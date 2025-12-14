@@ -69,7 +69,7 @@ const Navigation = () => {
       <div className="container mx-auto flex h-20 items-center justify-between px-4">
         <div className="flex items-center gap-2 text-2xl font-bold tracking-tighter text-foreground">
           <Hexagon className="h-8 w-8 text-primary fill-primary" />
-          <span>Hive<span className="text-primary">Mind</span></span>
+          <span>Bee<span className="text-primary">Yield</span></span>
         </div>
         <div className="hidden md:flex md:items-center md:gap-8">
           <a href="#" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Our Mission</a>
@@ -173,14 +173,14 @@ const ESGPage = () => {
                 <Card className="shadow-elegant border-none bg-primary text-primary-foreground">
                   <CardContent className="flex flex-col items-center text-center">
                     <Heart className="h-8 w-8 mb-4 opacity-80" />
-                    <div className="text-4xl font-bold mb-2">629 M+</div>
+                    <div className="text-4xl font-bold mb-2">2M+</div>
                     <div className="text-sm font-medium opacity-90 uppercase tracking-wider">Bees Saved</div>
                   </CardContent>
                 </Card>
                 <Card className="shadow-elegant border-none bg-white">
                   <CardContent className="flex flex-col items-center text-center">
                     <Wind className="h-8 w-8 mb-4 text-primary" />
-                    <div className="text-4xl font-bold mb-2 text-foreground">1,174</div>
+                    <div className="text-4xl font-bold mb-2 text-foreground">3000</div>
                     <div className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Tons CO2 Avoided</div>
                   </CardContent>
                 </Card>
@@ -201,11 +201,9 @@ const ESGPage = () => {
               <h2 className="text-3xl font-bold mb-8">Unveiling Our Impact</h2>
               <div className="prose prose-lg text-muted-foreground">
                 <p className="mb-6">
-                  In June 2024, BeeYield revealed ESG data from 2023 showcasing how its Precision Pollination as a Service (PPaaS) solution contributes to food security, reduced emissions, and the biodiversity and protection of the ecosystem.
-                </p>
+What started as a passion project during the pandemic has transformed into a critical agricultural solution. In June 2024, BeeYield released impact data confirming that our aim to secure the future of food is working. The report details how our expansion—now protecting the ecosystem through 1,500+ planted trees and managed colonies—is actively reducing emissions and safeguarding the biodiversity essential for our planet.                </p>
                 <p>
-                  By enhancing bee colony health and minimizing CO2 emissions, BeeYield is helping to advance global UN Sustainable Development Goals (SDGs) and to secure the future of the global food supply.
-                </p>
+Our work goes beyond agriculture; it is an act of ecosystem guardianship. By optimizing colony health and minimizing our carbon footprint, we are driving progress toward the UN Sustainable Development Goals (SDGs) necessary to safeguard our food systems.                </p>
               </div>
             </div>
           </section>
@@ -226,11 +224,10 @@ const ESGPage = () => {
                     </div>
                     <h4 className="text-2xl font-bold mb-4">Protecting Biodiversity</h4>
                     <p className="text-muted-foreground leading-relaxed mb-6">
-                      Supporting biodiversity and ecosystem protection, BeeYield's technology provides beekeepers with real-time insights into colony health. In 2023, our beekeepers experienced significantly lower colony losses, equating to approximately 629 million bees saved. This directly contributes to stopping biodiversity loss.
-                    </p>
+Beyond monitoring colony health, our holistic approach actively regenerates the environment. By planting over 1,500 trees and saving over 2 million bees, we create a resilient ecosystem that does double duty: reversing biodiversity loss while delivering the high-quality pollination essential for improving crop yields.                    </p>
                     <ul className="space-y-2">
                       <li className="flex items-center gap-2 text-sm font-medium">
-                        <Check className="h-4 w-4 text-primary" /> 25,190 fewer colonies lost
+                        <Check className="h-4 w-4 text-primary" /> fewer colonies lost
                       </li>
                       <li className="flex items-center gap-2 text-sm font-medium">
                         <Check className="h-4 w-4 text-primary" /> Stronger hives require fewer resources
@@ -264,8 +261,7 @@ const ESGPage = () => {
                     </div>
                     <h4 className="text-2xl font-bold mb-4">Food Security & Yield</h4>
                     <p className="text-muted-foreground leading-relaxed mb-6">
-                      In 2023, BeeYield serviced over 140K acres across North America, Europe, and Australia—a 240% increase. By optimizing deployment for crops like almonds, apples, and blueberries, we leverage technology to increase yield and nutritional value, directly supporting the goal of Zero Hunger.
-                    </p>
+Our operations have scaled to meet the challenge of food security. As of 2025, we have pollinated 25 acres and expanded our green footprint by planting 1,500+ trees. This commitment to 'Precision Pollination' has not only improved local yields but also delivered over 883kg of traceable honey, creating a model for sustainable growth.                    </p>
                     <div className="flex flex-wrap gap-2">
                       {["Almonds", "Apples", "Cherries", "Blueberries", "Rapeseed"].map(crop => (
                         <Badge key={crop} variant="secondary">{crop}</Badge>
@@ -285,8 +281,8 @@ const ESGPage = () => {
                     </div>
                     <h4 className="text-2xl font-bold mb-4">Reducing Emissions</h4>
                     <p className="text-muted-foreground leading-relaxed mb-6">
-                      Our technology minimizes hive transportation by utilizing fewer, stronger colonies per acre. In 2023, BeeYield's services prevented 1,174 tons of CO2 emissions—a 188% increase in savings from the previous year.
-                    </p>
+Our technology redefines efficiency by utilizing our proprietary Hives Per Acre and Frames Per Acre model. By deploying fewer, stronger colonies with verified frame density, we minimize transportation needs and maximize impact. In 2025, this precision approach—combined with planting 1,500+ trees—significantly reduced our carbon footprint while boosting pollination success.
+                  </p>
                      <Button variant="outline" className="w-full justify-between group">
                         Read Climate Report <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
                      </Button>
@@ -309,12 +305,11 @@ const ESGPage = () => {
             <div className="container mx-auto px-4 text-center max-w-4xl">
               <Quote className="h-12 w-12 mx-auto mb-8 opacity-50" />
               <blockquote className="text-2xl md:text-4xl font-bold leading-tight mb-10">
-                "We are proud to showcase BeeYield's commitment to addressing pressing global sustainability challenges. Our data underscores the vital role bees play in ensuring food security, reducing emissions, and safeguarding biodiversity."
-              </blockquote>
+BeeYield is dedicated to securing the future of food by addressing the most pressing gap in agriculture today. Our findings highlight the critical role of precision apiculture in stabilizing food security, lowering carbon footprints, and ensuring that our planet's biodiversity thrives alongside our farms.              </blockquote>
               <div className="flex flex-col items-center">
                 <div className="h-16 w-16 bg-white/20 rounded-full mb-4"></div>
-                <cite className="not-italic font-bold text-lg">Omer Davidi</cite>
-                <span className="opacity-80">CEO & Co-Founder, BeeYield</span>
+                <cite className="not-italic font-bold text-lg">Timothy Nduva </cite>
+                <span className="opacity-80">CEO & Founder, BeeYield</span>
               </div>
             </div>
           </section>
@@ -327,8 +322,7 @@ const ESGPage = () => {
                 Explore our full Environmental, Social, and Governance data to see how we are making a difference.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
-                <Button size="lg">Download 2023 ESG Report</Button>
-                <Button size="lg" variant="outline">Contact Our ESG Team</Button>
+                <Button size="lg">Read More</Button>
               </div>
             </div>
           </section>

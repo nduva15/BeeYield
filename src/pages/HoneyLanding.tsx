@@ -28,17 +28,17 @@ const Home = () => {
   const products = [
     {
       name: "Wildflower Honey",
-      price: "$18.99",
+      price: "1000",
       image: productImage,
     },
     {
       name: "Acacia Honey",
-      price: "$22.99",
+      price: "1000",
       image: productImage,
     },
     {
       name: "Lavender Honey",
-      price: "$24.99",
+      price: "1000",
       image: productImage,
     },
   ];
