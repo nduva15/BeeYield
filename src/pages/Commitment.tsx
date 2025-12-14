@@ -165,7 +165,7 @@ const CommitmentPage = () => {
                   <span className="text-gradient">Rely on Bees</span>
                 </h1>
                 <p className="mb-10 text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                  HiveMind is committed to the welfare of honey bees and the future of our food systems.
+                  BeeYield is committed to the welfare of honey bees and the future of our food systems.
                 </p>
               </div>
             </div>
@@ -186,7 +186,7 @@ const CommitmentPage = () => {
                   <h2 className="text-4xl font-bold mb-6">What's in a Name?</h2>
                   <div className="prose prose-lg text-muted-foreground">
                     <p className="mb-4">
-                      In our case, it turns out it’s quite a lot. <strong>HiveMind</strong> says everything about us. We are their supporters. We are their advocates. We are their champions.
+                      In our case, it turns out it's quite a lot. <strong>BeeYield</strong> says everything about us. We are their supporters. We are their advocates. We are their champions.
                     </p>
                     <p>
                       From the very beginning, our name has been the lens through which we make decisions. It gives clarity to our mission and serves as a daily reminder of how important it is. After all is said and done, bees are the unsung heroes of agriculture. They pollinate the planet and power our food ecosystem.
@@ -222,7 +222,7 @@ const CommitmentPage = () => {
                     </div>
                     <h3 className="text-2xl font-bold mb-4">Unprecedented Visibility</h3>
                     <p className="text-muted-foreground leading-relaxed">
-                      Tracking colony health during pollination requires visibility into these colonies on an unprecedented scale. Only HiveMind has the volume of aggregated data to achieve this. By analyzing hive data derived from all of our monitored colonies, we have developed a scientific model to create reports that help growers fulfill their sustainability goals.
+                      Tracking colony health during pollination requires visibility into these colonies on an unprecedented scale. Only BeeYield has the volume of aggregated data to achieve this. By analyzing hive data derived from all of our monitored colonies, we have developed a scientific model to create reports that help growers fulfill their sustainability goals.
                     </p>
                   </CardContent>
                 </Card>
@@ -284,7 +284,7 @@ const CommitmentPage = () => {
                       Across the spectrum, wild pollinators including wasps, flies, and beetles, many solitary bee species, moths and butterflies, are all under pressure. Habitat loss, fossil fuel-based agricultural inputs and other drivers all contribute to population decline.
                     </p>
                     <p>
-                      Only by accurately tracking population levels can conservation work be effective. HiveMind's acoustic detection technology can greatly improve the accuracy of species monitoring.
+                      Only by accurately tracking population levels can conservation work be effective. BeeYield's acoustic detection technology can greatly improve the accuracy of species monitoring.
                     </p>
                   </div>
                   <Button variant="outline" size="lg">
@@ -307,7 +307,7 @@ const CommitmentPage = () => {
                     </div>
                     <h2 className="text-3xl font-bold mb-6">Our ESG Commitment</h2>
                     <p className="text-lg text-muted-foreground mb-8">
-                      ESG (Environmental, Social and Governance) practices are an increasingly important component of corporate responsibility and reputation. HiveMind fulfills its obligations in several demonstrable ways, ensuring transparency and sustainable growth.
+                      ESG (Environmental, Social and Governance) practices are an increasingly important component of corporate responsibility and reputation. BeeYield fulfills its obligations in several demonstrable ways, ensuring transparency and sustainable growth.
                     </p>
                     <div className="flex flex-wrap gap-4">
                       <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">

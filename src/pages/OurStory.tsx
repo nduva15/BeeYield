@@ -145,7 +145,7 @@ const StoryPage = () => {
                 About Us
               </Badge>
               <h1 className="text-5xl md:text-7xl font-bold mb-8 tracking-tight">
-                The Story of <span className="text-gradient">HiveMind</span>
+                The Story of <span className="text-gradient">BeeYield</span>
               </h1>
               <p className="text-2xl md:text-3xl text-muted-foreground font-light leading-relaxed">
                 Our origin story is one of friendship, timing, and unique skillsets.
@@ -183,7 +183,7 @@ const StoryPage = () => {
                       In a small town in rural Israel, <span className="text-foreground font-semibold">Itai Kanot</span> was learning how to be a beekeeper from his father. By the time he was attending Reichman University, he had been a beekeeper most of his life.
                     </p>
                     <p className="mb-6">
-                      As it turned out, RUNI’s pioneering approach to interdisciplinary education would be the spark that ignited HiveMind.
+                      As it turned out, RUNI's pioneering approach to interdisciplinary education would be the spark that ignited BeeYield.
                     </p>
                     <p>
                       The convergence of these distinct fields—agriculture, security, and data analytics—created the foundation for a technology that would revolutionize how we understand and protect our food supply.
@@ -252,7 +252,7 @@ const StoryPage = () => {
                       This video invites you on an awe-inspiring odyssey, where billions of blossoms burst into life and the air resonates with the hypnotic drone of pollinators.
                     </p>
                     <p>
-                      Experience the spectacle of one of the largest pollination events on our planet, told through the lens of HiveMind. Witness how every bee, visiting thousands of flowers a day, transforms simple blossoms into the food that graces our tables.
+                      Experience the spectacle of one of the largest pollination events on our planet, told through the lens of BeeYield. Witness how every bee, visiting thousands of flowers a day, transforms simple blossoms into the food that graces our tables.
                     </p>
                   </div>
                   <Button className="mt-8 gap-2">
