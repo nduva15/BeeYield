@@ -5,10 +5,10 @@ import impactImage from "@/assets/impact-beekeeping.jpg";
 
 const Impact = () => {
   const stats = [
-    { label: "Beehives Protected", value: "2,500+", icon: Bug },
-    { label: "Trees Planted", value: "10,000+", icon: TreePine },
-    { label: "Water Saved (Liters)", value: "50,000+", icon: Droplets },
-    { label: "Carbon Offset (Tons)", value: "125+", icon: Sprout },
+    { label: "Beehives Protected", value: "150+", icon: Bug },
+    { label: "Trees Planted", value: "2500+", icon: TreePine },
+    { label: "Bees Saved (Colonies)", value: "2M+", icon: Droplets },
+    { label: "Carbon Offset (Tons)", value: "2+", icon: Sprout },
   ];
 
   return (
@@ -121,15 +121,15 @@ const Impact = () => {
 
           <Card className="border-none bg-gradient-to-br from-secondary to-secondary/80 text-secondary-foreground shadow-soft">
             <CardContent className="p-8">
-              <h2 className="mb-4 text-3xl font-bold">Our 2025 Goals</h2>
+              <h2 className="mb-4 text-3xl font-bold">Our 2030 Goals</h2>
               <ul className="space-y-3">
                 <li className="flex items-start">
                   <span className="mr-2 mt-1">✓</span>
-                  <span>Protect 5,000 additional beehives</span>
+                  <span>Protect 10,000 additional beehives</span>
                 </li>
                 <li className="flex items-start">
                   <span className="mr-2 mt-1">✓</span>
-                  <span>Plant 25,000 native flowering plants</span>
+                  <span>Plant 10,000 native flowering plants</span>
                 </li>
                 <li className="flex items-start">
                   <span className="mr-2 mt-1">✓</span>
@@ -137,7 +137,7 @@ const Impact = () => {
                 </li>
                 <li className="flex items-start">
                   <span className="mr-2 mt-1">✓</span>
-                  <span>Expand to 100+ partner beekeepers</span>
+                  <span>Expand to 200+ partner beekeepers</span>
                 </li>
               </ul>
             </CardContent>

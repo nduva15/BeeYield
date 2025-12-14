@@ -5,9 +5,9 @@ import { Link } from "react-router-dom";
 
 const PollinationServices = () => {
   const stats = [
-    { label: "Farms Served", value: "150+", description: "Active agricultural partners" },
-    { label: "Acres Pollinated", value: "50,000+", description: "Annual coverage area" },
-    { label: "Managed Hives", value: "5,000+", description: "Professional bee colonies" },
+    { label: "Farmers Served", value: "20+", description: "Active agricultural partners" },
+    { label: "Acres Pollinated", value: "30+", description: "Annual coverage area" },
+    { label: "Managed Hives", value: "150+", description: "Professional bee colonies" },
     { label: "Yield Increase", value: "35%", description: "Average crop improvement" },
   ];
 
