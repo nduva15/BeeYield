@@ -8,7 +8,7 @@ const About = () => {
         <div className="mx-auto max-w-3xl text-center">
           <h1 className="mb-6 text-5xl font-bold">About BeeYield</h1>
           <p className="mb-12 text-xl text-muted-foreground">
-            We're on a mission to bring pure, sustainable honey to your table while protecting our planet's precious pollinators.
+            Our mission is to solve the global pollination crisis by deploying healthy, verified colonies that revitalize ecosystems and ensure a sustainable food supply.
           </p>
         </div>
 
@@ -18,10 +18,10 @@ const About = () => {
               <h2 className="mb-4 text-3xl font-bold">Our Story</h2>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  Founded in 2020, BeeYield was born from a simple belief: honey should be pure, traceable, and produced in harmony with nature. Our founders, passionate about both environmental conservation and supporting local communities, set out to create a honey brand that would set new standards for transparency and sustainability.
+                 Founded and Started in 2020, BeeYield was born from a critical realization: the future of food depends on the health of our pollinators. Our founder, Timothy, driven by the urgent need to reverse biodiversity loss, set out to build an ecosystem guardianship model that restores nature, empowers farmers with higher yields, and secures a sustainable food supply for all.
                 </p>
                 <p>
-                  Today, we partner with ethical beekeepers across the region who share our commitment to sustainable practices. Every jar of BeeYield supports these dedicated farmers and contributes to vital pollinator conservation efforts.
+Today, we partner with forward-thinking farmers across the region who recognize pollination as an essential input. Every colony we deploy boosts agricultural yields for these growers and contributes to vital ecosystem restoration efforts.
                 </p>
                 <p>
                   Our innovative QR code traceability system lets you discover the unique story behind your honey - from the specific hive location to the flowering plants visited by the bees that produced it.
@@ -39,8 +39,7 @@ const About = () => {
               </div>
               <h3 className="mb-2 text-xl font-semibold">Our Team</h3>
               <p className="text-muted-foreground">
-                50+ dedicated beekeepers and conservation experts working together
-              </p>
+Today, we have built a robust network of 20 partner beekeepers and 5 key farmers working together to standardize sustainable pollination across the region.              </p>
             </CardContent>
           </Card>
 
@@ -51,8 +50,8 @@ const About = () => {
               </div>
               <h3 className="mb-2 text-xl font-semibold">Our Mission</h3>
               <p className="text-muted-foreground">
-                To produce the finest honey while protecting bees and supporting sustainable agriculture
-              </p>
+To secure the future of food by reversing the pollination crisis and delivering the essential inputs that restore agricultural yields.          
+    </p>
             </CardContent>
           </Card>
 
@@ -63,8 +62,9 @@ const About = () => {
               </div>
               <h3 className="mb-2 text-xl font-semibold">Our Values</h3>
               <p className="text-muted-foreground">
-                Transparency, sustainability, quality, and community at the heart of everything we do
-              </p>
+At the heart of everything we do is a commitment to protecting bees and improving pollination to drive higher yields—ensuring sustainability, quality, and total traceability from hive to harvest.  
+
+            </p>
             </CardContent>
           </Card>
         </div>
