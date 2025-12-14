@@ -125,8 +125,8 @@ const Contact = () => {
                   <Phone className="h-6 w-6 text-secondary" />
                 </div>
                 <h3 className="mb-2 font-semibold">Phone</h3>
-                <p className="text-sm text-muted-foreground">+1 (555) 123-4567</p>
-                <p className="text-sm text-muted-foreground">Mon-Fri, 9am-5pm EST</p>
+                <p className="text-sm text-muted-foreground">+254111424330</p>
+                <p className="text-sm text-muted-foreground">Mon-Sun, 8am-6pm EST</p>
               </CardContent>
             </Card>
 
@@ -136,8 +136,8 @@ const Contact = () => {
                   <MapPin className="h-6 w-6 text-accent" />
                 </div>
                 <h3 className="mb-2 font-semibold">Location</h3>
-                <p className="text-sm text-muted-foreground">123 Honey Lane</p>
-                <p className="text-sm text-muted-foreground">Meadowville, MV 12345</p>
+                <p className="text-sm text-muted-foreground">Makueni County </p>
+                <p className="text-sm text-muted-foreground">Kibwezi</p>
               </CardContent>
             </Card>
           </div>

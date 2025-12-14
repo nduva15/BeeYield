@@ -165,8 +165,7 @@ const CommitmentPage = () => {
                   <span className="text-gradient">Rely on Bees</span>
                 </h1>
                 <p className="mb-10 text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                  BeeYield is committed to the welfare of honey bees and the future of our food systems.
-                </p>
+BeeYield is dedicated to acting as an ecosystem guardian, prioritizing the welfare of pollinators to actively secure the future of our food systems.                </p>
               </div>
             </div>
             {/* Decorative background elements */}
@@ -183,14 +182,14 @@ const CommitmentPage = () => {
                     <Heart className="h-4 w-4" />
                     Our Commitment
                   </div>
-                  <h2 className="text-4xl font-bold mb-6">What's in a Name?</h2>
+                  <h2 className="text-4xl font-bold mb-6">What about Our Name?</h2>
                   <div className="prose prose-lg text-muted-foreground">
                     <p className="mb-4">
-                      In our case, it turns out it's quite a lot. <strong>BeeYield</strong> says everything about us. We are their supporters. We are their advocates. We are their champions.
-                    </p>
+In our case, our name defines our entire philosophy. BeeYield. It bridges the gap between the health of the colony and the success of the harvest. We are the supporters of the pollinator, the advocates for the ecosystem, and the champions of your yield.                    
+
+</p>
                     <p>
-                      From the very beginning, our name has been the lens through which we make decisions. It gives clarity to our mission and serves as a daily reminder of how important it is. After all is said and done, bees are the unsung heroes of agriculture. They pollinate the planet and power our food ecosystem.
-                    </p>
+From the very beginning, our name has been our compass. BeeYield. It defines the simple but critical equation for our survival: without the bee, there is no yield. It serves as a daily reminder that these aren't just unsung heroes—they are the engines of agriculture that power our entire food ecosystem.                    </p>
                   </div>
                 </div>
                 <div className="grid gap-6">
