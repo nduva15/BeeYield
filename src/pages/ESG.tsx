@@ -201,10 +201,10 @@ const ESGPage = () => {
               <h2 className="text-3xl font-bold mb-8">Unveiling Our Impact</h2>
               <div className="prose prose-lg text-muted-foreground">
                 <p className="mb-6">
-                  In June 2024, HiveMind revealed ESG data from 2023 showcasing how its Precision Pollination as a Service (PPaaS) solution contributes to food security, reduced emissions, and the biodiversity and protection of the ecosystem.
+                  In June 2024, BeeYield revealed ESG data from 2023 showcasing how its Precision Pollination as a Service (PPaaS) solution contributes to food security, reduced emissions, and the biodiversity and protection of the ecosystem.
                 </p>
                 <p>
-                  By enhancing bee colony health and minimizing CO2 emissions, HiveMind is helping to advance global UN Sustainable Development Goals (SDGs) and to secure the future of the global food supply.
+                  By enhancing bee colony health and minimizing CO2 emissions, BeeYield is helping to advance global UN Sustainable Development Goals (SDGs) and to secure the future of the global food supply.
                 </p>
               </div>
             </div>
@@ -226,7 +226,7 @@ const ESGPage = () => {
                     </div>
                     <h4 className="text-2xl font-bold mb-4">Protecting Biodiversity</h4>
                     <p className="text-muted-foreground leading-relaxed mb-6">
-                      Supporting biodiversity and ecosystem protection, HiveMind's technology provides beekeepers with real-time insights into colony health. In 2023, our beekeepers experienced significantly lower colony losses, equating to approximately 629 million bees saved. This directly contributes to stopping biodiversity loss.
+                      Supporting biodiversity and ecosystem protection, BeeYield's technology provides beekeepers with real-time insights into colony health. In 2023, our beekeepers experienced significantly lower colony losses, equating to approximately 629 million bees saved. This directly contributes to stopping biodiversity loss.
                     </p>
                     <ul className="space-y-2">
                       <li className="flex items-center gap-2 text-sm font-medium">
@@ -264,7 +264,7 @@ const ESGPage = () => {
                     </div>
                     <h4 className="text-2xl font-bold mb-4">Food Security & Yield</h4>
                     <p className="text-muted-foreground leading-relaxed mb-6">
-                      In 2023, HiveMind serviced over 140K acres across North America, Europe, and Australia—a 240% increase. By optimizing deployment for crops like almonds, apples, and blueberries, we leverage technology to increase yield and nutritional value, directly supporting the goal of Zero Hunger.
+                      In 2023, BeeYield serviced over 140K acres across North America, Europe, and Australia—a 240% increase. By optimizing deployment for crops like almonds, apples, and blueberries, we leverage technology to increase yield and nutritional value, directly supporting the goal of Zero Hunger.
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {["Almonds", "Apples", "Cherries", "Blueberries", "Rapeseed"].map(crop => (
@@ -285,7 +285,7 @@ const ESGPage = () => {
                     </div>
                     <h4 className="text-2xl font-bold mb-4">Reducing Emissions</h4>
                     <p className="text-muted-foreground leading-relaxed mb-6">
-                      Our technology minimizes hive transportation by utilizing fewer, stronger colonies per acre. In 2023, HiveMind’s services prevented 1,174 tons of CO2 emissions—a 188% increase in savings from the previous year.
+                      Our technology minimizes hive transportation by utilizing fewer, stronger colonies per acre. In 2023, BeeYield's services prevented 1,174 tons of CO2 emissions—a 188% increase in savings from the previous year.
                     </p>
                      <Button variant="outline" className="w-full justify-between group">
                         Read Climate Report <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -309,12 +309,12 @@ const ESGPage = () => {
             <div className="container mx-auto px-4 text-center max-w-4xl">
               <Quote className="h-12 w-12 mx-auto mb-8 opacity-50" />
               <blockquote className="text-2xl md:text-4xl font-bold leading-tight mb-10">
-                “We are proud to showcase HiveMind's commitment to addressing pressing global sustainability challenges. Our data underscores the vital role bees play in ensuring food security, reducing emissions, and safeguarding biodiversity.”
+                "We are proud to showcase BeeYield's commitment to addressing pressing global sustainability challenges. Our data underscores the vital role bees play in ensuring food security, reducing emissions, and safeguarding biodiversity."
               </blockquote>
               <div className="flex flex-col items-center">
                 <div className="h-16 w-16 bg-white/20 rounded-full mb-4"></div>
                 <cite className="not-italic font-bold text-lg">Omer Davidi</cite>
-                <span className="opacity-80">CEO & Co-Founder, HiveMind</span>
+                <span className="opacity-80">CEO & Co-Founder, BeeYield</span>
               </div>
             </div>
           </section>
