@@ -16,6 +16,8 @@ import PollinationServices from "./pages/Home";
 import PollinationRequest from "./pages/PollinationRequest";
 import CommitmentPage from "./pages/Commitment";
 import OurStory from "./pages/OurStory";
+import Team from "./Team";
+import CropsWePollinate from "./pages/CropsWePollinate";
 
 
 const queryClient = new QueryClient();
@@ -39,6 +41,8 @@ const App = () => (
             <Route path="/PollinationRequest" element={<PollinationRequest />} />
             <Route path="/Commitment" element={<CommitmentPage />} />
             <Route path="/ourstory" element={<OurStory />} />
+            <Route path="/crops-we-pollinate" element={<CropsWePollinate />} />
+            <Route path="/team" element={<Team />} />
 
 
 
