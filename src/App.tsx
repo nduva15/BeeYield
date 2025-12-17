@@ -16,6 +16,7 @@ import PollinationServices from "./pages/Home";
 import PollinationRequest from "./pages/PollinationRequest";
 import CommitmentPage from "./pages/Commitment";
 import OurStory from "./pages/OurStory";
+import ESG from "./pages/ESG";
 import Team from "./Team";
 import CropsWePollinate from "./pages/CropsWePollinate";
 
@@ -40,6 +41,8 @@ const App = () => (
             <Route path="/PollinationServices" element={<PollinationServices />} />
             <Route path="/PollinationRequest" element={<PollinationRequest />} />
             <Route path="/Commitment" element={<CommitmentPage />} />
+            <Route path="/ESG" element={<ESG />} />
+            <Route path="/esg" element={<ESG />} />
             <Route path="/ourstory" element={<OurStory />} />
             <Route path="/crops-we-pollinate" element={<CropsWePollinate />} />
             <Route path="/team" element={<Team />} />
