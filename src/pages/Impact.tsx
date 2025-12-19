@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Sprout, Droplets, TreePine, Bug, Download } from "lucide-react";
+import { Sprout, Droplets, TreePine, Bug, Download, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import impactImage from "@/assets/impact-beekeeping.jpg";
 
 const Impact = () => {
@@ -87,6 +88,9 @@ const Impact = () => {
                   <Progress value={88} className="h-2" />
                 </div>
               </div>
+              <Link to="/Commitment" className="mt-6 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-primary-foreground font-semibold hover:opacity-90 transition-opacity">
+                Read More <ArrowRight className="h-4 w-4" />
+              </Link>
             </CardContent>
           </Card>
 
@@ -116,6 +120,9 @@ const Impact = () => {
                   </li>
                 </ul>
               </div>
+              <Link to="/esg" className="mt-6 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-primary-foreground font-semibold hover:opacity-90 transition-opacity">
+                Read More <ArrowRight className="h-4 w-4" />
+              </Link>
             </CardContent>
           </Card>
 
