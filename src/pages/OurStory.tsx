@@ -1,143 +1,15 @@
-import React, { useState } from "react";
-import { 
-  Menu, X, Search, ShoppingCart, Hexagon,
+import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
   Users, Cpu, Sprout, Play, ArrowRight, Heart
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
-// -----------------------------------------------------------------------------
-// MOCK IMPORTS & THEME CONFIGURATION
-// -----------------------------------------------------------------------------
-
-const Link = ({ to, children, className }) => (
-  <a href={to} className={`contents ${className || ''}`} onClick={(e) => e.preventDefault()}>
-    {children}
-  </a>
-);
-
-const Button = ({ children, variant = "default", size = "default", className = "", ...props }) => {
-  const variants = {
-    default: "bg-primary text-primary-foreground hover:opacity-90 shadow-md",
-    secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-    outline: "border border-input bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground",
-    ghost: "hover:bg-accent hover:text-accent-foreground",
-  };
-
-  const sizes = {
-    default: "h-10 px-6 py-2",
-    sm: "h-8 rounded-md px-3 text-xs",
-    lg: "h-12 rounded-md px-8 text-lg",
-    icon: "h-10 w-10",
-  };
-
+const OurStory = () => {
   return (
-    <button 
-      className={`inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 ${variants[variant]} ${sizes[size]} ${className}`} 
-      {...props}
-    >
-      {children}
-    </button>
-  );
-};
-
-const Badge = ({ children, className = "", variant = "default" }) => {
-  const variants = {
-    default: "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
-    secondary: "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
-    outline: "text-foreground border border-input",
-  };
-  
-  return (
-    <div className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${variants[variant]} ${className}`}>
-      {children}
-    </div>
-  );
-};
-
-const Card = ({ children, className = "" }) => (
-  <div className={`rounded-xl border bg-card text-card-foreground shadow-sm ${className}`}>
-    {children}
-  </div>
-);
-
-const Navigation = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b bg-background/95 backdrop-blur-md">
-      <div className="container mx-auto flex h-20 items-center justify-between px-4">
-        <div className="flex items-center gap-2 text-2xl font-bold tracking-tighter text-foreground">
-          <Hexagon className="h-8 w-8 text-primary fill-primary" />
-          <span>Hive<span className="text-primary">Mind</span></span>
-        </div>
-        <div className="hidden md:flex md:items-center md:gap-8">
-          <a href="#" className="text-sm font-bold text-primary">Our Story</a>
-          <a href="#" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Pollination</a>
-          <a href="#" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Technology</a>
-          <a href="#" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">ESG</a>
-        </div>
-        <div className="hidden items-center gap-4 md:flex">
-          <Button>Get Started</Button>
-        </div>
-        <button className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
-      </div>
-      {isOpen && (
-        <div className="border-b bg-background px-4 py-4 md:hidden animate-in slide-in-from-top-5">
-          <div className="flex flex-col gap-4">
-            <a href="#" className="text-sm font-medium hover:text-primary">Our Story</a>
-            <a href="#" className="text-sm font-medium hover:text-primary">Pollination</a>
-            <a href="#" className="text-sm font-medium hover:text-primary">Technology</a>
-            <Button className="w-full">Get Started</Button>
-          </div>
-        </div>
-      )}
-    </nav>
-  );
-};
-
-// -----------------------------------------------------------------------------
-// MAIN COMPONENT (Our Story Page)
-// -----------------------------------------------------------------------------
-
-const StoryPage = () => {
-  return (
-    <>
-      <style>{`
-        :root {
-          --primary: #f59e0b;
-          --primary-foreground: #ffffff;
-          --secondary: #fffbeb;
-          --secondary-foreground: #451a03;
-          --muted: #f5f5f4;
-          --muted-foreground: #78716c;
-          --accent: #ecfccb;
-          --accent-foreground: #365314;
-          --background: #ffffff;
-          --foreground: #1c1917;
-          --card: #ffffff;
-          --card-foreground: #1c1917;
-          --border: #e7e5e4;
-        }
-        
-        .bg-background { background-color: var(--background); }
-        .bg-primary { background-color: var(--primary); }
-        .text-primary { color: var(--primary); }
-        .text-primary-foreground { color: var(--primary-foreground); }
-        .bg-secondary { background-color: var(--secondary); }
-        .text-secondary-foreground { color: var(--secondary-foreground); }
-        .bg-muted { background-color: var(--muted); }
-        .text-muted-foreground { color: var(--muted-foreground); }
-        .text-foreground { color: var(--foreground); }
-        
-        .shadow-soft { box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05); }
-        .shadow-elegant { box-shadow: 0 20px 40px -10px rgba(245, 158, 11, 0.15); }
-        .text-gradient { background: linear-gradient(to right, #d97706, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-      `}</style>
-
-      <div className="min-h-screen bg-background font-sans text-foreground">
-        <Navigation />
-        
-        <div className="pt-20">
+    <div className="min-h-screen py-20">
           {/* Hero Section */}
           <section className="relative py-24 md:py-32 bg-secondary/20">
             <div className="container mx-auto px-4 text-center max-w-4xl relative z-10">
@@ -282,29 +154,8 @@ const StoryPage = () => {
               </div>
             </div>
           </section>
-
-          {/* Footer */}
-          <footer className="py-12 bg-white border-t">
-            <div className="container mx-auto px-4 text-center">
-              <div className="flex items-center justify-center gap-2 text-2xl font-bold tracking-tighter text-foreground mb-8">
-                <Hexagon className="h-8 w-8 text-primary fill-primary" />
-                <span>Hive<span className="text-primary">Mind</span></span>
-              </div>
-              <p className="text-muted-foreground mb-8">
-                Revolutionizing agriculture, one hive at a time.
-              </p>
-              <div className="flex justify-center gap-6 text-sm font-medium text-muted-foreground">
-                <a href="#" className="hover:text-primary">Contact</a>
-                <a href="#" className="hover:text-primary">Careers</a>
-                <a href="#" className="hover:text-primary">Press</a>
-                <a href="#" className="hover:text-primary">Privacy</a>
-              </div>
-            </div>
-          </footer>
-        </div>
-      </div>
-    </>
+    </div>
   );
 };
 
-export default StoryPage;
+export default OurStory;
