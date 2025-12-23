@@ -17,8 +17,11 @@ import PollinationRequest from "./pages/PollinationRequest";
 import CommitmentPage from "./pages/Commitment";
 import OurStory from "./pages/OurStory";
 import ESG from "./pages/ESG";
-import Team from "./Team";
+import Team from "./pages/Team";
 import CropsWePollinate from "./pages/CropsWePollinate";
+import InLandPollinationPlatform from "./pages/InLandPollinationPlatform";
+import PollinationSolutions from "./pages/PollinationSolutions";
+import PrecisionPollination from "./pages/PrecisionPollination";
 
 
 const queryClient = new QueryClient();
@@ -46,6 +49,9 @@ const App = () => (
             <Route path="/ourstory" element={<OurStory />} />
             <Route path="/crops-we-pollinate" element={<CropsWePollinate />} />
             <Route path="/team" element={<Team />} />
+            <Route path="/InLandPollinationPlatform" element={<InLandPollinationPlatform />} />
+            <Route path="/PrecisionPollination" element={<PrecisionPollination />} />
+            <Route path="/PollinationSolutions" element={<PollinationSolutions />} />
 
 
 
