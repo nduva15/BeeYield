@@ -157,7 +157,7 @@ const PollinationServices = () => {
           <div className="mx-auto max-w-4xl text-center">
             <h2 className="mb-8 text-4xl font-bold">Crops We Pollinate</h2>
             <div className="grid gap-6 md:grid-cols-3">
-              {["Almonds", "Apples", "Blueberries", "Cherries", "Cucumbers", "Melons", "Pumpkins", "Strawberries", "Tomatoes"].map((crop, index) => (
+              {["Mangoes", "Maize", "Beans", "Cucumbers", "Melons", "Pumpkins", "Bananas", "Tomatoes"].map((crop, index) => (
                 <Card key={index} className="border-none shadow-soft">
                   <CardContent className="p-6">
                     <p className="text-lg font-semibold">{crop}</p>
