@@ -22,6 +22,8 @@ import CropsWePollinate from "./pages/CropsWePollinate";
 import InLandPollinationPlatform from "./pages/InLandPollinationPlatform";
 import PollinationSolutions from "./pages/PollinationSolutions";
 import PrecisionPollination from "./pages/PrecisionPollination";
+import Careers from "./pages/Careers";
+
 
 
 const queryClient = new QueryClient();
@@ -52,8 +54,7 @@ const App = () => (
             <Route path="/InLandPollinationPlatform" element={<InLandPollinationPlatform />} />
             <Route path="/PrecisionPollination" element={<PrecisionPollination />} />
             <Route path="/PollinationSolutions" element={<PollinationSolutions />} />
-
-
+            <Route path="/careers" element={<Careers />} />
 
             <Route path="*" element={<NotFound />} />
           </Routes>
