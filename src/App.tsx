@@ -23,6 +23,8 @@ import InLandPollinationPlatform from "./pages/InLandPollinationPlatform";
 import PollinationSolutions from "./pages/PollinationSolutions";
 import PrecisionPollination from "./pages/PrecisionPollination";
 import Careers from "./pages/Careers";
+import GlobalHiveNetwork from "./pages/GlobalHiveNetwork";
+
 
 
 
@@ -55,6 +57,7 @@ const App = () => (
             <Route path="/PrecisionPollination" element={<PrecisionPollination />} />
             <Route path="/PollinationSolutions" element={<PollinationSolutions />} />
             <Route path="/careers" element={<Careers />} />
+            <Route path="/GlobalHiveNetwork" element={<GlobalHiveNetwork />} />
 
             <Route path="*" element={<NotFound />} />
           </Routes>
