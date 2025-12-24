@@ -49,12 +49,12 @@ const Header = () => {
           </DropdownMenu>
 
           <Link
-            to="BeekeepingSolutions"
+            to="/PollinationSolutions"
             className={`text-sm font-medium transition-colors hover:text-primary ${
-              isActive("/BeekeepingSolutions") ? "text-primary" : "text-foreground"
+              isActive("/PollinationSolutions") ? "text-primary" : "text-foreground"
             }`}
           >
-            Beekeeping Solutions
+            Pollination Solutions
           </Link>
         </div>
 
