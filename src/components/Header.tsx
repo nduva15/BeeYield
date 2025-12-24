@@ -16,7 +16,7 @@ const Header = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Left side - Navigation Links */}
         <div className="hidden items-center space-x-8 md:flex">
@@ -60,13 +60,17 @@ const Header = () => {
 
         {/* Center - Logo (hidden on mobile, shown on desktop) */}
         <Link to="/" className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center space-x-2">
-          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-accent" />
+          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+            <span className="text-primary-foreground text-xs font-bold">BY</span>
+          </div>
           <span className="text-xl font-bold text-foreground">BeeYield</span>
         </Link>
 
         {/* Mobile Logo */}
         <Link to="/" className="flex items-center space-x-2 md:hidden">
-          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-accent" />
+          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+            <span className="text-primary-foreground text-xs font-bold">BY</span>
+          </div>
           <span className="text-xl font-bold text-foreground">BeeYield</span>
         </Link>
 
@@ -118,7 +122,7 @@ const Header = () => {
 
       {/* Expanded Menu (Desktop & Mobile) */}
       {isMenuOpen && (
-        <div className="absolute right-4 top-16 z-50 w-64 rounded-2xl bg-primary p-6 shadow-xl">
+        <div className="absolute right-4 top-16 z-50 w-64 rounded-2xl bg-primary p-6 shadow-xl animate-in fade-in slide-in-from-top-2">
           <div className="flex flex-col space-y-4">
             <Link
               to="/GlobalHiveNetwork"
