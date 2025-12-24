@@ -36,12 +36,12 @@ const Header = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-72 flex flex-col p-4 bg-primary border-none rounded-2xl shadow-xl">
               <DropdownMenuItem asChild className="focus:bg-primary/80 focus:text-primary-foreground">
-                <Link to="/pollination-services" className="w-full cursor-pointer px-4 py-3 text-base font-medium text-primary-foreground hover:bg-primary/80 rounded-lg">
+                <Link to="/PrecisionPollination" className="w-full cursor-pointer px-4 py-3 text-base font-medium text-primary-foreground hover:bg-primary/80 rounded-lg">
                   In-Hive Precision Pollination
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="focus:bg-primary/80 focus:text-primary-foreground">
-                <Link to="/pollination-request" className="w-full cursor-pointer px-4 py-3 text-base font-medium text-primary-foreground hover:bg-primary/80 rounded-lg">
+                <Link to="/inland-pollination-platform" className="w-full cursor-pointer px-4 py-3 text-base font-medium text-primary-foreground hover:bg-primary/80 rounded-lg">
                   In-Land Pollination Insights Platform
                 </Link>
               </DropdownMenuItem>
