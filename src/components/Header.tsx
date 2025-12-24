@@ -121,14 +121,14 @@ const Header = () => {
         <div className="absolute right-4 top-16 z-50 w-64 rounded-2xl bg-primary p-6 shadow-xl">
           <div className="flex flex-col space-y-4">
             <Link
-              to="/"
+              to="/GlobalHiveNetwork"
               onClick={() => setIsMenuOpen(false)}
               className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
             >
               Global Hive Network
             </Link>
             <Link
-              to="/GlobalHiveNetwork"
+              to="/AboutUs"
               onClick={() => setIsMenuOpen(false)}
               className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
             >
@@ -142,21 +142,21 @@ const Header = () => {
               Our Impact
             </Link>
             <Link
-              to="/Impact"
+              to="/PollinationServices"
               onClick={() => setIsMenuOpen(false)}
               className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
             >
               Pollination Services
             </Link>
             <Link
-              to="/pollination-request"
+              to="/careers"
               onClick={() => setIsMenuOpen(false)}
               className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
             >
               Careers
             </Link>
             <Link
-              to="/Careers"
+              to="/our-products"
               onClick={() => setIsMenuOpen(false)}
               className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
             >
