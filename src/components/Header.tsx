@@ -51,7 +51,7 @@ const Header = () => {
           <Link
             to="BeekeepingSolutions"
             className={`text-sm font-medium transition-colors hover:text-primary ${
-              isActive("/about") ? "text-primary" : "text-foreground"
+              isActive("/BeekeepingSolutions") ? "text-primary" : "text-foreground"
             }`}
           >
             Beekeeping Solutions
@@ -126,13 +126,6 @@ const Header = () => {
               className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
             >
               Global Hive Network
-            </Link>
-            <Link
-              to="/crops-we-pollinate"
-              onClick={() => setIsMenuOpen(false)}
-              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
-            >
-              Crops We Pollinate
             </Link>
             <Link
               to="/About"
