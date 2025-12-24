@@ -128,6 +128,13 @@ const Header = () => {
               Global Hive Network
             </Link>
             <Link
+              to="/crops-we-pollinate"
+              onClick={() => setIsMenuOpen(false)}
+              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
+            >
+              Crops We Pollinate
+            </Link>
+            <Link
               to="/AboutUs"
               onClick={() => setIsMenuOpen(false)}
               className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
@@ -147,6 +154,13 @@ const Header = () => {
               className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
             >
               Pollination Services
+            </Link>
+            <Link
+              to="/PollinationRequest"
+              onClick={() => setIsMenuOpen(false)}
+              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
+            >
+              Pollination Request
             </Link>
             <Link
               to="/careers"
@@ -175,6 +189,27 @@ const Header = () => {
               className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
             >
               Contact Us
+            </Link>
+            <Link
+              to="/OurStory"
+              onClick={() => setIsMenuOpen(false)}
+              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
+            >
+              Our Story
+            </Link>
+            <Link
+              to="/esg"
+              onClick={() => setIsMenuOpen(false)}
+              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
+            >
+              ESG
+            </Link>
+            <Link
+              to="/Team"
+              onClick={() => setIsMenuOpen(false)}
+              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
+            >
+              Team
             </Link>
             <Link
               to="/traceability"
