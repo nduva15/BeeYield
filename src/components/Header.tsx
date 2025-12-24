@@ -135,7 +135,7 @@ const Header = () => {
               Crops We Pollinate
             </Link>
             <Link
-              to="/AboutUs"
+              to="/About"
               onClick={() => setIsMenuOpen(false)}
               className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
             >
@@ -170,7 +170,7 @@ const Header = () => {
               Careers
             </Link>
             <Link
-              to="/our-products"
+              to="/shop"
               onClick={() => setIsMenuOpen(false)}
               className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
             >
@@ -203,6 +203,13 @@ const Header = () => {
               className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
             >
               ESG
+            </Link>
+            <Link
+              to="/commitment"
+              onClick={() => setIsMenuOpen(false)}
+              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
+            >
+              Commitment
             </Link>
             <Link
               to="/Team"
