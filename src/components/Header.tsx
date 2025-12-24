@@ -167,6 +167,13 @@ const Header = () => {
               Careers
             </Link>
             <Link
+              to="/Media"
+              onClick={() => setIsMenuOpen(false)}
+              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
+            >
+              Media
+            </Link>
+            <Link
               to="/shop"
               onClick={() => setIsMenuOpen(false)}
               className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
