@@ -34,15 +34,15 @@ const Header = () => {
               Pollination Solutions
               <ChevronDown className="h-4 w-4" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48">
-              <DropdownMenuItem asChild>
-                <Link to="/pollination-services" className="w-full cursor-pointer">
-                  Our Services
+            <DropdownMenuContent align="start" className="w-72 flex flex-col p-4 bg-primary border-none rounded-2xl shadow-xl">
+              <DropdownMenuItem asChild className="focus:bg-primary/80 focus:text-primary-foreground">
+                <Link to="/pollination-services" className="w-full cursor-pointer px-4 py-3 text-base font-medium text-primary-foreground hover:bg-primary/80 rounded-lg">
+                  In-Hive Precision Pollination
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/pollination-request" className="w-full cursor-pointer">
-                  Request Service
+              <DropdownMenuItem asChild className="focus:bg-primary/80 focus:text-primary-foreground">
+                <Link to="/pollination-request" className="w-full cursor-pointer px-4 py-3 text-base font-medium text-primary-foreground hover:bg-primary/80 rounded-lg">
+                  In-Land Pollination Insights Platform
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -118,83 +118,71 @@ const Header = () => {
 
       {/* Expanded Menu (Desktop & Mobile) */}
       {isMenuOpen && (
-        <div className="border-t bg-background">
-          <div className="container mx-auto grid gap-4 px-4 py-6 md:grid-cols-4">
-            <div className="space-y-3">
-              <h3 className="font-semibold text-foreground">Explore</h3>
-              <Link
-                to="/"
-                onClick={() => setIsMenuOpen(false)}
-                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                Home
-              </Link>
-              <Link
-                to="/about"
-                onClick={() => setIsMenuOpen(false)}
-                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                About Us
-              </Link>
-              <Link
-                to="/impact"
-                onClick={() => setIsMenuOpen(false)}
-                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                Our Impact
-              </Link>
-            </div>
-            <div className="space-y-3">
-              <h3 className="font-semibold text-foreground">Services</h3>
-              <Link
-                to="/pollination-services"
-                onClick={() => setIsMenuOpen(false)}
-                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                Pollination Services
-              </Link>
-              <Link
-                to="/pollination-request"
-                onClick={() => setIsMenuOpen(false)}
-                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                Request Service
-              </Link>
-            </div>
-            <div className="space-y-3">
-              <h3 className="font-semibold text-foreground">Shop</h3>
-              <Link
-                to="/shop"
-                onClick={() => setIsMenuOpen(false)}
-                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                Our Products
-              </Link>
-              <Link
-                to="/blogs"
-                onClick={() => setIsMenuOpen(false)}
-                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                Blog
-              </Link>
-            </div>
-            <div className="space-y-3">
-              <h3 className="font-semibold text-foreground">Connect</h3>
-              <Link
-                to="/contact"
-                onClick={() => setIsMenuOpen(false)}
-                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                Contact Us
-              </Link>
-              <Link
-                to="/traceability"
-                onClick={() => setIsMenuOpen(false)}
-                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                Trace Your Honey
-              </Link>
-            </div>
+        <div className="absolute right-4 top-16 z-50 w-64 rounded-2xl bg-primary p-6 shadow-xl">
+          <div className="flex flex-col space-y-4">
+            <Link
+              to="/"
+              onClick={() => setIsMenuOpen(false)}
+              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
+            >
+              Home
+            </Link>
+            <Link
+              to="/about"
+              onClick={() => setIsMenuOpen(false)}
+              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
+            >
+              About Us
+            </Link>
+            <Link
+              to="/impact"
+              onClick={() => setIsMenuOpen(false)}
+              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
+            >
+              Our Impact
+            </Link>
+            <Link
+              to="/pollination-services"
+              onClick={() => setIsMenuOpen(false)}
+              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
+            >
+              Pollination Services
+            </Link>
+            <Link
+              to="/pollination-request"
+              onClick={() => setIsMenuOpen(false)}
+              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
+            >
+              Request Service
+            </Link>
+            <Link
+              to="/shop"
+              onClick={() => setIsMenuOpen(false)}
+              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
+            >
+              Our Products
+            </Link>
+            <Link
+              to="/blogs"
+              onClick={() => setIsMenuOpen(false)}
+              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
+            >
+              Blog
+            </Link>
+            <Link
+              to="/contact"
+              onClick={() => setIsMenuOpen(false)}
+              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
+            >
+              Contact Us
+            </Link>
+            <Link
+              to="/traceability"
+              onClick={() => setIsMenuOpen(false)}
+              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
+            >
+              Trace Your Honey
+            </Link>
           </div>
         </div>
       )}
