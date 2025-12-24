@@ -70,7 +70,7 @@ const Commitment = () => {
             </div>
 
             <div className="grid md:grid-cols-2 gap-8">
-              <Card className="border-none shadow-lg hover:shadow-xl transition-all">
+              <Card className="border-none shadow-lg hover:shadow-xl transition-all bg-card">
                 <CardContent className="p-8">
                   <div className="mb-6 bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center">
                     <Database className="h-6 w-6 text-primary" />
@@ -82,7 +82,7 @@ const Commitment = () => {
                 </CardContent>
               </Card>
 
-              <Card className="border-none shadow-lg hover:shadow-xl transition-all">
+              <Card className="border-none shadow-lg hover:shadow-xl transition-all bg-card">
                 <CardContent className="p-8">
                   <div className="mb-6 bg-accent w-12 h-12 rounded-lg flex items-center justify-center">
                     <TrendingUp className="h-6 w-6 text-accent-foreground" />
@@ -180,7 +180,7 @@ const Commitment = () => {
                       { label: "Social", icon: Users },
                       { label: "Governance", icon: Shield }
                     ].map((item, i) => (
-                      <div key={i} className="bg-card p-4 rounded-xl shadow-sm flex items-center gap-4">
+                      <div key={i} className="bg-card p-4 rounded-xl shadow-sm flex items-center gap-4 border border-border/50">
                         <div className="bg-primary/10 p-2 rounded-full">
                           <item.icon className="h-5 w-5 text-primary" />
                         </div>
@@ -199,3 +199,4 @@ const Commitment = () => {
 };
 
 export default Commitment;
+
