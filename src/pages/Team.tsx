@@ -20,13 +20,12 @@ const Team = () => {
       role: "Co-founder", 
       image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400" 
     },
+    
   ];
 
   const boardMembers = [
-    "Kevin Murphy",
-    "Mor Assia",
-    "Alastair Cooper",
-    "Daniella Vellinga"
+    "Nandi Dean",
+    "Nicholas Nduva",
   ];
 
   return (
@@ -38,7 +37,7 @@ const Team = () => {
             Leadership
           </Badge>
           <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight text-foreground">
-            Meet the <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">PureHoney Team</span>
+            Meet the <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">BeeYield Team</span>
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground font-light leading-relaxed max-w-2xl mx-auto">
             Decades of experience in agriculture, technology, and entrepreneurship.
@@ -50,16 +49,16 @@ const Team = () => {
         <div className="absolute bottom-20 right-10 w-48 h-48 bg-accent/20 rounded-full blur-3xl opacity-60" />
       </section>
 
-      {/* Who is PureHoney? */}
+      {/* Who is BeeYield? */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto bg-muted/50 rounded-3xl p-10 md:p-14 border border-border">
             <div className="flex items-center gap-3 mb-6">
               <Globe className="h-6 w-6 text-primary" />
-              <h2 className="text-2xl font-bold text-foreground">Who is PureHoney?</h2>
+              <h2 className="text-2xl font-bold text-foreground">Who is BeeYield?</h2>
             </div>
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
-              PureHoney's founders guide a team of beekeepers, engineers, data scientists, programmers, researchers, agriculturalists, and more who are committed to applying their diverse expertise to help secure the future of the world's food supply. By bringing the power of data science to bear on the critical role played by pollination in agriculture, PureHoney is working tirelessly to ensure the well-being of all pollinators.
+              BeeYield's founders guide a team of beekeepers, IOT Engineers, data scientists, programmers, researchers, agriculturalists, and more who are committed to applying their diverse expertise to help secure the future of the world's food supply. By bringing the power of data science to bear on the critical role played by pollination in agriculture, BeeYield is working tirelessly to ensure the well-being of all pollinators.
             </p>
           </div>
         </div>
@@ -111,7 +110,7 @@ const Team = () => {
               </div>
               <h2 className="text-4xl font-bold mb-6 text-foreground">Board Members</h2>
               <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-                Our board members bring a wealth of experience, expertise, and dedication to the PureHoney mission. Collectively, their unique backgrounds and perspectives provide the guidance and experience that steers PureHoney toward success.
+                Our board members bring a wealth of experience, expertise, and dedication to the BeeYield's mission. Collectively, their unique backgrounds and perspectives provide the guidance and experience that steers BeeYield towards success.
               </p>
             </div>
 
