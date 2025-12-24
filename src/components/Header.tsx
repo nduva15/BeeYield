@@ -41,7 +41,7 @@ const Header = () => {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="focus:bg-primary/80 focus:text-primary-foreground">
-                <Link to="/inland-pollination-platform" className="w-full cursor-pointer px-4 py-3 text-base font-medium text-primary-foreground hover:bg-primary/80 rounded-lg">
+                <Link to="/InLandPollinationPlatform" className="w-full cursor-pointer px-4 py-3 text-base font-medium text-primary-foreground hover:bg-primary/80 rounded-lg">
                   In-Land Pollination Insights Platform
                 </Link>
               </DropdownMenuItem>
@@ -49,7 +49,7 @@ const Header = () => {
           </DropdownMenu>
 
           <Link
-            to="/about"
+            to="BeekeepingSolutions"
             className={`text-sm font-medium transition-colors hover:text-primary ${
               isActive("/about") ? "text-primary" : "text-foreground"
             }`}
@@ -61,13 +61,13 @@ const Header = () => {
         {/* Center - Logo (hidden on mobile, shown on desktop) */}
         <Link to="/" className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center space-x-2">
           <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-accent" />
-          <span className="text-xl font-bold text-foreground">PureHoney</span>
+          <span className="text-xl font-bold text-foreground">BeeYield</span>
         </Link>
 
         {/* Mobile Logo */}
         <Link to="/" className="flex items-center space-x-2 md:hidden">
           <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-accent" />
-          <span className="text-xl font-bold text-foreground">PureHoney</span>
+          <span className="text-xl font-bold text-foreground">BeeYield</span>
         </Link>
 
         {/* Right side - Traceability Button & Menu */}
@@ -125,10 +125,10 @@ const Header = () => {
               onClick={() => setIsMenuOpen(false)}
               className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
             >
-              Home
+              Global Hive Network
             </Link>
             <Link
-              to="/about"
+              to="/GlobalHiveNetwork"
               onClick={() => setIsMenuOpen(false)}
               className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
             >
@@ -142,7 +142,7 @@ const Header = () => {
               Our Impact
             </Link>
             <Link
-              to="/pollination-services"
+              to="/Impact"
               onClick={() => setIsMenuOpen(false)}
               className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
             >
@@ -153,10 +153,10 @@ const Header = () => {
               onClick={() => setIsMenuOpen(false)}
               className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
             >
-              Request Service
+              Careers
             </Link>
             <Link
-              to="/shop"
+              to="/Careers"
               onClick={() => setIsMenuOpen(false)}
               className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
             >
