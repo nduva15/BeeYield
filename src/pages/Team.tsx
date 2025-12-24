@@ -25,7 +25,8 @@ const Team = () => {
 
   const boardMembers = [
     "Nandi Dean",
-    "Nicholas Nduva",
+    "Rose Ndinda"
+    ,
   ];
 
   return (
@@ -58,7 +59,7 @@ const Team = () => {
               <h2 className="text-2xl font-bold text-foreground">Who is BeeYield?</h2>
             </div>
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
-              BeeYield's founders guide a team of beekeepers, IOT Engineers, data scientists, programmers, researchers, agriculturalists, and more who are committed to applying their diverse expertise to help secure the future of the world's food supply. By bringing the power of data science to bear on the critical role played by pollination in agriculture, BeeYield is working tirelessly to ensure the well-being of all pollinators.
+              BeeYield's founders guide a team of beekeepers, IOT Engineers, data scientists, programmers, researchers, ML Experts,Blockchain Experts and more who are committed to applying their diverse expertise to help secure the future of the world's food supply. By bringing the power of data science and ML to bear on the critical role played by pollination in agriculture, BeeYield is working tirelessly to ensure the well-being of all pollinators.
             </p>
           </div>
         </div>
