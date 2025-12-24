@@ -21,9 +21,9 @@ const Header = () => {
         {/* Left side - Navigation Links */}
         <div className="hidden items-center space-x-8 md:flex">
           <Link
-            to="/impact"
+            to="/Crops-We-Pollinate"
             className={`text-sm font-medium transition-colors hover:text-primary ${
-              isActive("/impact") ? "text-primary" : "text-foreground"
+              isActive("/Crops-We-Pollinate") ? "text-primary" : "text-foreground"
             }`}
           >
             Crops We Pollinate
