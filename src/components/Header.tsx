@@ -15,11 +15,39 @@ const Header = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
+  const menuLinks = [
+    { to: "/GlobalHiveNetwork", label: "Global Hive Network" },
+    { to: "/About", label: "About Us" },
+    { to: "/impact", label: "Our Impact" },
+    { to: "/PrecisionPollination", label: "Precision Pollination" },
+    { to: "/InLandPollinationPlatform", label: "In-Land Pollination" },
+    { to: "/PollinationServices", label: "Pollination Services" },
+    { to: "/PollinationRequest", label: "Pollination Request" },
+    { to: "/careers", label: "Careers" },
+    { to: "/Media", label: "Media" },
+    { to: "/shop", label: "Our Products" },
+    { to: "/blogs", label: "Blog" },
+    { to: "/contact", label: "Contact Us" },
+    { to: "/OurStory", label: "Our Story" },
+    { to: "/esg", label: "ESG" },
+    { to: "/commitment", label: "Commitment" },
+    { to: "/Team", label: "Team" },
+    { to: "/traceability", label: "Trace Your Honey" },
+  ];
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <nav className="container mx-auto flex h-16 items-center justify-between px-4">
-        {/* Left side - Navigation Links */}
-        <div className="hidden items-center space-x-8 md:flex">
+      <nav className="container mx-auto flex h-14 sm:h-16 items-center justify-between px-4 sm:px-6">
+        {/* Left side - Logo (all devices) */}
+        <Link to="/" className="flex items-center space-x-2 flex-shrink-0">
+          <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+            <span className="text-primary-foreground text-[10px] sm:text-xs font-bold">BY</span>
+          </div>
+          <span className="text-lg sm:text-xl font-bold text-foreground">BeeYield</span>
+        </Link>
+
+        {/* Center - Navigation Links (Desktop only) */}
+        <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
           <Link
             to="/Crops-We-Pollinate"
             className={`text-sm font-medium transition-colors hover:text-primary ${
@@ -34,7 +62,7 @@ const Header = () => {
               Pollination Solutions
               <ChevronDown className="h-4 w-4" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-72 flex flex-col p-4 bg-primary border-none rounded-2xl shadow-xl">
+            <DropdownMenuContent align="center" className="w-72 flex flex-col p-4 bg-primary border-none rounded-2xl shadow-xl z-[100]">
               <DropdownMenuItem asChild className="focus:bg-primary/80 focus:text-primary-foreground">
                 <Link to="/PrecisionPollination" className="w-full cursor-pointer px-4 py-3 text-base font-medium text-primary-foreground hover:bg-primary/80 rounded-lg">
                   In-Hive Precision Pollination
@@ -49,36 +77,21 @@ const Header = () => {
           </DropdownMenu>
 
           <Link
-            to="/PollinationSolutions"
+            to="/GlobalHiveNetwork"
             className={`text-sm font-medium transition-colors hover:text-primary ${
-              isActive("/PollinationSolutions") ? "text-primary" : "text-foreground"
+              isActive("/GlobalHiveNetwork") ? "text-primary" : "text-foreground"
             }`}
           >
-            Pollination Solutions
+            Global Hive Network
           </Link>
         </div>
 
-        {/* Center - Logo (hidden on mobile, shown on desktop) */}
-        <Link to="/" className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center space-x-2">
-          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-            <span className="text-primary-foreground text-xs font-bold">BY</span>
-          </div>
-          <span className="text-xl font-bold text-foreground">BeeYield</span>
-        </Link>
-
-        {/* Mobile Logo */}
-        <Link to="/" className="flex items-center space-x-2 md:hidden">
-          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-            <span className="text-primary-foreground text-xs font-bold">BY</span>
-          </div>
-          <span className="text-xl font-bold text-foreground">BeeYield</span>
-        </Link>
-
-        {/* Right side - Traceability Button & Menu */}
-        <div className="hidden items-center space-x-4 md:flex">
+        {/* Right side - Traceability Button & Menu (all devices) */}
+        <div className="flex items-center space-x-2 sm:space-x-4">
           <Button 
             variant="default" 
-            className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-6"
+            size="sm"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-3 sm:px-6 text-xs sm:text-sm h-8 sm:h-9"
             asChild
           >
             <Link to="/traceability">
@@ -91,146 +104,40 @@ const Header = () => {
             aria-label="Toggle menu"
             className="p-2 hover:bg-muted rounded-md transition-colors"
           >
-            <Menu className="h-6 w-6 text-foreground" />
-          </button>
-        </div>
-
-        {/* Mobile Menu Button */}
-        <div className="flex items-center gap-2 md:hidden">
-          <Button 
-            variant="default" 
-            size="sm"
-            className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
-            asChild
-          >
-            <Link to="/traceability">
-              Traceability
-            </Link>
-          </Button>
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle menu"
-          >
             {isMenuOpen ? (
-              <X className="h-6 w-6 text-foreground" />
+              <X className="h-5 w-5 sm:h-6 sm:w-6 text-foreground" />
             ) : (
-              <Menu className="h-6 w-6 text-foreground" />
+              <Menu className="h-5 w-5 sm:h-6 sm:w-6 text-foreground" />
             )}
           </button>
         </div>
       </nav>
 
-      {/* Expanded Menu (Desktop & Mobile) */}
+      {/* Expanded Menu (All devices) */}
       {isMenuOpen && (
-        <div className="absolute right-4 top-16 z-50 w-64 rounded-2xl bg-primary p-6 shadow-xl animate-in fade-in slide-in-from-top-2">
-          <div className="flex flex-col space-y-4">
-            <Link
-              to="/GlobalHiveNetwork"
-              onClick={() => setIsMenuOpen(false)}
-              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
-            >
-              Global Hive Network
-            </Link>
-            <Link
-              to="/About"
-              onClick={() => setIsMenuOpen(false)}
-              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
-            >
-              About Us
-            </Link>
-            <Link
-              to="/impact"
-              onClick={() => setIsMenuOpen(false)}
-              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
-            >
-              Our Impact
-            </Link>
-            <Link
-              to="/PollinationServices"
-              onClick={() => setIsMenuOpen(false)}
-              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
-            >
-              Pollination Services
-            </Link>
-            <Link
-              to="/PollinationRequest"
-              onClick={() => setIsMenuOpen(false)}
-              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
-            >
-              Pollination Request
-            </Link>
-            <Link
-              to="/careers"
-              onClick={() => setIsMenuOpen(false)}
-              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
-            >
-              Careers
-            </Link>
-            <Link
-              to="/Media"
-              onClick={() => setIsMenuOpen(false)}
-              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
-            >
-              Media
-            </Link>
-            <Link
-              to="/shop"
-              onClick={() => setIsMenuOpen(false)}
-              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
-            >
-              Our Products
-            </Link>
-            <Link
-              to="/blogs"
-              onClick={() => setIsMenuOpen(false)}
-              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
-            >
-              Blog
-            </Link>
-            <Link
-              to="/contact"
-              onClick={() => setIsMenuOpen(false)}
-              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
-            >
-              Contact Us
-            </Link>
-            <Link
-              to="/OurStory"
-              onClick={() => setIsMenuOpen(false)}
-              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
-            >
-              Our Story
-            </Link>
-            <Link
-              to="/esg"
-              onClick={() => setIsMenuOpen(false)}
-              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
-            >
-              ESG
-            </Link>
-            <Link
-              to="/commitment"
-              onClick={() => setIsMenuOpen(false)}
-              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
-            >
-              Commitment
-            </Link>
-            <Link
-              to="/Team"
-              onClick={() => setIsMenuOpen(false)}
-              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
-            >
-              Team
-            </Link>
-            <Link
-              to="/traceability"
-              onClick={() => setIsMenuOpen(false)}
-              className="text-base font-semibold text-primary-foreground hover:opacity-80 transition-opacity"
-            >
-              Trace Your Honey
-            </Link>
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40"
+            onClick={() => setIsMenuOpen(false)}
+          />
+          
+          {/* Menu Panel */}
+          <div className="fixed right-2 sm:right-4 top-14 sm:top-16 z-50 w-[calc(100%-1rem)] sm:w-72 max-h-[calc(100vh-4rem)] overflow-y-auto rounded-2xl bg-primary p-4 sm:p-6 shadow-xl animate-in fade-in slide-in-from-top-2">
+            <div className="flex flex-col space-y-1 sm:space-y-2">
+              {menuLinks.map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-sm sm:text-base font-semibold text-primary-foreground hover:bg-primary-foreground/10 rounded-lg px-3 py-2.5 sm:py-3 transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
+        </>
       )}
     </header>
   );
