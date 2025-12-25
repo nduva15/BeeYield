@@ -83,10 +83,10 @@ const OurStory = () => {
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { number: "184", label: "Beehives", desc: "From 4 to 184 hives" },
-              { number: "5", label: "Acres", desc: "Fenced apiary land" },
+              { number: "184+", label: "Beehives", desc: "From 4 to 184 hives" },
+              { number: "5+", label: "Acres", desc: "Fenced apiary land" },
               { number: "1,500+", label: "Trees Planted", desc: "Restoring the ecosystem" },
-              { number: "25", label: "Acres Pollinated", desc: "Client farmlands served" },
+              { number: "25+", label: "Acres Pollinated", desc: "Client farmlands served" },
             ].map((stat, i) => (
               <Card key={i} className="text-center border-border/50">
                 <CardContent className="p-6">
@@ -160,13 +160,13 @@ const OurStory = () => {
               </h2>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  Our pollination journey started with traditional methods — moving hives to client farms and letting nature do its work. We successfully pollinated <strong className="text-foreground">25 acres</strong> of farmland, proving the value of managed pollination services in Kenya.
+                  Our pollination journey started with traditional methods — moving hives to client farms and letting nature do its work. We successfully pollinated <strong className="text-foreground">25 acres+</strong> of farmland, proving the value of managed pollination services in Kenya.
                 </p>
                 <p>
                   But we knew we could do more. Today, BeeYield is evolving toward <strong className="text-foreground">precision pollination</strong> — leveraging IoT sensors, data analytics, and smart hive management to deliver measurable, optimized pollination outcomes.
                 </p>
                 <p>
-                  Our goal is to help farmers across East Africa increase their yields while supporting bee health and biodiversity.
+                  Our goal is to help farmers across the world increase their yields while supporting bee health and biodiversity.
                 </p>
               </div>
               <Button asChild className="mt-4">
@@ -185,7 +185,7 @@ const OurStory = () => {
                         <Heart className="h-8 w-8" />
                       </div>
                       <p className="text-lg font-semibold text-foreground">Growing Together</p>
-                      <p className="text-sm text-muted-foreground mt-2">Kibwezi, Kenya → East Africa → Beyond</p>
+                      <p className="text-sm text-muted-foreground mt-2">Kibwezi, Kenya → Africa → Beeyond</p>
                     </div>
                   </div>
                 </CardContent>
