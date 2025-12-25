@@ -89,7 +89,7 @@ const PollinationRequest = () => {
                         type="email"
                         value={formData.email}
                         onChange={(e) => handleChange("email", e.target.value)}
-                        placeholder="john@farm.com"
+                        placeholder="info@beeyield.com"
                         required
                       />
                     </div>
