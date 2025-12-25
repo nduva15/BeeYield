@@ -84,7 +84,7 @@ const OurStory = () => {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[
               { number: "184+", label: "Beehives", desc: "From 4 to 184 hives" },
-              { number: "5+", label: "Acres", desc: "Fenced apiary land" },
+              { number: "1M+", label: "Bee Colonies", desc: "Thriving colonies" },
               { number: "1,500+", label: "Trees Planted", desc: "Restoring the ecosystem" },
               { number: "25+", label: "Acres Pollinated", desc: "Client farmlands served" },
             ].map((stat, i) => (
