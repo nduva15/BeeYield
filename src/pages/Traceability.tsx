@@ -23,11 +23,11 @@ const Traceability = () => {
 
   const mockData = {
     batchId: "PH2024-WF-0342",
-    harvestDate: "August 15, 2024",
-    location: "Meadowville Valley Apiaries",
+    harvestDate: "August 15, 2025",
+    location: "BeeYield Kibwezi Apiary, Kenya",
     coordinates: "42.3601° N, 71.0589° W",
-    beekeeper: "Sarah Johnson",
-    flowerSource: "Wildflower (Mixed)",
+    beekeeper: "Timothy Nduva",
+    flowerSource: "Acacia, Maize, Mangoes (Mixed)",
     certifications: ["Organic", "Fair Trade", "Non-GMO"],
   };
 
