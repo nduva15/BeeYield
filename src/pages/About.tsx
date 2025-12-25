@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 
 const About = () => {
   return (
-    <div className="min-h-screen py-20">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen">
+      <div className="container mx-auto px-4 py-20">
         <div className="mx-auto max-w-3xl text-center">
           <h1 className="mb-6 text-5xl font-bold">About BeeYield</h1>
           <p className="mb-12 text-xl text-muted-foreground">
@@ -100,7 +100,7 @@ const About = () => {
         </div>
 
         {/* Values Cards */}
-        <div className="grid gap-8 md:grid-cols-3">
+        <div className="grid gap-8 md:grid-cols-3 mb-16">
           <Card className="border-none shadow-soft">
             <CardContent className="pt-6 text-center">
               <div className="mb-4 inline-block rounded-lg bg-primary/10 p-4">
@@ -138,9 +138,20 @@ const About = () => {
           </Card>
         </div>
       </div>
+
+      {/* Full-width Video Section - Before Footer */}
+      <div className="relative w-full h-[70vh] bg-foreground">
+        <iframe
+          className="absolute inset-0 w-full h-full"
+          src="https://www.youtube.com/embed/VIDEO_ID_HERE"
+          title="About BeeYield"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
     </div>
   );
 };
 
 export default About;
-
