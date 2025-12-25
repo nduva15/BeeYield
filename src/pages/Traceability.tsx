@@ -56,6 +56,51 @@ const Traceability = () => {
           </div>
         </div>
       </div>
+       {/* Trace Your Honey Section */}
+      <div className="py-20">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-2xl">
+            <div className="mb-8 text-center">
+              <h2 className="mb-4 text-3xl font-bold">Trace Your Honey</h2>
+              <p className="text-muted-foreground">
+                Enter the unique code from your jar to discover its complete journey
+              </p>
+            </div>
+            
+            <Card className="mb-12 border-none shadow-soft">
+              <CardContent className="p-8">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <label htmlFor="qrCode" className="text-sm font-medium">
+                      Enter Traceability Code
+                    </label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="qrCode"
+                        name="qrCode"
+                        value={qrCode}
+                        onChange={(e) => setQrCode(e.target.value)}
+                        placeholder="e.g., PH2024-WF-0342"
+                        className="flex-1"
+                      />
+                      <Button type="submit">
+                        Trace
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Find the code on the bottom of your honey jar
+                    </p>
+                  </div>
+                </form>
+
+                <div className="mt-6 border-t pt-6">
+                  <Button variant="outline" className="w-full" size="lg">
+                    <QrCode className="mr-2 h-5 w-5" />
+                    Scan QR Code Instead
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
 
       {/* Mission Statement - Champions for Bees */}
       <div className="bg-secondary/5 py-20">
@@ -157,51 +202,7 @@ const Traceability = () => {
         </div>
       </div>
 
-      {/* Trace Your Honey Section */}
-      <div className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-2xl">
-            <div className="mb-8 text-center">
-              <h2 className="mb-4 text-3xl font-bold">Trace Your Honey</h2>
-              <p className="text-muted-foreground">
-                Enter the unique code from your jar to discover its complete journey
-              </p>
-            </div>
-            
-            <Card className="mb-12 border-none shadow-soft">
-              <CardContent className="p-8">
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <label htmlFor="qrCode" className="text-sm font-medium">
-                      Enter Traceability Code
-                    </label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="qrCode"
-                        name="qrCode"
-                        value={qrCode}
-                        onChange={(e) => setQrCode(e.target.value)}
-                        placeholder="e.g., PH2024-WF-0342"
-                        className="flex-1"
-                      />
-                      <Button type="submit">
-                        Trace
-                      </Button>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      Find the code on the bottom of your honey jar
-                    </p>
-                  </div>
-                </form>
-
-                <div className="mt-6 border-t pt-6">
-                  <Button variant="outline" className="w-full" size="lg">
-                    <QrCode className="mr-2 h-5 w-5" />
-                    Scan QR Code Instead
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+    
 
             {showResults && (
               <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
