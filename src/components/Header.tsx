@@ -19,8 +19,6 @@ const Header = () => {
     { to: "/GlobalHiveNetwork", label: "Global Hive Network" },
     { to: "/About", label: "About Us" },
     { to: "/impact", label: "Our Impact" },
-    { to: "/PrecisionPollination", label: "Precision Pollination" },
-    { to: "/InLandPollinationPlatform", label: "In-Land Pollination" },
     { to: "/PollinationServices", label: "Pollination Services" },
     { to: "/PollinationRequest", label: "Pollination Request" },
     { to: "/careers", label: "Careers" },
@@ -54,7 +52,7 @@ const Header = () => {
               isActive("/Crops-We-Pollinate") ? "text-primary" : "text-foreground"
             }`}
           >
-            Crops We Pollinate
+            Professional Pollination
           </Link>
           
           <DropdownMenu>
@@ -77,13 +75,21 @@ const Header = () => {
           </DropdownMenu>
 
           <Link
-            to="/GlobalHiveNetwork"
+            to="/Home"
             className={`text-sm font-medium transition-colors hover:text-primary ${
-              isActive("/GlobalHiveNetwork") ? "text-primary" : "text-foreground"
+              isActive("/Home") ? "text-primary" : "text-foreground"
             }`}
           >
-            Global Hive Network
-          </Link>
+            Beekeeping Network         
+        </Link>
+        <Link
+            to="/Shop"
+            className={`text-sm font-medium transition-colors hover:text-primary ${
+              isActive("/Shop") ? "text-primary" : "text-foreground"
+            }`}
+          >
+            Shop         
+        </Link>
         </div>
 
         {/* Right side - Traceability Button & Menu (all devices) */}
