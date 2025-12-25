@@ -23,14 +23,12 @@ const Header = () => {
     { to: "/PollinationRequest", label: "Pollination Request" },
     { to: "/careers", label: "Careers" },
     { to: "/Media", label: "Media" },
-    { to: "/shop", label: "Our Products" },
     { to: "/blogs", label: "Blog" },
     { to: "/contact", label: "Contact Us" },
     { to: "/OurStory", label: "Our Story" },
     { to: "/esg", label: "ESG" },
     { to: "/commitment", label: "Commitment" },
     { to: "/Team", label: "Team" },
-    { to: "/traceability", label: "Trace Your Honey" },
   ];
 
   return (
