@@ -103,7 +103,7 @@ const Contact = () => {
                   <label className="text-sm font-medium">Email *</label>
                   <input
                     type="email"
-                    placeholder="jane@example.com"
+                    placeholder="info@beeyield.com"
                     className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   />
                 </div>

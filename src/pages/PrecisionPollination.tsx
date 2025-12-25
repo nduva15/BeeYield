@@ -254,9 +254,9 @@ const PrecisionPollination = () => {
                  <p className="text-muted-foreground leading-relaxed mb-6">
                    We want our partnership with you to be as smooth and stress free as possible. Meet Alissa, Head of Customer Success. Her team is ready to provide you with all the help you need, from onboarding, to making sure all your contract paperwork is buttoned up.
                  </p>
-                 <Button variant="outline" className="gap-2">
-                    <Mail className="h-4 w-4" /> Email Us: customersuccess@beeyield.com
-                 </Button>
+                  <Button variant="outline" className="gap-2">
+                    <Mail className="h-4 w-4" /> Email Us: info@beeyield.com
+                  </Button>
                </div>
             </div>
           </div>

@@ -311,7 +311,7 @@ const GlobalHiveNetwork = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">Email *</Label>
-                    <Input id="email" type="email" placeholder="you@example.com" required />
+                    <Input id="email" type="email" placeholder="info@beeyield.com" required />
                   </div>
                   <Button type="submit" className="w-full">
                     <Mail className="h-4 w-4 mr-2" /> Submit
