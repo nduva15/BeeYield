@@ -75,9 +75,9 @@ const Header = () => {
           </DropdownMenu>
 
           <Link
-            to="/Home"
+            to="/pollinationsolutions"
             className={`text-sm font-medium transition-colors hover:text-primary ${
-              isActive("/Home") ? "text-primary" : "text-foreground"
+              isActive("/pollinationsolutions") ? "text-primary" : "text-foreground"
             }`}
           >
             Beekeeping Network         
