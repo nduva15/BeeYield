@@ -13,14 +13,16 @@ const Impact = () => {
   ];
 
   return (
-    <div className="min-h-screen py-20">
-      <div className="container mx-auto px-4">
-        <div className="mx-auto max-w-3xl text-center">
-          <h1 className="mb-6 text-5xl font-bold">Our Environmental Impact</h1>
-          <p className="mb-12 text-xl text-muted-foreground">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-16">
+        <div className="mb-12 text-center">
+          <h1 className="mb-4 text-4xl font-bold text-foreground md:text-5xl">
+            Our Environmental Impact
+          </h1>
+          <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
             Every jar of BeeYield contributes to a healthier planet and thriving bee populations.
           </p>
-          <button 
+          <button
             onClick={() => {
               const link = document.createElement('a');
               link.href = '/impact-report.pdf';
@@ -36,117 +38,119 @@ const Impact = () => {
           </button>
         </div>
 
-        <div className="mb-16">
-          <img
-            src={impactImage}
-            alt="Sustainable beekeeping"
-            className="h-[400px] w-full rounded-lg object-cover shadow-glow"
-          />
+        <div className="relative mb-16 overflow-hidden rounded-2xl">
+          <img src={impactImage} alt="Impact" className="h-[400px] w-full object-cover" />
         </div>
 
-        <div className="mb-20 grid gap-8 md:grid-cols-4">
+        <div className="mb-16 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat, index) => (
-            <Card key={index} className="border-none shadow-soft">
-              <CardContent className="pt-6 text-center">
-                <div className="mb-4 inline-block rounded-lg bg-secondary/10 p-4">
-                  <stat.icon className="h-8 w-8 text-secondary" />
+            <Card key={index} className="text-center">
+              <CardContent className="pt-6">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                  <stat.icon className="h-8 w-8 text-primary" />
                 </div>
-                <div className="mb-2 text-3xl font-bold text-primary">{stat.value}</div>
-                <p className="text-sm text-muted-foreground">{stat.label}</p>
+                <h3 className="mb-2 text-3xl font-bold text-foreground">{stat.value}</h3>
+                <p className="text-muted-foreground">{stat.label}</p>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        <div className="mx-auto max-w-4xl space-y-12">
-          <Card className="border-none shadow-soft">
-            <CardContent className="p-8">
-              <h2 className="mb-6 text-3xl font-bold">Pollinator Protection</h2>
-              <p className="mb-4 text-muted-foreground">
+        <div className="grid gap-8 lg:grid-cols-3">
+          <Card className="lg:col-span-1">
+            <CardContent className="p-6">
+              <h3 className="mb-4 text-xl font-semibold text-foreground">Pollinator Protection</h3>
+              <p className="mb-6 text-muted-foreground">
                 We're committed to protecting bee populations through sustainable beekeeping practices and habitat conservation.
               </p>
               <div className="space-y-4">
                 <div>
-                  <div className="mb-2 flex items-center justify-between text-sm">
-                    <span>Habitat Conservation</span>
-                    <span className="font-semibold text-primary">95%</span>
+                  <div className="mb-2 flex justify-between text-sm">
+                    <span className="text-foreground">Habitat Conservation</span>
+                    <span className="text-primary">95%</span>
                   </div>
                   <Progress value={95} className="h-2" />
                 </div>
                 <div>
-                  <div className="mb-2 flex items-center justify-between text-sm">
-                    <span>Chemical-Free Practices</span>
-                    <span className="font-semibold text-primary">100%</span>
+                  <div className="mb-2 flex justify-between text-sm">
+                    <span className="text-foreground">Chemical-Free Practices</span>
+                    <span className="text-primary">100%</span>
                   </div>
                   <Progress value={100} className="h-2" />
                 </div>
                 <div>
-                  <div className="mb-2 flex items-center justify-between text-sm">
-                    <span>Native Plant Restoration</span>
-                    <span className="font-semibold text-primary">88%</span>
+                  <div className="mb-2 flex justify-between text-sm">
+                    <span className="text-foreground">Native Plant Restoration</span>
+                    <span className="text-primary">88%</span>
                   </div>
                   <Progress value={88} className="h-2" />
                 </div>
               </div>
-              <Link to="/Commitment" className="mt-6 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-primary-foreground font-semibold hover:opacity-90 transition-opacity">
+              <Link to="/commitment" className="mt-6 inline-flex items-center gap-2 text-primary hover:underline">
                 Read More <ArrowRight className="h-4 w-4" />
               </Link>
             </CardContent>
           </Card>
 
-          <Card className="border-none shadow-soft">
-            <CardContent className="p-8">
-              <h2 className="mb-6 text-3xl font-bold">Community Impact</h2>
+          <Card className="lg:col-span-1">
+            <CardContent className="p-6">
+              <h3 className="mb-4 text-xl font-semibold text-foreground">Community Impact</h3>
               <div className="space-y-4 text-muted-foreground">
                 <p>
                   Beyond environmental conservation, BeeYield is dedicated to supporting local beekeeping communities. We provide fair compensation, training, and resources to help our partner beekeepers thrive.
                 </p>
                 <ul className="space-y-2">
-                  <li className="flex items-start">
-                    <span className="mr-2 mt-1 text-primary">•</span>
-                    <span>Fair trade pricing ensuring sustainable livelihoods</span>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary">•</span>
+                    Fair trade pricing ensuring sustainable livelihoods
                   </li>
-                  <li className="flex items-start">
-                    <span className="mr-2 mt-1 text-primary">•</span>
-                    <span>Educational programs for new beekeepers</span>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary">•</span>
+                    Educational programs for new beekeepers
                   </li>
-                  <li className="flex items-start">
-                    <span className="mr-2 mt-1 text-primary">•</span>
-                    <span>Equipment grants for sustainable practices</span>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary">•</span>
+                    Equipment grants for sustainable practices
                   </li>
-                  <li className="flex items-start">
-                    <span className="mr-2 mt-1 text-primary">•</span>
-                    <span>Support for bee health research initiatives</span>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary">•</span>
+                    Support for bee health research initiatives
                   </li>
                 </ul>
               </div>
-              <Link to="/esg" className="mt-6 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-primary-foreground font-semibold hover:opacity-90 transition-opacity">
+              <Link to="/commitment" className="mt-6 inline-flex items-center gap-2 text-primary hover:underline">
                 Read More <ArrowRight className="h-4 w-4" />
               </Link>
             </CardContent>
           </Card>
 
-          <Card className="border-none bg-gradient-to-br from-secondary to-secondary/80 text-secondary-foreground shadow-soft">
-            <CardContent className="p-8">
-              <h2 className="mb-4 text-3xl font-bold">Our 2030 Goals</h2>
+          <Card className="bg-primary text-primary-foreground lg:col-span-1">
+            <CardContent className="p-6">
+              <h3 className="mb-4 text-xl font-semibold">Our 2030 Goals</h3>
               <ul className="space-y-3">
-                <li className="flex items-start">
-                  <span className="mr-2 mt-1">✓</span>
-                  <span>Protect 10,000 additional beehives</span>
+                <li className="flex items-center gap-2">
+                  <span className="text-lg">✓</span>
+                  Protect 10,000 additional beehives
                 </li>
-                <li className="flex items-start">
-                  <span className="mr-2 mt-1">✓</span>
-                  <span>Plant 10,000 native flowering plants</span>
+                <li className="flex items-center gap-2">
+                  <span className="text-lg">✓</span>
+                  Plant 10,000 native flowering plants
                 </li>
-                <li className="flex items-start">
-                  <span className="mr-2 mt-1">✓</span>
-                  <span>Achieve carbon-neutral operations</span>
+                <li className="flex items-center gap-2">
+                  <span className="text-lg">✓</span>
+                  Achieve carbon-neutral operations
                 </li>
-                <li className="flex items-start">
-                  <span className="mr-2 mt-1">✓</span>
-                  <span>Expand to 200+ partner beekeepers</span>
+                <li className="flex items-center gap-2">
+                  <span className="text-lg">✓</span>
+                  Expand to 200+ partner beekeepers
                 </li>
               </ul>
+              <Link 
+                to="/GlobalHiveNetwork" 
+                className="mt-6 inline-flex items-center gap-2 bg-primary-foreground text-primary px-4 py-2 rounded-lg font-semibold hover:opacity-90 transition-opacity"
+              >
+                Join Our Global Hive Network <ArrowRight className="h-4 w-4" />
+              </Link>
             </CardContent>
           </Card>
         </div>
