@@ -13,14 +13,14 @@ const Team = () => {
     },
     { 
       name: "Carole Mathuva", 
-      role: "COO & Co-founder", 
+      role: "Chief Growth Officer & Co-founder", 
       description: "Business Development lead, shaping partnerships and driving company growth.",
       image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400",
       linkedin: "#"
     },
     { 
       name: "Agatha Mathuva", 
-      role: "IT Head & Co-founder", 
+      role: "Chief IT Head & Co-founder", 
       description: "Leading technology infrastructure and digital innovation at BeeYield.",
       image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400",
       linkedin: "#"
@@ -30,14 +30,14 @@ const Team = () => {
   const technicalTeam = [
     { 
       name: "Rose Ndinda", 
-      role: "Web & App Developer", 
+      role: "VP Technology", 
       description: "Building seamless digital experiences across web and mobile platforms.",
       image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400",
       linkedin: "#"
     },
     { 
       name: "Nandi Dean", 
-      role: "Web Developer & Researcher", 
+      role: "VP Technology", 
       description: "Combining development expertise with research to drive innovation.",
       image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400",
       linkedin: "#"
@@ -65,7 +65,7 @@ const Team = () => {
             Meet the BeeYield Team
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            A family-driven team combining agriculture, technology, and innovation to secure the future of pollination.
+            A family-driven team combining agriculture, technology, and innovation to secure the future of pollination and food security.
           </p>
         </div>
         
@@ -99,7 +99,7 @@ const Team = () => {
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Our Founders</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Three siblings united by a shared vision to transform agriculture through precision pollination.
+              Three siblings united by a shared vision to transform agriculture through precision pollination and Traceability.
             </p>
           </div>
 
