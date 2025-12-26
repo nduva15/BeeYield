@@ -1,10 +1,78 @@
-import { Database, TrendingUp, Shield, Heart, Sprout, Globe, Users } from "lucide-react";
+import { ArrowRight, Target, Wheat, TreePine, Heart, Users, Droplets, Zap, Building, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 
-const Commitment = () => {
+const SDGs = () => {
+  const sdgs = [
+    {
+      number: 1,
+      title: "No Poverty",
+      description: "We provide training programs and a sustainable platform for smallholder farmers and youth to earn income through beekeeping, hive management, and pollination services.",
+      impact: "50+ farmers trained with income-generating hives",
+      color: "bg-red-500",
+      icon: Users,
+    },
+    {
+      number: 2,
+      title: "Zero Hunger",
+      description: "75% of food crops rely on pollinators. Our pollination services directly boost agricultural yields, ensuring food security for communities across Africa.",
+      impact: "25 acres pollinated, increasing crop yields by up to 40%",
+      color: "bg-amber-500",
+      icon: Wheat,
+    },
+    {
+      number: 6,
+      title: "Clean Water & Sanitation",
+      description: "Healthy ecosystems protect water sources. Our tree planting initiatives restore watersheds and protect water quality for rural communities.",
+      impact: "1,500+ trees protecting local water catchments",
+      color: "bg-cyan-500",
+      icon: Droplets,
+    },
+    {
+      number: 7,
+      title: "Affordable & Clean Energy",
+      description: "We're exploring solar-powered hive monitoring systems, reducing reliance on fossil fuels while enabling precision beekeeping in off-grid areas.",
+      impact: "Solar-powered IoT sensors in development",
+      color: "bg-yellow-500",
+      icon: Zap,
+    },
+    {
+      number: 8,
+      title: "Decent Work & Economic Growth",
+      description: "Our platform creates dignified employment opportunities in rural areas, empowering beekeepers with fair compensation and market access.",
+      impact: "Creating sustainable livelihoods for rural youth",
+      color: "bg-rose-600",
+      icon: Building,
+    },
+    {
+      number: 13,
+      title: "Climate Action",
+      description: "We've planted 1,500+ trees to restore habitats and capture carbon. Our sustainable practices promote biodiversity and build climate resilience.",
+      impact: "Estimated 30+ tons CO₂ captured annually",
+      color: "bg-green-600",
+      icon: Globe,
+    },
+    {
+      number: 15,
+      title: "Life on Land",
+      description: "Reducing bee mortality rates and protecting wild pollinators ensures healthy terrestrial ecosystems. We maintain less than 15% colony loss rate vs. 40% global average.",
+      impact: "184 healthy hives across 5-acre restored habitat",
+      color: "bg-lime-500",
+      icon: TreePine,
+    },
+    {
+      number: 17,
+      title: "Partnerships for the Goals",
+      description: "We collaborate with universities, research institutions, and agricultural partners to scale our impact and share knowledge across borders.",
+      impact: "Partnerships with Strathmore University & local farmers",
+      color: "bg-blue-800",
+      icon: Heart,
+    },
+  ];
+
   return (
     <Layout>
       <div className="min-h-screen bg-background">
@@ -13,184 +81,83 @@ const Commitment = () => {
           <div className="container mx-auto px-4 relative z-10">
             <div className="mx-auto max-w-4xl text-center">
               <Badge className="mb-8 bg-primary/10 text-primary border-none hover:bg-primary/20">
-                Global Impact Report
+                United Nations Sustainable Development Goals
               </Badge>
               <h1 className="mb-6 text-5xl font-bold leading-tight md:text-7xl tracking-tight text-foreground">
-                75% of Food Crops <br />
-                <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Rely on Bees</span>
+                Our SDG <br />
+                <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Commitment</span>
               </h1>
               <p className="mb-10 text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                BeeYield is dedicated to acting as an ecosystem guardian, prioritizing the welfare of pollinators to actively secure the future of our food systems.
+                BeeYield's work directly contributes to 8 Sustainable Development Goals, creating lasting impact for communities, ecosystems, and global food security.
               </p>
             </div>
           </div>
-          {/* Decorative background elements */}
           <div className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-3xl -z-10 opacity-60"></div>
           <div className="absolute bottom-0 right-0 translate-x-1/3 translate-y-1/3 w-[600px] h-[600px] bg-accent/20 rounded-full blur-3xl -z-10 opacity-60"></div>
         </section>
 
-        {/* Our Commitment / What's in a Name */}
-        <section className="py-20 bg-background">
+        {/* SDG Grid */}
+        <section className="py-20 bg-muted/30">
           <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-2 gap-16 items-start">
-              <div>
-                <div className="inline-flex items-center gap-2 mb-4 text-primary font-bold tracking-wider uppercase text-sm">
-                  <Heart className="h-4 w-4" />
-                  Our Commitment
-                </div>
-                <h2 className="text-4xl font-bold mb-6 text-foreground">What about Our Name?</h2>
-                <div className="prose prose-lg text-muted-foreground">
-                  <p className="mb-4">
-                    In our case, our name defines our entire philosophy. BeeYield. It bridges the gap between the health of the colony and the success of the harvest. We are the supporters of the pollinator, the advocates for the ecosystem, and the champions of your yield.
-                  </p>
-                  <p>
-                    From the very beginning, our name has been our compass. BeeYield. It defines the simple but critical equation for our survival: without the bee, there is no yield. It serves as a daily reminder that these aren't just unsung heroes—they are the engines of agriculture that power our entire food ecosystem.
-                  </p>
-                </div>
-              </div>
-              <div className="grid gap-6">
-                <img 
-                  src="https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?auto=format&fit=crop&q=80&w=800" 
-                  alt="Beekeeper holding frame" 
-                  className="rounded-2xl shadow-xl object-cover h-[400px] w-full"
-                />
-              </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {sdgs.map((sdg) => (
+                <Card key={sdg.number} className="border-none shadow-lg hover:shadow-xl transition-all overflow-hidden group">
+                  <div className={`${sdg.color} h-2 group-hover:h-3 transition-all`}></div>
+                  <CardContent className="p-6">
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className={`${sdg.color} text-white w-14 h-14 rounded-lg flex items-center justify-center font-bold text-2xl shrink-0`}>
+                        {sdg.number}
+                      </div>
+                      <div className={`${sdg.color}/10 p-2 rounded-lg`}>
+                        <sdg.icon className={`h-6 w-6 ${sdg.color.replace('bg-', 'text-')}`} />
+                      </div>
+                    </div>
+                    <h3 className="text-xl font-bold mb-3 text-foreground">{sdg.title}</h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed mb-4">
+                      {sdg.description}
+                    </p>
+                    <div className="pt-4 border-t border-border">
+                      <p className="text-xs text-primary font-semibold uppercase tracking-wider mb-1">Our Impact</p>
+                      <p className="text-sm text-foreground font-medium">{sdg.impact}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* Healthy Hive Index Section */}
-        <section className="py-24 bg-muted/30">
-          <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto text-center mb-16">
-              <h2 className="text-4xl font-bold mb-6 text-foreground">Enter the Healthy Hive Index</h2>
-              <p className="text-xl text-muted-foreground">
-                We have developed data-driven tools that measure the impact of bee-friendly orchards on the overall welfare of bees.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8">
-              <Card className="border-none shadow-lg hover:shadow-xl transition-all bg-card">
-                <CardContent className="p-8">
-                  <div className="mb-6 bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center">
-                    <Database className="h-6 w-6 text-primary" />
-                  </div>
-                  <h3 className="text-2xl font-bold mb-4 text-foreground">Unprecedented Visibility</h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    Tracking colony health during pollination requires visibility into these colonies on an unprecedented scale. Only BeeYield has the volume of aggregated data to achieve this. By analyzing hive data derived from all of our monitored colonies, we have developed a scientific model to create reports that help growers fulfill their sustainability goals.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-none shadow-lg hover:shadow-xl transition-all bg-card">
-                <CardContent className="p-8">
-                  <div className="mb-6 bg-accent w-12 h-12 rounded-lg flex items-center justify-center">
-                    <TrendingUp className="h-6 w-6 text-accent-foreground" />
-                  </div>
-                  <h3 className="text-2xl font-bold mb-4 text-foreground">And it's Good for Business</h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    These personalized bee health reports and certificates help crop producers benefit from the wave of consumer demand for ethically sourced food ingredients. This can be a powerful market differentiator and can translate directly into an advantage when working with other supply chain stakeholders.
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
-        {/* Impact Stat */}
+        {/* Call to Action */}
         <section className="py-24 bg-foreground text-background relative overflow-hidden">
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-5"></div>
           <div className="container mx-auto px-4 text-center relative z-10">
-            <div className="inline-block mb-4">
-              <Badge variant="outline" className="border-background/20 text-background hover:bg-background/10">
-                Global Impact Since 2020
-              </Badge>
-            </div>
-            <h2 className="text-[80px] md:text-[120px] leading-none font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent mb-4">
-              629 M+
-            </h2>
-            <p className="text-2xl md:text-3xl font-medium tracking-wide text-background/90">
-              BEES SAVED AND PROTECTED
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">Join Us in Creating Impact</h2>
+            <p className="text-xl text-background/80 max-w-2xl mx-auto mb-10">
+              Whether you're a farmer, investor, or sustainability advocate—there's a place for you in our mission to save bees and secure food systems.
             </p>
-          </div>
-        </section>
-
-        {/* Wild Pollinators */}
-        <section className="py-24 bg-background">
-          <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-2 gap-16 items-center">
-              <div className="order-2 md:order-1">
-                <img 
-                  src="https://images.unsplash.com/photo-1470753937643-efeb931202a9?auto=format&fit=crop&q=80&w=800" 
-                  alt="Wildflower meadow" 
-                  className="rounded-2xl shadow-xl object-cover h-[500px] w-full"
-                />
-              </div>
-              <div className="order-1 md:order-2">
-                <div className="inline-flex items-center gap-2 mb-4 text-primary font-bold tracking-wider uppercase text-sm">
-                  <Sprout className="h-4 w-4" />
-                  Biodiversity
-                </div>
-                <h2 className="text-4xl font-bold mb-6 leading-tight text-foreground">
-                  Healthy Ecosystems Require Stable Wild Pollinator Populations
-                </h2>
-                <div className="prose prose-lg text-muted-foreground mb-8">
-                  <p className="mb-4">
-                    Across the spectrum, wild pollinators including wasps, flies, and beetles, many solitary bee species, moths and butterflies, are all under pressure. Habitat loss, fossil fuel-based agricultural inputs and other drivers all contribute to population decline.
-                  </p>
-                  <p>
-                    Only by accurately tracking population levels can conservation work be effective. BeeYield's acoustic detection technology can greatly improve the accuracy of species monitoring.
-                  </p>
-                </div>
-                <Button variant="outline" size="lg">
-                  Learn About Our Tech
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link to="/pollination-services">
+                <Button size="lg" variant="secondary">
+                  Our Services <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-              </div>
+              </Link>
+              <Link to="/contact">
+                <Button size="lg" variant="outline" className="border-background/30 text-background hover:bg-background/10">
+                  Partner With Us
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
 
-        {/* ESG Commitment */}
-        <section className="py-24 bg-gradient-to-br from-secondary to-background">
-          <div className="container mx-auto px-4 max-w-5xl">
-            <Card className="border-none shadow-xl bg-card overflow-hidden">
-              <div className="grid md:grid-cols-5">
-                <div className="md:col-span-3 p-10 md:p-12 flex flex-col justify-center">
-                  <div className="flex items-center gap-2 mb-6 text-primary font-bold">
-                    <Globe className="h-5 w-5" />
-                    <span>Corporate Responsibility</span>
-                  </div>
-                  <h2 className="text-3xl font-bold mb-6 text-foreground">Our ESG Commitment</h2>
-                  <p className="text-lg text-muted-foreground mb-8">
-                    ESG (Environmental, Social and Governance) practices are an increasingly important component of corporate responsibility and reputation. BeeYield fulfills its obligations in several demonstrable ways, ensuring transparency and sustainable growth.
-                  </p>
-                  <div className="flex flex-wrap gap-4">
-                    <Button size="lg">
-                      Read More
-                    </Button>
-                    <Button variant="outline" size="lg">
-                      View 2024 Report
-                    </Button>
-                  </div>
-                </div>
-                <div className="md:col-span-2 bg-primary/5 flex items-center justify-center p-10">
-                  <div className="grid gap-4 w-full">
-                    {[
-                      { label: "Environmental", icon: Sprout },
-                      { label: "Social", icon: Users },
-                      { label: "Governance", icon: Shield }
-                    ].map((item, i) => (
-                      <div key={i} className="bg-card p-4 rounded-xl shadow-sm flex items-center gap-4 border border-border/50">
-                        <div className="bg-primary/10 p-2 rounded-full">
-                          <item.icon className="h-5 w-5 text-primary" />
-                        </div>
-                        <span className="font-bold text-foreground">{item.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </Card>
+        {/* Link back to Commitment */}
+        <section className="py-16 bg-background">
+          <div className="container mx-auto px-4 text-center">
+            <Link to="/commitment">
+              <Button variant="ghost" size="lg">
+                <ArrowRight className="mr-2 h-4 w-4 rotate-180" /> Back to Our Commitment
+              </Button>
+            </Link>
           </div>
         </section>
       </div>
@@ -198,4 +165,4 @@ const Commitment = () => {
   );
 };
 
-export default Commitment;
+export default SDGs;
