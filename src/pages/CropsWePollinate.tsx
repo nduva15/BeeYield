@@ -112,17 +112,11 @@ const CropsWePollinate = () => {
             BeeYield is comprised of leading experts in the field of pollination. Bee biologists and researchers, data-science experts, electrical engineers, leading agronomists, and veteran beekeepers make up our team, and all are committed to creating improved pollination outcomes for our customers.
           </p>
           
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             <Card className="bg-card border-none shadow-lg">
               <CardContent className="p-8 text-center">
                 <p className="text-4xl font-bold text-primary mb-2">25+</p>
                 <p className="text-muted-foreground font-medium">Acres Managed</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-card border-none shadow-lg">
-              <CardContent className="p-8 text-center">
-                <p className="text-4xl font-bold text-primary mb-2">1</p>
-                <p className="text-muted-foreground font-medium">Countries</p>
               </CardContent>
             </Card>
             <Card className="bg-card border-none shadow-lg">
@@ -155,61 +149,210 @@ const CropsWePollinate = () => {
             </p>
           </div>
 
-          <div className="relative max-w-5xl mx-auto">
-            {/* Simplified Africa Map SVG */}
-            <div className="relative bg-secondary/20 rounded-3xl p-8 md:p-12">
-              <svg viewBox="0 0 800 600" className="w-full h-auto">
-                {/* Africa continent simplified shape */}
+          <div className="relative max-w-6xl mx-auto">
+            <div className="relative bg-secondary/20 rounded-3xl p-4 md:p-8 overflow-hidden">
+              {/* World Map SVG */}
+              <svg viewBox="0 0 1000 500" className="w-full h-auto">
+                {/* Ocean background */}
+                <rect width="1000" height="500" fill="hsl(var(--secondary)/0.3)" />
+                
+                {/* North America */}
                 <path 
-                  d="M350 80 L450 70 L520 100 L560 150 L580 220 L590 300 L580 380 L560 450 L520 500 L450 540 L380 550 L310 530 L260 480 L240 420 L230 350 L240 280 L260 200 L300 130 Z"
-                  fill="hsl(var(--secondary))"
+                  d="M50 80 L180 60 L250 80 L280 120 L290 180 L270 220 L230 250 L180 280 L140 300 L100 280 L70 240 L50 180 L40 120 Z"
+                  fill="hsl(var(--muted))"
                   stroke="hsl(var(--border))"
-                  strokeWidth="2"
+                  strokeWidth="1"
+                />
+                {/* USA/Canada details */}
+                <path 
+                  d="M90 160 L200 140 L240 170 L220 210 L160 230 L100 210 Z"
+                  fill="hsl(var(--muted))"
+                  stroke="hsl(var(--border))"
+                  strokeWidth="1"
                 />
                 
-                {/* Kenya highlighted */}
+                {/* Central America */}
                 <path 
-                  d="M480 280 L520 270 L540 290 L530 330 L500 350 L470 340 L460 310 Z"
+                  d="M180 280 L220 290 L240 320 L220 350 L190 340 L170 310 Z"
+                  fill="hsl(var(--muted))"
+                  stroke="hsl(var(--border))"
+                  strokeWidth="1"
+                />
+                
+                {/* South America */}
+                <path 
+                  d="M220 350 L280 340 L320 380 L330 450 L300 490 L250 480 L220 440 L200 390 Z"
+                  fill="hsl(var(--muted))"
+                  stroke="hsl(var(--border))"
+                  strokeWidth="1"
+                />
+                
+                {/* Europe */}
+                <path 
+                  d="M440 60 L520 50 L560 70 L580 100 L570 140 L530 160 L480 150 L450 120 L430 90 Z"
+                  fill="hsl(var(--muted))"
+                  stroke="hsl(var(--border))"
+                  strokeWidth="1"
+                />
+                {/* UK/Ireland */}
+                <path 
+                  d="M420 80 L440 75 L445 95 L435 110 L420 105 Z"
+                  fill="hsl(var(--muted))"
+                  stroke="hsl(var(--border))"
+                  strokeWidth="1"
+                />
+                
+                {/* Africa Main */}
+                <path 
+                  d="M450 170 L550 160 L600 200 L620 280 L610 360 L570 420 L500 450 L440 430 L410 380 L400 300 L410 220 Z"
+                  fill="hsl(var(--muted))"
+                  stroke="hsl(var(--border))"
+                  strokeWidth="1"
+                />
+                
+                {/* Kenya - Highlighted */}
+                <path 
+                  d="M560 280 L590 270 L605 295 L595 330 L565 340 L545 320 L550 295 Z"
                   fill="hsl(var(--primary))"
                   stroke="hsl(var(--primary-foreground))"
                   strokeWidth="2"
-                  className="animate-pulse"
+                  className="drop-shadow-lg"
                 />
                 
-                {/* Kenya marker */}
-                <circle cx="500" cy="305" r="8" fill="hsl(var(--primary-foreground))" />
-                <circle cx="500" cy="305" r="4" fill="hsl(var(--primary))" />
-                
-                {/* Tanzania highlighted */}
+                {/* Tanzania - Highlighted */}
                 <path 
-                  d="M470 340 L530 330 L550 370 L540 420 L490 430 L450 400 L455 360 Z"
-                  fill="hsl(var(--primary)/0.7)"
+                  d="M545 320 L595 330 L610 365 L590 400 L550 395 L530 360 L535 335 Z"
+                  fill="hsl(var(--primary))"
                   stroke="hsl(var(--primary-foreground))"
                   strokeWidth="2"
+                  className="drop-shadow-lg"
                 />
                 
-                {/* Tanzania marker */}
-                <circle cx="500" cy="380" r="8" fill="hsl(var(--primary-foreground))" />
-                <circle cx="500" cy="380" r="4" fill="hsl(var(--primary))" />
+                {/* Madagascar */}
+                <path 
+                  d="M620 360 L640 355 L650 400 L635 430 L620 420 L615 380 Z"
+                  fill="hsl(var(--muted))"
+                  stroke="hsl(var(--border))"
+                  strokeWidth="1"
+                />
+                
+                {/* Middle East */}
+                <path 
+                  d="M580 160 L650 150 L680 190 L660 230 L610 240 L590 200 Z"
+                  fill="hsl(var(--muted))"
+                  stroke="hsl(var(--border))"
+                  strokeWidth="1"
+                />
+                
+                {/* Asia/Russia */}
+                <path 
+                  d="M560 50 L750 30 L900 50 L920 100 L900 140 L800 160 L700 150 L600 130 L570 90 Z"
+                  fill="hsl(var(--muted))"
+                  stroke="hsl(var(--border))"
+                  strokeWidth="1"
+                />
+                
+                {/* India */}
+                <path 
+                  d="M700 180 L750 170 L780 220 L760 280 L720 300 L690 270 L680 220 Z"
+                  fill="hsl(var(--muted))"
+                  stroke="hsl(var(--border))"
+                  strokeWidth="1"
+                />
+                
+                {/* Southeast Asia */}
+                <path 
+                  d="M780 200 L850 190 L880 240 L860 290 L810 300 L780 260 Z"
+                  fill="hsl(var(--muted))"
+                  stroke="hsl(var(--border))"
+                  strokeWidth="1"
+                />
+                
+                {/* China/East Asia */}
+                <path 
+                  d="M750 100 L850 90 L900 130 L880 180 L820 190 L760 170 L740 130 Z"
+                  fill="hsl(var(--muted))"
+                  stroke="hsl(var(--border))"
+                  strokeWidth="1"
+                />
+                
+                {/* Japan */}
+                <path 
+                  d="M910 120 L930 110 L940 150 L925 170 L910 160 Z"
+                  fill="hsl(var(--muted))"
+                  stroke="hsl(var(--border))"
+                  strokeWidth="1"
+                />
+                
+                {/* Indonesia */}
+                <path 
+                  d="M820 320 L920 310 L950 340 L930 370 L850 380 L820 350 Z"
+                  fill="hsl(var(--muted))"
+                  stroke="hsl(var(--border))"
+                  strokeWidth="1"
+                />
+                
+                {/* Australia */}
+                <path 
+                  d="M820 380 L920 370 L970 410 L960 470 L900 490 L840 480 L810 440 L800 400 Z"
+                  fill="hsl(var(--muted))"
+                  stroke="hsl(var(--border))"
+                  strokeWidth="1"
+                />
+                
+                {/* New Zealand */}
+                <path 
+                  d="M960 450 L975 445 L985 475 L970 490 L955 480 Z"
+                  fill="hsl(var(--muted))"
+                  stroke="hsl(var(--border))"
+                  strokeWidth="1"
+                />
 
-                {/* Labels */}
-                <text x="520" y="300" fill="hsl(var(--foreground))" fontSize="14" fontWeight="bold">Kenya</text>
-                <text x="520" y="390" fill="hsl(var(--foreground))" fontSize="14" fontWeight="bold">Tanzania</text>
+                {/* Kenya marker with pulse animation */}
+                <circle cx="575" cy="305" r="12" fill="hsl(var(--primary-foreground))" className="animate-ping opacity-75" />
+                <circle cx="575" cy="305" r="8" fill="hsl(var(--primary-foreground))" />
+                <circle cx="575" cy="305" r="4" fill="hsl(var(--primary))" />
+                
+                {/* Tanzania marker */}
+                <circle cx="570" cy="365" r="8" fill="hsl(var(--primary-foreground))" />
+                <circle cx="570" cy="365" r="4" fill="hsl(var(--primary))" />
+
+                {/* Continent Labels */}
+                <text x="150" y="200" fill="hsl(var(--muted-foreground))" fontSize="12" fontWeight="500" opacity="0.7">North America</text>
+                <text x="240" y="420" fill="hsl(var(--muted-foreground))" fontSize="12" fontWeight="500" opacity="0.7">South America</text>
+                <text x="470" y="110" fill="hsl(var(--muted-foreground))" fontSize="12" fontWeight="500" opacity="0.7">Europe</text>
+                <text x="480" y="320" fill="hsl(var(--muted-foreground))" fontSize="12" fontWeight="500" opacity="0.7">Africa</text>
+                <text x="760" y="80" fill="hsl(var(--muted-foreground))" fontSize="12" fontWeight="500" opacity="0.7">Asia</text>
+                <text x="850" y="440" fill="hsl(var(--muted-foreground))" fontSize="12" fontWeight="500" opacity="0.7">Australia</text>
+
+                {/* Country Labels for active regions */}
+                <text x="600" y="300" fill="hsl(var(--foreground))" fontSize="11" fontWeight="bold">Kenya</text>
+                <text x="600" y="375" fill="hsl(var(--foreground))" fontSize="11" fontWeight="bold">Tanzania</text>
               </svg>
 
               {/* Legend */}
-              <div className="absolute bottom-4 left-4 bg-card/90 backdrop-blur-sm rounded-xl p-4 shadow-lg">
-                <p className="text-sm font-semibold mb-2">Active Regions</p>
+              <div className="absolute bottom-4 left-4 bg-card/95 backdrop-blur-sm rounded-xl p-4 shadow-lg border">
+                <p className="text-sm font-semibold mb-3 flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-primary" />
+                  Active Regions
+                </p>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded-full bg-primary" />
-                    <span className="text-sm text-muted-foreground">Kenya (HQ)</span>
+                    <div className="w-4 h-4 rounded-full bg-primary animate-pulse" />
+                    <span className="text-sm text-muted-foreground">Kenya (Headquarters)</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded-full bg-primary/70" />
+                    <div className="w-4 h-4 rounded-full bg-primary" />
                     <span className="text-sm text-muted-foreground">Tanzania</span>
                   </div>
                 </div>
+              </div>
+
+              {/* Stats overlay */}
+              <div className="absolute top-4 right-4 bg-card/95 backdrop-blur-sm rounded-xl p-4 shadow-lg border">
+                <p className="text-xs text-muted-foreground mb-1">Operating in</p>
+                <p className="text-2xl font-bold text-primary">2 Countries</p>
+                <p className="text-xs text-muted-foreground mt-1">East Africa</p>
               </div>
             </div>
           </div>
@@ -291,3 +434,4 @@ const CropsWePollinate = () => {
 };
 
 export default CropsWePollinate;
+
