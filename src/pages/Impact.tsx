@@ -153,17 +153,18 @@ const Impact = () => {
               </Link>
             </CardContent>
           </Card>
-          {/* Full-width Video Section - Before Footer */}
-      <div className="relative w-full h-[70vh] bg-foreground">
-        <iframe
-          className="absolute inset-0 w-full h-full"
-          src="https://www.youtube.com/embed/VIDEO_ID_HERE"
-          title="About BeeYield"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
-      </div>
+        </div>
+
+        {/* Full-width Video Section */}
+        <div className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] h-[70vh] bg-foreground mt-16">
+          <iframe
+            className="absolute inset-0 w-full h-full"
+            src="https://www.youtube.com/embed/VIDEO_ID_HERE"
+            title="About BeeYield"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
         </div>
       </div>
     </div>
