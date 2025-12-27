@@ -44,13 +44,13 @@ const Traceability = () => {
     <div className="min-h-screen">
       {/* Hero Section */}
       <div className="bg-gradient-to-b from-primary/10 to-background py-20">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-6 lg:px-12">
           <div className="mb-12 text-center">
             <div className="mb-4 inline-block rounded-full bg-primary/10 p-4">
               <QrCode className="h-12 w-12 text-primary" />
             </div>
             <h1 className="mb-4 text-5xl font-bold">Honey Traceability</h1>
-            <p className="mx-auto max-w-2xl text-xl text-muted-foreground">
+            <p className="mx-auto text-xl text-muted-foreground">
               Discover the complete journey of your honey from hive to home. Simply enter the code from your jar or scan the QR code.
             </p>
           </div>
@@ -58,8 +58,8 @@ const Traceability = () => {
       </div>
        {/* Trace Your Honey Section */}
       <div className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-2xl">
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className="mx-auto max-w-6xl">
             <div className="mb-8 text-center">
               <h2 className="mb-4 text-3xl font-bold">Trace Your Honey</h2>
               <p className="text-muted-foreground">
@@ -104,8 +104,8 @@ const Traceability = () => {
 
       {/* Mission Statement - Champions for Bees */}
       <div className="bg-secondary/5 py-20">
-        <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-4xl text-center">
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className="mx-auto max-w-6xl text-center">
             <div className="mb-6 inline-block rounded-full bg-accent/20 p-4">
               <Heart className="h-10 w-10 text-accent" />
             </div>
@@ -126,7 +126,7 @@ const Traceability = () => {
 
       {/* Stats Section */}
       <div className="py-20">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-6 lg:px-12">
           <div className="grid gap-8 md:grid-cols-3">
             <Card className="border-none bg-primary/5 text-center shadow-soft">
               <CardContent className="pt-8 pb-8">
@@ -155,8 +155,8 @@ const Traceability = () => {
 
       {/* Why Traceability Matters */}
       <div className="bg-foreground/5 py-20">
-        <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-4xl">
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className="mx-auto max-w-6xl">
             <div className="mb-12 text-center">
               <div className="mb-4 inline-block rounded-full bg-primary/10 p-4">
                 <Shield className="h-10 w-10 text-primary" />
@@ -287,8 +287,8 @@ const Traceability = () => {
 
       {/* The Promise Section */}
       <div className="bg-primary/5 py-20">
-        <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-3xl text-center">
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className="mx-auto max-w-6xl text-center">
             <div className="mb-6 inline-block rounded-full bg-primary/10 p-4">
               <Award className="h-10 w-10 text-primary" />
             </div>
@@ -315,14 +315,14 @@ const Traceability = () => {
 
       {/* YouTube Video Section */}
       <div className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-4xl text-center">
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className="mx-auto max-w-6xl text-center">
             <h2 className="mb-4 text-3xl font-bold">See Our Story</h2>
             <p className="mb-8 text-lg text-muted-foreground">
               Watch how we're revolutionizing the honey industry with transparency and ethical practices
             </p>
           </div>
-          <div className="relative mx-auto max-w-4xl aspect-video">
+          <div className="relative mx-auto max-w-6xl aspect-video">
             <iframe
               className="absolute inset-0 w-full h-full rounded-2xl shadow-soft"
               src="https://www.youtube.com/embed/VIDEO_ID_HERE"
