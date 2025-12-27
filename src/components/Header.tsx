@@ -35,10 +35,12 @@ const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav className="container mx-auto flex h-14 sm:h-16 items-center justify-between px-4 sm:px-6">
         {/* Left side - Logo (all devices) */}
-        <Link to="/" className="flex items-center space-x-2 flex-shrink-0">
-          <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-            <span className="text-primary-foreground text-[10px] sm:text-xs font-bold">BY</span>
-          </div>
+        <Link to="/" className="flex items-center space-x-2 flex-shrink-0" aria-label="BeeYield home">
+          <img
+            src={require("@/assets/Logo.png")}
+            alt="BeeYield logo"
+            className="h-8 w-8 sm:h-9 sm:w-9 object-contain"
+          />
           <span className="text-lg sm:text-xl font-bold text-foreground">BeeYield</span>
         </Link>
 
