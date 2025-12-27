@@ -31,7 +31,7 @@ const Impact = () => {
               link.click();
               document.body.removeChild(link);
             }}
-            className="mb-12 inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
+            className="mb-12 mt-8 inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
           >
             <Download className="h-5 w-5" />
             Download Our Impact Report
@@ -153,6 +153,17 @@ const Impact = () => {
               </Link>
             </CardContent>
           </Card>
+          {/* Full-width Video Section - Before Footer */}
+      <div className="relative w-full h-[70vh] bg-foreground">
+        <iframe
+          className="absolute inset-0 w-full h-full"
+          src="https://www.youtube.com/embed/VIDEO_ID_HERE"
+          title="About BeeYield"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
         </div>
       </div>
     </div>
