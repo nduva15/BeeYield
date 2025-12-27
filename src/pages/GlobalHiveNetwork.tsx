@@ -35,6 +35,21 @@ const GlobalHiveNetwork = () => {
           <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-5"></div>
         </section>
 
+        {/* Feature Video */}
+        <section className="relative bg-black">
+          <div className="w-full">
+            <div className="relative w-full aspect-video">
+              <iframe
+                className="absolute inset-0 w-full h-full"
+                src="https://www.youtube.com/embed/aqz-KE-bpKQ"
+                title="BeeYield impact film"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
+            </div>
+          </div>
+        </section>
+
         {/* The Crisis Section */}
         <section className="py-24 bg-foreground text-background">
           <div className="container mx-auto px-4">
@@ -91,6 +106,7 @@ const GlobalHiveNetwork = () => {
                   </div>
                   <p className="text-sm font-bold text-primary uppercase tracking-wider mb-2">GOAL 1</p>
                   <h3 className="text-2xl font-bold mb-4 text-foreground">Smart Hives Network</h3>
+                  <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">Target: 2M hives</p>
                   <p className="text-muted-foreground text-sm leading-relaxed">
                     Building a network of sensor-equipped hives across Makueni and Kitui Counties, empowering local beekeepers with real-time colony health data and precision pollination insights.
                   </p>
@@ -104,6 +120,7 @@ const GlobalHiveNetwork = () => {
                   </div>
                   <p className="text-sm font-bold text-primary uppercase tracking-wider mb-2">GOAL 2</p>
                   <h3 className="text-2xl font-bold mb-4 text-foreground">Daily Health Signals</h3>
+                  <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">Target: 100M+ signals</p>
                   <p className="text-muted-foreground text-sm leading-relaxed">
                     Collecting millions of daily bee health signals to build Africa's most comprehensive pollinator health dataset, helping farmers optimize crop pollination timing.
                   </p>
@@ -117,6 +134,7 @@ const GlobalHiveNetwork = () => {
                   </div>
                   <p className="text-sm font-bold text-primary uppercase tracking-wider mb-2">GOAL 3</p>
                   <h3 className="text-2xl font-bold mb-4 text-foreground">Farmer Education</h3>
+                  <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">Target: 50K farmers</p>
                   <p className="text-muted-foreground text-sm leading-relaxed">
                     Training local farmers and beekeepers in sustainable pollination practices, improving yields for mangoes, beans, tomatoes, and sisal across Africa and the world.
                   </p>
