@@ -86,7 +86,7 @@ const ESG = () => {
                   <ArrowRight className="w-4 h-4" />
                 </Button>
                 <Button size="lg" variant="outline" asChild>
-                  <Link to="/sdgs">View SDG Alignment</Link>
+                  <Link to="/commitment">View SDG Alignment</Link>
                 </Button>
               </div>
             </div>
@@ -327,7 +327,7 @@ const ESG = () => {
                   <Link to="/contact">Contact Us</Link>
                 </Button>
                 <Button size="lg" variant="outline" asChild>
-                  <Link to="/pollination-services">Explore Pollination Services</Link>
+                  <Link to="/">Pollination Solutions</Link>
                 </Button>
               </div>
             </div>
