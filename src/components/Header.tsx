@@ -20,8 +20,6 @@ const Header = () => {
     { to: "/GlobalHiveNetwork", label: "Global Hive Network" },
     { to: "/About", label: "About Us" },
     { to: "/impact", label: "Our Impact" },
-    { to: "/PollinationServices", label: "Pollination Services" },
-    { to: "/PollinationRequest", label: "Pollination Request" },
     { to: "/careers", label: "Careers" },
     { to: "/Media", label: "Media" },
     { to: "/blogs", label: "Blog" },
