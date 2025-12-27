@@ -2,13 +2,11 @@ import {
   ArrowRight, Activity, Sprout, BarChart3, 
   Cpu, Wifi, Check
 } from "lucide-react";
-import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 const PollinationSolutions = () => {
   return (
-    <Layout>
       <div className="pt-8">
         {/* Hub Hero */}
         <section className="relative py-24 bg-gradient-to-b from-secondary/30 to-background overflow-hidden">
@@ -161,7 +159,6 @@ const PollinationSolutions = () => {
           </div>
         </section>
       </div>
-    </Layout>
   );
 };
 

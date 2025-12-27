@@ -3,9 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import Layout from "@/components/Layout";
 
-const SDGs = () => {
+const CommitmentPage = () => {
   const sdgs = [
     {
       number: 1,
@@ -74,7 +73,6 @@ const SDGs = () => {
   ];
 
   return (
-    <Layout>
       <div className="min-h-screen bg-background">
         {/* Hero Section */}
         <section className="relative overflow-hidden py-24 md:py-32">
@@ -161,8 +159,7 @@ const SDGs = () => {
           </div>
         </section>
       </div>
-    </Layout>
   );
 };
 
-export default SDGs;
+export default CommitmentPage;

@@ -2,11 +2,9 @@ import { MapPin, Globe, Heart, Zap, Database, Cpu, Sun, Users, Compass, Briefcas
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import Layout from "@/components/Layout";
 
 const Careers = () => {
   return (
-    <Layout>
       <div className="min-h-screen bg-background">
         {/* Hero Section */}
         <section className="relative py-24 bg-gradient-to-br from-secondary via-background to-primary/10 overflow-hidden">
@@ -199,7 +197,6 @@ const Careers = () => {
           </div>
         </section>
       </div>
-    </Layout>
   );
 };
 

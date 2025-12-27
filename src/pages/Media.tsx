@@ -1,5 +1,4 @@
 import { Download, ArrowRight, FileText, Image, Video, Users, Award } from "lucide-react";
-import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -22,7 +21,7 @@ const Media = () => {
   ];
 
   return (
-    <Layout>
+    <>
       {/* Hero Section */}
       <section className="relative py-24 bg-gradient-to-b from-secondary/30 to-background overflow-hidden">
         <div className="container mx-auto px-4 text-center max-w-4xl">
@@ -173,7 +172,7 @@ const Media = () => {
           </Button>
         </div>
       </section>
-    </Layout>
+    </>
   );
 };
 

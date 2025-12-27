@@ -5,13 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Layout from "@/components/Layout";
 
 const GlobalHiveNetwork = () => {
   const [supportType, setSupportType] = useState("monthly");
 
   return (
-    <Layout>
       <div className="min-h-screen bg-background">
         {/* Hero Section */}
         <section className="relative py-24 md:py-32 bg-gradient-to-br from-secondary via-background to-primary/10 overflow-hidden">
@@ -322,7 +320,6 @@ const GlobalHiveNetwork = () => {
           </div>
         </section>
       </div>
-    </Layout>
   );
 };
 
