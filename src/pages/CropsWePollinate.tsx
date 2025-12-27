@@ -121,6 +121,12 @@ const CropsWePollinate = () => {
             </Card>
             <Card className="bg-card border-none shadow-lg">
               <CardContent className="p-8 text-center">
+                <p className="text-4xl font-bold text-primary mb-2">1</p>
+                <p className="text-muted-foreground font-medium">Countries</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-card border-none shadow-lg">
+              <CardContent className="p-8 text-center">
                 <p className="text-4xl font-bold text-primary mb-2">2</p>
                 <p className="text-muted-foreground font-medium">Counties</p>
               </CardContent>
