@@ -20,11 +20,7 @@ const Header = () => {
     { to: "/GlobalHiveNetwork", label: "Global Hive Network" },
     { to: "/About", label: "About Us" },
     { to: "/impact", label: "Our Impact" },
-    { to: "/Crops-We-Pollinate", label: "Professional Pollination" },
-    { to: "/PrecisionPollination", label: "In-Hive Precision Pollination" },
-    { to: "/InLandPollinationPlatform", label: "In-Land Pollination Platform" },
-    { to: "/pollinationsolutions", label: "Beekeeping Network" },
-    { to: "/Shop", label: "Shop" },
+    // Removed: Professional Pollination, Pollination Solutions items, Beekeeping Network, Shop
     { to: "/careers", label: "Careers" },
     { to: "/Media", label: "Media" },
     { to: "/blogs", label: "Blog" },
@@ -48,8 +44,8 @@ const Header = () => {
           <span className="text-lg lg:text-xl font-bold text-foreground">BeeYield</span>
         </Link>
 
-        {/* Center - Navigation Links (Desktop only) */}
-        <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
+        {/* Center - Navigation Links (hidden to keep header uniform across devices) */}
+        <div className="hidden">
           <Link
             to="/Crops-We-Pollinate"
             className={`text-sm font-medium transition-colors hover:text-primary ${
