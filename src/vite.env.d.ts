@@ -30,3 +30,6 @@ declare module '*.webp' {
   const src: string;
   export default src;
 }
+
+// Fallback module declaration for libraries without TypeScript types
+declare module 'react-simple-maps';
