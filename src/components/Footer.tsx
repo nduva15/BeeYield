@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Facebook, Instagram, Twitter, Mail } from "lucide-react";
+import { Facebook, Instagram, Twitter, Linkedin } from "lucide-react";
 import Logo from "@/assets/Logo.png";
 
 const Footer = () => {
@@ -18,7 +18,7 @@ const Footer = () => {
               <span className="text-xl font-bold text-foreground">BeeYield</span>
             </div>
             <p className="text-sm text-muted-foreground max-w-xs mx-auto sm:mx-0">
-              Sustainable honey from ethical beekeeping practices. Pure, natural, traceable.
+              Your partner in pollination.
             </p>
           </div>
 
@@ -39,6 +39,11 @@ const Footer = () => {
               <li>
                 <Link to="/shop" className="text-muted-foreground hover:text-primary transition-colors">
                   Shop
+                </Link>
+              </li>
+              <li>
+                <Link to="/HoneyLanding" className="text-muted-foreground hover:text-primary transition-colors">
+                  Honey
                 </Link>
               </li>
               <li>
@@ -89,8 +94,8 @@ const Footer = () => {
               <a href="#" title="Twitter" className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2">
                 <Twitter className="h-5 w-5" />
               </a>
-              <a href="#" title="Email" className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2">
-                <Mail className="h-5 w-5" />
+              <a href="#" title="LinkedIn" className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2">
+                <Linkedin className="h-5 w-5" />
               </a>
             </div>
           </div>

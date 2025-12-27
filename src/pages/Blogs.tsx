@@ -18,7 +18,7 @@ const Blogs = () => {
       id: 2,
       title: "How to Identify Pure, Raw Honey",
       excerpt: "Learn the key characteristics that distinguish authentic raw honey from processed alternatives.",
-      category: "Education",
+      category: "Honey",
       date: "March 10, 2024",
       readTime: "4 min read",
       image: "/placeholder.svg",
@@ -36,16 +36,16 @@ const Blogs = () => {
       id: 4,
       title: "The Journey from Hive to Home",
       excerpt: "Follow our transparent process from ethical harvesting to your kitchen table.",
-      category: "Process",
+      category: "Hive Management",
       date: "February 28, 2024",
       readTime: "5 min read",
       image: "/placeholder.svg",
     },
     {
       id: 5,
-      title: "Health Benefits of Raw Honey",
-      excerpt: "Understanding the nutritional and medicinal properties of unprocessed honey.",
-      category: "Health",
+      title: "Understanding Pollination Services",
+      excerpt: "How precision pollination technology is transforming agricultural productivity across Africa.",
+      category: "Pollination",
       date: "February 20, 2024",
       readTime: "7 min read",
       image: "/placeholder.svg",
@@ -54,23 +54,34 @@ const Blogs = () => {
       id: 6,
       title: "Supporting Local Beekeepers",
       excerpt: "How choosing ethical honey makes a difference for small-scale beekeeping communities.",
-      category: "Community",
+      category: "Community Development",
       date: "February 15, 2024",
       readTime: "4 min read",
       image: "/placeholder.svg",
     },
   ];
 
-  const categories = ["All", "Conservation", "Education", "Sustainability", "Process", "Health", "Community"];
+  const categories = ["All", "Pollination", "IoT", "Diseases", "Conservation", "Community Development", "Honey", "Sustainability", "Hive Management"];
 
   return (
     <div className="min-h-screen py-20">
       <div className="container mx-auto px-4">
-        <div className="mb-12 text-center">
-          <h1 className="mb-4 text-5xl font-bold">Our Blog</h1>
-          <p className="text-xl text-muted-foreground">
-            Stories, insights, and education about honey, bees, and sustainability
-          </p>
+        <div className="mb-12 text-center relative rounded-2xl overflow-hidden shadow-xl">
+          {/* Background Image */}
+          <img 
+            src="/placeholder.svg" 
+            alt="Our Blog" 
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          {/* Overlay for text readability */}
+          <div className="absolute inset-0 bg-black/40" />
+          {/* Content */}
+          <div className="relative z-10 py-16 md:py-24">
+            <h1 className="mb-4 text-5xl font-bold text-white">Our Blog</h1>
+            <p className="text-xl text-white/90">
+              Stories, insights, and education about honey, bees, and sustainability
+            </p>
+          </div>
         </div>
 
         <div className="mb-8 flex flex-wrap justify-center gap-2">

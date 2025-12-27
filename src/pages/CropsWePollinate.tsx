@@ -52,14 +52,14 @@ const CropsWePollinate = () => {
       desc: "Tomato flowers benefit from buzz pollination. Our monitoring systems track bee activity to ensure adequate pollination, leading to better fruit size, shape, and uniformity."
     },
     {
-      name: "Onions",
-      image: "https://images.unsplash.com/photo-1618512496248-a07fe83aa829?auto=format&fit=crop&q=80&w=600",
-      desc: "Onion seed production requires cross-pollination between male and female plants. BeeYield helps producers optimize hive placement and monitor pollination activity for maximum seed yield."
+      name: "Apples",
+      image: "https://images.unsplash.com/photo-1560806887-1295c3f2efb2?auto=format&fit=crop&q=80&w=600",
+      desc: "Apple orchards rely heavily on bee pollination for fruit set and quality. BeeYield's monitoring ensures optimal hive placement and activity during the critical bloom period for maximum yield."
     }
   ];
 
   const locations = [
-    { continent: "Africa", countries: ["Kenya", "Tanzania"], color: "bg-primary" }
+    { continent: "Africa", countries: ["Kenya"], color: "bg-primary" }
   ];
 
   // Accurate world map TopoJSON from world-atlas
