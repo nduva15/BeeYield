@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
-import Home from "./pages/HoneyLanding";
+import Home from "./pages/Home";
 import About from "./pages/About";
 import Impact from "./pages/Impact";
 import Shop from "./pages/Shop";
@@ -12,7 +12,7 @@ import Blogs from "./pages/Blogs";
 import Contact from "./pages/Contact";
 import Traceability from "./pages/Traceability";
 import NotFound from "./pages/NotFound";
-import PollinationServices from "./pages/Home";
+// Legacy route still points to the home component
 import PollinationRequest from "./pages/PollinationRequest";
 import CommitmentPage from "./pages/Commitment";
 import OurStory from "./pages/OurStory";
@@ -45,7 +45,7 @@ const App = () => (
             <Route path="/blogs" element={<Blogs />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/traceability" element={<Traceability />} />
-            <Route path="/PollinationServices" element={<PollinationServices />} />
+            <Route path="/PollinationServices" element={<Home />} />
             <Route path="/PollinationRequest" element={<PollinationRequest />} />
             <Route path="/Commitment" element={<CommitmentPage />} />
             <Route path="/ESG" element={<ESG />} />
