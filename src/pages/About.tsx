@@ -31,7 +31,7 @@ const About = () => {
                   But where would three beekeepers meet? At the family table. Timothy's sisters, Agatha and Carole, brought their own Strathmore expertise to shape BeeYield's direction—web development, product design, and IoT research. Together, they made a decision: combine their studies and build something meaningful for their community and beyond.
                 </p>
                 <p>
-                  From those 4 hives, BeeYield has grown to <strong className="text-foreground">184 hives</strong> across a <strong className="text-foreground">5-acre fenced apiary</strong>. We've planted over <strong className="text-foreground">1,500 trees</strong> to restore the ecosystem. We launched pollination services—and while it wasn't precision at first, we served real clients and successfully pollinated <strong className="text-foreground">25 acres</strong> of farmland.
+                  From those 4 hives, BeeYield has grown to <strong className="text-foreground">184 hives</strong> across a <strong className="text-foreground">5-acre fenced apiary</strong>. We've planted over <strong className="text-foreground">2,500+ trees</strong> to restore the ecosystem. We launched pollination services—and while it wasn't precision at first, we served real clients and successfully pollinated <strong className="text-foreground">25 acres</strong> of farmland.
                 </p>
                 <p>
                   Today, BeeYield is evolving into <strong className="text-foreground">precision pollination</strong>—using data, technology, and verified healthy colonies to maximize agricultural yields and restore biodiversity. What started as a student's dream is now a family-powered movement to secure the future of food.
@@ -47,7 +47,7 @@ const About = () => {
             {[
               { value: "184", label: "Hives Today" },
               { value: "5", label: "Acre Apiary" },
-              { value: "1,500+", label: "Trees Planted" },
+              { value: "2,500+", label: "Trees Planted" },
               { value: "25", label: "Acres Pollinated" },
             ].map((stat, index) => (
               <Card key={index} className="border-none shadow-soft bg-secondary/30">
@@ -87,7 +87,7 @@ const About = () => {
                 </div>
                 <h3 className="mb-3 text-2xl font-bold">Our Impact</h3>
                 <p className="text-muted-foreground mb-6">
-                  From 4 hives to 184, from a half-acre to 5 acres, from seedlings to 1,500+ trees—explore how BeeYield is restoring ecosystems, supporting farmers, and building a sustainable future for pollinators.
+                  From 4 hives to 184, from a half-acre to 5 acres, from seedlings to 2,500+ trees—explore how BeeYield is restoring ecosystems, supporting farmers, and building a sustainable future for pollinators.
                 </p>
                 <Link to="/impact">
                   <Button variant="outline" className="group-hover:bg-primary group-hover:text-primary-foreground transition-all">
