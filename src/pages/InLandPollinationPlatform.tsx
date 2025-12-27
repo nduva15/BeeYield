@@ -3,7 +3,6 @@ import {
   Quote, Activity, Mail, ChevronRight,
   BarChart3, Signal, Play, Star
 } from "lucide-react";
-import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -31,7 +30,6 @@ const InLandPollination = () => {
   ];
 
   return (
-    <Layout>
       <div className="pt-8">
         {/* Hero Section */}
         <section className="relative py-24 bg-gradient-to-br from-secondary via-background to-primary/10 overflow-hidden">
@@ -287,7 +285,6 @@ const InLandPollination = () => {
           </div>
         </section>
       </div>
-    </Layout>
   );
 };
 

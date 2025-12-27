@@ -4,13 +4,11 @@ import {
   Quote, Check, BookOpen, Mail, ChevronRight,
   BarChart3, Thermometer, Mic
 } from "lucide-react";
-import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 const PrecisionPollination = () => {
   return (
-    <Layout>
       <div className="pt-8">
         {/* Hero Section */}
         <section className="relative py-24 bg-gradient-to-br from-secondary via-background to-primary/10 overflow-hidden">
@@ -275,7 +273,6 @@ const PrecisionPollination = () => {
           </div>
         </section>
       </div>
-    </Layout>
   );
 };
 

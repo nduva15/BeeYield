@@ -2,7 +2,6 @@ import { Database, TrendingUp, Check, Heart, Sprout, Globe, Wind, Sun, ArrowRigh
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import Layout from "@/components/Layout";
 import { Link } from "react-router-dom";
 
 const ESG = () => {
@@ -58,7 +57,6 @@ const ESG = () => {
   ];
 
   return (
-    <Layout>
       <div className="min-h-screen bg-background">
 
         {/* Hero Section */}
@@ -335,11 +333,8 @@ const ESG = () => {
             </div>
           </div>
         </section>
-
       </div>
-    </Layout>
   );
 };
 
 export default ESG;
-
