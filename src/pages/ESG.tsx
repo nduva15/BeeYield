@@ -8,7 +8,7 @@ const ESG = () => {
   const impactStats = [
     { value: "20+", label: "Partner Beekeepers", icon: Users, description: "Local farmers trained & earning" },
     { value: "25", label: "Acres Pollinated", icon: MapPin, description: "Precision pollination coverage" },
-    { value: "1,500+", label: "Trees Planted", icon: TreePine, description: "Ecosystem restoration" },
+    { value: "2,500+", label: "Trees Planted", icon: TreePine, description: "Ecosystem restoration" },
     { value: "184", label: "Active Colonies", icon: Bug, description: "Managed bee colonies" },
     { value: "883kg", label: "Honey Produced", icon: Package, description: "Pure traceable honey" },
     { value: "2M+", label: "Bees Protected", icon: Heart, description: "Pollinators saved & thriving" },
@@ -20,7 +20,7 @@ const ESG = () => {
       icon: Sprout,
       color: "from-emerald-500 to-green-600",
       initiatives: [
-        "1,500+ indigenous trees planted across Kibwezi, Makueni County",
+        "2,500+ indigenous trees planted across Kibwezi, Makueni County",
         "Only 50% honey harvest policy—bees keep what they need",
         "Zero chemical pesticides in our apiaries",
         "Water source protection for bee colonies",
