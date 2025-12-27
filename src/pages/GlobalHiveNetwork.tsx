@@ -10,6 +10,7 @@ const GlobalHiveNetwork = () => {
   const [supportType, setSupportType] = useState("monthly");
 
   return (
+    
       <div className="min-h-screen bg-background">
         {/* Hero Section */}
         <section className="relative py-24 md:py-32 bg-gradient-to-br from-secondary via-background to-primary/10 overflow-hidden">
@@ -35,20 +36,17 @@ const GlobalHiveNetwork = () => {
           <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-5"></div>
         </section>
 
-        {/* Feature Video */}
-        <section className="relative bg-black">
-          <div className="w-full">
-            <div className="relative w-full aspect-video">
-              <iframe
-                className="absolute inset-0 w-full h-full"
-                src="https://www.youtube.com/embed/aqz-KE-bpKQ"
-                title="BeeYield impact film"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              />
-            </div>
-          </div>
-        </section>
+        {/* Full-width Video Section - Before Footer */}
+        <div className="relative w-full h-[70vh] bg-foreground">
+          <iframe
+            className="absolute inset-0 w-full h-full"
+            src="https://www.youtube.com/embed/VIDEO_ID_HERE"
+            title="About BeeYield"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
 
         {/* The Crisis Section */}
         <section className="py-24 bg-foreground text-background">
