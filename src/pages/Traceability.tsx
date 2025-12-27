@@ -102,6 +102,84 @@ const Traceability = () => {
               </CardContent>
             </Card>
 
+            {showResults && (
+              <div className="mt-8 space-y-6 animate-in fade-in slide-in-from-bottom-4">
+                <Card className="border-none shadow-soft">
+                  <CardContent className="p-8">
+                    <h2 className="mb-6 text-2xl font-bold">Honey Information</h2>
+                    <div className="space-y-6">
+                      <div className="flex items-start gap-4">
+                        <div className="rounded-lg bg-primary/10 p-3">
+                          <Info className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold">Batch ID</h3>
+                          <p className="text-muted-foreground">{mockData.batchId}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-4">
+                        <div className="rounded-lg bg-secondary/10 p-3">
+                          <Calendar className="h-5 w-5 text-secondary" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold">Harvest Date</h3>
+                          <p className="text-muted-foreground">{mockData.harvestDate}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-4">
+                        <div className="rounded-lg bg-accent/10 p-3">
+                          <MapPin className="h-5 w-5 text-accent" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold">Origin</h3>
+                          <p className="text-muted-foreground">{mockData.location}</p>
+                          <p className="text-sm text-muted-foreground">{mockData.coordinates}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-4">
+                        <div className="rounded-lg bg-primary/10 p-3">
+                          <Leaf className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold">Flower Source</h3>
+                          <p className="text-muted-foreground">{mockData.flowerSource}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-none shadow-soft">
+                  <CardContent className="p-8">
+                    <h3 className="mb-4 font-semibold">Beekeeper</h3>
+                    <p className="mb-2 text-lg">{mockData.beekeeper}</p>
+                    <p className="text-sm text-muted-foreground">
+                      A third-generation beekeeper committed to sustainable practices and bee welfare.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-none shadow-soft">
+                  <CardContent className="p-8">
+                    <h3 className="mb-4 font-semibold">Certifications</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {mockData.certifications.map((cert) => (
+                        <span
+                          key={cert}
+                          className="rounded-full bg-secondary/20 px-4 py-2 text-sm font-medium text-secondary-foreground"
+                        >
+                          {cert}
+                        </span>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
       {/* Mission Statement - Champions for Bees */}
       <div className="bg-secondary/5 py-20">
         <div className="container mx-auto px-6 lg:px-12">
@@ -198,89 +276,6 @@ const Traceability = () => {
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-      </div>
-
-    
-
-            {showResults && (
-              <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
-                <Card className="border-none shadow-soft">
-                  <CardContent className="p-8">
-                    <h2 className="mb-6 text-2xl font-bold">Honey Information</h2>
-                    <div className="space-y-6">
-                      <div className="flex items-start gap-4">
-                        <div className="rounded-lg bg-primary/10 p-3">
-                          <Info className="h-5 w-5 text-primary" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold">Batch ID</h3>
-                          <p className="text-muted-foreground">{mockData.batchId}</p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-4">
-                        <div className="rounded-lg bg-secondary/10 p-3">
-                          <Calendar className="h-5 w-5 text-secondary" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold">Harvest Date</h3>
-                          <p className="text-muted-foreground">{mockData.harvestDate}</p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-4">
-                        <div className="rounded-lg bg-accent/10 p-3">
-                          <MapPin className="h-5 w-5 text-accent" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold">Origin</h3>
-                          <p className="text-muted-foreground">{mockData.location}</p>
-                          <p className="text-sm text-muted-foreground">{mockData.coordinates}</p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-4">
-                        <div className="rounded-lg bg-primary/10 p-3">
-                          <Leaf className="h-5 w-5 text-primary" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold">Flower Source</h3>
-                          <p className="text-muted-foreground">{mockData.flowerSource}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-none shadow-soft">
-                  <CardContent className="p-8">
-                    <h3 className="mb-4 font-semibold">Beekeeper</h3>
-                    <p className="mb-2 text-lg">{mockData.beekeeper}</p>
-                    <p className="text-sm text-muted-foreground">
-                      A third-generation beekeeper committed to sustainable practices and bee welfare.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-none shadow-soft">
-                  <CardContent className="p-8">
-                    <h3 className="mb-4 font-semibold">Certifications</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {mockData.certifications.map((cert) => (
-                        <span
-                          key={cert}
-                          className="rounded-full bg-secondary/20 px-4 py-2 text-sm font-medium text-secondary-foreground"
-                        >
-                          {cert}
-                        </span>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
           </div>
         </div>
       </div>
