@@ -112,7 +112,7 @@ const CropsWePollinate = () => {
             BeeYield is comprised of leading experts in the field of pollination. Bee biologists and researchers, data-science experts, electrical engineers, leading agronomists, and veteran beekeepers make up our team, and all are committed to creating improved pollination outcomes for our customers.
           </p>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             <Card className="bg-card border-none shadow-lg">
               <CardContent className="p-8 text-center">
                 <p className="text-4xl font-bold text-primary mb-2">25+</p>
