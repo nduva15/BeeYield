@@ -26,7 +26,7 @@ const CommitmentPage = () => {
       number: 6,
       title: "Clean Water & Sanitation",
       description: "Healthy ecosystems protect water sources. Our tree planting initiatives restore watersheds and protect water quality for rural communities.",
-      impact: "1,500+ trees protecting local water catchments",
+      impact: "2,500+ trees protecting local water catchments",
       color: "bg-cyan-500",
       icon: Droplets,
     },
@@ -49,7 +49,7 @@ const CommitmentPage = () => {
     {
       number: 13,
       title: "Climate Action",
-      description: "We've planted 1,500+ trees to restore habitats and capture carbon. Our sustainable practices promote biodiversity and build climate resilience.",
+      description: "We've planted 2,500+ trees to restore habitats and capture carbon. Our sustainable practices promote biodiversity and build climate resilience.",
       impact: "Estimated 30+ tons CO₂ captured annually",
       color: "bg-green-600",
       icon: Globe,

@@ -206,8 +206,8 @@ const GlobalHiveNetwork = () => {
                   <p className="text-muted-foreground leading-relaxed mb-6">
                     BeeYield is pioneering dual-benefit pollination models in sisal plantations. While supporting fiber production, our monitored bee colonies also produce high-quality honey, creating additional income streams for local beekeepers and farmers.
                   </p>
-                  <Button variant="outline" className="gap-2">
-                    Learn About Our Impact <ArrowRight className="h-4 w-4" />
+                  <Button variant="outline" className="gap-2" asChild>
+                    <a href="/impact">Learn About Our Impact <ArrowRight className="h-4 w-4" /></a>
                   </Button>
                 </div>
                 <div className="rounded-2xl overflow-hidden shadow-xl">

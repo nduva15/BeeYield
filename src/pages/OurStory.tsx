@@ -85,7 +85,7 @@ const OurStory = () => {
             {[
               { number: "184+", label: "Beehives", desc: "From 4 to 184 hives" },
               { number: "1M+", label: "Bee Colonies", desc: "Thriving colonies" },
-              { number: "1,500+", label: "Trees Planted", desc: "Restoring the ecosystem" },
+              { number: "2,500+", label: "Trees Planted", desc: "Restoring the ecosystem" },
               { number: "25+", label: "Acres Pollinated", desc: "Client farmlands served" },
             ].map((stat, i) => (
               <Card key={i} className="text-center border-border/50">
@@ -122,7 +122,7 @@ const OurStory = () => {
               {
                 icon: Sprout,
                 title: "Guardians of Nature",
-                desc: "With 1,500+ trees planted, we're not just beekeepers — we're ecosystem builders committed to environmental restoration."
+                desc: "With 2,500+ trees planted, we're not just beekeepers — we're ecosystem builders committed to environmental restoration."
               },
               {
                 icon: Cpu,
