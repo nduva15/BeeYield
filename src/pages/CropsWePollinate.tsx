@@ -76,7 +76,7 @@ const CropsWePollinate = () => {
                 <span className="text-primary">Crop Pollination</span>
               </h1>
               <p className="max-w-xl text-lg text-muted-foreground">
-                Our end-to-end solution gives unprecedented control and visibility into pollination, ensuring higher yields and sustainable practices.
+                Our end-to-end solution gives unprecedented control and visibility into pollination, ensuring 40% crop yields and sustainable practices.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Button size="lg" className="rounded-full" asChild>
@@ -112,11 +112,17 @@ const CropsWePollinate = () => {
             BeeYield is comprised of leading experts in the field of pollination. Bee biologists and researchers, data-science experts, electrical engineers, leading agronomists, and veteran beekeepers make up our team, and all are committed to creating improved pollination outcomes for our customers.
           </p>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             <Card className="bg-card border-none shadow-lg">
               <CardContent className="p-8 text-center">
                 <p className="text-4xl font-bold text-primary mb-2">25+</p>
                 <p className="text-muted-foreground font-medium">Acres Managed</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-card border-none shadow-lg">
+              <CardContent className="p-8 text-center">
+                <p className="text-4xl font-bold text-primary mb-2">1</p>
+                <p className="text-muted-foreground font-medium">Countries</p>
               </CardContent>
             </Card>
             <Card className="bg-card border-none shadow-lg">
