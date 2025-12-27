@@ -4,194 +4,282 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
   Users, Cpu, Sprout, ArrowRight, Check,
-  Globe, Flower2, Wheat, MapPin, ChevronDown, Mail
+  Globe, Flower2, Wheat, MapPin, Mail
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const CropsWePollinate = () => {
   const crops = [
     {
-      name: "Almonds",
-      image: "https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&q=80&w=600",
-      desc: "Almond pollination has specific challenges as it is the earliest crop to bloom. With BeeYield's In-Hive Precision Pollination solution and In-Field Pollination Insight Platform, growers have insight into the strength of every colony that is delivered for pollination combined with real-time monitoring of colony activity throughout the bloom period."
+      name: "Maize",
+      image: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&q=80&w=600",
+      desc: "Maize is a wind-pollinated crop, but bee activity can enhance pollination efficiency and improve yield quality. BeeYield monitors pollinator activity to ensure optimal conditions during the critical tasseling period."
     },
     {
-      name: "Apples",
-      image: "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?auto=format&fit=crop&q=80&w=600",
-      desc: "In 2023, BeeYield collaborated with four orchards in Washington State’s Yakima Valley to gather data during the apple bloom. Our In-Field Pollination Insight Platform captured data on how growers can use hive removal timing to reduce thinning expenses."
+      name: "Sisal",
+      image: "https://images.unsplash.com/photo-1509587584298-0f3b3a3a1797?auto=format&fit=crop&q=80&w=600",
+      desc: "Sisal plants produce abundant nectar that attracts bees. Our monitoring solutions help track bee activity around sisal plantations, contributing to both fiber production and honey yields."
     },
     {
-      name: "Avocados",
-      image: "https://images.unsplash.com/photo-1523049673856-388669a9092d?auto=format&fit=crop&q=80&w=600",
-      desc: "Avocado trees require cross-pollination to produce fruit, and honey bees play a crucial role in this process. BeeYield monitors bee activity in real time throughout the pollination period to assess activity at different times of the day, different parts of the orchard, and also in relation to bloom status and weather conditions."
+      name: "Mangoes",
+      image: "https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&q=80&w=600",
+      desc: "Mango trees depend heavily on insect pollination for fruit set. BeeYield's precision monitoring ensures that bee colonies are active during the brief flowering window, maximizing fruit production."
     },
     {
-      name: "Blueberries",
-      image: "https://images.unsplash.com/photo-1498557850523-fd3d118b962e?auto=format&fit=crop&q=80&w=600",
-      desc: "Blueberry flowers are generally less attractive to honey bees than other flowers. Bees brought in to perform pollination may be attracted to competing forage which can lead to reduced pollination efficacy. This means, to deliver effective and optimized pollination outcomes, the measurement of flower visitation rates by pollinating bees will be critical."
+      name: "Beans",
+      image: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&q=80&w=600",
+      desc: "Bean crops benefit significantly from bee pollination, with studies showing up to 30% yield increases. Our In-Field sensors track pollinator visits to ensure optimal bean pod development."
     },
     {
-      name: "Canola Seed",
-      image: "https://images.unsplash.com/photo-1499529112042-9553f0724506?auto=format&fit=crop&q=80&w=600",
-      desc: "Bee pollination is essential for the production of hybrid canola seeds, which are produced by cross-pollinating two different parental lines. As well as assessing the quality and strength of hives delivered, BeeYield can monitor activity in the field and the amount of cross pollination. This provides invaluable insights for pollination management as well as crop planting and management."
+      name: "Sunflower",
+      image: "https://images.unsplash.com/photo-1597848212624-a19eb35e2651?auto=format&fit=crop&q=80&w=600",
+      desc: "Sunflowers are highly attractive to bees and require cross-pollination for maximum seed production. BeeYield monitors hive activity to ensure thorough pollination across large sunflower fields."
     },
     {
-      name: "Onion Seed",
+      name: "Oranges",
+      image: "https://images.unsplash.com/photo-1547514701-42782101795e?auto=format&fit=crop&q=80&w=600",
+      desc: "Citrus orchards rely on bee pollination for fruit quality and quantity. Our technology provides real-time insights into colony health and foraging patterns throughout the orange bloom season."
+    },
+    {
+      name: "Vegetables",
+      image: "https://images.unsplash.com/photo-1566385101042-1a0aa0c1268c?auto=format&fit=crop&q=80&w=600",
+      desc: "Many vegetable crops require bee pollination for successful fruit and seed production. BeeYield helps growers optimize pollinator placement and timing for diverse vegetable operations."
+    },
+    {
+      name: "Tomatoes",
+      image: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&q=80&w=600",
+      desc: "Tomato flowers benefit from buzz pollination. Our monitoring systems track bee activity to ensure adequate pollination, leading to better fruit size, shape, and uniformity."
+    },
+    {
+      name: "Onions",
       image: "https://images.unsplash.com/photo-1618512496248-a07fe83aa829?auto=format&fit=crop&q=80&w=600",
-      desc: "To set seed, honey bees need to move pollen between male and female plants. They tend to find the male lines more attractive and have a tendency to move up and down rows instead of crossing between the lines. We can help producers estimate the optimum pollination input for different varietal combinations, planting densities and male/female row configurations."
-    },
-    {
-      name: "Carrot Seed",
-      image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&q=80&w=600",
-      desc: "Carrot flowers produce less nectar and have less protein-rich pollen than other plants, so bees may be attracted to competing forage. Our In-Field Pollination Insight Platform provides visibility into the strength and foraging effectiveness of each colony of bees that a grower contracts to ensure the best pollination outcome."
-    },
-    {
-      name: "Cherries",
-      image: "https://images.unsplash.com/photo-1528821128474-27f963b0bddb?auto=format&fit=crop&q=80&w=600",
-      desc: "Honey bees are a vital component in cross-pollinating a variety of cherry cultivars. With our technology, growers have insight into the strength of every colony that is delivered for pollination combined with real-time monitoring of colony activity throughout the bloom period."
-    },
-    {
-      name: "Raspberries",
-      image: "https://images.unsplash.com/photo-1577069861033-55d04cec4ef5?auto=format&fit=crop&q=80&w=600",
-      desc: "Raspberries can self-pollinate, but require insect pollination to maximize yield. The effectiveness of pollination affects the size, shape, and quantity of fruit produced. BeeYield can provide growers with assurance that they are getting the most effective pollination outcome possible."
-    },
-    {
-      name: "Cucurbits",
-      image: "https://images.unsplash.com/photo-1595123550441-d377e017de2d?auto=format&fit=crop&q=80&w=600",
-      desc: "Our In-Field sensor can effectively monitor pollination in Cucurbit crops by tracking bee activity between male and female plants. With a pollination window as short as 4 hours, it's vital to know that there is sufficient bee activity happening at the right time."
-    },
-    {
-      name: "Macadamia",
-      image: "https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&q=80&w=600",
-      desc: "Macadamia trees require cross-pollination to produce fruit, and honey bees play a crucial role in this process along with other native pollinators. Little research has been done in Macadamia pollination and the use of BeeYield's technology suite will greatly enhance the understanding and requirements of this crop."
+      desc: "Onion seed production requires cross-pollination between male and female plants. BeeYield helps producers optimize hive placement and monitor pollination activity for maximum seed yield."
     }
   ];
 
+  const locations = [
+    { continent: "Africa", countries: ["Kenya", "Tanzania"], color: "bg-primary" }
+  ];
+
   return (
-    <div className="min-h-screen py-20">
-          {/* Hero Section */}
-          <section className="relative py-24 bg-gradient-to-br from-secondary/50 via-white to-primary/5">
-            <div className="container mx-auto px-4">
-              <div className="flex flex-col md:flex-row items-center gap-12">
-                <div className="md:w-1/2 space-y-8">
-                  <Badge className="bg-primary/10 text-primary border-primary/20">
-                    Precision Agriculture
-                  </Badge>
-                  <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
-                    Get Data-Driven <br/>
-                    <span className="text-gradient">Crop Pollination</span>
-                  </h1>
-                  <p className="text-xl text-muted-foreground leading-relaxed max-w-lg">
-                    Our end-to-end solution gives unprecedented control and visibility into pollination, ensuring higher yields and sustainable practices.
-                  </p>
-                  <div className="flex flex-wrap gap-4">
-                    <Button size="lg" className="shadow-elegant">
-                      Get a Free Consultation
-                    </Button>
-                    <Button size="lg" variant="outline">
-                      Explore Crops
-                    </Button>
-                  </div>
-                </div>
-                
-                <div className="md:w-1/2 grid grid-cols-3 gap-3">
-                  {/* Decorative grid of crop images */}
-                  <img src={crops[0].image} className="rounded-2xl shadow-lg w-full h-48 object-cover translate-y-8" alt="" />
-                  <img src={crops[1].image} className="rounded-2xl shadow-lg w-full h-48 object-cover" alt="" />
-                  <img src={crops[3].image} className="rounded-2xl shadow-lg w-full h-48 object-cover translate-y-12" alt="" />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Expert Section */}
-          <section className="py-20 bg-white">
-            <div className="container mx-auto px-4 text-center max-w-4xl">
-              <h2 className="text-3xl font-bold mb-6">Work With the Pollination Experts</h2>
-              <div className="w-20 h-1 bg-primary mx-auto rounded-full mb-8" />
-              <p className="text-lg text-muted-foreground leading-relaxed mb-12">
-                BeeYield is comprised of leading experts in the field of pollination. Bee biologists and researchers, data-science experts, electrical engineers, leading agronomists, and veteran beekeepers make up our team, and all are committed to creating improved pollination outcomes for our customers.
+    <div className="min-h-screen bg-background">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-secondary/20 py-20 md:py-32">
+        <div className="container mx-auto px-4">
+          <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
+            <div className="space-y-8">
+              <Badge variant="secondary" className="rounded-full px-4 py-1.5 text-sm font-medium">
+                Precision Agriculture
+              </Badge>
+              <h1 className="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
+                Get Data-Driven <br />
+                <span className="text-primary">Crop Pollination</span>
+              </h1>
+              <p className="max-w-xl text-lg text-muted-foreground">
+                Our end-to-end solution gives unprecedented control and visibility into pollination, ensuring higher yields and sustainable practices.
               </p>
-              
-              <div className="grid md:grid-cols-3 gap-8">
-                <div className="p-6 bg-secondary rounded-xl">
-                  <div className="text-4xl font-bold text-primary mb-2">200K+</div>
-                  <div className="text-sm font-bold uppercase tracking-wide text-secondary-foreground">Acres Managed</div>
-                </div>
-                <div className="p-6 bg-secondary rounded-xl">
-                  <div className="text-4xl font-bold text-primary mb-2">7</div>
-                  <div className="text-sm font-bold uppercase tracking-wide text-secondary-foreground">Countries</div>
-                </div>
-                <div className="p-6 bg-secondary rounded-xl">
-                  <div className="text-4xl font-bold text-primary mb-2">10+</div>
-                  <div className="text-sm font-bold uppercase tracking-wide text-secondary-foreground">Crop Varieties</div>
-                </div>
+              <div className="flex flex-wrap gap-4">
+                <Button size="lg" className="rounded-full" asChild>
+                  <Link to="/contact">Get a Free Consultation</Link>
+                </Button>
+                <Button size="lg" variant="outline" className="rounded-full" asChild>
+                  <a href="#crops">Explore Crops</a>
+                </Button>
               </div>
-            </div>
-          </section>
-
-          {/* Crops Grid */}
-          <section className="py-24 bg-muted/30">
-            <div className="container mx-auto px-4">
-              <div className="flex flex-wrap gap-2 justify-center mb-16">
-                {crops.map((c, i) => (
-                  <Badge key={i} variant="secondary" className="text-sm px-4 py-2 cursor-default">
-                    {c.name}
-                  </Badge>
-                ))}
-              </div>
-
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {crops.map((crop, index) => (
-                  <Card key={index} className="border-none shadow-soft hover:shadow-elegant transition-all duration-300 group bg-white overflow-hidden flex flex-col h-full">
-                    <div className="h-48 overflow-hidden relative">
-                      <img 
-                        src={crop.image} 
-                        alt={crop.name} 
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
-                        <h3 className="text-2xl font-bold text-white">{crop.name}</h3>
-                      </div>
-                    </div>
-                    <CardContent className="flex-1 flex flex-col">
-                      <p className="text-muted-foreground text-sm leading-relaxed mb-6 flex-1">
-                        {crop.desc}
-                      </p>
-                      <div className="pt-4 border-t border-border/50">
-                        <span className="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-1">
-                          View Case Study <ArrowRight className="h-3 w-3" />
-                        </span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* Missing Crop CTA */}
-          <section className="py-24 bg-primary text-primary-foreground relative overflow-hidden">
-             {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-10">
-               <svg className="h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                 <path d="M0 100 C 20 0 50 0 100 100 Z" fill="white" />
-               </svg>
             </div>
             
-            <div className="container mx-auto px-4 text-center relative z-10 max-w-3xl">
-              <div className="inline-flex items-center justify-center p-3 bg-white/20 rounded-full mb-6 backdrop-blur-sm">
-                <Flower2 className="h-8 w-8 text-white" />
+            <div className="relative hidden lg:block">
+              {/* Decorative grid of crop images */}
+              <div className="absolute -right-4 -top-4 h-32 w-32 rounded-2xl bg-primary/20 blur-3xl" />
+              <div className="absolute -bottom-8 -left-8 h-40 w-40 rounded-full bg-secondary/30 blur-3xl" />
+              <div className="grid grid-cols-2 gap-4">
+                <img src={crops[0].image} alt={crops[0].name} className="h-48 w-full rounded-2xl object-cover shadow-lg" />
+                <img src={crops[2].image} alt={crops[2].name} className="h-48 w-full rounded-2xl object-cover shadow-lg mt-8" />
+                <img src={crops[4].image} alt={crops[4].name} className="h-48 w-full rounded-2xl object-cover shadow-lg -mt-4" />
+                <img src={crops[5].image} alt={crops[5].name} className="h-48 w-full rounded-2xl object-cover shadow-lg mt-4" />
               </div>
-              <h2 className="text-3xl md:text-5xl font-bold mb-6">Don't See Your Crop?</h2>
-              <p className="text-xl opacity-90 mb-10 leading-relaxed">
-                If your crop relies on bees for pollination, we would love to talk to see how we can improve your pollination. Whether through optimized placement, more precise timing of bee removal, or simply more efficient and cost-effective outcomes.
-              </p>
-              <Button size="lg" className="bg-white text-primary hover:bg-white/90 gap-2 font-bold text-lg h-14 px-8 shadow-xl">
-                <Mail className="h-5 w-5" /> Email Our Customer Success Team
-              </Button>
             </div>
-          </section>
+          </div>
+        </div>
+      </section>
+
+      {/* Expert Section */}
+      <section className="py-20 bg-secondary/30">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold md:text-4xl mb-4">Work With the Pollination Experts</h2>
+          <div className="w-24 h-1 bg-primary mx-auto mb-8 rounded-full" />
+          <p className="max-w-3xl mx-auto text-lg text-muted-foreground mb-12">
+            BeeYield is comprised of leading experts in the field of pollination. Bee biologists and researchers, data-science experts, electrical engineers, leading agronomists, and veteran beekeepers make up our team, and all are committed to creating improved pollination outcomes for our customers.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <Card className="bg-card border-none shadow-lg">
+              <CardContent className="p-8 text-center">
+                <p className="text-4xl font-bold text-primary mb-2">25+</p>
+                <p className="text-muted-foreground font-medium">Acres Managed</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-card border-none shadow-lg">
+              <CardContent className="p-8 text-center">
+                <p className="text-4xl font-bold text-primary mb-2">2</p>
+                <p className="text-muted-foreground font-medium">Counties</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-card border-none shadow-lg">
+              <CardContent className="p-8 text-center">
+                <p className="text-4xl font-bold text-primary mb-2">9+</p>
+                <p className="text-muted-foreground font-medium">Crop Varieties</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* World Map Section */}
+      <section className="py-20 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <Badge variant="outline" className="rounded-full px-4 py-1.5 mb-4">
+              <Globe className="w-4 h-4 mr-2" />
+              Global Presence
+            </Badge>
+            <h2 className="text-3xl font-bold md:text-4xl mb-4">Where We Operate</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              BeeYield is expanding its precision pollination services across Africa, starting with our home base in Kenya.
+            </p>
+          </div>
+
+          <div className="relative max-w-5xl mx-auto">
+            {/* Simplified Africa Map SVG */}
+            <div className="relative bg-secondary/20 rounded-3xl p-8 md:p-12">
+              <svg viewBox="0 0 800 600" className="w-full h-auto">
+                {/* Africa continent simplified shape */}
+                <path 
+                  d="M350 80 L450 70 L520 100 L560 150 L580 220 L590 300 L580 380 L560 450 L520 500 L450 540 L380 550 L310 530 L260 480 L240 420 L230 350 L240 280 L260 200 L300 130 Z"
+                  fill="hsl(var(--secondary))"
+                  stroke="hsl(var(--border))"
+                  strokeWidth="2"
+                />
+                
+                {/* Kenya highlighted */}
+                <path 
+                  d="M480 280 L520 270 L540 290 L530 330 L500 350 L470 340 L460 310 Z"
+                  fill="hsl(var(--primary))"
+                  stroke="hsl(var(--primary-foreground))"
+                  strokeWidth="2"
+                  className="animate-pulse"
+                />
+                
+                {/* Kenya marker */}
+                <circle cx="500" cy="305" r="8" fill="hsl(var(--primary-foreground))" />
+                <circle cx="500" cy="305" r="4" fill="hsl(var(--primary))" />
+                
+                {/* Tanzania highlighted */}
+                <path 
+                  d="M470 340 L530 330 L550 370 L540 420 L490 430 L450 400 L455 360 Z"
+                  fill="hsl(var(--primary)/0.7)"
+                  stroke="hsl(var(--primary-foreground))"
+                  strokeWidth="2"
+                />
+                
+                {/* Tanzania marker */}
+                <circle cx="500" cy="380" r="8" fill="hsl(var(--primary-foreground))" />
+                <circle cx="500" cy="380" r="4" fill="hsl(var(--primary))" />
+
+                {/* Labels */}
+                <text x="520" y="300" fill="hsl(var(--foreground))" fontSize="14" fontWeight="bold">Kenya</text>
+                <text x="520" y="390" fill="hsl(var(--foreground))" fontSize="14" fontWeight="bold">Tanzania</text>
+              </svg>
+
+              {/* Legend */}
+              <div className="absolute bottom-4 left-4 bg-card/90 backdrop-blur-sm rounded-xl p-4 shadow-lg">
+                <p className="text-sm font-semibold mb-2">Active Regions</p>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded-full bg-primary" />
+                    <span className="text-sm text-muted-foreground">Kenya (HQ)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded-full bg-primary/70" />
+                    <span className="text-sm text-muted-foreground">Tanzania</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Crops Grid */}
+      <section id="crops" className="py-20 bg-secondary/10">
+        <div className="container mx-auto px-4">
+          {/* Crop Navigation Pills */}
+          <div className="flex flex-wrap justify-center gap-3 mb-12">
+            {crops.map((c, i) => (
+              <Badge 
+                key={i} 
+                variant="outline" 
+                className="px-4 py-2 text-sm cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors rounded-full"
+              >
+                {c.name}
+              </Badge>
+            ))}
+          </div>
+
+          {/* Crops Cards */}
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {crops.map((crop, index) => (
+              <Card key={index} className="overflow-hidden border-none shadow-lg hover:shadow-xl transition-shadow group">
+                <div className="relative h-48 overflow-hidden">
+                  <img 
+                    src={crop.image} 
+                    alt={crop.name}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <h3 className="absolute bottom-4 left-4 text-2xl font-bold text-white">{crop.name}</h3>
+                </div>
+                <CardContent className="p-6">
+                  <p className="text-muted-foreground text-sm leading-relaxed mb-4">
+                    {crop.desc}
+                  </p>
+                  <Button variant="link" className="p-0 h-auto text-primary">
+                    View Case Study <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Missing Crop CTA */}
+      <section className="py-20 bg-primary text-primary-foreground relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <pattern id="hexagons" width="10" height="10" patternUnits="userSpaceOnUse">
+              <path d="M5 0 L10 2.5 L10 7.5 L5 10 L0 7.5 L0 2.5 Z" fill="none" stroke="currentColor" strokeWidth="0.5" />
+            </pattern>
+            <rect width="100%" height="100%" fill="url(#hexagons)" />
+          </svg>
+        </div>
+        
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-foreground/20 mb-6">
+            <Flower2 className="w-8 h-8" />
+          </div>
+          <h2 className="text-3xl font-bold md:text-4xl mb-4">Don't See Your Crop?</h2>
+          <p className="max-w-2xl mx-auto text-primary-foreground/80 mb-8">
+            If your crop relies on bees for pollination, we would love to talk to see how we can improve your pollination. Whether through optimized placement, more precise timing of bee removal, or simply more efficient and cost-effective outcomes.
+          </p>
+          <Button size="lg" variant="secondary" className="rounded-full" asChild>
+            <a href="mailto:info@beeyield.com">
+              <Mail className="mr-2 h-5 w-5" /> Email Our Customer Success Team
+            </a>
+          </Button>
+        </div>
+      </section>
     </div>
   );
 };
