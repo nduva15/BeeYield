@@ -25,8 +25,8 @@ const GlobalHiveNetwork = () => {
               BeeYield is leading the charge to address the pollinator crisis in Africa and the world, where 60% of bee colonies are lost annually and 75% of food crops depend on pollination.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="shadow-xl">
-                Support the Cause Today
+              <Button size="lg" asChild className="shadow-xl">
+                <a href="#support-african-farmers">Support the Cause Today</a>
               </Button>
               <Button size="lg" variant="outline">
                 Read the Whitepaper
@@ -223,14 +223,14 @@ const GlobalHiveNetwork = () => {
         </section>
 
         {/* Support / Donation Section */}
-        <section className="py-24 bg-primary relative overflow-hidden">
+        <section id="support-african-farmers" className="py-24 bg-primary relative overflow-hidden">
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-10"></div>
           <div className="container mx-auto px-4 relative z-10">
             <div className="text-center mb-12">
               <Heart className="h-12 w-12 mx-auto mb-4 text-primary-foreground/80" />
-              <h2 className="text-4xl font-bold mb-4 text-primary-foreground">Support African Farmers</h2>
+              <h2 className="text-4xl font-bold mb-4 text-primary-foreground">Support African and World Farmers</h2>
               <p className="text-xl text-primary-foreground/80 max-w-2xl mx-auto">
-                Join our community of supporters working to secure pollinator health and food security across Makueni and Kitui Counties. Your contribution directly supports local beekeepers and farmers.
+                Join our community of supporters strengthening pollinator health and food security across Makueni and Kitui Counties today—and building a global network for farmers everywhere.
               </p>
             </div>
 
