@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Facebook, Instagram, Twitter, Mail } from "lucide-react";
+import Logo from "@/assets/Logo.png";
 
 const Footer = () => {
   return (
@@ -9,9 +10,11 @@ const Footer = () => {
           {/* Logo & Tagline */}
           <div className="space-y-4 text-center sm:text-left">
             <div className="flex items-center space-x-2 justify-center sm:justify-start">
-              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                <span className="text-primary-foreground text-xs font-bold">BY</span>
-              </div>
+              <img
+                src={Logo}
+                alt="BeeYield logo"
+                className="h-8 w-8 object-contain"
+              />
               <span className="text-xl font-bold text-foreground">BeeYield</span>
             </div>
             <p className="text-sm text-muted-foreground max-w-xs mx-auto sm:mx-0">
