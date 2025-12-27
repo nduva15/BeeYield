@@ -180,6 +180,10 @@ const Traceability = () => {
               </div>
             )}
 
+          </div>
+        </div>
+      </div>
+
       {/* Mission Statement - Champions for Bees */}
       <div className="bg-secondary/5 py-20">
         <div className="container mx-auto px-6 lg:px-12">
