@@ -32,15 +32,15 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <nav className="container mx-auto flex h-14 sm:h-16 items-center justify-between px-4 sm:px-6">
+      <nav className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6 lg:px-8">
         {/* Left side - Logo (all devices) */}
         <Link to="/" className="flex items-center space-x-2 flex-shrink-0" aria-label="BeeYield home">
           <img
             src={Logo}
             alt="BeeYield logo"
-            className="h-8 w-8 sm:h-9 sm:w-9 object-contain"
+            className="h-8 w-8 lg:h-9 lg:w-9 object-contain"
           />
-          <span className="text-lg sm:text-xl font-bold text-foreground">BeeYield</span>
+          <span className="text-lg lg:text-xl font-bold text-foreground">BeeYield</span>
         </Link>
 
         {/* Center - Navigation Links (Desktop only) */}
