@@ -78,8 +78,8 @@ const GlobalHiveNetwork = () => {
                 <p className="text-background/80 leading-relaxed mb-8">
                   This isn't just about bees—it's about ensuring sustainable agriculture and food security for millions across Africa and the world. The time to act is now.
                 </p>
-                <Button variant="secondary" className="gap-2">
-                  Learn More <ArrowRight className="h-4 w-4" />
+                <Button variant="secondary" className="gap-2" asChild>
+                  <a href="/Crops-We-Pollinate">Learn More <ArrowRight className="h-4 w-4" /></a>
                 </Button>
               </div>
             </div>
