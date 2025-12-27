@@ -18,7 +18,7 @@ const Footer = () => {
               <span className="text-xl font-bold text-foreground">BeeYield</span>
             </div>
             <p className="text-sm text-muted-foreground max-w-xs mx-auto sm:mx-0">
-              Sustainable honey from ethical beekeeping practices. Pure, natural, traceable.
+              Your partner in pollination.
             </p>
           </div>
 
