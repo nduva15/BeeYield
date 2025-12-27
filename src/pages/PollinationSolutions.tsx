@@ -4,6 +4,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
 
 const PollinationSolutions = () => {
   return (
@@ -58,9 +59,11 @@ const PollinationSolutions = () => {
                     </div>
                   </div>
 
-                  <Button size="lg" className="w-full gap-2">
-                    Explore In-Hive Technology <ArrowRight className="h-4 w-4" />
-                  </Button>
+                  <Link to="/PrecisionPollination">
+                    <Button size="lg" className="w-full gap-2">
+                      Explore In-Hive Technology <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
                 </div>
                 
                 {/* Background Image Overlay */}
@@ -81,7 +84,7 @@ const PollinationSolutions = () => {
                     <Wifi className="h-8 w-8 text-accent-foreground" />
                   </div>
                   
-                  <h2 className="text-3xl font-bold mb-4 text-foreground">In-Field Insights</h2>
+                  <h2 className="text-3xl font-bold mb-4 text-foreground">In-Land Insights</h2>
                   <p className="text-lg text-muted-foreground mb-8 flex-grow">
                     Sensors deployed across your orchards measure actual bee flight activity and pollination events. Visualize coverage maps to ensure every acre gets the attention it needs.
                   </p>
@@ -101,9 +104,11 @@ const PollinationSolutions = () => {
                     </div>
                   </div>
 
-                  <Button size="lg" variant="outline" className="w-full gap-2 border-accent-foreground/20 text-accent-foreground hover:bg-accent-foreground hover:text-background">
-                    Explore In-Field Technology <ArrowRight className="h-4 w-4" />
-                  </Button>
+                  <Link to="/InLandPollinationPlatform">
+                    <Button size="lg" className="w-full gap-2">
+                      Explore In-Land Technology <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
                 </div>
 
                 {/* Background Image Overlay */}
