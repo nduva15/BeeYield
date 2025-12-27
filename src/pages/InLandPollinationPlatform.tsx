@@ -6,6 +6,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Link } from "react-router-dom";
 
 const InLandPollination = () => {
   const testimonials = [
@@ -47,9 +48,11 @@ const InLandPollination = () => {
                   PLIP delivers key in-land data on per-flower bee visits to evaluate pollination efficacy.
                 </p>
                 <div className="flex flex-wrap gap-4">
+                  <Link to="/PollinationRequest">
                   <Button size="lg" className="shadow-lg">
                      Book Pollination Service
                   </Button>
+                  </Link>
                   <Button size="lg" variant="outline" className="gap-2">
                      <Play className="h-4 w-4" /> View Sensor Demo
                   </Button>

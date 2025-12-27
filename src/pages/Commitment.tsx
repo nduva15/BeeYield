@@ -134,30 +134,18 @@ const CommitmentPage = () => {
               Whether you're a farmer, investor, or sustainability advocate—there's a place for you in our mission to save bees and secure food systems.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link to="/">
-                <Button size="lg" variant="secondary">
-                  Our Solutions <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
+              
               <Link to="/contact">
-                <Button size="lg" className="bg-orange-500 hover:bg-orange-600 text-white">
-                  Partner With Us
+              <Button size="lg" variant="secondary">
+                  Our Services <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
             </div>
           </div>
         </section>
 
-        {/* Link back to Impact */}
-        <section className="py-16 bg-background">
-          <div className="container mx-auto px-4 text-center">
-            <Link to="/impact">
-              <Button variant="ghost" size="lg">
-                <ArrowRight className="mr-2 h-4 w-4 rotate-180" /> Back to Impact
-              </Button>
-            </Link>
-          </div>
-        </section>
+        {/* Link back to Commitment */}
+      
       </div>
   );
 };

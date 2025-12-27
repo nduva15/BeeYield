@@ -162,6 +162,7 @@ const Contact = () => {
                       >
                         <option>Pollination Services</option>
                         <option>Pricing</option>
+                        <option>Consultation</option>
                         <option>Partnership</option>
                         <option>Support</option>
                       </select>
@@ -232,6 +233,7 @@ const Contact = () => {
                         <option>Press Inquiry</option>
                         <option>Careers</option>
                         <option>Sustainability</option>
+                        <option>Consultation</option>
                         <option>General Question</option>
                       </select>
                     </div>
