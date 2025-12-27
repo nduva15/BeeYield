@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import Logo from "@/assets/Logo.png";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -37,7 +38,7 @@ const Header = () => {
         {/* Left side - Logo (all devices) */}
         <Link to="/" className="flex items-center space-x-2 flex-shrink-0" aria-label="BeeYield home">
           <img
-            src={require("@/assets/Logo.png")}
+            src={Logo}
             alt="BeeYield logo"
             className="h-8 w-8 sm:h-9 sm:w-9 object-contain"
           />
