@@ -47,6 +47,7 @@ const App = () => (
             <Route path="/traceability" element={<Traceability />} />
             <Route path="/PollinationServices" element={<Home />} />
             <Route path="/PollinationRequest" element={<PollinationRequest />} />
+            <Route path="/pollination-request" element={<PollinationRequest />} />
             <Route path="/Commitment" element={<CommitmentPage />} />
             <Route path="/ESG" element={<ESG />} />
             <Route path="/esg" element={<ESG />} />

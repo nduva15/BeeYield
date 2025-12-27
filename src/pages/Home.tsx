@@ -59,7 +59,7 @@ const PollinationServices = () => {
               We provide healthy bee colonies and expert monitoring for commercial growers.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
-              <Link to="/pollination-request">
+              <Link to="/PollinationRequest">
                 <Button size="lg" className="bg-background text-foreground hover:bg-background/90">
                   Request Pollination Service
                 </Button>
@@ -178,7 +178,7 @@ const PollinationServices = () => {
               <p className="mb-8 text-lg opacity-90">
                 Partner with BeeYield for reliable, professional pollination services
               </p>
-              <Link to="/pollination-request">
+              <Link to="/PollinationRequest">
                 <Button size="lg" className="bg-background text-foreground hover:bg-background/90">
                   Get Started Today
                 </Button>
