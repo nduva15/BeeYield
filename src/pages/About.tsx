@@ -15,7 +15,7 @@ const About = () => {
         </div>
 
         {/* Origin Story */}
-        <div className="mx-auto mb-16 max-w-4xl">
+        <div className="mx-auto mb-16 ">
           <Card className="border-none shadow-soft overflow-hidden">
             <CardContent className="p-8 md:p-12">
               <div className="flex items-center gap-2 mb-4 text-primary font-bold tracking-wider uppercase text-sm">
@@ -42,7 +42,7 @@ const About = () => {
         </div>
 
         {/* Growth Stats */}
-        <div className="mx-auto mb-16 max-w-4xl">
+        <div className="mx-auto mb-16 ">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
               { value: "184", label: "Hives Today" },

@@ -265,9 +265,9 @@ const CropsWePollinate = () => {
                   <p className="text-muted-foreground text-sm leading-relaxed mb-4">
                     {crop.desc}
                   </p>
-                  <Button variant="link" className="p-0 h-auto text-primary">
+                  {/* <Button variant="link" className="p-0 h-auto text-primary">
                     View Case Study <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
+                  </Button> */}
                 </CardContent>
               </Card>
             ))}
