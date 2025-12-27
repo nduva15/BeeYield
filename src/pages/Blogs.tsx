@@ -66,11 +66,22 @@ const Blogs = () => {
   return (
     <div className="min-h-screen py-20">
       <div className="container mx-auto px-4">
-        <div className="mb-12 text-center">
-          <h1 className="mb-4 text-5xl font-bold">Our Blog</h1>
-          <p className="text-xl text-muted-foreground">
-            Stories, insights, and education about honey, bees, and sustainability
-          </p>
+        <div className="mb-12 text-center relative rounded-2xl overflow-hidden shadow-xl">
+          {/* Background Image */}
+          <img 
+            src="/placeholder.svg" 
+            alt="Our Blog" 
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          {/* Overlay for text readability */}
+          <div className="absolute inset-0 bg-black/40" />
+          {/* Content */}
+          <div className="relative z-10 py-16 md:py-24">
+            <h1 className="mb-4 text-5xl font-bold text-white">Our Blog</h1>
+            <p className="text-xl text-white/90">
+              Stories, insights, and education about honey, bees, and sustainability
+            </p>
+          </div>
         </div>
 
         <div className="mb-8 flex flex-wrap justify-center gap-2">
