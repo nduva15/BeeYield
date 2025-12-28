@@ -80,7 +80,7 @@ const PollinationServices = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="text-foreground space-y-8">
               <Badge className="bg-primary/10 text-primary border-primary/30 text-sm px-4 py-2">
-                🐝 Africa's Premier Pollination Partner
+                🐝 Africa and the World's Premier Pollination Partner
               </Badge>
               
               <h1 className="text-5xl md:text-7xl font-bold leading-tight">
@@ -107,7 +107,7 @@ const PollinationServices = () => {
               </div>
 
               {/* Quick Stats */}
-              <div className="grid grid-cols-5 gap-4 pt-8 border-t border-border">
+              <div className="grid grid-cols-6 gap-3 pt-8 border-t border-border">
                 <div>
                   <p className="text-3xl font-bold text-primary">35%</p>
                   <p className="text-muted-foreground text-sm">Average Yield Increase</p>
@@ -117,8 +117,12 @@ const PollinationServices = () => {
                   <p className="text-muted-foreground text-sm">Managed Hives</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-primary">24/7</p>
-                  <p className="text-muted-foreground text-sm">Monitoring Active</p>
+                  <p className="text-3xl font-bold text-primary">2K+</p>
+                  <p className="text-muted-foreground text-sm">Data Points</p>
+                </div>
+                <div>
+                  <p className="text-3xl font-bold text-primary">1+</p>
+                  <p className="text-muted-foreground text-sm">Continents</p>
                 </div>
                 <div>
                   <p className="text-3xl font-bold text-primary">1+</p>
@@ -336,7 +340,7 @@ const PollinationServices = () => {
               Our Expertise
             </Badge>
             <h2 className="text-4xl md:text-5xl font-bold text-foreground">
-              Crops We <span className="text-primary">Transform</span>
+              Crops We <span className="text-primary">Pollinate</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               From staple grains to high-value fruits, our pollination expertise spans the full spectrum
@@ -345,7 +349,8 @@ const PollinationServices = () => {
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 max-w-6xl mx-auto">
             {crops.map((crop, index) => (
-              <div 
+              <Link 
+                to="/crops-we-pollinate"
                 key={index} 
                 className="group relative overflow-hidden rounded-2xl aspect-square cursor-pointer"
               >
@@ -361,12 +366,12 @@ const PollinationServices = () => {
                     {crop.name}
                   </h3>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
 
           <div className="text-center mt-12">
-            <Link to="/CropsWePollinate">
+            <Link to="/crops-we-pollinate">
               <Button size="lg" className="bg-primary hover:bg-primary/90 text-white">
                 View All Crops & Case Studies
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -387,7 +392,7 @@ const PollinationServices = () => {
               Hear From Our <span className="text-primary">Partners</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Watch how BeeYield is transforming pollination for farmers across Africa
+              Watch how BeeYield is transforming pollination for farmers across Africa and the world
             </p>
           </div>
 

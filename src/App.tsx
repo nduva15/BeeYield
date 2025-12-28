@@ -25,6 +25,7 @@ import PrecisionPollination from "./pages/PrecisionPollination";
 import Careers from "./pages/Careers";
 import GlobalHiveNetwork from "./pages/GlobalHiveNetwork";
 import Media from "./pages/Media";
+import HoneyLanding from "./pages/HoneyLanding";
 
 
 
@@ -60,6 +61,7 @@ const App = () => (
             <Route path="/careers" element={<Careers />} />
             <Route path="/GlobalHiveNetwork" element={<GlobalHiveNetwork />} />
             <Route path="/Media" element={<Media />} />
+            <Route path="/HoneyLanding" element={<HoneyLanding />} />
 
 
             <Route path="*" element={<NotFound />} />

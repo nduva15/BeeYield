@@ -27,28 +27,13 @@ const Footer = () => {
             <h3 className="mb-4 text-sm font-semibold text-foreground">Quick Links</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link to="/About" className="text-muted-foreground hover:text-primary transition-colors">
-                  About Us
-                </Link>
-              </li>
-              <li>
                 <Link to="/impact" className="text-muted-foreground hover:text-primary transition-colors">
                   Our Impact
                 </Link>
               </li>
               <li>
-                <Link to="/shop" className="text-muted-foreground hover:text-primary transition-colors">
-                  Shop
-                </Link>
-              </li>
-              <li>
                 <Link to="/HoneyLanding" className="text-muted-foreground hover:text-primary transition-colors">
                   Honey
-                </Link>
-              </li>
-              <li>
-                <Link to="/blogs" className="text-muted-foreground hover:text-primary transition-colors">
-                  Blog
                 </Link>
               </li>
             </ul>
@@ -58,11 +43,6 @@ const Footer = () => {
           <div className="text-center sm:text-left">
             <h3 className="mb-4 text-sm font-semibold text-foreground">Support</h3>
             <ul className="space-y-2 text-sm">
-              <li>
-                <Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">
-                  Contact Us
-                </Link>
-              </li>
               <li>
                 <Link to="/traceability" className="text-muted-foreground hover:text-primary transition-colors">
                   Traceability

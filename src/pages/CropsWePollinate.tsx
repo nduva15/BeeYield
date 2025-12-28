@@ -155,7 +155,7 @@ const CropsWePollinate = () => {
             </Badge>
             <h2 className="text-3xl font-bold md:text-4xl mb-4">Where We Operate</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              BeeYield is expanding its precision pollination services across Africa, starting with our home base in Kenya.
+              BeeYield is expanding its precision pollination services across Africa and the world, starting with our home base in Kenya.
             </p>
           </div>
 
