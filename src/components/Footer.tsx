@@ -26,14 +26,19 @@ const Footer = () => {
           <div className="text-center sm:text-left">
             <h3 className="mb-4 text-sm font-semibold text-foreground">Quick Links</h3>
             <ul className="space-y-2 text-sm">
+                            <li>
+                              <Link to="/HoneyLanding" className="text-muted-foreground hover:text-primary transition-colors">
+                                Honey
+                              </Link>
+                            </li>
+                            <li>
+                              <Link to="/BeeLearn" className="text-muted-foreground hover:text-primary transition-colors">
+                                Learn
+                              </Link>
+                            </li>
               <li>
-                <Link to="/impact" className="text-muted-foreground hover:text-primary transition-colors">
-                  Our Impact
-                </Link>
-              </li>
-              <li>
-                <Link to="/HoneyLanding" className="text-muted-foreground hover:text-primary transition-colors">
-                  Honey
+                <Link to="/shop" className="text-muted-foreground hover:text-primary transition-colors">
+                  Shop
                 </Link>
               </li>
             </ul>
@@ -49,14 +54,32 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  FAQ
-                </a>
+                <Link to="/professional-pollination" className="text-muted-foreground hover:text-primary transition-colors">
+                  Professional Pollination
+                </Link>
+              </li>
+              <li className="group relative">
+                <Link to="/PollinationSolutions" className="text-muted-foreground hover:text-primary transition-colors flex items-center">
+                  Pollination Solutions
+                  <svg className="ml-1 h-3 w-3 text-muted-foreground group-hover:text-primary transition-colors" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                </Link>
+                <ul className="absolute left-0 mt-1 min-w-[180px] bg-white border border-border/30 rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity z-10">
+                  <li>
+                    <Link to="/InHivePollinationPlatform" className="block px-4 py-2 text-sm text-muted-foreground hover:text-primary hover:bg-muted/30 transition-colors">
+                      InHive Pollination Platform
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/InLandPollinationPlatform" className="block px-4 py-2 text-sm text-muted-foreground hover:text-primary hover:bg-muted/30 transition-colors">
+                      InLand Pollination Platform
+                    </Link>
+                  </li>
+                </ul>
               </li>
               <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  Shipping
-                </a>
+                <Link to="/GlobalHiveNetwork" className="text-muted-foreground hover:text-primary transition-colors">
+                  Beekeeping Network
+                </Link>
               </li>
             </ul>
           </div>
@@ -74,11 +97,9 @@ const Footer = () => {
               <a href="#" title="Twitter" className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2">
                 <Twitter className="h-5 w-5" />
               </a>
-              <a href="#" title="LinkedIn" className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2">
                 <a href="https://www.linkedin.com/company/beeyield/" title="LinkedIn" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2">
                   <Linkedin className="h-5 w-5" />
                 </a>
-              </a>
             </div>
           </div>
         </div>
@@ -87,8 +108,8 @@ const Footer = () => {
           <p>&copy; {new Date().getFullYear()} BeeYield. All rights reserved.</p>
         </div>
       </div>
-    </footer>
-  );
-};
-
-export default Footer;
+        </footer>
+      );
+    };
+    
+    export default Footer;

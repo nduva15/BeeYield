@@ -256,7 +256,7 @@ const Traceability = () => {
                 we believe you deserve to know exactly what you're putting on your table.
               </p>
               <p className="text-lg leading-relaxed text-muted-foreground">
-                Our revolutionary traceability system lets you trace every jar back to its source—not just the country 
+                Our revolutionary traceability system lets you trace every jar back to its source, not just the country 
                 or region, but the <span className="font-semibold text-primary">exact hive, the beekeeper who cared for it, 
                 the flowers the bees visited, and even the water sources that sustained the colony</span>. 
                 This isn't just honey; it's a story you can verify.
@@ -293,7 +293,7 @@ const Traceability = () => {
             </div>
             <h2 className="mb-6 text-4xl font-bold">Our Promise to You</h2>
             <p className="mb-8 text-xl leading-relaxed text-muted-foreground">
-              Every jar of BeeYield honey carries more than just sweetness—it carries a story of ethical beekeeping, 
+              Every jar of BeeYield honey carries more than just sweetness; it carries a story of ethical beekeeping, 
               environmental stewardship, and unwavering commitment to quality. When you choose our honey, you're not 
               just buying a product; you're joining a movement to protect the pollinators that sustain our world.
             </p>
@@ -324,7 +324,7 @@ const Traceability = () => {
           <div className="relative mx-auto max-w-6xl aspect-video">
             <iframe
               className="absolute inset-0 w-full h-full rounded-2xl shadow-soft"
-              src="https://www.youtube.com/embed/VIDEO_ID_HERE"
+              src="https://www.youtube.com/embed/dQw4w9WgXcQ"
               title="BeeYield Traceability Story"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

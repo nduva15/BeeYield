@@ -19,7 +19,6 @@ const Header = () => {
   const menuLinks = [
     { to: "/GlobalHiveNetwork", label: "Global Hive Network" },
     { to: "/OurStory", label: "Our Story" },
-    { to: "/impact", label: "Our Impact" },
     { to: "/Media", label: "Media" },
     { to: "/blogs", label: "Blog" },
     { to: "/contact", label: "Contact Us" },

@@ -401,7 +401,7 @@ const PollinationServices = () => {
             <div className="relative aspect-video rounded-2xl overflow-hidden shadow-xl border border-border">
               <iframe
                 className="absolute inset-0 w-full h-full"
-                src="https://www.youtube.com/embed/VIDEO_ID_1"
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ"
                 title="BeeYield Partner Testimonial"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
@@ -412,7 +412,7 @@ const PollinationServices = () => {
             <div className="relative aspect-video rounded-2xl overflow-hidden shadow-xl border border-border">
               <iframe
                 className="absolute inset-0 w-full h-full"
-                src="https://www.youtube.com/embed/VIDEO_ID_2"
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ"
                 title="BeeYield Technology in Action"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen

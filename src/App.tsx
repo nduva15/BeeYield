@@ -27,6 +27,8 @@ import GlobalHiveNetwork from "./pages/GlobalHiveNetwork";
 import Media from "./pages/Media";
 import HoneyLanding from "./pages/HoneyLanding";
 
+import BeeLearn from "./pages/BeeLearn";
+
 
 
 const queryClient = new QueryClient();
@@ -62,6 +64,9 @@ const App = () => (
             <Route path="/GlobalHiveNetwork" element={<GlobalHiveNetwork />} />
             <Route path="/Media" element={<Media />} />
             <Route path="/HoneyLanding" element={<HoneyLanding />} />
+
+            {/* Learn Landing Page */}
+            <Route path="/BeeLearn" element={<BeeLearn />} />
 
 
             <Route path="*" element={<NotFound />} />
