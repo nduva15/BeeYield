@@ -76,7 +76,7 @@ const GlobalHiveNetwork = () => {
                   With 75% of food crops relying on pollinators, the decline of African bee populations threatens agricultural productivity, farmer livelihoods, and regional food security. Crops like mangoes, beans, tomatoes, and sisal depend heavily on healthy bee colonies.
                 </p>
                 <p className="text-background/80 leading-relaxed mb-8">
-                  This isn't just about bees—it's about ensuring sustainable agriculture and food security for millions across Africa and the world. The time to act is now.
+                  This isn't just about bees. It's about ensuring sustainable agriculture and food security for millions across Africa and the world. The time to act is now.
                 </p>
                 <Button variant="secondary" className="gap-2" asChild>
                   <a href="/Crops-We-Pollinate">Learn More <ArrowRight className="h-4 w-4" /></a>
@@ -230,7 +230,7 @@ const GlobalHiveNetwork = () => {
               <Heart className="h-12 w-12 mx-auto mb-4 text-primary-foreground/80" />
               <h2 className="text-4xl font-bold mb-4 text-primary-foreground">Support African and World Farmers</h2>
               <p className="text-xl text-primary-foreground/80 max-w-2xl mx-auto">
-                Join our community of supporters strengthening pollinator health and food security across Makueni and Kitui Counties today—and building a global network for farmers everywhere.
+                Join our community of supporters strengthening pollinator health and food security across Makueni and Kitui Counties today and building a global network for farmers everywhere.
               </p>
             </div>
 

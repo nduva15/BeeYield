@@ -25,16 +25,16 @@ const About = () => {
               <h2 className="mb-6 text-3xl font-bold">Our Story</h2>
               <div className="space-y-4 text-muted-foreground text-lg leading-relaxed">
                 <p>
-                  In 2020, in the midst of the global pandemic, BeeYield was born on a humble half-acre plot with just 4 hives in Kibwezi—a rural town in Makueni, Kenya. Timothy, then a Strathmore University student, saw an opportunity where others saw crisis. With a mission to protect pollinators and secure food systems, he placed those first hives and began a journey that would become a family legacy.
+                  In 2020, in the midst of the global pandemic, BeeYield was born on a humble half-acre plot with just 4 hives in Kibwezi, a rural town in Makueni, Kenya. Timothy, then a Strathmore University student, saw an opportunity where others saw crisis. With a mission to protect pollinators and secure food systems, he placed those first hives and began a journey that would become a family legacy.
                 </p>
                 <p>
-                  But where would three beekeepers meet? At the family table. Timothy's sisters, Agatha and Carole, brought their own Strathmore expertise to shape BeeYield's direction—web development, product design, and IoT research. Together, they made a decision: combine their studies and build something meaningful for their community and beyond.
+                  But where would three beekeepers meet? At the family table. Timothy's sisters, Agatha and Carole, brought their own Strathmore expertise to shape BeeYield's direction: web development, product design, and IoT research. Together, they made a decision: combine their studies and build something meaningful for their community and beyond.
                 </p>
                 <p>
-                  From those 4 hives, BeeYield has grown to <strong className="text-foreground">184 hives</strong> across a <strong className="text-foreground">5-acre fenced apiary</strong>. We've planted over <strong className="text-foreground">2,500+ trees</strong> to restore the ecosystem. We launched pollination services—and while it wasn't precision at first, we served real clients and successfully pollinated <strong className="text-foreground">25 acres</strong> of farmland.
+                  From those 4 hives, BeeYield has grown to <strong className="text-foreground">184 hives</strong> across a <strong className="text-foreground">5-acre fenced apiary</strong>. We've planted over <strong className="text-foreground">2,500+ trees</strong> to restore the ecosystem. We launched pollination services and while it wasn't precision at first, we served real clients and successfully pollinated <strong className="text-foreground">25 acres</strong> of farmland.
                 </p>
                 <p>
-                  Today, BeeYield is evolving into <strong className="text-foreground">precision pollination</strong>—using data, technology, and verified healthy colonies to maximize agricultural yields and restore biodiversity. What started as a student's dream is now a family-powered movement to secure the future of food.
+                  Today, BeeYield is evolving into <strong className="text-foreground">precision pollination</strong>, using data, technology, and verified healthy colonies to maximize agricultural yields and restore biodiversity. What started as a student's dream is now a family-powered movement to secure the future of food.
                 </p>
               </div>
             </CardContent>
@@ -70,7 +70,7 @@ const About = () => {
                 </div>
                 <h3 className="mb-3 text-2xl font-bold">Meet Our Team</h3>
                 <p className="text-muted-foreground mb-6">
-                  Get to know the founding family behind BeeYield—three Strathmore graduates who combined their expertise in technology, business, and beekeeping to build a precision pollination company from rural Kenya.
+                  Get to know the founding family behind BeeYield: three Strathmore graduates who combined their expertise in technology, business, and beekeeping to build a precision pollination company from rural Kenya.
                 </p>
                 <Link to="/team">
                   <Button variant="outline" className="group-hover:bg-primary group-hover:text-primary-foreground transition-all">
@@ -87,7 +87,7 @@ const About = () => {
                 </div>
                 <h3 className="mb-3 text-2xl font-bold">Our Impact</h3>
                 <p className="text-muted-foreground mb-6">
-                  From 4 hives to 184, from a half-acre to 5 acres, from seedlings to 2,500+ trees—explore how BeeYield is restoring ecosystems, supporting farmers, and building a sustainable future for pollinators.
+                  From 4 hives to 184, from a half-acre to 5 acres, from seedlings to 2,500+ trees. Explore how BeeYield is restoring ecosystems, supporting farmers, and building a sustainable future for pollinators.
                 </p>
                 <Link to="/impact">
                   <Button variant="outline" className="group-hover:bg-primary group-hover:text-primary-foreground transition-all">
@@ -108,7 +108,7 @@ const About = () => {
               </div>
               <h3 className="mb-2 text-xl font-semibold">Family-Powered</h3>
               <p className="text-muted-foreground">
-                Three siblings, one vision—combining Strathmore studies to build a precision pollination company from rural Kenya.
+                Three siblings, one vision. Combining Strathmore studies to build a precision pollination company from rural Kenya.
               </p>
             </CardContent>
           </Card>
@@ -132,7 +132,7 @@ const About = () => {
               </div>
               <h3 className="mb-2 text-xl font-semibold">Our Values</h3>
               <p className="text-muted-foreground">
-                Sustainability, traceability, and community—protecting bees and improving yields from hive to harvest.
+                Sustainability, traceability, and community. Protecting bees and improving yields from hive to harvest.
               </p>
             </CardContent>
           </Card>

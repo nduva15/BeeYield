@@ -195,7 +195,7 @@ const Traceability = () => {
             <p className="mb-8 text-xl leading-relaxed text-muted-foreground">
               At BeeYield, we believe that the future of our planet depends on the health of our pollinators. 
               That's why we've made a radical commitment: <span className="font-semibold text-primary">we only harvest 50% of the honey our bees produce</span>. 
-              The other half? It stays exactly where it belongs—with the bees who made it.
+              The other half? It stays exactly where it belongs, with the bees who made it.
             </p>
             <p className="text-lg leading-relaxed text-muted-foreground">
               While others chase profits, we chase purpose. Our bees aren't just workers; they're partners in a mission 
