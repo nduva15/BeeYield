@@ -8,7 +8,22 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 
+import { useEffect } from "react";
 const InLandPollination = () => {
+  useEffect(() => {
+    // Inject GTM script into head
+    const script = document.createElement('script');
+    script.innerHTML = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-KF284247');`;
+    script.async = true;
+    document.head.appendChild(script);
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
   const testimonials = [
     {
       name: "Sarah Jenkins",
@@ -32,6 +47,16 @@ const InLandPollination = () => {
 
   return (
       <div className="pt-8">
+        {/* Google Tag Manager (noscript) */}
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-KF284247"
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+            title="Google Tag Manager"
+          ></iframe>
+        </noscript>
         {/* Hero Section */}
         <section className="relative py-24 bg-gradient-to-br from-secondary via-background to-primary/10 overflow-hidden">
           <div className="container mx-auto px-4 relative z-10">

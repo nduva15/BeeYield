@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,20 @@ import {
 import { ShoppingCart, Leaf, BookOpen, Shirt, Filter, Star, Heart } from "lucide-react";
 
 const Shop = () => {
+  useEffect(() => {
+    // Inject GTM script into head
+    const script = document.createElement('script');
+    script.innerHTML = ` (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-KF284247');`;
+    script.async = true;
+    document.head.appendChild(script);
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
   const [selectedSizes, setSelectedSizes] = useState<Record<number, string>>({});
   const [selectedMerchCategory, setSelectedMerchCategory] = useState<string>("All");
 
@@ -285,6 +299,16 @@ const Shop = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Google Tag Manager (noscript) */}
+      <noscript>
+        <iframe
+          src="https://www.googletagmanager.com/ns.html?id=GTM-KF284247"
+          height="0"
+          width="0"
+          style={{ display: "none", visibility: "hidden" }}
+          title="Google Tag Manager"
+        ></iframe>
+      </noscript>
       {/* Hero Section */}
       <section className="relative py-16 sm:py-20 lg:py-24 bg-gradient-to-br from-primary/10 via-background to-accent/10 overflow-hidden">
         <div className="absolute inset-0 opacity-5">
