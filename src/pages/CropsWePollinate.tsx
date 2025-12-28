@@ -116,7 +116,7 @@ const CropsWePollinate = () => {
             BeeYield is comprised of leading experts in the field of pollination. Bee biologists and researchers, data-science experts, electrical engineers, leading agronomists, and veteran beekeepers make up our team, and all are committed to creating improved pollination outcomes for our customers.
           </p>
           
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-8 max-w-5xl mx-auto">
             <Card className="bg-card border-none shadow-lg">
               <CardContent className="p-8 text-center">
                 <p className="text-4xl font-bold text-primary mb-2">25+</p>
@@ -133,6 +133,12 @@ const CropsWePollinate = () => {
               <CardContent className="p-8 text-center">
                 <p className="text-4xl font-bold text-primary mb-2">2</p>
                 <p className="text-muted-foreground font-medium">Counties</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-card border-none shadow-lg">
+              <CardContent className="p-8 text-center">
+                <p className="text-4xl font-bold text-primary mb-2">1</p>
+                <p className="text-muted-foreground font-medium">Continents</p>
               </CardContent>
             </Card>
             <Card className="bg-card border-none shadow-lg">
@@ -192,39 +198,13 @@ const CropsWePollinate = () => {
                     </text>
                   </Marker>
 
-                  {/* Tanzania marker (Dar es Salaam) */}
-                  <Marker coordinates={[39.2083, -6.7924]}>
-                    <circle r={6} fill="hsl(var(--primary-foreground))" />
-                    <circle r={3} fill="hsl(var(--primary))" />
-                    <text y={-12} className="text-[11px]" fill="hsl(var(--foreground))" fontWeight={700}>
-                      Tanzania
-                    </text>
-                  </Marker>
                 </ComposableMap>
-              </div>
-
-              {/* Legend */}
-              <div className="absolute bottom-4 left-4 bg-card/95 backdrop-blur-sm rounded-xl p-4 shadow-lg border">
-                <p className="text-sm font-semibold mb-3 flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-primary" />
-                  Active Regions
-                </p>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded-full bg-primary animate-pulse" />
-                    <span className="text-sm text-muted-foreground">Kenya (Headquarters)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded-full bg-primary" />
-                    <span className="text-sm text-muted-foreground">Tanzania</span>
-                  </div>
-                </div>
               </div>
 
               {/* Stats overlay */}
               <div className="absolute top-4 right-4 bg-card/95 backdrop-blur-sm rounded-xl p-4 shadow-lg border">
                 <p className="text-xs text-muted-foreground mb-1">Operating in</p>
-                <p className="text-2xl font-bold text-primary">2 Countries</p>
+                <p className="text-2xl font-bold text-primary">1 Country</p>
                 <p className="text-xs text-muted-foreground mt-1">Africa & Beyond</p>
               </div>
             </div>
