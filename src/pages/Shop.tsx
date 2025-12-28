@@ -329,10 +329,6 @@ const Shop = () => {
           </p>
           <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
             <span className="flex items-center gap-2 bg-card px-4 py-2 rounded-full border border-border">
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              Sustainably sourced and packaged
-            </span>
-            <span className="flex items-center gap-2 bg-card px-4 py-2 rounded-full border border-border">
               100% Traceable Products
             </span>
           </div>
