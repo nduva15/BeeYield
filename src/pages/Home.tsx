@@ -83,7 +83,7 @@ const PollinationServices = () => {
                 🐝 Africa and the World's Premier Pollination Partner
               </Badge>
               
-              <h1 className="text-5xl md:text-7xl font-bold leading-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold leading-tight">
                 Your Partner in
                 <span className="text-primary block">Pollination</span>
               </h1>
@@ -92,45 +92,45 @@ const PollinationServices = () => {
                 With BeeYield's data-driven, managed pollination solutions for commercial crop growers.
               </p>
 
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-col sm:flex-row gap-4">
                 <a href="mailto:info@beeyield.com">
-                  <Button size="lg" className="bg-primary text-white hover:bg-primary/90 text-lg px-8 py-6 font-semibold shadow-2xl">
+                  <Button size="lg" className="w-full sm:w-auto bg-primary text-white hover:bg-primary/90 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 font-semibold shadow-2xl">
                     Book Consultation
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </a>
                 <Link to="/PollinationRequest">
-                  <Button size="lg" variant="outline" className="border-2 border-primary text-primary hover:bg-primary/10 text-lg px-8 py-6">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 border-primary text-primary hover:bg-primary/10 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6">
                     Book Pollination
                   </Button>
                 </Link>
               </div>
 
               {/* Quick Stats */}
-              <div className="grid grid-cols-6 gap-3 pt-8 border-t border-border">
-                <div>
-                  <p className="text-3xl font-bold text-primary">35%</p>
-                  <p className="text-muted-foreground text-sm">Average Yield Increase</p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-8 border-t border-border">
+                <div className="text-center sm:text-left">
+                  <p className="text-2xl sm:text-3xl font-bold text-primary">35%</p>
+                  <p className="text-muted-foreground text-xs sm:text-sm">Average Yield Increase</p>
                 </div>
-                <div>
-                  <p className="text-3xl font-bold text-primary">150+</p>
-                  <p className="text-muted-foreground text-sm">Managed Hives</p>
+                <div className="text-center sm:text-left">
+                  <p className="text-2xl sm:text-3xl font-bold text-primary">150+</p>
+                  <p className="text-muted-foreground text-xs sm:text-sm">Managed Hives</p>
                 </div>
-                <div>
-                  <p className="text-3xl font-bold text-primary">2K+</p>
-                  <p className="text-muted-foreground text-sm">Data Points</p>
+                <div className="text-center sm:text-left">
+                  <p className="text-2xl sm:text-3xl font-bold text-primary">2K+</p>
+                  <p className="text-muted-foreground text-xs sm:text-sm">Data Points</p>
                 </div>
-                <div>
-                  <p className="text-3xl font-bold text-primary">1+</p>
-                  <p className="text-muted-foreground text-sm">Continents</p>
+                <div className="text-center sm:text-left">
+                  <p className="text-2xl sm:text-3xl font-bold text-primary">1+</p>
+                  <p className="text-muted-foreground text-xs sm:text-sm">Continents</p>
                 </div>
-                <div>
-                  <p className="text-3xl font-bold text-primary">1+</p>
-                  <p className="text-muted-foreground text-sm">Countries</p>
+                <div className="text-center sm:text-left">
+                  <p className="text-2xl sm:text-3xl font-bold text-primary">1+</p>
+                  <p className="text-muted-foreground text-xs sm:text-sm">Countries</p>
                 </div>
-                <div>
-                  <p className="text-3xl font-bold text-primary">2+</p>
-                  <p className="text-muted-foreground text-sm">Counties</p>
+                <div className="text-center sm:text-left">
+                  <p className="text-2xl sm:text-3xl font-bold text-primary">2+</p>
+                  <p className="text-muted-foreground text-xs sm:text-sm">Counties</p>
                 </div>
               </div>
             </div>
@@ -423,37 +423,37 @@ const PollinationServices = () => {
       </section>
 
       {/* Final CTA Section */}
-      <section className="py-24 relative overflow-hidden">
+      <section className="py-16 sm:py-24 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-accent">
           <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-10 left-20 w-64 h-64 bg-white rounded-full blur-3xl" />
-            <div className="absolute bottom-10 right-20 w-80 h-80 bg-accent/50 rounded-full blur-3xl" />
+            <div className="absolute top-10 left-10 sm:left-20 w-32 sm:w-64 h-32 sm:h-64 bg-white rounded-full blur-3xl" />
+            <div className="absolute bottom-10 right-10 sm:right-20 w-40 sm:w-80 h-40 sm:h-80 bg-accent/50 rounded-full blur-3xl" />
           </div>
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
-            <h2 className="text-4xl md:text-6xl font-bold text-white">
+          <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8">
+            <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold text-white">
               Take Control of Your Pollination Today
             </h2>
-            <p className="text-xl text-white/90 max-w-2xl mx-auto">
+            <p className="text-base sm:text-xl text-white/90 max-w-2xl mx-auto">
               Partner with BeeYield's precision-driven, technology-powered pollination 
               solutions built for commercial growers across Africa and beyond.
             </p>
-            <div className="flex flex-wrap justify-center gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
               <Link to="/contact">
-                <Button size="lg" className="bg-white text-primary hover:bg-primary-foreground/90 text-lg px-8 py-6 font-semibold shadow-xl">
+                <Button size="lg" className="w-full sm:w-auto bg-white text-primary hover:bg-primary-foreground/90 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 font-semibold shadow-xl">
                   Request a Free Consultation
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
               <a href="mailto:info@beeyield.com">
-                <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white/10 text-lg px-8 py-6 bg-transparent">
+                <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 border-white text-white hover:bg-white/10 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 bg-transparent">
                   Email Us
                 </Button>
               </a>
             </div>
-            <p className="text-white/70 text-sm pt-4">
+            <p className="text-white/70 text-xs sm:text-sm pt-4">
               No commitment required. We'll assess your needs and create a custom pollination plan.
             </p>
           </div>

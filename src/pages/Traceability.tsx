@@ -43,22 +43,22 @@ const Traceability = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="bg-gradient-to-b from-primary/10 to-background py-20">
-        <div className="container mx-auto px-6 lg:px-12">
-          <div className="mb-12 text-center">
-            <div className="mb-4 inline-block rounded-full bg-primary/10 p-4">
-              <QrCode className="h-12 w-12 text-primary" />
+      <div className="bg-gradient-to-b from-primary/10 to-background py-12 sm:py-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-12">
+          <div className="mb-8 sm:mb-12 text-center">
+            <div className="mb-4 inline-block rounded-full bg-primary/10 p-3 sm:p-4">
+              <QrCode className="h-8 sm:h-12 w-8 sm:w-12 text-primary" />
             </div>
-            <h1 className="mb-4 text-5xl font-bold">Honey Traceability</h1>
-            <p className="mx-auto text-xl text-muted-foreground">
+            <h1 className="mb-4 text-3xl sm:text-4xl md:text-5xl font-bold">Honey Traceability</h1>
+            <p className="mx-auto text-base sm:text-xl text-muted-foreground max-w-2xl">
               Discover the complete journey of your honey from hive to home. Simply enter the code from your jar or scan the QR code.
             </p>
           </div>
         </div>
       </div>
        {/* Trace Your Honey Section */}
-      <div className="py-20">
-        <div className="container mx-auto px-6 lg:px-12">
+      <div className="py-12 sm:py-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-12">
           <div className="mx-auto max-w-6xl">
             <div className="mb-8 text-center">
               <h2 className="mb-4 text-3xl font-bold">Trace Your Honey</h2>

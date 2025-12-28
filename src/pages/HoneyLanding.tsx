@@ -112,7 +112,7 @@ const Home = () => {
               🍯 Sustainably Harvested from Kenya
             </Badge>
             
-            <h1 className="text-5xl md:text-7xl font-bold leading-tight text-foreground">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold leading-tight text-foreground">
               Honey That
               <span className="text-primary block">Gives Back</span>
             </h1>
@@ -122,26 +122,26 @@ const Home = () => {
               leaving the rest for them to thrive. Every jar is fully traceable from hive to your home.
             </p>
             
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/shop">
-                <Button size="lg" className="bg-primary text-white hover:bg-primary/90 text-lg px-8 py-6 font-semibold shadow-2xl">
+                <Button size="lg" className="w-full sm:w-auto bg-primary text-white hover:bg-primary/90 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 font-semibold shadow-2xl">
                   Shop Our Honey
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
               <Link to="/traceability">
-                <Button size="lg" variant="outline" className="border-2 border-primary text-primary hover:bg-primary/10 text-lg px-8 py-6">
+                <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 border-primary text-primary hover:bg-primary/10 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6">
                   Trace Your Jar
                 </Button>
               </Link>
             </div>
 
             {/* Stats Bar */}
-            <div className="grid grid-cols-4 gap-4 pt-8 border-t border-border">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-8 border-t border-border">
               {stats.map((stat, index) => (
-                <div key={index}>
-                  <p className="text-2xl md:text-3xl font-bold text-primary">{stat.value}</p>
-                  <p className="text-muted-foreground text-sm">{stat.label}</p>
+                <div key={index} className="text-center sm:text-left">
+                  <p className="text-xl sm:text-2xl md:text-3xl font-bold text-primary">{stat.value}</p>
+                  <p className="text-muted-foreground text-xs sm:text-sm">{stat.label}</p>
                 </div>
               ))}
             </div>
@@ -192,18 +192,18 @@ const Home = () => {
         </div>
         
         <div className="container mx-auto px-4 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center max-w-6xl mx-auto">
             {/* Left Content */}
-            <div className="space-y-8">
+            <div className="space-y-6 sm:space-y-8">
               <Badge className="bg-green-500/10 text-green-600 border-green-500/30">
                 Our Commitment
               </Badge>
               
-              <h2 className="text-4xl md:text-5xl font-bold text-foreground">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">
                 We Only Take <span className="text-primary">Half.</span>
               </h2>
               
-              <p className="text-xl text-muted-foreground leading-relaxed">
+              <p className="text-base sm:text-xl text-muted-foreground leading-relaxed">
                 Most commercial honey operations take everything. We do things differently. 
                 At BeeYield, we harvest only 50% of the honey our bees produce. The other half stays 
                 exactly where it belongs: with the bees who made it.
@@ -253,27 +253,27 @@ const Home = () => {
             
             {/* Right Visual */}
             <div className="relative">
-              <div className="bg-gradient-to-br from-primary/10 to-green-500/10 rounded-3xl p-8 border border-primary/20">
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="bg-card rounded-2xl p-6 shadow-lg text-center">
-                    <Droplets className="h-12 w-12 text-primary mx-auto mb-4" />
-                    <p className="text-4xl font-bold text-primary mb-2">50%</p>
-                    <p className="text-sm text-muted-foreground">Harvested for You</p>
+              <div className="bg-gradient-to-br from-primary/10 to-green-500/10 rounded-3xl p-4 sm:p-8 border border-primary/20">
+                <div className="grid grid-cols-2 gap-3 sm:gap-6">
+                  <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-lg text-center">
+                    <Droplets className="h-8 sm:h-12 w-8 sm:w-12 text-primary mx-auto mb-2 sm:mb-4" />
+                    <p className="text-2xl sm:text-4xl font-bold text-primary mb-1 sm:mb-2">50%</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Harvested for You</p>
                   </div>
-                  <div className="bg-card rounded-2xl p-6 shadow-lg text-center">
-                    <span className="text-4xl mb-4 block">🐝</span>
-                    <p className="text-4xl font-bold text-green-600 mb-2">50%</p>
-                    <p className="text-sm text-muted-foreground">Left for the Bees</p>
+                  <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-lg text-center">
+                    <span className="text-2xl sm:text-4xl mb-2 sm:mb-4 block">🐝</span>
+                    <p className="text-2xl sm:text-4xl font-bold text-green-600 mb-1 sm:mb-2">50%</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Left for the Bees</p>
                   </div>
-                  <div className="bg-card rounded-2xl p-6 shadow-lg text-center">
-                    <QrCode className="h-12 w-12 text-primary mx-auto mb-4" />
-                    <p className="text-2xl font-bold text-foreground mb-2">Traceable</p>
-                    <p className="text-sm text-muted-foreground">Hive to Home</p>
+                  <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-lg text-center">
+                    <QrCode className="h-8 sm:h-12 w-8 sm:w-12 text-primary mx-auto mb-2 sm:mb-4" />
+                    <p className="text-lg sm:text-2xl font-bold text-foreground mb-1 sm:mb-2">Traceable</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Hive to Home</p>
                   </div>
-                  <div className="bg-card rounded-2xl p-6 shadow-lg text-center">
-                    <MapPin className="h-12 w-12 text-primary mx-auto mb-4" />
-                    <p className="text-xl font-bold text-foreground mb-2">Makueni</p>
-                    <p className="text-sm text-muted-foreground">Kenya, Africa</p>
+                  <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-lg text-center">
+                    <MapPin className="h-8 sm:h-12 w-8 sm:w-12 text-primary mx-auto mb-2 sm:mb-4" />
+                    <p className="text-lg sm:text-xl font-bold text-foreground mb-1 sm:mb-2">Makueni</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Kenya, Africa</p>
                   </div>
                 </div>
               </div>
@@ -283,16 +283,16 @@ const Home = () => {
       </section>
 
       {/* Products Preview */}
-      <section className="py-24 bg-muted/30">
+      <section className="py-16 sm:py-24 bg-muted/30">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16 space-y-4">
+          <div className="text-center mb-12 sm:mb-16 space-y-4">
             <Badge variant="outline" className="text-primary border-primary/30">
               Our Collection
             </Badge>
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">
               Premium <span className="text-primary">Artisan Honey</span>
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto">
               Hand-harvested, raw, and unfiltered. Each variety tells a unique story of its origin.
             </p>
           </div>
@@ -356,9 +356,9 @@ const Home = () => {
             ))}
           </div>
           
-          <div className="mt-16 text-center">
+          <div className="mt-12 sm:mt-16 text-center">
             <Link to="/shop">
-              <Button size="lg" variant="outline" className="border-2 border-primary text-primary hover:bg-primary/10">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 border-primary text-primary hover:bg-primary/10">
                 View All Products
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -368,33 +368,33 @@ const Home = () => {
       </section>
 
       {/* Final CTA Section */}
-      <section className="py-24 relative overflow-hidden">
+      <section className="py-16 sm:py-24 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-accent">
           <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-10 left-20 w-64 h-64 bg-white rounded-full blur-3xl" />
-            <div className="absolute bottom-10 right-20 w-80 h-80 bg-accent/50 rounded-full blur-3xl" />
+            <div className="absolute top-10 left-10 sm:left-20 w-32 sm:w-64 h-32 sm:h-64 bg-white rounded-full blur-3xl" />
+            <div className="absolute bottom-10 right-10 sm:right-20 w-40 sm:w-80 h-40 sm:h-80 bg-accent/50 rounded-full blur-3xl" />
           </div>
         </div>
         
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
-            <Award className="h-16 w-16 text-white/80 mx-auto" />
-            <h2 className="text-4xl md:text-6xl font-bold text-white">
+          <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8">
+            <Award className="h-12 sm:h-16 w-12 sm:w-16 text-white/80 mx-auto" />
+            <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold text-white">
               Taste the Difference. Support the Bees.
             </h2>
-            <p className="text-xl text-white/90 max-w-2xl mx-auto">
+            <p className="text-base sm:text-xl text-white/90 max-w-2xl mx-auto">
               Every jar of BeeYield honey is a commitment to ethical beekeeping, 
               environmental restoration, and uncompromising quality.
             </p>
-            <div className="flex flex-wrap justify-center gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
               <Link to="/shop">
-                <Button size="lg" className="bg-white text-primary hover:bg-white/90 text-lg px-8 py-6 font-semibold shadow-xl">
+                <Button size="lg" className="w-full sm:w-auto bg-white text-primary hover:bg-white/90 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 font-semibold shadow-xl">
                   Shop Now
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
               <Link to="/traceability">
-                <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white/10 text-lg px-8 py-6 bg-transparent">
+                <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 border-white text-white hover:bg-white/10 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 bg-transparent">
                   Learn About Traceability
                 </Button>
               </Link>

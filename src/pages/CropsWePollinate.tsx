@@ -75,18 +75,18 @@ const CropsWePollinate = () => {
               <Badge variant="secondary" className="rounded-full px-4 py-1.5 text-sm font-medium">
                 Precision Agriculture
               </Badge>
-              <h1 className="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
+              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
                 Get Data-Driven <br />
                 <span className="text-primary">Crop Pollination</span>
               </h1>
-              <p className="max-w-xl text-lg text-muted-foreground">
+              <p className="max-w-xl text-base sm:text-lg text-muted-foreground">
                 Our end-to-end solution gives unprecedented control and visibility into pollination, ensuring 40% crop yields and sustainable practices.
               </p>
-              <div className="flex flex-wrap gap-4">
-                <Button size="lg" className="rounded-full" asChild>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button size="lg" className="w-full sm:w-auto rounded-full" asChild>
                   <Link to="/contact">Get a Free Consultation</Link>
                 </Button>
-                <Button size="lg" variant="outline" className="rounded-full" asChild>
+                <Button size="lg" variant="outline" className="w-full sm:w-auto rounded-full" asChild>
                   <a href="#crops">Explore Crops</a>
                 </Button>
               </div>
@@ -112,39 +112,39 @@ const CropsWePollinate = () => {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold md:text-4xl mb-4">Work With the Pollination Experts</h2>
           <div className="w-24 h-1 bg-primary mx-auto mb-8 rounded-full" />
-          <p className="max-w-3xl mx-auto text-lg text-muted-foreground mb-12">
+          <p className="max-w-3xl mx-auto text-base sm:text-lg text-muted-foreground mb-12 px-4">
             BeeYield is comprised of leading experts in the field of pollination. Bee biologists and researchers, data-science experts, electrical engineers, leading agronomists, and veteran beekeepers make up our team, and all are committed to creating improved pollination outcomes for our customers.
           </p>
           
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 sm:gap-8 max-w-5xl mx-auto px-4">
             <Card className="bg-card border-none shadow-lg">
-              <CardContent className="p-8 text-center">
-                <p className="text-4xl font-bold text-primary mb-2">25+</p>
-                <p className="text-muted-foreground font-medium">Acres Managed</p>
+              <CardContent className="p-4 sm:p-8 text-center">
+                <p className="text-2xl sm:text-4xl font-bold text-primary mb-2">25+</p>
+                <p className="text-muted-foreground font-medium text-xs sm:text-base">Acres Managed</p>
               </CardContent>
             </Card>
             <Card className="bg-card border-none shadow-lg">
-              <CardContent className="p-8 text-center">
-                <p className="text-4xl font-bold text-primary mb-2">1</p>
-                <p className="text-muted-foreground font-medium">Countries</p>
+              <CardContent className="p-4 sm:p-8 text-center">
+                <p className="text-2xl sm:text-4xl font-bold text-primary mb-2">1</p>
+                <p className="text-muted-foreground font-medium text-xs sm:text-base">Countries</p>
               </CardContent>
             </Card>
             <Card className="bg-card border-none shadow-lg">
-              <CardContent className="p-8 text-center">
-                <p className="text-4xl font-bold text-primary mb-2">2</p>
-                <p className="text-muted-foreground font-medium">Counties</p>
+              <CardContent className="p-4 sm:p-8 text-center">
+                <p className="text-2xl sm:text-4xl font-bold text-primary mb-2">2</p>
+                <p className="text-muted-foreground font-medium text-xs sm:text-base">Counties</p>
               </CardContent>
             </Card>
             <Card className="bg-card border-none shadow-lg">
-              <CardContent className="p-8 text-center">
-                <p className="text-4xl font-bold text-primary mb-2">1</p>
-                <p className="text-muted-foreground font-medium">Continents</p>
+              <CardContent className="p-4 sm:p-8 text-center">
+                <p className="text-2xl sm:text-4xl font-bold text-primary mb-2">1</p>
+                <p className="text-muted-foreground font-medium text-xs sm:text-base">Continents</p>
               </CardContent>
             </Card>
-            <Card className="bg-card border-none shadow-lg">
-              <CardContent className="p-8 text-center">
-                <p className="text-4xl font-bold text-primary mb-2">9+</p>
-                <p className="text-muted-foreground font-medium">Crop Varieties</p>
+            <Card className="bg-card border-none shadow-lg col-span-2 sm:col-span-1">
+              <CardContent className="p-4 sm:p-8 text-center">
+                <p className="text-2xl sm:text-4xl font-bold text-primary mb-2">9+</p>
+                <p className="text-muted-foreground font-medium text-xs sm:text-base">Crop Varieties</p>
               </CardContent>
             </Card>
           </div>
@@ -199,6 +199,20 @@ const CropsWePollinate = () => {
                   </Marker>
 
                 </ComposableMap>
+              </div>
+
+              {/* Legend */}
+              <div className="absolute bottom-4 left-4 bg-card/95 backdrop-blur-sm rounded-xl p-4 shadow-lg border">
+                <p className="text-sm font-semibold mb-3 flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-primary" />
+                  Active Regions
+                </p>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded-full bg-primary animate-pulse" />
+                    <span className="text-sm text-muted-foreground">Kenya (Headquarters)</span>
+                  </div>
+                </div>
               </div>
 
               {/* Stats overlay */}
