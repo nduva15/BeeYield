@@ -13,39 +13,163 @@ const PollinationSolutions = () => {
   return (
     <div className="min-h-screen bg-background">
 
-      {/* Hub Hero */}
+      {/* Hub Hero - Beekeeping Solutions */}
       <section className="relative py-24 md:py-32 bg-gradient-to-br from-primary/10 via-background to-accent/10 overflow-hidden">
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <Badge className="mb-6 bg-primary/20 text-primary border-primary/30">
-            End-to-End Visibility
-          </Badge>
-          <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-            Pollination Solutions
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            We combine biological understanding with technological innovation to monitor pollination from the inside out.
-          </p>
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="text-center lg:text-left relative z-10">
+              <Badge className="mb-6 bg-primary/20 text-primary border-primary/30">
+                Smart Beekeeping Network
+              </Badge>
+              <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
+                Beekeeping Solutions
+              </h1>
+              <p className="text-xl text-muted-foreground mb-8">
+                Helping beekeepers build, maintain, and deploy the strongest, healthiest hives. Our cutting-edge hive monitoring technology and data-driven insights empower you to overcome daily colony management challenges and maximize hive productivity.
+              </p>
+              <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
+                <Button asChild size="lg">
+                  <Link to="/contact">
+                    Get Started <ArrowRight className="ml-2 w-4 h-4" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" size="lg">
+                  <Link to="/">
+                    Learn More
+                  </Link>
+                </Button>
+              </div>
+            </div>
+            <div className="relative">
+              <div className="aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl">
+                <img 
+                  src="https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&q=80&w=800" 
+                  alt="Beekeeper inspecting hives" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="absolute -bottom-4 -left-4 bg-primary text-primary-foreground px-6 py-3 rounded-xl shadow-lg">
+                <p className="text-2xl font-bold">184+</p>
+                <p className="text-sm opacity-90">Managed Hives</p>
+              </div>
+            </div>
+          </div>
         </div>
         {/* Background elements */}
         <div className="absolute top-20 left-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
         <div className="absolute bottom-10 right-10 w-80 h-80 bg-accent/10 rounded-full blur-3xl" />
       </section>
 
+      {/* The Two Paths Section - Moved to Top */}
+      <section className="py-20 md:py-28 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
+              Two Powerful Approaches to Pollination
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Choose the solution that fits your needs, or combine both for complete visibility.
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            {/* Path 1: In-Hive */}
+            <Card className="group relative overflow-hidden border-2 border-border/50 hover:border-primary/50 transition-all duration-300">
+              <CardContent className="p-8 relative z-10">
+                <div className="w-16 h-16 rounded-2xl bg-primary/20 flex items-center justify-center mb-6">
+                  <Cpu className="w-8 h-8 text-primary" />
+                </div>
+                <Badge className="mb-4">Colony Health</Badge>
+                <h3 className="text-2xl font-bold text-foreground mb-4">In-Hive Precision</h3>
+                <p className="text-muted-foreground mb-6">
+                  Our proprietary sensors live inside the hive box, monitoring acoustic signatures, temperature, and humidity 24/7. Know the strength of your colonies before they are deployed.
+                </p>
+
+                <ul className="space-y-3 mb-8">
+                  <li className="flex items-center gap-3 text-foreground">
+                    <Check className="w-5 h-5 text-primary" />
+                    Queen health status
+                  </li>
+                  <li className="flex items-center gap-3 text-foreground">
+                    <Check className="w-5 h-5 text-primary" />
+                    Colony strength grading
+                  </li>
+                  <li className="flex items-center gap-3 text-foreground">
+                    <Check className="w-5 h-5 text-primary" />
+                    Environmental stress alerts
+                  </li>
+                </ul>
+
+                <Button asChild variant="outline" className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                  <Link to="/PrecisionPollination">
+                    Explore In-Hive Technology <ArrowRight className="ml-2 w-4 h-4" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Path 2: In-Land */}
+            <Card className="group relative overflow-hidden border-2 border-border/50 hover:border-accent/50 transition-all duration-300">
+              <CardContent className="p-8 relative z-10">
+                <div className="w-16 h-16 rounded-2xl bg-accent/20 flex items-center justify-center mb-6">
+                  <Sprout className="w-8 h-8 text-accent-foreground" />
+                </div>
+                <Badge variant="secondary" className="mb-4">Land Analytics</Badge>
+                <h3 className="text-2xl font-bold text-foreground mb-4">In-Land Insights</h3>
+                <p className="text-muted-foreground mb-6">
+                  PLIP sensors deployed across your orchards measure actual bee flight activity and per-flower pollination events. Visualize coverage maps to ensure every acre gets the attention it needs.
+                </p>
+
+                <ul className="space-y-3 mb-8">
+                  <li className="flex items-center gap-3 text-foreground">
+                    <Check className="w-5 h-5 text-primary" />
+                    Real-time pollination maps
+                  </li>
+                  <li className="flex items-center gap-3 text-foreground">
+                    <Check className="w-5 h-5 text-primary" />
+                    Foraging efficiency tracking
+                  </li>
+                  <li className="flex items-center gap-3 text-foreground">
+                    <Check className="w-5 h-5 text-primary" />
+                    Weather impact analysis
+                  </li>
+                </ul>
+
+                <Button asChild variant="outline" className="group-hover:bg-accent group-hover:text-accent-foreground transition-colors">
+                  <Link to="/InLandPollinationPlatform">
+                    Explore In-Land Technology <ArrowRight className="ml-2 w-4 h-4" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Testimonial Quote */}
       <section className="py-16 bg-primary/5">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <Quote className="w-12 h-12 text-primary/40 mx-auto mb-6" />
-            <p className="text-2xl md:text-3xl font-medium text-foreground italic mb-8">
-              "Beekeepers face daily challenges to maintain thriving colonies. BeeYield delivers real-world solutions to help address these issues."
-            </p>
-            <div className="flex items-center justify-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
-                <Users className="w-8 h-8 text-primary" />
+          <div className="max-w-5xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              {/* Photo Half */}
+              <div className="aspect-[4/3] rounded-2xl overflow-hidden shadow-xl">
+                <img 
+                  src="https://images.unsplash.com/photo-1560493676-04071c5f467b?auto=format&fit=crop&q=80&w=600" 
+                  alt="John Mutua - Partner Beekeeper" 
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <div className="text-left">
-                <p className="font-bold text-foreground">John Mutua</p>
-                <p className="text-muted-foreground">Partner Beekeeper, Makueni</p>
+              
+              {/* Testimonial Half */}
+              <div className="text-center md:text-left">
+                <Quote className="w-10 h-10 text-primary/40 mb-4 mx-auto md:mx-0" />
+                <p className="text-xl md:text-2xl font-medium text-foreground italic mb-6">
+                  "Beekeepers face daily challenges to maintain thriving colonies. BeeYield delivers real-world solutions to help address these issues."
+                </p>
+                <div>
+                  <p className="font-bold text-foreground text-lg">John Mutua</p>
+                  <p className="text-muted-foreground">Partner Beekeeper, Makueni</p>
+                </div>
               </div>
             </div>
           </div>
@@ -66,9 +190,31 @@ const PollinationSolutions = () => {
               <p className="text-lg text-muted-foreground mb-6">
                 We use small, non-intrusive sensors inside the hives to collect data on bee health and behavior. Each hive can be monitored year-round to help you better manage your operations, and build stronger colonies more efficiently.
               </p>
-              <p className="text-muted-foreground mb-8">
+              <p className="text-muted-foreground mb-6">
                 Our technology provides unprecedented visibility into colony health, enabling beekeepers to make informed decisions that improve hive strength and reduce mortality rates.
               </p>
+              
+              {/* Bee Mortality Stats */}
+              <div className="bg-muted/50 rounded-xl p-6 mb-8">
+                <h3 className="font-semibold text-foreground mb-4">Tackling the Bee Mortality Crisis</h3>
+                <p className="text-muted-foreground text-sm mb-4">
+                  Globally, bee colony mortality rates average <strong className="text-foreground">30-40%</strong> annually. In Africa, some regions experience losses as high as <strong className="text-foreground">60%</strong> due to climate change, habitat loss, and limited access to monitoring technology.
+                </p>
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  <div className="bg-background rounded-lg p-4 text-center">
+                    <p className="text-3xl font-bold text-red-500">40%</p>
+                    <p className="text-xs text-muted-foreground">Global Average Colony Loss</p>
+                  </div>
+                  <div className="bg-background rounded-lg p-4 text-center">
+                    <p className="text-3xl font-bold text-primary">&lt;15%</p>
+                    <p className="text-xs text-muted-foreground">BeeYield Managed Colonies</p>
+                  </div>
+                </div>
+                <p className="text-muted-foreground text-sm mt-4">
+                  Through real-time monitoring, early disease detection, and data-driven hive management, we've reduced colony loss rates to <strong className="text-foreground">less than 15%</strong>, saving thousands of bees and securing livelihoods for local beekeepers.
+                </p>
+              </div>
+              
               <div className="flex flex-wrap gap-4">
                 <Button asChild>
                   <Link to="/contact">
@@ -115,7 +261,7 @@ const PollinationSolutions = () => {
               Disease Detection & Colony Monitoring
             </h2>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              Our sensors provide continuous, buffered data streams—temperature, humidity, weight, sound, and GPS—enabling early disease detection and proactive colony management.
+              Our sensors provide continuous, buffered data streams including temperature, humidity, weight, sound, and GPS, enabling early disease detection and proactive colony management.
             </p>
           </div>
 
@@ -436,7 +582,7 @@ const PollinationSolutions = () => {
         </div>
       </section>
 
-      {/* Why Work With Us */}
+      {/* Why Partner With BeeYield */}
       <section className="py-20 bg-gradient-to-br from-primary/10 to-accent/10">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -444,10 +590,10 @@ const PollinationSolutions = () => {
               Partnership Benefits
             </Badge>
             <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
-              Why Work With Us?
+              Why Partner With BeeYield?
             </h2>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              Beekeeping is a hard business. We're here to make it easier with fair payment terms and a model that rewards your hard work.
+              We believe beekeepers deserve more than just a contract. They deserve a partner invested in their success. Join a network where technology meets tradition.
             </p>
           </div>
 
@@ -455,22 +601,22 @@ const PollinationSolutions = () => {
             <Card className="border-2 border-primary/20 bg-card">
               <CardContent className="p-8">
                 <h3 className="text-2xl font-bold text-foreground mb-4">
-                  More Money for Your Stronger Hives? Yes!
+                  Your Hives, Your Rewards
                 </h3>
                 <p className="text-muted-foreground mb-6">
-                  Traditional contracts limit you. Even if you bring great bees, you still only get paid the same rate. With BeeYield, our frames-per-acre model means we reward you for your stronger hives.
+                  Every colony is unique, and we recognize that. Our smart monitoring technology grades each hive individually, ensuring you're compensated fairly for the colonies you've worked hard to nurture.
                 </p>
                 <p className="text-muted-foreground mb-6">
-                  All of the hives you commit to BeeYield are compensated on the individual strength of each hive, so your hard work is rewarded.
+                  No more flat-rate contracts that undervalue your best performers. With BeeYield, stronger hives mean better returns. It's that simple.
                 </p>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-primary/10 rounded-xl p-4 text-center">
-                    <p className="text-2xl font-bold text-primary">50%</p>
-                    <p className="text-sm text-muted-foreground">Upfront Payment</p>
+                    <p className="text-2xl font-bold text-primary">Real-Time</p>
+                    <p className="text-sm text-muted-foreground">Hive Health Data</p>
                   </div>
                   <div className="bg-accent/10 rounded-xl p-4 text-center">
-                    <p className="text-2xl font-bold text-accent-foreground">50%</p>
-                    <p className="text-sm text-muted-foreground">On Completion</p>
+                    <p className="text-2xl font-bold text-accent-foreground">Fair</p>
+                    <p className="text-sm text-muted-foreground">Performance-Based Pay</p>
                   </div>
                 </div>
               </CardContent>
@@ -478,10 +624,10 @@ const PollinationSolutions = () => {
 
             <div>
               <h3 className="text-2xl font-bold text-foreground mb-6">
-                We Don't Succeed Unless You Succeed
+                Your Success Is Our Mission
               </h3>
               <p className="text-muted-foreground mb-6">
-                We want our partnership with you to be as smooth and stress-free as possible. Our customer success team is ready to provide you with all the help you need, from onboarding to making sure all your paperwork is handled.
+                From the moment you join, our dedicated team walks alongside you. Whether it's integrating our sensors, interpreting colony data, or connecting you with new opportunities, we're here every step of the way.
               </p>
               <div className="bg-card rounded-xl p-6 border border-border mb-6">
                 <div className="flex items-center gap-4 mb-4">
@@ -489,106 +635,20 @@ const PollinationSolutions = () => {
                     <Users className="w-8 h-8 text-primary" />
                   </div>
                   <div>
-                    <p className="font-bold text-foreground">Customer Success Team</p>
-                    <p className="text-sm text-muted-foreground">Ready to help you succeed</p>
+                    <p className="font-bold text-foreground">Dedicated Support Team</p>
+                    <p className="text-sm text-muted-foreground">Your partners in beekeeping success</p>
                   </div>
                 </div>
                 <p className="text-muted-foreground text-sm">
-                  Get in touch for any reason at all: <span className="text-primary font-medium">hello@beeyield.com</span>
+                  Have questions or ready to get started? Reach out anytime: <span className="text-primary font-medium">info@beeyield.com</span>
                 </p>
               </div>
               <Button asChild>
                 <Link to="/contact">
-                  Contact Us <ArrowRight className="ml-2 w-4 h-4" />
+                  Become a Partner <ArrowRight className="ml-2 w-4 h-4" />
                 </Link>
               </Button>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* The Two Paths Section */}
-      <section className="py-20 md:py-28">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
-              Two Powerful Approaches
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Choose the solution that fits your needs, or combine both for complete visibility.
-            </p>
-          </div>
-
-          <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
-            {/* Path 1: In-Hive */}
-            <Card className="group relative overflow-hidden border-2 border-border/50 hover:border-primary/50 transition-all duration-300">
-              <CardContent className="p-8 relative z-10">
-                <div className="w-16 h-16 rounded-2xl bg-primary/20 flex items-center justify-center mb-6">
-                  <Cpu className="w-8 h-8 text-primary" />
-                </div>
-                <Badge className="mb-4">Colony Health</Badge>
-                <h3 className="text-2xl font-bold text-foreground mb-4">In-Hive Precision</h3>
-                <p className="text-muted-foreground mb-6">
-                  Our proprietary sensors live inside the hive box, monitoring acoustic signatures, temperature, and humidity 24/7. Know the strength of your colonies before they are deployed.
-                </p>
-
-                <ul className="space-y-3 mb-8">
-                  <li className="flex items-center gap-3 text-foreground">
-                    <Check className="w-5 h-5 text-primary" />
-                    Queen health status
-                  </li>
-                  <li className="flex items-center gap-3 text-foreground">
-                    <Check className="w-5 h-5 text-primary" />
-                    Colony strength grading
-                  </li>
-                  <li className="flex items-center gap-3 text-foreground">
-                    <Check className="w-5 h-5 text-primary" />
-                    Environmental stress alerts
-                  </li>
-                </ul>
-
-                <Button asChild variant="outline" className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                  <Link to="/technology">
-                    Explore In-Hive Technology <ArrowRight className="ml-2 w-4 h-4" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Path 2: In-Field */}
-            <Card className="group relative overflow-hidden border-2 border-border/50 hover:border-accent/50 transition-all duration-300">
-              <CardContent className="p-8 relative z-10">
-                <div className="w-16 h-16 rounded-2xl bg-accent/20 flex items-center justify-center mb-6">
-                  <Sprout className="w-8 h-8 text-accent-foreground" />
-                </div>
-                <Badge variant="secondary" className="mb-4">Field Analytics</Badge>
-                <h3 className="text-2xl font-bold text-foreground mb-4">In-Field Insights</h3>
-                <p className="text-muted-foreground mb-6">
-                  Sensors deployed across your orchards measure actual bee flight activity and pollination events. Visualize coverage maps to ensure every acre gets the attention it needs.
-                </p>
-
-                <ul className="space-y-3 mb-8">
-                  <li className="flex items-center gap-3 text-foreground">
-                    <Check className="w-5 h-5 text-primary" />
-                    Real-time pollination maps
-                  </li>
-                  <li className="flex items-center gap-3 text-foreground">
-                    <Check className="w-5 h-5 text-primary" />
-                    Foraging efficiency tracking
-                  </li>
-                  <li className="flex items-center gap-3 text-foreground">
-                    <Check className="w-5 h-5 text-primary" />
-                    Weather impact analysis
-                  </li>
-                </ul>
-
-                <Button asChild variant="outline" className="group-hover:bg-accent group-hover:text-accent-foreground transition-colors">
-                  <Link to="/technology">
-                    Explore In-Field Technology <ArrowRight className="ml-2 w-4 h-4" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </section>
@@ -604,7 +664,7 @@ const PollinationSolutions = () => {
               Better Together
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              While powerful individually, our In-Hive and In-Field solutions work best in tandem, providing a complete feedback loop for growers and beekeepers.
+              While powerful individually, our In-Hive and In-Land solutions work best in tandem, providing a complete feedback loop for growers and beekeepers.
             </p>
           </div>
 
@@ -634,6 +694,61 @@ const PollinationSolutions = () => {
         </div>
       </section>
 
+      {/* Hear What Our Beekeepers Have to Say */}
+      <section className="py-20 md:py-28 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <Badge className="mb-4 bg-primary/20 text-primary border-primary/30">
+              Testimonials
+            </Badge>
+            <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
+              Hear What Our Beekeepers Have to Say
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Real stories from beekeepers who have partnered with BeeYield.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {/* Video 1 */}
+            <div className="rounded-2xl overflow-hidden shadow-lg bg-card">
+              <div className="aspect-video">
+                <iframe 
+                  className="w-full h-full"
+                  src="https://www.youtube.com/embed/VIDEO_ID_1" 
+                  title="Beekeeper Testimonial 1"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="font-bold text-foreground">Partner Beekeeper Story</h3>
+                <p className="text-sm text-muted-foreground">How BeeYield transformed our operations</p>
+              </div>
+            </div>
+
+            {/* Video 2 */}
+            <div className="rounded-2xl overflow-hidden shadow-lg bg-card">
+              <div className="aspect-video">
+                <iframe 
+                  className="w-full h-full"
+                  src="https://www.youtube.com/embed/VIDEO_ID_2" 
+                  title="Beekeeper Testimonial 2"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="font-bold text-foreground">Success with BeeYield</h3>
+                <p className="text-sm text-muted-foreground">Improved colony health and profitability</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
@@ -649,7 +764,7 @@ const PollinationSolutions = () => {
                 Request Pollination Services
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
+            <Button asChild size="lg" className="bg-green-500 hover:bg-green-600 text-white">
               <Link to="/contact">
                 Contact Sales
               </Link>

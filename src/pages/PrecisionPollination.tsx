@@ -6,7 +6,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "react-router-dom";
 
 const PrecisionPollination = () => {
   return (
@@ -26,11 +25,9 @@ const PrecisionPollination = () => {
                   Accountability. Actionable data. <br/>
                   And a guarantee of the strongest bees available.
                 </p>
-                <Link to="/contact">
                 <Button size="lg" className="shadow-lg">
                   Get a Free Consultation
                 </Button>
-                </Link>
               </div>
 
               <div className="relative">

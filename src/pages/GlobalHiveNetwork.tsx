@@ -78,9 +78,9 @@ const GlobalHiveNetwork = () => {
                 <p className="text-background/80 leading-relaxed mb-8">
                   This isn't just about bees—it's about ensuring sustainable agriculture and food security for millions across Africa and the world. The time to act is now.
                 </p>
-                {/* <Button variant="secondary" className="gap-2">
-                  Learn More <ArrowRight className="h-4 w-4" />
-                </Button> */}
+                <Button variant="secondary" className="gap-2" asChild>
+                  <a href="/Crops-We-Pollinate">Learn More <ArrowRight className="h-4 w-4" /></a>
+                </Button>
               </div>
             </div>
           </div>
@@ -275,7 +275,7 @@ const GlobalHiveNetwork = () => {
               {/* Higher Tier Card */}
               <Card className="border-2 border-primary shadow-2xl relative">
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-primary text-primary-foreground mt-5">MOST POPULAR</Badge>
+                  <Badge className="bg-primary text-primary-foreground">MOST POPULAR</Badge>
                 </div>
                 <CardContent className="p-8 pt-10">
                   <h3 className="text-xl font-bold text-center mb-6 text-foreground">Patron of the Hive</h3>
