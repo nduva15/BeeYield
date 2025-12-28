@@ -210,8 +210,8 @@ const OurStory = () => {
                 <Button variant="secondary" asChild>
                   <Link to="/contact">Get In Touch</Link>
                 </Button>
-                <Button variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10" asChild>
-                  <Link to="/careers">Join Our Team</Link>
+                <Button className="bg-green-500 hover:bg-green-600 text-white" asChild>
+                  <Link to="/Team">Join Our Team</Link>
                 </Button>
               </div>
             </CardContent>
