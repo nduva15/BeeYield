@@ -715,7 +715,7 @@ const PollinationSolutions = () => {
               <div className="aspect-video">
                 <iframe 
                   className="w-full h-full"
-                  src="https://www.youtube.com/embed/VIDEO_ID_1" 
+                  src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
                   title="Beekeeper Testimonial 1"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -733,7 +733,7 @@ const PollinationSolutions = () => {
               <div className="aspect-video">
                 <iframe 
                   className="w-full h-full"
-                  src="https://www.youtube.com/embed/VIDEO_ID_2" 
+                  src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
                   title="Beekeeper Testimonial 2"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

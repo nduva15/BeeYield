@@ -151,7 +151,7 @@ const PrecisionPollination = () => {
                   All the key metrics for each orchard, from the day the bees are delivered until the day the beekeepers remove them, are displayed on the dashboard.
                 </p>
                 <p className="text-muted-foreground leading-relaxed mb-6">
-                  These include the current frames-per-acre count of the orchards, along with bee activity, flight time, location and temperature for drop points, and more — giving growers complete confidence that they are getting the pollination they have paid for.
+                  These include the current frames-per-acre count of the orchards, along with bee activity, flight time, location and temperature for drop points, and more, giving growers complete confidence that they are getting the pollination they have paid for.
                 </p>
                 <ul className="space-y-3">
                   {["Frames-per-acre count", "Bee activity & flight time", "GPS Location & Temperature"].map((item, i) => (

@@ -185,7 +185,7 @@ const Impact = () => {
         <div className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] h-[70vh] bg-foreground mt-16">
           <iframe
             className="absolute inset-0 w-full h-full"
-            src="https://www.youtube.com/embed/VIDEO_ID_HERE"
+            src="https://www.youtube.com/embed/dQw4w9WgXcQ"
             title="About BeeYield"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

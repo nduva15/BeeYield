@@ -21,7 +21,7 @@ const OurStory = () => {
               The Story of BeeYield
             </h1>
             <p className="text-lg text-muted-foreground sm:text-xl">
-              Born in Kibwezi, Makueni County, Kenya — a story of family, resilience, and a mission to transform pollination.
+              Born in Kibwezi, Makueni County, Kenya, a story of family, resilience, and a mission to transform pollination.
             </p>
           </div>
 
@@ -39,7 +39,7 @@ const OurStory = () => {
               <Card className="border-none bg-primary/5 shadow-none">
                 <CardContent className="p-6 sm:p-8">
                   <blockquote className="text-xl font-medium italic text-foreground sm:text-2xl">
-                    "Where would three beekeepers meet? In our case — around the family dinner table."
+                    "Where would three beekeepers meet? In our case, around the family dinner table."
                   </blockquote>
                 </CardContent>
               </Card>
@@ -58,10 +58,10 @@ const OurStory = () => {
                   In 2020, while the world stood still amid a global pandemic, <strong className="text-foreground">Timothy</strong>, a Strathmore University student, saw an opportunity in the quiet of rural Kibwezi, Makueni County. With just <strong className="text-foreground">half an acre of land and 4 beehives</strong>, BeeYield was born.
                 </p>
                 <p>
-                  What started as a small venture quickly became a family affair. Timothy's two sisters, <strong className="text-foreground">Agatha</strong> and <strong className="text-foreground">Carole</strong>, brought their unique expertise to shape the company's direction — from web development and product design to IoT research, they helped give BeeYield its visibility and technological edge.
+                  What started as a small venture quickly became a family affair. Timothy's two sisters, <strong className="text-foreground">Agatha</strong> and <strong className="text-foreground">Carole</strong>, brought their unique expertise to shape the company's direction, from web development and product design to IoT research, they helped give BeeYield its visibility and technological edge.
                 </p>
                 <p>
-                  Together, the three siblings transformed a modest apiary into something much greater — proving that innovation can flourish anywhere, even in the most unexpected places.
+                  Together, the three siblings transformed a modest apiary into something much greater, proving that innovation can flourish anywhere, even in the most unexpected places.
                 </p>
               </div>
             </div>
@@ -74,7 +74,7 @@ const OurStory = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center mb-12">
             <h2 className="text-3xl font-bold text-foreground sm:text-4xl mb-4">
-              From 4 Hives to 184 — Our Growth Journey
+              From 4 Hives to 184: Our Growth Journey
             </h2>
             <p className="text-muted-foreground">
               What began on half an acre has grown into a thriving 5-acre apiary, fenced and flourishing.
@@ -117,12 +117,12 @@ const OurStory = () => {
               {
                 icon: Users,
                 title: "Family-Driven",
-                desc: "Built by siblings Timothy, Agatha, and Carole — we combine passion with purpose, bringing diverse skills under one shared vision."
+                desc: "Built by siblings Timothy, Agatha, and Carole, we combine passion with purpose, bringing diverse skills under one shared vision."
               },
               {
                 icon: Sprout,
                 title: "Guardians of Nature",
-                desc: "With 2,500+ trees planted, we're not just beekeepers — we're ecosystem builders committed to environmental restoration."
+                desc: "With 2,500+ trees planted, we're not just beekeepers, we're ecosystem builders committed to environmental restoration."
               },
               {
                 icon: Cpu,
@@ -160,10 +160,10 @@ const OurStory = () => {
               </h2>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  Our pollination journey started with traditional methods — moving hives to client farms and letting nature do its work. We successfully pollinated <strong className="text-foreground">25 acres+</strong> of farmland, proving the value of managed pollination services in Kenya.
+                  Our pollination journey started with traditional methods, moving hives to client farms and letting nature do its work. We successfully pollinated <strong className="text-foreground">25 acres+</strong> of farmland, proving the value of managed pollination services in Kenya.
                 </p>
                 <p>
-                  But we knew we could do more. Today, BeeYield is evolving toward <strong className="text-foreground">precision pollination</strong> — leveraging IoT sensors, data analytics, and smart hive management to deliver measurable, optimized pollination outcomes.
+                  But we knew we could do more. Today, BeeYield is evolving toward <strong className="text-foreground">precision pollination</strong>, leveraging IoT sensors, data analytics, and smart hive management to deliver measurable, optimized pollination outcomes.
                 </p>
                 <p>
                   Our goal is to help farmers across the world increase their yields while supporting bee health and biodiversity.
@@ -204,7 +204,7 @@ const OurStory = () => {
                 Join Us on Our Journey
               </h2>
               <p className="text-primary-foreground/80 max-w-2xl mx-auto mb-6">
-                From a family dream in rural Kenya to a growing force in precision pollination — we're just getting started. Partner with us to transform agriculture.
+                From a family dream in rural Kenya to a growing force in precision pollination, we're just getting started. Partner with us to transform agriculture.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button variant="secondary" asChild>
@@ -222,7 +222,7 @@ const OurStory = () => {
       <div className="relative w-full h-[70vh] bg-foreground">
         <iframe
           className="absolute inset-0 w-full h-full"
-          src="https://www.youtube.com/embed/VIDEO_ID_HERE"
+          src="https://www.youtube.com/embed/dQw4w9WgXcQ"
           title="About BeeYield"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

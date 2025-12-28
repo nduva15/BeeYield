@@ -14,6 +14,7 @@ import { ShoppingCart, Leaf, BookOpen, Shirt, Filter, Star, Heart } from "lucide
 
 const Shop = () => {
   const [selectedSizes, setSelectedSizes] = useState<Record<number, string>>({});
+  const [selectedMerchCategory, setSelectedMerchCategory] = useState<string>("All");
 
   const honeyProducts = [
     {
@@ -300,7 +301,7 @@ const Shop = () => {
             The BeeYield <span className="text-primary">Shop</span>
           </h1>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Premium honey, sustainable merch, and expert knowledge — all supporting our mission to revolutionize pollination in Kenya.
+            Premium honey, sustainable merch, and expert knowledge, all supporting our mission to revolutionize pollination in Kenya.
           </p>
           <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
             <span className="flex items-center gap-2 bg-card px-4 py-2 rounded-full border border-border">
@@ -387,7 +388,7 @@ const Shop = () => {
                         <SelectContent>
                           {product.variants.map((variant) => (
                             <SelectItem key={variant.size} value={variant.size}>
-                              {variant.size} — {formatPrice(variant.price)}
+                              {variant.size}, {formatPrice(variant.price)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -408,14 +409,22 @@ const Shop = () => {
           <TabsContent value="merch" className="mt-0">
             <div className="flex flex-wrap gap-2 mb-6">
               {["All", "Unisex", "Women", "Kids", "Accessories"].map((cat) => (
-                <Button key={cat} variant={cat === "All" ? "default" : "outline"} size="sm">
+                <Button
+                  key={cat}
+                  variant={selectedMerchCategory === cat ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setSelectedMerchCategory(cat)}
+                >
                   {cat}
                 </Button>
               ))}
             </div>
-            
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {merchProducts.map((product) => (
+              {merchProducts
+                .filter((product) =>
+                  selectedMerchCategory === "All" ? true : product.category === selectedMerchCategory
+                )
+                .map((product) => (
                 <Card key={product.id} className="group overflow-hidden border-border/50 hover:border-primary/50 hover:shadow-lg transition-all duration-300">
                   <div className="relative aspect-square bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center overflow-hidden">
                     <div className="w-24 h-24 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
