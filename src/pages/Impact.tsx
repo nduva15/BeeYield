@@ -56,14 +56,14 @@ const Impact = () => {
           ))}
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-3">
-          <Card className="lg:col-span-1">
-            <CardContent className="p-6">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+          <Card className="lg:col-span-1 flex flex-col">
+            <CardContent className="p-6 flex flex-col flex-grow">
               <h3 className="mb-4 text-xl font-semibold text-foreground">Pollinator Protection</h3>
               <p className="mb-6 text-muted-foreground">
                 We're committed to protecting bee populations through sustainable beekeeping practices and habitat conservation.
               </p>
-              <div className="space-y-4">
+              <div className="space-y-4 flex-grow">
                 <div>
                   <div className="mb-2 flex justify-between text-sm">
                     <span className="text-foreground">Habitat Conservation</span>
@@ -92,10 +92,10 @@ const Impact = () => {
             </CardContent>
           </Card>
 
-          <Card className="lg:col-span-1">
-            <CardContent className="p-6">
+          <Card className="lg:col-span-1 flex flex-col">
+            <CardContent className="p-6 flex flex-col flex-grow">
               <h3 className="mb-4 text-xl font-semibold text-foreground">Community Impact</h3>
-              <div className="space-y-4 text-muted-foreground">
+              <div className="space-y-4 text-muted-foreground flex-grow">
                 <p>
                   Beyond environmental conservation, BeeYield is dedicated to supporting local beekeeping communities. We provide fair compensation, training, and resources to help our partner beekeepers thrive.
                 </p>
@@ -124,10 +124,10 @@ const Impact = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-primary text-primary-foreground lg:col-span-1">
-            <CardContent className="p-6">
+          <Card className="bg-primary text-primary-foreground lg:col-span-1 flex flex-col">
+            <CardContent className="p-6 flex flex-col flex-grow">
               <h3 className="mb-4 text-xl font-semibold">Our 2030 Goals</h3>
-              <ul className="space-y-3">
+              <ul className="space-y-3 flex-grow">
                 <li className="flex items-center gap-2">
                   <span className="text-lg">✓</span>
                   Protect 10,000 additional beehives
@@ -150,6 +150,32 @@ const Impact = () => {
                 className="mt-6 inline-flex items-center gap-2 bg-primary-foreground text-primary px-4 py-2 rounded-lg font-semibold hover:opacity-90 transition-opacity"
               >
                 Join Our Global Hive Network <ArrowRight className="h-4 w-4" />
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="lg:col-span-1 flex flex-col">
+            <CardContent className="p-6 flex flex-col flex-grow">
+              <h3 className="mb-4 text-xl font-semibold text-foreground">ESG Commitment</h3>
+              <p className="mb-4 text-muted-foreground">
+                Environmental, Social, and Governance principles guide everything we do at BeeYield. We're committed to sustainable practices that benefit bees, beekeepers, and our planet.
+              </p>
+              <ul className="space-y-2 text-muted-foreground mb-6 flex-grow">
+                <li className="flex items-start gap-2">
+                  <span className="text-primary">•</span>
+                  Transparent environmental reporting
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary">•</span>
+                  Ethical supply chain practices
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary">•</span>
+                  Community-first governance
+                </li>
+              </ul>
+              <Link to="/ESG" className="inline-flex items-center gap-2 text-primary hover:underline font-semibold">
+                Explore Our ESG Framework <ArrowRight className="h-4 w-4" />
               </Link>
             </CardContent>
           </Card>
