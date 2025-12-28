@@ -319,7 +319,7 @@ const Shop = () => {
         <div className="container mx-auto px-4 text-center relative z-10">
           <Badge variant="outline" className="mb-4 px-4 py-1">
             <Leaf className="h-3 w-3 mr-1" />
-            From Kibwezi with Love
+            Sustainably sourced with love
           </Badge>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6">
             The BeeYield <span className="text-primary">Shop</span>
