@@ -225,7 +225,7 @@ const CropsWePollinate = () => {
               <div className="absolute top-4 right-4 bg-card/95 backdrop-blur-sm rounded-xl p-4 shadow-lg border">
                 <p className="text-xs text-muted-foreground mb-1">Operating in</p>
                 <p className="text-2xl font-bold text-primary">2 Countries</p>
-                <p className="text-xs text-muted-foreground mt-1">East Africa</p>
+                <p className="text-xs text-muted-foreground mt-1">Africa & Beyond</p>
               </div>
             </div>
           </div>

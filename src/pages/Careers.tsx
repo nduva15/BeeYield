@@ -32,7 +32,7 @@ const Careers = () => {
               <div>
                 <h2 className="text-6xl font-bold mb-6 text-primary">Hi!</h2>
                 <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-                  We get it. Choosing your next job is one of the most important decisions you get to make. After all there's a ton of companies to choose from. All with different cultures and vibes, different levels of compensation, different missions, so in the end it comes down to this — what matters to you, is what matters.
+                  We get it. Choosing your next job is one of the most important decisions you get to make. After all there's a ton of companies to choose from. All with different cultures and vibes, different levels of compensation, different missions, so in the end it comes down to this: what matters to you, is what matters.
                 </p>
               </div>
               <div className="bg-secondary/30 p-8 rounded-2xl border border-secondary">
@@ -128,7 +128,7 @@ const Careers = () => {
                   </div>
                   <h3 className="text-xl font-bold mb-3 text-foreground">Innovation is in our DNA</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">
-                    We're building the world's largest database of bee and pollination knowledge — empowering beekeepers to manage hives right from their smartphones.
+                    We're building the world's largest database of bee and pollination knowledge, empowering beekeepers to manage hives right from their smartphones.
                   </p>
                 </CardContent>
               </Card>

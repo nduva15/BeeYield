@@ -21,7 +21,7 @@ const ESG = () => {
       color: "from-emerald-500 to-green-600",
       initiatives: [
         "2,500+ indigenous trees planted across Kibwezi, Makueni County",
-        "Only 50% honey harvest policy—bees keep what they need",
+        "Only 50% honey harvest policy. Bees keep what they need",
         "Zero chemical pesticides in our apiaries",
         "Water source protection for bee colonies",
         "Carbon footprint reduction through local operations"
@@ -77,7 +77,7 @@ const ESG = () => {
               </h1>
               
               <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-                Environmental, Social, and Governance practices aren't just corporate buzzwords for us—they're the foundation of everything we do at BeeYield. From the semi-arid lands of Kibwezi, Kenya, we're proving that sustainable beekeeping can transform communities and ecosystems.
+                Environmental, Social, and Governance practices aren't just corporate buzzwords for us. They're the foundation of everything we do at BeeYield. From the semi-arid lands of Kibwezi, Kenya, we're proving that sustainable beekeeping can transform communities and ecosystems.
               </p>
               
               <div className="flex flex-wrap justify-center gap-4">
@@ -130,7 +130,7 @@ const ESG = () => {
                   What ESG Means for BeeYield
                 </h2>
                 <p className="text-lg text-muted-foreground">
-                  ESG stands for Environmental, Social, and Governance—three pillars that guide how we operate, make decisions, and measure our success. For a Kenyan agri-tech company working with bees and farmers, these aren't abstract concepts—they're daily realities.
+                  ESG stands for Environmental, Social, and Governance: three pillars that guide how we operate, make decisions, and measure our success. For a Kenyan agri-tech company working with bees and farmers, these aren't abstract concepts. They're daily realities.
                 </p>
               </div>
 
@@ -236,7 +236,7 @@ const ESG = () => {
                     <p className="text-sm italic text-muted-foreground mb-2">
                       "Since BeeYield brought their hives to my farm, my mango harvest has doubled. My family eats better now."
                     </p>
-                    <p className="text-xs font-medium">— Mary Mutua, Farmer, Kibwezi</p>
+                    <p className="text-xs font-medium">Mary Mutua, Farmer, Kibwezi</p>
                   </div>
                 </div>
               </div>
@@ -297,7 +297,7 @@ const ESG = () => {
             <div className="max-w-3xl mx-auto text-center">
               <Quote className="w-12 h-12 text-primary/30 mx-auto mb-6" />
               <blockquote className="text-xl md:text-2xl italic text-foreground mb-8 leading-relaxed">
-                "ESG isn't a report we file once a year—it's how we wake up every morning. Every bee we protect, every farmer we train, every tree we plant is a step toward the Kenya and the Africa we want to see."
+                "ESG isn't a report we file once a year. It's how we wake up every morning. Every bee we protect, every farmer we train, every tree we plant is a step toward the Kenya and the Africa we want to see."
               </blockquote>
               <div className="flex items-center justify-center gap-4">
                 <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
@@ -320,7 +320,7 @@ const ESG = () => {
                 Partner With Us for Impact
               </h2>
               <p className="text-lg text-muted-foreground mb-8">
-                Whether you're a farmer seeking pollination services, an investor aligned with ESG principles, or a beekeeper looking to join our network—we'd love to hear from you.
+                Whether you're a farmer seeking pollination services, an investor aligned with ESG principles, or a beekeeper looking to join our network, we'd love to hear from you.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
                 <Button size="lg" asChild>

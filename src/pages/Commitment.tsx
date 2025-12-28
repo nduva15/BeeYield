@@ -131,7 +131,7 @@ const CommitmentPage = () => {
           <div className="container mx-auto px-4 text-center relative z-10">
             <h2 className="text-4xl md:text-5xl font-bold mb-6">Join Us in Creating Impact</h2>
             <p className="text-xl text-background/80 max-w-2xl mx-auto mb-10">
-              Whether you're a farmer, investor, or sustainability advocate—there's a place for you in our mission to save bees and secure food systems.
+              Whether you're a farmer, investor, or sustainability advocate, there's a place for you in our mission to save bees and secure food systems.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link to="/">
