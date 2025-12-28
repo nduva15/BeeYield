@@ -110,9 +110,6 @@ const CropsWePollinate = () => {
                 <Button size="lg" className="w-full sm:w-auto rounded-full" asChild>
                   <Link to="/contact">Get a Free Consultation</Link>
                 </Button>
-                <Button size="lg" variant="outline" className="w-full sm:w-auto rounded-full" asChild>
-                  <a href="#crops">Explore Crops</a>
-                </Button>
               </div>
             </div>
             
