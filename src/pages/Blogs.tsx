@@ -79,7 +79,7 @@ const Blogs = () => {
   const categories = ["All", "Pollination", "IoT", "Diseases", "Conservation", "Community Development", "Honey", "Sustainability", "Hive Management"];
 
   return (
-    <div className="min-h-screen py-20">
+    <>
       {/* Google Tag Manager (noscript) */}
       <noscript>
         <iframe
@@ -90,79 +90,81 @@ const Blogs = () => {
           title="Google Tag Manager"
         ></iframe>
       </noscript>
-      <div className="container mx-auto px-4">
-        <div className="mb-12 text-center relative rounded-2xl overflow-hidden shadow-xl">
-          {/* Background Image */}
-          <img 
-            src="/placeholder.svg" 
-            alt="Our Blog" 
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-          {/* Overlay for text readability */}
-          <div className="absolute inset-0 bg-black/40" />
-          {/* Content */}
-          <div className="relative z-10 py-16 md:py-24">
-            <h1 className="mb-4 text-5xl font-bold text-white">Our Blog</h1>
-            <p className="text-xl text-white/90">
-              Stories, insights, and education about honey, bees, and sustainability
-            </p>
+      <div className="min-h-screen py-20">
+        <div className="container mx-auto px-4">
+          <div className="mb-12 text-center relative rounded-2xl overflow-hidden shadow-xl">
+            {/* Background Image */}
+            <img 
+              src="/placeholder.svg" 
+              alt="Our Blog" 
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            {/* Overlay for text readability */}
+            <div className="absolute inset-0 bg-black/40" />
+            {/* Content */}
+            <div className="relative z-10 py-16 md:py-24">
+              <h1 className="mb-4 text-5xl font-bold text-white">Our Blog</h1>
+              <p className="text-xl text-white/90">
+                Stories, insights, and education about honey, bees, and sustainability
+              </p>
+            </div>
+          </div>
+
+          <div className="mb-8 flex flex-wrap justify-center gap-2">
+            {categories.map((category) => (
+              <Button
+                key={category}
+                variant={category === "All" ? "default" : "outline"}
+                size="sm"
+              >
+                {category}
+              </Button>
+            ))}
+          </div>
+
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {posts.map((post) => (
+              <Card key={post.id} className="overflow-hidden transition-all hover:shadow-glow">
+                <div className="aspect-video overflow-hidden bg-muted">
+                  <img
+                    src={post.image}
+                    alt={post.title}
+                    className="h-full w-full object-cover transition-transform hover:scale-105"
+                  />
+                </div>
+                <CardContent className="p-6">
+                  <Badge className="mb-3 bg-primary/10 text-primary hover:bg-primary/20">
+                    {post.category}
+                  </Badge>
+                  <h3 className="mb-3 text-xl font-semibold line-clamp-2">{post.title}</h3>
+                  <p className="mb-4 text-sm text-muted-foreground line-clamp-3">{post.excerpt}</p>
+                  <div className="mb-4 flex items-center gap-4 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="h-3 w-3" />
+                      <span>{post.date}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      <span>{post.readTime}</span>
+                    </div>
+                  </div>
+                  <Button variant="ghost" className="group -ml-3 p-0">
+                    Read More
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="mt-12 text-center">
+            <Button size="lg" variant="outline">
+              Load More Articles
+            </Button>
           </div>
         </div>
-
-        <div className="mb-8 flex flex-wrap justify-center gap-2">
-          {categories.map((category) => (
-            <Button
-              key={category}
-              variant={category === "All" ? "default" : "outline"}
-              size="sm"
-            >
-              {category}
-            </Button>
-          ))}
-        </div>
-
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post) => (
-            <Card key={post.id} className="overflow-hidden transition-all hover:shadow-glow">
-              <div className="aspect-video overflow-hidden bg-muted">
-                <img
-                  src={post.image}
-                  alt={post.title}
-                  className="h-full w-full object-cover transition-transform hover:scale-105"
-                />
-              </div>
-              <CardContent className="p-6">
-                <Badge className="mb-3 bg-primary/10 text-primary hover:bg-primary/20">
-                  {post.category}
-                </Badge>
-                <h3 className="mb-3 text-xl font-semibold line-clamp-2">{post.title}</h3>
-                <p className="mb-4 text-sm text-muted-foreground line-clamp-3">{post.excerpt}</p>
-                <div className="mb-4 flex items-center gap-4 text-xs text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
-                    <span>{post.date}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    <span>{post.readTime}</span>
-                  </div>
-                </div>
-                <Button variant="ghost" className="group -ml-3 p-0">
-                  Read More
-                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        <div className="mt-12 text-center">
-          <Button size="lg" variant="outline">
-            Load More Articles
-          </Button>
-        </div>
       </div>
-    </div>
+    </>
   );
 };
 
