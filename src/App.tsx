@@ -4,6 +4,18 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
+// Google Tag Manager noscript
+const GTMNoScript = () => (
+  <noscript>
+    <iframe
+      src="https://www.googletagmanager.com/ns.html?id=GTM-KF284247"
+      height="0"
+      width="0"
+      style={{ display: "none", visibility: "hidden" }}
+      title="Google Tag Manager"
+    ></iframe>
+  </noscript>
+);
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Impact from "./pages/Impact";
@@ -33,45 +45,48 @@ import BeeLearn from "./pages/BeeLearn";
 
 const queryClient = new QueryClient();
 
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/impact" element={<Impact />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/blogs" element={<Blogs />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/traceability" element={<Traceability />} />
-            <Route path="/PollinationServices" element={<Home />} />
-            <Route path="/PollinationRequest" element={<PollinationRequest />} />
-            <Route path="/pollination-request" element={<PollinationRequest />} />
-            <Route path="/Commitment" element={<CommitmentPage />} />
-            <Route path="/ESG" element={<ESG />} />
-            <Route path="/esg" element={<ESG />} />
-            <Route path="/ourstory" element={<OurStory />} />
-            <Route path="/crops-we-pollinate" element={<CropsWePollinate />} />
-            <Route path="/team" element={<Team />} />
-            <Route path="/InLandPollinationPlatform" element={<InLandPollinationPlatform />} />
-            <Route path="/PrecisionPollination" element={<PrecisionPollination />} />
-            <Route path="/PollinationSolutions" element={<PollinationSolutions />} />
-            <Route path="/careers" element={<Careers />} />
-            <Route path="/GlobalHiveNetwork" element={<GlobalHiveNetwork />} />
-            <Route path="/Media" element={<Media />} />
-            <Route path="/HoneyLanding" element={<HoneyLanding />} />
+        <>
+          <GTMNoScript />
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/impact" element={<Impact />} />
+              <Route path="/shop" element={<Shop />} />
+              <Route path="/blogs" element={<Blogs />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/traceability" element={<Traceability />} />
+              <Route path="/PollinationServices" element={<Home />} />
+              <Route path="/PollinationRequest" element={<PollinationRequest />} />
+              <Route path="/pollination-request" element={<PollinationRequest />} />
+              <Route path="/Commitment" element={<CommitmentPage />} />
+              <Route path="/ESG" element={<ESG />} />
+              <Route path="/esg" element={<ESG />} />
+              <Route path="/ourstory" element={<OurStory />} />
+              <Route path="/crops-we-pollinate" element={<CropsWePollinate />} />
+              <Route path="/team" element={<Team />} />
+              <Route path="/InLandPollinationPlatform" element={<InLandPollinationPlatform />} />
+              <Route path="/PrecisionPollination" element={<PrecisionPollination />} />
+              <Route path="/PollinationSolutions" element={<PollinationSolutions />} />
+              <Route path="/careers" element={<Careers />} />
+              <Route path="/GlobalHiveNetwork" element={<GlobalHiveNetwork />} />
+              <Route path="/Media" element={<Media />} />
+              <Route path="/HoneyLanding" element={<HoneyLanding />} />
 
-            {/* Learn Landing Page */}
-            <Route path="/BeeLearn" element={<BeeLearn />} />
+              {/* Learn Landing Page */}
+              <Route path="/BeeLearn" element={<BeeLearn />} />
 
-
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Layout>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Layout>
+        </>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
