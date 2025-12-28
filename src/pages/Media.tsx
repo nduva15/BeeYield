@@ -2,7 +2,22 @@ import { Download, ArrowRight, FileText, Image, Video, Users, Award } from "luci
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
+import { useEffect } from "react";
 const Media = () => {
+  useEffect(() => {
+    // Inject GTM script into head
+    const script = document.createElement('script');
+    script.innerHTML = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-KF284247');`;
+    script.async = true;
+    document.head.appendChild(script);
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
   const pressReleases = [
     "BeeYield Establishes Regional Headquarters in Kenya, Growing its Local Presence & Supporting Pollination of Multiple Crops",
     "BeeYield Achieves 10 Million Hive Samples Daily With Its In-Hive Sensors",
@@ -22,6 +37,16 @@ const Media = () => {
 
   return (
     <>
+      {/* Google Tag Manager (noscript) */}
+      <noscript>
+        <iframe
+          src="https://www.googletagmanager.com/ns.html?id=GTM-KF284247"
+          height="0"
+          width="0"
+          style={{ display: "none", visibility: "hidden" }}
+          title="Google Tag Manager"
+        ></iframe>
+      </noscript>
       {/* Hero Section */}
       <section className="relative py-24 bg-gradient-to-b from-secondary/30 to-background overflow-hidden">
         <div className="container mx-auto px-4 text-center max-w-4xl">

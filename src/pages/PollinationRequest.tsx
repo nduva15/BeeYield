@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,20 @@ import { useToast } from "@/hooks/use-toast";
 import { Calendar, MapPin, Sprout } from "lucide-react";
 
 const PollinationRequest = () => {
+  useEffect(() => {
+    // Inject GTM script into head
+    const script = document.createElement('script');
+    script.innerHTML = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-KF284247');`;
+    script.async = true;
+    document.head.appendChild(script);
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
@@ -48,6 +62,16 @@ const PollinationRequest = () => {
 
   return (
     <div className="min-h-screen py-20">
+      {/* Google Tag Manager (noscript) */}
+      <noscript>
+        <iframe
+          src="https://www.googletagmanager.com/ns.html?id=GTM-KF284247"
+          height="0"
+          width="0"
+          style={{ display: "none", visibility: "hidden" }}
+          title="Google Tag Manager"
+        ></iframe>
+      </noscript>
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-3xl">
           <div className="mb-12 text-center">

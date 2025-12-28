@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,6 +6,20 @@ import { QrCode, MapPin, Calendar, Leaf, Info, Heart, Shield, Droplets, Home, Us
 import { useToast } from "@/hooks/use-toast";
 
 const Traceability = () => {
+  useEffect(() => {
+    // Inject GTM script into head
+    const script = document.createElement('script');
+    script.innerHTML = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-KF284247');`;
+    script.async = true;
+    document.head.appendChild(script);
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
   const [qrCode, setQrCode] = useState("");
   const [showResults, setShowResults] = useState(false);
   const { toast } = useToast();
@@ -42,6 +56,16 @@ const Traceability = () => {
 
   return (
     <div className="min-h-screen">
+      {/* Google Tag Manager (noscript) */}
+      <noscript>
+        <iframe
+          src="https://www.googletagmanager.com/ns.html?id=GTM-KF284247"
+          height="0"
+          width="0"
+          style={{ display: "none", visibility: "hidden" }}
+          title="Google Tag Manager"
+        ></iframe>
+      </noscript>
       {/* Hero Section */}
       <div className="bg-gradient-to-b from-primary/10 to-background py-12 sm:py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-12">
