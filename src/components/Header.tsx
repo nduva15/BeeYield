@@ -18,16 +18,15 @@ const Header = () => {
 
   const menuLinks = [
     { to: "/GlobalHiveNetwork", label: "Global Hive Network" },
-    { to: "/About", label: "About Us" },
+    { to: "/OurStory", label: "Our Story" },
     { to: "/impact", label: "Our Impact" },
-    { to: "/Shop", label: "Shop" },
-    { to: "/careers", label: "Careers" },
     { to: "/Media", label: "Media" },
     { to: "/blogs", label: "Blog" },
     { to: "/contact", label: "Contact Us" },
-    { to: "/OurStory", label: "Our Story" },
     { to: "/esg", label: "ESG" },
     { to: "/commitment", label: "Commitment" },
+    { to: "/About", label: "About Us" },
+    { to: "/careers", label: "Careers" },
     { to: "/Team", label: "Team" },
   ];
 
