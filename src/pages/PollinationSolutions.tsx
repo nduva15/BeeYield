@@ -198,7 +198,7 @@ const PollinationSolutions = () => {
               <div className="bg-muted/50 rounded-xl p-6 mb-8">
                 <h3 className="font-semibold text-foreground mb-4">Tackling the Bee Mortality Crisis</h3>
                 <p className="text-muted-foreground text-sm mb-4">
-                  Globally, bee colony mortality rates average <strong className="text-foreground">30-40%</strong> annually. In Africa, some regions experience losses as high as <strong className="text-foreground">60%</strong> due to climate change, habitat loss, and limited access to monitoring technology.
+                  Globally, bee colony mortality rates average <strong className="text-foreground">30-40%</strong> annually. In parts of Africa and the world, some regions experience losses as high as <strong className="text-foreground">60%</strong> due to climate change, habitat loss, and limited access to monitoring technology.
                 </p>
                 <div className="grid grid-cols-2 gap-4 mt-4">
                   <div className="bg-background rounded-lg p-4 text-center">

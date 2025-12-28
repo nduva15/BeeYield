@@ -17,7 +17,7 @@ const CommitmentPage = () => {
     {
       number: 2,
       title: "Zero Hunger",
-      description: "75% of food crops rely on pollinators. Our pollination services directly boost agricultural yields, ensuring food security for communities across Africa.",
+      description: "75% of food crops rely on pollinators. Our pollination services directly boost agricultural yields, ensuring food security for communities across Africa and the world.",
       impact: "25 acres pollinated, increasing crop yields by up to 40%",
       color: "bg-amber-500",
       icon: Wheat,

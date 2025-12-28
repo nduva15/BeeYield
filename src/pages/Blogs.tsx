@@ -44,7 +44,7 @@ const Blogs = () => {
     {
       id: 5,
       title: "Understanding Pollination Services",
-      excerpt: "How precision pollination technology is transforming agricultural productivity across Africa.",
+      excerpt: "How precision pollination technology is transforming agricultural productivity across Africa and the world.",
       category: "Pollination",
       date: "February 20, 2024",
       readTime: "7 min read",
