@@ -9,7 +9,7 @@ const Team = () => {
       role: "CEO & Founder", 
       description: "Visionary leader driving BeeYield's mission to revolutionize pollination through technology.",
       image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400",
-      linkedin: "#"
+      linkedin: "https://www.linkedin.com/in/timothymathuva/"
     },
     { 
       name: "Carole Mathuva", 

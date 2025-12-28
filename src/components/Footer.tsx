@@ -75,7 +75,9 @@ const Footer = () => {
                 <Twitter className="h-5 w-5" />
               </a>
               <a href="#" title="LinkedIn" className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2">
-                <Linkedin className="h-5 w-5" />
+                <a href="https://www.linkedin.com/company/beeyield/" title="LinkedIn" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2">
+                  <Linkedin className="h-5 w-5" />
+                </a>
               </a>
             </div>
           </div>
