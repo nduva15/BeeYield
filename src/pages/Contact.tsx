@@ -16,19 +16,19 @@ const Contact = () => {
   ];
 
   return (
-    <div className="min-h-screen py-20">
+    <div className="min-h-screen py-12 sm:py-20">
       <div className="container mx-auto px-4">
         
         {/* Header */}
-        <div className="mx-auto max-w-3xl text-center mb-12">
-          <h1 className="mb-6 text-5xl font-bold">Contact Us Today</h1>
-          <p className="mb-12 text-xl text-muted-foreground">
+        <div className="mx-auto max-w-3xl text-center mb-8 sm:mb-12">
+          <h1 className="mb-4 sm:mb-6 text-3xl sm:text-4xl md:text-5xl font-bold">Contact Us Today</h1>
+          <p className="mb-8 sm:mb-12 text-base sm:text-xl text-muted-foreground">
             Fill in the form, and we will get back to you at our earliest convenience.
           </p>
         </div>
 
         {/* Tabs */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-8 sm:mb-12 max-w-4xl mx-auto">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;

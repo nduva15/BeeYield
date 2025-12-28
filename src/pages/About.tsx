@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 const About = () => {
   return (
     <div className="min-h-screen">
-      <div className="container mx-auto px-4 py-20">
+      <div className="container mx-auto px-4 py-12 sm:py-20">
         <div className="mx-auto max-w-3xl text-center">
-          <h1 className="mb-6 text-5xl font-bold">About BeeYield</h1>
-          <p className="mb-12 text-xl text-muted-foreground">
+          <h1 className="mb-4 sm:mb-6 text-3xl sm:text-4xl md:text-5xl font-bold">About BeeYield</h1>
+          <p className="mb-8 sm:mb-12 text-base sm:text-xl text-muted-foreground">
             Born from a family's shared vision in rural Kenya, we're on a mission to solve the global pollination crisis through precision pollination and ecosystem guardianship.
           </p>
         </div>
