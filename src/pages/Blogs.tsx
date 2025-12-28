@@ -2,9 +2,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
-
-const Blogs = () => {
 import { useEffect } from "react";
+
 const Blogs = () => {
   useEffect(() => {
     // Inject GTM script into head
@@ -81,6 +80,16 @@ const Blogs = () => {
 
   return (
     <div className="min-h-screen py-20">
+      {/* Google Tag Manager (noscript) */}
+      <noscript>
+        <iframe
+          src="https://www.googletagmanager.com/ns.html?id=GTM-KF284247"
+          height="0"
+          width="0"
+          style={{ display: "none", visibility: "hidden" }}
+          title="Google Tag Manager"
+        ></iframe>
+      </noscript>
       <div className="container mx-auto px-4">
         <div className="mb-12 text-center relative rounded-2xl overflow-hidden shadow-xl">
           {/* Background Image */}
@@ -154,16 +163,6 @@ const Blogs = () => {
         </div>
       </div>
     </div>
-      {/* Google Tag Manager (noscript) */}
-      <noscript>
-        <iframe
-          src="https://www.googletagmanager.com/ns.html?id=GTM-KF284247"
-          height="0"
-          width="0"
-          style={{ display: "none", visibility: "hidden" }}
-          title="Google Tag Manager"
-        ></iframe>
-      </noscript>
   );
 };
 
