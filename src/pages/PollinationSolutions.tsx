@@ -104,34 +104,34 @@ const PollinationSolutions = () => {
         </div>
       </section>
 
-      {/* One Small Sensor Section */}
+      {/* Disease Detection & Colony Monitoring */}
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <Badge className="mb-4 bg-primary/20 text-primary border-primary/30">
-              Revolutionary Technology
+              Advanced Monitoring
             </Badge>
             <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
-              One Small Sensor, One Giant Leap for Beekeeping
+              Disease Detection & Colony Monitoring
             </h2>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              The BeeYield sensor installs in a minute. From that minute on, it tracks all the key metrics of the hive to give you complete visibility into colony health and status.
+              Our sensors provide continuous, buffered data streams—temperature, humidity, weight, sound, and GPS—enabling early disease detection and proactive colony management.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {/* In-Hive Sensors */}
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {/* Continuous Data Collection */}
             <Card className="border-border/50 bg-card/50 backdrop-blur hover:shadow-lg transition-all duration-300">
               <CardContent className="p-8">
                 <div className="w-16 h-16 rounded-2xl bg-primary/20 flex items-center justify-center mb-6">
                   <Cpu className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="text-2xl font-bold text-foreground mb-4">In-Hive Sensors</h3>
+                <h3 className="text-2xl font-bold text-foreground mb-4">Continuous Data</h3>
                 <p className="text-muted-foreground mb-6">
-                  Small IoT (Internet of Things) sensors capture key metrics from the colony including temperature, humidity, light levels, location, hive orientation, and most importantly, the acoustic signature of the hive.
+                  Our sensors provide continuous, buffered data streams to give you complete visibility into colony health around the clock.
                 </p>
                 <ul className="space-y-3">
-                  {["Temperature & humidity", "Acoustic signatures", "Light levels", "Hive orientation"].map((item) => (
+                  {["Temperature & humidity", "Weight monitoring", "Acoustic analysis", "GPS tracking"].map((item) => (
                     <li key={item} className="flex items-center gap-3 text-foreground">
                       <Check className="w-5 h-5 text-primary" />
                       {item}
@@ -141,18 +141,39 @@ const PollinationSolutions = () => {
               </CardContent>
             </Card>
 
-            {/* Gateways */}
+            {/* Smart Alerts */}
             <Card className="border-border/50 bg-card/50 backdrop-blur hover:shadow-lg transition-all duration-300">
               <CardContent className="p-8">
-                <div className="w-16 h-16 rounded-2xl bg-accent/20 flex items-center justify-center mb-6">
-                  <Wifi className="w-8 h-8 text-accent-foreground" />
+                <div className="w-16 h-16 rounded-2xl bg-destructive/20 flex items-center justify-center mb-6">
+                  <Shield className="w-8 h-8 text-destructive" />
                 </div>
-                <h3 className="text-2xl font-bold text-foreground mb-4">Gateways</h3>
+                <h3 className="text-2xl font-bold text-foreground mb-4">Smart Alerts</h3>
                 <p className="text-muted-foreground mb-6">
-                  The Gateway logs the data from the sensors and transmits it directly to the cloud using its onboard cellular modem. No complex setup required.
+                  Motion/weight anomalies and GPS movement trigger instant alerts, helping you detect theft, swarming, or disease before it spreads.
                 </p>
                 <ul className="space-y-3">
-                  {["Cellular connectivity", "Cloud transmission", "Long-range coverage", "Weather resistant"].map((item) => (
+                  {["Weight anomaly detection", "GPS movement alerts", "Swarm prediction", "Disease early warning"].map((item) => (
+                    <li key={item} className="flex items-center gap-3 text-foreground">
+                      <Check className="w-5 h-5 text-primary" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* Honey Production */}
+            <Card className="border-border/50 bg-card/50 backdrop-blur hover:shadow-lg transition-all duration-300">
+              <CardContent className="p-8">
+                <div className="w-16 h-16 rounded-2xl bg-amber-500/20 flex items-center justify-center mb-6">
+                  <TrendingUp className="w-8 h-8 text-amber-500" />
+                </div>
+                <h3 className="text-2xl font-bold text-foreground mb-4">Honey Production</h3>
+                <p className="text-muted-foreground mb-6">
+                  Track honey production in real-time through weight monitoring. Know exactly when your hives are ready for harvest and optimize yield.
+                </p>
+                <ul className="space-y-3">
+                  {["Real-time weight tracking", "Harvest timing alerts", "Production forecasting", "Yield optimization"].map((item) => (
                     <li key={item} className="flex items-center gap-3 text-foreground">
                       <Check className="w-5 h-5 text-primary" />
                       {item}
