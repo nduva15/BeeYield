@@ -24,6 +24,7 @@ const CropsWePollinate = () => {
       document.head.removeChild(script);
     };
   }, []);
+
   const crops = [
     {
       name: "Maize",
@@ -82,46 +83,40 @@ const CropsWePollinate = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Google Tag Manager (noscript) */}
-      <noscript>
-        <iframe
-          src="https://www.googletagmanager.com/ns.html?id=GTM-KF284247"
-          height="0"
-          width="0"
-          style={{ display: "none", visibility: "hidden" }}
-          title="Google Tag Manager"
-        ></iframe>
-      </noscript>
+      <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KF284247" height="0" width="0" style={{display:'none',visibility:'hidden'}}></iframe></noscript>
+
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-secondary/20 py-20 md:py-32">
-        <div className="container mx-auto px-4">
-          <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
+      <section className="relative min-h-[70vh] flex items-center overflow-hidden bg-gradient-to-br from-primary/10 via-background to-accent/10">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,hsl(var(--primary)/0.1),transparent_50%)]" />
+        <div className="container mx-auto px-4 py-20 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
-              <Badge variant="secondary" className="rounded-full px-4 py-1.5 text-sm font-medium">
+              <Badge variant="outline" className="border-primary/30 text-primary px-4 py-2">
                 Precision Agriculture
               </Badge>
-              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
                 Get Data-Driven <br />
                 <span className="text-primary">Crop Pollination</span>
               </h1>
-              <p className="max-w-xl text-base sm:text-lg text-muted-foreground">
+              <p className="text-lg text-muted-foreground max-w-xl">
                 Our end-to-end solution gives unprecedented control and visibility into pollination, ensuring 40% crop yields and sustainable practices.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="w-full sm:w-auto rounded-full" asChild>
-                  <Link to="/contact">Get a Free Consultation</Link>
+              <div className="flex flex-wrap gap-4">
+                <Button size="lg" className="bg-primary hover:bg-primary/90" asChild>
+                  Get a Free Consultation
                 </Button>
               </div>
             </div>
-            
+
             <div className="relative hidden lg:block">
-              {/* Decorative grid of crop images */}
-              <div className="absolute -right-4 -top-4 h-32 w-32 rounded-2xl bg-primary/20 blur-3xl" />
-              <div className="absolute -bottom-8 -left-8 h-40 w-40 rounded-full bg-secondary/30 blur-3xl" />
-              <div className="grid grid-cols-2 gap-4">
-                <img src={crops[0].image} alt={crops[0].name} className="h-48 w-full rounded-2xl object-cover shadow-lg" />
-                <img src={crops[2].image} alt={crops[2].name} className="h-48 w-full rounded-2xl object-cover shadow-lg mt-8" />
-                <img src={crops[4].image} alt={crops[4].name} className="h-48 w-full rounded-2xl object-cover shadow-lg -mt-4" />
-                <img src={crops[5].image} alt={crops[5].name} className="h-48 w-full rounded-2xl object-cover shadow-lg mt-4" />
+              {/* Decorative grid of crop images - Using Sisal and Oranges */}
+              <div className="absolute -top-10 -right-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
+              <div className="absolute -bottom-10 -left-10 w-72 h-72 bg-accent/10 rounded-full blur-3xl" />
+              <div className="grid grid-cols-2 gap-4 relative">
+                <img src="https://images.unsplash.com/photo-1509587584298-0f3b3a3a1797?auto=format&fit=crop&q=80&w=400" alt="Sisal plantation" className="rounded-2xl shadow-xl h-48 w-full object-cover" />
+                <img src="https://images.unsplash.com/photo-1547514701-42782101795e?auto=format&fit=crop&q=80&w=400" alt="Orange orchard" className="rounded-2xl shadow-xl h-48 w-full object-cover mt-8" />
+                <img src="https://images.unsplash.com/photo-1547514701-42782101795e?auto=format&fit=crop&q=80&w=400" alt="Fresh oranges" className="rounded-2xl shadow-xl h-48 w-full object-cover" />
+                <img src="https://images.unsplash.com/photo-1509587584298-0f3b3a3a1797?auto=format&fit=crop&q=80&w=400" alt="Sisal field" className="rounded-2xl shadow-xl h-48 w-full object-cover mt-8" />
               </div>
             </div>
           </div>
@@ -129,43 +124,43 @@ const CropsWePollinate = () => {
       </section>
 
       {/* Expert Section */}
-      <section className="py-20 bg-secondary/30">
+      <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold md:text-4xl mb-4">Work With the Pollination Experts</h2>
-          <div className="w-24 h-1 bg-primary mx-auto mb-8 rounded-full" />
-          <p className="max-w-3xl mx-auto text-base sm:text-lg text-muted-foreground mb-12 px-4">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Work With the Pollination Experts</h2>
+          <div className="w-24 h-1 bg-primary mx-auto mb-8" />
+          <p className="text-lg text-muted-foreground max-w-4xl mx-auto mb-12">
             BeeYield is comprised of leading experts in the field of pollination. Bee biologists and researchers, data-science experts, electrical engineers, leading agronomists, and veteran beekeepers make up our team, and all are committed to creating improved pollination outcomes for our customers.
           </p>
           
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 sm:gap-8 max-w-5xl mx-auto px-4">
-            <Card className="bg-card border-none shadow-lg">
-              <CardContent className="p-4 sm:p-8 text-center">
-                <p className="text-2xl sm:text-4xl font-bold text-primary mb-2">25+</p>
-                <p className="text-muted-foreground font-medium text-xs sm:text-base">Acres Managed</p>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+            <Card className="bg-card border-border/50">
+              <CardContent className="p-6 text-center">
+                <p className="text-4xl font-bold text-primary mb-2">25+</p>
+                <p className="text-sm text-muted-foreground">Acres Managed</p>
               </CardContent>
             </Card>
-            <Card className="bg-card border-none shadow-lg">
-              <CardContent className="p-4 sm:p-8 text-center">
-                <p className="text-2xl sm:text-4xl font-bold text-primary mb-2">1</p>
-                <p className="text-muted-foreground font-medium text-xs sm:text-base">Countries</p>
+            <Card className="bg-card border-border/50">
+              <CardContent className="p-6 text-center">
+                <p className="text-4xl font-bold text-primary mb-2">1</p>
+                <p className="text-sm text-muted-foreground">Countries</p>
               </CardContent>
             </Card>
-            <Card className="bg-card border-none shadow-lg">
-              <CardContent className="p-4 sm:p-8 text-center">
-                <p className="text-2xl sm:text-4xl font-bold text-primary mb-2">2</p>
-                <p className="text-muted-foreground font-medium text-xs sm:text-base">Counties</p>
+            <Card className="bg-card border-border/50">
+              <CardContent className="p-6 text-center">
+                <p className="text-4xl font-bold text-primary mb-2">2</p>
+                <p className="text-sm text-muted-foreground">Counties</p>
               </CardContent>
             </Card>
-            <Card className="bg-card border-none shadow-lg">
-              <CardContent className="p-4 sm:p-8 text-center">
-                <p className="text-2xl sm:text-4xl font-bold text-primary mb-2">1</p>
-                <p className="text-muted-foreground font-medium text-xs sm:text-base">Continents</p>
+            <Card className="bg-card border-border/50">
+              <CardContent className="p-6 text-center">
+                <p className="text-4xl font-bold text-primary mb-2">1</p>
+                <p className="text-sm text-muted-foreground">Continents</p>
               </CardContent>
             </Card>
-            <Card className="bg-card border-none shadow-lg col-span-2 sm:col-span-1">
-              <CardContent className="p-4 sm:p-8 text-center">
-                <p className="text-2xl sm:text-4xl font-bold text-primary mb-2">9+</p>
-                <p className="text-muted-foreground font-medium text-xs sm:text-base">Crop Varieties</p>
+            <Card className="bg-card border-border/50">
+              <CardContent className="p-6 text-center">
+                <p className="text-4xl font-bold text-primary mb-2">9+</p>
+                <p className="text-sm text-muted-foreground">Crop Varieties</p>
               </CardContent>
             </Card>
           </div>
@@ -176,31 +171,34 @@ const CropsWePollinate = () => {
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <Badge variant="outline" className="rounded-full px-4 py-1.5 mb-4">
+            <Badge variant="outline" className="border-primary/30 text-primary mb-4">
               <Globe className="w-4 h-4 mr-2" />
               Global Presence
             </Badge>
-            <h2 className="text-3xl font-bold md:text-4xl mb-4">Where We Operate</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Where We Operate</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               BeeYield is expanding its precision pollination services across Africa and the world, starting with our home base in Kenya.
             </p>
           </div>
 
-          <div className="relative max-w-6xl mx-auto">
-            <div className="relative bg-secondary/20 rounded-3xl p-4 md:p-8 overflow-hidden">
+          <div className="max-w-5xl mx-auto">
+            <div className="relative bg-card rounded-3xl border border-border/50 p-8 overflow-hidden">
               {/* Accurate World Map */}
-              <div className="w-full">
-                <ComposableMap projection="geoNaturalEarth1" className="w-full">
+              <div className="w-full h-[400px]">
+                <ComposableMap projectionConfig={{ scale: 147 }}>
                   <Geographies geography={geoUrl}>
                     {({ geographies }) =>
                       geographies.map((geo) => (
                         <Geography
                           key={geo.rsmKey}
                           geography={geo}
+                          fill={geo.properties.name === "Kenya" ? "hsl(var(--primary))" : "hsl(var(--muted))"}
+                          stroke="hsl(var(--border))"
+                          strokeWidth={0.5}
                           style={{
-                            default: { fill: "hsl(var(--muted))", stroke: "hsl(var(--border))", strokeWidth: 0.5 },
-                            hover: { fill: "hsl(var(--secondary)/0.6)", outline: "none" },
-                            pressed: { fill: "hsl(var(--secondary)/0.8)", outline: "none" },
+                            default: { outline: "none" },
+                            hover: { outline: "none", fill: geo.properties.name === "Kenya" ? "hsl(var(--primary))" : "hsl(var(--accent))" },
+                            pressed: { outline: "none" }
                           }}
                         />
                       ))
@@ -209,38 +207,37 @@ const CropsWePollinate = () => {
 
                   {/* Kenya marker (Nairobi) */}
                   <Marker coordinates={[36.8219, -1.2921]}>
-                    <g className="animate-ping opacity-75">
-                      <circle r={8} fill="hsl(var(--primary-foreground))" />
-                    </g>
-                    <circle r={6} fill="hsl(var(--primary-foreground))" />
-                    <circle r={3} fill="hsl(var(--primary))" />
-                    <text y={-12} className="text-[11px]" fill="hsl(var(--foreground))" fontWeight={700}>
+                    <circle r={8} fill="hsl(var(--primary))" stroke="#fff" strokeWidth={2} />
+                    <circle r={12} fill="hsl(var(--primary))" fillOpacity={0.3}>
+                      <animate attributeName="r" from="8" to="20" dur="1.5s" repeatCount="indefinite" />
+                      <animate attributeName="opacity" from="0.6" to="0" dur="1.5s" repeatCount="indefinite" />
+                    </circle>
+                    <text textAnchor="middle" y={-20} className="fill-foreground text-sm font-semibold">
                       Kenya
                     </text>
                   </Marker>
-
                 </ComposableMap>
               </div>
 
               {/* Legend */}
-              <div className="absolute bottom-4 left-4 bg-card/95 backdrop-blur-sm rounded-xl p-4 shadow-lg border">
-                <p className="text-sm font-semibold mb-3 flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-primary" />
-                  Active Regions
-                </p>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded-full bg-primary animate-pulse" />
-                    <span className="text-sm text-muted-foreground">Kenya (Headquarters)</span>
+              <div className="absolute bottom-8 left-8 bg-background/80 backdrop-blur-sm rounded-xl p-4 border border-border/50">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-3 h-3 rounded-full bg-primary" />
+                  <span className="text-sm font-medium">Active Regions</span>
+                </div>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <MapPin className="w-4 h-4 text-primary" />
+                    Kenya (Headquarters)
                   </div>
                 </div>
               </div>
 
               {/* Stats overlay */}
-              <div className="absolute top-4 right-4 bg-card/95 backdrop-blur-sm rounded-xl p-4 shadow-lg border">
-                <p className="text-xs text-muted-foreground mb-1">Operating in</p>
-                <p className="text-2xl font-bold text-primary">1 Country</p>
-                <p className="text-xs text-muted-foreground mt-1">Africa & Beyond</p>
+              <div className="absolute top-8 right-8 bg-primary text-primary-foreground rounded-xl p-4">
+                <p className="text-sm opacity-80">Operating in</p>
+                <p className="text-2xl font-bold">1 Country</p>
+                <p className="text-sm opacity-80">Africa & Beyond</p>
               </div>
             </div>
           </div>
@@ -248,41 +245,30 @@ const CropsWePollinate = () => {
       </section>
 
       {/* Crops Grid */}
-      <section id="crops" className="py-20 bg-secondary/10">
+      <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           {/* Crop Navigation Pills */}
           <div className="flex flex-wrap justify-center gap-3 mb-12">
             {crops.map((c, i) => (
-              <Badge 
-                key={i} 
-                variant="outline" 
-                className="px-4 py-2 text-sm cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors rounded-full"
-              >
+              <Badge key={i} variant="outline" className="px-4 py-2 text-sm cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors">
                 {c.name}
               </Badge>
             ))}
           </div>
 
           {/* Crops Cards */}
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {crops.map((crop, index) => (
-              <Card key={index} className="overflow-hidden border-none shadow-lg hover:shadow-xl transition-shadow group">
+              <Card key={index} className="overflow-hidden group hover:shadow-xl transition-all duration-300 border-border/50">
                 <div className="relative h-48 overflow-hidden">
-                  <img 
-                    src={crop.image} 
-                    alt={crop.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  <h3 className="absolute bottom-4 left-4 text-2xl font-bold text-white">{crop.name}</h3>
+                  <img src={crop.image} alt={crop.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
+                  <h3 className="absolute bottom-4 left-4 text-2xl font-bold text-foreground">{crop.name}</h3>
                 </div>
                 <CardContent className="p-6">
-                  <p className="text-muted-foreground text-sm leading-relaxed mb-4">
+                  <p className="text-muted-foreground leading-relaxed">
                     {crop.desc}
                   </p>
-                  {/* <Button variant="link" className="p-0 h-auto text-primary">
-                    View Case Study <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button> */}
                 </CardContent>
               </Card>
             ))}
@@ -291,26 +277,26 @@ const CropsWePollinate = () => {
       </section>
 
       {/* Missing Crop CTA */}
-      <section className="py-20 bg-primary text-primary-foreground relative overflow-hidden">
+      <section className="relative py-24 bg-primary text-primary-foreground overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
             <pattern id="hexagons" width="10" height="10" patternUnits="userSpaceOnUse">
-              <path d="M5 0 L10 2.5 L10 7.5 L5 10 L0 7.5 L0 2.5 Z" fill="none" stroke="currentColor" strokeWidth="0.5" />
+              <path d="M5 0L10 2.5V7.5L5 10L0 7.5V2.5L5 0Z" fill="none" stroke="currentColor" strokeWidth="0.5" />
             </pattern>
             <rect width="100%" height="100%" fill="url(#hexagons)" />
           </svg>
         </div>
-        
+
         <div className="container mx-auto px-4 text-center relative z-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-foreground/20 mb-6">
-            <Flower2 className="w-8 h-8" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary-foreground/10 mb-6">
+            <Flower2 className="w-10 h-10" />
           </div>
-          <h2 className="text-3xl font-bold md:text-4xl mb-4">Don't See Your Crop?</h2>
-          <p className="max-w-2xl mx-auto text-primary-foreground/80 mb-8">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Don't See Your Crop?</h2>
+          <p className="text-lg opacity-90 max-w-2xl mx-auto mb-8">
             If your crop relies on bees for pollination, we would love to talk to see how we can improve your pollination. Whether through optimized placement, more precise timing of bee removal, or simply more efficient and cost-effective outcomes.
           </p>
-          <Button size="lg" variant="secondary" className="rounded-full" asChild>
+          <Button size="lg" variant="secondary" className="bg-primary-foreground text-primary hover:bg-primary-foreground/90" asChild>
             <a href="mailto:info@beeyield.com">
               <Mail className="mr-2 h-5 w-5" /> Email Our Customer Success Team
             </a>
@@ -322,4 +308,5 @@ const CropsWePollinate = () => {
 };
 
 export default CropsWePollinate;
+
 
