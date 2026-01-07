@@ -10,6 +10,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Star,
+  Leaf,
+  Shirt,
+  BookOpen,
+  Filter,
+  Heart,
+  ShoppingCart,
+  ShoppingBag,
+} from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { Product, ProductVariant } from "@/services/shopService";
 
