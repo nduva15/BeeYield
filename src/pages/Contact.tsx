@@ -2,11 +2,15 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-  Mail, Phone, MapPin, ChevronDown,
-  Sprout, Bug, MessageSquare
+  Mail, Phone, MapPin,
+  Sprout, Bug, MessageSquare, Loader2, ArrowRight
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { submitContactForm, ContactSubmission } from "@/services/contactService";
+import { Badge } from "@/components/ui/badge";
 
 const Contact = () => {
+  const { toast } = useToast();
   useEffect(() => {
     // Inject GTM script into head
     const script = document.createElement('script');
@@ -21,7 +25,8 @@ const Contact = () => {
       document.head.removeChild(script);
     };
   }, []);
-  const [activeTab, setActiveTab] = useState("grower");
+
+  const [activeTab, setActiveTab] = useState<"grower" | "beekeeper" | "general">("grower");
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -52,9 +57,7 @@ const Contact = () => {
     setLoading(true);
 
     try {
-      const { submitContactForm } = await import("@/services/contactService");
-
-      const submissionData: any = {
+      const submissionData: ContactSubmission = {
         first_name: formData.firstName,
         last_name: formData.lastName,
         email: formData.email,
@@ -64,6 +67,7 @@ const Contact = () => {
         country: formData.country,
         inquiry_type: activeTab,
         topic: formData.topic,
+        message: formData.message
       };
 
       if (activeTab === "grower") {
@@ -75,16 +79,16 @@ const Contact = () => {
         submissionData.hive_count = Number(formData.hiveCount);
         submissionData.experience_years = formData.experience;
       } else {
-        submissionData.company_name = formData.company;
-        submissionData.message = formData.message;
+        submissionData.company = formData.company;
       }
 
       await submitContactForm(submissionData);
 
-      // We should probably use a toast here if available in context, but since I don't see one in props, I'll alert or check local toast hook
-      alert("Inquiry submitted successfully!");
+      toast({
+        title: "Inquiry Submitted!",
+        description: "We'll get back to you shortly.",
+      });
 
-      // Reset form
       setFormData({
         firstName: "", lastName: "", city: "", state: "", country: "", email: "", phone: "",
         farmName: "", crop: "Almonds", acres: "", topic: "Pollination Services",
@@ -93,20 +97,24 @@ const Contact = () => {
 
     } catch (error) {
       console.error("Submission failed:", error);
-      alert("There was an error submitting your inquiry. Please try again.");
+      toast({
+        title: "Submission Failed",
+        description: "Please try again later.",
+        variant: "destructive"
+      });
     } finally {
       setLoading(false);
     }
   };
 
   const tabs = [
-    { id: "grower", label: "Grower Inquiries", icon: Sprout },
-    { id: "beekeeper", label: "Beekeeper Inquiries", icon: Bug },
-    { id: "general", label: "General Inquiries", icon: MessageSquare },
+    { id: "grower", label: "Growers", icon: Sprout },
+    { id: "beekeeper", label: "Beekeepers", icon: Bug },
+    { id: "general", label: "General", icon: MessageSquare },
   ];
 
   return (
-    <div className="min-h-screen py-12 sm:py-20">
+    <div className="min-h-screen bg-background">
       {/* Google Tag Manager (noscript) */}
       <noscript>
         <iframe
@@ -117,354 +125,157 @@ const Contact = () => {
           title="Google Tag Manager"
         ></iframe>
       </noscript>
-      <div className="container mx-auto px-4">
 
-        {/* Header */}
-        <div className="mx-auto max-w-3xl text-center mb-8 sm:mb-12">
-          <h1 className="mb-4 sm:mb-6 text-3xl sm:text-4xl md:text-5xl font-bold">Contact Us Today</h1>
-          <p className="mb-8 sm:mb-12 text-base sm:text-xl text-muted-foreground">
-            Fill in the form, and we will get back to you at our earliest convenience.
+      {/* Hero */}
+      <section className="pt-32 pb-16 bg-gradient-to-br from-primary/10 via-background to-accent/10">
+        <div className="container mx-auto px-4 text-center max-w-4xl">
+          <Badge className="bg-primary/20 text-primary border-primary/30 px-6 py-2 rounded-2xl font-black uppercase tracking-widest mb-8">
+            Connect With Us
+          </Badge>
+          <h1 className="text-5xl md:text-8xl font-black tracking-tighter leading-none mb-8">
+            Let's Start a <br /><span className="text-primary italic">Conversation</span>
+          </h1>
+          <p className="text-xl md:text-2xl text-muted-foreground font-medium">
+            Whether you're looking to optimize your yield or join our network, our experts are ready to help.
           </p>
         </div>
+      </section>
 
-        {/* Tabs */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-8 sm:mb-12 max-w-4xl mx-auto">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center justify-center gap-3 p-4 rounded-xl border-2 transition-all duration-200 ${isActive
-                    ? "border-primary bg-primary/5 text-primary shadow-soft"
-                    : "border-transparent bg-white shadow-soft text-muted-foreground hover:bg-secondary/20"
-                  }`}
-              >
-                <Icon className={`h-5 w-5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
-                <span className="font-bold">{tab.label}</span>
-              </button>
-            );
-          })}
-        </div>
+      <section className="py-24">
+        <div className="container mx-auto px-4">
 
-        {/* Form Container */}
-        <Card className="max-w-4xl mx-auto border-none shadow-soft">
-          <CardContent className="p-8 md:p-12">
-            <form onSubmit={handleSubmit} className="space-y-8">
-              {/* Common Fields */}
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">First Name *</label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="Jane"
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Last Name *</label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="Doe"
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">City *</label>
-                  <input
-                    type="text"
-                    name="city"
-                    value={formData.city}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="New York"
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">State *</label>
-                    <input
-                      type="text"
-                      name="state"
-                      value={formData.state}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="NY"
-                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Country *</label>
-                    <input
-                      type="text"
-                      name="country"
-                      value={formData.country}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="USA"
-                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Email *</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="info@beeyield.com"
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Phone Number *</label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="+1 (555) 000-0000"
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                  />
-                </div>
-              </div>
-
-              <div className="h-px bg-border/50" />
-
-              {/* Specific Fields based on Tab */}
-              <div className="grid md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-
-                {activeTab === "grower" && (
-                  <>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Farm Name *</label>
-                      <input
-                        type="text"
-                        name="farmName"
-                        value={formData.farmName}
-                        onChange={handleInputChange}
-                        required
-                        placeholder="Green Acres Farm"
-                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Crop *</label>
-                      <select
-                        name="crop"
-                        value={formData.crop}
-                        onChange={handleInputChange}
-                        aria-label="Crop selection"
-                        className="w-full appearance-none rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                      >
-                        <option>Almonds</option>
-                        <option>Apples</option>
-                        <option>Avocados</option>
-                        <option>Blueberries</option>
-                        <option>Cherries</option>
-                        <option>Other</option>
-                      </select>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Acres *</label>
-                      <input
-                        type="number"
-                        name="acres"
-                        value={formData.acres}
-                        onChange={handleInputChange}
-                        required
-                        placeholder="500"
-                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Topic *</label>
-                      <select
-                        name="topic"
-                        value={formData.topic}
-                        onChange={handleInputChange}
-                        aria-label="Topic selection"
-                        className="w-full appearance-none rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                      >
-                        <option>Pollination Services</option>
-                        <option>Pricing</option>
-                        <option>Consultation</option>
-                        <option>Partnership</option>
-                        <option>Support</option>
-                      </select>
-                    </div>
-                  </>
-                )}
-
-                {activeTab === "beekeeper" && (
-                  <>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Apiary Name *</label>
-                      <input
-                        type="text"
-                        name="apiaryName"
-                        value={formData.apiaryName}
-                        onChange={handleInputChange}
-                        required
-                        placeholder="Busy Bee Apiaries"
-                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Number of Hives *</label>
-                      <input
-                        type="number"
-                        name="hiveCount"
-                        value={formData.hiveCount}
-                        onChange={handleInputChange}
-                        required
-                        placeholder="1000"
-                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Years of Experience *</label>
-                      <select
-                        name="experience"
-                        value={formData.experience}
-                        onChange={handleInputChange}
-                        aria-label="Years of experience selection"
-                        className="w-full appearance-none rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                      >
-                        <option>1-5 years</option>
-                        <option>5-10 years</option>
-                        <option>10+ years</option>
-                      </select>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Topic *</label>
-                      <select
-                        name="topic"
-                        value={formData.topic}
-                        onChange={handleInputChange}
-                        aria-label="Topic selection for beekeeper"
-                        className="w-full appearance-none rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                      >
-                        <option>Technology Integration</option>
-                        <option>Hive Monitoring</option>
-                        <option>Partnership</option>
-                        <option>Support</option>
-                      </select>
-                    </div>
-                  </>
-                )}
-
-                {activeTab === "general" && (
-                  <>
-                    <div className="md:col-span-2 space-y-2">
-                      <label className="text-sm font-medium">Company / Organization</label>
-                      <input
-                        type="text"
-                        name="company"
-                        value={formData.company}
-                        onChange={handleInputChange}
-                        placeholder="Optional"
-                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                      />
-                    </div>
-                    <div className="md:col-span-2 space-y-2">
-                      <label className="text-sm font-medium">Topic *</label>
-                      <select
-                        name="topic"
-                        value={formData.topic}
-                        onChange={handleInputChange}
-                        aria-label="Topic selection for general inquiry"
-                        className="w-full appearance-none rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                      >
-                        <option>Press Inquiry</option>
-                        <option>Careers</option>
-                        <option>Sustainability</option>
-                        <option>Consultation</option>
-                        <option>General Question</option>
-                      </select>
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {/* Message Area for general */}
-              {activeTab === 'general' && (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Message</label>
-                  <textarea
-                    name="message"
-                    value={formData.message}
-                    onChange={handleInputChange}
-                    placeholder="How can we help you?"
-                    className="w-full min-h-[120px] rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                  />
-                </div>
-              )}
-
-              <div className="space-y-6 pt-4">
-                <div className="flex items-start space-x-2">
-                  <input
-                    type="checkbox"
-                    id="terms"
-                    required
-                    className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                  />
-                  <label htmlFor="terms" className="text-sm font-medium leading-none text-muted-foreground">
-                    I agree with the <a href="#" className="text-primary hover:underline">Terms and Conditions</a> and <a href="#" className="text-primary hover:underline">Privacy Policy</a>
-                  </label>
-                </div>
-
-                <Button type="submit" size="lg" className="min-w-[200px]" disabled={loading}>
-                  {loading ? "Submitting..." : "Submit Inquiry"}
-                </Button>
-              </div>
-
-            </form>
-          </CardContent>
-        </Card>
-
-        {/* Direct Contact Info */}
-        <div className="grid md:grid-cols-3 gap-8 mt-16 max-w-4xl mx-auto text-center">
-          <div className="p-6">
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Mail className="h-6 w-6 text-primary" />
-            </div>
-            <h3 className="font-bold mb-2">Email Us</h3>
-            <p className="text-muted-foreground">info@beeyield.com</p>
+          {/* Tab Switcher */}
+          <div className="flex flex-wrap justify-center gap-4 mb-20 max-w-2xl mx-auto">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`flex-1 flex items-center justify-center gap-3 h-16 rounded-2xl border-2 font-black transition-all ${isActive ? 'bg-primary border-primary text-white shadow-glow' : 'bg-white border-border text-muted-foreground hover:bg-muted/50'}`}
+                >
+                  <Icon className="h-5 w-5" />
+                  {tab.label}
+                </button>
+              )
+            })}
           </div>
-          <div className="p-6">
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Phone className="h-6 w-6 text-primary" />
+
+          <div className="grid lg:grid-cols-12 gap-16 max-w-7xl mx-auto">
+            {/* Form Col */}
+            <div className="lg:col-span-8">
+              <Card className="border-none shadow-premium rounded-[4rem] bg-white p-10 md:p-16">
+                <form onSubmit={handleSubmit} className="space-y-12">
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <div className="space-y-3">
+                      <Label className="font-black">First Name</Label>
+                      <input name="firstName" value={formData.firstName} onChange={handleInputChange} className="w-full h-14 bg-muted/20 border-2 border-transparent focus:border-primary rounded-2xl px-6 outline-none transition-all" required />
+                    </div>
+                    <div className="space-y-3">
+                      <Label className="font-black">Last Name</Label>
+                      <input name="lastName" value={formData.lastName} onChange={handleInputChange} className="w-full h-14 bg-muted/20 border-2 border-transparent focus:border-primary rounded-2xl px-6 outline-none transition-all" required />
+                    </div>
+                    <div className="space-y-3">
+                      <Label className="font-black">Email Address</Label>
+                      <input type="email" name="email" value={formData.email} onChange={handleInputChange} className="w-full h-14 bg-muted/20 border-2 border-transparent focus:border-primary rounded-2xl px-6 outline-none transition-all" required />
+                    </div>
+                    <div className="space-y-3">
+                      <Label className="font-black">Phone Number</Label>
+                      <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} className="w-full h-14 bg-muted/20 border-2 border-transparent focus:border-primary rounded-2xl px-6 outline-none transition-all" required />
+                    </div>
+                  </div>
+
+                  <div className="h-px bg-border/50" />
+
+                  <div className="grid md:grid-cols-2 gap-8">
+                    {activeTab === 'grower' && (
+                      <>
+                        <div className="space-y-3">
+                          <Label className="font-black">Farm Name</Label>
+                          <input name="farmName" value={formData.farmName} onChange={handleInputChange} className="w-full h-14 bg-muted/20 border-2 border-transparent focus:border-primary rounded-2xl px-6 outline-none transition-all" required />
+                        </div>
+                        <div className="space-y-3">
+                          <Label className="font-black">Primary Crop</Label>
+                          <select name="crop" value={formData.crop} onChange={handleInputChange} className="w-full h-14 bg-muted/20 border-2 border-transparent focus:border-primary rounded-2xl px-6 outline-none transition-all appearance-none cursor-pointer">
+                            <option>Almonds</option>
+                            <option>Apples</option>
+                            <option>Maize</option>
+                            <option>Sunflower</option>
+                          </select>
+                        </div>
+                      </>
+                    )}
+                    {activeTab === 'beekeeper' && (
+                      <>
+                        <div className="space-y-3">
+                          <Label className="font-black">Apiary Name</Label>
+                          <input name="apiaryName" value={formData.apiaryName} onChange={handleInputChange} className="w-full h-14 bg-muted/20 border-2 border-transparent focus:border-primary rounded-2xl px-6 outline-none transition-all" required />
+                        </div>
+                        <div className="space-y-3">
+                          <Label className="font-black">Hive Count</Label>
+                          <input type="number" name="hiveCount" value={formData.hiveCount} onChange={handleInputChange} className="w-full h-14 bg-muted/20 border-2 border-transparent focus:border-primary rounded-2xl px-6 outline-none transition-all" required />
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label className="font-black">Your Message</Label>
+                    <textarea name="message" value={formData.message} onChange={handleInputChange} rows={6} className="w-full bg-muted/20 border-2 border-transparent focus:border-primary rounded-[2rem] p-8 outline-none transition-all" placeholder="How can we help you?" />
+                  </div>
+
+                  <Button type="submit" size="lg" className="h-20 w-full text-2xl font-black shadow-glow group" disabled={loading}>
+                    {loading ? "Transmitting..." : "Send Inquiry"} <ArrowRight className="ml-2 group-hover:translate-x-2 transition-transform" />
+                  </Button>
+                </form>
+              </Card>
             </div>
-            <h3 className="font-bold mb-2">Call Us</h3>
-            <p className="text-muted-foreground">+1 (800) 123-4567</p>
-          </div>
-          <div className="p-6">
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <MapPin className="h-6 w-6 text-primary" />
+
+            {/* Contact Info Col */}
+            <div className="lg:col-span-4 space-y-12">
+              <div className="bg-foreground text-background p-12 rounded-[3.5rem] space-y-10">
+                <h2 className="text-3xl font-black">Direct Access</h2>
+                <div className="space-y-8">
+                  <div className="flex gap-6">
+                    <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center shrink-0">
+                      <Mail className="h-7 w-7 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-black uppercase text-white/40 mb-1">Email Us</p>
+                      <p className="text-xl font-bold">info@beeyield.com</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-6">
+                    <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center shrink-0">
+                      <Phone className="h-7 w-7 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-black uppercase text-white/40 mb-1">Call HQ</p>
+                      <p className="text-xl font-bold">+254 700 123 456</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-6">
+                    <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center shrink-0">
+                      <MapPin className="h-7 w-7 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-black uppercase text-white/40 mb-1">Global Base</p>
+                      <p className="text-xl font-bold">Kibwezi, Kenya</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <Card className="bg-primary/5 border-none rounded-[3.5rem] p-12 text-center overflow-hidden relative">
+                <h3 className="text-2xl font-black mb-4 relative z-10">Follow the Journey</h3>
+                <p className="text-muted-foreground font-medium relative z-10">Stay updated on the latest in bee-tech.</p>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full -mr-16 -mt-16" />
+              </Card>
             </div>
-            <h3 className="font-bold mb-2">Visit Us</h3>
-            <p className="text-muted-foreground">Kibwezi</p>
           </div>
         </div>
-
-      </div>
+      </section>
     </div>
   );
 };

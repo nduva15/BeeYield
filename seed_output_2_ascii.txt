@@ -1,0 +1,106 @@
+.venv\Scripts\python.exe : 
+Could not find platform 
+independent libraries 
+<prefix>
+At line:1 char:1
++ .venv\Scripts\python.exe 
+backend/db/seed_all_data.py 
+> seed_output_2. ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
+    + CategoryInfo          
+    : NotSpecified: (Could  
+   not find ...raries <pr   
+ efix>:String) [], Remot    
+eException
+    + FullyQualifiedErrorId 
+    : NativeCommandError
+ 
+Traceback (most recent call 
+last):
+  File "C:\Users\aggym\Downl
+oads\Honey\backend\db\seed_a
+ll_data.py", line 310, in 
+main
+    seed_traceability()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\aggym\Downl
+oads\Honey\backend\db\seed_a
+ll_data.py", line 174, in 
+seed_traceability
+    f_recs = supabase.table(
+"farmers").insert(farmers).e
+xecute().data
+             ~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~^^
+  File "C:\Users\aggym\Downl
+oads\Honey\.venv\Lib\site-pa
+ckages\postgrest\_sync\reque
+st_builder.py", line 53, in 
+execute
+    raise 
+APIError(dict(json_obj))
+postgrest.exceptions.APIErro
+r: {'message': "Could not 
+find the table 
+'public.farmers' in the 
+schema cache", 'code': 
+'PGRST205', 'hint': 
+"Perhaps you meant the 
+table 'public.orders'", 
+'details': None}
+Connected to Supabase: https://ezfccfypwmuvbpujkqrg.supabase.co
+============================================================
+BeeYield Database Seeding Engine V4
+============================================================
+--- Clearing existing data ---
+   - Clearing user_profiles...
+   - Clearing learning_lessons...
+   - Clearing learning_modules...
+   - Clearing impact_stories...
+   - Clearing esg_metrics...
+   - Clearing crops_pollinated...
+   - Clearing pollination_packages...
+   - Clearing pollination_services...
+   - Clearing faqs...
+   - Clearing partners...
+   - Clearing company_milestones...
+   - Clearing company_stats...
+   - Clearing team_members...
+   - Clearing media_items...
+   - Clearing blog_posts...
+   - Clearing job_applications...
+   - Clearing job_listings...
+   - Clearing order_items...
+   - Clearing orders...
+   - Clearing batches...
+   - Clearing processing_records...
+   - Clearing harvests...
+   - Clearing hives...
+   - Clearing apiaries...
+   - Clearing farmers...
+   - Clearing product_variants...
+   - Clearing products...
+   - Clearing sdgs...
+   - Clearing esg_pillars...
+   - Clearing esg_initiatives...
+   - Clearing company_values...
+
+--- Seeding Products ---
+   Warning: 'images' column missing in DB, skipping for Organic Acacia Honey.
+   [OK] Organic Acacia Honey
+   Warning: 'images' column missing in DB, skipping for Wild Forest Multi-floral.
+   [OK] Wild Forest Multi-floral
+   Warning: 'images' column missing in DB, skipping for BeeYield Tech Tee.
+   [OK] BeeYield Tech Tee
+   Warning: 'images' column missing in DB, skipping for Beekeeping for Beginners.
+   [OK] Beekeeping for Beginners
+
+--- Seeding Traceability (Farmer -> Apiary -> Hive -> Harvest) ---
+
+ERROR: {'message': "Could not find the table 'public.farmers' in the schema cache", 'code': 'PGRST205', 'hint': "Perhaps you meant the table 'public.orders'", 'details': None}
+
+HINT: This error often occurs when the Supabase schema is out of date.
+FIX: Run the SQL in 'backend/db/complete_schema.sql' in your Supabase SQL Editor.

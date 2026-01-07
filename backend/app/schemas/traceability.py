@@ -1,5 +1,5 @@
-from pydantic import BaseModel
-from typing import Optional, List, Any
+from pydantic import BaseModel, Field
+from typing import Optional, List, Dict, Any
 from datetime import date, datetime
 
 # --- Shared ---
@@ -7,43 +7,131 @@ class BlockchainRecordBase(BaseModel):
     block_index: Optional[int] = None
     hash: Optional[str] = None
     timestamp: Optional[datetime] = None
+    blockchain_verified: bool = False
+
+class LocationBase(BaseModel):
+    latitude: float
+    longitude: float
+    location_name: str
+    region: str
+    county: str
+    ward: Optional[str] = None
+
+# --- Farmer / Beekeeper ---
+class FarmerBase(BaseModel):
+    name: str = Field(..., description="Full name of the beekeeper/farmer")
+    phone: Optional[str] = None
+    id_number: Optional[str] = Field(None, description="National ID or Farmer ID header")
+    experience_years: int = 0
+    story: Optional[str] = Field(None, description="The beekeeper's personal story")
+
+class FarmerCreate(FarmerBase, LocationBase):
+    pass
+
+class Farmer(FarmerCreate):
+    farmer_id: str
+    registration_date: datetime
+    certification_status: str = "PENDING"  # PENDING, CERTIFIED, REJECTED
+    total_hives: int = 0
+
+# --- Apiary (Bee Yard) ---
+class ApiaryBase(BaseModel):
+    apiary_code: str = Field(..., description="Unique code e.g. NYR-001")
+    name: str
+    environment_type: str = Field(..., description="E.g. Forest, Savannah, Acacia Farm")
+    flora_types: List[str] = Field(default=[], description="Predominant flowers nearby")
+    water_source: Optional[str] = None
+    sun_exposure: str = "Full Sun"
+    
+class ApiaryCreate(ApiaryBase, LocationBase):
+    farmer_id: str
+    
+class Apiary(ApiaryCreate):
+    apiary_id: str
+    established_date: date
+    hive_count: int = 0
 
 # --- Hive ---
 class HiveBase(BaseModel):
     hive_code: str
-    apiary_name: str
-    location_name: str
-    latitude: float
-    longitude: float
+    hive_type: str = Field(..., description="Langstroth, Top Bar, Traditional Log")
+    bee_type: str = Field(..., description="E.g. Apis mellifera scutellata (African Honey Bee)")
+    queen_type: Optional[str] = None
+    frame_count: int = 0
+    material: str = "Wood"
 
 class HiveCreate(HiveBase):
-    environment_type: str
-    hive_type: str
+    apiary_id: str
+    farmer_id: str
+    has_sensors: bool = False
     installation_date: date
 
 class Hive(HiveCreate):
-    id: str # UUID
-    blockchain_offset: Optional[dict] = None # Placeholder for blockchain metadata
+    hive_id: str
+    status: str = "ACTIVE"
+    last_inspection: Optional[date] = None
+
+# --- IoT Sensor Data ---
+class HiveSensorData(BaseModel):
+    hive_id: str
+    temperature_celsius: float
+    humidity_percent: float
+    weight_kg: float
+    sound_level_db: float
+    frequency_hz: Optional[float] = None
+    battery_level: float
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
 
 # --- Harvest ---
 class HarvestCreate(BaseModel):
     hive_id: str
+    farmer_id: str
     harvest_date: date
-    harvester_name: str
-    quantity_harvested_kg: float
-    quantity_left_for_bees_kg: float # Should be 50% ideally
+    quantity_kg: float
+    quantity_left_for_bees_kg: float
     extraction_method: str
+    nectar_source: str = Field(..., description="Primary nectar source e.g. Acacia, Multi-floral")
+    weather_conditions: str
+    moisture_content_percent: Optional[float] = None
 
 class Harvest(HarvestCreate):
-    id: str
+    harvest_id: str
     harvest_code: str
+    quality_score: Optional[int] = None
+    blockchain_hash: Optional[str] = None
 
-# --- Trace Response ---
-# This matches the structure expected by the frontend Traceability page
+# --- Traceability Journey Response ---
+class TraceJourneyStep(BaseModel):
+    title: str
+    date: str
+    location: str
+    description: str
+    icon: str  # Icon name for frontend
+    data: Dict[str, Any]
+    hash: Optional[str] = None
+
 class TraceResponse(BaseModel):
-    batch_id: str
+    batch_code: str
+    product_name: str
     verified: bool
     blockchain_verified: bool
-    journey: dict
-    beekeeper_story: Optional[str] = None
-    impact: Optional[dict] = None
+    verification_url: str
+    
+    # Entities
+    farmer: Optional[Farmer] = None
+    apiary: Optional[Apiary] = None
+    hive: Optional[Hive] = None
+    
+    # Story
+    story_title: str
+    story_content: str
+    
+    # Stats / Impact
+    impact_stats: Dict[str, Any]
+    
+    # Sensor Snapshot (at harvest time or realtime)
+    sensor_snapshot: Optional[Dict[str, Any]] = None
+    
+    # Full Journey
+    timeline: List[TraceJourneyStep]
+

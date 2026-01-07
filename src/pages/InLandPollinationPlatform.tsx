@@ -1,14 +1,15 @@
-import { 
-  Mic, Map, LayoutDashboard, ArrowRight, 
+
+import React, { useEffect } from "react";
+import {
+  Mic, Map, LayoutDashboard, ArrowRight,
   Quote, Activity, Mail, ChevronRight,
-  BarChart3, Signal, Play, Star
+  BarChart3, Signal, Play, Star, Zap, Cpu, Globe
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 
-import { useEffect } from "react";
 const InLandPollination = () => {
   useEffect(() => {
     // Inject GTM script into head
@@ -24,6 +25,7 @@ const InLandPollination = () => {
       document.head.removeChild(script);
     };
   }, []);
+
   const testimonials = [
     {
       name: "Sarah Jenkins",
@@ -46,274 +48,235 @@ const InLandPollination = () => {
   ];
 
   return (
-      <div className="pt-8">
-        {/* Google Tag Manager (noscript) */}
-        <noscript>
-          <iframe
-            src="https://www.googletagmanager.com/ns.html?id=GTM-KF284247"
-            height="0"
-            width="0"
-            style={{ display: "none", visibility: "hidden" }}
-            title="Google Tag Manager"
-          ></iframe>
-        </noscript>
-        {/* Hero Section */}
-        <section className="relative py-24 bg-gradient-to-br from-secondary via-background to-primary/10 overflow-hidden">
-          <div className="container mx-auto px-4 relative z-10">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div>
-                <Badge className="mb-6 bg-primary/10 text-primary border-primary/20">
-                  In-Land Technology
-                </Badge>
-                <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight text-foreground">
-                  Pollination Land <br/>
-                  Insight Platform
-                </h1>
-                <p className="text-xl text-muted-foreground leading-relaxed mb-8">
-                  PLIP delivers key in-land data on per-flower bee visits to evaluate pollination efficacy.
-                </p>
-                <div className="flex flex-wrap gap-4">
-                  <Link to="/PollinationRequest">
-                  <Button size="lg" className="shadow-lg">
-                     Book Pollination Service
-                  </Button>
-                  </Link>
-                  <Button size="lg" variant="outline" className="gap-2">
-                     <Play className="h-4 w-4" /> View Sensor Demo
-                  </Button>
-                </div>
-              </div>
+    <div className="min-h-screen bg-background selection:bg-primary selection:text-white">
+      {/* Google Tag Manager (noscript) */}
+      <noscript>
+        <iframe
+          src="https://www.googletagmanager.com/ns.html?id=GTM-KF284247"
+          height="0" width="0" style={{ display: "none", visibility: "hidden" }}
+          title="Google Tag Manager"
+        ></iframe>
+      </noscript>
 
-              <div className="relative">
-                {/* Hero Image */}
-                <div className="aspect-square max-w-md mx-auto bg-gradient-to-br from-primary/20 to-primary/5 rounded-full flex items-center justify-center relative shadow-xl">
-                  <Signal className="h-32 w-32 text-primary opacity-60" />
-                  <div className="absolute -bottom-4 -right-4 bg-background rounded-xl shadow-lg p-4 border border-border">
-                     <div className="flex items-center gap-2">
-                       <p className="text-sm font-bold text-foreground">Acoustic Monitoring</p>
-                       <div className="flex items-center gap-1 text-xs text-green-600">
-                         <Activity className="h-3 w-3" />
-                         Detecting Flight Signatures
-                       </div>
-                     </div>
-                  </div>
+      {/* Hero Section - Ultra Premium */}
+      <section className="relative min-h-screen flex items-center overflow-hidden bg-[#0A0A0A] text-white py-24">
+        <div className="container mx-auto px-4 relative z-20">
+          <div className="grid lg:grid-cols-2 gap-20 items-center">
+            <div className="space-y-10">
+              <Badge className="bg-primary/20 text-primary border-primary/30 px-6 py-2 text-sm font-black uppercase tracking-widest">
+                Agricultural Intelligence
+              </Badge>
+              <h1 className="text-6xl md:text-9xl font-black tracking-tighter leading-[0.8]">
+                PLIP <br />
+                <span className="text-primary italic">Platform</span>
+              </h1>
+              <p className="text-xl md:text-2xl text-white/60 max-w-xl font-medium leading-relaxed">
+                The Pollination Land Insight Platform delivers surgical data on per-flower bee visits, giving you the power to see and save your harvest.
+              </p>
+              <div className="flex flex-wrap gap-6 pt-6">
+                <Button size="lg" className="h-16 px-12 bg-primary hover:bg-white hover:text-primary text-white font-black text-xl rounded-2xl shadow-glow transition-all" asChild>
+                  <Link to="/PollinationRequest">Get Early Access</Link>
+                </Button>
+                <Button size="lg" variant="outline" className="h-16 px-12 border-white/20 hover:bg-white hover:text-black font-black text-xl rounded-2xl transition-all gap-3">
+                  <Play className="h-6 w-6" /> Watch Demo
+                </Button>
+              </div>
+            </div>
+
+            <div className="relative">
+              <div className="aspect-square rounded-[4rem] bg-gradient-to-br from-primary/20 via-primary/5 to-transparent border border-white/10 p-12 flex items-center justify-center relative overflow-hidden group">
+                <Signal className="h-64 w-64 text-primary animate-pulse opacity-40" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(var(--primary-rgb),0.1),transparent)]" />
+
+                <div className="absolute top-10 right-10 bg-white/5 backdrop-blur-xl p-6 rounded-3xl border border-white/10 animate-float">
+                  <Activity className="h-8 w-8 text-primary mb-3" />
+                  <p className="text-xs font-black uppercase tracking-widest text-white/40">Real-time Visiblity</p>
+                  <p className="text-2xl font-black text-white">98.4% Accuracy</p>
                 </div>
-                {/* Abstract decorations */}
-                <div className="absolute top-10 left-0 h-20 w-20 bg-primary/10 rounded-full blur-2xl" />
-                <div className="absolute bottom-10 right-10 h-32 w-32 bg-accent/20 rounded-full blur-3xl" />
+
+                <div className="absolute bottom-10 left-10 bg-white/5 backdrop-blur-xl p-6 rounded-3xl border border-white/10 animate-float-delayed">
+                  <div className="flex gap-1 mb-3">
+                    {[1, 2, 3, 4].map(i => <div key={i} className="w-1.5 h-6 bg-primary rounded-full animate-bounce" style={{ animationDelay: `${i * 0.1}s` }} />)}
+                  </div>
+                  <p className="text-xs font-black uppercase tracking-widest text-white/40">Acoustic Signature</p>
+                  <p className="text-2xl font-black text-white">Detecting Flight</p>
+                </div>
               </div>
             </div>
           </div>
-        </section>
+        </div>
 
-        {/* What Is PLIP + Quote */}
-        <section className="py-20 bg-background">
-          <div className="container mx-auto px-4">
-            <div className="grid lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
-              <div>
-                <h2 className="text-4xl font-bold mb-6 text-foreground">PLIP. BeeYield's In-Land Solution</h2>
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  BeeYield's Pollination Land Insight Platform (PLIP) measures bee activity in crops. This innovative platform provides you with the crucial knowledge of how many bees are actually pollinating your crop, along with additional actionable data to make real-time decisions that influence crop yield.
-                </p>
+        {/* Ambient background */}
+        <div className="absolute top-0 right-0 w-[50vw] h-[50vw] bg-primary/10 rounded-full blur-[150px] -mr-[25vw] -mt-[25vw]" />
+        <div className="absolute bottom-0 left-0 w-[50vw] h-[50vw] bg-accent/5 rounded-full blur-[150px] -ml-[25vw] -mb-[25vw]" />
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-10 pointer-events-none" />
+      </section>
+
+      {/* Narrative Section */}
+      <section className="py-32 bg-background relative overflow-hidden">
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-24 items-center max-w-7xl mx-auto">
+            <div className="relative">
+              <div className="aspect-square rounded-[4rem] overflow-hidden shadow-2xl skew-y-2">
+                <img
+                  src="https://images.unsplash.com/photo-1547514701-42782101795e?w=800"
+                  alt="Farm Land"
+                  className="w-full h-full object-cover"
+                />
               </div>
-
-              <div className="bg-secondary/50 p-8 rounded-2xl border-l-4 border-primary">
-                <Quote className="h-10 w-10 text-primary mb-4 opacity-50" />
-                <p className="text-lg text-foreground italic leading-relaxed mb-6">
+              <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-primary/20 rounded-full blur-3xl -z-10" />
+            </div>
+            <div className="space-y-8">
+              <Badge variant="secondary" className="bg-primary/5 text-primary border-primary/20 px-4">Why PLIP?</Badge>
+              <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9]">Hear the bees, <br /><span className="text-primary italic">see the yield</span>.</h2>
+              <p className="text-xl text-muted-foreground leading-relaxed font-secondary">
+                BeeYield's Pollination Land Insight Platform (PLIP) uses proprietary acoustic AI to measure bee activity at the flower level. This isn't just data; it's the heartbeat of your farm.
+              </p>
+              <div className="bg-muted/50 p-10 rounded-[3rem] border-l-8 border-primary relative">
+                <Quote className="absolute top-6 right-10 h-20 w-20 text-primary/10" />
+                <p className="text-2xl font-black italic text-foreground mb-6 leading-relaxed relative z-10">
                   "PLIP lets us see the actual number of bees that visit the flowers. Now I can check the amount of pollination in our lands 24/7."
                 </p>
                 <div>
-                  <p className="font-bold text-foreground">Avi Gabai</p>
-                  <p className="text-sm text-muted-foreground">Hazera Seed Production Israel</p>
+                  <p className="font-black text-primary text-xl tracking-tighter">Avi Gabai</p>
+                  <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mt-1">Hazera Seed Production Israel</p>
                 </div>
               </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Tech Breakdown (Acoustics & Visibility) */}
-        <section className="py-20 bg-muted/30">
-          <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-              {/* Acoustic Sensor Card */}
-              <Card className="border-none shadow-lg hover:shadow-xl transition-shadow">
-                <CardContent className="p-8">
-                  <div className="bg-primary/10 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
-                    <Mic className="h-8 w-8 text-primary" />
-                  </div>
-                  <h3 className="text-2xl font-bold mb-4 text-foreground">We Can Hear Bees!</h3>
-                  <p className="text-muted-foreground leading-relaxed mb-6">
-                    Redesigned to withstand the rigors of the land, our new sensor boasts a larger enclosure to deliver improved battery life, and features a custom algorithm precisely tuned to detect the flight audio signature of the bees.
-                  </p>
-                  <Button variant="link" className="p-0 h-auto text-primary">
-                    Learn More <ChevronRight className="h-4 w-4 ml-1" />
-                  </Button>
-                </CardContent>
-              </Card>
-              {/* Visibility Card */}
-              <Card className="border-none shadow-lg hover:shadow-xl transition-shadow">
-                <CardContent className="p-8">
-                  <div className="bg-primary/10 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
-                    <Map className="h-8 w-8 text-primary" />
-                  </div>
-                  <h3 className="text-2xl font-bold mb-4 text-foreground">Visibility Into Every Land</h3>
-                  <p className="text-muted-foreground leading-relaxed mb-6">
-                    Accurate information about forage rates allows for real-time responses. You can see actual pollinator visits on the flower, efficiency of the pollination process, and data on the degree to which synchronized bloom has occurred, all in real-time.
-                  </p>
-                  <Button variant="link" className="p-0 h-auto text-primary">
-                    View Demo <ChevronRight className="h-4 w-4 ml-1" />
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
+      {/* Tech Cards */}
+      <section className="py-32 bg-muted/20">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
+            <Card className="border-none shadow-soft hover:shadow-glow transition-all duration-700 bg-white rounded-[4rem] group overflow-hidden">
+              <CardContent className="p-16">
+                <div className="bg-primary/10 w-24 h-24 rounded-3xl flex items-center justify-center mb-10 group-hover:bg-primary group-hover:text-white transition-all duration-500">
+                  <Mic className="h-12 w-12" />
+                </div>
+                <h3 className="text-4xl font-black mb-6 tracking-tight">Sonic Vision</h3>
+                <p className="text-muted-foreground text-lg leading-relaxed font-medium mb-10">
+                  Equipped with industrial-grade outdoor enclosures, our sensors use custom algorithms tuned to detect the unique frequency of bee flight among field noise.
+                </p>
+                <Button variant="link" className="p-0 h-auto text-primary font-black uppercase text-xs tracking-widest hover:gap-4 transition-all group/link">
+                  Technical Specs <ArrowRight className="h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="border-none shadow-soft hover:shadow-glow transition-all duration-700 bg-white rounded-[4rem] group overflow-hidden">
+              <CardContent className="p-16">
+                <div className="bg-accent/10 w-24 h-24 rounded-3xl flex items-center justify-center mb-10 group-hover:bg-accent group-hover:text-amber-900 transition-all duration-500">
+                  <Map className="h-12 w-12" />
+                </div>
+                <h3 className="text-4xl font-black mb-6 tracking-tight">Network Visibility</h3>
+                <p className="text-muted-foreground text-lg leading-relaxed font-medium mb-10">
+                  Visualize foraging efficiency and bloom synchronization in real-time. Know exactly which acres are being underserved before it's too late.
+                </p>
+                <Button variant="link" className="p-0 h-auto text-primary font-black uppercase text-xs tracking-widest hover:gap-4 transition-all group/link">
+                  Explore Heatmaps <ArrowRight className="h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Dashboard Section */}
-        <section className="py-20 bg-background">
-          <div className="container mx-auto px-4">
-            <div className="grid lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
-              <div className="relative">
-                {/* Dashboard Mockup */}
-                <div className="bg-muted/50 rounded-2xl p-6 shadow-xl border border-border">
-                  <div className="bg-background rounded-xl p-6 shadow-inner">
-                    <div className="flex items-center gap-3 mb-6">
-                      <LayoutDashboard className="h-5 w-5 text-primary" />
-                      <span className="font-bold text-foreground">PLIP Dashboard Live View</span>
+      {/* Dashboard Preview */}
+      <section className="py-32 bg-foreground text-background">
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-32 items-center max-w-7xl mx-auto">
+            <div className="order-2 lg:order-1">
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-accent rounded-[3.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+                <div className="relative bg-[#1A1A1A] rounded-[3rem] p-4 border border-white/10 shadow-3xl overflow-hidden aspect-video flex items-center justify-center">
+                  <div className="w-full space-y-4 p-8">
+                    <div className="flex justify-between items-center mb-8">
+                      <div className="h-6 w-32 bg-white/10 rounded-full" />
+                      <div className="h-10 w-10 bg-primary/20 rounded-xl" />
                     </div>
-                    <div className="flex items-end gap-2 h-32">
-                      {[40, 70, 50, 90, 60, 30, 80, 50].map((h, i) => (
-                        <div key={i} className="flex-1 bg-gradient-to-t from-primary to-primary/50 rounded-t-md" style={{ height: `${h}%` }} />
+                    <div className="flex items-end gap-3 h-48">
+                      {[60, 40, 90, 70, 50, 80, 40, 60, 50, 70].map((h, i) => (
+                        <div key={i} className="flex-1 bg-primary rounded-t-lg transition-all duration-1000 group-hover:scale-y-110 origin-bottom" style={{ height: `${h}%`, opacity: h / 100 }} />
                       ))}
                     </div>
                   </div>
                 </div>
-                {/* Floating Metric Badge */}
-                <div className="absolute -bottom-6 -right-6 bg-background rounded-xl shadow-lg p-4 border border-border">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                    <BarChart3 className="h-4 w-4 text-primary" />
-                    Visits / Min
-                  </div>
-                  <p className="text-2xl font-bold text-foreground">42.8</p>
-                </div>
-              </div>
-
-              <div>
-                <Badge variant="secondary" className="mb-4">
-                  <Activity className="h-3 w-3 mr-1" />
-                  Data Driven
-                </Badge>
-                <h2 className="text-4xl font-bold mb-6 text-foreground">All on an Easy-to-Read Dashboard</h2>
-                <p className="text-muted-foreground leading-relaxed mb-4">
-                  The PLIP dashboard presents key metrics and delivers actionable insights every day the bees are at work. It gives highly detailed information on the per minute bee visits from each land's data collection points.
-                </p>
-                <p className="text-muted-foreground leading-relaxed mb-6">
-                  With PLIP you can compare the impact of pollination activity among different genetic strains of the same varietal, filter by different production practices and treatments, track and correlate output rates, as well as quality levels and germination rates.
-                </p>
-                
-                {/* Research Quote */}
-                <div className="bg-muted/50 p-4 rounded-lg border-l-4 border-primary">
-                  <p className="text-sm italic text-foreground mb-2">
-                    "We built highly sensitive algorithms that can distinguish the acoustic signature of a flying bee from a tractor engine on the same frequency."
-                  </p>
-                  <p className="text-xs font-bold text-foreground">George Clouston</p>
-                  <p className="text-xs text-muted-foreground">Research Director</p>
+                <div className="absolute -bottom-10 -right-10 bg-white p-8 rounded-[2rem] shadow-2xl rotate-3 text-foreground">
+                  <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-1">Bee Traffic</p>
+                  <p className="text-5xl font-black text-primary tracking-tighter">42.8</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest">Visits / Minute</p>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
-
-        {/* Real Testimonials with Photos */}
-        <section className="py-20 bg-muted/30">
-          <div className="container mx-auto px-4">
-            <h2 className="text-4xl font-bold text-center mb-4 text-foreground">Hear What Our Growers Have to Say</h2>
-            <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-12">
-              Real results from farms across the country using the Pollination Land Insight Platform.
-            </p>
-            
-            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-               {testimonials.map((t, i) => (
-                 <Card key={i} className="border-none shadow-lg">
-                    <CardContent className="p-6">
-                      <div className="flex items-center gap-4 mb-4">
-                        <img src={t.image} alt={t.name} className="h-14 w-14 rounded-full object-cover" />
-                        <div>
-                          <p className="font-bold text-foreground">{t.name}</p>
-                          <p className="text-xs text-muted-foreground">{t.role}</p>
-                        </div>
-                      </div>
-                      <p className="text-muted-foreground text-sm italic leading-relaxed mb-4">"{t.quote}"</p>
-                      <div className="flex gap-1">
-                        {[...Array(5)].map((_, i) => <Star key={i} className="h-4 w-4 fill-primary text-primary" />)}
-                      </div>
-                    </CardContent>
-                 </Card>
-               ))}
+            <div className="order-1 lg:order-2 space-y-10">
+              <Badge className="bg-primary text-white font-black px-6 py-2 uppercase tracking-widest">The Command Center</Badge>
+              <h2 className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.8]">One View. <br /> Total <span className="text-primary italic">Control</span>.</h2>
+              <p className="text-xl text-white/50 leading-relaxed font-medium">
+                Compare genetic strains, track production practices, and correlate output rates in real-time. PLIP turns your land into a predictable factory of growth.
+              </p>
+              <ul className="space-y-6">
+                {['Compare genetic strain impact', 'Filter by production practices', 'Real-time bloom tracking'].map((item, i) => (
+                  <li key={i} className="flex items-center gap-4 text-xl font-bold">
+                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                      <Check className="h-5 w-5" />
+                    </div>
+                    {item}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Customer Success */}
-        <section className="py-20 bg-background">
-          <div className="container mx-auto px-4 max-w-5xl">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-               <div className="relative">
-                 <div className="aspect-square max-w-sm mx-auto bg-gradient-to-br from-secondary to-muted rounded-full flex items-center justify-center">
-                   <div className="h-40 w-40 bg-muted rounded-full shadow-inner" />
-                 </div>
-               </div>
-               <div>
-                 <h2 className="text-3xl font-bold mb-4 text-foreground">We Don't Succeed Unless You Succeed</h2>
-                 <p className="text-muted-foreground leading-relaxed mb-6">
-                   We want our partnership with you to be as smooth and stress free as possible. Meet Alissa, Head of Customer Success. Her team is ready to provide you with all the help you need, from onboarding, to making sure all your contract paperwork is buttoned up.
-                 </p>
-                 <Button variant="outline" className="gap-2">
-                  <Mail className="h-4 w-4" /> Email Us: info@beeyield.com
-                </Button>
-               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Cross-Link to Precision Pollination & Final CTA */}
-        <section className="py-20 bg-primary text-primary-foreground">
-          <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto items-center">
-              <div className="h-1 w-16 bg-primary-foreground/30 hidden md:block" />
-              {/* CTA Side */}
-              <div className="text-center md:text-left">
-                <h2 className="text-3xl font-bold mb-4">Ready to optimize your lands?</h2>
-                <p className="opacity-90 mb-6">
-                  Start getting actionable data on your pollination efficacy today.
-                </p>
-                <Button variant="secondary" size="lg">
-                   Book Pollination Service
-                </Button>
-              </div>
-
-              {/* Cross-Link Side */}
-              <div className="bg-primary-foreground/10 p-6 rounded-2xl backdrop-blur-sm">
-                <div className="flex items-start gap-4">
-                  <div className="bg-primary-foreground/20 p-3 rounded-lg">
-                    <Mic className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold mb-2">Looking for In-Hive Monitoring?</h3>
-                    <p className="text-sm opacity-90 mb-4">
-                      Check out our Precision Pollination solution to monitor colony health from the inside out.
-                    </p>
-                    <Button variant="link" className="p-0 h-auto text-primary-foreground gap-1">
-                       Explore Precision Pollination <ArrowRight className="h-4 w-4" />
-                    </Button>
+      {/* Testimonials */}
+      <section className="py-32 bg-background overflow-hidden">
+        <div className="container mx-auto px-4">
+          <h2 className="text-5xl md:text-7xl font-black text-center mb-24 tracking-tighter">The Proof</h2>
+          <div className="grid md:grid-cols-3 gap-12 max-w-7xl mx-auto">
+            {testimonials.map((t, i) => (
+              <div key={i} className="group flex flex-col items-center text-center space-y-8 p-12 rounded-[4rem] hover:bg-muted/30 transition-all duration-500">
+                <div className="relative">
+                  <img src={t.image} alt={t.name} className="h-24 w-24 rounded-[2rem] object-cover ring-8 ring-primary/5 group-hover:ring-primary/10 transition-all" />
+                  <div className="absolute -bottom-2 -right-2 bg-primary text-white p-2 rounded-xl shadow-lg">
+                    <Quote className="h-4 w-4" />
                   </div>
                 </div>
+                <p className="text-xl font-medium italic text-muted-foreground leading-relaxed">"{t.quote}"</p>
+                <div>
+                  <p className="text-2xl font-black text-foreground">{t.name}</p>
+                  <p className="text-xs font-black uppercase tracking-widest text-primary mt-1">{t.role}</p>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
+
+      {/* Global Expansion */}
+      <section className="py-32 bg-primary/5">
+        <div className="container mx-auto px-4 text-center">
+          <Globe className="h-20 w-20 text-primary mx-auto mb-10 animate-bounce-subtle" />
+          <h2 className="text-4xl md:text-6xl font-black mb-10 tracking-tight">Deploy Anywhere.</h2>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto font-medium mb-12 italic">
+            From the Central Valley of California to the highlands of Kenya, PLIP is designed to survive the elements and deliver the results.
+          </p>
+          <Button size="lg" className="h-16 px-12 bg-foreground text-background font-black text-xl rounded-2xl shadow-premium hover:bg-primary transition-all">
+            Contact Global Sales
+          </Button>
+        </div>
+      </section>
+    </div>
   );
 };
+
+const Check = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+  </svg>
+);
 
 export default InLandPollination;
