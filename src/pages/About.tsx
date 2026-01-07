@@ -1,10 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Users, Target, Award, MapPin, TreePine, ArrowRight } from "lucide-react";
+import { Users, Target, Award, MapPin, TreePine, ArrowRight, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { getAboutPageData, AboutPageData } from "@/services/companyService";
 
 const About = () => {
+  const [data, setData] = useState<AboutPageData | null>(null);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     // Inject GTM script into head
     const script = document.createElement('script');
@@ -15,10 +19,62 @@ const About = () => {
       })(window,document,'script','dataLayer','GTM-KF284247');`;
     script.async = true;
     document.head.appendChild(script);
+
+    // Fetch Backend Data
+    const fetchData = async () => {
+      try {
+        const { getAboutPageData } = await import("@/services/companyService");
+        const res = await getAboutPageData();
+        setData(res);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+
     return () => {
       document.head.removeChild(script);
     };
   }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  const info = data?.info;
+  const story = data?.story;
+  const stats = data?.stats || [];
+
+  // Fallback if data fetch fails
+  const displayInfo = info || {
+    name: "BeeYield",
+    mission: "To secure the future of food by reversing the pollination crisis through precision pollination and ecosystem restoration.",
+    description: "Born from a family's shared vision in rural Kenya, we're on a mission to solve the global pollination crisis through precision pollination and ecosystem guardianship.",
+    location: "Kibwezi, Makueni County, Kenya",
+    origin_story: [
+      "In 2020, in the midst of the global pandemic, BeeYield was born on a humble half-acre plot with just 4 hives in Kibwezi, a rural town in Makueni, Kenya. Timothy, then a Strathmore University student, saw an opportunity where others saw crisis.",
+      "But where would three beekeepers meet? At the family table. Timothy's sisters, Agatha and Carole, brought their own Strathmore expertise to shape BeeYield's direction.",
+      "From those 4 hives, BeeYield has grown to 184 hives across a 5-acre fenced apiary. We've planted over 2,500+ trees to restore the ecosystem."
+    ],
+    stats: [
+      { value: "184", label: "Hives Today" },
+      { value: "5", label: "Acre Apiary" },
+      { value: "2,500+", label: "Trees Planted" },
+      { value: "25", label: "Acres Pollinated" },
+    ],
+    values: [
+      { title: "Family-Powered", description: "Three siblings, one vision. Combining Strathmore studies to build a precision pollination company." },
+      { title: "Sustainability", description: "Protecting bees and improving yields from hive to harvest." },
+      { title: "Traceability", description: "Ensuring authenticity and quality through blockchain technology." }
+    ]
+  };
+
   return (
     <div className="min-h-screen">
       {/* Google Tag Manager (noscript) */}
@@ -33,9 +89,9 @@ const About = () => {
       </noscript>
       <div className="container mx-auto px-4 py-12 sm:py-20">
         <div className="mx-auto max-w-3xl text-center">
-          <h1 className="mb-4 sm:mb-6 text-3xl sm:text-4xl md:text-5xl font-bold">About BeeYield</h1>
+          <h1 className="mb-4 sm:mb-6 text-3xl sm:text-4xl md:text-5xl font-bold">About {displayInfo.name}</h1>
           <p className="mb-8 sm:mb-12 text-base sm:text-xl text-muted-foreground">
-            Born from a family's shared vision in rural Kenya, we're on a mission to solve the global pollination crisis through precision pollination and ecosystem guardianship.
+            {displayInfo.description}
           </p>
         </div>
 
@@ -45,22 +101,13 @@ const About = () => {
             <CardContent className="p-8 md:p-12">
               <div className="flex items-center gap-2 mb-4 text-primary font-bold tracking-wider uppercase text-sm">
                 <MapPin className="h-4 w-4" />
-                Kibwezi, Makueni County, Kenya
+                {displayInfo.location}
               </div>
               <h2 className="mb-6 text-3xl font-bold">Our Story</h2>
               <div className="space-y-4 text-muted-foreground text-lg leading-relaxed">
-                <p>
-                  In 2020, in the midst of the global pandemic, BeeYield was born on a humble half-acre plot with just 4 hives in Kibwezi, a rural town in Makueni, Kenya. Timothy, then a Strathmore University student, saw an opportunity where others saw crisis. With a mission to protect pollinators and secure food systems, he placed those first hives and began a journey that would become a family legacy.
-                </p>
-                <p>
-                  But where would three beekeepers meet? At the family table. Timothy's sisters, Agatha and Carole, brought their own Strathmore expertise to shape BeeYield's direction: web development, product design, and IoT research. Together, they made a decision: combine their studies and build something meaningful for their community and beyond.
-                </p>
-                <p>
-                  From those 4 hives, BeeYield has grown to <strong className="text-foreground">184 hives</strong> across a <strong className="text-foreground">5-acre fenced apiary</strong>. We've planted over <strong className="text-foreground">2,500+ trees</strong> to restore the ecosystem. We launched pollination services and while it wasn't precision at first, we served real clients and successfully pollinated <strong className="text-foreground">25 acres</strong> of farmland.
-                </p>
-                <p>
-                  Today, BeeYield is evolving into <strong className="text-foreground">precision pollination</strong>, using data, technology, and verified healthy colonies to maximize agricultural yields and restore biodiversity. What started as a student's dream is now a family-powered movement to secure the future of food.
-                </p>
+                {displayInfo.origin_story.map((paragraph, idx) => (
+                  <p key={idx}>{paragraph}</p>
+                ))}
               </div>
             </CardContent>
           </Card>
@@ -69,12 +116,7 @@ const About = () => {
         {/* Growth Stats */}
         <div className="mx-auto mb-16 max-w-4xl">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { value: "184", label: "Hives Today" },
-              { value: "5", label: "Acre Apiary" },
-              { value: "2,500+", label: "Trees Planted" },
-              { value: "25", label: "Acres Pollinated" },
-            ].map((stat, index) => (
+            {displayInfo.stats.map((stat, index) => (
               <Card key={index} className="border-none shadow-soft bg-secondary/30">
                 <CardContent className="p-6 text-center">
                   <p className="text-3xl md:text-4xl font-bold text-primary mb-1">{stat.value}</p>
@@ -112,7 +154,7 @@ const About = () => {
                 </div>
                 <h3 className="mb-3 text-2xl font-bold">Our Impact</h3>
                 <p className="text-muted-foreground mb-6">
-                  From 4 hives to 184, from a half-acre to 5 acres, from seedlings to 2,500+ trees. Explore how BeeYield is restoring ecosystems, supporting farmers, and building a sustainable future for pollinators.
+                  Exploring how BeeYield is restoring ecosystems, supporting farmers, and building a sustainable future for pollinators.
                 </p>
                 <Link to="/impact">
                   <Button variant="outline" className="group-hover:bg-primary group-hover:text-primary-foreground transition-all">
@@ -126,41 +168,19 @@ const About = () => {
 
         {/* Values Cards */}
         <div className="grid gap-8 md:grid-cols-3 mb-16">
-          <Card className="border-none shadow-soft">
-            <CardContent className="pt-6 text-center">
-              <div className="mb-4 inline-block rounded-lg bg-primary/10 p-4">
-                <Users className="h-8 w-8 text-primary" />
-              </div>
-              <h3 className="mb-2 text-xl font-semibold">Family-Powered</h3>
-              <p className="text-muted-foreground">
-                Three siblings, one vision. Combining Strathmore studies to build a precision pollination company from rural Kenya.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-none shadow-soft">
-            <CardContent className="pt-6 text-center">
-              <div className="mb-4 inline-block rounded-lg bg-secondary/50 p-4">
-                <Target className="h-8 w-8 text-secondary-foreground" />
-              </div>
-              <h3 className="mb-2 text-xl font-semibold">Our Mission</h3>
-              <p className="text-muted-foreground">
-                To secure the future of food by reversing the pollination crisis through precision pollination and ecosystem restoration.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-none shadow-soft">
-            <CardContent className="pt-6 text-center">
-              <div className="mb-4 inline-block rounded-lg bg-accent/30 p-4">
-                <Award className="h-8 w-8 text-accent-foreground" />
-              </div>
-              <h3 className="mb-2 text-xl font-semibold">Our Values</h3>
-              <p className="text-muted-foreground">
-                Sustainability, traceability, and community. Protecting bees and improving yields from hive to harvest.
-              </p>
-            </CardContent>
-          </Card>
+          {displayInfo.values.map((value, idx) => (
+            <Card key={idx} className="border-none shadow-soft">
+              <CardContent className="pt-6 text-center">
+                <div className="mb-4 inline-block rounded-lg bg-primary/10 p-4">
+                  {idx === 0 ? <Users className="h-8 w-8 text-primary" /> : idx === 1 ? <Target className="h-8 w-8 text-secondary-foreground" /> : <Award className="h-8 w-8 text-accent-foreground" />}
+                </div>
+                <h3 className="mb-2 text-xl font-semibold">{value.title}</h3>
+                <p className="text-muted-foreground">
+                  {value.description}
+                </p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
 

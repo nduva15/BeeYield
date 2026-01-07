@@ -10,7 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ShoppingCart, Leaf, BookOpen, Shirt, Filter, Star, Heart } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import { Product, ProductVariant } from "@/services/shopService";
 
 const Shop = () => {
   useEffect(() => {
@@ -27,247 +28,33 @@ const Shop = () => {
       document.head.removeChild(script);
     };
   }, []);
-  const [selectedSizes, setSelectedSizes] = useState<Record<number, string>>({});
+  const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
   const [selectedMerchCategory, setSelectedMerchCategory] = useState<string>("All");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const honeyProducts = [
-    {
-      id: 1,
-      name: "Kibwezi Wildflower",
-      description: "Pure honey from the diverse wildflower meadows of Makueni",
-      variants: [
-        { size: "250g", price: 850 },
-        { size: "500g", price: 1500 },
-        { size: "1kg", price: 2800 },
-      ],
-      badge: "Bestseller",
-      rating: 4.9,
-      reviews: 127,
-    },
-    {
-      id: 2,
-      name: "Acacia Gold",
-      description: "Light, crystalline honey with a delicate sweet flavor",
-      variants: [
-        { size: "250g", price: 950 },
-        { size: "500g", price: 1700 },
-        { size: "1kg", price: 3200 },
-      ],
-      badge: "Premium",
-      rating: 4.8,
-      reviews: 89,
-    },
-    {
-      id: 3,
-      name: "Forest Dark",
-      description: "Rich, robust honey from mountain forest blossoms",
-      variants: [
-        { size: "250g", price: 900 },
-        { size: "500g", price: 1600 },
-        { size: "1kg", price: 3000 },
-      ],
-      badge: null,
-      rating: 4.7,
-      reviews: 64,
-    },
-    {
-      id: 4,
-      name: "Raw Honeycomb",
-      description: "Unprocessed honeycomb pieces in natural beeswax",
-      variants: [
-        { size: "200g", price: 1200 },
-        { size: "400g", price: 2200 },
-      ],
-      badge: "Limited",
-      rating: 5.0,
-      reviews: 43,
-    },
-    {
-      id: 5,
-      name: "Sisal Flower Honey",
-      description: "Unique honey from sisal plant blooms",
-      variants: [
-        { size: "250g", price: 800 },
-        { size: "500g", price: 1400 },
-        { size: "1kg", price: 2600 },
-      ],
-      badge: "New",
-      rating: 4.6,
-      reviews: 28,
-    },
-    {
-      id: 6,
-      name: "Gift Box Collection",
-      description: "Curated selection of 4 honey varieties",
-      variants: [
-        { size: "4x125g", price: 2500 },
-        { size: "4x250g", price: 4200 },
-      ],
-      badge: "Gift Set",
-      rating: 4.9,
-      reviews: 56,
-    },
-  ];
+  // Cart functionality
+  const { addToCart, openCart, getTotalItems } = useCart();
 
-  const merchProducts = [
-    {
-      id: 101,
-      name: "BeeYield Classic Tee",
-      description: "100% organic cotton with embroidered logo",
-      category: "Unisex",
-      variants: [
-        { size: "S", price: 1800 },
-        { size: "M", price: 1800 },
-        { size: "L", price: 1800 },
-        { size: "XL", price: 1800 },
-        { size: "XXL", price: 2000 },
-      ],
-      badge: "Bestseller",
-      rating: 4.8,
-      reviews: 89,
-    },
-    {
-      id: 102,
-      name: "Beekeeper's Cap",
-      description: "Adjustable cotton cap with bee embroidery",
-      category: "Unisex",
-      variants: [
-        { size: "One Size", price: 1200 },
-      ],
-      badge: null,
-      rating: 4.7,
-      reviews: 45,
-    },
-    {
-      id: 103,
-      name: "Pollinator Hoodie",
-      description: "Cozy fleece hoodie with back print",
-      category: "Unisex",
-      variants: [
-        { size: "S", price: 3500 },
-        { size: "M", price: 3500 },
-        { size: "L", price: 3500 },
-        { size: "XL", price: 3500 },
-        { size: "XXL", price: 3800 },
-      ],
-      badge: "Premium",
-      rating: 4.9,
-      reviews: 67,
-    },
-    {
-      id: 104,
-      name: "Women's Fitted Tee",
-      description: "Slim fit organic cotton with floral bee design",
-      category: "Women",
-      variants: [
-        { size: "XS", price: 1800 },
-        { size: "S", price: 1800 },
-        { size: "M", price: 1800 },
-        { size: "L", price: 1800 },
-        { size: "XL", price: 1800 },
-      ],
-      badge: "New",
-      rating: 4.6,
-      reviews: 32,
-    },
-    {
-      id: 105,
-      name: "Kids Bee Explorer Tee",
-      description: "Fun bee graphics for young nature lovers",
-      category: "Kids",
-      variants: [
-        { size: "3-4Y", price: 1200 },
-        { size: "5-6Y", price: 1200 },
-        { size: "7-8Y", price: 1200 },
-        { size: "9-10Y", price: 1400 },
-      ],
-      badge: null,
-      rating: 4.9,
-      reviews: 28,
-    },
-    {
-      id: 106,
-      name: "Canvas Tote Bag",
-      description: "Reusable shopping bag with bee artwork",
-      category: "Accessories",
-      variants: [
-        { size: "Standard", price: 1500 },
-        { size: "Large", price: 1800 },
-      ],
-      badge: "Eco-Friendly",
-      rating: 4.8,
-      reviews: 54,
-    },
-  ];
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const { getProducts } = await import("@/services/shopService");
+        const data = await getProducts();
+        setProducts(data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
 
-  const educationalProducts = [
-    {
-      id: 201,
-      name: "Beginner's Beekeeping Guide",
-      description: "Complete PDF guide for starting your beekeeping journey",
-      format: "PDF",
-      pages: 85,
-      price: 1500,
-      badge: "Bestseller",
-      rating: 4.9,
-      reviews: 156,
-    },
-    {
-      id: 202,
-      name: "Precision Pollination Handbook",
-      description: "Advanced techniques for agricultural pollination",
-      format: "PDF",
-      pages: 120,
-      price: 2500,
-      badge: "Professional",
-      rating: 4.8,
-      reviews: 89,
-    },
-    {
-      id: 203,
-      name: "Hive Health & Disease Prevention",
-      description: "Identifying and treating common bee diseases",
-      format: "PDF",
-      pages: 65,
-      price: 1200,
-      badge: null,
-      rating: 4.7,
-      reviews: 67,
-    },
-    {
-      id: 204,
-      name: "Sustainable Apiary Management",
-      description: "Eco-friendly practices for modern beekeepers",
-      format: "PDF + Video",
-      pages: 95,
-      price: 3500,
-      badge: "Bundle",
-      rating: 5.0,
-      reviews: 43,
-    },
-    {
-      id: 205,
-      name: "Urban Beekeeping Essentials",
-      description: "Keep bees in cities and suburban areas",
-      format: "PDF",
-      pages: 55,
-      price: 1000,
-      badge: "New",
-      rating: 4.6,
-      reviews: 21,
-    },
-    {
-      id: 206,
-      name: "Complete Beekeeper's Library",
-      description: "All 5 guides bundled at a special price",
-      format: "PDF Bundle",
-      pages: "420+",
-      price: 7500,
-      badge: "Best Value",
-      rating: 4.9,
-      reviews: 78,
-    },
-  ];
+  const honeyProducts = products.filter(p => p.category === 'honey');
+  const merchProducts = products.filter(p => p.category === 'merch');
+  const educationalProducts = products.filter(p => p.category === 'education');
 
   const formatPrice = (price: number) => {
     return `KES ${price.toLocaleString()}`;
@@ -281,15 +68,33 @@ const Shop = () => {
     return "secondary";
   };
 
+  // Handle Add to Cart for all product types
+  const handleAddToCart = (product: Product, category: 'honey' | 'merch' | 'education') => {
+    const selectedSize = selectedSizes[product.id] || product.variants[0].size;
+    const variant = product.variants.find((v: ProductVariant) => v.size === selectedSize);
+
+    if (!variant) return;
+
+    addToCart({
+      productId: product.id,
+      name: product.name,
+      description: product.description,
+      size: selectedSize,
+      price: variant.price_kes,
+      quantity: 1,
+      badge: product.badge,
+      category,
+    });
+  };
+
   const renderStars = (rating: number) => {
     return (
       <div className="flex items-center gap-1">
         {[...Array(5)].map((_, i) => (
           <Star
             key={i}
-            className={`h-3 w-3 ${
-              i < Math.floor(rating) ? "fill-primary text-primary" : "text-muted-foreground/30"
-            }`}
+            className={`h-3 w-3 ${i < Math.floor(rating) ? "fill-primary text-primary" : "text-muted-foreground/30"
+              }`}
           />
         ))}
         <span className="text-xs text-muted-foreground ml-1">({rating})</span>
@@ -315,7 +120,7 @@ const Shop = () => {
           <div className="absolute top-20 left-10 w-32 h-32 bg-primary rounded-full blur-3xl" />
           <div className="absolute bottom-20 right-10 w-48 h-48 bg-accent rounded-full blur-3xl" />
         </div>
-        
+
         <div className="container mx-auto px-4 text-center relative z-10">
           <Badge variant="outline" className="mb-4 px-4 py-1">
             <Leaf className="h-3 w-3 mr-1" />
@@ -353,7 +158,7 @@ const Shop = () => {
                 <span className="hidden sm:inline">Learn</span>
               </TabsTrigger>
             </TabsList>
-            
+
             <div className="flex items-center gap-2">
               <Filter className="h-4 w-4 text-muted-foreground" />
               <Select defaultValue="featured">
@@ -385,7 +190,7 @@ const Shop = () => {
                         {product.badge}
                       </Badge>
                     )}
-                    <button 
+                    <button
                       aria-label="Add to wishlist"
                       className="absolute top-3 right-3 p-2 bg-background/80 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
                     >
@@ -396,7 +201,7 @@ const Shop = () => {
                     <div className="mb-2">{renderStars(product.rating)}</div>
                     <h3 className="font-semibold text-lg text-foreground mb-1">{product.name}</h3>
                     <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{product.description}</p>
-                    
+
                     <div className="space-y-3">
                       <Select
                         value={selectedSizes[product.id] || product.variants[0].size}
@@ -408,13 +213,16 @@ const Shop = () => {
                         <SelectContent>
                           {product.variants.map((variant) => (
                             <SelectItem key={variant.size} value={variant.size}>
-                              {variant.size}, {formatPrice(variant.price)}
+                              {variant.size}, {formatPrice(variant.price_kes)}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
-                      
-                      <Button className="w-full gap-2">
+
+                      <Button
+                        className="w-full gap-2"
+                        onClick={() => handleAddToCart(product, 'honey')}
+                      >
                         <ShoppingCart className="h-4 w-4" />
                         Add to Cart
                       </Button>
@@ -441,63 +249,66 @@ const Shop = () => {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {merchProducts
-                .filter((product) =>
-                  selectedMerchCategory === "All" ? true : product.category === selectedMerchCategory
+                .filter((p) =>
+                  selectedMerchCategory === "All" ? true : p.category === selectedMerchCategory
                 )
                 .map((product) => (
-                <Card key={product.id} className="group overflow-hidden border-border/50 hover:border-primary/50 hover:shadow-lg transition-all duration-300">
-                  <div className="relative aspect-square bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center overflow-hidden">
-                    <div className="w-24 h-24 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-                      <Shirt className="h-12 w-12 text-primary/50" />
-                    </div>
-                    {product.badge && (
-                      <Badge variant={getBadgeVariant(product.badge)} className="absolute top-3 left-3">
-                        {product.badge}
+                  <Card key={product.id} className="group overflow-hidden border-border/50 hover:border-primary/50 hover:shadow-lg transition-all duration-300">
+                    <div className="relative aspect-square bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center overflow-hidden">
+                      <div className="w-24 h-24 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                        <Shirt className="h-12 w-12 text-primary/50" />
+                      </div>
+                      {product.badge && (
+                        <Badge variant={getBadgeVariant(product.badge)} className="absolute top-3 left-3">
+                          {product.badge}
+                        </Badge>
+                      )}
+                      <Badge variant="secondary" className="absolute top-3 right-3">
+                        {product.category}
                       </Badge>
-                    )}
-                    <Badge variant="secondary" className="absolute top-3 right-3">
-                      {product.category}
-                    </Badge>
-                  </div>
-                  <CardContent className="p-5">
-                    <div className="mb-2">{renderStars(product.rating)}</div>
-                    <h3 className="font-semibold text-lg text-foreground mb-1">{product.name}</h3>
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{product.description}</p>
-                    
-                    <div className="space-y-3">
-                      <div className="flex flex-wrap gap-2">
-                        {product.variants.map((variant, idx) => (
-                          <button
-                            key={variant.size}
-                            className={`px-3 py-1 text-xs rounded-md border transition-colors ${
-                              (selectedSizes[product.id] || product.variants[0].size) === variant.size
+                    </div>
+                    <CardContent className="p-5">
+                      <div className="mb-2">{renderStars(product.rating)}</div>
+                      <h3 className="font-semibold text-lg text-foreground mb-1">{product.name}</h3>
+                      <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{product.description}</p>
+
+                      <div className="space-y-3">
+                        <div className="flex flex-wrap gap-2">
+                          {product.variants.map((variant: ProductVariant) => (
+                            <button
+                              key={variant.size}
+                              className={`px-3 py-1 text-xs rounded-md border transition-colors ${(selectedSizes[product.id] || product.variants[0].size) === variant.size
                                 ? "border-primary bg-primary/10 text-primary"
                                 : "border-border text-muted-foreground hover:border-primary/50"
-                            }`}
-                            onClick={() => setSelectedSizes({ ...selectedSizes, [product.id]: variant.size })}
+                                }`}
+                              onClick={() => setSelectedSizes({ ...selectedSizes, [product.id]: variant.size })}
+                            >
+                              {variant.size}
+                            </button>
+                          ))}
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <span className="text-lg font-bold text-foreground">
+                            {formatPrice(
+                              product.variants.find(
+                                (v: ProductVariant) => v.size === (selectedSizes[product.id] || product.variants[0].size)
+                              )?.price_kes || product.variants[0].price_kes
+                            )}
+                          </span>
+                          <Button
+                            size="sm"
+                            className="gap-2"
+                            onClick={() => handleAddToCart(product, 'merch')}
                           >
-                            {variant.size}
-                          </button>
-                        ))}
+                            <ShoppingCart className="h-4 w-4" />
+                            Add
+                          </Button>
+                        </div>
                       </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <span className="text-lg font-bold text-foreground">
-                          {formatPrice(
-                            product.variants.find(
-                              (v) => v.size === (selectedSizes[product.id] || product.variants[0].size)
-                            )?.price || product.variants[0].price
-                          )}
-                        </span>
-                        <Button size="sm" className="gap-2">
-                          <ShoppingCart className="h-4 w-4" />
-                          Add
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                ))}
             </div>
           </TabsContent>
 
@@ -516,20 +327,26 @@ const Shop = () => {
                       </Badge>
                     )}
                     <Badge variant="outline" className="absolute top-3 right-3 bg-background/80 backdrop-blur-sm">
-                      {product.format}
+                      {product.variants[0]?.size || "PDF"}
                     </Badge>
                   </div>
                   <CardContent className="p-5">
                     <div className="flex items-center justify-between mb-2">
                       {renderStars(product.rating)}
-                      <span className="text-xs text-muted-foreground">{product.pages} pages</span>
+                      <span className="text-xs text-muted-foreground">Professional Guide</span>
                     </div>
                     <h3 className="font-semibold text-lg text-foreground mb-1">{product.name}</h3>
                     <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{product.description}</p>
-                    
+
                     <div className="flex items-center justify-between">
-                      <span className="text-xl font-bold text-foreground">{formatPrice(product.price)}</span>
-                      <Button className="gap-2">
+                      <span className="text-xl font-bold text-foreground">{formatPrice(product.variants[0]?.price_kes || 0)}</span>
+                      <Button
+                        className="gap-2"
+                        onClick={() => {
+                          handleAddToCart(product, 'education');
+                          openCart();
+                        }}
+                      >
                         <ShoppingCart className="h-4 w-4" />
                         Buy Now
                       </Button>
@@ -563,6 +380,22 @@ const Shop = () => {
           </div>
         </div>
       </section>
+
+      {/* Floating Cart Trigger (Mobile/Quick Access) */}
+      {getTotalItems() > 0 && (
+        <button
+          onClick={openCart}
+          className="fixed bottom-6 right-6 z-40 p-4 bg-primary text-primary-foreground rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all animate-in fade-in zoom-in duration-300 group"
+          aria-label="Open cart"
+        >
+          <div className="relative">
+            <ShoppingBag className="h-6 w-6" />
+            <span className="absolute -top-2 -right-2 bg-accent text-accent-foreground text-[10px] font-bold h-5 w-5 rounded-full flex items-center justify-center border-2 border-primary group-hover:bg-white group-hover:text-primary transition-colors">
+              {getTotalItems()}
+            </span>
+          </div>
+        </button>
+      )}
     </div>
   );
 };

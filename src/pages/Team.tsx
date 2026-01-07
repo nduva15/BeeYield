@@ -1,9 +1,13 @@
-import { Linkedin, Award, Users, Briefcase, Code } from "lucide-react";
+import { Linkedin, Award, Users, Briefcase, Code, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { useEffect, useState } from "react";
+import { getTeam, TeamData } from "@/services/companyService";
 
-import { useEffect } from "react";
 const Team = () => {
+  const [teamData, setTeamData] = useState<TeamData | null>(null);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     // Inject GTM script into head
     const script = document.createElement('script');
@@ -14,52 +18,69 @@ const Team = () => {
       })(window,document,'script','dataLayer','GTM-KF284247');`;
     script.async = true;
     document.head.appendChild(script);
+
+    const fetchData = async () => {
+      const data = await getTeam();
+      setTeamData(data);
+      setLoading(false);
+    };
+    fetchData();
+
     return () => {
       document.head.removeChild(script);
     };
   }, []);
-  const founders = [
-    { 
-      name: "Timothy Mathuva", 
-      role: "CEO & Founder", 
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  const founders = teamData?.founders || [
+    {
+      name: "Timothy Mathuva",
+      role: "CEO & Founder",
       description: "Visionary leader driving BeeYield's mission to revolutionize pollination through technology.",
       image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400",
       linkedin: "https://www.linkedin.com/in/timothymathuva/"
     },
-    { 
-      name: "Carole Mathuva", 
-      role: "Chief Growth Officer & Co-founder", 
+    {
+      name: "Carole Mathuva",
+      role: "Chief Growth Officer & Co-founder",
       description: "Business Development lead, shaping partnerships and driving company growth.",
       image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400",
       linkedin: "#"
     },
-    { 
-      name: "Agatha Mathuva", 
-      role: "Chief IT Head & Co-founder", 
+    {
+      name: "Agatha Mathuva",
+      role: "Chief IT Head & Co-founder",
       description: "Leading technology infrastructure and digital innovation at BeeYield.",
       image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400",
       linkedin: "#"
     },
   ];
 
-  const boardMembers = [
-    { 
-      name: "Nicholas Nduva", 
+  const boardMembers = teamData?.board || [
+    {
+      name: "Nicholas Nduva",
       role: "Board Member",
       image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=400",
       linkedin: "#"
     },
-    { 
-      name: "Redemepta Mathuva", 
+    {
+      name: "Redemepta Mathuva",
       role: "Board Member",
       image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&q=80&w=400",
       linkedin: "#"
     },
   ];
 
-  const technicalTeam = [
-    { 
-      name: "Rose Ndinda", 
+  const technicalTeam = teamData?.technical || [
+    {
+      name: "Rose Ndinda",
       role: "Technical Team Member",
       description: "Contributing to BeeYield's technical innovation and development.",
       image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400",
@@ -92,7 +113,7 @@ const Team = () => {
             A family-driven team combining agriculture, technology, and innovation to secure the future of pollination and food security.
           </p>
         </div>
-        
+
         {/* Abstract Background Shapes */}
         <div className="absolute top-20 left-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
         <div className="absolute bottom-10 right-10 w-80 h-80 bg-secondary/5 rounded-full blur-3xl" />
@@ -132,13 +153,13 @@ const Team = () => {
               <Card key={index} className="group overflow-hidden border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
                 <CardContent className="p-0">
                   <div className="relative overflow-hidden">
-                    <img 
-                      src={member.image} 
+                    <img
+                      src={member.image}
                       alt={member.name}
                       className="w-full h-72 object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent" />
-                    <a 
+                    <a
                       href={member.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -151,7 +172,7 @@ const Team = () => {
                   <div className="p-6">
                     <h3 className="text-xl font-bold text-foreground mb-1">{member.name}</h3>
                     <p className="text-primary font-medium mb-3">{member.role}</p>
-                    <p className="text-sm text-muted-foreground">{member.description}</p>
+                    {member.description && <p className="text-sm text-muted-foreground">{member.description}</p>}
                   </div>
                 </CardContent>
               </Card>
@@ -180,13 +201,13 @@ const Team = () => {
                 <Card key={index} className="group overflow-hidden border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
                   <CardContent className="p-0">
                     <div className="relative overflow-hidden">
-                      <img 
-                        src={member.image} 
+                      <img
+                        src={member.image}
                         alt={member.name}
                         className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent" />
-                      <a 
+                      <a
                         href={member.linkedin}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -227,13 +248,13 @@ const Team = () => {
               <Card key={index} className="group overflow-hidden border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
                 <CardContent className="p-0">
                   <div className="relative overflow-hidden">
-                    <img 
-                      src={member.image} 
+                    <img
+                      src={member.image}
                       alt={member.name}
                       className="w-full h-72 object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent" />
-                    <a 
+                    <a
                       href={member.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -246,7 +267,7 @@ const Team = () => {
                   <div className="p-6">
                     <h3 className="text-xl font-bold text-foreground mb-1">{member.name}</h3>
                     <p className="text-primary font-medium mb-3">{member.role}</p>
-                    <p className="text-sm text-muted-foreground">{member.description}</p>
+                    {member.description && <p className="text-sm text-muted-foreground">{member.description}</p>}
                   </div>
                 </CardContent>
               </Card>
