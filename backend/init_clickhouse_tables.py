@@ -48,6 +48,18 @@ def init_clickhouse():
         database=database,
         secure=True
     )
+
+    # DROP existing tables to ensure fresh schema
+    print("🗑️ Dropping existing tables to ensure fresh schema...")
+    tables_to_drop = [
+        "mv_daily_page_views", "mv_daily_scans", "mv_daily_orders",
+        "page_views", "traceability_scans", "order_events", "product_views", 
+        "search_queries", "api_requests", "hive_sensor_data", 
+        "pollination_analytics", "email_events"
+    ]
+    for table in tables_to_drop:
+        client.command(f"DROP TABLE IF EXISTS {table}")
+    print("✅ Existing tables dropped")
     
     # 2. Page Views Table
     client.command("""
@@ -222,7 +234,7 @@ def init_clickhouse():
     print("✅ Table email_events created")
     
     # 11. Materialized View: Daily Page Views
-    client.command("""
+    client.command(f"""
     CREATE MATERIALIZED VIEW IF NOT EXISTS mv_daily_page_views
     ENGINE = SummingMergeTree()
     PARTITION BY toYYYYMM(date)
@@ -232,13 +244,13 @@ def init_clickhouse():
         page_path,
         count() as views,
         uniq(session_id) as unique_sessions
-    FROM page_views
+    FROM {database}.page_views
     GROUP BY date, page_path
     """)
     print("✅ Materialized view mv_daily_page_views created")
     
     # 12. Materialized View: Daily Scans
-    client.command("""
+    client.command(f"""
     CREATE MATERIALIZED VIEW IF NOT EXISTS mv_daily_scans
     ENGINE = SummingMergeTree()
     PARTITION BY toYYYYMM(date)
@@ -248,13 +260,13 @@ def init_clickhouse():
         batch_code,
         scan_country,
         count() as scans
-    FROM traceability_scans
+    FROM {database}.traceability_scans
     GROUP BY date, batch_code, scan_country
     """)
     print("✅ Materialized view mv_daily_scans created")
     
     # 13. Materialized View: Daily Orders
-    client.command("""
+    client.command(f"""
     CREATE MATERIALIZED VIEW IF NOT EXISTS mv_daily_orders
     ENGINE = SummingMergeTree()
     PARTITION BY toYYYYMM(date)
@@ -265,7 +277,7 @@ def init_clickhouse():
         countIf(event_type = 'created') as orders_created,
         countIf(event_type = 'paid') as orders_paid,
         sumIf(order_total, event_type = 'paid') as revenue
-    FROM order_events
+    FROM {database}.order_events
     GROUP BY date, currency
     """)
     print("✅ Materialized view mv_daily_orders created")

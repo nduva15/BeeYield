@@ -24,7 +24,7 @@ class ClickHouseService:
             client = clickhouse_connect.get_client(
                 host=settings.CLICKHOUSE_HOST.replace("https://", "").replace("http://", ""),
                 port=settings.CLICKHOUSE_PORT,
-                username=settings.CLICKHOUSE_USER,
+                user=settings.CLICKHOUSE_USER,
                 password=settings.CLICKHOUSE_PASSWORD,
                 database=target_db,
                 secure=settings.CLICKHOUSE_SECURE

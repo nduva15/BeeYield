@@ -93,6 +93,7 @@ class CompanyInfo(BaseModel):
     headquarters: str = "Nairobi, Kenya"
     contact_email: str = "hello@beeyield.com"
     contact_phone: str = "+254 700 000 000"
+    values: List[dict] = []
     social_links: dict = {
         "twitter": "https://twitter.com/beeyield",
         "linkedin": "https://linkedin.com/company/beeyield",

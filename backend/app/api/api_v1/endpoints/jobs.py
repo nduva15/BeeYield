@@ -1,113 +1,165 @@
 """
-Jobs/Careers Endpoints
+Jobs Endpoints - Alias for Careers
+Maps /api/v1/jobs to the careers endpoints for frontend compatibility
 """
-from fastapi import APIRouter, HTTPException, UploadFile, File, Form
-from typing import List, Optional
-from app.schemas import jobs as schemas
-from app.db.supabase_db import db_select, db_insert, db_get_by_id
-from datetime import datetime
-import uuid
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form, BackgroundTasks
+from typing import List
+from datetime import date
+from app.schemas import careers as schemas
+from app.db.supabase_db import db_select, db_insert, get_supabase
+from app.services import email
 
 router = APIRouter()
 
 
-# ============ PUBLIC JOBS ENDPOINTS ============
-
-@router.get("/", response_model=List[dict])
-def list_jobs(department: Optional[str] = None):
+@router.get("/", response_model=List[schemas.JobListing])
+def get_jobs():
     """
-    Lists open career positions.
+    Get all active job listings.
+    Alias for /api/v1/careers/
     """
-    filters = {"is_active": True}
-    if department:
-        filters["department"] = department
+    jobs = db_select("job_listings", filters={"is_active": True}, order_by="posted_date", ascending=False)
     
-    jobs = db_select("job_positions", filters=filters, order_by="posted_at", ascending=False)
-    
-    if not jobs or len(jobs) == 0:
-        # Return mock data
+    if not jobs:
+        # Return fallback data
         return [
             {
                 "id": "job-1",
-                "title": "Senior Beekeeper",
-                "department": "Operations",
-                "location": "Kibwezi, Kenya",
-                "job_type": "full-time",
-                "description": "We are looking for an experienced beekeeper to manage our expanding apiary in Kibwezi.",
-                "requirements": ["5+ years beekeeping experience", "Experience with African Honey Bees", "Driving license"],
-                "benefits": ["Competitive salary", "Housing provided", "Health insurance"],
-                "posted_at": "2024-12-01T08:00:00Z",
-                "is_active": True
+                "title": "Senior Agronomist",
+                "slug": "senior-agronomist",
+                "department": "Agriculture",
+                "location": "Nairobi, Kenya",
+                "job_type": "Full-time",
+                "description": "Lead our agricultural research and pollination optimization programs.",
+                "requirements": ["MSc in Agronomy", "5+ years experience"],
+                "benefits": ["Health insurance", "Performance bonus"],
+                "salary_range": "KES 150,000 - 250,000/month",
+                "is_active": True,
+                "posted_date": date.today()
             },
             {
                 "id": "job-2",
-                "title": "IoT Systems Engineer",
-                "department": "Technical",
+                "title": "Field Operations Manager",
+                "slug": "field-operations-manager",
+                "department": "Operations",
+                "location": "Rift Valley, Kenya",
+                "job_type": "Full-time",
+                "description": "Manage hive deployment and pollination services.",
+                "requirements": ["Bachelor's degree", "3+ years in operations"],
+                "benefits": ["Health insurance", "Company vehicle"],
+                "salary_range": "KES 100,000 - 150,000/month",
+                "is_active": True,
+                "posted_date": date.today()
+            },
+            {
+                "id": "job-3",
+                "title": "Data Scientist",
+                "slug": "data-scientist",
+                "department": "Technology",
+                "location": "Remote (Kenya)",
+                "job_type": "Full-time",
+                "description": "Build ML models for pollination optimization.",
+                "requirements": ["MSc in Data Science", "Python experience"],
+                "benefits": ["Remote work", "Stock options"],
+                "salary_range": "KES 200,000 - 350,000/month",
+                "is_active": True,
+                "posted_date": date.today()
+            },
+            {
+                "id": "job-4",
+                "title": "Beekeeping Specialist",
+                "slug": "beekeeping-specialist",
+                "department": "Operations",
+                "location": "Mount Kenya Region",
+                "job_type": "Contract",
+                "description": "Expert guidance on hive management.",
+                "requirements": ["5+ years experience", "Training certification"],
+                "benefits": ["Competitive daily rate", "Equipment provided"],
+                "salary_range": "KES 2,500 - 4,000/day",
+                "is_active": True,
+                "posted_date": date.today()
+            },
+            {
+                "id": "job-5",
+                "title": "Customer Success Manager",
+                "slug": "customer-success-manager",
+                "department": "Sales",
                 "location": "Nairobi, Kenya",
-                "job_type": "full-time",
-                "description": "Help us build the next generation of smart hives using IoT sensors and AI.",
-                "requirements": ["BSc in Engineering or CS", "Experience with ESP32/Arduino", "Python/C++ proficiency"],
-                "benefits": ["Flexible hours", "Innovation budget", "Equity options"],
-                "posted_at": "2024-12-05T09:00:00Z",
-                "is_active": True
+                "job_type": "Full-time",
+                "description": "Build lasting relationships with grower clients.",
+                "requirements": ["Bachelor's degree", "3+ years in customer success"],
+                "benefits": ["Health insurance", "Performance commission"],
+                "salary_range": "KES 80,000 - 120,000/month",
+                "is_active": True,
+                "posted_date": date.today()
             }
         ]
     
     return jobs
 
 
-@router.get("/{job_id}", response_model=dict)
-def get_job_detail(job_id: str):
-    """
-    Get detailed information about a specific job.
-    """
-    job = db_get_by_id("job_positions", job_id)
-    if not job:
-        # Mock fallback for demonstration
-        if job_id == "job-1":
-            return {
-                "id": "job-1",
-                "title": "Senior Beekeeper",
-                "department": "Operations",
-                "location": "Kibwezi, Kenya",
-                "job_type": "full-time",
-                "description": "Manage hive health and harvest operations.",
-                "requirements": ["Experience"],
-                "benefits": ["Insurance"],
-                "posted_at": datetime.now()
-            }
-        raise HTTPException(status_code=404, detail="Job position not found")
-    return job
-
-
 @router.post("/apply", response_model=dict)
-def apply_for_job(application: schemas.JobApplicationCreate):
+async def apply_for_job(
+    background_tasks: BackgroundTasks,
+    job_id: str = Form(...),
+    full_name: str = Form(...),
+    email_address: str = Form(...),
+    phone: str = Form(None),
+    cover_letter: str = Form(None),
+    linkedin_url: str = Form(None),
+    portfolio_url: str = Form(None),
+    experience_years: int = Form(None),
+    resume: UploadFile = File(None)
+):
     """
     Submit a job application.
+    Alias for /api/v1/careers/apply
     """
-    app_data = application.dict()
-    app_data["id"] = str(uuid.uuid4())
-    app_data["status"] = "pending"
-    app_data["created_at"] = datetime.utcnow().isoformat()
+    resume_url = None
     
-    result = db_insert("job_applications", app_data)
+    if resume:
+        try:
+            supabase = get_supabase()
+            if supabase:
+                file_ext = resume.filename.split(".")[-1] if resume.filename else "pdf"
+                file_name = f"{job_id}_{full_name.replace(' ', '_')}_{date.today().isoformat()}.{file_ext}"
+                contents = await resume.read()
+                supabase.storage.from_("resumes").upload(file_name, contents)
+                resume_url = supabase.storage.from_("resumes").get_public_url(file_name)
+        except Exception as e:
+            print(f"Resume upload error: {e}")
     
-    if result.get("success"):
-        return {"status": "success", "message": "Application submitted successfully", "application_id": app_data["id"]}
+    application_data = {
+        "job_id": job_id,
+        "full_name": full_name,
+        "email": email_address,
+        "phone": phone,
+        "resume_url": resume_url,
+        "cover_letter": cover_letter,
+        "linkedin_url": linkedin_url,
+        "portfolio_url": portfolio_url,
+        "experience_years": experience_years,
+        "status": "new"
+    }
     
-    # Return mock success if DB fails for now
-    return {"status": "success", "message": "Application received (demo mode)"}
-
-
-# ============ ADMIN ENDPOINTS ============
-
-@router.post("/", response_model=dict)
-def create_job_position(job: schemas.JobPositionCreate):
-    """
-    Create a new job position (Admin).
-    """
-    job_data = job.dict()
-    job_data["posted_at"] = datetime.utcnow().isoformat()
-    job_data["is_active"] = True
+    result = db_insert("job_applications", application_data)
     
-    return db_insert("job_positions", job_data)
+    # Send notifications
+    background_tasks.add_task(
+        email.send_email,
+        "careers@beeyield.com",
+        f"New Job Application: {full_name}",
+        f"New application for job ID: {job_id}\nApplicant: {full_name}\nEmail: {email_address}"
+    )
+    
+    background_tasks.add_task(
+        email.send_email,
+        email_address,
+        "Application Received - BeeYield Careers",
+        f"Dear {full_name},\n\nThank you for applying to BeeYield!\n\nBest regards,\nBeeYield Talent Team"
+    )
+    
+    return {
+        "status": "success",
+        "message": "Application submitted successfully"
+    }

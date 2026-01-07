@@ -1,0 +1,45 @@
+.venv\Scripts\python.exe : 
+Could not find platform 
+independent libraries 
+<prefix>
+At line:1 char:1
++ .venv\Scripts\python.exe 
+backend/db/seed_all_data.py 
+> seed_output.tx ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
+    + CategoryInfo          
+    : NotSpecified: (Could  
+   not find ...raries <pr   
+ efix>:String) [], Remot    
+eException
+    + FullyQualifiedErrorId 
+    : NativeCommandError
+ 
+Traceback (most recent call 
+last):
+  File "C:\Users\aggym\Downl
+oads\Honey\backend\db\seed_a
+ll_data.py", line 26, in 
+<module>
+    print(f"\u2705 
+Connected to Supabase: 
+{SUPABASE_URL}")
+    ~~~~~^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\aggym\AppDa
+ta\Local\Programs\Python\Pyt
+hon313\Lib\encodings\cp1252.
+py", line 19, in encode
+    return codecs.charmap_en
+code(input,self.errors,encod
+ing_table)[0]
+           ~~~~~~~~~~~~~~~~~
+~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^
+UnicodeEncodeError: 
+'charmap' codec can't 
+encode character '\u2705' 
+in position 0: character 
+maps to <undefined>

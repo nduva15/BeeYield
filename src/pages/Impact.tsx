@@ -1,11 +1,18 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Sprout, Droplets, TreePine, Bug, Download, ArrowRight } from "lucide-react";
+import { Sprout, Droplets, TreePine, Bug, Download, ArrowRight, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
-import impactImage from "@/assets/impact-beekeeping.jpg";
+import { useEffect, useState } from "react";
+import { getCompanyStats, getImpactStories, CompanyStat, ImpactStory } from "@/services/companyService";
+import { getESGMetrics, ESGMetric } from "@/services/servicesService";
 
-import { useEffect } from "react";
 const Impact = () => {
+  const [stats, setStats] = useState<CompanyStat[]>([]);
+  const [stories, setStories] = useState<ImpactStory[]>([]);
+  const [esgMetrics, setEsgMetrics] = useState<ESGMetric[]>([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     // Inject GTM script into head
     const script = document.createElement('script');
@@ -16,16 +23,42 @@ const Impact = () => {
       })(window,document,'script','dataLayer','GTM-KF284247');`;
     script.async = true;
     document.head.appendChild(script);
+
+    const initData = async () => {
+      try {
+        const [fetchedStats, fetchedStories, fetchedMetrics] = await Promise.all([
+          getCompanyStats(),
+          getImpactStories(),
+          getESGMetrics()
+        ]);
+        setStats(fetchedStats);
+        setStories(fetchedStories);
+        setEsgMetrics(fetchedMetrics);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    initData();
+
     return () => {
       document.head.removeChild(script);
     };
   }, []);
-  const stats = [
-    { label: "Beehives Protected", value: "150+", icon: Bug },
-    { label: "Trees Planted", value: "2500+", icon: TreePine },
-    { label: "Bees Saved (Colonies)", value: "2M+", icon: Droplets },
-    { label: "Carbon Offset (Tons)", value: "2+", icon: Sprout },
-  ];
+
+  const getIcon = (iconName: string) => {
+    switch (iconName.toLowerCase()) {
+      case 'bug': return Bug;
+      case 'treepine': return TreePine;
+      case 'droplets': return Droplets;
+      case 'sprout': return Sprout;
+      case 'hexagon': return Bug; // Fallback
+      case 'users': return Sprout; // Fallback
+      case 'flower': return Sprout; // Fallback
+      default: return Bug;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -56,103 +89,125 @@ const Impact = () => {
               link.click();
               document.body.removeChild(link);
             }}
-            className="mb-12 mt-5  inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
+            className="mb-12 mt-5 inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-primary-foreground font-semibold hover:opacity-90 transition-opacity shadow-lg"
           >
             <Download className="h-5 w-5" />
             Download Our Impact Report
           </button>
         </div>
 
-        <div className="relative mb-16 overflow-hidden rounded-2xl">
-          <img src={impactImage} alt="Impact" className="h-[400px] w-full object-cover" />
-        </div>
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+          </div>
+        ) : (
+          <>
+            <div className="relative mb-16 overflow-hidden rounded-2xl shadow-xl group">
+              <img
+                src="https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=1600&auto=format&fit=crop&q=80"
+                alt="Impact"
+                className="h-[400px] w-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-black/30" />
+            </div>
 
-        <div className="mb-16 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {stats.map((stat, index) => (
-            <Card key={index} className="text-center">
-              <CardContent className="pt-6">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                  <stat.icon className="h-8 w-8 text-primary" />
-                </div>
-                <h3 className="mb-2 text-3xl font-bold text-foreground">{stat.value}</h3>
-                <p className="text-muted-foreground">{stat.label}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+            <div className="mb-16 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              {stats.map((stat, index) => {
+                const IconComp = getIcon(stat.icon || '');
+                return (
+                  <Card key={index} className="text-center border-none shadow-soft hover:shadow-glow transition-all">
+                    <CardContent className="pt-6">
+                      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                        <IconComp className="h-8 w-8 text-primary" />
+                      </div>
+                      <h3 className="mb-2 text-3xl font-bold text-foreground">{stat.stat_value}</h3>
+                      <p className="text-muted-foreground font-medium">{stat.stat_label}</p>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+
+            <h2 className="text-3xl font-bold mb-8 text-center">Impact Stories</h2>
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mb-16">
+              {stories.map((story) => (
+                <Card key={story.id} className="overflow-hidden border-none shadow-soft hover:shadow-glow transition-all">
+                  <div className="aspect-video relative overflow-hidden">
+                    <img
+                      src={story.image_url || "https://images.unsplash.com/photo-1471943311424-646960669fbc?w=800"}
+                      className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                      alt={story.title}
+                    />
+                    <Badge className="absolute top-4 right-4 bg-primary/90">{story.impact_type}</Badge>
+                  </div>
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-bold mb-2">{story.title}</h3>
+                    <p className="text-muted-foreground text-sm mb-4 line-clamp-3">{story.summary}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-primary font-bold">{story.beneficiaries_count} Beneficiaries</span>
+                      <Link to={`/impact/${story.slug}`} className="text-primary hover:underline text-sm font-semibold flex items-center gap-1">
+                        Read Story <ArrowRight className="h-3 w-3" />
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </>
+        )}
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-          <Card className="lg:col-span-1 flex flex-col">
+          <Card className="lg:col-span-1 flex flex-col border-none shadow-soft">
             <CardContent className="p-6 flex flex-col flex-grow">
-              <h3 className="mb-4 text-xl font-semibold text-foreground">Pollinator Protection</h3>
-              <p className="mb-6 text-muted-foreground">
+              <h3 className="mb-4 text-xl font-bold text-foreground">Pollinator Protection</h3>
+              <p className="mb-6 text-muted-foreground text-sm">
                 We're committed to protecting bee populations through sustainable beekeeping practices and habitat conservation.
               </p>
               <div className="space-y-4 flex-grow">
-                <div>
-                  <div className="mb-2 flex justify-between text-sm">
-                    <span className="text-foreground">Habitat Conservation</span>
-                    <span className="text-primary">95%</span>
+                {esgMetrics.filter(m => m.category === 'environmental').map((m, i) => (
+                  <div key={i}>
+                    <div className="mb-2 flex justify-between text-xs font-medium">
+                      <span className="text-foreground">{m.metric_name}</span>
+                      <span className="text-primary">{m.metric_value}{m.metric_unit}</span>
+                    </div>
+                    <Progress value={Math.min(100, m.metric_value)} className="h-1.5" />
                   </div>
-                  <Progress value={95} className="h-2" />
-                </div>
-                <div>
-                  <div className="mb-2 flex justify-between text-sm">
-                    <span className="text-foreground">Chemical-Free Practices</span>
-                    <span className="text-primary">100%</span>
-                  </div>
-                  <Progress value={100} className="h-2" />
-                </div>
-                <div>
-                  <div className="mb-2 flex justify-between text-sm">
-                    <span className="text-foreground">Native Plant Restoration</span>
-                    <span className="text-primary">88%</span>
-                  </div>
-                  <Progress value={88} className="h-2" />
-                </div>
+                ))}
               </div>
-              <Link to="/commitment" className="mt-6 inline-flex items-center gap-2 text-primary hover:underline">
+              <Link to="/commitment" className="mt-6 inline-flex items-center gap-2 text-primary hover:underline font-bold text-sm">
                 Read More <ArrowRight className="h-4 w-4" />
               </Link>
             </CardContent>
           </Card>
 
-          <Card className="lg:col-span-1 flex flex-col">
+          <Card className="lg:col-span-1 flex flex-col border-none shadow-soft">
             <CardContent className="p-6 flex flex-col flex-grow">
-              <h3 className="mb-4 text-xl font-semibold text-foreground">Community Impact</h3>
-              <div className="space-y-4 text-muted-foreground flex-grow">
+              <h3 className="mb-4 text-xl font-bold text-foreground">Community Impact</h3>
+              <div className="space-y-4 text-muted-foreground text-sm flex-grow">
                 <p>
-                  Beyond environmental conservation, BeeYield is dedicated to supporting local beekeeping communities. We provide fair compensation, training, and resources to help our partner beekeepers thrive.
+                  Beyond environmental conservation, BeeYield is dedicated to supporting local beekeeping communities.
                 </p>
                 <ul className="space-y-2">
                   <li className="flex items-start gap-2">
-                    <span className="text-primary">•</span>
+                    <span className="text-primary font-bold">•</span>
                     Fair trade pricing ensuring sustainable livelihoods
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-primary">•</span>
+                    <span className="text-primary font-bold">•</span>
                     Educational programs for new beekeepers
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-primary">•</span>
-                    Equipment grants for sustainable practices
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-primary">•</span>
-                    Support for bee health research initiatives
                   </li>
                 </ul>
               </div>
-              <Link to="/commitment" className="mt-6 inline-flex items-center gap-2 text-primary hover:underline">
+              <Link to="/commitment" className="mt-6 inline-flex items-center gap-2 text-primary hover:underline font-bold text-sm">
                 Read More <ArrowRight className="h-4 w-4" />
               </Link>
             </CardContent>
           </Card>
 
-          <Card className="bg-primary text-primary-foreground lg:col-span-1 flex flex-col">
+          <Card className="bg-primary text-primary-foreground lg:col-span-1 flex flex-col shadow-glow">
             <CardContent className="p-6 flex flex-col flex-grow">
-              <h3 className="mb-4 text-xl font-semibold">Our 2030 Goals</h3>
-              <ul className="space-y-3 flex-grow">
+              <h3 className="mb-4 text-xl font-bold">Our 2030 Goals</h3>
+              <ul className="space-y-3 flex-grow text-sm">
                 <li className="flex items-center gap-2">
                   <span className="text-lg">✓</span>
                   Protect 10,000 additional beehives
@@ -161,45 +216,23 @@ const Impact = () => {
                   <span className="text-lg">✓</span>
                   Plant 10,000 native flowering plants
                 </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-lg">✓</span>
-                  Achieve carbon-neutral operations
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-lg">✓</span>
-                  Expand to 200+ partner beekeepers
-                </li>
               </ul>
-              <Link 
-                to="/GlobalHiveNetwork" 
-                className="mt-6 inline-flex items-center gap-2 bg-primary-foreground text-primary px-4 py-2 rounded-lg font-semibold hover:opacity-90 transition-opacity"
+              <Link
+                to="/GlobalHiveNetwork"
+                className="mt-6 inline-flex items-center gap-2 bg-white text-primary px-4 py-2 rounded-lg font-bold hover:bg-opacity-90 transition-all text-sm justify-center"
               >
                 Join Our Global Hive Network <ArrowRight className="h-4 w-4" />
               </Link>
             </CardContent>
           </Card>
 
-          <Card className="lg:col-span-1 flex flex-col">
+          <Card className="lg:col-span-1 flex flex-col border-none shadow-soft">
             <CardContent className="p-6 flex flex-col flex-grow">
-              <h3 className="mb-4 text-xl font-semibold text-foreground">ESG Commitment</h3>
-              <p className="mb-4 text-muted-foreground">
-                Environmental, Social, and Governance principles guide everything we do at BeeYield. We're committed to sustainable practices that benefit bees, beekeepers, and our planet.
+              <h3 className="mb-4 text-xl font-bold text-foreground">ESG Commitment</h3>
+              <p className="mb-4 text-muted-foreground text-sm">
+                Environmental, Social, and Governance principles guide everything we do at BeeYield.
               </p>
-              <ul className="space-y-2 text-muted-foreground mb-6 flex-grow">
-                <li className="flex items-start gap-2">
-                  <span className="text-primary">•</span>
-                  Transparent environmental reporting
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary">•</span>
-                  Ethical supply chain practices
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary">•</span>
-                  Community-first governance
-                </li>
-              </ul>
-              <Link to="/ESG" className="inline-flex items-center gap-2 text-primary hover:underline font-semibold">
+              <Link to="/ESG" className="mt-auto inline-flex items-center gap-2 text-primary hover:underline font-bold text-sm">
                 Explore Our ESG Framework <ArrowRight className="h-4 w-4" />
               </Link>
             </CardContent>
@@ -207,7 +240,7 @@ const Impact = () => {
         </div>
 
         {/* Full-width Video Section */}
-        <div className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] h-[70vh] bg-foreground mt-16">
+        <div className="relative mt-16 overflow-hidden rounded-2xl shadow-2xl h-[70vh]">
           <iframe
             className="absolute inset-0 w-full h-full"
             src="https://www.youtube.com/embed/dQw4w9WgXcQ"

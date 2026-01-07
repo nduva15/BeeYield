@@ -1,3 +1,8 @@
+/**
+ * Shop Service - Connects to Python Backend
+ */
+import { API_V1_URL } from "./api";
+
 export interface ProductVariant {
     id: string;
     size: string;
@@ -19,11 +24,11 @@ export interface Product {
     variants: ProductVariant[];
 }
 
-const API_URL = "http://localhost:8000/api/v1";
-
 export const getProducts = async (category?: string): Promise<Product[]> => {
     try {
-        const url = category ? `${API_URL}/shop/products?category=${category}` : `${API_URL}/shop/products`;
+        const url = category
+            ? `${API_V1_URL}/shop/products?category=${category}`
+            : `${API_V1_URL}/shop/products`;
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error("Failed to fetch products");
@@ -35,8 +40,30 @@ export const getProducts = async (category?: string): Promise<Product[]> => {
     }
 };
 
+export const getProduct = async (productId: string): Promise<Product | null> => {
+    try {
+        const response = await fetch(`${API_V1_URL}/shop/products/${productId}`);
+        if (!response.ok) {
+            throw new Error("Failed to fetch product");
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching product:", error);
+        return null;
+    }
+};
+
 export interface CheckoutOrder {
-    shipping_address: any;
+    shipping_address: {
+        first_name: string;
+        last_name: string;
+        email: string;
+        phone: string;
+        address: string;
+        city: string;
+        county: string;
+        postal_code?: string;
+    };
     payment_method: "mpesa" | "card";
     items: {
         product_id: string;
@@ -47,9 +74,21 @@ export interface CheckoutOrder {
     notes?: string;
 }
 
-export const initializeCheckout = async (orderData: CheckoutOrder): Promise<any> => {
+export interface CheckoutResponse {
+    order_id: string;
+    order_number: string;
+    status: string;
+    message: string;
+    payment_info?: {
+        checkout_request_id?: string;
+        merchant_request_id?: string;
+        client_secret?: string;
+    };
+}
+
+export const initializeCheckout = async (orderData: CheckoutOrder): Promise<CheckoutResponse> => {
     try {
-        const response = await fetch(`${API_URL}/shop/checkout/init`, {
+        const response = await fetch(`${API_V1_URL}/shop/checkout/init`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

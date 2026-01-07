@@ -1,3 +1,4 @@
+
 """
 Services Endpoints - Pollination, Learning, ESG, Crops
 """
@@ -11,7 +12,7 @@ router = APIRouter()
 
 # ============ POLLINATION SOLUTIONS ============
 
-@router.get("/pollination", response_model=List[dict])
+@router.get("/pollination", response_model=List[schemas.PollinationService])
 def get_pollination_services():
     """
     Get all pollination services.
@@ -24,19 +25,25 @@ def get_pollination_services():
                 "id": "ser-1",
                 "name": "In-Land Pollination",
                 "slug": "in-land-pollination",
+                "description": "Comprehensive pollination tracking for field crops.",
                 "short_description": "Precision pollination services for large-scale farms.",
                 "features": ["GPS-tracked hives", "24/7 monitoring", "Certified beekeepers"],
+                "benefits": ["Increased yield", "Data-driven decisions"],
                 "display_order": 1,
-                "is_active": True
+                "is_active": True,
+                "created_at": "2024-01-01T00:00:00Z"
             },
             {
                 "id": "ser-2",
                 "name": "Precision Pollination",
                 "slug": "precision-pollination",
+                "description": "Advanced AI-driven pollination planning.",
                 "short_description": "Data-driven pollination optimization using AI.",
                 "features": ["AI-powered placement", "Yield analytics", "Weather integration"],
+                "benefits": ["Optimized bee density", "Cost reduction"],
                 "display_order": 2,
-                "is_active": True
+                "is_active": True,
+                "created_at": "2024-01-01T00:00:00Z"
             }
         ]
     return services
@@ -44,7 +51,7 @@ def get_pollination_services():
 
 # ============ CROPS ============
 
-@router.get("/crops", response_model=List[dict])
+@router.get("/crops", response_model=List[schemas.Crop])
 def get_crops():
     """
     Get all crops pollinated by BeeYield.
@@ -53,16 +60,28 @@ def get_crops():
     
     if not crops or len(crops) == 0:
         return [
-            {"id": "crop-1", "name": "Avocado", "slug": "avocado", "description": "Premium pollination for avocado orchards."},
-            {"id": "crop-2", "name": "Macadamia", "slug": "macadamia", "description": "Specialized pollination for macadamia nuts."},
-            {"id": "crop-3", "name": "Coffee", "slug": "coffee", "description": "Enhance coffee bean yields with bee pollination."}
+            {
+                "id": "crop-1", "name": "Avocado", "slug": "avocado", 
+                "description": "Premium pollination for avocado orchards.",
+                "display_order": 1, "is_active": True, "created_at": "2024-01-01T00:00:00Z"
+            },
+            {
+                "id": "crop-2", "name": "Macadamia", "slug": "macadamia", 
+                "description": "Specialized pollination for macadamia nuts.",
+                "display_order": 2, "is_active": True, "created_at": "2024-01-01T00:00:00Z"
+            },
+            {
+                "id": "crop-3", "name": "Coffee", "slug": "coffee", 
+                "description": "Enhance coffee bean yields with bee pollination.",
+                "display_order": 3, "is_active": True, "created_at": "2024-01-01T00:00:00Z"
+            }
         ]
     return crops
 
 
 # ============ LEARNING / BEE LEARN ============
 
-@router.get("/learning/modules", response_model=List[dict])
+@router.get("/learning/modules", response_model=List[schemas.LearningModule])
 def get_learning_modules(category: Optional[str] = None):
     """
     Get all learning modules for Bee Learn.
@@ -82,7 +101,11 @@ def get_learning_modules(category: Optional[str] = None):
                 "description": "Learn the basics of beehive management.",
                 "category": "Basic",
                 "difficulty_level": "beginner",
-                "is_free": True
+                "is_free": True,
+                "display_order": 1,
+                "is_active": True,
+                "created_at": "2024-01-01T00:00:00Z",
+                "lessons": []
             },
             {
                 "id": "mod-2",
@@ -91,21 +114,45 @@ def get_learning_modules(category: Optional[str] = None):
                 "description": "Advanced techniques for optimizing crop yields.",
                 "category": "Advanced",
                 "difficulty_level": "intermediate",
-                "is_free": False
+                "is_free": False,
+                "display_order": 2,
+                "is_active": True,
+                "created_at": "2024-01-01T00:00:00Z",
+                "lessons": []
             }
         ]
+    
+    # For each module, fetch its lessons
+    for module in modules:
+        lessons = db_select("learning_lessons", filters={"module_id": module["id"]}, order_by="display_order")
+        module["lessons"] = lessons if lessons else []
+        
     return modules
 
 
 # ============ ESG & IMPACT ============
 
-@router.get("/esg/metrics", response_model=List[dict])
+@router.get("/esg/metrics", response_model=List[schemas.ESGMetric])
 def get_esg_metrics():
     """
     Get ESG (Environmental, Social, Governance) metrics.
     """
     metrics = db_select("esg_metrics", order_by="metric_name")
-    return metrics if metrics else []
+    
+    if not metrics or len(metrics) == 0:
+        return [
+            {
+                "id": "esg-1", "metric_key": "carbon_offset", "metric_name": "Carbon Offset",
+                "metric_value": 125.5, "metric_unit": "tons", "category": "environmental",
+                "year": 2023, "is_verified": True, "updated_at": "2024-01-01T00:00:00Z"
+            },
+            {
+                "id": "esg-2", "metric_key": "farmers_trained", "metric_name": "Farmers Trained",
+                "metric_value": 500.0, "metric_unit": "farmers", "category": "social",
+                "year": 2023, "is_verified": True, "updated_at": "2024-01-01T00:00:00Z"
+            }
+        ]
+    return metrics
 
 
 @router.get("/impact/stories", response_model=List[dict])
@@ -114,7 +161,47 @@ def get_impact_stories():
     Get impact stories.
     """
     stories = db_select("impact_stories", filters={"is_active": True}, order_by="published_at", ascending=False)
-    return stories if stories else []
+    
+    if not stories or len(stories) == 0:
+        return [
+            {
+                "id": "story-1", "title": "Empowering Women Beekeepers", "slug": "empowering-women",
+                "summary": "How BeeYield is creating opportunities for women in rural Kenya.",
+                "content": "Full story here...", "impact_type": "Social", "location": "Kibwezi",
+                "is_featured": True, "is_active": True, "published_at": "2024-03-01T00:00:00Z",
+                "created_at": "2024-03-01T00:00:00Z"
+            }
+        ]
+    return stories
+
+
+@router.get("/impact/sdgs", response_model=List[dict])
+def get_sdgs():
+    """
+    Get UN Sustainable Development Goals commitment.
+    """
+    sdgs = db_select("sdgs", filters={"is_active": True}, order_by="display_order")
+    return sdgs if sdgs else []
+
+
+@router.get("/esg/pillars", response_model=List[dict])
+def get_esg_pillars():
+    """
+    Get ESG pillars and their initiatives.
+    """
+    pillars = db_select("esg_pillars", filters={"is_active": True}, order_by="display_order")
+    
+    # Enrich with initiatives
+    result = []
+    for pillar in pillars:
+        try:
+            initiatives = db_select("esg_initiatives", filters={"pillar_id": pillar["id"]}, order_by="display_order")
+            pillar["initiatives"] = [i["description"] for i in initiatives]
+        except Exception:
+            pillar["initiatives"] = []
+        result.append(pillar)
+        
+    return result if result else []
 
 
 # ============ GLOBAL HIVE NETWORK ============
@@ -125,4 +212,14 @@ def get_apiaries():
     Get all apiary locations in the network.
     """
     apiaries = db_select("apiaries", filters={"is_active": True})
-    return apiaries if apiaries else []
+    
+    if not apiaries or len(apiaries) == 0:
+        return [
+            {
+                "id": "apiary-1", "apiary_id": "api-1", "apiary_code": "KIB-001", "name": "Main Apiary Kibwezi",
+                "location_name": "Kibwezi", "region": "Makueni", "county": "Makueni", 
+                "latitude": -2.4, "longitude": 37.9, "hive_count": 184,
+                "is_active": True, "created_at": "2024-01-01T00:00:00Z"
+            }
+        ]
+    return apiaries
