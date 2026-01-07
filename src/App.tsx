@@ -83,18 +83,29 @@ const App = () => (
                   <Route path="/ESG" element={<ESG />} />
                   <Route path="/esg" element={<ESG />} />
                   <Route path="/ourstory" element={<OurStory />} />
+                  <Route path="/our-story" element={<OurStory />} />
                   <Route path="/crops-we-pollinate" element={<CropsWePollinate />} />
                   <Route path="/team" element={<Team />} />
+                  <Route path="/Team" element={<Team />} />
                   <Route path="/InLandPollinationPlatform" element={<InLandPollinationPlatform />} />
+                  <Route path="/inland-pollination-platform" element={<InLandPollinationPlatform />} />
                   <Route path="/PrecisionPollination" element={<PrecisionPollination />} />
+                  <Route path="/precision-pollination" element={<PrecisionPollination />} />
                   <Route path="/PollinationSolutions" element={<PollinationSolutions />} />
+                  <Route path="/pollination-solutions" element={<PollinationSolutions />} />
                   <Route path="/careers" element={<Careers />} />
                   <Route path="/GlobalHiveNetwork" element={<GlobalHiveNetwork />} />
+                  <Route path="/global-hive-network" element={<GlobalHiveNetwork />} />
                   <Route path="/Media" element={<Media />} />
+                  <Route path="/media" element={<Media />} />
                   <Route path="/HoneyLanding" element={<HoneyLanding />} />
+                  <Route path="/honey-landing" element={<HoneyLanding />} />
+                  <Route path="/honey" element={<HoneyLanding />} />
 
                   {/* Learn Landing Page */}
                   <Route path="/BeeLearn" element={<BeeLearn />} />
+                  <Route path="/bee-learn" element={<BeeLearn />} />
+                  <Route path="/learn" element={<BeeLearn />} />
                   <Route path="/dashboard" element={<Dashboard />} />
 
                   <Route path="*" element={<NotFound />} />
