@@ -12,7 +12,7 @@ export interface CartItem {
     price: number;
     quantity: number;
     badge: string | null;
-    category: 'honey' | 'merch' | 'education';
+    category: 'honey' | 'merch' | 'education' | 'hardware';
 }
 
 interface CartContextType {
