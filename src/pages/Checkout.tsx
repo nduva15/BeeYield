@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import {
     ShoppingBag,
@@ -22,8 +23,13 @@ import {
     Truck,
     Package,
     Lock,
+    User,
+    UserPlus,
+    LogIn,
 } from 'lucide-react';
 import { initializeCheckout } from '@/services/shopService';
+import LoginForm from '@/components/auth/LoginForm';
+import RegisterForm from '@/components/auth/RegisterForm';
 
 type CheckoutStep = 'cart' | 'shipping' | 'payment' | 'confirmation';
 
@@ -38,13 +44,17 @@ interface ShippingDetails {
     notes: string;
 }
 
+type AuthMode = 'guest' | 'login' | 'register';
+
 const Checkout: React.FC = () => {
     const navigate = useNavigate();
     const { items, getTotalItems, getTotalPrice, clearCart } = useCart();
+    const { user, loading: authLoading } = useAuth();
     const [currentStep, setCurrentStep] = useState<CheckoutStep>('cart');
     const [paymentMethod, setPaymentMethod] = useState<'mpesa' | 'card'>('mpesa');
     const [isProcessing, setIsProcessing] = useState(false);
     const [orderNumber, setOrderNumber] = useState('');
+    const [authMode, setAuthMode] = useState<AuthMode>('guest');
     const [shippingDetails, setShippingDetails] = useState<ShippingDetails>({
         fullName: '',
         email: '',
@@ -55,6 +65,19 @@ const Checkout: React.FC = () => {
         postalCode: '',
         notes: '',
     });
+
+    // Auto-fill from user profile when logged in
+    useEffect(() => {
+        if (user) {
+            const metadata = user.user_metadata || {};
+            setShippingDetails(prev => ({
+                ...prev,
+                fullName: `${metadata.first_name || ''} ${metadata.last_name || ''}`.trim() || prev.fullName,
+                email: user.email || prev.email,
+            }));
+            setAuthMode('guest'); // Reset to guest since user is now logged in
+        }
+    }, [user]);
 
     // Google Tag Manager
     useEffect(() => {
@@ -105,7 +128,7 @@ const Checkout: React.FC = () => {
                 return false;
             }
         }
-        if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(shippingDetails.email)) {
+        if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(shippingDetails.email)) {
             toast.error('Please enter a valid email address');
             return false;
         }
@@ -116,7 +139,11 @@ const Checkout: React.FC = () => {
         return true;
     };
 
-    const handleNextStep = () => {
+    const [createAccount, setCreateAccount] = useState(false);
+    const [password, setPassword] = useState('');
+    const { signUp } = useAuth();
+
+    const handleNextStep = async () => {
         if (currentStep === 'cart') {
             if (items.length === 0) {
                 toast.error('Your cart is empty');
@@ -125,6 +152,26 @@ const Checkout: React.FC = () => {
             setCurrentStep('shipping');
         } else if (currentStep === 'shipping') {
             if (validateShipping()) {
+                if (createAccount && !user) {
+                    if (password.length < 6) {
+                        toast.error('Password must be at least 6 characters');
+                        return;
+                    }
+                    setIsProcessing(true);
+                    const { error } = await signUp(shippingDetails.email, password, {
+                        first_name: shippingDetails.fullName.split(' ')[0],
+                        last_name: shippingDetails.fullName.split(' ').slice(1).join(' '),
+                    });
+                    setIsProcessing(false);
+
+                    if (error) {
+                        toast.error('Account creation failed', { description: error.message });
+                        return;
+                    } else {
+                        toast.success('Account created!', { description: 'Please check your email to verify.' });
+                        // Proceed even if not verified yet, order will be linked if session is established or we rely on email match
+                    }
+                }
                 setCurrentStep('payment');
             }
         } else if (currentStep === 'payment') {
@@ -293,8 +340,8 @@ const Checkout: React.FC = () => {
                                             <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-amber-100 to-amber-50 dark:from-amber-900/20 dark:to-amber-800/10 flex items-center justify-center">
                                                 <span className="text-3xl">{getCategoryEmoji(item.category)}</span>
                                             </div>
-                                            <div className="flex-1">
-                                                <h4 className="font-medium">{item.name}</h4>
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="font-medium truncate">{item.name}</h4>
                                                 <div className="flex items-center gap-2 mt-1">
                                                     <Badge variant="secondary">{item.size}</Badge>
                                                     <span className="text-sm text-muted-foreground">
@@ -318,110 +365,247 @@ const Checkout: React.FC = () => {
 
                         {/* Shipping Step */}
                         {currentStep === 'shipping' && (
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <MapPin className="h-5 w-5 text-primary" />
-                                        Shipping Details
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="md:col-span-2">
-                                            <Label htmlFor="fullName">Full Name *</Label>
-                                            <Input
-                                                id="fullName"
-                                                name="fullName"
-                                                value={shippingDetails.fullName}
-                                                onChange={handleInputChange}
-                                                placeholder="John Doe"
-                                                className="mt-1"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label htmlFor="email">Email Address *</Label>
-                                            <Input
-                                                id="email"
-                                                name="email"
-                                                type="email"
-                                                value={shippingDetails.email}
-                                                onChange={handleInputChange}
-                                                placeholder="john@example.com"
-                                                className="mt-1"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label htmlFor="phone">Phone Number *</Label>
-                                            <Input
-                                                id="phone"
-                                                name="phone"
-                                                value={shippingDetails.phone}
-                                                onChange={handleInputChange}
-                                                placeholder="+254 712 345 678"
-                                                className="mt-1"
-                                            />
-                                        </div>
-                                        <div className="md:col-span-2">
-                                            <Label htmlFor="address">Street Address *</Label>
-                                            <Input
-                                                id="address"
-                                                name="address"
-                                                value={shippingDetails.address}
-                                                onChange={handleInputChange}
-                                                placeholder="123 Bee Street, Apartment 4B"
-                                                className="mt-1"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label htmlFor="city">City *</Label>
-                                            <Input
-                                                id="city"
-                                                name="city"
-                                                value={shippingDetails.city}
-                                                onChange={handleInputChange}
-                                                placeholder="Nairobi"
-                                                className="mt-1"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label htmlFor="county">County *</Label>
-                                            <Input
-                                                id="county"
-                                                name="county"
-                                                value={shippingDetails.county}
-                                                onChange={handleInputChange}
-                                                placeholder="Nairobi County"
-                                                className="mt-1"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label htmlFor="postalCode">Postal Code</Label>
-                                            <Input
-                                                id="postalCode"
-                                                name="postalCode"
-                                                value={shippingDetails.postalCode}
-                                                onChange={handleInputChange}
-                                                placeholder="00100"
-                                                className="mt-1"
-                                            />
-                                        </div>
-                                        <div className="md:col-span-2">
-                                            <Label htmlFor="notes">Delivery Notes (Optional)</Label>
-                                            <Textarea
-                                                id="notes"
-                                                name="notes"
-                                                value={shippingDetails.notes}
-                                                onChange={handleInputChange}
-                                                placeholder="Any special instructions for delivery..."
-                                                className="mt-1"
-                                                rows={3}
-                                            />
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                            <>
+                                {/* Account Options - Show only if not logged in */}
+                                {!user && (
+                                    <Card className="mb-6">
+                                        <CardHeader>
+                                            <CardTitle className="flex items-center gap-2">
+                                                <User className="h-5 w-5 text-primary" />
+                                                Account Options
+                                            </CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            {/* Auth Mode Selector */}
+                                            <div className="grid grid-cols-3 gap-3 mb-6">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setAuthMode('guest')}
+                                                    className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${authMode === 'guest'
+                                                        ? 'border-primary bg-primary/5'
+                                                        : 'border-border hover:border-primary/50'
+                                                        }`}
+                                                >
+                                                    <User className={`h-6 w-6 ${authMode === 'guest' ? 'text-primary' : 'text-muted-foreground'}`} />
+                                                    <span className="text-sm font-medium">Guest</span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setAuthMode('login')}
+                                                    className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${authMode === 'login'
+                                                        ? 'border-green-500 bg-green-500/5'
+                                                        : 'border-border hover:border-green-500/50'
+                                                        }`}
+                                                >
+                                                    <LogIn className={`h-6 w-6 ${authMode === 'login' ? 'text-green-600' : 'text-muted-foreground'}`} />
+                                                    <span className="text-sm font-medium">Sign In</span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setAuthMode('register')}
+                                                    className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${authMode === 'register'
+                                                        ? 'border-amber-500 bg-amber-500/5'
+                                                        : 'border-border hover:border-amber-500/50'
+                                                        }`}
+                                                >
+                                                    <UserPlus className={`h-6 w-6 ${authMode === 'register' ? 'text-amber-600' : 'text-muted-foreground'}`} />
+                                                    <span className="text-sm font-medium">Create Account</span>
+                                                </button>
+                                            </div>
+
+                                            {/* Login Form */}
+                                            {authMode === 'login' && (
+                                                <div className="p-4 bg-muted/50 rounded-lg">
+                                                    <LoginForm
+                                                        onSuccess={() => toast.success('Logged in! Your details have been auto-filled.')}
+                                                        onSwitchToRegister={() => setAuthMode('register')}
+                                                    />
+                                                </div>
+                                            )}
+
+                                            {/* Register Form */}
+                                            {authMode === 'register' && (
+                                                <div className="p-4 bg-muted/50 rounded-lg">
+                                                    <RegisterForm
+                                                        onSuccess={() => toast.success('Account created! You can now proceed.')}
+                                                        onSwitchToLogin={() => setAuthMode('login')}
+                                                        prefillEmail={shippingDetails.email}
+                                                    />
+                                                </div>
+                                            )}
+
+                                            {/* Guest info */}
+                                            {authMode === 'guest' && (
+                                                <p className="text-sm text-muted-foreground text-center">
+                                                    Continue as a guest. You can create an account later.
+                                                </p>
+                                            )}
+                                        </CardContent>
+                                    </Card>
+                                )}
+
+                                {/* Logged in user badge */}
+                                {user && (
+                                    <Card className="mb-6">
+                                        <CardContent className="py-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                                                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                                                </div>
+                                                <div>
+                                                    <p className="font-medium">Logged in as {user.email}</p>
+                                                    <p className="text-sm text-muted-foreground">Your details have been auto-filled</p>
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                )}
+
+                                {/* Shipping Details Form - Show for guest or logged in users */}
+                                {(authMode === 'guest' || user) && (
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle className="flex items-center gap-2">
+                                                <MapPin className="h-5 w-5 text-primary" />
+                                                Shipping Details
+                                            </CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div className="md:col-span-2">
+                                                    <Label htmlFor="fullName">Full Name *</Label>
+                                                    <Input
+                                                        id="fullName"
+                                                        name="fullName"
+                                                        value={shippingDetails.fullName}
+                                                        onChange={handleInputChange}
+                                                        placeholder="John Doe"
+                                                        className="mt-1"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Label htmlFor="email">Email Address *</Label>
+                                                    <Input
+                                                        id="email"
+                                                        name="email"
+                                                        type="email"
+                                                        value={shippingDetails.email}
+                                                        onChange={handleInputChange}
+                                                        placeholder="john@example.com"
+                                                        className="mt-1"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Label htmlFor="phone">Phone Number *</Label>
+                                                    <Input
+                                                        id="phone"
+                                                        name="phone"
+                                                        value={shippingDetails.phone}
+                                                        onChange={handleInputChange}
+                                                        placeholder="+254 712 345 678"
+                                                        className="mt-1"
+                                                    />
+                                                </div>
+                                                <div className="md:col-span-2">
+                                                    <Label htmlFor="address">Street Address *</Label>
+                                                    <Input
+                                                        id="address"
+                                                        name="address"
+                                                        value={shippingDetails.address}
+                                                        onChange={handleInputChange}
+                                                        placeholder="123 Bee Street, Apartment 4B"
+                                                        className="mt-1"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Label htmlFor="city">City *</Label>
+                                                    <Input
+                                                        id="city"
+                                                        name="city"
+                                                        value={shippingDetails.city}
+                                                        onChange={handleInputChange}
+                                                        placeholder="Nairobi"
+                                                        className="mt-1"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Label htmlFor="county">County *</Label>
+                                                    <Input
+                                                        id="county"
+                                                        name="county"
+                                                        value={shippingDetails.county}
+                                                        onChange={handleInputChange}
+                                                        placeholder="Nairobi County"
+                                                        className="mt-1"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Label htmlFor="postalCode">Postal Code</Label>
+                                                    <Input
+                                                        id="postalCode"
+                                                        name="postalCode"
+                                                        value={shippingDetails.postalCode}
+                                                        onChange={handleInputChange}
+                                                        placeholder="00100"
+                                                        className="mt-1"
+                                                    />
+                                                </div>
+                                                <div className="md:col-span-2">
+                                                    <Label htmlFor="notes">Delivery Notes (Optional)</Label>
+                                                    <Textarea
+                                                        id="notes"
+                                                        name="notes"
+                                                        value={shippingDetails.notes}
+                                                        onChange={handleInputChange}
+                                                        placeholder="Any special instructions for delivery..."
+                                                        className="mt-1"
+                                                        rows={3}
+                                                    />
+                                                </div>
+
+                                                {/* Inline Account Creation */}
+                                                {!user && authMode === 'guest' && (
+                                                    <div className="md:col-span-2 mt-4 pt-4 border-t border-border">
+                                                        <div className="flex items-center space-x-2">
+                                                            <input
+                                                                type="checkbox"
+                                                                id="createAccount"
+                                                                checked={createAccount}
+                                                                onChange={(e) => setCreateAccount(e.target.checked)}
+                                                                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                                                            />
+                                                            <Label htmlFor="createAccount" className="text-sm font-medium">
+                                                                Save my information for a faster checkout next time
+                                                            </Label>
+                                                        </div>
+
+                                                        {createAccount && (
+                                                            <div className="mt-4 space-y-4 max-w-sm pl-6 transition-all animate-in fade-in slide-in-from-top-2">
+                                                                <div className="space-y-2">
+                                                                    <Label htmlFor="new-password">Create Password</Label>
+                                                                    <Input
+                                                                        id="new-password"
+                                                                        type="password"
+                                                                        placeholder="At least 6 characters"
+                                                                        value={password}
+                                                                        onChange={(e) => setPassword(e.target.value)}
+                                                                    />
+                                                                    <p className="text-xs text-muted-foreground">
+                                                                        We'll create an account linked to {shippingDetails.email || 'your email'}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                )}
+                            </>
                         )}
 
+                        {/* Payment Step */}
                         {/* Payment Step */}
                         {currentStep === 'payment' && (
                             <Card>

@@ -130,7 +130,7 @@ const Home = () => {
                   <Link to="/contact">Book Consultation <ArrowRight className="ml-2 h-6 w-6" /></Link>
                 </Button>
                 <Button size="lg" variant="outline" className="h-16 px-10 text-xl font-black border-2" asChild>
-                  <Link to="/PollinationRequest">Book Pollination</Link>
+                  <Link to="/pollination-request">Book Pollination</Link>
                 </Button>
               </div>
 

@@ -24,61 +24,90 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div className="text-center sm:text-left">
-            <h3 className="mb-4 text-sm font-semibold text-foreground">Quick Links</h3>
+            <h3 className="mb-4 text-sm font-semibold text-foreground uppercase tracking-wider">Solutions</h3>
             <ul className="space-y-2 text-sm">
-                            <li>
-                              <Link to="/HoneyLanding" className="text-muted-foreground hover:text-primary transition-colors">
-                                Honey
-                              </Link>
-                            </li>
-                            <li>
-                              <Link to="/BeeLearn" className="text-muted-foreground hover:text-primary transition-colors">
-                                Learn
-                              </Link>
-                            </li>
+              <li>
+                <Link to="/HoneyLanding" className="text-muted-foreground hover:text-primary transition-colors">
+                  Honey
+                </Link>
+              </li>
+              <li>
+                <Link to="/BeeLearn" className="text-muted-foreground hover:text-primary transition-colors">
+                  Learn
+                </Link>
+              </li>
               <li>
                 <Link to="/shop" className="text-muted-foreground hover:text-primary transition-colors">
                   Shop
                 </Link>
               </li>
-            </ul>
-          </div>
-
-          {/* Support */}
-          <div className="text-center sm:text-left">
-            <h3 className="mb-4 text-sm font-semibold text-foreground">Support</h3>
-            <ul className="space-y-2 text-sm">
               <li>
                 <Link to="/traceability" className="text-muted-foreground hover:text-primary transition-colors">
                   Traceability
                 </Link>
               </li>
+            </ul>
+          </div>
+
+          {/* Pollination */}
+          <div className="text-center sm:text-left">
+            <h3 className="mb-4 text-sm font-semibold text-foreground uppercase tracking-wider">Pollination</h3>
+            <ul className="space-y-2 text-sm">
               <li>
-                <Link to="/professional-pollination" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/crops-we-pollinate" className="text-muted-foreground hover:text-primary transition-colors">
                   Professional Pollination
                 </Link>
               </li>
-              <li className="group relative">
-                <Link to="/PollinationSolutions" className="text-muted-foreground hover:text-primary transition-colors flex items-center">
+              <li>
+                <Link to="/PollinationSolutions" className="text-muted-foreground hover:text-primary transition-colors">
                   Pollination Solutions
-                  <svg className="ml-1 h-3 w-3 text-muted-foreground group-hover:text-primary transition-colors" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
                 </Link>
-                <ul className="absolute left-0 mt-1 min-w-[180px] bg-white border border-border/30 rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity z-10">
-                  <li>
-                    <Link to="/InHivePollinationPlatform" className="block px-4 py-2 text-sm text-muted-foreground hover:text-primary hover:bg-muted/30 transition-colors">
-                      InHive Pollination Platform
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/InLandPollinationPlatform" className="block px-4 py-2 text-sm text-muted-foreground hover:text-primary hover:bg-muted/30 transition-colors">
-                      InLand Pollination Platform
-                    </Link>
-                  </li>
-                </ul>
+              </li>
+              <li>
+                <Link to="/PrecisionPollination" className="text-muted-foreground hover:text-primary transition-colors">
+                  Precision Pollination
+                </Link>
+              </li>
+              <li>
+                <Link to="/InLandPollinationPlatform" className="text-muted-foreground hover:text-primary transition-colors">
+                  InLand Pollination
+                </Link>
               </li>
               <li>
                 <Link to="/GlobalHiveNetwork" className="text-muted-foreground hover:text-primary transition-colors">
-                  Beekeeping Network
+                  Global Hive Network
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Company */}
+          <div className="text-center sm:text-left">
+            <h3 className="mb-4 text-sm font-semibold text-foreground uppercase tracking-wider">Company</h3>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link to="/impact" className="text-muted-foreground hover:text-primary transition-colors">
+                  Our Impact
+                </Link>
+              </li>
+              <li>
+                <Link to="/blogs" className="text-muted-foreground hover:text-primary transition-colors">
+                  Blog
+                </Link>
+              </li>
+              <li>
+                <Link to="/careers" className="text-muted-foreground hover:text-primary transition-colors">
+                  Careers
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">
+                  Contact
                 </Link>
               </li>
             </ul>
@@ -86,20 +115,20 @@ const Footer = () => {
 
           {/* Connect */}
           <div className="text-center sm:text-left">
-            <h3 className="mb-4 text-sm font-semibold text-foreground">Connect</h3>
+            <h3 className="mb-4 text-sm font-semibold text-foreground uppercase tracking-wider">Connect</h3>
             <div className="flex space-x-4 justify-center sm:justify-start">
-              <a href="#" title="Facebook" className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2">
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" title="Facebook" className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2">
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="#" title="Instagram" className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2">
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" title="Instagram" className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2">
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="#" title="Twitter" className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2">
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" title="Twitter" className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2">
                 <Twitter className="h-5 w-5" />
               </a>
-                <a href="https://www.linkedin.com/company/beeyield/" title="LinkedIn" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2">
-                  <Linkedin className="h-5 w-5" />
-                </a>
+              <a href="https://www.linkedin.com/company/beeyield/" title="LinkedIn" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2">
+                <Linkedin className="h-5 w-5" />
+              </a>
             </div>
           </div>
         </div>
@@ -108,8 +137,8 @@ const Footer = () => {
           <p>&copy; {new Date().getFullYear()} BeeYield. All rights reserved.</p>
         </div>
       </div>
-        </footer>
-      );
-    };
-    
-    export default Footer;
+    </footer>
+  );
+};
+
+export default Footer;

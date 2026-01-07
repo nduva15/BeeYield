@@ -8,7 +8,7 @@ import { getESGMetrics, getESGPillars, ESGMetric } from "@/services/servicesServ
 
 const ESG = () => {
   const [metrics, setMetrics] = useState<ESGMetric[]>([]);
-  const [pillars, setPillars] = useState<any[]>([]);
+  const [pillars, setPillars] = useState<unknown[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

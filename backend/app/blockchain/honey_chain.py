@@ -3,7 +3,7 @@ BeeYield Honey Blockchain - Complete Traceability Chain
 A custom blockchain implementation for tracking honey from hive to jar
 """
 from typing import List, Dict, Any, Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 import threading
 from .honey_block import HoneyBlock, BlockType
@@ -401,13 +401,16 @@ class HoneyBlockchain:
         - best_before: Best before date
         - qr_code_data: QR code content for jars
         """
-        # Generate unique batch code
-        batch_code = self.crypto.generate_batch_code(
-            apiary_code=batch_data.get("apiary_code", "UNK"),
-            harvest_date=datetime.now(),
-            honey_type=batch_data.get("honey_type", "WILD"),
-            batch_number=self.chain_length
-        )
+        # Generate unique batch code only if not provided
+        if "batch_code" in batch_data:
+            batch_code = batch_data["batch_code"]
+        else:
+            batch_code = self.crypto.generate_batch_code(
+                apiary_code=batch_data.get("apiary_code", "UNK"),
+                harvest_date=datetime.now(),
+                honey_type=batch_data.get("honey_type", "WILD"),
+                batch_number=self.chain_length
+            )
         
         enriched_data = {
             **batch_data,
@@ -520,10 +523,23 @@ class HoneyBlockchain:
         return None
     
     def search_by_record_id(self, record_id: str) -> Optional[Dict[str, Any]]:
-        """Search for a block by its record ID"""
+        """
+        Search for a block by its record ID or entity-specific IDs.
+        Searches for: record_id, farmer_id, apiary_id, hive_id, harvest_id, 
+        processing_id, batch_id to enable full traceability.
+        """
+        if not record_id:
+            return None
+            
+        id_fields = [
+            "record_id", "farmer_id", "apiary_id", "hive_id", 
+            "harvest_id", "processing_id", "batch_id"
+        ]
+        
         for block in self.chain:
-            if block.data.get("record_id") == record_id:
-                return block.to_dict()
+            for field in id_fields:
+                if block.data.get(field) == record_id:
+                    return block.to_dict()
         return None
     
     def search_by_type(self, block_type: BlockType) -> List[Dict[str, Any]]:
@@ -550,7 +566,7 @@ class HoneyBlockchain:
     def trace_batch(self, batch_code: str) -> Dict[str, Any]:
         """
         Get complete traceability info for a batch code.
-        Returns the full journey from hive to jar.
+        Returns the full journey from hive to jar with all linked entities.
         """
         # Find the batch block
         batch_block = None
@@ -564,6 +580,27 @@ class HoneyBlockchain:
         
         batch_data = batch_block.data
         
+        # Follow the chain to find linked entities
+        # Look for harvest_id in batch, then get hive_id, apiary_id, farmer_id from harvest
+        harvest_id = batch_data.get("harvest_id")
+        harvest_block = self.search_by_record_id(harvest_id) if harvest_id else None
+        
+        harvest_data = harvest_block.get("data", {}) if harvest_block else {}
+        
+        # Get IDs from harvest data
+        hive_id = harvest_data.get("hive_id") or batch_data.get("hive_id")
+        apiary_id = harvest_data.get("apiary_id") or batch_data.get("apiary_id")
+        farmer_id = harvest_data.get("farmer_id") or batch_data.get("farmer_id")
+        
+        # Update batch_details with the linked IDs for the traceability service
+        enriched_batch_details = {
+            **batch_data,
+            "harvest_id": harvest_id,
+            "hive_id": hive_id,
+            "apiary_id": apiary_id,
+            "farmer_id": farmer_id,
+        }
+        
         # Build the trace
         trace = {
             "found": True,
@@ -571,9 +608,13 @@ class HoneyBlockchain:
             "blockchain_verified": True,
             "block_hash": batch_block.hash,
             "verification_url": f"https://beeyield.co.ke/verify/{batch_block.hash[:16]}",
-            "batch_details": batch_data,
+            "batch_details": enriched_batch_details,
             "journey": {
-                "batch": batch_block.to_dict()
+                "batch": batch_block.to_dict(),
+                "harvest": harvest_block,
+                "hive_id": hive_id,
+                "apiary_id": apiary_id,
+                "farmer_id": farmer_id
             },
             "chain_stats": {
                 "total_blocks": len(self.chain),
@@ -699,5 +740,5 @@ class HoneyBlockchain:
 
 
 # Global blockchain instance
-from datetime import timedelta
+
 honey_blockchain = HoneyBlockchain(difficulty=2, auto_mine=True)

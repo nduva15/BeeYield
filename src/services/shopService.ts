@@ -6,7 +6,7 @@ import { API_V1_URL } from "./api";
 export interface ProductVariant {
     id: string;
     size: string;
-    price_kes: number;
+    price: number;
     stock_quantity: number;
     is_available: boolean;
 }

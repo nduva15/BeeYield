@@ -4,8 +4,9 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, ShoppingCart, Star, Download, Loader2, PlayCircle, ShieldCheck } from "lucide-react";
-import { getProducts, ProductWithVariants } from "@/services/shopService";
+import { BookOpen, ShoppingCart, Star, Download, Loader2, PlayCircle, ShieldCheck, Heart, Users } from "lucide-react";
+import { getProducts, Product } from "@/services/shopService";
+import { getLearningModules, LearningModule } from "@/services/servicesService";
 
 function renderStars(rating: number) {
   const fullStars = Math.floor(rating || 0);
@@ -20,7 +21,8 @@ function renderStars(rating: number) {
 }
 
 const BeeLearn = () => {
-  const [products, setProducts] = useState<ProductWithVariants[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [freeModules, setFreeModules] = useState<LearningModule[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -36,10 +38,15 @@ const BeeLearn = () => {
 
     const fetchLearnProducts = async () => {
       try {
-        const allProducts = await getProducts();
+        const [allProducts, modules] = await Promise.all([
+          getProducts(),
+          getLearningModules()
+        ]);
+
         // Filter for education category
         const learnProducts = allProducts.filter(p => p.category === 'education');
         setProducts(learnProducts);
+        setFreeModules(modules);
       } catch (err) {
         console.error(err);
       } finally {
@@ -146,55 +153,85 @@ const BeeLearn = () => {
             </p>
           </div>
 
-          {loading ? (
-            <div className="flex justify-center py-20">
-              <Loader2 className="h-10 w-10 animate-spin text-primary" />
-            </div>
-          ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-6xl mx-auto">
-              {products.length > 0 ? (
-                products.map((p) => (
-                  <Card key={p.id} className="group overflow-hidden border-none shadow-soft hover:shadow-glow transition-all duration-500 bg-white flex flex-col">
-                    <CardContent className="p-0 flex flex-col flex-grow">
-                      <div className="relative overflow-hidden aspect-[4/3]">
-                        <img
-                          src={p.images?.[0] || "https://images.unsplash.com/photo-1464983953574-0892a716854b?w=600"}
-                          alt={p.name}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                        />
-                        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent" />
-                        {p.badge && (
-                          <Badge className="absolute top-6 left-6 bg-primary text-white font-black text-xs px-4 py-1.5 shadow-lg">
-                            {p.badge}
-                          </Badge>
-                        )}
-                        <div className="absolute bottom-6 left-6 text-white font-black text-xl">
-                          KES {p.variants?.[0]?.price_kes || '0'}
-                        </div>
+          {/* Course Products Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {products.length > 0 ? (
+              products.map((product) => (
+                <Card key={product.id} className="group overflow-hidden border-none shadow-soft hover:shadow-glow transition-all bg-white">
+                  <div className="aspect-[4/5] relative overflow-hidden">
+                    <img
+                      src={product.images?.[0] || "https://images.unsplash.com/photo-1471943311424-646960669fbc?w=800"}
+                      alt={product.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    {product.badge && (
+                      <Badge className="absolute top-4 right-4 bg-primary shadow-lg">{product.badge}</Badge>
+                    )}
+                  </div>
+                  <CardContent className="p-6">
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className="text-xl font-bold group-hover:text-primary transition-colors">{product.name}</h3>
+                      <div className="text-right">
+                        <p className="text-lg font-black text-primary">KES {product.variants?.[0]?.price?.toLocaleString() || "0"}</p>
                       </div>
-                      <div className="p-8 flex flex-col flex-grow">
-                        <h3 className="text-2xl font-black text-foreground mb-2 group-hover:text-primary transition-colors">{p.name}</h3>
-                        <div className="mb-4">{renderStars(p.rating || 0)}</div>
-                        <p className="text-muted-foreground font-medium mb-6 line-clamp-3 text-sm leading-relaxed">
-                          {p.description}
-                        </p>
-                        <div className="mt-auto">
-                          <Button className="w-full gap-3 font-black h-12 shadow-glow hover:shadow-primary/40 transition-shadow">
-                            <ShoppingCart className="h-5 w-5" />
-                            Get Started
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
-              ) : (
-                <div className="col-span-full py-20 text-center bg-muted/20 rounded-3xl">
-                  <p className="text-muted-foreground font-bold">No courses available at the moment. Please check back soon!</p>
-                </div>
-              )}
-            </div>
-          )}
+                    </div>
+                    <div className="flex items-center gap-2 mb-6 text-sm">
+                      {renderStars(product.rating || 5)}
+                      <span className="text-muted-foreground font-medium">({product.review_count || 0} reviews)</span>
+                    </div>
+                    <Button asChild className="w-full font-bold h-12">
+                      <Link to={`/shop?product=${product.id}`}>
+                        <ShoppingCart className="mr-2 h-4 w-4" /> Enroll Now
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="col-span-full py-20 text-center bg-muted/20 rounded-3xl">
+                <p className="text-muted-foreground font-bold">No courses available currently. Check back soon!</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Free learning modules section */}
+      <section className="py-24 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-black text-foreground mb-6">Free Learning Resources</h2>
+            <p className="text-muted-foreground text-lg max-w-3xl mx-auto font-medium">
+              Start your journey with our community-supported open access modules.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {freeModules.length > 0 ? (
+              freeModules.map((module) => (
+                <Card key={module.id} className="border-none shadow-soft hover:shadow-glow transition-all bg-white flex flex-col md:flex-row overflow-hidden">
+                  <div className="md:w-1/3 bg-primary/10 flex items-center justify-center p-8">
+                    <BookOpen className="h-12 w-12 text-primary" />
+                  </div>
+                  <CardContent className="p-8 flex flex-col justify-center md:w-2/3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Badge variant="secondary" className="font-bold text-xs uppercase tracking-wider">{module.category}</Badge>
+                      <span className="text-xs font-bold text-muted-foreground uppercase">{module.difficulty_level}</span>
+                    </div>
+                    <h3 className="text-xl font-black mb-2">{module.title}</h3>
+                    <p className="text-muted-foreground text-sm mb-6">{module.description}</p>
+                    <Button variant="outline" className="self-start font-bold border-2 border-primary/20 hover:bg-primary/5">
+                      Start Learning
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="col-span-full py-10 text-center">
+                <p className="text-muted-foreground font-bold">New free modules coming soon!</p>
+              </div>
+            )}
+          </div>
         </div>
       </section>
 

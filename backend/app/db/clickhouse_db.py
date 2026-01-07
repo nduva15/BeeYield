@@ -140,6 +140,57 @@ def get_analytics_summary(days: int = 30) -> Dict[str, Any]:
         "traceability_scans": scans[0]["total_scans"] if scans else 0
     }
 
+def get_page_views_chart(days: int = 7) -> List[Dict[str, Any]]:
+    """Get daily page views for chart"""
+    return ClickHouseService.query(f"""
+        SELECT
+            toStartOfDay(created_at) as date,
+            count() as views,
+            uniq(session_id) as visitors
+        FROM page_views
+        WHERE created_at >= now() - INTERVAL {days} DAY
+        GROUP BY date
+        ORDER BY date ASC
+    """)
+
+def get_top_pages(limit: int = 10, days: int = 30) -> List[Dict[str, Any]]:
+    """Get top visited pages"""
+    return ClickHouseService.query(f"""
+        SELECT
+            page_path,
+            count() as views
+        FROM page_views
+        WHERE created_at >= now() - INTERVAL {days} DAY
+        GROUP BY page_path
+        ORDER BY views DESC
+        LIMIT {limit}
+    """)
+
+def get_scans_chart(days: int = 7) -> List[Dict[str, Any]]:
+    """Get daily traceability scans"""
+    return ClickHouseService.query(f"""
+        SELECT
+            toStartOfDay(scanned_at) as date,
+            count() as scans
+        FROM traceability_scans
+        WHERE scanned_at >= now() - INTERVAL {days} DAY
+        GROUP BY date
+        ORDER BY date ASC
+    """)
+
+def get_sales_analytics(days: int = 30) -> List[Dict[str, Any]]:
+    """Get sales performance"""
+    return ClickHouseService.query(f"""
+        SELECT
+            toStartOfDay(event_at) as date,
+            count() as orders,
+            sum(order_total) as revenue
+        FROM order_events
+        WHERE event_type = 'paid' AND event_at >= now() - INTERVAL {days} DAY
+        GROUP BY date
+        ORDER BY date ASC
+    """)
+
 
 # Singleton accessor
 clickhouse = ClickHouseService()

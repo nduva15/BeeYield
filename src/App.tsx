@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import { CartProvider } from "./contexts/CartContext";
+import { AuthProvider } from "./contexts/AuthContext";
 import CartDrawer from "./components/CartDrawer";
 // Google Tag Manager noscript
 const GTMNoScript = () => (
@@ -43,6 +44,7 @@ import HoneyLanding from "./pages/HoneyLanding";
 import Checkout from "./pages/Checkout";
 
 import BeeLearn from "./pages/BeeLearn";
+import Dashboard from "./pages/Dashboard";
 
 
 
@@ -51,51 +53,55 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <CartProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <>
-            <GTMNoScript />
-            <CartDrawer />
-            <Layout>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/impact" element={<Impact />} />
-                <Route path="/shop" element={<Shop />} />
-                <Route path="/checkout" element={<Checkout />} />
-                <Route path="/blogs" element={<Blogs />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/traceability" element={<Traceability />} />
-                <Route path="/PollinationServices" element={<Home />} />
-                <Route path="/PollinationRequest" element={<PollinationRequest />} />
-                <Route path="/pollination-request" element={<PollinationRequest />} />
-                <Route path="/Commitment" element={<CommitmentPage />} />
-                <Route path="/ESG" element={<ESG />} />
-                <Route path="/esg" element={<ESG />} />
-                <Route path="/ourstory" element={<OurStory />} />
-                <Route path="/crops-we-pollinate" element={<CropsWePollinate />} />
-                <Route path="/team" element={<Team />} />
-                <Route path="/InLandPollinationPlatform" element={<InLandPollinationPlatform />} />
-                <Route path="/PrecisionPollination" element={<PrecisionPollination />} />
-                <Route path="/PollinationSolutions" element={<PollinationSolutions />} />
-                <Route path="/careers" element={<Careers />} />
-                <Route path="/GlobalHiveNetwork" element={<GlobalHiveNetwork />} />
-                <Route path="/Media" element={<Media />} />
-                <Route path="/HoneyLanding" element={<HoneyLanding />} />
+    <AuthProvider>
+      <CartProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <>
+              <GTMNoScript />
+              <CartDrawer />
+              <Layout>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/impact" element={<Impact />} />
+                  <Route path="/shop" element={<Shop />} />
+                  <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/blogs" element={<Blogs />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/traceability" element={<Traceability />} />
+                  <Route path="/PollinationServices" element={<Home />} />
+                  <Route path="/PollinationRequest" element={<PollinationRequest />} />
+                  <Route path="/pollination-request" element={<PollinationRequest />} />
+                  <Route path="/Commitment" element={<CommitmentPage />} />
+                  <Route path="/commitment" element={<CommitmentPage />} />
+                  <Route path="/ESG" element={<ESG />} />
+                  <Route path="/esg" element={<ESG />} />
+                  <Route path="/ourstory" element={<OurStory />} />
+                  <Route path="/crops-we-pollinate" element={<CropsWePollinate />} />
+                  <Route path="/team" element={<Team />} />
+                  <Route path="/InLandPollinationPlatform" element={<InLandPollinationPlatform />} />
+                  <Route path="/PrecisionPollination" element={<PrecisionPollination />} />
+                  <Route path="/PollinationSolutions" element={<PollinationSolutions />} />
+                  <Route path="/careers" element={<Careers />} />
+                  <Route path="/GlobalHiveNetwork" element={<GlobalHiveNetwork />} />
+                  <Route path="/Media" element={<Media />} />
+                  <Route path="/HoneyLanding" element={<HoneyLanding />} />
 
-                {/* Learn Landing Page */}
-                <Route path="/BeeLearn" element={<BeeLearn />} />
+                  {/* Learn Landing Page */}
+                  <Route path="/BeeLearn" element={<BeeLearn />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
 
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Layout>
-          </>
-        </BrowserRouter>
-      </TooltipProvider>
-    </CartProvider>
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Layout>
+            </>
+          </BrowserRouter>
+        </TooltipProvider>
+      </CartProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 

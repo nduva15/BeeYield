@@ -1,4 +1,4 @@
-import { get, post } from './api';
+import { apiGet } from './api';
 
 export interface MediaItem {
     id: string;
@@ -13,10 +13,10 @@ export interface MediaItem {
 }
 
 export const getMediaItems = async (type?: string): Promise<MediaItem[]> => {
-    const queryParams = type ? { media_type: type } : {};
-    return get<MediaItem[]>('/media/', queryParams);
+    const queryParams = type ? { media_type: type } : undefined;
+    return apiGet<MediaItem[]>('/media/', queryParams);
 };
 
 export const getFeaturedMedia = async (): Promise<MediaItem[]> => {
-    return get<MediaItem[]>('/media/featured');
+    return apiGet<MediaItem[]>('/media/featured');
 };

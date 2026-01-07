@@ -29,7 +29,7 @@ export interface LearningModule {
     category: string;
     difficulty_level: string;
     is_free: boolean;
-    lessons: any[];
+    lessons: unknown[];
 }
 
 export interface ESGMetric {
@@ -98,6 +98,24 @@ export const getESGMetrics = async (): Promise<ESGMetric[]> => {
     }
 };
 
+export interface SDG {
+    id: string;
+    number: number;
+    title: string;
+    description: string;
+    impact: string;
+    color: string;
+    icon: string;
+}
+
+export interface ESGPillar {
+    id: string;
+    name: string;
+    description: string;
+    icon: string;
+    metrics: string[];
+}
+
 export const getApiaries = async (): Promise<Apiary[]> => {
     try {
         const response = await fetch(`${API_V1_URL}/services/apiaries`);
@@ -109,7 +127,7 @@ export const getApiaries = async (): Promise<Apiary[]> => {
     }
 };
 
-export const getESGPillars = async (): Promise<any[]> => {
+export const getESGPillars = async (): Promise<ESGPillar[]> => {
     try {
         const response = await fetch(`${API_V1_URL}/services/esg/pillars`);
         if (!response.ok) throw new Error("Failed to fetch ESG pillars");
@@ -120,7 +138,7 @@ export const getESGPillars = async (): Promise<any[]> => {
     }
 };
 
-export const getImpactStories = async (): Promise<any[]> => {
+export const getImpactStories = async (): Promise<unknown[]> => {
     try {
         const response = await fetch(`${API_V1_URL}/services/impact/stories`);
         if (!response.ok) throw new Error("Failed to fetch impact stories");
@@ -131,7 +149,7 @@ export const getImpactStories = async (): Promise<any[]> => {
     }
 };
 
-export const getSDGs = async (): Promise<any[]> => {
+export const getSDGs = async (): Promise<SDG[]> => {
     try {
         const response = await fetch(`${API_V1_URL}/services/impact/sdgs`);
         if (!response.ok) throw new Error("Failed to fetch SDGs");

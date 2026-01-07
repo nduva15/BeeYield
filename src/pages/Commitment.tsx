@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
-import { ArrowRight, Target, Wheat, TreePine, Heart, Users, Droplets, Zap, Building, Globe, Loader2 } from "lucide-react";
+import { ArrowRight, Target, Wheat, TreePine, Heart, Users, Droplets, Zap, Building, Globe, Loader2, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { getSDGs } from "@/services/servicesService";
+import { getSDGs, type SDG } from "@/services/servicesService";
 
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, LucideIcon> = {
   Target, Wheat, TreePine, Heart, Users, Droplets, Zap, Building, Globe
 };
 
 const CommitmentPage = () => {
-  const [sdgs, setSdgs] = useState<any[]>([]);
+  const [sdgs, setSdgs] = useState<SDG[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,22 +34,22 @@ const CommitmentPage = () => {
           // Fallback static data
           setSdgs([
             {
-              number: 1, title: "No Poverty", color: "bg-red-500", icon: "Users",
+              id: "sdg-1", number: 1, title: "No Poverty", color: "bg-red-500", icon: "Users",
               description: "We provide training programs for smallholder farmers.",
               impact: "50+ farmers trained"
             },
             {
-              number: 2, title: "Zero Hunger", color: "bg-amber-500", icon: "Wheat",
+              id: "sdg-2", number: 2, title: "Zero Hunger", color: "bg-amber-500", icon: "Wheat",
               description: "Pollination services boost agricultural yields.",
               impact: "25 acres pollinated"
             },
             {
-              number: 13, title: "Climate Action", color: "bg-emerald-600", icon: "TreePine",
+              id: "sdg-13", number: 13, title: "Climate Action", color: "bg-emerald-600", icon: "TreePine",
               description: "Reforestation and biodiversity protection initiatives.",
               impact: "2,500+ trees planted"
             },
             {
-              number: 15, title: "Life on Land", color: "bg-green-600", icon: "Heart",
+              id: "sdg-15", number: 15, title: "Life on Land", color: "bg-green-600", icon: "Heart",
               description: "Protecting essential pollinators and terrestrial ecosystems.",
               impact: "2M+ bees protected"
             }

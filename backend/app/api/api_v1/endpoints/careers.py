@@ -159,6 +159,9 @@ async def apply_for_job(
     
     result = db_insert("job_applications", application_data)
     
+    if not result.get("success"):
+        raise HTTPException(status_code=500, detail=f"Database error: {result.get('error')}")
+    
     # Send notification emails
     background_tasks.add_task(
         email.send_email,
@@ -178,5 +181,6 @@ async def apply_for_job(
     return {
         "status": "success",
         "message": "Application submitted successfully",
-        "application_id": result.get("data", [{}])[0].get("id") if result.get("success") else None
+        "application_id": result.get("data", [{}])[0].get("id") if result.get("data") else None
     }
+

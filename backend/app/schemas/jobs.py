@@ -29,8 +29,8 @@ class JobPosition(JobPositionBase):
     id: str
     is_active: bool
     applications_count: int = 0
-    posted_at: datetime
-    closes_at: Optional[datetime] = None
+    posted_date: date
+    closing_date: Optional[date] = None
     created_at: datetime
 
     class Config:

@@ -181,3 +181,59 @@ def get_about_page():
         stats=stats,
         leadership_team=team
     )
+
+
+# ============ PARTNERS ============
+
+@router.get("/partners", response_model=List[schemas.Partner])
+def get_partners():
+    """
+    Get all active partners, certifications, and investors.
+    """
+    partners = db_select("partners", filters={"is_active": True}, order_by="display_order")
+    
+    if not partners or len(partners) == 0:
+        return [
+            {
+                "id": "partner-1", "name": "EcoCert", "type": "certification",
+                "logo_url": "https://images.unsplash.com/photo-1563906267088-b029e7101114?w=200",
+                "website_url": "#", "description": "Certified Organic",
+                "display_order": 1, "is_active": True, "created_at": "2024-01-01T00:00:00Z"
+            },
+            {
+                "id": "partner-2", "name": "Kenya Beekeepers Assoc", "type": "partner",
+                "logo_url": "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=200",
+                "website_url": "#", "description": "Strategic Partner",
+                "display_order": 2, "is_active": True, "created_at": "2024-01-01T00:00:00Z"
+            }
+        ]
+    return partners
+
+
+# ============ FAQs ============
+
+@router.get("/faqs", response_model=List[schemas.FAQ])
+def get_faqs(category: Optional[str] = None):
+    """
+    Get Frequently Asked Questions.
+    """
+    filters = {"is_active": True}
+    if category:
+        filters["category"] = category
+        
+    faqs = db_select("faqs", filters=filters, order_by="display_order")
+    
+    if not faqs or len(faqs) == 0:
+        return [
+            {
+                "id": "faq-1", "question": "Is all honey organic?",
+                "answer": "Yes, all our honey is sourced from certified organic apiaries.",
+                "category": "Products", "display_order": 1, "is_active": True, "created_at": "2024-01-01T00:00:00Z"
+            },
+            {
+                "id": "faq-2", "question": "How do I trace my honey?",
+                "answer": "Scan the QR code on the jar or enter the batch code on our Traceability page.",
+                "category": "Services", "display_order": 2, "is_active": True, "created_at": "2024-01-01T00:00:00Z"
+            }
+        ]
+    return faqs

@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { submitPollinationRequest } from "@/services/contactService";
+
 import { Calendar, MapPin, Sprout, ArrowRight, ShieldCheck, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -43,8 +45,6 @@ const PollinationRequest = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const { submitPollinationRequest } = await import("@/services/contactService");
-
       const payload = {
         full_name: formData.name,
         email: formData.email,

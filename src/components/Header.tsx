@@ -20,15 +20,15 @@ const Header = () => {
 
   const menuLinks = [
     { to: "/GlobalHiveNetwork", label: "Global Hive Network" },
-    { to: "/OurStory", label: "Our Story" },
+    { to: "/ourstory", label: "Our Story" },
     { to: "/Media", label: "Media" },
     { to: "/blogs", label: "Blog" },
     { to: "/contact", label: "Contact Us" },
     { to: "/esg", label: "ESG" },
     { to: "/commitment", label: "Commitment" },
-    { to: "/About", label: "About Us" },
+    { to: "/about", label: "About Us" },
     { to: "/careers", label: "Careers" },
-    { to: "/Team", label: "Team" },
+    { to: "/team", label: "Team" },
   ];
 
   return (
@@ -47,8 +47,8 @@ const Header = () => {
         {/* Center - Navigation Links (Desktop only) */}
         <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
           <Link
-            to="/Crops-We-Pollinate"
-            className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/Crops-We-Pollinate") ? "text-primary" : "text-foreground"
+            to="/crops-we-pollinate"
+            className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/crops-we-pollinate") ? "text-primary" : "text-foreground"
               }`}
           >
             Professional Pollination
@@ -74,15 +74,15 @@ const Header = () => {
           </DropdownMenu>
 
           <Link
-            to="/pollinationsolutions"
-            className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/pollinationsolutions") ? "text-primary" : "text-foreground"
+            to="/PollinationSolutions"
+            className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/PollinationSolutions") ? "text-primary" : "text-foreground"
               }`}
           >
             Beekeeping Network
           </Link>
           <Link
-            to="/Shop"
-            className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/Shop") ? "text-primary" : "text-foreground"
+            to="/shop"
+            className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/shop") ? "text-primary" : "text-foreground"
               }`}
           >
             Shop

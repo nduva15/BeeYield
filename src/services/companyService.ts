@@ -69,12 +69,22 @@ export interface ImpactStory {
     beneficiaries_count?: number;
 }
 
+export interface AboutPageInfo {
+    name: string;
+    description: string;
+    mission: string;
+    location?: string;
+    origin_story: string[];
+    stats: { value: string; label: string }[];
+    values: { title: string; description: string; icon: string }[];
+}
+
 export interface AboutPageData {
     company_info: CompanyInfo;
     story: CompanyStory;
     stats: CompanyStat[];
     leadership_team: TeamMember[];
-    info?: any; // For fallback compatibility in About.tsx
+    info?: AboutPageInfo; // For fallback compatibility in About.tsx
 }
 
 export interface TeamData {
@@ -163,7 +173,7 @@ export const getAboutPageData = async (): Promise<AboutPageData | null> => {
                 mission: data.company_info.mission,
                 location: data.company_info.headquarters,
                 origin_story: [data.story.intro],
-                stats: data.stats.map((s: any) => ({ value: s.stat_value, label: s.stat_label })),
+                stats: data.stats.map((s: CompanyStat) => ({ value: s.stat_value, label: s.stat_label })),
                 values: data.company_info.values || []
             }
         };
@@ -180,6 +190,46 @@ export const getImpactStories = async (): Promise<ImpactStory[]> => {
         return await response.json();
     } catch (error) {
         console.error("Error fetching impact stories:", error);
+        return [];
+    }
+};
+
+export interface Partner {
+    id: string;
+    name: string;
+    type: string;
+    logo_url?: string;
+    website_url?: string;
+    description?: string;
+}
+
+export interface FAQ {
+    id: string;
+    question: string;
+    answer: string;
+    category: string;
+}
+
+export const getPartners = async (): Promise<Partner[]> => {
+    try {
+        const response = await fetch(`${API_V1_URL}/company/partners`);
+        if (!response.ok) throw new Error("Failed to fetch partners");
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching partners:", error);
+        return [];
+    }
+};
+
+export const getFAQs = async (category?: string): Promise<FAQ[]> => {
+    try {
+        let url = `${API_V1_URL}/company/faqs`;
+        if (category) url += `?category=${category}`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Failed to fetch FAQs");
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching FAQs:", error);
         return [];
     }
 };

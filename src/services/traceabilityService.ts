@@ -49,7 +49,7 @@ export interface TraceJourneyStep {
     location: string;
     description: string;
     icon: string;
-    data: any;
+    data: Record<string, unknown>;
     hash?: string;
 }
 
@@ -70,10 +70,10 @@ export interface TraceResponse {
     story_content: string;
 
     // Stats / Impact
-    impact_stats: Record<string, any>;
+    impact_stats: Record<string, unknown>;
 
     // Sensor Snapshot
-    sensor_snapshot?: Record<string, any>;
+    sensor_snapshot?: Record<string, unknown>;
 
     // Full Journey
     timeline: TraceJourneyStep[];
@@ -115,7 +115,7 @@ export const getImpactStats = async (): Promise<ImpactStats | null> => {
     }
 };
 
-export const getBlockchainStatus = async (): Promise<any> => {
+export const getBlockchainStatus = async (): Promise<unknown> => {
     try {
         const response = await fetch(`${API_V1_URL}/traceability/chain`);
         if (!response.ok) {

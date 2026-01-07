@@ -10,14 +10,21 @@ class ContactSubmissionCreate(BaseModel):
     city: str
     state: str
     country: str
+    topic: Optional[str] = None
+    message: Optional[str] = None
     
     # Optional fields depending on type
     company: Optional[str] = None
-    topic: str
-    message: Optional[str] = None
+    farm_name: Optional[str] = None
+    crop_type: Optional[str] = None
+    acres: Optional[int] = None
+    apiary_name: Optional[str] = None
+    hive_count: Optional[int] = None
+    experience_years: Optional[str] = None
     
     # Catch-all for form-specific data
     form_specific_data: Optional[Dict] = None
+
 
 class PollinationRequestCreate(BaseModel):
     full_name: str

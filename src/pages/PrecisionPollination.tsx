@@ -58,7 +58,7 @@ const PrecisionPollination = () => {
                   <Link to="/contact">Get Consultation <ArrowRight className="ml-2 group-hover:translate-x-2 transition-transform" /></Link>
                 </Button>
                 <Button size="lg" variant="outline" className="h-16 px-10 text-xl font-black border-2" asChild>
-                  <Link to="/PollinationRequest">Book Pollination</Link>
+                  <Link to="/pollination-request">Book Pollination</Link>
                 </Button>
               </div>
             </div>

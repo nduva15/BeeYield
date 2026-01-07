@@ -1,0 +1,50 @@
+﻿
+> beeyield@0.0.0 build
+> vite build
+
+[36mvite v7.3.0 [32mbuilding client environment for production...[36m[39m
+node.exe : 
+[baseline-browser-mapping] 
+The data in this module is 
+over two months old.  To 
+ensure accurate Baseline 
+data, please update: `npm i 
+baseline-browser-mapping@lat
+est -D`
+At C:\Program 
+Files\nodejs\npm.ps1:29 
+char:3
++   & $NODE_EXE $NPM_CLI_JS 
+$args
++   ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~
+    + CategoryInfo          
+    : NotSpecified: ([base  
+  line-brows...ping@lates   
+ t -D`:String) [], Remot    
+eException
+    + FullyQualifiedErrorId 
+    : NativeCommandError
+ 
+transforming...
+[32mΓ£ô[39m 2538 modules transformed.
+[31mΓ£ù[39m Build failed 
+in 29.75s
+[31merror during build:
+[31msrc/services/mediaServi
+ce.ts (1:9): "get" is not 
+exported by 
+"src/services/api.ts", 
+imported by "src/services/me
+diaService.ts".[31m
+file: [36mC:/Users/aggym/Do
+wnloads/Honey/src/services/m
+ediaService.ts:1:9[31m
+[33m
+1: import { get, post } 
+from './api';
+            ^
+2: 
+3: export interface 
+MediaItem {
+[31m
