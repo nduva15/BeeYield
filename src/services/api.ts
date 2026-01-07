@@ -37,12 +37,23 @@ export async function apiRequest<T>(
 }
 
 // GET request helper
-export async function apiGet<T>(endpoint: string): Promise<T> {
-    return apiRequest<T>(endpoint, { method: "GET" });
+export async function apiGet<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
+    let url = endpoint;
+    if (params) {
+        const stringParams: Record<string, string> = {};
+        Object.entries(params).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+                stringParams[key] = String(value);
+            }
+        });
+        const query = new URLSearchParams(stringParams).toString();
+        url += `${url.includes('?') ? '&' : '?'}${query}`;
+    }
+    return apiRequest<T>(url, { method: "GET" });
 }
 
 // POST request helper
-export async function apiPost<T>(endpoint: string, data: any): Promise<T> {
+export async function apiPost<T>(endpoint: string, data: unknown): Promise<T> {
     return apiRequest<T>(endpoint, {
         method: "POST",
         body: JSON.stringify(data),
@@ -50,7 +61,7 @@ export async function apiPost<T>(endpoint: string, data: any): Promise<T> {
 }
 
 // PUT request helper
-export async function apiPut<T>(endpoint: string, data: any): Promise<T> {
+export async function apiPut<T>(endpoint: string, data: unknown): Promise<T> {
     return apiRequest<T>(endpoint, {
         method: "PUT",
         body: JSON.stringify(data),

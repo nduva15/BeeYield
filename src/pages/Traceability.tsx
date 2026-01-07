@@ -6,7 +6,7 @@ import {
   QrCode, MapPin, Calendar, Leaf, Info, Heart,
   Shield, Droplets, Home, Users, Award,
   CheckCircle2, Thermometer, CloudRain,
-  Activity, Zap, Box, Factory, Jar
+  Activity, Zap, Box, Factory, Package, Cpu
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { traceBatch, TraceResponse, TraceJourneyStep } from "@/services/traceabilityService";
@@ -18,6 +18,14 @@ const Traceability = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const [batchData, setBatchData] = useState<TraceResponse | null>(null);
+
+  useEffect(() => {
+    document.title = "Verified Traceability | BeeYield Blockchain & Sensor Network";
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', 'Trace your honey jar back to the exact hive using BeeYield Blockchain. Verified by ApiSense acoustic nodes and Intelligent Hives precision sensors.');
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,7 +69,7 @@ const Traceability = () => {
 
   const getIcon = (iconName: string) => {
     switch (iconName) {
-      case "Jar": return <Jar className="h-6 w-6" />;
+      case "Jar": return <Package className="h-6 w-6" />;
       case "Factory": return <Factory className="h-6 w-6" />;
       case "Basket": return <Box className="h-6 w-6" />;
       case "Hexagon": return <Zap className="h-6 w-6" />;
@@ -180,7 +188,7 @@ const Traceability = () => {
                 {batchData.timeline.map((step, idx) => (
                   <div key={idx} className="relative transition-all hover:translate-x-1">
                     <div className={`absolute -left-8 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white ring-2 ${idx === 0 ? 'ring-primary' : 'ring-muted shadow-sm'}`}>
-                      {idx === 0 ? <Jar className="h-3 w-3 text-primary" /> : <div className="h-1.5 w-1.5 rounded-full bg-muted-foreground" />}
+                      {idx === 0 ? <Package className="h-3 w-3 text-primary" /> : <div className="h-1.5 w-1.5 rounded-full bg-muted-foreground" />}
                     </div>
                     <Card className="border-none shadow-soft hover:shadow-md transition-shadow">
                       <CardContent className="p-5">
@@ -274,7 +282,7 @@ const Traceability = () => {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-4 mb-4">
                       <div className="rounded-xl bg-white/5 p-4 border border-white/10">
                         <p className="text-[10px] uppercase text-white/40 font-bold mb-1">Hive Type</p>
                         <p className="text-sm font-medium">{batchData.hive.hive_type}</p>
@@ -282,6 +290,22 @@ const Traceability = () => {
                       <div className="rounded-xl bg-white/5 p-4 border border-white/10">
                         <p className="text-[10px] uppercase text-white/40 font-bold mb-1">Status</p>
                         <p className="text-sm font-medium text-green-400">Monitoring Active</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 pt-4 border-t border-white/10">
+                      <p className="text-xs font-bold uppercase tracking-widest text-primary mb-2">Active Sensors</p>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-white/70">Intelligent Hives™</span>
+                        <span className="font-mono text-xs bg-white/10 px-2 py-1 rounded">Scale + Temp</span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-white/70">ApiSense.io</span>
+                        <span className="font-mono text-xs bg-white/10 px-2 py-1 rounded">Acoustic Analysis</span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-white/70">Atmosphere</span>
+                        <span className="font-mono text-xs bg-white/10 px-2 py-1 rounded">VOCs / CO2</span>
                       </div>
                     </div>
                   </CardContent>
@@ -302,7 +326,7 @@ const Traceability = () => {
             </p>
           </div>
 
-          <div className="grid gap-8 md:grid-cols-3">
+          <div className="grid gap-8 md:grid-cols-3 mb-24">
             {[
               {
                 icon: Shield,
@@ -328,6 +352,26 @@ const Traceability = () => {
                 <p className="leading-relaxed text-muted-foreground">{item.description}</p>
               </div>
             ))}
+          </div>
+
+          <div className="border-t border-border/50 pt-16">
+            <p className="text-center text-xs font-bold uppercase tracking-widest text-muted-foreground mb-8">Official Technology Partners</p>
+            <div className="flex flex-wrap items-center justify-center gap-12 text-center opacity-70 grayscale hover:grayscale-0 transition-all duration-500">
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-16 h-16 bg-zinc-100 rounded-2xl flex items-center justify-center mb-2">
+                  <Activity className="h-8 w-8 text-indigo-600" />
+                </div>
+                <span className="font-bold text-zinc-800">ApiSense.io</span>
+                <span className="text-xs text-muted-foreground">Acoustic Disease Diagnostics</span>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-16 h-16 bg-zinc-100 rounded-2xl flex items-center justify-center mb-2">
+                  <Cpu className="h-8 w-8 text-blue-600" />
+                </div>
+                <span className="font-bold text-zinc-800">Intelligent Hives™</span>
+                <span className="text-xs text-muted-foreground">Precision GPS & Weight</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

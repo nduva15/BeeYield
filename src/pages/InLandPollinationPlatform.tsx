@@ -26,6 +26,14 @@ const InLandPollination = () => {
     };
   }, []);
 
+  useEffect(() => {
+    document.title = "Pollination Land Insight Platform (PLIP) | BeeYield";
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', 'Maximize crop yields with PLIP. Real-time pollination tracking using Intelligent Hives GPS and ApiSense acoustic disease detection.');
+    }
+  }, []);
+
   const testimonials = [
     {
       name: "Sarah Jenkins",
@@ -156,12 +164,12 @@ const InLandPollination = () => {
                 <div className="bg-primary/10 w-24 h-24 rounded-3xl flex items-center justify-center mb-10 group-hover:bg-primary group-hover:text-white transition-all duration-500">
                   <Mic className="h-12 w-12" />
                 </div>
-                <h3 className="text-4xl font-black mb-6 tracking-tight">Sonic Vision</h3>
+                <h3 className="text-4xl font-black mb-6 tracking-tight">Sonic Visio™</h3>
                 <p className="text-muted-foreground text-lg leading-relaxed font-medium mb-10">
-                  Equipped with industrial-grade outdoor enclosures, our sensors use custom algorithms tuned to detect the unique frequency of bee flight among field noise.
+                  Powered by <strong>ApiSense.io</strong>, our acoustic nodes analyze frequency shifts to detect disease (Varroa, Foulbrood) and queen status 24/7 without opening the hive.
                 </p>
                 <Button variant="link" className="p-0 h-auto text-primary font-black uppercase text-xs tracking-widest hover:gap-4 transition-all group/link">
-                  Technical Specs <ArrowRight className="h-4 w-4" />
+                  See ApiSense Tech <ArrowRight className="h-4 w-4" />
                 </Button>
               </CardContent>
             </Card>
@@ -171,9 +179,9 @@ const InLandPollination = () => {
                 <div className="bg-accent/10 w-24 h-24 rounded-3xl flex items-center justify-center mb-10 group-hover:bg-accent group-hover:text-amber-900 transition-all duration-500">
                   <Map className="h-12 w-12" />
                 </div>
-                <h3 className="text-4xl font-black mb-6 tracking-tight">Network Visibility</h3>
+                <h3 className="text-4xl font-black mb-6 tracking-tight">Active Tracking</h3>
                 <p className="text-muted-foreground text-lg leading-relaxed font-medium mb-10">
-                  Visualize foraging efficiency and bloom synchronization in real-time. Know exactly which acres are being underserved before it's too late.
+                  Using <strong>Intelligent Hives™</strong> GPS and weight sensors, we correlate nectar flow with precise geolocation, proving your yield comes from your land, down to the meter.
                 </p>
                 <Button variant="link" className="p-0 h-auto text-primary font-black uppercase text-xs tracking-widest hover:gap-4 transition-all group/link">
                   Explore Heatmaps <ArrowRight className="h-4 w-4" />

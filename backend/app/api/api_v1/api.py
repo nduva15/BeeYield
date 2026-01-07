@@ -5,10 +5,13 @@ from fastapi import APIRouter
 from app.api.api_v1.endpoints import (
     company, auth, traceability, contact, 
     forms, shop, blog, careers, media, 
-    services, jobs
+    services, jobs, analytics
 )
 
 api_router = APIRouter()
+
+# Analytics endpoint
+api_router.include_router(analytics.router, prefix="/analytics", tags=["Analytics"])
 
 # Core business endpoints
 api_router.include_router(company.router, prefix="/company", tags=["Company"])

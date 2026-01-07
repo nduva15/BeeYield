@@ -1,5 +1,5 @@
 """
-Company Schemas - About, Story, Team, Stats
+Company Schemas - About, Story, Team, Stats, Partners, FAQs
 """
 from pydantic import BaseModel
 from typing import Optional, List
@@ -77,6 +77,54 @@ class CompanyStat(CompanyStatBase):
     id: str
     display_order: int
     updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+# ============ PARTNERS ============
+
+class PartnerBase(BaseModel):
+    name: str
+    type: Optional[str] = "partner"
+    logo_url: Optional[str] = None
+    website_url: Optional[str] = None
+    description: Optional[str] = None
+
+
+class PartnerCreate(PartnerBase):
+    display_order: int = 0
+    is_active: bool = True
+
+
+class Partner(PartnerBase):
+    id: str
+    display_order: int
+    is_active: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+# ============ FAQs ============
+
+class FAQBase(BaseModel):
+    question: str
+    answer: str
+    category: Optional[str] = "General"
+
+
+class FAQCreate(FAQBase):
+    display_order: int = 0
+    is_active: bool = True
+
+
+class FAQ(FAQBase):
+    id: str
+    display_order: int
+    is_active: bool
+    created_at: datetime
 
     class Config:
         from_attributes = True

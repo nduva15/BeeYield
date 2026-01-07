@@ -19,7 +19,7 @@ def register_farmer(farmer_in: schemas.FarmerCreate) -> Dict[str, Any]:
     data['blockchain_hash'] = block.hash
     
     # 2. DB
-    # db_insert("farmers", data) # Uncomment when table exists
+    db_insert("farmers", data)
     
     return data
 
@@ -31,7 +31,7 @@ def register_apiary(apiary_in: schemas.ApiaryCreate) -> Dict[str, Any]:
     block = honey_blockchain.register_apiary(data)
     data['blockchain_hash'] = block.hash
     
-    # db_insert("apiaries", data)
+    db_insert("apiaries", data)
     return data
 
 def register_hive(hive_in: schemas.HiveCreate) -> Dict[str, Any]:
@@ -43,7 +43,7 @@ def register_hive(hive_in: schemas.HiveCreate) -> Dict[str, Any]:
     block = honey_blockchain.register_hive(data)
     data['blockchain_hash'] = block.hash
     
-    # db_insert("hives", data)
+    db_insert("hives", data)
     return data
 
 def record_sensor_data(sensor_in: schemas.HiveSensorData) -> Dict[str, Any]:
@@ -72,7 +72,7 @@ def record_harvest(harvest_in: schemas.HarvestCreate) -> Dict[str, Any]:
     data['blockchain_hash'] = block.hash
     data['quality_score'] = block.data.get("sustainability_score")
     
-    # db_insert("harvests", data)
+    db_insert("harvests", data)
     return data
 
 def create_batch(batch_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -149,8 +149,8 @@ def get_trace_journey(batch_code: str) -> Optional[schemas.TraceResponse]:
         ))
         
     # Step D: Hive Life (Sensor Data)
-    # Find hive from harvest
-    hive_id = harvest_data.get('hive_id')
+    # Find hive from harvest or batch data
+    hive_id = harvest_data.get('hive_id') or batch_data.get('hive_id')
     hive_block = honey_blockchain.search_by_record_id(hive_id) if hive_id else None
     
     hive = None
@@ -180,7 +180,7 @@ def get_trace_journey(batch_code: str) -> Optional[schemas.TraceResponse]:
         ))
 
     # Step E: Apiary & Location
-    apiary_id = harvest_data.get('apiary_id') or (hive.apiary_id if hive else None)
+    apiary_id = harvest_data.get('apiary_id') or batch_data.get('apiary_id') or (hive.apiary_id if hive else None)
     apiary_block = honey_blockchain.search_by_record_id(apiary_id) if apiary_id else None
     
     apiary = None
@@ -212,7 +212,7 @@ def get_trace_journey(batch_code: str) -> Optional[schemas.TraceResponse]:
         ))
 
     # Step F: Farmer / Beekeeper
-    farmer_id = harvest_data.get('farmer_id') or (hive.farmer_id if hive else None)
+    farmer_id = harvest_data.get('farmer_id') or batch_data.get('farmer_id') or (hive.farmer_id if hive else None)
     farmer_block = honey_blockchain.search_by_record_id(farmer_id) if farmer_id else None
     
     farmer = None

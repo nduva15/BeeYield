@@ -152,7 +152,7 @@ const Contact = () => {
               return (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
+                  onClick={() => setActiveTab(tab.id as "grower" | "beekeeper" | "general")}
                   className={`flex-1 flex items-center justify-center gap-3 h-16 rounded-2xl border-2 font-black transition-all ${isActive ? 'bg-primary border-primary text-white shadow-glow' : 'bg-white border-border text-muted-foreground hover:bg-muted/50'}`}
                 >
                   <Icon className="h-5 w-5" />

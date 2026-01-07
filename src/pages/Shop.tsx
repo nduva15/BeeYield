@@ -19,6 +19,7 @@ import {
   Heart,
   ShoppingCart,
   ShoppingBag,
+  Cpu,
 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { Product, ProductVariant } from "@/services/shopService";
@@ -38,6 +39,15 @@ const Shop = () => {
       document.head.removeChild(script);
     };
   }, []);
+
+  useEffect(() => {
+    document.title = "BeeYield Shop | Premium Honey & Beekeeping Hardware";
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', 'Shop premium organic honey, professional beekeeping suits, and advanced IoT hive sensors from Intelligent Hives and ApiSense.');
+    }
+  }, []);
+
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
   const [selectedMerchCategory, setSelectedMerchCategory] = useState<string>("All");
   const [products, setProducts] = useState<Product[]>([]);
@@ -74,12 +84,12 @@ const Shop = () => {
     if (!badge) return "secondary";
     if (badge === "Bestseller" || badge === "Best Value") return "default";
     if (badge === "Premium" || badge === "Professional") return "secondary";
-    if (badge === "New" || badge === "Limited") return "outline";
+    if (badge === "New" || badge === "Limited" || badge === "New Technology") return "outline";
     return "secondary";
   };
 
   // Handle Add to Cart for all product types
-  const handleAddToCart = (product: Product, category: 'honey' | 'merch' | 'education') => {
+  const handleAddToCart = (product: Product, category: 'honey' | 'merch' | 'education' | 'hardware') => {
     const selectedSize = selectedSizes[product.id] || product.variants[0].size;
     const variant = product.variants.find((v: ProductVariant) => v.size === selectedSize);
 
@@ -154,7 +164,7 @@ const Shop = () => {
       <section className="container mx-auto px-4 py-12 sm:py-16">
         <Tabs defaultValue="honey" className="w-full">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-            <TabsList className="grid w-full sm:w-auto grid-cols-3 bg-muted/50 p-1">
+            <TabsList className="grid w-full sm:w-auto grid-cols-2 sm:grid-cols-4 bg-muted/50 p-1">
               <TabsTrigger value="honey" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <Leaf className="h-4 w-4" />
                 <span className="hidden sm:inline">Honey</span>
@@ -162,6 +172,10 @@ const Shop = () => {
               <TabsTrigger value="merch" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <Shirt className="h-4 w-4" />
                 <span className="hidden sm:inline">Merch</span>
+              </TabsTrigger>
+              <TabsTrigger value="hardware" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Cpu className="h-4 w-4" />
+                <span className="hidden sm:inline">Hardware</span>
               </TabsTrigger>
               <TabsTrigger value="learn" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <BookOpen className="h-4 w-4" />
@@ -319,6 +333,57 @@ const Shop = () => {
                     </CardContent>
                   </Card>
                 ))}
+            </div>
+          </TabsContent>
+
+          {/* Hardware Tab */}
+          <TabsContent value="hardware" className="mt-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {products.filter(p => p.category === 'hardware').map((product) => (
+                <Card key={product.id} className="group overflow-hidden border-border/50 hover:border-primary/50 hover:shadow-lg transition-all duration-300">
+                  <div className="relative aspect-[4/3] bg-gradient-to-br from-zinc-100 to-zinc-50 dark:from-zinc-900/50 dark:to-zinc-800/20 flex items-center justify-center overflow-hidden">
+                    <div className="absolute inset-4 border border-zinc-200 rounded-lg flex items-center justify-center bg-white/50 backdrop-blur-sm">
+                      <Cpu className="h-16 w-16 text-zinc-400 group-hover:text-primary transition-colors duration-500" />
+                    </div>
+                    {product.badge && (
+                      <Badge variant={getBadgeVariant(product.badge)} className="absolute top-3 left-3 z-10">
+                        {product.badge}
+                      </Badge>
+                    )}
+                    <div className="absolute bottom-3 right-3 z-10">
+                      <Badge variant="outline" className="bg-background/80 backdrop-blur-sm">
+                        IoT Ready
+                      </Badge>
+                    </div>
+                  </div>
+                  <CardContent className="p-5">
+                    <div className="flex items-center justify-between mb-2">
+                      {renderStars(product.rating)}
+                      <span className="text-xs font-mono text-muted-foreground">V 2.0</span>
+                    </div>
+                    <h3 className="font-semibold text-lg text-foreground mb-1">{product.name}</h3>
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2 min-h-[40px]">{product.description}</p>
+
+                    <div className="flex items-center justify-between pt-2 border-t border-border/50">
+                      <div className="flex flex-col">
+                        <span className="text-xs text-muted-foreground uppercase font-bold">Starting at</span>
+                        <span className="text-xl font-bold text-foreground">{formatPrice(product.variants[0]?.price_kes || 0)}</span>
+                      </div>
+                      <Button
+                        variant="default"
+                        className="gap-2 shadow-lg hover:shadow-xl transition-all"
+                        onClick={() => {
+                          handleAddToCart(product, 'hardware');
+                          openCart();
+                        }}
+                      >
+                        <ShoppingCart className="h-4 w-4" />
+                        Order Now
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </TabsContent>
 

@@ -105,7 +105,7 @@ def seed_products():
             "description": "Our signature light and floral honey, crystal clear for your morning tea.", 
             "category": "honey", 
             "badge": "Bestseller", 
-            "images": ["https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=800"], 
+            "images": ["/images/products/acacia_honey_jar.png"], 
             "rating": 4.9, 
             "review_count": 128
         },
@@ -114,27 +114,126 @@ def seed_products():
             "description": "Dark, complex honey harvested from the indigenous forests of Mt. Kenya.", 
             "category": "honey", 
             "badge": "Award Winning", 
-            "images": ["https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=800"], 
+            "images": ["/images/products/wild_forest_honey.png"], 
             "rating": 4.8, 
             "review_count": 94
+        },
+        {
+            "name": "Royal Reserve Manuka-Style",
+            "description": "Ultra-premium, high-activity honey with verified medicinal properties.",
+            "category": "honey",
+            "badge": "Premium",
+            "images": ["/images/products/royal_reserve_honey.png"], 
+            "rating": 5.0,
+            "review_count": 42
         },
         {
             "name": "BeeYield Tech Tee", 
             "description": "Breathable, eco-friendly cotton t-shirt for the modern beekeeper.", 
             "category": "merch", 
-            "badge": None, 
-            "images": ["https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800"], 
+            "badge": "Staff Pick", 
+            "images": ["/images/products/beeyield_tshirt.png"], 
             "rating": 4.7, 
             "review_count": 32
+        },
+        {
+            "name": "Save the Bees Hoodie",
+            "description": "Premium heavyweight hoodie with our conservation message. Warm, stylish, and sustainable.",
+            "category": "merch",
+            "badge": "Limited Edition",
+            "images": ["/images/products/beeyield_tshirt.png"],
+            "rating": 4.9,
+            "review_count": 45
+        },
+        {
+            "name": "Stainless Steel Smoker",
+            "description": "Professional-grade smoker with heat shield and leather bellows. Essential for every beekeeper.",
+            "category": "merch",
+            "badge": "Essential",
+            "images": ["/images/products/smoker_tool.png"],
+            "rating": 4.8,
+            "review_count": 92
+        },
+        {
+            "name": "Pro-Grip Hive Tool",
+            "description": "Heavy-duty J-hook hive tool made from hardened spring steel. Perfect for prying frames.",
+            "category": "merch",
+            "badge": "Top Rated",
+            "images": ["/images/products/smoker_tool.png"],
+            "rating": 4.9,
+            "review_count": 115
+        },
+        {
+            "name": "BeeYield Branded Cap",
+            "description": "Adjustable, breathable cotton cap with embroidered BeeYield logo.",
+            "category": "merch",
+            "badge": "New Arrival",
+            "images": ["/images/products/beeyield_tshirt.png"],
+            "rating": 4.6,
+            "review_count": 28
         },
         {
             "name": "Beekeeping for Beginners", 
             "description": "A comprehensive digital course covering everything from first hive to first harvest.", 
             "category": "education", 
-            "badge": "Professional", 
-            "images": ["https://images.unsplash.com/photo-1582213702035-7c01481b490f?w=800"], 
+            "badge": "Best Seller", 
+            "images": ["/images/products/beekeeping_book_guide.png"], 
             "rating": 4.9, 
-            "review_count": 89
+            "review_count": 215
+        },
+        {
+            "name": "Intermediate Hive Management",
+            "description": "Advanced course on splits, pest management, and maximizing honey production.",
+            "category": "education",
+            "badge": "Advanced",
+            "images": ["/images/products/advanced_beekeeping.png"], 
+            "rating": 4.8, 
+            "review_count": 64
+        },
+        {
+            "name": "Pollination Economics Masterclass",
+            "description": "Learn how to monetize your pollination services and calculate ROI for commercial fruit growers.",
+            "category": "education",
+            "badge": "Enterprise",
+            "images": ["/images/products/pollination_economics.png"], 
+            "rating": 5.0, 
+            "review_count": 31
+        },
+        {
+            "name": "Queen Rearing & Breeding",
+            "description": "A deep dive into the specialized art of raising high-quality African honeybee queens.",
+            "category": "education",
+            "badge": "Expert Level",
+            "images": ["/images/products/queen_rearing_course.png"], 
+            "rating": 4.9, 
+            "review_count": 18
+        },
+        {
+            "name": "Bee Health & Disease Management",
+            "description": "Identify, treat, and prevent common honeybee diseases and pests in tropical climates.",
+            "category": "education",
+            "badge": "Technical",
+            "images": ["/images/products/beekeeping_book_guide.png"], 
+            "rating": 4.7, 
+            "review_count": 42
+        },
+        {
+            "name": "ApiSense Sentinel Node",
+            "description": "IoT hive monitor with acoustic disease detection and gas sensing (VOCs/CO2).",
+            "category": "hardware",
+            "badge": "New Technology",
+            "images": ["/images/products/apisense_node.png"], 
+            "rating": 5.0, 
+            "review_count": 12
+        },
+        {
+            "name": "Intelligent Hive Scale",
+            "description": "Precision weight, temperature, and humidity monitoring with 4G connectivity.",
+            "category": "hardware",
+            "badge": "Best Value",
+            "images": ["/images/products/hive_scale.png"], 
+            "rating": 4.8, 
+            "review_count": 24
         }
     ]
     
@@ -157,8 +256,10 @@ def seed_products():
                 ]
             elif p_data["category"] == "merch":
                 v_data = [{"product_id": p_id, "size": s, "price_kes": 2200, "stock_quantity": 20} for s in ["S", "M", "L", "XL"]]
-            else: # education
+            elif p_data["category"] == "education":
                 v_data = [{"product_id": p_id, "size": "Digital Course", "price_kes": 3500, "stock_quantity": 9999}]
+            else: # hardware
+                v_data = [{"product_id": p_id, "size": "Unit", "price_kes": 15000, "stock_quantity": 50}]
             
             # Filter variant data
             cleaned_v_data = filter_data("product_variants", v_data)
@@ -244,9 +345,9 @@ def seed_cms():
     supabase.table("blog_posts").insert(blog).execute()
     
     jobs = [
-        {"title": "Software Engineer", "department": "Technical", "location": "Nairobi / Remote", "job_type": "Full-time", "description": "Build the platform.", "is_active": True}
+        {"title": "Software Engineer", "slug": "software-engineer", "department": "Technical", "location": "Nairobi / Remote", "job_type": "Full-time", "description": "Build the platform.", "is_active": True, "posted_date": str(date.today()), "closing_date": str(date.today() + timedelta(days=30))}
     ]
-    supabase.table("job_listings").insert(jobs).execute()
+    supabase.table("job_listings").insert(filter_data("job_listings", jobs)).execute()
     print("   ✓ CMS content seeded")
 
 def seed_services():
@@ -269,9 +370,28 @@ def seed_services():
     impact = [{"title": "Scaling Sustainability", "slug": "sustainability-impact", "summary": "Impact story.", "is_featured": True, "is_active": True}]
     supabase.table("impact_stories").insert(impact).execute()
 
-    mod = {"title": "Beekeeping Essentials", "slug": "beekeeping-essentials", "description": "Foundation course.", "category": "Basic", "duration_minutes": 60}
-    m_rec = supabase.table("learning_modules").insert(mod).execute().data[0]
-    supabase.table("learning_lessons").insert([{"module_id": m_rec["id"], "title": "Safety & Gear", "display_order": 1}]).execute()
+    modules = [
+        {"title": "Beekeeping Essentials", "slug": "beekeeping-essentials", "description": "Foundation course for aspiring beekeepers.", "category": "Basic", "duration_minutes": 60, "difficulty_level": "beginner"},
+        {"title": "Pollinator Landscapes", "slug": "pollinator-landscapes", "description": "Learn to create habitats that support local biodiversity.", "category": "Environment", "duration_minutes": 45, "difficulty_level": "beginner"},
+        {"title": "Introduction to Hive Health", "slug": "hive-health-intro", "description": "Identifying and managing common honeybee pests and diseases.", "category": "Technical", "duration_minutes": 90, "difficulty_level": "intermediate"},
+        {"title": "The Honey Cycle", "slug": "honey-cycle", "description": "A deep dive into how bees make honey and the extraction process.", "category": "Basic", "duration_minutes": 30, "difficulty_level": "beginner"},
+        {"title": "Urban Beekeeping", "slug": "urban-beekeeping", "description": "Master the unique challenges of keeping bees in city environments.", "category": "Specialized", "duration_minutes": 75, "difficulty_level": "intermediate"},
+        {"title": "Sustainable Harvesting", "slug": "sustainable-harvesting", "description": "Ethical methods for harvesting honey while ensuring colony survival.", "category": "Ethics", "duration_minutes": 50, "difficulty_level": "beginner"}
+    ]
+    
+    for mod in modules:
+        res = supabase.table("learning_modules").insert(mod).execute()
+        if res.data:
+            m_id = res.data[0]["id"]
+            if mod["slug"] == "beekeeping-essentials":
+                lessons = [
+                    {"module_id": m_id, "title": "Safety & Gear", "display_order": 1},
+                    {"module_id": m_id, "title": "Hive Components", "display_order": 2}
+                ]
+            else:
+                lessons = [{"module_id": m_id, "title": "Getting Started", "display_order": 1}]
+            supabase.table("learning_lessons").insert(lessons).execute()
+    
     print("   ✓ Services & learning seeded")
 
 def seed_sdgs():

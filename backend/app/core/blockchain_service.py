@@ -3,6 +3,13 @@ import os
 from web3 import Web3
 from app.core.config import settings
 
+"""
+DEPRECATED: This file is no longer used in the active application.
+The active blockchain implementation is in `backend/app/blockchain/honey_chain.py` (Python-based).
+This Web3 implementation is kept for future reference only.
+"""
+
+
 # Minimal ABI based on our contract (Normally you'd auto-generate this from solc)
 CONTRACT_ABI = [
     {
