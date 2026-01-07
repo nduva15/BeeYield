@@ -105,7 +105,7 @@ def seed_products():
             "description": "Our signature light and floral honey, crystal clear for your morning tea.", 
             "category": "honey", 
             "badge": "Bestseller", 
-            "images": ["/images/products/acacia_honey_jar.png"], 
+            "images": ["https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=800"], 
             "rating": 4.9, 
             "review_count": 128
         },
@@ -114,7 +114,7 @@ def seed_products():
             "description": "Dark, complex honey harvested from the indigenous forests of Mt. Kenya.", 
             "category": "honey", 
             "badge": "Award Winning", 
-            "images": ["/images/products/wild_forest_honey.png"], 
+            "images": ["https://images.unsplash.com/photo-1558449028-b53a39d100fc?w=800"], 
             "rating": 4.8, 
             "review_count": 94
         },
@@ -123,7 +123,7 @@ def seed_products():
             "description": "Ultra-premium, high-activity honey with verified medicinal properties.",
             "category": "honey",
             "badge": "Premium",
-            "images": ["/images/products/royal_reserve_honey.png"], 
+            "images": ["https://images.unsplash.com/photo-1471943311424-646960669fbc?w=800"], 
             "rating": 5.0,
             "review_count": 42
         },
@@ -132,7 +132,7 @@ def seed_products():
             "description": "Breathable, eco-friendly cotton t-shirt for the modern beekeeper.", 
             "category": "merch", 
             "badge": "Staff Pick", 
-            "images": ["/images/products/beeyield_tshirt.png"], 
+            "images": ["https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800"], 
             "rating": 4.7, 
             "review_count": 32
         },
@@ -141,7 +141,7 @@ def seed_products():
             "description": "Premium heavyweight hoodie with our conservation message. Warm, stylish, and sustainable.",
             "category": "merch",
             "badge": "Limited Edition",
-            "images": ["/images/products/beeyield_tshirt.png"],
+            "images": ["https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=800"],
             "rating": 4.9,
             "review_count": 45
         },
@@ -150,7 +150,7 @@ def seed_products():
             "description": "Professional-grade smoker with heat shield and leather bellows. Essential for every beekeeper.",
             "category": "merch",
             "badge": "Essential",
-            "images": ["/images/products/smoker_tool.png"],
+            "images": ["https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=800"],
             "rating": 4.8,
             "review_count": 92
         },
@@ -159,7 +159,7 @@ def seed_products():
             "description": "Heavy-duty J-hook hive tool made from hardened spring steel. Perfect for prying frames.",
             "category": "merch",
             "badge": "Top Rated",
-            "images": ["/images/products/smoker_tool.png"],
+            "images": ["https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=800"],
             "rating": 4.9,
             "review_count": 115
         },
@@ -168,7 +168,7 @@ def seed_products():
             "description": "Adjustable, breathable cotton cap with embroidered BeeYield logo.",
             "category": "merch",
             "badge": "New Arrival",
-            "images": ["/images/products/beeyield_tshirt.png"],
+            "images": ["https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=800"],
             "rating": 4.6,
             "review_count": 28
         },
@@ -177,7 +177,7 @@ def seed_products():
             "description": "A comprehensive digital course covering everything from first hive to first harvest.", 
             "category": "education", 
             "badge": "Best Seller", 
-            "images": ["/images/products/beekeeping_book_guide.png"], 
+            "images": ["https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800"], 
             "rating": 4.9, 
             "review_count": 215
         },
@@ -186,7 +186,7 @@ def seed_products():
             "description": "Advanced course on splits, pest management, and maximizing honey production.",
             "category": "education",
             "badge": "Advanced",
-            "images": ["/images/products/advanced_beekeeping.png"], 
+            "images": ["https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800"], 
             "rating": 4.8, 
             "review_count": 64
         },
@@ -195,7 +195,7 @@ def seed_products():
             "description": "Learn how to monetize your pollination services and calculate ROI for commercial fruit growers.",
             "category": "education",
             "badge": "Enterprise",
-            "images": ["/images/products/pollination_economics.png"], 
+            "images": ["https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800"], 
             "rating": 5.0, 
             "review_count": 31
         },
@@ -204,16 +204,16 @@ def seed_products():
             "description": "A deep dive into the specialized art of raising high-quality African honeybee queens.",
             "category": "education",
             "badge": "Expert Level",
-            "images": ["/images/products/queen_rearing_course.png"], 
+            "images": ["https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800"], 
             "rating": 4.9, 
             "review_count": 18
         },
         {
-            "name": "Bee Health & Disease Management",
+            "name": "BeeHealth Management",
             "description": "Identify, treat, and prevent common honeybee diseases and pests in tropical climates.",
             "category": "education",
             "badge": "Technical",
-            "images": ["/images/products/beekeeping_book_guide.png"], 
+            "images": ["https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=800"], 
             "rating": 4.7, 
             "review_count": 42
         },
@@ -234,6 +234,33 @@ def seed_products():
             "images": ["/images/products/hive_scale.png"], 
             "rating": 4.8, 
             "review_count": 24
+        },
+        {
+            "name": "Savannah Blossom Gold Honey",
+            "description": "Distinctive golden honey with rich floral notes, harvested at sunset in the African savannah.",
+            "category": "honey",
+            "badge": "Limited Edition",
+            "images": ["/images/products/savannah_blossom_honey.png"],
+            "rating": 4.9,
+            "review_count": 15
+        },
+        {
+            "name": "BeeYield Canvas Tote Bag",
+            "description": "Eco-friendly canvas tote perfect for farmers markets. Durable and stylish.",
+            "category": "merch",
+            "badge": "New Arrival",
+            "images": ["/images/products/beeyield_tote_bag.png"],
+            "rating": 4.8,
+            "review_count": 8
+        },
+        {
+            "name": "Solar Hive Monitor",
+            "description": "Self-sustaining solar powered hive monitor for remote locations. Never worry about batteries again.",
+            "category": "hardware",
+            "badge": "Eco-Choice",
+            "images": ["/images/products/solar_hive_monitor.png"],
+            "rating": 5.0,
+            "review_count": 5
         }
     ]
     

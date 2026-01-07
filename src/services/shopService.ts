@@ -3,12 +3,11 @@
  */
 import { API_V1_URL } from "./api";
 
-export interface ProductVariant {
-    id: string;
-    size: string;
-    price: number;
-    stock_quantity: number;
-    is_available: boolean;
+id: string;
+size: string;
+price_kes: number;
+stock_quantity: number;
+is_available: boolean;
 }
 
 export interface Product {

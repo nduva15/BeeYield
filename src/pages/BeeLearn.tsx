@@ -172,7 +172,7 @@ const BeeLearn = () => {
                     <div className="flex justify-between items-start mb-4">
                       <h3 className="text-xl font-bold group-hover:text-primary transition-colors">{product.name}</h3>
                       <div className="text-right">
-                        <p className="text-lg font-black text-primary">KES {product.variants?.[0]?.price?.toLocaleString() || "0"}</p>
+                        <p className="text-lg font-black text-primary">KES {product.variants?.[0]?.price_kes?.toLocaleString() || "0"}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 mb-6 text-sm">

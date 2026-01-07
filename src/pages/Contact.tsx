@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import SEO from "@/components/SEO";
 import {
   Mail, Phone, MapPin,
   Sprout, Bug, MessageSquare, Loader2, ArrowRight
@@ -11,20 +13,6 @@ import { Badge } from "@/components/ui/badge";
 
 const Contact = () => {
   const { toast } = useToast();
-  useEffect(() => {
-    // Inject GTM script into head
-    const script = document.createElement('script');
-    script.innerHTML = ` (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-      })(window,document,'script','dataLayer','GTM-KF284247');`;
-    script.async = true;
-    document.head.appendChild(script);
-    return () => {
-      document.head.removeChild(script);
-    };
-  }, []);
 
   const [activeTab, setActiveTab] = useState<"grower" | "beekeeper" | "general">("grower");
   const [loading, setLoading] = useState(false);
@@ -115,6 +103,10 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Contact Us"
+        description="Get in touch with BeeYield. Connect regarding pollination services, beekeeping support, or general inquiries."
+      />
       {/* Google Tag Manager (noscript) */}
       <noscript>
         <iframe

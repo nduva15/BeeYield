@@ -7,18 +7,7 @@ import Layout from "./components/Layout";
 import { CartProvider } from "./contexts/CartContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import CartDrawer from "./components/CartDrawer";
-// Google Tag Manager noscript
-const GTMNoScript = () => (
-  <noscript>
-    <iframe
-      src="https://www.googletagmanager.com/ns.html?id=GTM-KF284247"
-      height="0"
-      width="0"
-      style={{ display: "none", visibility: "hidden" }}
-      title="Google Tag Manager"
-    ></iframe>
-  </noscript>
-);
+
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Impact from "./pages/Impact";
@@ -47,6 +36,20 @@ import BeeLearn from "./pages/BeeLearn";
 import Dashboard from "./pages/Dashboard";
 
 
+
+
+// Google Tag Manager noscript
+const GTMNoScript = () => (
+  <noscript>
+    <iframe
+      src="https://www.googletagmanager.com/ns.html?id=GTM-KF284247"
+      height="0"
+      width="0"
+      style={{ display: "none", visibility: "hidden" }}
+      title="Google Tag Manager"
+    ></iframe>
+  </noscript>
+);
 
 const queryClient = new QueryClient();
 
