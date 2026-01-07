@@ -14,12 +14,15 @@ if not SUPABASE_URL or not SUPABASE_KEY:
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-print("--- Products in DB ---")
-res = supabase.table("products").select("name, category").execute()
-for p in res.data:
-    print(f"- {p['name']} ({p['category']})")
+with open("backend/data_verification.txt", "w", encoding="utf-8") as f:
+    f.write("--- Products in DB ---\n")
+    res = supabase.table("products").select("name, category").execute()
+    for p in res.data:
+        f.write(f"- {p['name']} ({p['category']})\n")
 
-print("\n--- Learning Modules in DB ---")
-res = supabase.table("learning_modules").select("title, category").execute()
-for m in res.data:
-    print(f"- {m['title']} ({m['category']})")
+    f.write("\n--- Learning Modules in DB ---\n")
+    res = supabase.table("learning_modules").select("title, category").execute()
+    for m in res.data:
+        f.write(f"- {m['title']} ({m['category']})\n")
+
+print("Verification complete. Check backend/data_verification.txt")

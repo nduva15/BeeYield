@@ -16,9 +16,3 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   }
 });
 
-// Admin client for server-side / Edge Functions only
-export const createAdminClient = () => {
-  const serviceRoleKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!serviceRoleKey) throw new Error('Missing service role key');
-  return createClient<Database>(supabaseUrl, serviceRoleKey);
-};

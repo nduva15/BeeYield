@@ -219,6 +219,77 @@ MOCK_PRODUCTS = [
         "variants": [
             {"id": "v31", "size": "Online Course", "price_kes": 4800, "stock_quantity": 9999, "is_available": True}
         ]
+    },
+    {
+        "id": "hw-1",
+        "name": "ApiSense Sentinel Node",
+        "description": "IoT hive monitor with acoustic disease detection and gas sensing (VOCs/CO2).",
+        "category": "hardware",
+        "badge": "New Technology",
+        "images": ["/images/products/apisense_node.png"],
+        "rating": 5.0,
+        "review_count": 12,
+        "is_active": True,
+        "variants": [
+            {"id": "v-hw-1", "size": "Unit", "price_kes": 15000, "stock_quantity": 50, "is_available": True}
+        ]
+    },
+    {
+        "id": "hw-2",
+        "name": "Intelligent Hive Scale",
+        "description": "Precision weight, temperature, and humidity monitoring with 4G connectivity.",
+        "category": "hardware",
+        "badge": "Best Value",
+        "images": ["/images/products/hive_scale.png"],
+        "rating": 4.8,
+        "review_count": 24,
+        "is_active": True,
+        "variants": [
+            {"id": "v-hw-2", "size": "Unit", "price_kes": 12500, "stock_quantity": 50, "is_available": True}
+        ]
+    },
+    {
+        "id": "hw-3",
+        "name": "Solar Hive Monitor",
+        "description": "Self-sustaining solar powered hive monitor for remote locations. Never worry about batteries again.",
+        "category": "hardware",
+        "badge": "Eco-Choice",
+        "images": ["/images/products/solar_hive_monitor.png"],
+        "rating": 5.0,
+        "review_count": 5,
+        "is_active": True,
+        "variants": [
+            {"id": "v-hw-3", "size": "Unit", "price_kes": 18000, "stock_quantity": 30, "is_available": True}
+        ]
+    },
+    {
+        "id": "honey-5",
+        "name": "Savannah Blossom Gold Honey",
+        "description": "Distinctive golden honey with rich floral notes, harvested at sunset in the African savannah.",
+        "category": "honey",
+        "badge": "Limited Edition",
+        "images": ["/images/products/savannah_blossom_honey.png"],
+        "rating": 4.9,
+        "review_count": 15,
+        "is_active": True,
+        "variants": [
+            {"id": "v-sav-1", "size": "500g", "price_kes": 950, "stock_quantity": 50, "is_available": True},
+            {"id": "v-sav-2", "size": "1kg", "price_kes": 1800, "stock_quantity": 30, "is_available": True}
+        ]
+    },
+    {
+        "id": "merch-7",
+        "name": "BeeYield Canvas Tote Bag",
+        "description": "Eco-friendly canvas tote perfect for farmers markets. Durable and stylish.",
+        "category": "merch",
+        "badge": "New Arrival",
+        "images": ["/images/products/beeyield_tote_bag.png"],
+        "rating": 4.8,
+        "review_count": 8,
+        "is_active": True,
+        "variants": [
+            {"id": "v-tote-1", "size": "One Size", "price_kes": 1200, "stock_quantity": 100, "is_available": True}
+        ]
     }
 ]
 
