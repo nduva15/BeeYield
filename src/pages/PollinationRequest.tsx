@@ -24,6 +24,7 @@ const PollinationRequest = () => {
     };
   }, []);
   const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -36,24 +37,45 @@ const PollinationRequest = () => {
     additionalInfo: ""
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Request Submitted!",
-      description: "Our team will contact you within 24 hours to discuss your pollination needs.",
-    });
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      farmName: "",
-      location: "",
-      cropType: "",
-      acres: "",
-      pollinationDate: "",
-      additionalInfo: ""
-    });
+    setLoading(true);
+    try {
+      const { submitPollinationRequest } = await import("@/services/contactService");
+
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        farm_name: formData.farmName,
+        location: formData.location,
+        crop_type: formData.cropType,
+        acres: Number(formData.acres),
+        start_date: formData.pollinationDate,
+        info: formData.additionalInfo
+      };
+
+      await submitPollinationRequest(payload);
+
+      toast({
+        title: "Request Submitted!",
+        description: "Our team will contact you within 24 hours to discuss your pollination needs.",
+      });
+      // Reset form
+      setFormData({
+        name: "", email: "", phone: "", farmName: "", location: "",
+        cropType: "", acres: "", pollinationDate: "", additionalInfo: ""
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Error",
+        description: "Failed to submit request. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (field: string, value: string) => {
@@ -93,7 +115,7 @@ const PollinationRequest = () => {
                     <MapPin className="mr-2 h-5 w-5 text-primary" />
                     Contact Information
                   </h3>
-                  
+
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="name">Full Name *</Label>
@@ -105,7 +127,7 @@ const PollinationRequest = () => {
                         required
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="email">Email *</Label>
                       <Input
@@ -138,7 +160,7 @@ const PollinationRequest = () => {
                     <Sprout className="mr-2 h-5 w-5 text-primary" />
                     Farm Information
                   </h3>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="farmName">Farm Name *</Label>
                     <Input
@@ -203,7 +225,7 @@ const PollinationRequest = () => {
                     <Calendar className="mr-2 h-5 w-5 text-primary" />
                     Service Details
                   </h3>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="pollinationDate">Preferred Pollination Start Date *</Label>
                     <Input
@@ -227,8 +249,8 @@ const PollinationRequest = () => {
                   </div>
                 </div>
 
-                <Button type="submit" size="lg" className="w-full">
-                  Submit Pollination Request
+                <Button type="submit" size="lg" className="w-full" disabled={loading}>
+                  {loading ? "Submitting..." : "Submit Pollination Request"}
                 </Button>
 
                 <p className="text-center text-sm text-muted-foreground">

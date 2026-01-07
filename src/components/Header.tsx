@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, ShoppingBag } from "lucide-react";
 import { Button } from "./ui/button";
+import { useCart } from "@/contexts/CartContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +14,7 @@ import Logo from "@/assets/Logo.png";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const { getTotalItems, openCart } = useCart();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -46,13 +48,12 @@ const Header = () => {
         <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
           <Link
             to="/Crops-We-Pollinate"
-            className={`text-sm font-medium transition-colors hover:text-primary ${
-              isActive("/Crops-We-Pollinate") ? "text-primary" : "text-foreground"
-            }`}
+            className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/Crops-We-Pollinate") ? "text-primary" : "text-foreground"
+              }`}
           >
             Professional Pollination
           </Link>
-          
+
           <DropdownMenu>
             <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium transition-colors hover:text-primary">
               Pollination Solutions
@@ -74,26 +75,24 @@ const Header = () => {
 
           <Link
             to="/pollinationsolutions"
-            className={`text-sm font-medium transition-colors hover:text-primary ${
-              isActive("/pollinationsolutions") ? "text-primary" : "text-foreground"
-            }`}
+            className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/pollinationsolutions") ? "text-primary" : "text-foreground"
+              }`}
           >
-            Beekeeping Network         
-        </Link>
-        <Link
+            Beekeeping Network
+          </Link>
+          <Link
             to="/Shop"
-            className={`text-sm font-medium transition-colors hover:text-primary ${
-              isActive("/Shop") ? "text-primary" : "text-foreground"
-            }`}
+            className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/Shop") ? "text-primary" : "text-foreground"
+              }`}
           >
-            Shop         
-        </Link>
+            Shop
+          </Link>
         </div>
 
         {/* Right side - Traceability Button & Menu (all devices) */}
         <div className="flex items-center space-x-2 sm:space-x-4">
-          <Button 
-            variant="default" 
+          <Button
+            variant="default"
             size="sm"
             className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-3 sm:px-6 text-xs sm:text-sm h-8 sm:h-9"
             asChild
@@ -102,7 +101,20 @@ const Header = () => {
               Traceability
             </Link>
           </Button>
-          
+
+          <button
+            onClick={openCart}
+            className="relative p-2 hover:bg-muted rounded-full transition-all active:scale-90 group"
+            aria-label={`Open cart with ${getTotalItems()} items`}
+          >
+            <ShoppingBag className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
+            {getTotalItems() > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground text-[10px] font-bold h-4 w-4 sm:h-5 sm:w-5 rounded-full flex items-center justify-center border-2 border-background animate-in zoom-in duration-300">
+                {getTotalItems()}
+              </span>
+            )}
+          </button>
+
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
@@ -121,11 +133,11 @@ const Header = () => {
       {isMenuOpen && (
         <>
           {/* Backdrop */}
-          <div 
+          <div
             className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40"
             onClick={() => setIsMenuOpen(false)}
           />
-          
+
           {/* Menu Panel */}
           <div className="fixed right-2 sm:right-4 top-14 sm:top-16 z-50 w-[calc(100%-1rem)] sm:w-72 max-h-[calc(100vh-4rem)] overflow-y-auto rounded-2xl bg-primary p-4 sm:p-6 shadow-xl animate-in fade-in slide-in-from-top-2">
             <div className="flex flex-col space-y-1 sm:space-y-2">

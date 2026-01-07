@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { QrCode, MapPin, Calendar, Leaf, Info, Heart, Shield, Droplets, Home, Users, Award } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { traceBatch, TraceResponse } from "@/services/traceabilityService";
 
 const Traceability = () => {
   useEffect(() => {
@@ -20,18 +21,45 @@ const Traceability = () => {
       document.head.removeChild(script);
     };
   }, []);
+
   const [qrCode, setQrCode] = useState("");
   const [showResults, setShowResults] = useState(false);
   const { toast } = useToast();
+  const [batchData, setBatchData] = useState<TraceResponse | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (qrCode.trim()) {
-      setShowResults(true);
-      toast({
-        title: "Code verified!",
-        description: "Loading honey information...",
-      });
+      setShowResults(false);
+      try {
+        toast({
+          title: "Verifying on Blockchain...",
+          description: "Fetching immutable records.",
+        });
+
+        const data = await traceBatch(qrCode);
+
+        if (data) {
+          setBatchData(data);
+          setShowResults(true);
+          toast({
+            title: "Verified!",
+            description: "Batch found on HoneyChain.",
+          });
+        } else {
+          // Fallback for demo if backend not running or ID not found
+          console.log("Batch not found, showing mock for demo");
+          setBatchData(null);
+          setShowResults(true);
+          toast({
+            title: "Demo Mode",
+            description: "Backend not reachable, showing sample data.",
+            variant: "destructive"
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 
@@ -80,7 +108,7 @@ const Traceability = () => {
           </div>
         </div>
       </div>
-       {/* Trace Your Honey Section */}
+      {/* Trace Your Honey Section */}
       <div className="py-12 sm:py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-12">
           <div className="mx-auto max-w-6xl">
@@ -90,7 +118,7 @@ const Traceability = () => {
                 Enter the unique code from your jar to discover its complete journey
               </p>
             </div>
-            
+
             <Card className="mb-12 border-none shadow-soft">
               <CardContent className="p-8">
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -138,7 +166,7 @@ const Traceability = () => {
                         </div>
                         <div>
                           <h3 className="font-semibold">Batch ID</h3>
-                          <p className="text-muted-foreground">{mockData.batchId}</p>
+                          <p className="text-muted-foreground">{batchData?.batch_id || mockData.batchId}</p>
                         </div>
                       </div>
 
@@ -148,7 +176,9 @@ const Traceability = () => {
                         </div>
                         <div>
                           <h3 className="font-semibold">Harvest Date</h3>
-                          <p className="text-muted-foreground">{mockData.harvestDate}</p>
+                          <p className="text-muted-foreground">
+                            {batchData ? batchData.journey.harvest.date : mockData.harvestDate}
+                          </p>
                         </div>
                       </div>
 
@@ -158,8 +188,8 @@ const Traceability = () => {
                         </div>
                         <div>
                           <h3 className="font-semibold">Origin</h3>
-                          <p className="text-muted-foreground">{mockData.location}</p>
-                          <p className="text-sm text-muted-foreground">{mockData.coordinates}</p>
+                          <p className="text-muted-foreground">{batchData?.journey.hive.location || mockData.location}</p>
+                          <p className="text-sm text-muted-foreground">{batchData?.journey.hive.coordinates || mockData.coordinates}</p>
                         </div>
                       </div>
 
@@ -168,8 +198,8 @@ const Traceability = () => {
                           <Leaf className="h-5 w-5 text-primary" />
                         </div>
                         <div>
-                          <h3 className="font-semibold">Flower Source</h3>
-                          <p className="text-muted-foreground">{mockData.flowerSource}</p>
+                          <h3 className="font-semibold">Environment</h3>
+                          <p className="text-muted-foreground">{batchData?.journey.hive.environment || mockData.flowerSource}</p>
                         </div>
                       </div>
                     </div>
@@ -179,9 +209,9 @@ const Traceability = () => {
                 <Card className="border-none shadow-soft">
                   <CardContent className="p-8">
                     <h3 className="mb-4 font-semibold">Beekeeper</h3>
-                    <p className="mb-2 text-lg">{mockData.beekeeper}</p>
+                    <p className="mb-2 text-lg">{batchData ? batchData.journey.harvest.beekeeper : mockData.beekeeper}</p>
                     <p className="text-sm text-muted-foreground">
-                      A third-generation beekeeper committed to sustainable practices and bee welfare.
+                      {batchData ? batchData.beekeeper_story : "A third-generation beekeeper committed to sustainable practices and bee welfare."}
                     </p>
                   </CardContent>
                 </Card>
@@ -217,13 +247,13 @@ const Traceability = () => {
             </div>
             <h2 className="mb-6 text-4xl font-bold">Champions for Saving Bees</h2>
             <p className="mb-8 text-xl leading-relaxed text-muted-foreground">
-              At BeeYield, we believe that the future of our planet depends on the health of our pollinators. 
-              That's why we've made a radical commitment: <span className="font-semibold text-primary">we only harvest 50% of the honey our bees produce</span>. 
+              At BeeYield, we believe that the future of our planet depends on the health of our pollinators.
+              That's why we've made a radical commitment: <span className="font-semibold text-primary">we only harvest 50% of the honey our bees produce</span>.
               The other half? It stays exactly where it belongs, with the bees who made it.
             </p>
             <p className="text-lg leading-relaxed text-muted-foreground">
-              While others chase profits, we chase purpose. Our bees aren't just workers; they're partners in a mission 
-              to restore balance to our ecosystem. Every jar you purchase directly supports sustainable beekeeping practices 
+              While others chase profits, we chase purpose. Our bees aren't just workers; they're partners in a mission
+              to restore balance to our ecosystem. Every jar you purchase directly supports sustainable beekeeping practices
               and funds our bee conservation initiatives across the region.
             </p>
           </div>
@@ -272,17 +302,17 @@ const Traceability = () => {
                 In a booming honey market flooded with adulterated products, we're setting a new standard for transparency.
               </p>
             </div>
-            
+
             <div className="mb-12 rounded-2xl bg-background p-8 shadow-soft">
               <p className="mb-6 text-lg leading-relaxed text-muted-foreground">
-                Did you know that up to <span className="font-semibold text-destructive">70% of honey on supermarket shelves</span> may be 
-                adulterated with cheap syrups or mislabeled about its origin? In an industry plagued by fraud, 
+                Did you know that up to <span className="font-semibold text-destructive">70% of honey on supermarket shelves</span> may be
+                adulterated with cheap syrups or mislabeled about its origin? In an industry plagued by fraud,
                 we believe you deserve to know exactly what you're putting on your table.
               </p>
               <p className="text-lg leading-relaxed text-muted-foreground">
-                Our revolutionary traceability system lets you trace every jar back to its source, not just the country 
-                or region, but the <span className="font-semibold text-primary">exact hive, the beekeeper who cared for it, 
-                the flowers the bees visited, and even the water sources that sustained the colony</span>. 
+                Our revolutionary traceability system lets you trace every jar back to its source, not just the country
+                or region, but the <span className="font-semibold text-primary">exact hive, the beekeeper who cared for it,
+                  the flowers the bees visited, and even the water sources that sustained the colony</span>.
                 This isn't just honey; it's a story you can verify.
               </p>
             </div>
@@ -290,7 +320,7 @@ const Traceability = () => {
             {/* What We Trace Grid */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {traceabilityFeatures.map((feature) => (
-                <div 
+                <div
                   key={feature.label}
                   className="flex items-start gap-4 rounded-xl bg-background p-4 shadow-soft transition-all hover:shadow-md"
                 >
@@ -317,8 +347,8 @@ const Traceability = () => {
             </div>
             <h2 className="mb-6 text-4xl font-bold">Our Promise to You</h2>
             <p className="mb-8 text-xl leading-relaxed text-muted-foreground">
-              Every jar of BeeYield honey carries more than just sweetness; it carries a story of ethical beekeeping, 
-              environmental stewardship, and unwavering commitment to quality. When you choose our honey, you're not 
+              Every jar of BeeYield honey carries more than just sweetness; it carries a story of ethical beekeeping,
+              environmental stewardship, and unwavering commitment to quality. When you choose our honey, you're not
               just buying a product; you're joining a movement to protect the pollinators that sustain our world.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
