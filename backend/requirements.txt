@@ -17,4 +17,4 @@ flake8==7.0.0
 web3==6.15.0
 eth-account==0.11.0
 solcx==6.0.0
-clickhouse-connect==0.7.8
+clickhouse-connect
