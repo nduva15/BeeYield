@@ -1,211 +1,686 @@
-import { useEffect } from "react";
-import {
-  Cpu, Wifi, LayoutDashboard, ArrowRight,
-  Quote, Check, BookOpen, Mail, ChevronRight,
-  BarChart3, Thermometer, Mic, Zap, Shield, Database, Activity
-} from "lucide-react";
+import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Check, TrendingUp, Shield, BarChart3, ArrowRight,
+  Cpu, Wifi, Zap, Target, Database, Award, Clock, Users,
+  Activity, Thermometer, Mic, Radio, Smartphone, Bell,
+  Settings, LineChart, Heart, AlertCircle, CheckCircle2
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
 const PrecisionPollination = () => {
-  useEffect(() => {
-    // Inject GTM script into head
-    const script = document.createElement('script');
-    script.innerHTML = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-      })(window,document,'script','dataLayer','GTM-KF284247');`;
-    script.async = true;
-    document.head.appendChild(script);
-    return () => {
-      document.head.removeChild(script);
-    };
-  }, []);
+  const sensorMetrics = [
+    {
+      icon: Thermometer,
+      title: "Temperature Monitoring",
+      description: "Continuous tracking of hive internal temperature (33-36°C optimal range) to ensure colony comfort and brood health.",
+      color: "from-red-500 to-orange-500"
+    },
+    {
+      icon: Activity,
+      title: "Humidity Levels",
+      description: "Real-time humidity measurements (40-60% ideal) prevent moisture-related diseases and maintain optimal hive conditions.",
+      color: "from-blue-500 to-cyan-500"
+    },
+    {
+      icon: Mic,
+      title: "Acoustic Analysis",
+      description: "AI-powered sound pattern recognition identifies queen presence, swarming behavior, and colony stress levels.",
+      color: "from-purple-500 to-pink-500"
+    },
+    {
+      icon: Database,
+      title: "Population Tracking",
+      description: "Estimate bee population dynamics through activity patterns and hive weight changes over time.",
+      color: "from-green-500 to-emerald-500"
+    },
+    {
+      icon: Bell,
+      title: "Health Alerts",
+      description: "Instant notifications when sensors detect anomalies like disease signatures, pest invasions, or queen loss.",
+      color: "from-amber-500 to-yellow-500"
+    },
+    {
+      icon: LineChart,
+      title: "Productivity Metrics",
+      description: "Track foraging activity, honey production rates, and pollination efficiency across your entire operation.",
+      color: "from-indigo-500 to-violet-500"
+    }
+  ];
+
+  const dataPoints = [
+    { label: "Sensors per Hive", value: "5-8", icon: Cpu },
+    { label: "Data Points Daily", value: "10,000+", icon: BarChart3 },
+    { label: "Update Frequency", value: "15 min", icon: Clock },
+    { label: "Battery Life", value: "12 mo", icon: Zap }
+  ];
+
+  const benefits = [
+    {
+      icon: Shield,
+      title: "Colony Health Guarantee",
+      description: "We monitor colony strength 24/7. If our sensors detect a weak hive, we replace it immediately—before it impacts your pollination.",
+      stat: "99.2% uptime"
+    },
+    {
+      icon: Target,
+      title: "Precision Placement",
+      description: "AI algorithms analyze your field layout and crop bloom patterns to determine optimal hive positioning for maximum coverage.",
+      stat: "35% better coverage"
+    },
+    {
+      icon: TrendingUp,
+      title: "Yield Optimization",
+      description: "Historical data from thousands of hives helps us predict and maximize pollination effectiveness for your specific crop.",
+      stat: "28% average yield boost"
+    },
+    {
+      icon: Users,
+      title: "Expert Support Team",
+      description: "Dedicated agronomists and beekeeping specialists analyze your data and provide actionable recommendations weekly.",
+      stat: "48hr response time"
+    }
+  ];
+
+  const technicalSpecs = [
+    {
+      category: "In-Hive Sensors",
+      specs: [
+        "Temperature range: -40°C to 85°C (±0.5°C accuracy)",
+        "Humidity range: 0-100% RH (±2% accuracy)",
+        "Acoustic sampling: 16kHz, 24-bit resolution",
+        "Vibration detection: 3-axis accelerometer",
+        "Weight monitoring: ±50g precision",
+        "Bluetooth 5.0 Low Energy connectivity"
+      ]
+    },
+    {
+      category: "Gateway Unit",
+      specs: [
+        "Coverage range: 100m radius per gateway",
+        "Cellular connectivity: 4G LTE with 5G ready",
+        "Power: Solar + battery backup (3 days autonomy)",
+        "Weatherproof: IP67 rated enclosure",
+        "Data transmission: Encrypted AES-256",
+        "GPS location tracking built-in"
+      ]
+    },
+    {
+      category: "Cloud Platform",
+      specs: [
+        "Real-time dashboard with mobile apps (iOS/Android)",
+        "Historical data retention: 10+ years",
+        "API access for farm management integration",
+        "Machine learning insights updated weekly",
+        "Multi-user access with role management",
+        "Automated reporting and alerts"
+      ]
+    }
+  ];
+
+  const performanceMetrics = [
+    { metric: "Colony Survival Rate", traditional: "78%", precision: "96%", improvement: "+23%" },
+    { metric: "Pollination Consistency", traditional: "Variable", precision: "Predictable", improvement: "100% visibility" },
+    { metric: "Hive Replacement Speed", traditional: "5-7 days", precision: "Same day", improvement: "5x faster" },
+    { metric: "Data-Driven Decisions", traditional: "None", precision: "Real-time", improvement: "Complete intel" }
+  ];
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Google Tag Manager (noscript) */}
-      <noscript>
-        <iframe
-          src="https://www.googletagmanager.com/ns.html?id=GTM-KF284247"
-          height="0"
-          width="0"
-          style={{ display: "none", visibility: "hidden" }}
-          title="Google Tag Manager"
-        ></iframe>
-      </noscript>
-
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-white via-primary/5 to-background py-24">
+      <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-blue-800">
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute top-20 left-10 w-72 h-72 bg-blue-400 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-300 rounded-full blur-3xl animate-pulse delay-1000" />
+            <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-indigo-400 rounded-full blur-3xl animate-pulse delay-500" />
+          </div>
+          {/* Honeycomb Pattern */}
+          <svg className="absolute inset-0 w-full h-full opacity-10" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <pattern id="honeycomb-precision" x="0" y="0" width="20" height="17.32" patternUnits="userSpaceOnUse">
+              <polygon points="10,0 20,5.77 20,17.32 10,23.09 0,17.32 0,5.77" fill="none" stroke="currentColor" strokeWidth="0.5" />
+            </pattern>
+            <rect width="100%" height="100%" fill="url(#honeycomb-precision)" />
+          </svg>
+        </div>
+
         <div className="container mx-auto px-4 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-20 items-center">
-            <div className="space-y-10">
-              <Badge className="bg-primary/20 text-primary border-primary/30 px-6 py-2 rounded-2xl font-black uppercase tracking-widest shadow-sm">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="text-white space-y-8">
+              <Badge className="bg-white/20 text-white border-white/30 text-sm px-4 py-2">
+                <Cpu className="h-4 w-4 inline mr-2" />
                 In-Hive IoT Intelligence
               </Badge>
-              <h1 className="text-6xl md:text-9xl font-black tracking-tighter leading-none">
-                Precision <br />
-                <span className="text-primary italic">Pollination</span>
+
+              <h1 className="text-5xl md:text-7xl font-bold leading-tight">
+                Know Your
+                <span className="text-blue-300 block">Hives</span>
+                Inside
+                <span className="text-blue-300 block">& Out</span>
               </h1>
-              <p className="text-xl md:text-2xl text-muted-foreground max-w-xl font-medium leading-relaxed">
-                The strongest bees, backed by surgical data. We turn pollination from a gamble into a guarantee through real-time hive monitoring.
+
+              <p className="text-xl text-white/90 max-w-lg leading-relaxed">
+                Stop paying for boxes. Start paying for performance. Our precision sensor network
+                gives you X-ray vision into every hive, ensuring you get the pollination power you paid for.
               </p>
-              <div className="flex flex-col sm:flex-row gap-6">
-                <Button size="lg" className="h-16 px-10 text-xl font-black shadow-glow group" asChild>
-                  <Link to="/contact">Get Consultation <ArrowRight className="ml-2 group-hover:translate-x-2 transition-transform" /></Link>
+
+              <div className="flex flex-wrap gap-4">
+                <Button size="lg" className="bg-white text-indigo-900 hover:bg-blue-100 text-lg px-8 py-6 font-semibold shadow-2xl">
+                  Request Free Consultation
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
-                <Button size="lg" variant="outline" className="h-16 px-10 text-xl font-black border-2" asChild>
-                  <Link to="/pollination-request">Book Pollination</Link>
+                <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white/10 text-lg px-8 py-6 bg-transparent">
+                  Watch Demo Video
                 </Button>
               </div>
-            </div>
 
-            <div className="relative">
-              <div className="aspect-square rounded-[4rem] bg-white shadow-premium flex items-center justify-center p-20 border border-border group overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-                <Cpu className="h-48 w-48 text-primary animate-pulse" />
-
-                {/* Floating Metric Badges */}
-                <div className="absolute top-12 left-12 bg-white p-6 rounded-3xl shadow-xl border border-border animate-float-delayed">
-                  <Thermometer className="h-8 w-8 text-primary mb-2" />
-                  <p className="text-xs font-black uppercase text-muted-foreground">Internal Temp</p>
-                  <p className="text-2xl font-black">35.4°C</p>
+              {/* Quick Stats */}
+              <div className="grid grid-cols-3 gap-6 pt-8 border-t border-white/20">
+                <div>
+                  <p className="text-3xl font-bold text-blue-300">150+</p>
+                  <p className="text-white/70 text-sm">Monitored Hives</p>
                 </div>
-
-                <div className="absolute bottom-12 right-12 bg-white p-6 rounded-3xl shadow-xl border border-border animate-float">
-                  <Activity className="h-8 w-8 text-green-500 mb-2" />
-                  <p className="text-xs font-black uppercase text-muted-foreground">Colony Status</p>
-                  <p className="text-2xl font-black">Optimal</p>
+                <div>
+                  <p className="text-3xl font-bold text-blue-300">96%</p>
+                  <p className="text-white/70 text-sm">Colony Health Rate</p>
+                </div>
+                <div>
+                  <p className="text-3xl font-bold text-blue-300">15min</p>
+                  <p className="text-white/70 text-sm">Update Interval</p>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Narrative Section */}
-      <section className="py-32 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center space-y-10">
-            <h2 className="text-4xl md:text-7xl font-black tracking-tighter">What is <span className="text-primary italic">Precision Pollination?</span></h2>
-            <p className="text-xl md:text-2xl text-muted-foreground font-medium leading-relaxed">
-              It's a revolutionary way to handle commercial pollination. For the first time, growers get full visibility into the hives they rent, ensuring they pay for pollination power, not just boxes.
-            </p>
-            <div className="bg-muted/30 p-12 rounded-[3.5rem] border-l-8 border-primary relative">
-              <Quote className="absolute top-8 right-12 h-20 w-20 text-primary/10" />
-              <p className="text-2xl font-black italic text-foreground mb-8 leading-relaxed relative z-10">
-                "Our commitment to our growers is to bring them unprecedented transparency for the most effective pollination outcomes."
-              </p>
-              <div className="flex items-center justify-center gap-4">
-                <div className="text-left font-black">
-                  <p className="text-primary">Ze'ev Barylka</p>
-                  <p className="text-xs uppercase tracking-widest text-muted-foreground">BeeYield Chief Sales Officer</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Hardware Breakdown */}
-      <section className="py-32 bg-muted/20">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
-            <Card className="border-none shadow-soft hover:shadow-glow transition-all duration-700 bg-white rounded-[3.5rem] p-16 group">
-              <div className="w-24 h-24 bg-primary/10 rounded-3xl flex items-center justify-center mb-10 group-hover:bg-primary group-hover:text-white transition-all duration-500">
-                <Mic className="h-12 w-12" />
-              </div>
-              <h3 className="text-4xl font-black mb-6">In-Hive Sensor</h3>
-              <p className="text-lg text-muted-foreground font-medium mb-10 leading-relaxed">
-                Captures temperature, humidity, and the acoustic signature of the hive. Using AI to decode colony health through sound.
-              </p>
-              <div className="flex items-center gap-2 text-primary font-black uppercase text-xs tracking-widest">
-                System Specification <ChevronRight className="h-4 w-4" />
-              </div>
-            </Card>
-
-            <Card className="border-none shadow-soft hover:shadow-glow transition-all duration-700 bg-white rounded-[3.5rem] p-16 group">
-              <div className="w-24 h-24 bg-accent/10 rounded-3xl flex items-center justify-center mb-10 group-hover:bg-accent group-hover:text-amber-900 transition-all duration-500">
-                <Wifi className="h-12 w-12" />
-              </div>
-              <h3 className="text-4xl font-black mb-6">Gateway Unit</h3>
-              <p className="text-lg text-muted-foreground font-medium mb-10 leading-relaxed">
-                Acts as a central hub, collecting data via Bluetooth™ from internal sensors and securely uploading it to the cloud.
-              </p>
-              <div className="flex items-center gap-2 text-primary font-black uppercase text-xs tracking-widest">
-                Connectivity Overview <ChevronRight className="h-4 w-4" />
-              </div>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Visibility Section */}
-      <section className="py-32 bg-foreground text-background">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-24 items-center max-w-7xl mx-auto">
-            <div className="space-y-10">
-              <h2 className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.8]">
-                Do You <span className="text-primary italic">Actually</span> Know What's in the Box?
-              </h2>
-              <p className="text-2xl font-black text-primary italic">We do.</p>
-              <p className="text-xl text-white/60 font-medium leading-relaxed">
-                When you pollinate with BeeYield, you stop paying for boxes and start paying for actual pollination power. We replace any non-performing hives with stronger ones, guaranteed.
-              </p>
-              <ul className="space-y-6">
-                {['Frames-per-acre count audit', 'Real-time activity heatmaps', 'Automated hive replacement'].map((item, i) => (
-                  <li key={i} className="flex items-center gap-4 text-xl font-bold">
-                    <Check className="h-6 w-6 text-primary shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="relative">
-              <div className="bg-[#1A1A1A] rounded-[4rem] p-10 border border-white/10 shadow-3xl aspect-square flex flex-col justify-between">
-                <div className="flex justify-between items-center">
-                  <Badge className="bg-primary/20 text-white border-primary/40">Real-time Feed</Badge>
-                  <div className="flex gap-2">
-                    <div className="h-3 w-3 rounded-full bg-red-500 animate-pulse" />
-                    <span className="text-xs font-black uppercase tracking-widest text-white/40">Live</span>
+            {/* Hero Visual */}
+            <div className="hidden lg:block relative">
+              <div className="relative w-full aspect-square">
+                {/* Central Device Mockup */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-80 h-80 bg-gradient-to-br from-blue-400/30 to-purple-500/30 backdrop-blur-sm rounded-3xl rotate-45 border border-white/20 shadow-2xl">
+                    <div className="w-full h-full -rotate-45 flex items-center justify-center p-8">
+                      <div className="bg-white/90 backdrop-blur-md rounded-2xl p-8 shadow-xl w-full h-full flex flex-col justify-between">
+                        <div className="flex justify-between items-center">
+                          <Badge className="bg-green-500 text-white">Live</Badge>
+                          <Wifi className="h-6 w-6 text-blue-600" />
+                        </div>
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-semibold text-gray-700">Temp</span>
+                            <span className="text-2xl font-bold text-gray-900">35.2°C</span>
+                          </div>
+                          <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div className="h-full w-4/5 bg-green-500 rounded-full"></div>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-semibold text-gray-700">Activity</span>
+                            <CheckCircle2 className="h-6 w-6 text-green-500" />
+                          </div>
+                        </div>
+                        <Cpu className="h-12 w-12 text-blue-600 mx-auto" />
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="space-y-8">
-                  <div className="h-12 w-full bg-white/5 rounded-2xl animate-pulse" style={{ width: '80%' }} />
-                  <div className="h-12 w-full bg-white/5 rounded-2xl animate-pulse" style={{ width: '60%' }} />
-                  <div className="h-12 w-full bg-white/5 rounded-2xl animate-pulse" style={{ width: '90%' }} />
+                {/* Floating Elements */}
+                <div className="absolute top-10 right-10 bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/30 animate-bounce">
+                  <Database className="h-8 w-8 text-blue-300" />
                 </div>
-                <div className="p-8 bg-primary rounded-3xl text-center">
-                  <p className="text-white font-black text-3xl">99.8% Connectivity</p>
+                <div className="absolute bottom-20 left-0 bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/30 animate-pulse">
+                  <Radio className="h-8 w-8 text-purple-300" />
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/60 animate-bounce">
+          <div className="flex flex-col items-center gap-2">
+            <span className="text-sm">Discover More</span>
+            <ArrowRight className="h-5 w-5 rotate-90" />
+          </div>
+        </div>
+      </section>
+
+      {/* The Problem Section */}
+      <section className="py-24 bg-gradient-to-b from-background to-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center space-y-8">
+            <Badge variant="outline" className="text-indigo-600 border-indigo-300">
+              The Industry Problem
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground">
+              You Can't Manage What You <span className="text-indigo-600">Can't Measure</span>
+            </h2>
+            <p className="text-xl text-muted-foreground leading-relaxed">
+              Traditional pollination services deliver hives to your fields and hope for the best.
+              Weak colonies? You won't know until harvest. Queen dead? The beekeeper might not even realize it.
+              <strong> This outdated model leaves millions on the table.</strong>
+            </p>
+            <div className="grid md:grid-cols-3 gap-6 pt-8">
+              <div className="p-6 bg-red-50 dark:bg-red-950/20 rounded-2xl border border-red-200 dark:border-red-900">
+                <AlertCircle className="h-10 w-10 text-red-600 mx-auto mb-4" />
+                <h3 className="font-bold text-lg mb-2">No Visibility</h3>
+                <p className="text-sm text-muted-foreground">You pay for boxes, not pollination strength</p>
+              </div>
+              <div className="p-6 bg-red-50 dark:bg-red-950/20 rounded-2xl border border-red-200 dark:border-red-900">
+                <AlertCircle className="h-10 w-10 text-red-600 mx-auto mb-4" />
+                <h3 className="font-bold text-lg mb-2">Slow Response</h3>
+                <p className="text-sm text-muted-foreground">Week-long waits for hive replacements</p>
+              </div>
+              <div className="p-6 bg-red-50 dark:bg-red-950/20 rounded-2xl border border-red-200 dark:border-red-900">
+                <AlertCircle className="h-10 w-10 text-red-600 mx-auto mb-4" />
+                <h3 className="font-bold text-lg mb-2">Guesswork</h3>
+                <p className="text-sm text-muted-foreground">No data means no optimization</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Customer Success */}
-      <section className="py-32 bg-white">
-        <div className="container mx-auto px-4 text-center max-w-3xl">
-          <h2 className="text-4xl md:text-6xl font-black mb-8 tracking-tighter">Your Success is Our <span className="text-primary italic">Obsession</span></h2>
-          <p className="text-xl text-muted-foreground font-medium mb-12">
-            Our Customer Success team is ready to provide you with all the help you need, from onboarding to contract management.
-          </p>
-          <Button variant="outline" size="lg" className="h-16 px-12 border-2 font-black text-lg gap-3" asChild>
-            <a href="mailto:info@beeyield.com"><Mail className="h-6 w-6" /> Talk to Customer Success</a>
-          </Button>
+      {/* Our Solution - Sensor Metrics */}
+      <section className="py-24 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16 space-y-4">
+            <Badge variant="outline" className="text-indigo-600 border-indigo-300">
+              Our Solution
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground">
+              Six Critical Metrics, <span className="text-indigo-600">One Complete Picture</span>
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Our multi-sensor system continuously monitors the biological and environmental factors
+              that determine pollination success. Here's what we track in every single hive:
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {sensorMetrics.map((metric, index) => (
+              <Card key={index} className="group bg-card/80 backdrop-blur-sm border-border/50 hover:border-indigo-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/10">
+                <CardContent className="p-6">
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${metric.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                    <metric.icon className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-foreground mb-2">{metric.title}</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{metric.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="py-32 bg-primary text-white text-center rounded-t-[5rem]">
-        <h2 className="text-5xl md:text-8xl font-black tracking-tighter mb-10">Ready for Precision?</h2>
-        <Button size="lg" className="h-20 px-16 text-2xl font-black bg-white text-primary hover:bg-white/90 shadow-2xl" asChild>
-          <Link to="/contact">Get a Free Consultation</Link>
-        </Button>
+      {/* Data Points Section */}
+      <section className="py-24 bg-gradient-to-b from-muted/30 to-background">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-4 gap-8 max-w-5xl mx-auto">
+            {dataPoints.map((point, index) => (
+              <div key={index} className="text-center p-8 bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-border hover:border-indigo-400 transition-all">
+                <point.icon className="h-12 w-12 text-indigo-600 mx-auto mb-4" />
+                <p className="text-4xl font-bold text-foreground mb-2">{point.value}</p>
+                <p className="text-sm text-muted-foreground font-medium">{point.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works - Hardware */}
+      <section className="py-24 bg-background relative overflow-hidden">
+        <div className="absolute inset-0 opacity-5">
+          <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <pattern id="tech-hex" x="0" y="0" width="10" height="8.66" patternUnits="userSpaceOnUse">
+              <polygon points="5,0 10,2.89 10,8.66 5,11.55 0,8.66 0,2.89" fill="none" stroke="currentColor" strokeWidth="0.3" />
+            </pattern>
+            <rect width="100%" height="100%" fill="url(#tech-hex)" />
+          </svg>
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-16 space-y-4">
+            <Badge className="bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300">
+              The Technology
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground">
+              Hardware That <span className="text-indigo-600">Thinks</span>
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Two pieces of cutting-edge hardware work together to give you unprecedented visibility into hive performance
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto mb-16">
+            {/* In-Hive Sensor */}
+            <Card className="group relative overflow-hidden border-2 border-transparent hover:border-indigo-400 transition-all duration-500 bg-gradient-to-br from-card to-indigo-50/50 dark:to-indigo-950/20">
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <CardContent className="p-8 relative z-10">
+                <div className="flex items-start gap-6">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-500 flex items-center justify-center flex-shrink-0 shadow-lg">
+                    <Mic className="h-8 w-8 text-white" />
+                  </div>
+                  <div className="space-y-4 flex-1">
+                    <h3 className="text-2xl font-bold text-foreground">In-Hive Sensor Node</h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      Compact, non-invasive sensors installed inside each hive capture temperature, humidity,
+                      and acoustic signatures. Our proprietary AI decodes bee sounds to detect queen health,
+                      swarming intentions, and stress indicators.
+                    </p>
+                    <ul className="space-y-2">
+                      {["Temperature ±0.5°C accuracy", "16kHz acoustic sampling", "12-month battery life", "Bluetooth Low Energy"].map((feature, i) => (
+                        <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Check className="h-4 w-4 text-indigo-500" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Gateway Unit */}
+            <Card className="group relative overflow-hidden border-2 border-transparent hover:border-purple-400 transition-all duration-500 bg-gradient-to-br from-card to-purple-50/50 dark:to-purple-950/20">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <CardContent className="p-8 relative z-10">
+                <div className="flex items-start gap-6">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0 shadow-lg">
+                    <Wifi className="h-8 w-8 text-white" />
+                  </div>
+                  <div className="space-y-4 flex-1">
+                    <h3 className="text-2xl font-bold text-foreground">FieldGate™ Hub</h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      Solar-powered gateway collects data from up to 50 hives within 100m radius via Bluetooth,
+                      then securely uploads to our cloud platform via 4G/5G cellular connection. Works anywhere,
+                      even in remote fields.
+                    </p>
+                    <ul className="space-y-2">
+                      {["100m Bluetooth range", "Solar + 3-day battery backup", "4G LTE cellular uplink", "IP67 weatherproof"].map((feature, i) => (
+                        <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Check className="h-4 w-4 text-purple-500" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Technical Specifications Deep Dive */}
+          <div className="max-w-6xl mx-auto">
+            <h3 className="text-3xl font-bold text-center mb-12">Complete Technical Specifications</h3>
+            <div className="grid md:grid-cols-3 gap-6">
+              {technicalSpecs.map((section, index) => (
+                <Card key={index} className="bg-white dark:bg-gray-900">
+                  <CardContent className="p-6">
+                    <h4 className="text-lg font-bold mb-4 text-indigo-600">{section.category}</h4>
+                    <ul className="space-y-2">
+                      {section.specs.map((spec, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <Check className="h-4 w-4 text-green-500 shrink-0 mt-0.5" />
+                          <span>{spec}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Benefits Section */}
+      <section className="py-24 bg-gradient-to-b from-muted/30 to-background">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16 space-y-4">
+            <Badge variant="outline" className="text-indigo-600 border-indigo-300">
+              Your Benefits
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground">
+              From Data to <span className="text-indigo-600">Dollars</span>
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              All this technology translates into real, measurable improvements for your farm
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {benefits.map((benefit, index) => (
+              <Card key={index} className="group relative overflow-hidden border-2 hover:border-indigo-400 transition-all">
+                <CardContent className="p-8">
+                  <div className="flex items-start gap-6">
+                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-500 flex items-center justify-center flex-shrink-0">
+                      <benefit.icon className="h-7 w-7 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between mb-3">
+                        <h3 className="text-xl font-bold text-foreground">{benefit.title}</h3>
+                        <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                          {benefit.stat}
+                        </Badge>
+                      </div>
+                      <p className="text-muted-foreground leading-relaxed">{benefit.description}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Performance Comparison */}
+      <section className="py-24 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16 space-y-4">
+            <Badge className="bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300">
+              The Proof
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground">
+              Traditional vs. <span className="text-indigo-600">Precision</span>
+            </h2>
+          </div>
+
+          <div className="max-w-5xl mx-auto">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl overflow-hidden border border-border">
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-muted/50">
+                    <th className="text-left p-6 font-bold text-foreground">Performance Metric</th>
+                    <th className="text-center p-6 font-bold text-muted-foreground">Traditional Pollination</th>
+                    <th className="text-center p-6 font-bold text-indigo-600">BeeYield Precision</th>
+                    <th className="text-center p-6 font-bold text-green-600">Improvement</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {performanceMetrics.map((row, index) => (
+                    <tr key={index} className="border-t border-border hover:bg-muted/20 transition-colors">
+                      <td className="p-6 font-semibold text-foreground">{row.metric}</td>
+                      <td className="p-6 text-center text-muted-foreground">{row.traditional}</td>
+                      <td className="p-6 text-center font-bold text-indigo-600">{row.precision}</td>
+                      <td className="p-6 text-center font-bold text-green-600">{row.improvement}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Dashboard Preview Section */}
+      <section className="py-24 bg-gradient-to-b from-muted/30 to-background relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5" />
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-16 space-y-4">
+            <Badge variant="outline" className="text-indigo-600 border-indigo-300">
+              Your Command Center
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground">
+              Real-Time Dashboard, <span className="text-indigo-600">Real Power</span>
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Access your entire pollination operation from any device—desktop, tablet, or smartphone
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto">
+            <Card className="bg-gradient-to-br from-gray-900 to-gray-800 text-white border-none shadow-2xl overflow-hidden">
+              <CardContent className="p-8">
+                <div className="flex justify-between items-center mb-8">
+                  <div>
+                    <h3 className="text-2xl font-bold mb-1">Live Hive Monitoring</h3>
+                    <p className="text-gray-400">Updated every 15 minutes</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="h-3 w-3 rounded-full bg-green-500 animate-pulse" />
+                    <span className="text-sm font-semibold">LIVE</span>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-6 mb-8">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                    <div className="flex items-center justify-between mb-4">
+                      <Thermometer className="h-8 w-8 text-red-400" />
+                      <CheckCircle2 className="h-6 w-6 text-green-400" />
+                    </div>
+                    <p className="text-3xl font-bold mb-1">35.2°C</p>
+                    <p className="text-sm text-gray-400">Avg. Hive Temperature</p>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                    <div className="flex items-center justify-between mb-4">
+                      <Activity className="h-8 w-8 text-blue-400" />
+                      <CheckCircle2 className="h-6 w-6 text-green-400" />
+                    </div>
+                    <p className="text-3xl font-bold mb-1">52%</p>
+                    <p className="text-sm text-gray-400">Avg. Humidity</p>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                    <div className="flex items-center justify-between mb-4">
+                      <Heart className="h-8 w-8 text-pink-400" />
+                      <CheckCircle2 className="h-6 w-6 text-green-400" />
+                    </div>
+                    <p className="text-3xl font-bold mb-1">148</p>
+                    <p className="text-sm text-gray-400">Healthy Hives</p>
+                  </div>
+                </div>
+
+                <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                  <h4 className="font-bold mb-4 flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5 text-indigo-400" />
+                    Activity Trends (Last 7 Days)
+                  </h4>
+                  <div className="space-y-3">
+                    {[
+                      { day: "Today", value: 92 },
+                      { day: "Yesterday", value: 88 },
+                      { day: "2 days ago", value: 85 }
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-center gap-4">
+                        <span className="text-sm w-24 text-gray-400">{item.day}</span>
+                        <div className="flex-1 h-8 bg-white/5 rounded-lg overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-end pr-3"
+                            style={{ width: `${item.value}%` }}
+                          >
+                            <span className="text-xs font-bold">{item.value}%</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="text-center mt-8">
+              <Link to="/dashboard">
+                <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                  Explore Live Dashboard Demo
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Integration & API Section */}
+      <section className="py-24 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center space-y-8">
+            <Badge variant="outline" className="text-indigo-600 border-indigo-300">
+              Seamless Integration
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground">
+              Plug Into Your <span className="text-indigo-600">Existing Systems</span>
+            </h2>
+            <p className="text-xl text-muted-foreground leading-relaxed">
+              Our platform provides robust APIs and webhooks so you can integrate hive data into
+              your farm management software, ERP systems, or custom analytics dashboards.
+            </p>
+            <div className="grid md:grid-cols-2 gap-6 pt-8">
+              <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border-indigo-200 dark:border-indigo-900">
+                <CardContent className="p-6">
+                  <Settings className="h-10 w-10 text-indigo-600 mb-4" />
+                  <h3 className="font-bold text-lg mb-2">RESTful API</h3>
+                  <p className="text-sm text-muted-foreground">Full CRUD access to all hive data with comprehensive documentation</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 border-purple-200 dark:border-purple-900">
+                <CardContent className="p-6">
+                  <Smartphone className="h-10 w-10 text-purple-600 mb-4" />
+                  <h3 className="font-bold text-lg mb-2">Mobile Apps</h3>
+                  <p className="text-sm text-muted-foreground">Native iOS and Android apps for field teams and managers</p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA Section */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-purple-700 to-blue-700">
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute top-10 left-20 w-64 h-64 bg-blue-400 rounded-full blur-3xl" />
+            <div className="absolute bottom-10 right-20 w-80 h-80 bg-purple-300 rounded-full blur-3xl" />
+          </div>
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-4xl mx-auto text-center space-y-8">
+            <h2 className="text-4xl md:text-6xl font-bold text-white">
+              Ready to See Inside Your Hives?
+            </h2>
+            <p className="text-xl text-white/90 max-w-2xl mx-auto">
+              Join the farmers who've traded guesswork for guaranteed results.
+              Schedule a free consultation and we'll create a custom monitoring plan for your operation.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4 pt-4">
+              <Link to="/pollination-request">
+                <Button size="lg" className="bg-white text-indigo-700 hover:bg-blue-100 text-lg px-8 py-6 font-semibold shadow-xl">
+                  Request Pollination Service
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+              <Link to="/contact">
+                <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white/10 text-lg px-8 py-6 bg-transparent">
+                  Talk to Our Team
+                </Button>
+              </Link>
+            </div>
+            <p className="text-white/70 text-sm pt-4">
+              No commitment required. Free assessment of your pollination needs and custom quote.
+            </p>
+          </div>
+        </div>
       </section>
     </div>
   );

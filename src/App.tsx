@@ -27,6 +27,7 @@ import InLandPollinationPlatform from "./pages/InLandPollinationPlatform";
 import PollinationSolutions from "./pages/PollinationSolutions";
 import PrecisionPollination from "./pages/PrecisionPollination";
 import Careers from "./pages/Careers";
+import PollinationServices from "./pages/PollinationServices";
 import GlobalHiveNetwork from "./pages/GlobalHiveNetwork";
 import Media from "./pages/Media";
 import HoneyLanding from "./pages/HoneyLanding";
@@ -75,7 +76,8 @@ const App = () => (
                   <Route path="/blogs" element={<Blogs />} />
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/traceability" element={<Traceability />} />
-                  <Route path="/PollinationServices" element={<Home />} />
+                  <Route path="/PollinationServices" element={<PollinationServices />} />
+                  <Route path="/pollination-services" element={<PollinationServices />} />
                   <Route path="/PollinationRequest" element={<PollinationRequest />} />
                   <Route path="/pollination-request" element={<PollinationRequest />} />
                   <Route path="/Commitment" element={<CommitmentPage />} />
@@ -89,6 +91,7 @@ const App = () => (
                   <Route path="/Team" element={<Team />} />
                   <Route path="/InLandPollinationPlatform" element={<InLandPollinationPlatform />} />
                   <Route path="/inland-pollination-platform" element={<InLandPollinationPlatform />} />
+                  <Route path="/in-land-pollination" element={<InLandPollinationPlatform />} />
                   <Route path="/PrecisionPollination" element={<PrecisionPollination />} />
                   <Route path="/precision-pollination" element={<PrecisionPollination />} />
                   <Route path="/PollinationSolutions" element={<PollinationSolutions />} />
