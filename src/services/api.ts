@@ -37,7 +37,7 @@ export async function apiRequest<T>(
 }
 
 // GET request helper
-export async function apiGet<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
+export async function apiGet<T>(endpoint: string, params?: Record<string, unknown>): Promise<T> {
     let url = endpoint;
     if (params) {
         const stringParams: Record<string, string> = {};
