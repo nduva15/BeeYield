@@ -23,31 +23,9 @@ import {
 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { Product, ProductVariant } from "@/services/shopService";
+import SEO from "@/components/SEO";
 
 const Shop = () => {
-  useEffect(() => {
-    // Inject GTM script into head
-    const script = document.createElement('script');
-    script.innerHTML = ` (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-      })(window,document,'script','dataLayer','GTM-KF284247');`;
-    script.async = true;
-    document.head.appendChild(script);
-    return () => {
-      document.head.removeChild(script);
-    };
-  }, []);
-
-  useEffect(() => {
-    document.title = "BeeYield Shop | Premium Honey & Beekeeping Hardware";
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) {
-      metaDesc.setAttribute('content', 'Shop premium organic honey, professional beekeeping suits, and advanced IoT hive sensors from Intelligent Hives and ApiSense.');
-    }
-  }, []);
-
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
   const [selectedMerchCategory, setSelectedMerchCategory] = useState<string>("All");
   const [products, setProducts] = useState<Product[]>([]);
@@ -124,6 +102,10 @@ const Shop = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Shop | Premium Honey & Beekeeping Hardware"
+        description="Shop premium organic honey, professional beekeeping suits, and advanced IoT hive sensors from Intelligent Hives and ApiSense."
+      />
       {/* Google Tag Manager (noscript) */}
       <noscript>
         <iframe
