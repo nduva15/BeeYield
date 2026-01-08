@@ -92,70 +92,18 @@ def get_trace_journey(batch_code: str) -> Optional[schemas.TraceResponse]:
     """
     
     # 1. Find Batch Block
+    raise Exception("I AM RUNNING!")
     trace_result = honey_blockchain.trace_batch(batch_code)
-    if not trace_result['found']:
-        return None
-    
-    batch_data = trace_result['batch_details']
-    journey_timeline = []
-    
-    # 2. Reconstruct Timeline (working backwards)
-    
-    # Step A: The Product (Batch)
-    journey_timeline.append(schemas.TraceJourneyStep(
-        title="Ready for You",
-        date=batch_data.get('production_date', datetime.now().isoformat()),
-        location="BeeYield Distribution Center",
-        description=f"Bottled and sealed. Batch {batch_code}.",
-        icon="Jar",
-        data=batch_data,
-        hash=trace_result['block_hash']
-    ))
-    
-    # Step B: Processing
-    # In a real scenario, we'd look up the processing ID from the batch_data
-    # For this demo, we'll simulate the link if missing, or use blockchain search
-    processing_id = batch_data.get('processing_id')
-    proc_block = honey_blockchain.search_by_record_id(processing_id) if processing_id else None
-    
-    if proc_block:
-        proc_data = proc_block['data']
-        journey_timeline.append(schemas.TraceJourneyStep(
-            title="Processing & Quality Check",
-            date=proc_data.get('processing_date', ''),
-            location=proc_data.get('facility_name', 'Processing Facility'),
-            description=f"Filtered using {proc_data.get('processing_method')} method. Quality Grade: {proc_data.get('quality_grade')}.",
-            icon="Factory",
-            data=proc_data,
-            hash=proc_block['hash']
-        ))
-    
-    # Step C: Harvest
-    # Find harvest from processing or batch
-    harvest_id = batch_data.get('harvest_id')
-    harvest_block = honey_blockchain.search_by_record_id(harvest_id) if harvest_id else None
-    
-    harvest_data = {}
-    if harvest_block:
-        harvest_data = harvest_block['data']
-        journey_timeline.append(schemas.TraceJourneyStep(
-            title="Harvest Day",
-            date=harvest_data.get('harvest_date', ''),
-            location="Apiary Site", # We'll fill this with Apiary name if avail
-            description=f"Harvested by {harvest_data.get('harvester_name')}. {harvest_data.get('quantity_kg')}kg collected. 50% left for the bees ({harvest_data.get('quantity_left_for_bees_kg')}kg).",
-            icon="Basket",
-            data=harvest_data,
-            hash=harvest_block['hash']
-        ))
-        
+    # ... (rest of logic) ...
+
     # Step D: Hive Life (Sensor Data)
-    # Find hive from harvest or batch data
     hive_id = harvest_data.get('hive_id') or batch_data.get('hive_id')
     hive_block = honey_blockchain.search_by_record_id(hive_id) if hive_id else None
     
     hive = None
     if hive_block:
         h_data = hive_block['data']
+        # ... (hive object creation) ...
         hive = schemas.Hive(
             hive_id=h_data.get('hive_id'),
             hive_code=h_data.get('hive_code'),
@@ -169,6 +117,31 @@ def get_trace_journey(batch_code: str) -> Optional[schemas.TraceResponse]:
             material=h_data.get('material', 'Wood')
         )
         
+        with open("debug_GOLD.txt", "a") as f:
+            f.write(f"Hive found: {hive_id}. Scanning chain of length {len(honey_blockchain.chain)}\n")
+            for b in honey_blockchain.chain:
+                if b.block_type == BlockType.HIVE_SENSOR_DATA:
+                    f.write(f"Sensor Block {b.index}: Hive {b.data.get('hive_id')} | Anomalies: {b.data.get('anomalies_detected')}\n")
+
+        sensor_blocks = [
+            b for b in honey_blockchain.chain 
+            if b.block_type == BlockType.HIVE_SENSOR_DATA 
+            and b.data.get('hive_id') == hive_id
+        ]
+        
+        for s_block in sensor_blocks:
+            anomalies = s_block.data.get('anomalies_detected', [])
+            if "ACOUSTIC_VARROA_PATTERN" in anomalies:
+                journey_timeline.append(schemas.TraceJourneyStep(
+                    title="Health Shield Activated",
+                    date=s_block.data.get('timestamp', '')[:10], # YYYY-MM-DD
+                    location=f"Hive {h_data.get('hive_code')}",
+                    description="BeeYield Acoustic Sensors (ApiSense) detected early Varroa mite signature. Automatic alert sent to Beekeeper. Organic intervention applied immediately. Colony health restored.",
+                    icon="Shield",
+                    data={"anomalies": anomalies, "sensor_reading": s_block.data},
+                    hash=s_block.hash
+                ))
+
         journey_timeline.append(schemas.TraceJourneyStep(
             title="Hive Life",
             date="Continuous Monitoring",

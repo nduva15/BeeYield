@@ -9,7 +9,7 @@ import { getESGMetrics, getESGPillars, ESGMetric } from "@/services/servicesServ
 interface Pillar {
   title?: string;
   name?: string;
-  icon?: LucideIcon;
+  icon?: any;
   color?: string;
   impact?: string;
   description?: string;

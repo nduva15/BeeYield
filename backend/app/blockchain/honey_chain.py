@@ -286,8 +286,57 @@ class HoneyBlockchain:
             anomalies.append("HIGH_HUMIDITY")
         elif humidity < 30:
             anomalies.append("LOW_HUMIDITY")
+
+        # Audio/Disease anomalies (Explicitly passed)
+        if "audio_anomaly" in sensor_data:
+            anomalies.append(sensor_data["audio_anomaly"])
         
         return anomalies
+
+    # ... (rest of methods) ...
+
+    def _bootstrap_demo_data(self) -> None:
+        # ... (existing bootstrap code) ...
+
+            # 2. Sarah Nduku (Kibwezi)
+            self.register_farmer({
+                "farmer_id": "F-SAR-002", "name": "Sarah Nduku", "region": "Eastern", "county": "Makueni",
+                "location_name": "Kibwezi South", "coordinates": {"latitude": -2.42, "longitude": 37.95},
+                "story": "Sarah teaches sustainable farming to women's groups in Kibwezi.",
+                "registration_date": (datetime.now() - timedelta(days=400)).isoformat()
+            })
+            self.register_apiary({
+                "apiary_id": "A-KIB-BAOBAB", "apiary_code": "KIB-02", "name": "Baobab Grove",
+                "farmer_id": "F-SAR-002", "location_name": "Kibwezi", "region": "Eastern", "county": "Makueni",
+                "coordinates": {"latitude": -2.42, "longitude": 37.95}, "environment_type": "Acacia Scrubland",
+                "flora_types": ["Baobab", "Acacia"]
+            })
+            self.register_hive({
+                "hive_id": "H-KIB-02-05", "hive_code": "KIB-02-H05", "apiary_id": "A-KIB-BAOBAB",
+                "farmer_id": "F-SAR-002", "bee_type": "African Honey Bee", "hive_type": "Langstroth",
+                "has_sensors": True, "installation_date": "2022-03-15"
+            })
+            # SENSOR ALERT: Disease Detected & Prevented
+            self.record_sensor_data({
+                "hive_id": "H-KIB-02-05", # Sarah's Hive
+                "timestamp": "2024-01-10T09:00:00", # Before harvest
+                "temperature_celsius": 36.5, # Slightly elevated
+                "humidity_percent": 55.0,
+                "audio_anomaly": "ACOUSTIC_VARROA_PATTERN", # The Trigger
+                "sound_level_db": 72.0,
+                "bee_activity_level": 8
+            })
+            self.record_harvest({
+                "harvest_id": "HRV-KIB-02-24", "hive_id": "H-KIB-02-05", "apiary_id": "A-KIB-BAOBAB",
+                "farmer_id": "F-SAR-002", "harvester_name": "Sarah Nduku",
+                "harvest_date": "2024-02-20", "quantity_kg": 12.8, "quantity_left_for_bees_kg": 12.8,
+                "extraction_method": "Centrifuge", "honey_type": "Multi-floral", "bee_flower": "Baobab"
+            })
+            self.create_batch({
+                "batch_id": "BATCH-KIB-002", "batch_code": "KIB-GOLD-24", "honey_type": "Savannah Gold",
+                "harvest_id": "HRV-KIB-02-24", "apiary_code": "KIB-02", "production_date": "2024-02-25",
+                "created_by": "SYSTEM"
+            })
     
     # ==================== HARVEST OPERATIONS ====================
     

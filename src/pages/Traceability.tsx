@@ -125,6 +125,7 @@ const Traceability = () => {
       case "Basket": return <Box className="h-6 w-6" />;
       case "Hexagon": return <Zap className="h-6 w-6" />;
       case "MapPin": return <MapPin className="h-6 w-6" />;
+      case "Shield": return <Shield className="h-6 w-6 text-emerald-600" />;
       default: return <Activity className="h-6 w-6" />;
     }
   };

@@ -204,7 +204,7 @@ const CropsWePollinate = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {cropsToDisplay.map((crop, index) => (
-              <Card key={crop.id || index} className="overflow-hidden group hover:shadow-glow transition-all duration-500 border-none shadow-soft flex flex-col h-full bg-card">
+              <Card key={index} className="overflow-hidden group hover:shadow-glow transition-all duration-500 border-none shadow-soft flex flex-col h-full bg-card">
                 <div className="relative h-56 overflow-hidden">
                   <img
                     src={crop.image_url || "https://images.unsplash.com/photo-1597848212624-a19eb35e2651?auto=format&fit=crop&q=80&w=600"}

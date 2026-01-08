@@ -231,7 +231,7 @@ const Home = () => {
             {crops.map((crop, index) => (
               <Link
                 to="/crops-we-pollinate"
-                key={crop.id || index}
+                key={index}
                 className="group relative overflow-hidden rounded-3xl aspect-square shadow-soft hover:shadow-glow transition-all"
               >
                 <img
