@@ -5,12 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Layout from "@/components/Layout";
 
 const GlobalHiveNetwork = () => {
   const [supportType, setSupportType] = useState("monthly");
 
   return (
-    
+    <Layout>
       <div className="min-h-screen bg-background">
         {/* Hero Section */}
         <section className="relative py-24 md:py-32 bg-gradient-to-br from-secondary via-background to-primary/10 overflow-hidden">
@@ -19,14 +20,14 @@ const GlobalHiveNetwork = () => {
               A Planetary Initiative
             </Badge>
             <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight text-foreground">
-              Saving Africa and the World's Pollinators
+              The Global Two Million Hives Network
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed mb-8 max-w-3xl mx-auto">
-              BeeYield is leading the charge to address the pollinator crisis in Africa and the world, where 60% of bee colonies are lost annually and 75% of food crops depend on pollination.
+              BeeYield is creating the world's largest science-driven initiative to address the global bee crisis.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" asChild className="shadow-xl">
-                <a href="#support-african-farmers">Support the Cause Today</a>
+              <Button size="lg" className="shadow-xl">
+                Support the Cause Today
               </Button>
               <Button size="lg" variant="outline">
                 Read the Whitepaper
@@ -35,18 +36,6 @@ const GlobalHiveNetwork = () => {
           </div>
           <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-5"></div>
         </section>
-
-        {/* Full-width Video Section - Before Footer */}
-        <div className="relative w-full h-[70vh] bg-foreground">
-          <iframe
-            className="absolute inset-0 w-full h-full"
-            src="https://www.youtube.com/embed/VIDEO_ID_HERE"
-            title="About BeeYield"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
-        </div>
 
         {/* The Crisis Section */}
         <section className="py-24 bg-foreground text-background">
@@ -59,24 +48,24 @@ const GlobalHiveNetwork = () => {
                       <AlertTriangle className="h-5 w-5 text-red-400" />
                       <span className="text-sm font-bold text-red-400 uppercase tracking-wider">Global Emergency</span>
                     </div>
-                    <h3 className="text-3xl font-bold mb-4 text-background">The Bee Crisis</h3>
+                    <h3 className="text-3xl font-bold mb-4 text-background">The Silent Decline</h3>
                     <p className="text-background/80 leading-relaxed mb-6">
-                      Across Africa and the world, beekeepers are opening their hives to discover devastating losses. African bee colonies face unique challenges from climate change, habitat loss, and limited access to modern beekeeping technology.
+                      A major indication of the health of a hive is the density of bees on its frames. But with growing bee mortality rates, it is becoming increasingly frequent for beekeepers around the world to open their hives – and discover weak hives with few, if any, bees.
                     </p>
                     <div className="bg-red-500/20 p-4 rounded-lg">
                       <p className="text-4xl font-bold text-red-400">60%</p>
-                      <p className="text-sm text-background/70">Annual colony mortality rate in Africa</p>
+                      <p className="text-sm text-background/70">Mortality rate in U.S. hives this past season</p>
                     </div>
                   </CardContent>
                 </Card>
               </div>
               <div className="order-1 lg:order-2">
-                <h2 className="text-4xl font-bold mb-6">The Pollination Crisis: <br/>Food Security at Risk</h2>
+                <h2 className="text-4xl font-bold mb-6">The Bee Crisis: <br />A Global Emergency</h2>
                 <p className="text-background/80 leading-relaxed mb-6">
-                  With 75% of food crops relying on pollinators, the decline of African bee populations threatens agricultural productivity, farmer livelihoods, and regional food security. Crops like mangoes, beans, tomatoes, and sisal depend heavily on healthy bee colonies.
+                  Bees are at the heart of global food production, biodiversity, and ecosystem stability, yet they face an unprecedented crisis. Alarming declines are reported worldwide.
                 </p>
                 <p className="text-background/80 leading-relaxed mb-8">
-                  This isn't just about bees—it's about ensuring sustainable agriculture and food security for millions across Africa and the world. The time to act is now.
+                  This threat to pollinators is a threat to food security and agricultural sustainability. The time to act is now.
                 </p>
                 <Button variant="secondary" className="gap-2">
                   Learn More <ArrowRight className="h-4 w-4" />
@@ -90,9 +79,9 @@ const GlobalHiveNetwork = () => {
         <section className="py-24 bg-background">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center mb-16">
-              <h2 className="text-4xl font-bold mb-6 text-foreground">A Data-Driven Approach to African Agriculture</h2>
+              <h2 className="text-4xl font-bold mb-6 text-foreground">A Science-Driven Response</h2>
               <p className="text-xl text-muted-foreground leading-relaxed">
-                To address this crisis, BeeYield is bringing precision pollination technology to African farmers. We're partnering with local beekeepers and agricultural communities to monitor hive health, optimize pollination, and improve yields for crops that feed millions.
+                To address this crisis, BeeYield is launching The Global Two Million Hives Network. This initiative is the world's first large-scale, science-driven effort of its kind. We prioritize research, data, and technology to drive meaningful impact.
               </p>
             </div>
 
@@ -103,10 +92,9 @@ const GlobalHiveNetwork = () => {
                     <Globe className="h-8 w-8 text-primary" />
                   </div>
                   <p className="text-sm font-bold text-primary uppercase tracking-wider mb-2">GOAL 1</p>
-                  <h3 className="text-2xl font-bold mb-4 text-foreground">Smart Hives Network</h3>
-                  <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">Target: 2M hives</p>
+                  <h3 className="text-2xl font-bold mb-4 text-foreground">2M Smart Hives</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">
-                    Building a network of sensor-equipped hives across Makueni and Kitui Counties, empowering local beekeepers with real-time colony health data and precision pollination insights.
+                    Creating a global network of smart hives, focusing on high-risk countries and priority agricultural regions by partnering with local stakeholders.
                   </p>
                 </CardContent>
               </Card>
@@ -117,10 +105,9 @@ const GlobalHiveNetwork = () => {
                     <Activity className="h-8 w-8 text-primary" />
                   </div>
                   <p className="text-sm font-bold text-primary uppercase tracking-wider mb-2">GOAL 2</p>
-                  <h3 className="text-2xl font-bold mb-4 text-foreground">Daily Health Signals</h3>
-                  <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">Target: 100M+ signals</p>
+                  <h3 className="text-2xl font-bold mb-4 text-foreground">100M Signals</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">
-                    Collecting millions of daily bee health signals to build Africa's most comprehensive pollinator health dataset, helping farmers optimize crop pollination timing.
+                    Collecting 100 million daily bee signals to build the largest and most comprehensive global bee health dataset in history.
                   </p>
                 </CardContent>
               </Card>
@@ -131,10 +118,9 @@ const GlobalHiveNetwork = () => {
                     <BookOpen className="h-8 w-8 text-primary" />
                   </div>
                   <p className="text-sm font-bold text-primary uppercase tracking-wider mb-2">GOAL 3</p>
-                  <h3 className="text-2xl font-bold mb-4 text-foreground">Farmer Education</h3>
-                  <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">Target: 50K farmers</p>
+                  <h3 className="text-2xl font-bold mb-4 text-foreground">Education</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">
-                    Training local farmers and beekeepers in sustainable pollination practices, improving yields for mangoes, beans, tomatoes, and sisal across Africa and the world.
+                    Working with governments, NGOs, farmers, and educators to implement sustainable pollination practices worldwide.
                   </p>
                 </CardContent>
               </Card>
@@ -145,75 +131,75 @@ const GlobalHiveNetwork = () => {
         {/* Global Case Studies */}
         <section className="py-24 bg-muted/30">
           <div className="container mx-auto px-4">
-            <h2 className="text-4xl font-bold text-center mb-4 text-foreground">Pioneering Work Across Africa and the World</h2>
+            <h2 className="text-4xl font-bold text-center mb-4 text-foreground">Pioneering Work Across the Globe</h2>
             <div className="w-20 h-1 bg-primary mx-auto rounded-full mb-16" />
 
             <div className="space-y-16 max-w-6xl mx-auto">
-              {/* Makueni County - Mangoes */}
+              {/* Peru */}
               <div className="grid lg:grid-cols-2 gap-8 items-center">
                 <div>
                   <Badge className="mb-4 bg-green-100 text-green-700 border-green-200">
-                    <MapPin className="h-3 w-3 mr-1" /> MAKUENI COUNTY
+                    <MapPin className="h-3 w-3 mr-1" /> PERU
                   </Badge>
-                  <h3 className="text-3xl font-bold mb-4 text-foreground">Optimizing Mango Pollination</h3>
+                  <h3 className="text-3xl font-bold mb-4 text-foreground">Empowering Latin America</h3>
                   <p className="text-muted-foreground leading-relaxed mb-6">
-                    In partnership with local mango growers in Makueni County, BeeYield is deploying smart hive sensors to maximize fruit set during the critical flowering window. Our precision monitoring ensures bee colonies are active when trees need them most.
+                    BeeYield is breaking new ground through a strategic collaboration with CONAPI, the National Confederation of Beekeepers. This partnership aims to empower Peruvian beekeepers with data-driven pollination tools, specifically for key exports like avocado and blueberries.
                   </p>
                   <ul className="space-y-2 text-sm">
-                    <li className="flex items-center gap-2 text-foreground"><Check className="h-4 w-4 text-primary" /> 40% increase in mango yields observed</li>
-                    <li className="flex items-center gap-2 text-foreground"><Check className="h-4 w-4 text-primary" /> Training 50+ local beekeepers</li>
+                    <li className="flex items-center gap-2 text-foreground"><Check className="h-4 w-4 text-primary" /> First partnership in Latin America</li>
+                    <li className="flex items-center gap-2 text-foreground"><Check className="h-4 w-4 text-primary" /> Focus on education and market readiness</li>
                   </ul>
                 </div>
                 <div className="rounded-2xl overflow-hidden shadow-xl">
-                  <img 
-                    src="https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&q=80&w=800" 
-                    alt="Mango orchard in Makueni" 
+                  <img
+                    src="https://images.unsplash.com/photo-1526392060635-9d6019884377?auto=format&fit=crop&q=80&w=800"
+                    alt="Peru landscape"
                     className="w-full h-[300px] object-cover"
                   />
                 </div>
               </div>
 
-              {/* Kitui County - Beans & Tomatoes */}
+              {/* California */}
               <div className="grid lg:grid-cols-2 gap-8 items-center">
                 <div className="order-2 lg:order-1 rounded-2xl overflow-hidden shadow-xl">
-                  <img 
-                    src="https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&q=80&w=800" 
-                    alt="Vegetable farming in Kitui" 
+                  <img
+                    src="https://images.unsplash.com/photo-1599940824399-b87987ceb72a?auto=format&fit=crop&q=80&w=800"
+                    alt="Almond orchard"
                     className="w-full h-[300px] object-cover"
                   />
                 </div>
                 <div className="order-1 lg:order-2">
                   <Badge className="mb-4 bg-blue-100 text-blue-700 border-blue-200">
-                    <MapPin className="h-3 w-3 mr-1" /> KITUI COUNTY
+                    <MapPin className="h-3 w-3 mr-1" /> CALIFORNIA, USA
                   </Badge>
-                  <h3 className="text-3xl font-bold mb-4 text-foreground">Vegetable Crop Revolution</h3>
+                  <h3 className="text-3xl font-bold mb-4 text-foreground">The Almond Bloom Experiment</h3>
                   <p className="text-muted-foreground leading-relaxed mb-6">
-                    Working with smallholder farmers in Kitui County, we're transforming bean and tomato production through precision pollination. Our sensors track pollinator activity in real-time, helping farmers time their interventions perfectly.
+                    During the 2025 almond bloom, BeeYield launched an ambitious dual-site study on the effects of ground cover and topography. Deploying 144 sensors capturing data every ten minutes, we are pioneering one of the most granular studies of pollination environments to date.
                   </p>
                   <blockquote className="border-l-4 border-primary pl-4 italic text-muted-foreground">
-                    "With BeeYield's technology, we've seen 30% better pod development in our bean crops and more uniform tomato sizes."
+                    "Preliminary results are already challenging assumptions, such as the belief that bare soil retains and radiates heat overnight."
                   </blockquote>
                 </div>
               </div>
 
-              {/* Sisal Production */}
+              {/* Israel */}
               <div className="grid lg:grid-cols-2 gap-8 items-center">
                 <div>
                   <Badge className="mb-4 bg-amber-100 text-amber-700 border-amber-200">
-                    <MapPin className="h-3 w-3 mr-1" /> MAKUENI COUNTY
+                    <MapPin className="h-3 w-3 mr-1" /> ISRAEL
                   </Badge>
-                  <h3 className="text-3xl font-bold mb-4 text-foreground">Sisal & Honey Production</h3>
+                  <h3 className="text-3xl font-bold mb-4 text-foreground">Solving the Avocado Puzzle</h3>
                   <p className="text-muted-foreground leading-relaxed mb-6">
-                    BeeYield is pioneering dual-benefit pollination models in sisal plantations. While supporting fiber production, our monitored bee colonies also produce high-quality honey, creating additional income streams for local beekeepers and farmers.
+                    Partnering with the Israeli Honey Board, BeeYield is spearheading a ground-breaking study on optimal hive density for the Hass avocado cultivar. Little is known about the density that maximizes fruit set without harming colony health—until now.
                   </p>
                   <Button variant="outline" className="gap-2">
-                    Learn About Our Impact <ArrowRight className="h-4 w-4" />
+                    Read the Study Findings <ArrowRight className="h-4 w-4" />
                   </Button>
                 </div>
                 <div className="rounded-2xl overflow-hidden shadow-xl">
-                  <img 
-                    src="https://images.unsplash.com/photo-1509587584298-0f3b3a3a1797?auto=format&fit=crop&q=80&w=800" 
-                    alt="Sisal plantation" 
+                  <img
+                    src="https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?auto=format&fit=crop&q=80&w=800"
+                    alt="Avocado farm"
                     className="w-full h-[300px] object-cover"
                   />
                 </div>
@@ -223,14 +209,14 @@ const GlobalHiveNetwork = () => {
         </section>
 
         {/* Support / Donation Section */}
-        <section id="support-african-farmers" className="py-24 bg-primary relative overflow-hidden">
+        <section className="py-24 bg-primary relative overflow-hidden">
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-10"></div>
           <div className="container mx-auto px-4 relative z-10">
             <div className="text-center mb-12">
               <Heart className="h-12 w-12 mx-auto mb-4 text-primary-foreground/80" />
-              <h2 className="text-4xl font-bold mb-4 text-primary-foreground">Support African and World Farmers</h2>
+              <h2 className="text-4xl font-bold mb-4 text-primary-foreground">Show Your Support</h2>
               <p className="text-xl text-primary-foreground/80 max-w-2xl mx-auto">
-                Join our community of supporters strengthening pollinator health and food security across Makueni and Kitui Counties today—and building a global network for farmers everywhere.
+                Join our global community of growers, researchers, and advocates working to secure the future of pollinators and global food supply.
               </p>
             </div>
 
@@ -240,13 +226,13 @@ const GlobalHiveNetwork = () => {
                 <CardContent className="p-8">
                   <div className="flex justify-center mb-6">
                     <div className="bg-muted rounded-lg p-1 inline-flex">
-                      <button 
+                      <button
                         onClick={() => setSupportType("onetime")}
                         className={`px-4 py-2 rounded-md text-sm font-bold transition-colors ${supportType === "onetime" ? "bg-background shadow-sm text-primary" : "text-muted-foreground hover:text-foreground"}`}
                       >
                         One-time
                       </button>
-                      <button 
+                      <button
                         onClick={() => setSupportType("monthly")}
                         className={`px-4 py-2 rounded-md text-sm font-bold transition-colors ${supportType === "monthly" ? "bg-background shadow-sm text-primary" : "text-muted-foreground hover:text-foreground"}`}
                       >
@@ -254,14 +240,14 @@ const GlobalHiveNetwork = () => {
                       </button>
                     </div>
                   </div>
-                  
+
                   <div className="text-center mb-6">
                     <span className="text-5xl font-bold text-foreground">
                       {supportType === "monthly" ? "$10" : "$50"}
                     </span>
                     {supportType === "monthly" && <span className="text-muted-foreground">/mo</span>}
                   </div>
-                  
+
                   <ul className="space-y-3 mb-8">
                     <li className="flex items-center gap-2 text-sm text-foreground"><Check className="h-4 w-4 text-primary" /> Fund sensor deployment</li>
                     <li className="flex items-center gap-2 text-sm text-foreground"><Check className="h-4 w-4 text-primary" /> Support beekeeper education</li>
@@ -279,14 +265,14 @@ const GlobalHiveNetwork = () => {
                 </div>
                 <CardContent className="p-8 pt-10">
                   <h3 className="text-xl font-bold text-center mb-6 text-foreground">Patron of the Hive</h3>
-                  
+
                   <div className="text-center mb-6">
                     <span className="text-5xl font-bold text-foreground">
                       {supportType === "monthly" ? "$100" : "$500"}
                     </span>
                     {supportType === "monthly" && <span className="text-muted-foreground">/mo</span>}
                   </div>
-                  
+
                   <ul className="space-y-3 mb-8">
                     <li className="flex items-center gap-2 text-sm text-foreground"><Check className="h-4 w-4 text-primary" /> Adopt a smart hive</li>
                     <li className="flex items-center gap-2 text-sm text-foreground"><Check className="h-4 w-4 text-primary" /> Access to webinars & events</li>
@@ -304,12 +290,12 @@ const GlobalHiveNetwork = () => {
         <section className="py-24 bg-background">
           <div className="container mx-auto px-4 max-w-2xl">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold mb-4 text-foreground">Join Our Network</h2>
+              <h2 className="text-4xl font-bold mb-4 text-foreground">Sign Up To Our Network</h2>
               <p className="text-muted-foreground">
-                Interested in updates about bee health, pollination research, and agricultural innovations in Africa and the world? Stay connected with BeeYield's work.
+                Interested in updates, webinars, events, and research related to bee health and The Two Million Hives Initiative? We will be happy to keep in touch.
               </p>
             </div>
-            
+
             <Card className="border-none shadow-xl">
               <CardContent className="p-8">
                 <form className="space-y-6">
@@ -325,7 +311,7 @@ const GlobalHiveNetwork = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">Email *</Label>
-                    <Input id="email" type="email" placeholder="info@beeyield.com" required />
+                    <Input id="email" type="email" placeholder="you@example.com" required />
                   </div>
                   <Button type="submit" className="w-full">
                     <Mail className="h-4 w-4 mr-2" /> Submit
@@ -336,6 +322,7 @@ const GlobalHiveNetwork = () => {
           </div>
         </section>
       </div>
+    </Layout>
   );
 };
 

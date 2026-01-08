@@ -170,7 +170,7 @@ const OurStory = () => {
                 </p>
               </div>
               <Button asChild className="mt-4">
-                <Link to="/PollinationSolutions">
+                <Link to="/pollination-solutions">
                   Explore Our Solutions <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
