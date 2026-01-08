@@ -387,9 +387,9 @@ const Traceability = () => {
                     <Card className="border-none shadow-premium overflow-hidden bg-white group">
                       <div className="aspect-square w-full bg-muted relative">
                         <img
-                          src="/timothy_nduva_farmer_1767849719513.png"
+                          src="https://images.unsplash.com/photo-1508500350118-afbd8ce5d494?w=800&auto=format&fit=crop&q=80"
                           alt="Timothy Nduva"
-                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                         <div className="absolute bottom-6 left-6 text-white">
