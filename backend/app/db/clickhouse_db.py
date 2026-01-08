@@ -27,7 +27,8 @@ class ClickHouseService:
                 user=settings.CLICKHOUSE_USER,
                 password=settings.CLICKHOUSE_PASSWORD,
                 database=target_db,
-                secure=settings.CLICKHOUSE_SECURE
+                secure=settings.CLICKHOUSE_SECURE,
+                connect_timeout=10
             )
             if database is None:
                 cls._client = client
