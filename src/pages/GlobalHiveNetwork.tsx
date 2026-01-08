@@ -96,7 +96,7 @@ const GlobalHiveNetwork = () => {
                   <Card key={apiary.id} className="border-none shadow-soft hover:shadow-glow transition-all group">
                     <div className="aspect-video relative overflow-hidden bg-muted">
                       <img
-                        src={(apiary as any).image_url || "https://images.unsplash.com/photo-1553279768-865429fa0078?w=800"}
+                        src={apiary.image_url || "https://images.unsplash.com/photo-1553279768-865429fa0078?w=800"}
                         className="w-full h-full object-cover transition-transform group-hover:scale-105"
                         alt={apiary.name}
                       />
