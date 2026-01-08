@@ -156,7 +156,7 @@ def get_company_stats(category: Optional[str] = None):
             {"id": "stat-1", "stat_key": "farmers_supported", "stat_value": "500+", "stat_label": "Farmers Supported", "icon": "users", "category": "impact", "display_order": 1, "updated_at": "2024-01-01T00:00:00Z"},
             {"id": "stat-2", "stat_key": "hives_managed", "stat_value": "184", "stat_label": "Hives Managed", "icon": "hexagon", "category": "impact", "display_order": 2, "updated_at": "2024-01-01T00:00:00Z"},
             {"id": "stat-3", "stat_key": "trees_planted", "stat_value": "2,500+", "stat_label": "Trees Planted", "icon": "tree-pine", "category": "environment", "display_order": 3, "updated_at": "2024-01-01T00:00:00Z"},
-            {"id": "stat-4", "stat_key": "acres_pollinated", "stat_value": "25", "stat_label": "Acres Pollinated", "icon": "flower", "category": "impact", "display_order": 4, "updated_at": "2024-01-01T00:00:00Z"},
+            {"id": "stat-4", "stat_key": "acres_pollinated", "stat_value": "25+", "stat_label": "Acres Pollinated", "icon": "flower", "category": "impact", "display_order": 4, "updated_at": "2024-01-01T00:00:00Z"},
             {"id": "stat-5", "stat_key": "beekeepers", "stat_value": "50+", "stat_label": "Partner Beekeepers", "icon": "users", "category": "community", "display_order": 5, "updated_at": "2024-01-01T00:00:00Z"}
         ]
     
