@@ -11,6 +11,9 @@ class Settings(BaseSettings):
         "http://localhost:5173",
         "http://localhost:3000",
         "https://beeyield.com",
+        "https://www.beeyield.com",
+        "https://beeyield.vercel.app",
+        "https://*.vercel.app",
     ]
 
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")

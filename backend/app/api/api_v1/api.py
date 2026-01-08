@@ -5,7 +5,7 @@ from fastapi import APIRouter
 from app.api.api_v1.endpoints import (
     company, auth, traceability, contact, 
     forms, shop, blog, careers, media, 
-    services, jobs, analytics
+    services, jobs, analytics, notes
 )
 
 api_router = APIRouter()
@@ -35,6 +35,9 @@ api_router.include_router(forms.router, prefix="/forms", tags=["Forms"])
 
 # Auth
 api_router.include_router(auth.router, prefix="/auth", tags=["Auth"])
+
+# Notes
+api_router.include_router(notes.router, prefix="/notes", tags=["Notes"])
 
 # Stats endpoint at root level
 @api_router.get("/stats/impact")
@@ -88,6 +91,7 @@ def api_root():
             "careers": "/api/v1/careers",
             "jobs": "/api/v1/jobs",
             "contact": "/api/v1/contact",
+            "notes": "/api/v1/notes",
             "stats": "/api/v1/stats/impact"
         },
         "docs": "/docs"

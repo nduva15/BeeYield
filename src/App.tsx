@@ -9,6 +9,8 @@ import { CartProvider } from "./contexts/CartContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import CartDrawer from "./components/CartDrawer";
 import { Loader2 } from "lucide-react";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 // Lazy load all page components for better performance
 const Home = lazy(() => import("./pages/Home"));
@@ -39,6 +41,7 @@ const BeeLearn = lazy(() => import("./pages/BeeLearn"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const AccountSettings = lazy(() => import("@/pages/AccountSettings"));
+const Notes = lazy(() => import("./pages/Notes"));
 
 // Loading fallback component
 const PageLoader = () => (
@@ -58,6 +61,8 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <>
+              <Analytics />
+              <SpeedInsights />
               <CartDrawer />
               <Suspense fallback={<PageLoader />}>
                 <Layout>
@@ -105,6 +110,7 @@ const App = () => (
                     <Route path="/bee-learn" element={<BeeLearn />} />
                     <Route path="/learn" element={<BeeLearn />} />
                     <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/notes" element={<Notes />} />
 
                     {/* Auth Routes */}
                     <Route path="/auth/callback" element={<AuthCallback />} />

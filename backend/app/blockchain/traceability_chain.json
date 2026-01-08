@@ -1,0 +1,277 @@
+[
+  {
+    "index": 0,
+    "block_type": "GENESIS",
+    "timestamp": 1767855500.921461,
+    "timestamp_readable": "2026-01-08T09:58:20.921461",
+    "data": {
+      "message": "\ud83d\udc1d BeeYield Honey Traceability Genesis Block \ud83c\udf6f",
+      "mission": "Empowering beekeepers, protecting bees, ensuring honey authenticity",
+      "version": "2.0",
+      "created": "2026-01-08T09:58:20.921424",
+      "network": "BeeYield Private Chain",
+      "initial_metrics": {
+        "apiaries": 0,
+        "hives": 0,
+        "farmers": 0,
+        "honey_kg": 0
+      }
+    },
+    "previous_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+    "hash": "0dab75f233d2ac303ca09f41148ac2e5b9069a65314db4981b8d8d65862644ea",
+    "merkle_root": "0679e638af25e11b47a7f19be070114fdde0c72bb213b1aabafd6a770ba105be",
+    "nonce": 0,
+    "creator_signature": "GENESIS",
+    "difficulty": 2
+  },
+  {
+    "index": 1,
+    "block_type": "FARMER_REGISTRATION",
+    "timestamp": 1767855500.923532,
+    "timestamp_readable": "2026-01-08T09:58:20.923532",
+    "data": {
+      "farmer_id": "F-MAT-001",
+      "name": "Timothy Nduva",
+      "region": "Eastern",
+      "county": "Makueni",
+      "location_name": "Kibwezi HQ",
+      "coordinates": {
+        "latitude": -2.41,
+        "longitude": 37.97
+      },
+      "story": "Timothy is a master beekeeper in Kibwezi, dedicated to sustainable pollination and protecting the African honey bee.",
+      "registration_date": "2024-05-18T12:58:20.922328",
+      "entity_type": "FARMER",
+      "status": "ACTIVE",
+      "public_key": "93e40efe3015b363a1442495eafa40a5bd73465b7e07fc2f79eede507354cbb5",
+      "record_id": "fe690928a8d815429981481c7c96997d",
+      "created_by": "F-MAT-001",
+      "chain_timestamp": "2026-01-08T09:58:20.923507"
+    },
+    "previous_hash": "0dab75f233d2ac303ca09f41148ac2e5b9069a65314db4981b8d8d65862644ea",
+    "hash": "00b071fe2c1bbcda68e207e1478fbe73a4c4fb6da487a50067359d75ffdd3d15",
+    "merkle_root": "f4e8694abe9eed3c4af84e9df69cf7fdfe092e9350fa325d9c5acbb01b6f33af",
+    "nonce": 1022,
+    "creator_signature": "jjvIihf7cYmvGJXEnYsHnW7ZRpPCGX5V0+TkGhb3bQE=",
+    "difficulty": 2
+  },
+  {
+    "index": 2,
+    "block_type": "APIARY_REGISTRATION",
+    "timestamp": 1767855500.982489,
+    "timestamp_readable": "2026-01-08T09:58:20.982489",
+    "data": {
+      "apiary_id": "A-KIB-SAVANNAH",
+      "apiary_code": "KIB-01",
+      "name": "Kibwezi Savannah Apiary",
+      "farmer_id": "F-MAT-001",
+      "location_name": "Kibwezi",
+      "region": "Eastern",
+      "county": "Makueni",
+      "coordinates": {
+        "latitude": -2.41,
+        "longitude": 37.97
+      },
+      "environment_type": "Savannah Wooded",
+      "flora_types": [
+        "Acacia Tortilis",
+        "Citrus",
+        "Wildflowers"
+      ],
+      "entity_type": "APIARY",
+      "status": "ACTIVE",
+      "hive_count": 0,
+      "total_honey_kg": 0,
+      "record_id": "e7f51eec5d46a9df9f96acd44ff262fc",
+      "created_by": "F-MAT-001",
+      "chain_timestamp": "2026-01-08T09:58:20.982460"
+    },
+    "previous_hash": "00b071fe2c1bbcda68e207e1478fbe73a4c4fb6da487a50067359d75ffdd3d15",
+    "hash": "004ddb987b35f46ddecccd774effb1500cd24b76283e13ab530641645ca9477d",
+    "merkle_root": "ced167593b51b351be500ce23967ff0fbb4c4400013f1e3727510d9110d8eabe",
+    "nonce": 130,
+    "creator_signature": "auTZHsqVhBJtS1C6b/u2fqpuG6u/TjRwCA6HQQgsjkU=",
+    "difficulty": 2
+  },
+  {
+    "index": 3,
+    "block_type": "HIVE_REGISTRATION",
+    "timestamp": 1767855500.997181,
+    "timestamp_readable": "2026-01-08T09:58:20.997181",
+    "data": {
+      "hive_id": "H-KIB-01-01",
+      "hive_code": "KIB-01-H01",
+      "apiary_id": "A-KIB-SAVANNAH",
+      "farmer_id": "F-MAT-001",
+      "bee_type": "African Honey Bee",
+      "hive_type": "Langstroth",
+      "has_sensors": true,
+      "installation_date": "2020-05-20",
+      "entity_type": "HIVE",
+      "status": "ACTIVE",
+      "is_monitored": true,
+      "total_harvests": 0,
+      "total_honey_kg": 0,
+      "record_id": "68c3ba19e1cd9885ea86c031207cc548",
+      "created_by": "F-MAT-001",
+      "chain_timestamp": "2026-01-08T09:58:20.997156"
+    },
+    "previous_hash": "004ddb987b35f46ddecccd774effb1500cd24b76283e13ab530641645ca9477d",
+    "hash": "003ccd0043f4eaa8c362cefc47dc9137bcb918a2b7cba424c2766b0b99888370",
+    "merkle_root": "14bb9bb8d13ad1bbd736a356ff48fb56e6b5184fbc843a9ef1f107283a35795d",
+    "nonce": 299,
+    "creator_signature": "RdDFCEIH7B2/OzPrXptFrun1Z7wmhJ9vjf6GvyHFt4Q=",
+    "difficulty": 2
+  },
+  {
+    "index": 4,
+    "block_type": "HIVE_SENSOR_DATA",
+    "timestamp": 1767855501.02059,
+    "timestamp_readable": "2026-01-08T09:58:21.020590",
+    "data": {
+      "hive_id": "H-KIB-01-01",
+      "apiary_id": "A-KIB-SAVANNAH",
+      "timestamp": "2023-12-20T10:30:00",
+      "temperature": 34.2,
+      "humidity": 65.5,
+      "weight": 28.5,
+      "audio_anomaly": "ACOUSTIC_VARROA_PATTERN",
+      "record_type": "SENSOR_READING",
+      "anomalies_detected": [
+        "ACOUSTIC_VARROA_PATTERN"
+      ],
+      "record_id": "f8494c96f82fbb376cd1198d8cdf16b1",
+      "created_by": "H-KIB-01-01",
+      "chain_timestamp": "2026-01-08T09:58:21.020568"
+    },
+    "previous_hash": "003ccd0043f4eaa8c362cefc47dc9137bcb918a2b7cba424c2766b0b99888370",
+    "hash": "005c4c184a251be62ac7fc4cc4a77badd92503a2c13db830850ecfeac502cd52",
+    "merkle_root": "286c4bafb2117d055bcb239e597447d37d966a067207185e9346128cc4f82b98",
+    "nonce": 173,
+    "creator_signature": "xCG9630AEafT7WRO3fCGVndRPgfq2bydbqSQk9qFEBw=",
+    "difficulty": 2
+  },
+  {
+    "index": 5,
+    "block_type": "HARVEST_RECORD",
+    "timestamp": 1767855501.03465,
+    "timestamp_readable": "2026-01-08T09:58:21.034650",
+    "data": {
+      "harvest_id": "HRV-KIB-01-24",
+      "hive_id": "H-KIB-01-01",
+      "apiary_id": "A-KIB-SAVANNAH",
+      "farmer_id": "F-MAT-001",
+      "harvester_name": "Timothy Nduva",
+      "harvest_date": "2024-01-15",
+      "quantity_kg": 15.5,
+      "left_for_bees_kg": 15.5,
+      "extraction_method": "Centrifuge",
+      "honey_type": "Acacia",
+      "bee_flower": "Acacia",
+      "record_type": "HARVEST",
+      "sustainability_score": 95,
+      "harvest_code": "8BC2D8DF76E2",
+      "record_id": "014198fe55d5eec6bd00f6f9890e2028",
+      "created_by": "F-MAT-001",
+      "chain_timestamp": "2026-01-08T09:58:21.034627"
+    },
+    "previous_hash": "005c4c184a251be62ac7fc4cc4a77badd92503a2c13db830850ecfeac502cd52",
+    "hash": "0031800e8fc8fbdf2c6082f5d6048bb46570f13ae7748a144aa983ed7259a1a1",
+    "merkle_root": "a20b136454a8dd5843d1329933c11ee20c797293fe786b41fa413eb9f6203641",
+    "nonce": 58,
+    "creator_signature": "/EhspJat16FO71dudghH0Lu4EgXZg7CAvGiSdOqeyTo=",
+    "difficulty": 2
+  },
+  {
+    "index": 6,
+    "block_type": "BATCH_CREATION",
+    "timestamp": 1767855501.042877,
+    "timestamp_readable": "2026-01-08T09:58:21.042877",
+    "data": {
+      "batch_id": "BATCH-DEMO-001",
+      "batch_code": "DEMO-001",
+      "honey_type": "Kibwezi Premium Acacia",
+      "harvest_id": "HRV-KIB-01-24",
+      "apiary_code": "KIB-01",
+      "production_date": "2026-01-08T12:58:21.042535",
+      "created_by": "SYSTEM",
+      "impact_stats": {
+        "acres_pollinated": "25+ Acres",
+        "beekeepers": "1 Beekeeper",
+        "bees_protected": "Yes",
+        "carbon_sequestered": "1.2 Tons"
+      },
+      "record_type": "BATCH",
+      "qr_verify_url": "https://beeyield.co.ke/trace/DEMO-001",
+      "blockchain_index": 6,
+      "record_id": "e89e778f812a0dbd3eacc1a9e3e3e7dc",
+      "chain_timestamp": "2026-01-08T09:58:21.042855"
+    },
+    "previous_hash": "0031800e8fc8fbdf2c6082f5d6048bb46570f13ae7748a144aa983ed7259a1a1",
+    "hash": "003bf4f3eeda41293b2d58669347d1c25ca97c19cd471d49a70a534ba0bcff20",
+    "merkle_root": "95e7ddf0af38a4b439acafb9af1fe2cc924bd48bf1b36ecd320210aa204b3d4b",
+    "nonce": 405,
+    "creator_signature": "HyjekPQZheIo6BJ4kOHWoDTPOJ0a9Rj88yioTuI12y0=",
+    "difficulty": 2
+  },
+  {
+    "index": 7,
+    "block_type": "BATCH_CREATION",
+    "timestamp": 1767855501.064817,
+    "timestamp_readable": "2026-01-08T09:58:21.064817",
+    "data": {
+      "batch_id": "BATCH-KIB-001",
+      "batch_code": "KIB-ACACIA-24",
+      "honey_type": "Organic Acacia",
+      "harvest_id": "HRV-KIB-01-24",
+      "apiary_code": "KIB-01",
+      "production_date": "2024-01-20",
+      "created_by": "SYSTEM",
+      "impact_stats": {
+        "acres_pollinated": "25+ Acres",
+        "beekeepers": "1 Beekeeper"
+      },
+      "record_type": "BATCH",
+      "qr_verify_url": "https://beeyield.co.ke/trace/KIB-ACACIA-24",
+      "blockchain_index": 7,
+      "record_id": "8d16988a8cecc348ecdb405f83c11b7b",
+      "chain_timestamp": "2026-01-08T09:58:21.064797"
+    },
+    "previous_hash": "003bf4f3eeda41293b2d58669347d1c25ca97c19cd471d49a70a534ba0bcff20",
+    "hash": "00b50ac6f4fd4e5fca9583ceb47a6ae95af06f2ddba798df7c474e1e1765eb7a",
+    "merkle_root": "e99a7182dce41e9a6829af4b0bddc8399072b82f2a7c5d58dec4a988a3470881",
+    "nonce": 307,
+    "creator_signature": "1DAfCDKVGGdWSqpQkK71nq7XjuYgSgvH51HwxEAcScc=",
+    "difficulty": 2
+  },
+  {
+    "index": 8,
+    "block_type": "BATCH_CREATION",
+    "timestamp": 1767855501.091634,
+    "timestamp_readable": "2026-01-08T09:58:21.091634",
+    "data": {
+      "batch_id": "BATCH-KIB-002",
+      "batch_code": "KIB-GOLD-24",
+      "honey_type": "Savannah Gold",
+      "harvest_id": "HRV-KIB-01-24",
+      "apiary_code": "KIB-01",
+      "production_date": "2024-02-25",
+      "created_by": "SYSTEM",
+      "impact_stats": {
+        "acres_pollinated": "25+ Acres",
+        "beekeepers": "1 Beekeeper"
+      },
+      "record_type": "BATCH",
+      "qr_verify_url": "https://beeyield.co.ke/trace/KIB-GOLD-24",
+      "blockchain_index": 8,
+      "record_id": "3ae70c4dbde3e600d546721820bb2783",
+      "chain_timestamp": "2026-01-08T09:58:21.091561"
+    },
+    "previous_hash": "00b50ac6f4fd4e5fca9583ceb47a6ae95af06f2ddba798df7c474e1e1765eb7a",
+    "hash": "00a77b296b1fcc6db13ce20593ff45da29d0168233fbe0056ff1981541ae72e2",
+    "merkle_root": "1dc9e96e9bb729239ee411f01940693fba149f9b9c38fbe0eda552c056144998",
+    "nonce": 412,
+    "creator_signature": "trq1oJZkAMY+SMfyqzfEJQKQV4lCounCx4GdVV9CgUc=",
+    "difficulty": 2
+  }
+]

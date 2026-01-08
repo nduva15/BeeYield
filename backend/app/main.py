@@ -24,10 +24,21 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 
 @app.get("/")
 def root():
+    from app.db.supabase_db import get_supabase
+    from app.db.clickhouse_db import ClickHouseService
+    
+    supabase_status = "connected" if get_supabase() is not None else "not configured"
+    clickhouse_status = "connected" if ClickHouseService.get_client() is not None else "not configured"
+    
     return {
         "message": "Welcome to BeeYield API",
         "docs_url": "/docs",
-        "redoc_url": "/redoc"
+        "redoc_url": "/redoc",
+        "status": "online",
+        "connections": {
+            "supabase": supabase_status,
+            "clickhouse": clickhouse_status
+        }
     }
 
 if __name__ == "__main__":
