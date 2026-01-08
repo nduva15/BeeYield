@@ -169,30 +169,6 @@ const PollinationSolutions = () => {
         </div>
       </section>
 
-      {/* Integration Logos/System Logos */}
-      <section className="py-24 border-y border-border/50">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-12">Powered By Industry Leaders</p>
-          <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-50 grayscale hover:grayscale-0 transition-all">
-            <div className="flex items-center gap-2">
-              <Smartphone className="h-8 w-8" />
-              <span className="text-2xl font-black italic">ApiSense.io</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Cpu className="h-8 w-8" />
-              <span className="text-2xl font-black italic">HiveGate™</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Radio className="h-8 w-8" />
-              <span className="text-2xl font-black italic">LoRaWAN</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Database className="h-8 w-8" />
-              <span className="text-2xl font-black italic">AgriCloud</span>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Final CTA Section */}
       <section className="py-24 relative overflow-hidden bg-primary text-white">

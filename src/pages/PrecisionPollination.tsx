@@ -155,14 +155,14 @@ const PrecisionPollination = () => {
                 In-Hive IoT Intelligence
               </Badge>
 
-              <h1 className="text-5xl md:text-7xl font-bold leading-tight">
+              <h1 className="text-display-xl md:text-display-2xl font-black leading-tight tracking-tightest">
                 Know Your
-                <span className="text-honey-light block">Hives</span>
+                <span className="text-honey-light block italic">Hives</span>
                 Inside
                 <span className="text-honey-light block">& Out</span>
               </h1>
 
-              <p className="text-xl text-white/90 max-w-lg leading-relaxed">
+              <p className="text-xl md:text-2xl text-white/90 max-w-lg leading-relaxed font-medium">
                 Stop paying for boxes. Start paying for performance. Our precision sensor network
                 gives you X-ray vision into every hive, ensuring you get the pollination power you paid for.
               </p>
@@ -180,16 +180,16 @@ const PrecisionPollination = () => {
               {/* Quick Stats */}
               <div className="grid grid-cols-3 gap-6 pt-8 border-t border-white/20">
                 <div>
-                  <p className="text-3xl font-bold text-honey-light">150+</p>
-                  <p className="text-white/70 text-sm">Monitored Hives</p>
+                  <p className="text-4xl font-black text-honey-light">150+</p>
+                  <p className="text-white/70 text-xs font-bold uppercase tracking-widest">Monitored Hives</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-honey-light">96%</p>
-                  <p className="text-white/70 text-sm">Colony Health Rate</p>
+                  <p className="text-4xl font-black text-honey-light">96%</p>
+                  <p className="text-white/70 text-xs font-bold uppercase tracking-widest">Colony Health Rate</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-honey-light">15min</p>
-                  <p className="text-white/70 text-sm">Update Interval</p>
+                  <p className="text-4xl font-black text-honey-light">15min</p>
+                  <p className="text-white/70 text-xs font-bold uppercase tracking-widest">Update Interval</p>
                 </div>
               </div>
             </div>
@@ -299,13 +299,13 @@ const PrecisionPollination = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {sensorMetrics.map((metric, index) => (
-              <Card key={index} className="group bg-card/80 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
-                <CardContent className="p-6">
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${metric.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                    <metric.icon className="h-6 w-6 text-white" />
+              <Card key={index} className="group glass-dark sm:glass border-none shadow-soft hover:shadow-glow transition-all duration-500 hover:-translate-y-2">
+                <CardContent className="p-8">
+                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${metric.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-lg`}>
+                    <metric.icon className="h-7 w-7 text-white" />
                   </div>
-                  <h3 className="text-xl font-semibold text-foreground mb-2">{metric.title}</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">{metric.description}</p>
+                  <h3 className="text-2xl font-black text-foreground mb-4">{metric.title}</h3>
+                  <p className="text-muted-foreground font-medium leading-relaxed">{metric.description}</p>
                 </CardContent>
               </Card>
             ))}

@@ -88,14 +88,14 @@ const InLandPollinationPlatform = () => {
                 🐝 East Africa's Premier Pollination Partner
               </Badge>
 
-              <h1 className="text-5xl md:text-7xl font-bold leading-tight">
+              <h1 className="text-display-xl md:text-display-2xl font-black leading-none tracking-tightest">
                 Where
-                <span className="text-yellow-300 block">Technology</span>
+                <span className="text-primary block italic">Technology</span>
                 Meets the
-                <span className="text-yellow-300 block">Hive</span>
+                <span className="text-primary block">Hive</span>
               </h1>
 
-              <p className="text-xl text-white/90 max-w-lg leading-relaxed">
+              <p className="text-xl md:text-2xl text-white/90 max-w-lg leading-relaxed font-medium">
                 We don't just bring bees to your fields. We bring intelligence, precision, and
                 a promise — every flower visited, every yield maximized, every harvest transformed.
               </p>
@@ -113,18 +113,18 @@ const InLandPollinationPlatform = () => {
               </div>
 
               {/* Quick Stats */}
-              <div className="grid grid-cols-3 gap-6 pt-8 border-t border-white/20">
+              <div className="grid grid-cols-3 gap-6 pt-8 border-t border-white/20 font-black">
                 <div>
-                  <p className="text-3xl font-bold text-honey-light">35%</p>
-                  <p className="text-white/70 text-sm">Average Yield Increase</p>
+                  <p className="text-4xl md:text-5xl text-honey-light tracking-tightest">35%</p>
+                  <p className="text-white/70 text-xs uppercase tracking-widest">Yield Boost</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-honey-light">150+</p>
-                  <p className="text-white/70 text-sm">Managed Hives</p>
+                  <p className="text-4xl md:text-5xl text-honey-light tracking-tightest">150+</p>
+                  <p className="text-white/70 text-xs uppercase tracking-widest">Active Hives</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-honey-light">24/7</p>
-                  <p className="text-white/70 text-sm">Monitoring Active</p>
+                  <p className="text-4xl md:text-5xl text-honey-light tracking-tightest">24/7</p>
+                  <p className="text-white/70 text-xs uppercase tracking-widest">Monitoring</p>
                 </div>
               </div>
             </div>
@@ -205,32 +205,30 @@ const InLandPollinationPlatform = () => {
 
           <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
             {/* In-Hive Precision */}
-            <Card className="group relative overflow-hidden border-2 border-transparent hover:border-amber-400 transition-all duration-500 bg-gradient-to-br from-card to-amber-50/50 dark:to-amber-950/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <CardContent className="p-8 relative z-10">
-                <div className="flex items-start gap-6">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <Cpu className="h-8 w-8 text-white" />
+            <Card className="group relative overflow-hidden border-none shadow-premium bg-white dark:bg-card rounded-[3rem] transition-all duration-700 hover:-translate-y-2 hover:shadow-glow">
+              <CardContent className="p-10 relative z-10">
+                <div className="flex items-start gap-8">
+                  <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <Cpu className="h-10 w-10 text-primary" />
                   </div>
                   <div className="space-y-4 flex-1">
-                    <h3 className="text-2xl font-bold text-foreground">In-Hive Precision</h3>
-                    <p className="text-muted-foreground leading-relaxed">
+                    <h3 className="text-3xl font-black text-foreground tracking-tight">In-Hive <br /> Precision</h3>
+                    <p className="text-muted-foreground leading-relaxed font-semibold">
                       Smart sensors inside every hive monitor colony strength, bee population,
-                      temperature, and activity levels. Know exactly what you're paying for
-                      before the first bee takes flight.
+                      temperature, and activity levels. Know exactly what you're paying for.
                     </p>
                     <ul className="space-y-2">
-                      {["Real-time colony health metrics", "Bee count verification", "Temperature & humidity tracking", "Gateway connectivity"].map((feature, i) => (
-                        <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Check className="h-4 w-4 text-amber-500" />
+                      {["Real-time health metrics", "Bee count verification", "Acoustic health alerts"].map((feature, i) => (
+                        <li key={i} className="flex items-center gap-2 text-sm font-black">
+                          <Check className="h-4 w-4 text-primary" />
                           {feature}
                         </li>
                       ))}
                     </ul>
                     <Link to="/precision-pollination">
-                      <Button className="mt-4 bg-amber-600 hover:bg-amber-700 text-white">
+                      <Button className="mt-4 bg-primary hover:bg-primary/90 text-white font-black h-14 px-8 rounded-xl shadow-glow">
                         Explore In-Hive Tech
-                        <ArrowRight className="ml-2 h-4 w-4" />
+                        <ArrowRight className="ml-2 h-5 w-5" />
                       </Button>
                     </Link>
                   </div>
@@ -239,32 +237,30 @@ const InLandPollinationPlatform = () => {
             </Card>
 
             {/* In-Field Insights */}
-            <Card className="group relative overflow-hidden border-2 border-transparent hover:border-green-400 transition-all duration-500 bg-gradient-to-br from-card to-green-50/50 dark:to-green-950/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <CardContent className="p-8 relative z-10">
-                <div className="flex items-start gap-6">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <Eye className="h-8 w-8 text-white" />
+            <Card className="group relative overflow-hidden border-none shadow-premium bg-white dark:bg-card rounded-[3rem] transition-all duration-700 hover:-translate-y-2 hover:shadow-glow">
+              <CardContent className="p-10 relative z-10">
+                <div className="flex items-start gap-8">
+                  <div className="w-20 h-20 rounded-2xl bg-nature-green/10 flex items-center justify-center flex-shrink-0">
+                    <Eye className="h-10 w-10 text-nature-green" />
                   </div>
                   <div className="space-y-4 flex-1">
-                    <h3 className="text-2xl font-bold text-foreground">In-Field Insights</h3>
-                    <p className="text-muted-foreground leading-relaxed">
+                    <h3 className="text-3xl font-black text-foreground tracking-tight">In-Field <br /> Insights</h3>
+                    <p className="text-muted-foreground leading-relaxed font-semibold text-nature-green/80">
                       Our field sensors track actual bee activity across your crops.
-                      See which areas are getting pollinated, identify gaps, and optimize
-                      hive placement in real-time.
+                      See which areas are getting pollinated and identify gaps in real-time.
                     </p>
                     <ul className="space-y-2">
-                      {["Flower visitation tracking", "Pollination coverage maps", "Weather correlation data", "Optimal timing alerts"].map((feature, i) => (
-                        <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Check className="h-4 w-4 text-green-500" />
+                      {["Flower visitation tracking", "Pollination heatmaps", "Weather correlation data"].map((feature, i) => (
+                        <li key={i} className="flex items-center gap-2 text-sm font-black text-nature-green">
+                          <Check className="h-4 w-4" />
                           {feature}
                         </li>
                       ))}
                     </ul>
                     <Link to="/in-land-pollination">
-                      <Button className="mt-4 bg-green-600 hover:bg-green-700 text-white">
+                      <Button className="mt-4 bg-secondary hover:bg-secondary/90 text-white font-black h-14 px-8 rounded-xl shadow-glow">
                         Explore Field Insights
-                        <ArrowRight className="ml-2 h-4 w-4" />
+                        <ArrowRight className="ml-2 h-5 w-5" />
                       </Button>
                     </Link>
                   </div>

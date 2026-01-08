@@ -836,6 +836,18 @@ class HoneyBlockchain:
                 "farmer_id": "F-SAR-002", "bee_type": "African Honey Bee", "hive_type": "Langstroth",
                 "has_sensors": True, "installation_date": "2022-03-15"
             })
+            
+            # Add sensor data with disease detection (Varroa mite pattern)
+            self.record_sensor_data({
+                "hive_id": "H-KIB-02-05",
+                "apiary_id": "A-KIB-BAOBAB",
+                "timestamp": "2024-02-15T10:30:00",
+                "temperature": 34.2,
+                "humidity": 65.5,
+                "weight": 28.5,
+                "audio_anomaly": "ACOUSTIC_VARROA_PATTERN"  # This triggers Health Shield event
+            })
+            
             self.record_harvest({
                 "harvest_id": "HRV-KIB-02-24", "hive_id": "H-KIB-02-05", "apiary_id": "A-KIB-BAOBAB",
                 "farmer_id": "F-SAR-002", "harvester_name": "Sarah Nduku",
