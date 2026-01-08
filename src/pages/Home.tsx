@@ -198,7 +198,7 @@ const Home = () => {
                 <h3 className="text-3xl font-black">In-Hive Precision</h3>
                 <p className="text-lg text-muted-foreground font-medium">Smart sensors monitor colony health 24/7. Know your pollination strength before deployment.</p>
                 <Button className="h-12 px-8 font-black" asChild>
-                  <Link to="/PrecisionPollination">Explore In-Hive <ArrowRight className="ml-2 w-5 h-5" /></Link>
+                  <Link to="/precision-pollination">Explore In-Hive <ArrowRight className="ml-2 w-5 h-5" /></Link>
                 </Button>
               </CardContent>
             </Card>
@@ -211,7 +211,7 @@ const Home = () => {
                 <h3 className="text-3xl font-black">In-Land PLIP</h3>
                 <p className="text-lg text-muted-foreground font-medium">Measure real bee activity in the field to correlate colony strength with yield outcomes.</p>
                 <Button className="h-12 px-8 font-black bg-secondary hover:bg-secondary/90" asChild>
-                  <Link to="/InLandPollinationPlatform">Explore Platform <ArrowRight className="ml-2 w-5 h-5" /></Link>
+                  <Link to="/in-land-pollination">Explore Platform <ArrowRight className="ml-2 w-5 h-5" /></Link>
                 </Button>
               </CardContent>
             </Card>

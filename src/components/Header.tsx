@@ -19,9 +19,9 @@ const Header = () => {
   const isActive = (path: string) => location.pathname === path;
 
   const menuLinks = [
-    { to: "/GlobalHiveNetwork", label: "Global Hive Network" },
+    { to: "/global-hive-network", label: "Global Hive Network" },
     { to: "/ourstory", label: "Our Story" },
-    { to: "/Media", label: "Media" },
+    { to: "/media", label: "Media" },
     { to: "/blogs", label: "Blog" },
     { to: "/contact", label: "Contact Us" },
     { to: "/esg", label: "ESG" },
@@ -61,12 +61,12 @@ const Header = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="center" className="w-72 flex flex-col p-4 bg-primary border-none rounded-2xl shadow-xl z-[100]">
               <DropdownMenuItem asChild className="focus:bg-primary/80 focus:text-primary-foreground">
-                <Link to="/PrecisionPollination" className="w-full cursor-pointer px-4 py-3 text-base font-medium text-primary-foreground hover:bg-primary/80 rounded-lg">
+                <Link to="/precision-pollination" className="w-full cursor-pointer px-4 py-3 text-base font-medium text-primary-foreground hover:bg-primary/80 rounded-lg">
                   In-Hive Precision Pollination
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="focus:bg-primary/80 focus:text-primary-foreground">
-                <Link to="/InLandPollinationPlatform" className="w-full cursor-pointer px-4 py-3 text-base font-medium text-primary-foreground hover:bg-primary/80 rounded-lg">
+                <Link to="/in-land-pollination" className="w-full cursor-pointer px-4 py-3 text-base font-medium text-primary-foreground hover:bg-primary/80 rounded-lg">
                   In-Land Pollination Insights Platform
                 </Link>
               </DropdownMenuItem>
@@ -74,8 +74,8 @@ const Header = () => {
           </DropdownMenu>
 
           <Link
-            to="/PollinationSolutions"
-            className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/PollinationSolutions") ? "text-primary" : "text-foreground"
+            to="/pollination-solutions"
+            className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/pollination-solutions") ? "text-primary" : "text-foreground"
               }`}
           >
             Beekeeping Network
@@ -160,17 +160,17 @@ const Header = () => {
                 </span>
                 <div className="pl-4 flex flex-col space-y-1">
                   <Link
-                    to="/PrecisionPollination"
+                    to="/precision-pollination"
                     onClick={() => setIsMenuOpen(false)}
-                    className={`text-sm font-medium hover:bg-primary-foreground/10 rounded-lg px-3 py-2 transition-colors ${isActive("/PrecisionPollination") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground/90"
+                    className={`text-sm font-medium hover:bg-primary-foreground/10 rounded-lg px-3 py-2 transition-colors ${isActive("/precision-pollination") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground/90"
                       }`}
                   >
                     In-Hive Precision Pollination
                   </Link>
                   <Link
-                    to="/InLandPollinationPlatform"
+                    to="/in-land-pollination"
                     onClick={() => setIsMenuOpen(false)}
-                    className={`text-sm font-medium hover:bg-primary-foreground/10 rounded-lg px-3 py-2 transition-colors ${isActive("/InLandPollinationPlatform") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground/90"
+                    className={`text-sm font-medium hover:bg-primary-foreground/10 rounded-lg px-3 py-2 transition-colors ${isActive("/in-land-pollination") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground/90"
                       }`}
                   >
                     In-Land Pollination Insights
@@ -179,9 +179,9 @@ const Header = () => {
               </div>
 
               <Link
-                to="/PollinationSolutions"
+                to="/pollination-solutions"
                 onClick={() => setIsMenuOpen(false)}
-                className={`text-sm sm:text-base font-semibold hover:bg-primary-foreground/10 rounded-lg px-3 py-2.5 sm:py-3 transition-colors ${isActive("/PollinationSolutions") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground"
+                className={`text-sm sm:text-base font-semibold hover:bg-primary-foreground/10 rounded-lg px-3 py-2.5 sm:py-3 transition-colors ${isActive("/pollination-solutions") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground"
                   }`}
               >
                 Beekeeping Network
