@@ -50,6 +50,7 @@ export interface Apiary {
     latitude: number;
     longitude: number;
     hive_count: number;
+    image_url?: string;
 }
 
 export const getPollinationServices = async (): Promise<PollinationService[]> => {
