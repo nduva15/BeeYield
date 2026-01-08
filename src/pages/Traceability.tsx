@@ -79,7 +79,7 @@ const Traceability = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
+    <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <div className="relative overflow-hidden bg-gradient-to-br from-primary/20 via-primary/5 to-white py-20 lg:py-32">
         <div className="container mx-auto px-6 lg:px-12">
@@ -143,7 +143,7 @@ const Traceability = () => {
                       <h2 className="text-3xl font-bold text-foreground">{batchData.product_name}</h2>
                       <p className="font-mono text-sm text-muted-foreground mt-1">Batch ID: {batchData.batch_code}</p>
                     </div>
-                    <div className="flex items-center gap-2 rounded-full bg-green-50 px-4 py-2 text-green-700">
+                    <div className="flex items-center gap-2 rounded-full bg-nature-green/10 px-4 py-2 text-nature-green">
                       <CheckCircle2 className="h-5 w-5" />
                       <span className="text-sm font-bold uppercase tracking-wider">Blockchain Verified</span>
                     </div>
@@ -173,7 +173,7 @@ const Traceability = () => {
                       <p className="text-xs uppercase font-bold text-muted-foreground flex items-center">
                         <Users className="mr-1 h-3 w-3" /> Fair Pay
                       </p>
-                      <p className="text-xl font-semibold text-green-600">Guaranteed</p>
+                      <p className="text-xl font-semibold text-nature-green">Guaranteed</p>
                     </div>
                   </div>
                 </CardContent>
@@ -269,7 +269,7 @@ const Traceability = () => {
 
               {/* Hive Details */}
               {batchData.hive && (
-                <Card className="border-none shadow-soft bg-[#2A2A2A] text-white overflow-hidden">
+                <Card className="border-none shadow-soft bg-foreground text-background overflow-hidden">
                   <div className="bg-primary px-6 py-2 text-xs font-bold uppercase tracking-widest text-center">Hive Sensor Node: {batchData.hive.hive_code}</div>
                   <CardContent className="p-6">
                     <div className="flex items-center gap-4 mb-6">
@@ -289,7 +289,7 @@ const Traceability = () => {
                       </div>
                       <div className="rounded-xl bg-white/5 p-4 border border-white/10">
                         <p className="text-[10px] uppercase text-white/40 font-bold mb-1">Status</p>
-                        <p className="text-sm font-medium text-green-400">Monitoring Active</p>
+                        <p className="text-sm font-medium text-nature-green-light">Monitoring Active</p>
                       </div>
                     </div>
 
@@ -344,7 +344,7 @@ const Traceability = () => {
                 description: "No blending. No shortcuts. Trace every individual jar back to a single hive and a named beekeeper."
               }
             ].map((item, i) => (
-              <div key={i} className="group p-8 rounded-3xl bg-[#fafafa] transition-all hover:bg-white hover:shadow-premium text-center">
+              <div key={i} className="group p-8 rounded-3xl bg-muted/30 transition-all hover:bg-card hover:shadow-premium text-center">
                 <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
                   <item.icon className="h-8 w-8" />
                 </div>
@@ -358,17 +358,17 @@ const Traceability = () => {
             <p className="text-center text-xs font-bold uppercase tracking-widest text-muted-foreground mb-8">Official Technology Partners</p>
             <div className="flex flex-wrap items-center justify-center gap-12 text-center opacity-70 grayscale hover:grayscale-0 transition-all duration-500">
               <div className="flex flex-col items-center gap-2">
-                <div className="w-16 h-16 bg-zinc-100 rounded-2xl flex items-center justify-center mb-2">
-                  <Activity className="h-8 w-8 text-indigo-600" />
+                <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mb-2">
+                  <Activity className="h-8 w-8 text-primary" />
                 </div>
-                <span className="font-bold text-zinc-800">ApiSense.io</span>
+                <span className="font-bold text-foreground">ApiSense.io</span>
                 <span className="text-xs text-muted-foreground">Acoustic Disease Diagnostics</span>
               </div>
               <div className="flex flex-col items-center gap-2">
-                <div className="w-16 h-16 bg-zinc-100 rounded-2xl flex items-center justify-center mb-2">
-                  <Cpu className="h-8 w-8 text-blue-600" />
+                <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mb-2">
+                  <Cpu className="h-8 w-8 text-secondary" />
                 </div>
-                <span className="font-bold text-zinc-800">Intelligent Hives™</span>
+                <span className="font-bold text-foreground">Intelligent Hives™</span>
                 <span className="text-xs text-muted-foreground">Precision GPS & Weight</span>
               </div>
             </div>
