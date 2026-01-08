@@ -15,25 +15,25 @@ async def get_trace_by_code(code: str, request: Request, background_tasks: Backg
     Public endpoint to trace honey by its batch code (e.g. from jar).
     Returns full journey: Farmer -> Apiary -> Hive -> Harvest -> Processing.
     """
-    from app.db.clickhouse_db import ClickHouseService
-    ch_service = ClickHouseService()
+    from app.db.clickhouse_db import track_traceability_scan
     
     print(f"🔍 Trace Request for Code: {code}")
     result = traceability_service.get_trace_journey(code)
     
     if result:
         print(f"✅ Found in Blockchain: {code}")
-        background_tasks.add_task(ch_service.track_traceability_scan, code, True)
+        background_tasks.add_task(track_traceability_scan, code)
         return result
         
     # Demo Fallback (if real data not found, return a rich demo response for the user to see UI)
     if code.startswith("DEMO"):
         print(f"ℹ️ Returning Demo Data for: {code}")
-        background_tasks.add_task(ch_service.track_traceability_scan, code, True, "Demo")
+        background_tasks.add_task(track_traceability_scan, code, scan_location="Demo")
         return _get_demo_trace(code)
     
-    background_tasks.add_task(ch_service.track_traceability_scan, code, False)
+    background_tasks.add_task(track_traceability_scan, code)
     print(f"❌ Code Not Found: {code}")
+
     raise HTTPException(status_code=404, detail=f"Traceability code '{code}' not found on the blockchain.")
 
 @router.get("/chain", response_model=Dict[str, Any])

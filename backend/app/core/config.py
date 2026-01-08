@@ -30,6 +30,10 @@ class Settings(BaseSettings):
     SUPABASE_KEY: str = Field(default="", validation_alias="SUPABASE_SERVICE_ROLE_KEY")
     SUPABASE_ANON_KEY: Optional[str] = Field(default=None, validation_alias="VITE_SUPABASE_ANON_KEY")
     SUPABASE_JWT_SECRET: Optional[str] = None
+    
+    # Postgres direct connection (for migrations/legacy sqlalchemy)
+    POSTGRES_URL: Optional[str] = Field(default=None, validation_alias="POSTGRES_URL")
+
 
     # ============ CLICKHOUSE (Analytics) ============
     CLICKHOUSE_HOST: str = Field(default="", validation_alias="CLICKHOUSE_HOST")

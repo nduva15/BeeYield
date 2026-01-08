@@ -12,3 +12,10 @@ values
   ('It was awesome!');
 
 alter table notes enable row level security;
+
+-- Add policies to allow public access
+create policy "Public notes are viewable by everyone"
+on notes for select using (true);
+
+create policy "Everyone can insert notes"
+on notes for insert with check (true);
