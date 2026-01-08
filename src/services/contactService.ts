@@ -35,13 +35,17 @@ export interface PollinationRequest {
     additional_info?: string;
 }
 
+export interface NewsletterSubscription {
+    email: string;
+    first_name?: string;
+    source?: string;
+}
+
 export const submitContactForm = async (data: ContactSubmission) => {
     try {
-        // Map frontend fields to backend schema if needed
         const payload = {
             ...data,
-            // Backend expects 'company' for generic company name
-            company: data.company_name || data.company
+            company: data.company
         };
 
         const response = await fetch(`${API_V1_URL}/contact/submit`, {
@@ -80,6 +84,27 @@ export const submitPollinationRequest = async (data: PollinationRequest) => {
         return await response.json();
     } catch (error) {
         console.error("Error submitting pollination request:", error);
+        throw error;
+    }
+};
+
+export const submitNewsletterSubscription = async (data: NewsletterSubscription) => {
+    try {
+        const response = await fetch(`${API_V1_URL}/contact/newsletter`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || "Failed to subscribe to newsletter");
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error subscribing to newsletter:", error);
         throw error;
     }
 };

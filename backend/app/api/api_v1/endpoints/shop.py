@@ -1,5 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Header
 from typing import List, Optional
+from jose import jwt
+from app.core.config import settings
+from app.core import security
 from app.schemas import shop as schemas
 from app.services import payment, shop_service
 from app.db.clickhouse_db import track_order_event
@@ -32,11 +35,26 @@ def add_to_cart(item: schemas.CartItemAdd):
     return {"status": "success", "message": "Item added to cart"}
 
 @router.post("/checkout/init", response_model=dict)
-def initialize_checkout(order_in: schemas.OrderCreate):
+def initialize_checkout(
+    order_in: schemas.OrderCreate,
+    authorization: Optional[str] = Header(None)
+):
     """
     Initialize payment for order.
     """
-    order_result = shop_service.create_order(order_in)
+    user_id = None
+    if authorization:
+        try:
+            token = authorization.split(" ")[1]
+            # Try to decode token to get user_id. 
+            # Note: In production, verify signature with Supabase JWT secret.
+            # Here we attempt to decode assuming standard JWT structure.
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[security.ALGORITHM], options={"verify_signature": False})
+            user_id = payload.get("sub")
+        except Exception as e:
+            print(f"Auth token decode error: {e}")
+
+    order_result = shop_service.create_order(order_in, user_id=user_id)
     
     if order_result["status"] == "error":
         raise HTTPException(status_code=500, detail=order_result["message"])

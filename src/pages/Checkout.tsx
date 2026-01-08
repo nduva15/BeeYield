@@ -27,7 +27,7 @@ import {
     UserPlus,
     LogIn,
 } from 'lucide-react';
-import { initializeCheckout } from '@/services/shopService';
+import { initializeCheckout, CheckoutOrder } from '@/services/shopService';
 import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
 
@@ -49,7 +49,7 @@ type AuthMode = 'guest' | 'login' | 'register';
 const Checkout: React.FC = () => {
     const navigate = useNavigate();
     const { items, getTotalItems, getTotalPrice, clearCart } = useCart();
-    const { user, loading: authLoading } = useAuth();
+    const { user, session, signUp, loading: authLoading } = useAuth();
     const [currentStep, setCurrentStep] = useState<CheckoutStep>('cart');
     const [paymentMethod, setPaymentMethod] = useState<'mpesa' | 'card'>('mpesa');
     const [isProcessing, setIsProcessing] = useState(false);
@@ -128,7 +128,6 @@ const Checkout: React.FC = () => {
 
     const [createAccount, setCreateAccount] = useState(false);
     const [password, setPassword] = useState('');
-    const { signUp } = useAuth();
 
     const handleNextStep = async () => {
         if (currentStep === 'cart') {
@@ -180,7 +179,7 @@ const Checkout: React.FC = () => {
         try {
             const { initializeCheckout } = await import('@/services/shopService');
 
-            const orderData: Record<string, unknown> = {
+            const orderData: CheckoutOrder = {
                 shipping_address: {
                     first_name: shippingDetails.fullName.split(' ')[0] || '',
                     last_name: shippingDetails.fullName.split(' ').slice(1).join(' ') || '',
@@ -201,7 +200,7 @@ const Checkout: React.FC = () => {
                 notes: shippingDetails.notes
             };
 
-            const response = await initializeCheckout(orderData);
+            const response = await initializeCheckout(orderData, session?.access_token);
 
             // If it's M-Pesa, we might get a checkoutRequestId
             // If it's Card, we might get a Stripe sessionId or similar

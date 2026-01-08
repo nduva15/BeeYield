@@ -197,7 +197,7 @@ const Team = () => {
             We're always looking for brilliant minds who care about the planet as much as they care about the code.
           </p>
           <Button asChild size="lg" className="h-16 px-12 bg-primary hover:bg-white hover:text-primary text-white font-black text-xl rounded-2xl shadow-glow transition-all">
-            <a href="/Careers">View Openings</a>
+            <Link to="/careers">View Openings</Link>
           </Button>
         </div>
       </section>

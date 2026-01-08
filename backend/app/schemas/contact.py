@@ -36,3 +36,8 @@ class PollinationRequestCreate(BaseModel):
     acres: int
     preferred_start_date: str # Date string
     additional_info: Optional[str] = None
+
+class NewsletterSubscriptionCreate(BaseModel):
+    email: EmailStr
+    first_name: Optional[str] = None
+    source: Optional[str] = "footer"
