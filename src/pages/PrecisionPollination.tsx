@@ -132,11 +132,11 @@ const PrecisionPollination = () => {
       {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden">
         {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-blue-800">
+        <div className="absolute inset-0 bg-gradient-to-br from-foreground via-secondary to-foreground">
           <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-20 left-10 w-72 h-72 bg-blue-400 rounded-full blur-3xl animate-pulse" />
-            <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-300 rounded-full blur-3xl animate-pulse delay-1000" />
-            <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-indigo-400 rounded-full blur-3xl animate-pulse delay-500" />
+            <div className="absolute top-20 left-10 w-72 h-72 bg-primary/30 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-20 right-10 w-96 h-96 bg-honey-light/20 rounded-full blur-3xl animate-pulse delay-1000" />
+            <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-secondary/40 rounded-full blur-3xl animate-pulse delay-500" />
           </div>
           {/* Honeycomb Pattern */}
           <svg className="absolute inset-0 w-full h-full opacity-10" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -157,9 +157,9 @@ const PrecisionPollination = () => {
 
               <h1 className="text-5xl md:text-7xl font-bold leading-tight">
                 Know Your
-                <span className="text-blue-300 block">Hives</span>
+                <span className="text-honey-light block">Hives</span>
                 Inside
-                <span className="text-blue-300 block">& Out</span>
+                <span className="text-honey-light block">& Out</span>
               </h1>
 
               <p className="text-xl text-white/90 max-w-lg leading-relaxed">
@@ -180,15 +180,15 @@ const PrecisionPollination = () => {
               {/* Quick Stats */}
               <div className="grid grid-cols-3 gap-6 pt-8 border-t border-white/20">
                 <div>
-                  <p className="text-3xl font-bold text-blue-300">150+</p>
+                  <p className="text-3xl font-bold text-honey-light">150+</p>
                   <p className="text-white/70 text-sm">Monitored Hives</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-blue-300">96%</p>
+                  <p className="text-3xl font-bold text-honey-light">96%</p>
                   <p className="text-white/70 text-sm">Colony Health Rate</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-blue-300">15min</p>
+                  <p className="text-3xl font-bold text-honey-light">15min</p>
                   <p className="text-white/70 text-sm">Update Interval</p>
                 </div>
               </div>
@@ -249,11 +249,11 @@ const PrecisionPollination = () => {
       <section className="py-24 bg-gradient-to-b from-background to-muted/30">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center space-y-8">
-            <Badge variant="outline" className="text-indigo-600 border-indigo-300">
+            <Badge variant="outline" className="text-primary border-primary">
               The Industry Problem
             </Badge>
             <h2 className="text-4xl md:text-5xl font-bold text-foreground">
-              You Can't Manage What You <span className="text-indigo-600">Can't Measure</span>
+              You Can't Manage What You <span className="text-primary">Can't Measure</span>
             </h2>
             <p className="text-xl text-muted-foreground leading-relaxed">
               Traditional pollination services deliver hives to your fields and hope for the best.
@@ -261,18 +261,18 @@ const PrecisionPollination = () => {
               <strong> This outdated model leaves millions on the table.</strong>
             </p>
             <div className="grid md:grid-cols-3 gap-6 pt-8">
-              <div className="p-6 bg-red-50 dark:bg-red-950/20 rounded-2xl border border-red-200 dark:border-red-900">
-                <AlertCircle className="h-10 w-10 text-red-600 mx-auto mb-4" />
+              <div className="p-6 bg-destructive/10 rounded-2xl border border-destructive/20">
+                <AlertCircle className="h-10 w-10 text-destructive mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">No Visibility</h3>
                 <p className="text-sm text-muted-foreground">You pay for boxes, not pollination strength</p>
               </div>
-              <div className="p-6 bg-red-50 dark:bg-red-950/20 rounded-2xl border border-red-200 dark:border-red-900">
-                <AlertCircle className="h-10 w-10 text-red-600 mx-auto mb-4" />
+              <div className="p-6 bg-destructive/10 rounded-2xl border border-destructive/20">
+                <AlertCircle className="h-10 w-10 text-destructive mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Slow Response</h3>
                 <p className="text-sm text-muted-foreground">Week-long waits for hive replacements</p>
               </div>
-              <div className="p-6 bg-red-50 dark:bg-red-950/20 rounded-2xl border border-red-200 dark:border-red-900">
-                <AlertCircle className="h-10 w-10 text-red-600 mx-auto mb-4" />
+              <div className="p-6 bg-destructive/10 rounded-2xl border border-destructive/20">
+                <AlertCircle className="h-10 w-10 text-destructive mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Guesswork</h3>
                 <p className="text-sm text-muted-foreground">No data means no optimization</p>
               </div>
@@ -285,11 +285,11 @@ const PrecisionPollination = () => {
       <section className="py-24 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 space-y-4">
-            <Badge variant="outline" className="text-indigo-600 border-indigo-300">
+            <Badge variant="outline" className="text-primary border-primary">
               Our Solution
             </Badge>
             <h2 className="text-4xl md:text-5xl font-bold text-foreground">
-              Six Critical Metrics, <span className="text-indigo-600">One Complete Picture</span>
+              Six Critical Metrics, <span className="text-primary">One Complete Picture</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Our multi-sensor system continuously monitors the biological and environmental factors
