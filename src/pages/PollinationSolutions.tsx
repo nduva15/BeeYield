@@ -31,7 +31,7 @@ const PollinationSolutions = () => {
             <Badge className="bg-primary/20 text-primary border-primary/30 px-6 py-2 text-sm font-black uppercase tracking-widest">
               Digital Pollination Ecosystem
             </Badge>
-            <h1 className="text-5xl md:text-8xl font-black text-white tracking-tighter leading-none">
+            <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-white tracking-tight leading-tight">
               One Platform. <br />
               <span className="text-primary italic">Unlimited</span> Yield.
             </h1>
@@ -115,7 +115,7 @@ const PollinationSolutions = () => {
           <div className="grid lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
             <div className="space-y-8">
               <Badge variant="outline" className="text-primary border-primary/30">Total Visibility</Badge>
-              <h2 className="text-4xl md:text-6xl font-black tracking-tighter">The Power of Both</h2>
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tight">The Power of Both</h2>
               <p className="text-xl text-muted-foreground leading-relaxed font-medium">
                 Combine In-Hive health data with In-Field activity metrics for the ultimate pollination protocol.
                 Identify precisely why certain areas are underperforming and resolve it instantly.
@@ -177,7 +177,7 @@ const PollinationSolutions = () => {
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent rounded-full blur-[100px] -ml-48 -mb-48" />
         </div>
         <div className="container mx-auto px-4 relative z-10 text-center space-y-10">
-          <h2 className="text-5xl md:text-8xl font-black tracking-tighter">Ready for the <br /> Future of Farming?</h2>
+          <h2 className="text-4xl md:text-6xl font-bold tracking-tight">Ready for the <br /> Future of Farming?</h2>
           <p className="text-xl text-white/80 max-w-2xl mx-auto font-medium">
             Contact our pollination agronomists today for a custom consultation and see how BeeYield can transform your harvest.
           </p>

@@ -52,7 +52,7 @@ const Impact = () => {
       <div className="container mx-auto px-4 py-24">
         <div className="mb-20 text-center space-y-6">
           <Badge variant="outline" className="text-primary border-primary px-4 py-1">Environment & Sustainability</Badge>
-          <h1 className="text-display-xl md:text-display-2xl font-black text-foreground tracking-tightest leading-tight">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground tracking-tight leading-tight">
             Our Environmental <span className="text-primary italic">Impact</span>
           </h1>
           <p className="mx-auto max-w-2xl text-xl text-muted-foreground font-medium">
@@ -74,68 +74,64 @@ const Impact = () => {
           </button>
         </div>
 
-        {loading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+        {/* Non-blocking load - content will appear when stats/stories/metrics arrive */}
+
+        <>
+          <div className="relative mb-16 overflow-hidden rounded-2xl shadow-xl group">
+            <img
+              src="https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=1600&auto=format&fit=crop&q=80"
+              alt="Impact"
+              className="h-[400px] w-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-black/30" />
           </div>
-        ) : (
-          <>
-            <div className="relative mb-16 overflow-hidden rounded-2xl shadow-xl group">
-              <img
-                src="https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=1600&auto=format&fit=crop&q=80"
-                alt="Impact"
-                className="h-[400px] w-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-black/30" />
-            </div>
 
-            <div className="mb-24 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-              {stats.map((stat, index) => {
-                const IconComp = getIcon(stat.icon || '');
-                return (
-                  <Card key={index} className="text-center glass-dark sm:glass border-none shadow-soft hover:shadow-glow transition-all duration-500 hover:-translate-y-2">
-                    <CardContent className="p-8">
-                      <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-primary/10 shadow-inner">
-                        <IconComp className="h-10 w-10 text-primary" />
-                      </div>
-                      <h3 className="mb-2 text-4xl font-black text-foreground tracking-tighter">{stat.stat_value}</h3>
-                      <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs">{stat.stat_label}</p>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-
-            <div className="mb-12 text-center space-y-4">
-              <Badge variant="outline" className="text-primary tracking-widest uppercase text-xs">Stories from the Field</Badge>
-              <h2 className="text-5xl font-black text-foreground tracking-tightest leading-none">Impact Stories</h2>
-            </div>
-            <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3 mb-24">
-              {stories.map((story) => (
-                <Card key={story.id} className="overflow-hidden border-none shadow-soft hover:shadow-glow transition-all">
-                  <div className="aspect-video relative overflow-hidden">
-                    <img
-                      src={story.image_url || "https://images.unsplash.com/photo-1471943311424-646960669fbc?w=800"}
-                      className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                      alt={story.title}
-                    />
-                    <Badge className="absolute top-4 right-4 bg-primary/90">{story.impact_type}</Badge>
-                  </div>
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-bold mb-2">{story.title}</h3>
-                    <p className="text-muted-foreground text-sm mb-4 line-clamp-3">{story.summary}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-primary font-bold">{story.beneficiaries_count} Beneficiaries</span>
-                      <Link to={`/impact/${story.slug}`} className="text-primary hover:underline text-sm font-semibold flex items-center gap-1">
-                        Read Story <ArrowRight className="h-3 w-3" />
-                      </Link>
+          <div className="mb-24 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+            {stats.map((stat, index) => {
+              const IconComp = getIcon(stat.icon || '');
+              return (
+                <Card key={index} className="text-center glass-dark sm:glass border-none shadow-soft hover:shadow-glow transition-all duration-500 hover:-translate-y-2">
+                  <CardContent className="p-8">
+                    <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-primary/10 shadow-inner">
+                      <IconComp className="h-10 w-10 text-primary" />
                     </div>
+                    <h3 className="mb-2 text-4xl font-black text-foreground tracking-tighter">{stat.stat_value}</h3>
+                    <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs">{stat.stat_label}</p>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
-          </>
-        )}
+              );
+            })}
+          </div>
+
+          <div className="mb-12 text-center space-y-4">
+            <Badge variant="outline" className="text-primary tracking-widest uppercase text-xs">Stories from the Field</Badge>
+            <h2 className="text-3xl md:text-5xl font-bold text-foreground tracking-tight leading-tight">Impact Stories</h2>
+          </div>
+          <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3 mb-24">
+            {stories.map((story) => (
+              <Card key={story.id} className="overflow-hidden border-none shadow-soft hover:shadow-glow transition-all">
+                <div className="aspect-video relative overflow-hidden">
+                  <img
+                    src={story.image_url || "https://images.unsplash.com/photo-1471943311424-646960669fbc?w=800"}
+                    className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                    alt={story.title}
+                  />
+                  <Badge className="absolute top-4 right-4 bg-primary/90">{story.impact_type}</Badge>
+                </div>
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-bold mb-2">{story.title}</h3>
+                  <p className="text-muted-foreground text-sm mb-4 line-clamp-3">{story.summary}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-primary font-bold">{story.beneficiaries_count} Beneficiaries</span>
+                    <Link to={`/impact/${story.slug}`} className="text-primary hover:underline text-sm font-semibold flex items-center gap-1">
+                      Read Story <ArrowRight className="h-3 w-3" />
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </>
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 mb-24">
           <Card className="lg:col-span-1 flex flex-col border-none shadow-soft glass hover:shadow-glow transition-all duration-500">

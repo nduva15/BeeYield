@@ -66,15 +66,15 @@ export default {
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],
-        heading: ["Outfit", "system-ui", "-apple-system", "sans-serif"],
-        display: ["Outfit", "system-ui", "-apple-system", "sans-serif"],
+        heading: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+        display: ["Inter", "system-ui", "-apple-system", "sans-serif"],
         body: ["Inter", "system-ui", "-apple-system", "sans-serif"],
       },
       fontSize: {
         "2xs": ["0.625rem", { lineHeight: "1rem" }],
-        "display-lg": ["4rem", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
-        "display-xl": ["5rem", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
-        "display-2xl": ["6rem", { lineHeight: "1.05", letterSpacing: "-0.02em" }],
+        "display-lg": ["3rem", { lineHeight: "1.1", letterSpacing: "-0.01em" }],
+        "display-xl": ["3.5rem", { lineHeight: "1.1", letterSpacing: "-0.01em" }],
+        "display-2xl": ["4.5rem", { lineHeight: "1.05", letterSpacing: "-0.01em" }],
       },
       letterSpacing: {
         tightest: "-0.04em",

@@ -31,7 +31,7 @@ const CommitmentPage = () => {
             {
               id: "sdg-2", number: 2, title: "Zero Hunger", color: "bg-amber-500", icon: "Wheat",
               description: "Pollination services boost agricultural yields.",
-              impact: "25 acres pollinated"
+              impact: "25+ acres pollinated"
             },
             {
               id: "sdg-13", number: 13, title: "Climate Action", color: "bg-emerald-600", icon: "TreePine",

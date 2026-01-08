@@ -266,9 +266,10 @@ def get_trace_journey(batch_code: str) -> Optional[schemas.TraceResponse]:
             story_title=f"Meet {farmer.name}" if farmer else "Our Story",
             story_content=farmer.story if farmer else "Sustainably harvested from Kenya's rich landscapes.",
             impact_stats={
-                "farmer_fair_pay": "100%",
+                "acres_pollinated": "25+ Acres",
+                "beekeepers": "1 Beekeeper",
                 "bees_protected": "Yes",
-                "biodiversity_score": "High"
+                "farmer_fair_pay": "100%"
             },
             sensor_snapshot=sensor_snapshot,
             timeline=journey_timeline

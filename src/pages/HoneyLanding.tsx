@@ -61,13 +61,7 @@ const HoneyLanding = () => {
     return variant ? variant.price_kes : (product.variants[0]?.price_kes || 0);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
-      </div>
-    );
-  }
+  // Products and stats will load in background to avoid blocking the main page content
 
   return (
     <div className="min-h-screen bg-background">
@@ -79,7 +73,7 @@ const HoneyLanding = () => {
               🍯 Sustainably Harvested in Makueni
             </Badge>
 
-            <h1 className="text-display-xl md:text-display-2xl font-black leading-none tracking-tightest">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight">
               Honey That<br />
               <span className="text-primary italic">Gives Back</span>
             </h1>
@@ -97,21 +91,25 @@ const HoneyLanding = () => {
               </Button>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-10 border-t border-border/50 font-black">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-8 pt-10 border-t border-border/50 font-bold">
               <div>
-                <p className="text-4xl md:text-5xl text-primary tracking-tightest">{getStatValue('active_colonies', '184+')}</p>
+                <p className="text-3xl md:text-4xl text-primary tracking-tight">{getStatValue('active_colonies', '184+')}</p>
                 <p className="text-[10px] uppercase tracking-widest text-muted-foreground mt-1">Active Hives</p>
               </div>
               <div>
-                <p className="text-4xl md:text-5xl text-primary tracking-tightest">50%</p>
+                <p className="text-3xl md:text-4xl text-primary tracking-tight">{getStatValue('acres_pollinated', '25+')}</p>
+                <p className="text-[10px] uppercase tracking-widest text-muted-foreground mt-1">Acres Pollinated</p>
+              </div>
+              <div>
+                <p className="text-3xl md:text-4xl text-primary tracking-tight">50%</p>
                 <p className="text-[10px] uppercase tracking-widest text-muted-foreground mt-1">Bee Share</p>
               </div>
               <div>
-                <p className="text-4xl md:text-5xl text-primary tracking-tightest">{getStatValue('trees_planted', '2,500+')}</p>
+                <p className="text-3xl md:text-4xl text-primary tracking-tight">{getStatValue('trees_planted', '2,500+')}</p>
                 <p className="text-[10px] uppercase tracking-widest text-muted-foreground mt-1">Trees Planted</p>
               </div>
               <div>
-                <p className="text-4xl md:text-5xl text-primary tracking-tightest">100%</p>
+                <p className="text-3xl md:text-4xl text-primary tracking-tight">100%</p>
                 <p className="text-[10px] uppercase tracking-widest text-muted-foreground mt-1">Traceable</p>
               </div>
             </div>
@@ -125,8 +123,8 @@ const HoneyLanding = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-24 space-y-6">
             <Badge variant="outline" className="text-primary border-primary px-4 py-1">The BeeYield Standard</Badge>
-            <h2 className="text-5xl md:text-7xl font-black tracking-tightest leading-none">Not Just Honey. <br /><span className="text-primary italic">A Promise.</span></h2>
-            <p className="text-xl md:text-2xl text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed">Hand-harvested with respect for the pollinators that make life sweet.</p>
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight">Not Just Honey. <br /><span className="text-primary italic">A Promise.</span></h2>
+            <p className="text-lg md:text-xl text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed">Hand-harvested with respect for the pollinators that make life sweet.</p>
           </div>
 
           <div className="grid md:grid-cols-4 gap-8 max-w-7xl mx-auto">
@@ -144,6 +142,79 @@ const HoneyLanding = () => {
                 <p className="text-muted-foreground font-semibold leading-relaxed">{f.desc}</p>
               </Card>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Traceability Showcase */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-20 items-center">
+            <div className="space-y-10">
+              <Badge className="bg-primary/20 text-primary border-primary/30 px-6 py-2 rounded-2xl font-black uppercase tracking-widest shadow-sm">
+                🔍 Transparency First
+              </Badge>
+              <h2 className="text-5xl md:text-7xl font-black leading-tight tracking-tightest">
+                Every Jar Has a<br />
+                <span className="text-primary italic">Story to Tell.</span>
+              </h2>
+              <p className="text-xl text-muted-foreground font-medium leading-relaxed max-w-xl">
+                Scan the QR code on your BeeYield jar to unlock its entire journey—from the specific hive in Kibwezi to the date it was hand-harvested.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="relative flex-1">
+                  <QrCode className="absolute left-4 top-1/2 -translate-y-1/2 h-6 w-6 text-primary" />
+                  <input
+                    type="text"
+                    placeholder="Enter Batch ID (e.g. DEMO-001)"
+                    className="w-full h-16 bg-muted/30 border-2 border-primary/10 rounded-2xl pl-14 pr-4 font-bold text-lg focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all outline-none"
+                  />
+                </div>
+                <Button size="lg" className="h-16 px-10 text-xl font-black shadow-glow" asChild>
+                  <Link to="/traceability">Trace Now</Link>
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-3 gap-8 pt-10 border-t border-border/50">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-primary">
+                    <Shield className="h-5 w-5" />
+                    <span className="font-black text-xs uppercase tracking-widest">Verified</span>
+                  </div>
+                  <p className="text-sm font-semibold text-muted-foreground">Blockchain secured records</p>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-primary">
+                    <MapPin className="h-5 w-5" />
+                    <span className="font-black text-xs uppercase tracking-widest">Origin</span>
+                  </div>
+                  <p className="text-sm font-semibold text-muted-foreground">Precise GPS apiary tracking</p>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-primary">
+                    <Award className="h-5 w-5" />
+                    <span className="font-black text-xs uppercase tracking-widest">Purity</span>
+                  </div>
+                  <p className="text-sm font-semibold text-muted-foreground">Bio-acoustic health data</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="relative">
+              <div className="relative z-10 p-4 bg-white/50 backdrop-blur-xl border border-white/20 rounded-[3rem] shadow-premium transform hover:-rotate-2 transition-transform duration-700">
+                <img
+                  src="https://images.unsplash.com/photo-1589118949245-7d38baf380d6?w=800&auto=format&fit=crop&q=80"
+                  alt="Traceability Interface"
+                  className="rounded-[2.5rem] shadow-2xl"
+                />
+                <div className="absolute -bottom-10 -right-10 bg-primary p-10 rounded-[2.5rem] shadow-glow animate-pulse hidden md:block">
+                  <QrCode className="h-20 w-20 text-white" />
+                </div>
+              </div>
+              {/* Background Glow */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-primary/5 blur-[120px] -z-10 rounded-full" />
+            </div>
           </div>
         </div>
       </section>
@@ -206,7 +277,7 @@ const HoneyLanding = () => {
 
       {/* CTA section */}
       <section className="py-32 bg-primary text-white text-center">
-        <h2 className="text-5xl md:text-8xl font-black tracking-tighter mb-10">Taste the Truth</h2>
+        <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-10">Taste the Truth</h2>
         <Button size="lg" className="h-20 px-16 text-2xl font-black bg-white text-primary hover:bg-white/90 shadow-2xl" asChild>
           <Link to="/shop">Buy BeeYield Honey</Link>
         </Button>

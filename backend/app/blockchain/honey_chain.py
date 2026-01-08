@@ -295,49 +295,6 @@ class HoneyBlockchain:
 
     # ... (rest of methods) ...
 
-    def _bootstrap_demo_data(self) -> None:
-        # ... (existing bootstrap code) ...
-
-            # 2. Sarah Nduku (Kibwezi)
-            self.register_farmer({
-                "farmer_id": "F-SAR-002", "name": "Sarah Nduku", "region": "Eastern", "county": "Makueni",
-                "location_name": "Kibwezi South", "coordinates": {"latitude": -2.42, "longitude": 37.95},
-                "story": "Sarah teaches sustainable farming to women's groups in Kibwezi.",
-                "registration_date": (datetime.now() - timedelta(days=400)).isoformat()
-            })
-            self.register_apiary({
-                "apiary_id": "A-KIB-BAOBAB", "apiary_code": "KIB-02", "name": "Baobab Grove",
-                "farmer_id": "F-SAR-002", "location_name": "Kibwezi", "region": "Eastern", "county": "Makueni",
-                "coordinates": {"latitude": -2.42, "longitude": 37.95}, "environment_type": "Acacia Scrubland",
-                "flora_types": ["Baobab", "Acacia"]
-            })
-            self.register_hive({
-                "hive_id": "H-KIB-02-05", "hive_code": "KIB-02-H05", "apiary_id": "A-KIB-BAOBAB",
-                "farmer_id": "F-SAR-002", "bee_type": "African Honey Bee", "hive_type": "Langstroth",
-                "has_sensors": True, "installation_date": "2022-03-15"
-            })
-            # SENSOR ALERT: Disease Detected & Prevented
-            self.record_sensor_data({
-                "hive_id": "H-KIB-02-05", # Sarah's Hive
-                "timestamp": "2024-01-10T09:00:00", # Before harvest
-                "temperature_celsius": 36.5, # Slightly elevated
-                "humidity_percent": 55.0,
-                "audio_anomaly": "ACOUSTIC_VARROA_PATTERN", # The Trigger
-                "sound_level_db": 72.0,
-                "bee_activity_level": 8
-            })
-            self.record_harvest({
-                "harvest_id": "HRV-KIB-02-24", "hive_id": "H-KIB-02-05", "apiary_id": "A-KIB-BAOBAB",
-                "farmer_id": "F-SAR-002", "harvester_name": "Sarah Nduku",
-                "harvest_date": "2024-02-20", "quantity_kg": 12.8, "quantity_left_for_bees_kg": 12.8,
-                "extraction_method": "Centrifuge", "honey_type": "Multi-floral", "bee_flower": "Baobab"
-            })
-            self.create_batch({
-                "batch_id": "BATCH-KIB-002", "batch_code": "KIB-GOLD-24", "honey_type": "Savannah Gold",
-                "harvest_id": "HRV-KIB-02-24", "apiary_code": "KIB-02", "production_date": "2024-02-25",
-                "created_by": "SYSTEM"
-            })
-    
     # ==================== HARVEST OPERATIONS ====================
     
     def record_harvest(self, harvest_data: Dict[str, Any]) -> HoneyBlock:
@@ -701,184 +658,116 @@ class HoneyBlockchain:
         print("🐝 Initializing HoneyChain Bootstrap...")
         
         try:
-            # 1. Register Farmer
-            farmer_data = {
-                "farmer_id": "F-JOHN-KAMAU",
-                "name": "John Kamau",
-                "phone": "+254 712 345 678",
-                "experience_years": 15,
-                "story": "John has been beekeeping for 15 years in the foothills of Mt. Kenya. He is a pioneer in organic methods.",
-                "region": "Central",
-                "county": "Nyeri",
-                "coordinates": {"latitude": -0.4264, "longitude": 36.9476},
-                "registration_date": datetime.utcnow().isoformat()
-            }
-            self.register_farmer(farmer_data)
-
-            # 2. Register Apiary
-            apiary_data = {
-                "apiary_id": "A-MK-GROVE",
-                "apiary_code": "MK-NY-01",
-                "name": "Mt. Kenya Highland Grove",
-                "farmer_id": "F-JOHN-KAMAU",
-                "location_name": "Nyeri Forest Edge",
-                "region": "Central",
-                "county": "Nyeri",
-                "coordinates": {"latitude": -0.4300, "longitude": 36.9500},
-                "environment_type": "Indigineous Forest Edge",
-                "flora_types": ["Acacia", "Croton", "Wild Jasmine"]
-            }
-            self.register_apiary(apiary_data)
-
-            # 3. Register Hive
-            hive_data = {
-                "hive_id": "H-PRECISION-01",
-                "hive_code": "MK-01-H05",
-                "apiary_id": "A-MK-GROVE",
-                "farmer_id": "F-JOHN-KAMAU",
-                "bee_type": "African Honey Bee (Apis m. scutellata)",
-                "hive_type": "Langstroth Precision",
-                "installation_date": (datetime.now() - timedelta(days=400)).isoformat(),
-                "is_monitored": True
-            }
-            self.register_hive(hive_data)
-
-            # 4. Record Sensor Data
-            sensor_data = {
-                "hive_id": "H-PRECISION-01",
-                "temperature_celsius": 34.2,
-                "humidity_percent": 52.0,
-                "weight_kg": 42.5,
-                "sound_level_db": 65.0,
-                "timestamp": datetime.utcnow().isoformat()
-            }
-            self.record_sensor_data(sensor_data)
-
-            # 5. Record Harvest
-            harvest_id = "HARV-2024-001"
-            harvest_data = {
-                "harvest_id": harvest_id,
-                "hive_id": "H-PRECISION-01",
-                "apiary_id": "A-MK-GROVE",
-                "farmer_id": "F-JOHN-KAMAU",
-                "harvester_name": "John Kamau",
-                "harvest_date": (datetime.now() - timedelta(days=15)).isoformat(),
-                "quantity_kg": 15.0,
-                "left_for_bees_kg": 15.0,
-                "extraction_method": "Cold Centrifuge",
-                "honey_type": "Acacia",
-                "bee_flower": "Acacia"
-            }
-            self.record_harvest(harvest_data)
-
-            # 6. Create Product Batch
-            batch_data = {
-                "batch_id": "BATCH-DEMO-001",
-                "batch_code": "DEMO-001",
-                "honey_type": "Premium Acacia",
-                "harvest_id": harvest_id,
-                "apiary_code": "MK-NY-01",
-                "production_date": datetime.now().isoformat(),
-                "created_by": "SYSTEM"
-            }
-            self.create_batch(batch_data)
-            
-            print("✅ HoneyChain Bootstrap Complete. DEMO-001 is live.")
-
-            # --- KIBWEZI BATCHES (Added on Request) ---
-            print("🐝 Bootstrapping Kibwezi Batches...")
-
-            # 1. Timothy Mathuva (Kibwezi)
+            # 1. Register Only One Farmer: Timothy Nduva
             self.register_farmer({
-                "farmer_id": "F-MAT-001", "name": "Timothy Mathuva", "region": "Eastern", "county": "Makueni",
-                "location_name": "Kibwezi HQ", "coordinates": {"latitude": -2.41, "longitude": 37.97},
-                "story": "Timothy founded BeeYield on his family farm to combine his passion for tech.",
+                "farmer_id": "F-MAT-001", 
+                "name": "Timothy Nduva", 
+                "region": "Eastern", 
+                "county": "Makueni",
+                "location_name": "Kibwezi HQ", 
+                "coordinates": {"latitude": -2.41, "longitude": 37.97},
+                "story": "Timothy is a master beekeeper in Kibwezi, dedicated to sustainable pollination and protecting the African honey bee.",
                 "registration_date": (datetime.now() - timedelta(days=600)).isoformat()
             })
+
+            # 2. Register Apiary for Timothy
             self.register_apiary({
-                "apiary_id": "A-KIB-SAVANNAH", "apiary_code": "KIB-01", "name": "Savannah Wooded Apiary",
-                "farmer_id": "F-MAT-001", "location_name": "Kibwezi", "region": "Eastern", "county": "Makueni",
-                "coordinates": {"latitude": -2.41, "longitude": 37.97}, "environment_type": "Savannah Wooded",
+                "apiary_id": "A-KIB-SAVANNAH", 
+                "apiary_code": "KIB-01", 
+                "name": "Kibwezi Savannah Apiary",
+                "farmer_id": "F-MAT-001", 
+                "location_name": "Kibwezi", 
+                "region": "Eastern", 
+                "county": "Makueni",
+                "coordinates": {"latitude": -2.41, "longitude": 37.97}, 
+                "environment_type": "Savannah Wooded",
                 "flora_types": ["Acacia Tortilis", "Citrus", "Wildflowers"]
             })
+
+            # 3. Register Hive
             self.register_hive({
-                "hive_id": "H-KIB-01-01", "hive_code": "KIB-01-H01", "apiary_id": "A-KIB-SAVANNAH",
-                "farmer_id": "F-MAT-001", "bee_type": "African Honey Bee", "hive_type": "Langstroth",
-                "has_sensors": True, "installation_date": "2020-05-20"
-            })
-            self.record_harvest({
-                "harvest_id": "HRV-KIB-01-24", "hive_id": "H-KIB-01-01", "apiary_id": "A-KIB-SAVANNAH",
-                "farmer_id": "F-MAT-001", "harvester_name": "Timothy Mathuva",
-                "harvest_date": "2024-01-15", "quantity_kg": 15.5, "quantity_left_for_bees_kg": 15.5,
-                "extraction_method": "Centrifuge", "honey_type": "Acacia", "bee_flower": "Acacia"
-            })
-            self.create_batch({
-                "batch_id": "BATCH-KIB-001", "batch_code": "KIB-ACACIA-24", "honey_type": "Organic Acacia",
-                "harvest_id": "HRV-KIB-01-24", "apiary_code": "KIB-01", "production_date": "2024-01-20",
-                "created_by": "SYSTEM"
+                "hive_id": "H-KIB-01-01", 
+                "hive_code": "KIB-01-H01", 
+                "apiary_id": "A-KIB-SAVANNAH",
+                "farmer_id": "F-MAT-001", 
+                "bee_type": "African Honey Bee", 
+                "hive_type": "Langstroth",
+                "has_sensors": True, 
+                "installation_date": "2020-05-20"
             })
 
-            # 2. Sarah Nduku (Kibwezi)
-            self.register_farmer({
-                "farmer_id": "F-SAR-002", "name": "Sarah Nduku", "region": "Eastern", "county": "Makueni",
-                "location_name": "Kibwezi South", "coordinates": {"latitude": -2.42, "longitude": 37.95},
-                "story": "Sarah teaches sustainable farming to women's groups in Kibwezi.",
-                "registration_date": (datetime.now() - timedelta(days=400)).isoformat()
-            })
-            self.register_apiary({
-                "apiary_id": "A-KIB-BAOBAB", "apiary_code": "KIB-02", "name": "Baobab Grove",
-                "farmer_id": "F-SAR-002", "location_name": "Kibwezi", "region": "Eastern", "county": "Makueni",
-                "coordinates": {"latitude": -2.42, "longitude": 37.95}, "environment_type": "Acacia Scrubland",
-                "flora_types": ["Baobab", "Acacia"]
-            })
-            self.register_hive({
-                "hive_id": "H-KIB-02-05", "hive_code": "KIB-02-H05", "apiary_id": "A-KIB-BAOBAB",
-                "farmer_id": "F-SAR-002", "bee_type": "African Honey Bee", "hive_type": "Langstroth",
-                "has_sensors": True, "installation_date": "2022-03-15"
-            })
-            
-            # Add sensor data with disease detection (Varroa mite pattern)
+            # 4. Record Sensor Data (with Health Shield Trigger)
             self.record_sensor_data({
-                "hive_id": "H-KIB-02-05",
-                "apiary_id": "A-KIB-BAOBAB",
-                "timestamp": "2024-02-15T10:30:00",
+                "hive_id": "H-KIB-01-01",
+                "apiary_id": "A-KIB-SAVANNAH",
+                "timestamp": "2023-12-20T10:30:00",
                 "temperature": 34.2,
                 "humidity": 65.5,
                 "weight": 28.5,
-                "audio_anomaly": "ACOUSTIC_VARROA_PATTERN"  # This triggers Health Shield event
-            })
-            
-            self.record_harvest({
-                "harvest_id": "HRV-KIB-02-24", "hive_id": "H-KIB-02-05", "apiary_id": "A-KIB-BAOBAB",
-                "farmer_id": "F-SAR-002", "harvester_name": "Sarah Nduku",
-                "harvest_date": "2024-02-20", "quantity_kg": 12.8, "quantity_left_for_bees_kg": 12.8,
-                "extraction_method": "Centrifuge", "honey_type": "Multi-floral", "bee_flower": "Baobab"
-            })
-            self.create_batch({
-                "batch_id": "BATCH-KIB-002", "batch_code": "KIB-GOLD-24", "honey_type": "Savannah Gold",
-                "harvest_id": "HRV-KIB-02-24", "apiary_code": "KIB-02", "production_date": "2024-02-25",
-                "created_by": "SYSTEM"
+                "audio_anomaly": "ACOUSTIC_VARROA_PATTERN"
             })
 
-            # 3. David Mutisya (Kibwezi)
-            self.register_farmer({
-                "farmer_id": "F-DAV-003", "name": "David Mutisya", "region": "Eastern", "county": "Makueni",
-                "location_name": "Kibwezi Forest", "coordinates": {"latitude": -2.39, "longitude": 38.01},
-                "story": "David focuses on conservation beekeeping, planting indigenous trees.",
-                "registration_date": (datetime.now() - timedelta(days=200)).isoformat()
+            # 5. Record Harvest
+            self.record_harvest({
+                "harvest_id": "HRV-KIB-01-24", 
+                "hive_id": "H-KIB-01-01", 
+                "apiary_id": "A-KIB-SAVANNAH",
+                "farmer_id": "F-MAT-001", 
+                "harvester_name": "Timothy Nduva",
+                "harvest_date": "2024-01-15", 
+                "quantity_kg": 15.5, 
+                "left_for_bees_kg": 15.5,
+                "extraction_method": "Centrifuge", 
+                "honey_type": "Acacia", 
+                "bee_flower": "Acacia"
             })
-            self.register_apiary({
-                "apiary_id": "A-KIB-RIVER", "apiary_code": "KIB-03", "name": "Riverine Forest",
-                "farmer_id": "F-DAV-003", "location_name": "Kibwezi", "region": "Eastern", "county": "Makueni",
-                "coordinates": {"latitude": -2.39, "longitude": 38.01}, "environment_type": "Riverine Forest",
-                "flora_types": ["River Gum", "Croton"]
-            })
+
+            # 6. Create Batches
+            # DEMO-001 (Main Demo)
             self.create_batch({
-                # Shortcut directly to batch for David (simulating simple record)
-                "batch_id": "BATCH-KIB-003", "batch_code": "KIB-PREMIUM-24", "honey_type": "Riverine Wild",
-                "harvest_id": "HRV-KIB-02-24", # Reusing harvest for simplicity/fallback or would need new harvest
-                "apiary_code": "KIB-03", "production_date": "2024-03-10",
-                "created_by": "SYSTEM"
+                "batch_id": "BATCH-DEMO-001",
+                "batch_code": "DEMO-001",
+                "honey_type": "Kibwezi Premium Acacia",
+                "harvest_id": "HRV-KIB-01-24",
+                "apiary_code": "KIB-01",
+                "production_date": datetime.now().isoformat(),
+                "created_by": "SYSTEM",
+                "impact_stats": {
+                    "acres_pollinated": "25+ Acres",
+                    "beekeepers": "1 Beekeeper",
+                    "bees_protected": "Yes",
+                    "carbon_sequestered": "1.2 Tons"
+                }
+            })
+
+            # KIB-ACACIA-24
+            self.create_batch({
+                "batch_id": "BATCH-KIB-001", 
+                "batch_code": "KIB-ACACIA-24", 
+                "honey_type": "Organic Acacia",
+                "harvest_id": "HRV-KIB-01-24", 
+                "apiary_code": "KIB-01", 
+                "production_date": "2024-01-20",
+                "created_by": "SYSTEM",
+                "impact_stats": {
+                    "acres_pollinated": "25+ Acres",
+                    "beekeepers": "1 Beekeeper"
+                }
+            })
+
+            # KIB-GOLD-24
+            self.create_batch({
+                "batch_id": "BATCH-KIB-002", 
+                "batch_code": "KIB-GOLD-24", 
+                "honey_type": "Savannah Gold",
+                "harvest_id": "HRV-KIB-01-24", 
+                "apiary_code": "KIB-01", 
+                "production_date": "2024-02-25",
+                "created_by": "SYSTEM",
+                "impact_stats": {
+                    "acres_pollinated": "25+ Acres",
+                    "beekeepers": "1 Beekeeper"
+                }
             })
 
         except Exception as e:

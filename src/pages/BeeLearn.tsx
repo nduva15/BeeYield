@@ -228,7 +228,7 @@ const BeeLearn = () => {
           <blockquote className="text-2xl md:text-4xl font-black italic max-w-4xl mx-auto leading-tight">
             "Knowledge is like honey; it's best when shared, and it never expires. We're seeding a future where everyone can be a guardian of the honey bee."
           </blockquote>
-          <p className="mt-8 text-honey-light font-bold">— Timothy Mathuva, CEO</p>
+          <p className="mt-8 text-honey-light font-bold">— Timothy Nduva, CEO</p>
         </div>
         <div className="absolute -top-10 -left-10 w-40 h-40 bg-white/5 rounded-full blur-2xl" />
         <div className="absolute -bottom-10 -right-10 w-60 h-60 bg-primary/10 rounded-full blur-2xl" />

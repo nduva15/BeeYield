@@ -34,7 +34,7 @@ def company_info():
         mission="Revolutionizing beekeeping through blockchain traceability and sustainable practices.",
         vision="To create a world where every drop of honey tells a story of ethical sourcing and environmental stewardship.",
         founded_year=2020,
-        headquarters="Nairobi, Kenya",
+        headquarters="Kibwezi, Makueni, Kenya",
         contact_email="hello@beeyield.com",
         contact_phone="+254 700 000 000",
         values=values,
@@ -64,11 +64,11 @@ def team_members():
     return [
         { 
             "id": "team-1",
-            "name": "Timothy Mathuva", 
+            "name": "Timothy Nduva", 
             "role": "CEO & Founder", 
             "bio": "Visionary leader driving BeeYield's mission to revolutionize pollination through technology.",
             "image_url": "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400",
-            "linkedin_url": "https://www.linkedin.com/in/timothymathuva/",
+            "linkedin_url": "https://www.linkedin.com/in/timothynduva/",
             "is_leadership": True,
             "display_order": 1,
             "is_active": True,
@@ -76,7 +76,7 @@ def team_members():
         },
         { 
             "id": "team-2",
-            "name": "Carole Mathuva", 
+            "name": "Carole Nduva", 
             "role": "Chief Growth Officer & Co-founder", 
             "bio": "Business Development lead, shaping partnerships and driving company growth.",
             "image_url": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400",
@@ -88,7 +88,7 @@ def team_members():
         },
         { 
             "id": "team-3",
-            "name": "Agatha Mathuva", 
+            "name": "Agatha Nduva", 
             "role": "Chief IT Head & Co-founder", 
             "bio": "Leading technology infrastructure and digital innovation at BeeYield.",
             "image_url": "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400",

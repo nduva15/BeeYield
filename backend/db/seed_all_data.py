@@ -297,22 +297,10 @@ def seed_traceability():
     print("\n--- Seeding Traceability (Farmer -> Apiary -> Hive -> Harvest) ---")
     farmers = [
         {
-            "farmer_id": "F-MAT-001", "name": "Timothy Mathuva", "registration_date": datetime.now().isoformat(),
-            "region": "Kibwezi", "county": "Makueni", "experience_years": 4, 
-            "story": "Timothy founded BeeYield on his family farm to combine his passion for tech.",
+            "farmer_id": "F-MAT-001", "name": "Timothy Nduva", "registration_date": datetime.now().isoformat(),
+            "region": "Kibwezi", "county": "Makueni", "experience_years": 8, 
+            "story": "Timothy is a master beekeeper and conservationist in Kibwezi, leading the way in sustainable honey production.",
             "latitude": -2.41, "longitude": 37.97, "location_name": "Kibwezi HQ", "certification_status": "CERTIFIED"
-        },
-        {
-            "farmer_id": "F-SAR-002", "name": "Sarah Nduku", "registration_date": (datetime.now() - timedelta(days=400)).isoformat(),
-            "region": "Kibwezi", "county": "Makueni", "experience_years": 12, 
-            "story": "Sarah is a community leader who teaches sustainable farming to women's groups in Kibwezi.",
-            "latitude": -2.42, "longitude": 37.95, "location_name": "Kibwezi South", "certification_status": "CERTIFIED"
-        },
-        {
-            "farmer_id": "F-DAV-003", "name": "David Mutisya", "registration_date": (datetime.now() - timedelta(days=200)).isoformat(),
-            "region": "Kibwezi", "county": "Makueni", "experience_years": 7, 
-            "story": "David focuses on conservation beekeeping, planting indigenous trees to support his colonies.",
-            "latitude": -2.39, "longitude": 38.01, "location_name": "Kibwezi Forest Edge", "certification_status": "CERTIFIED"
         }
     ]
     f_recs = supabase.table("farmers").insert(farmers).execute().data
@@ -323,27 +311,11 @@ def seed_traceability():
     apiaries = [
         # Timothy's Apiary
         {
-            "apiary_id": str(uuid.uuid4()), "apiary_code": "KIB-01", "name": "Main Apiary - Savannah",
+            "apiary_id": str(uuid.uuid4()), "apiary_code": "KIB-01", "name": "Kibwezi Savannah Apiary",
             "farmer_id": f_map["F-MAT-001"], "environment_type": "Savannah Wooded", 
-            "flora_types": ["Acacia", "Citrus", "Wildflowers"], "location_name": "Kibwezi",
-            "latitude": -2.40, "longitude": 37.96, "region": "Eastern", "county": "Makueni",
+            "flora_types": ["Acacia Tortilis", "Citrus", "Wildflowers"], "location_name": "Kibwezi",
+            "latitude": -2.41, "longitude": 37.97, "region": "Eastern", "county": "Makueni",
             "hive_count": 184, "established_date": "2020-05-15", "is_active": True
-        },
-        # Sarah's Apiary
-        {
-            "apiary_id": str(uuid.uuid4()), "apiary_code": "KIB-02", "name": "Baobab Grove Apiary",
-            "farmer_id": f_map["F-SAR-002"], "environment_type": "Acacia Scrubland", 
-            "flora_types": ["Acacia Tortilis", "Baobab"], "location_name": "Kibwezi",
-            "latitude": -2.42, "longitude": 37.95, "region": "Eastern", "county": "Makueni",
-            "hive_count": 45, "established_date": "2022-02-10", "is_active": True
-        },
-        # David's Apiary
-        {
-            "apiary_id": str(uuid.uuid4()), "apiary_code": "KIB-03", "name": "Riverine Forest Apiary",
-            "farmer_id": f_map["F-DAV-003"], "environment_type": "Riverine Forest", 
-            "flora_types": ["River Gum", "Croton", "Wild Basil"], "location_name": "Kibwezi",
-            "latitude": -2.39, "longitude": 38.01, "region": "Eastern", "county": "Makueni",
-            "hive_count": 62, "established_date": "2023-08-20", "is_active": True
         }
     ]
     a_recs = supabase.table("apiaries").insert(apiaries).execute().data
@@ -358,20 +330,6 @@ def seed_traceability():
             "apiary_id": a_map["KIB-01"], "farmer_id": f_map["F-MAT-001"],
             "hive_type": "Langstroth", "bee_type": "African Honey Bee", 
             "frame_count": 10, "has_sensors": True, "installation_date": "2020-05-20"
-        },
-        # Sarah's Hive
-        {
-            "hive_id": str(uuid.uuid4()), "hive_code": "KIB-02-H05", 
-            "apiary_id": a_map["KIB-02"], "farmer_id": f_map["F-SAR-002"],
-            "hive_type": "Langstroth", "bee_type": "African Honey Bee", 
-            "frame_count": 10, "has_sensors": True, "installation_date": "2022-03-15"
-        },
-        # David's Hive
-        {
-            "hive_id": str(uuid.uuid4()), "hive_code": "KIB-03-H12", 
-            "apiary_id": a_map["KIB-03"], "farmer_id": f_map["F-DAV-003"],
-            "hive_type": "Top Bar", "bee_type": "African Honey Bee", 
-            "frame_count": 24, "has_sensors": True, "installation_date": "2023-09-01"
         }
     ]
     h_recs = supabase.table("hives").insert(hives).execute().data
@@ -387,56 +345,39 @@ def seed_traceability():
             "harvest_date": "2024-01-15", "quantity_kg": 15.5, "quantity_left_for_bees_kg": 15.5,
             "extraction_method": "Centrifuge", "nectar_source": "Acacia Tortilis",
             "weather_conditions": "Sunny, 32°C", "moisture_content_percent": 17.2, "quality_score": 98
-        },
-        # Sarah's Harvest
-        {
-            "harvest_id": str(uuid.uuid4()), "harvest_code": "HRV-24-KIB-02", 
-            "hive_id": h_map["KIB-02-H05"], "farmer_id": f_map["F-SAR-002"],
-            "harvest_date": "2024-02-20", "quantity_kg": 12.8, "quantity_left_for_bees_kg": 12.8,
-            "extraction_method": "Centrifuge", "nectar_source": "Multi-floral",
-            "weather_conditions": "Partly Cloudy, 29°C", "moisture_content_percent": 18.1, "quality_score": 96
-        },
-        # David's Harvest
-        {
-            "harvest_id": str(uuid.uuid4()), "harvest_code": "HRV-24-KIB-03", 
-            "hive_id": h_map["KIB-03-H12"], "farmer_id": f_map["F-DAV-003"],
-            "harvest_date": "2024-03-05", "quantity_kg": 18.2, "quantity_left_for_bees_kg": 18.2,
-            "extraction_method": "Press", "nectar_source": "Riverine Wildflowers",
-            "weather_conditions": "Clear, 30°C", "moisture_content_percent": 17.5, "quality_score": 99
         }
     ]
     harv_recs = supabase.table("harvests").insert(harvests).execute().data
     
-    # Map harvest IDs (using harvest_code is enough since we inserted in order, but let's be safe if possible. Here we assume 1:1 mapping for simplicity or just use index if insertion preserves order. Supabase returns inserted rows.)
-    # A safer way is to map by harvest_code
     harv_map = {h['harvest_code']: h['id'] for h in harv_recs}
     
     batches = [
         {
-            "batch_code": "DEMO-KIB-24", "packaging_date": "2024-01-20", 
+            "batch_code": "DEMO-001", "packaging_date": "2024-01-20", 
             "expiry_date": "2026-01-20", "quantity_jars": 30, "jar_size_grams": 500,
-            "harvest_id": harv_map["HRV-24-KIB-01"] # Linking to Timothy's harvest
+            "harvest_id": harv_map["HRV-24-KIB-01"]
         },
         {
             "batch_code": "KIB-ACACIA-24", "packaging_date": "2024-02-25", 
             "expiry_date": "2026-02-25", "quantity_jars": 45, "jar_size_grams": 500,
-            "harvest_id": harv_map["HRV-24-KIB-02"] # Linking to Sarah's harvest
+            "harvest_id": harv_map["HRV-24-KIB-01"]
         },
         {
             "batch_code": "KIB-GOLD-24", "packaging_date": "2024-03-10", 
             "expiry_date": "2026-03-10", "quantity_jars": 60, "jar_size_grams": 500,
-            "harvest_id": harv_map["HRV-24-KIB-03"] # Linking to David's harvest
+            "harvest_id": harv_map["HRV-24-KIB-01"]
         }
     ]
     supabase.table("batches").insert(batches).execute()
-    print("   ✓ Journey data established (3 Batches)")
+    print("   ✓ Journey data established (3 Batches linked to Timothy Nduva)")
 
 def seed_cms():
     print("\n--- Seeding CMS (Stats, Milestones, Team, Blog) ---")
     stats = [
-        {"stat_key": "hives", "stat_label": "Hives Managed", "stat_value": "184", "icon": "Hexagon", "category": "impact", "display_order": 1},
-        {"stat_key": "farmers", "stat_label": "Farmers Impacted", "stat_value": "50+", "icon": "Users", "category": "social", "display_order": 2},
-        {"stat_key": "trees", "stat_label": "Trees Planted", "stat_value": "2,500+", "icon": "TreePine", "category": "environment", "display_order": 3}
+        {"stat_key": "active_colonies", "stat_value": "184", "stat_label": "Active Hives", "icon": "Hexagon", "display_order": 1},
+        {"stat_key": "acres_pollinated", "stat_value": "25+", "stat_label": "Acres Pollinated", "icon": "Sprout", "display_order": 2},
+        {"stat_key": "apiary_size", "stat_value": "5", "stat_label": "Acre Apiary", "icon": "MapPin", "display_order": 3},
+        {"stat_key": "trees_planted", "stat_value": "2,500+", "stat_label": "Trees Planted", "icon": "TreePine", "display_order": 4}
     ]
     supabase.table("company_stats").insert(stats).execute()
 
@@ -447,12 +388,12 @@ def seed_cms():
     supabase.table("company_milestones").insert(milestones).execute()
 
     team = [
-        {"name": "Timothy Mathuva", "role": "CEO & Founder", "is_leadership": True, "department": "Leadership", "display_order": 1, "image_url": "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400", "bio": "Leading the pollination revolution."}
+        {"name": "Timothy Nduva", "role": "CEO & Founder", "is_leadership": True, "department": "Leadership", "display_order": 1, "image_url": "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400", "bio": "Leading the pollination revolution with data-driven beekeeping."}
     ]
     supabase.table("team_members").insert(team).execute()
 
     blog = [
-        {"title": "The Future of Smart Beekeeping", "slug": "future-smart-beekeeping", "excerpt": "How IoT is saving the African honey bee.", "content": "<p>Content...</p>", "category": "Technology", "status": "published", "author_name": "Agatha Mathuva", "published_at": datetime.now().isoformat()}
+        {"title": "The Future of Smart Beekeeping", "slug": "future-smart-beekeeping", "excerpt": "How IoT is saving the African honey bee.", "content": "<p>Content...</p>", "category": "Technology", "status": "published", "author_name": "Agatha Nduva", "published_at": datetime.now().isoformat()}
     ]
     supabase.table("blog_posts").insert(blog).execute()
     
@@ -510,7 +451,7 @@ def seed_sdgs():
     print("\n--- Seeding SDGs ---")
     sdgs = [
         {"number": 1, "title": "No Poverty", "description": "Training programs for smallholder farmers.", "impact": "50+ farmers trained", "color": "bg-red-500", "icon": "Users", "display_order": 1},
-        {"number": 2, "title": "Zero Hunger", "description": "Boosting agricultural yields.", "impact": "25 acres pollinated", "color": "bg-amber-500", "icon": "Wheat", "display_order": 2},
+        {"number": 2, "title": "Zero Hunger", "description": "Boosting agricultural yields.", "impact": "25+ acres pollinated", "color": "bg-amber-500", "icon": "Wheat", "display_order": 2},
         {"number": 6, "title": "Clean Water", "description": "Ecosystem restoration.", "impact": "2,500+ trees", "color": "bg-cyan-500", "icon": "Droplets", "display_order": 3}
     ]
     supabase.table("sdgs").insert(sdgs).execute()

@@ -25,14 +25,7 @@ const About = () => {
     fetchData();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
+  // Non-blocking load for better UX
   const info = data?.info;
   const story = data?.story;
   const stats = data?.stats || [];
@@ -44,7 +37,7 @@ const About = () => {
     description: "Born from a family's shared vision in rural Kenya, we're on a mission to solve the global pollination crisis through precision pollination and ecosystem guardianship.",
     location: "Kibwezi, Makueni County, Kenya",
     origin_story: [
-      "In 2020, in the midst of the global pandemic, BeeYield was born on a humble half-acre plot with just 4 hives in Kibwezi, a rural town in Makueni, Kenya. Timothy, then a Strathmore University student, saw an opportunity where others saw crisis.",
+      "In 2020, in the midst of the global pandemic, BeeYield was born on a 5-acre plot with just 4 hives in Kibwezi, a rural town in Makueni, Kenya. Timothy, then a Strathmore University student, saw an opportunity where others saw crisis.",
       "But where would three beekeepers meet? At the family table. Timothy's sisters, Agatha and Carole, brought their own Strathmore expertise to shape BeeYield's direction.",
       "From those 4 hives, BeeYield has grown to 184 hives across a 5-acre fenced apiary. We've planted over 2,500+ trees to restore the ecosystem."
     ],
@@ -52,7 +45,7 @@ const About = () => {
       { value: "184", label: "Hives Today" },
       { value: "5", label: "Acre Apiary" },
       { value: "2,500+", label: "Trees Planted" },
-      { value: "25", label: "Acres Pollinated" },
+      { value: "25+", label: "Acres Pollinated" },
     ],
     values: [
       { title: "Family-Powered", description: "Three siblings, one vision. Combining Strathmore studies to build a precision pollination company." },

@@ -45,7 +45,7 @@ def get_blog_posts(
                 "featured_image": "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=800",
                 "category": "Conservation",
                 "tags": ["bees", "environment", "pollination"],
-                "author_name": "Timothy Mathuva",
+                "author_name": "Timothy Nduva",
                 "read_time_minutes": 5,
                 "published_at": "2024-12-15T10:00:00Z",
                 "views_count": 1234
@@ -58,7 +58,7 @@ def get_blog_posts(
                 "featured_image": "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=800",
                 "category": "Technology",
                 "tags": ["blockchain", "traceability", "honey"],
-                "author_name": "Agatha Mathuva",
+                "author_name": "Agatha Nduva",
                 "read_time_minutes": 7,
                 "published_at": "2024-12-10T10:00:00Z",
                 "views_count": 856
@@ -71,7 +71,7 @@ def get_blog_posts(
                 "featured_image": "https://images.unsplash.com/photo-1471943311424-646960669fbc?w=800",
                 "category": "Sustainability",
                 "tags": ["sustainability", "beekeeping", "practices"],
-                "author_name": "Carole Mathuva",
+                "author_name": "Carole Nduva",
                 "read_time_minutes": 6,
                 "published_at": "2024-12-05T10:00:00Z",
                 "views_count": 678
@@ -105,7 +105,7 @@ def get_blog_post(slug: str):
             "featured_image": "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=800",
             "category": "Conservation",
             "tags": ["bees", "environment", "pollination"],
-            "author_name": "Timothy Mathuva",
+            "author_name": "Timothy Nduva",
             "read_time_minutes": 5,
             "published_at": "2024-12-15T10:00:00Z",
             "views_count": 1235

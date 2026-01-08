@@ -27,17 +27,7 @@ const Team = () => {
     fetchData();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center space-y-4">
-          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
-          <p className="text-muted-foreground font-black uppercase tracking-widest text-xs">Summoning the Hive...</p>
-        </div>
-      </div>
-    );
-  }
-
+  // Non-blocking load for better UX
   // Grouping members for display
   const founders = members.filter(m => m.role.toLowerCase().includes('founder'));
   const others = members.filter(m => !m.role.toLowerCase().includes('founder'));
@@ -51,7 +41,7 @@ const Team = () => {
           <Badge variant="outline" className="mb-8 border-primary/40 text-primary px-6 py-2 bg-primary/5 font-black uppercase tracking-widest animate-fade-in">
             Meet the Visionaries
           </Badge>
-          <h1 className="text-6xl md:text-9xl font-black text-foreground mb-10 tracking-tighter leading-[0.8]">
+          <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-10 tracking-tight leading-tight">
             The Hive <br />
             <span className="text-primary italic">Mind</span>
           </h1>
@@ -107,7 +97,7 @@ const Team = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-24">
             <Badge className="mb-6 bg-foreground text-background font-black px-6 py-1.5 uppercase tracking-widest">The Foundation</Badge>
-            <h2 className="text-5xl md:text-7xl font-black tracking-tighter">The Founders</h2>
+            <h2 className="text-4xl md:text-6xl font-bold tracking-tight">The Founders</h2>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-16 max-w-7xl mx-auto">
@@ -151,7 +141,7 @@ const Team = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-24">
             <Badge variant="outline" className="mb-6 border-primary/40 text-primary px-6 py-1.5 font-black uppercase tracking-widest">Growth & Tech</Badge>
-            <h2 className="text-4xl md:text-6xl font-black tracking-tighter">The Full Hive</h2>
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight">The Full Hive</h2>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">

@@ -81,13 +81,8 @@ const Home = () => {
     }
   ];
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
-      </div>
-    );
-  }
+  // No longer blocking initial render with a full-page loader for better UX
+  // The page will show with default stat values while data is being fetched
 
   return (
     <div className="min-h-screen bg-background">
@@ -105,7 +100,7 @@ const Home = () => {
                 🐝 Africa's Premier Pollination Partner
               </Badge>
 
-              <h1 className="text-5xl sm:text-6xl md:text-8xl font-black leading-tight tracking-tighter">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight tracking-tight">
                 Your Partner in
                 <span className="text-primary block italic">Pollination</span>
               </h1>
@@ -126,28 +121,28 @@ const Home = () => {
               {/* Quick Stats */}
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 pt-12 border-t border-border/50">
                 <div>
-                  <p className="text-3xl font-black text-primary">{getStatValue('yield_increase', '35%')}</p>
-                  <p className="text-muted-foreground text-xs font-bold uppercase tracking-wider">Yield Increase</p>
+                  <p className="text-2xl font-bold text-primary">{getStatValue('yield_increase', '35%')}</p>
+                  <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-wider">Yield Increase</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-black text-primary">{getStatValue('active_colonies', '150+')}</p>
-                  <p className="text-muted-foreground text-xs font-bold uppercase tracking-wider">Managed Hives</p>
+                  <p className="text-2xl font-bold text-primary">{getStatValue('active_colonies', '150+')}</p>
+                  <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-wider">Managed Hives</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-black text-primary">2K+</p>
-                  <p className="text-muted-foreground text-xs font-bold uppercase tracking-wider">Data Points</p>
+                  <p className="text-2xl font-bold text-primary">2K+</p>
+                  <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-wider">Data Points</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-black text-primary">1+</p>
-                  <p className="text-muted-foreground text-xs font-bold uppercase tracking-wider">Continents</p>
+                  <p className="text-2xl font-bold text-primary">1+</p>
+                  <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-wider">Continents</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-black text-primary">1+</p>
-                  <p className="text-muted-foreground text-xs font-bold uppercase tracking-wider">Countries</p>
+                  <p className="text-2xl font-bold text-primary">1+</p>
+                  <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-wider">Countries</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-black text-primary">2+</p>
-                  <p className="text-muted-foreground text-xs font-bold uppercase tracking-wider">Counties</p>
+                  <p className="text-2xl font-bold text-primary">2+</p>
+                  <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-wider">Counties</p>
                 </div>
               </div>
             </div>
@@ -176,7 +171,7 @@ const Home = () => {
             <Badge variant="outline" className="text-primary border-primary/30 px-4 py-1.5 font-bold uppercase tracking-widest">
               Our Philosophy
             </Badge>
-            <h2 className="text-4xl md:text-7xl font-black text-foreground tracking-tight">
+            <h2 className="text-3xl md:text-5xl font-bold text-foreground tracking-tight">
               Pollination is an <span className="text-primary italic">Art</span> and a <span className="text-primary italic">Science</span>
             </h2>
             <p className="text-xl text-muted-foreground leading-relaxed font-medium">
@@ -252,7 +247,7 @@ const Home = () => {
       {/* Final CTA */}
       <section className="py-32 bg-primary text-white">
         <div className="container mx-auto px-4 text-center space-y-12">
-          <h2 className="text-5xl md:text-8xl font-black tracking-tighter leading-none">Ready for a Better Harvest?</h2>
+          <h2 className="text-4xl md:text-6xl font-bold tracking-tight leading-tight">Ready for a Better Harvest?</h2>
           <div className="flex flex-wrap justify-center gap-8">
             <Button size="lg" className="h-20 px-16 text-2xl font-black bg-white text-primary hover:bg-white/90 shadow-2xl" asChild>
               <Link to="/contact">Get Consultation</Link>

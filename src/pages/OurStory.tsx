@@ -27,13 +27,7 @@ const OurStory = () => {
     fetchStory();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
-      </div>
-    );
-  }
+  // Non-blocking load for better UX
 
   return (
     <div className="min-h-screen bg-background">
@@ -83,7 +77,7 @@ const OurStory = () => {
               </h2>
               <div className="space-y-4 text-muted-foreground text-lg leading-relaxed">
                 <p>
-                  In 2020, while the world stood still, <strong className="text-foreground">Timothy</strong>, a Strathmore University student, saw an opportunity in the quiet of rural Kibwezi. With just <strong className="text-foreground">half an acre and 4 beehives</strong>, BeeYield was born.
+                  In 2020, while the world stood still, <strong className="text-foreground">Timothy</strong>, a Strathmore University student, saw an opportunity in the quiet of rural Kibwezi. With just <strong className="text-foreground">5 acres and 4 beehives</strong>, BeeYield was born.
                 </p>
                 <p>
                   What started as a small venture quickly became a family affair. Timothy's sisters, <strong className="text-foreground">Agatha</strong> and <strong className="text-foreground">Carole</strong>, brought their expertise in IT and growth to help give BeeYield its technological edge and visibility.
