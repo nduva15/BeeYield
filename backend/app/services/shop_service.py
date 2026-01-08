@@ -411,7 +411,7 @@ def create_order(order_in: schemas.OrderCreate, user_id: Optional[str] = None) -
             if has_honey:
                 # Assign a batch number for traceability
                 # In a real system, this would come from inventory management
-                batch_number = "BATCH-2024-001" 
+                batch_number = "DEMO-001" 
             
             from app.services.email_service import email_service
             email_service.send_order_confirmation(full_order, full_order.get('items', []), batch_number=batch_number)

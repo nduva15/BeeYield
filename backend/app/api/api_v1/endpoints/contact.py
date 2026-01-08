@@ -4,7 +4,7 @@ Contact Endpoints
 from fastapi import APIRouter, HTTPException, BackgroundTasks
 from app.schemas import contact as schemas
 from app.services import email
-from app.db.supabase_db import db_insert
+from app.db.supabase_db import db_insert, db_select
 
 router = APIRouter()
 
@@ -83,3 +83,30 @@ def request_pollination(request: schemas.PollinationRequestCreate, background_ta
     )
     
     return {"status": "success", "message": "Pollination request submitted successfully"}
+
+@router.post("/newsletter", response_model=dict)
+def subscribe_newsletter(request: schemas.NewsletterSubscriptionCreate, background_tasks: BackgroundTasks):
+    """
+    Handle newsletter subscriptions.
+    """
+    # 1. Check if already subscribed
+    existing = db_select("newsletter_subscriptions", filters={"email": request.email})
+    if existing:
+        return {"status": "success", "message": "Already subscribed"}
+
+    # 2. Save to Database
+    db_data = request.dict()
+    result = db_insert("newsletter_subscriptions", db_data)
+    
+    if not result.get("success"):
+        raise HTTPException(status_code=500, detail=f"Database error: {result.get('error')}")
+    
+    # 3. Send Welcome Email
+    background_tasks.add_task(
+        email.send_email,
+        request.email,
+        "Welcome to the BeeYield Hive! 🐝",
+        f"Hi {request.first_name or 'there'},\n\nThanks for subscribing to our newsletter! You'll now be the first to know about our latest updates, honey harvests, and pollination insights.\n\nStay buzzing,\nThe BeeYield Team"
+    )
+    
+    return {"status": "success", "message": "Subscribed successfully"}

@@ -85,8 +85,8 @@ const Traceability = () => {
       setShowResults(false);
       try {
         toast({
-          title: "Accessing HoneyChain...",
-          description: "Verifying cryptographic records.",
+          title: "Accessing HoneyChain... 🔗",
+          description: "Verifying cryptographic records... 🕵️‍♂️",
         });
 
         const data = await traceBatch(qrCode);
@@ -95,13 +95,13 @@ const Traceability = () => {
           setBatchData(data);
           setShowResults(true);
           toast({
-            title: "Verified Authenticity",
-            description: "Full journey found on the BeeYield Blockchain.",
+            title: "Verified Authenticity! ✅",
+            description: "Success! 🐝 Full journey found on the BeeYield Blockchain.",
           });
         } else {
           toast({
-            title: "Code Not Found",
-            description: "We couldn't find this batch on the blockchain. Please check the code.",
+            title: "Code Not Found 🚫",
+            description: "Oops! 🙈 We couldn't find this batch on the blockchain. Please check the code.",
             variant: "destructive"
           });
         }
@@ -144,8 +144,9 @@ const Traceability = () => {
               Authenticity <span className="text-primary italic">You Can Trace</span>
             </h1>
             <p className="mb-10 text-lg text-muted-foreground sm:text-xl">
-              Every drop of BeeYield honey tells a story of sustainable beekeeping,
-              local empowerment, and radical transparency.
+              Hey there! 👋 We believe in radical transparency.
+              Every drop of BeeYield honey tells a unique story of sustainable beekeeping and local empowerment. 🐝✨
+              Trace your jar's journey below! 👇
             </p>
 
             <Card className="mx-auto max-w-xl border-none bg-white/60 shadow-2xl backdrop-blur-md">

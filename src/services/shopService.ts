@@ -86,13 +86,19 @@ export interface CheckoutResponse {
     };
 }
 
-export const initializeCheckout = async (orderData: CheckoutOrder): Promise<CheckoutResponse> => {
+export const initializeCheckout = async (orderData: CheckoutOrder, token?: string): Promise<CheckoutResponse> => {
     try {
+        const headers: HeadersInit = {
+            "Content-Type": "application/json",
+        };
+
+        if (token) {
+            headers["Authorization"] = `Bearer ${token}`;
+        }
+
         const response = await fetch(`${API_V1_URL}/shop/checkout/init`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers,
             body: JSON.stringify(orderData),
         });
         if (!response.ok) {
