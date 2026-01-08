@@ -256,15 +256,15 @@ const Checkout: React.FC = () => {
                     <div className="flex items-center justify-between mb-4">
                         <button
                             onClick={() => navigate('/shop')}
-                            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                            className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors font-bold"
                         >
-                            <ArrowLeft className="h-4 w-4" />
+                            <ArrowLeft className="h-5 w-5" />
                             <span className="hidden sm:inline">Back to Shop</span>
                         </button>
-                        <h1 className="text-xl font-bold">Checkout</h1>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Lock className="h-4 w-4" />
-                            <span className="hidden sm:inline">Secure Checkout</span>
+                        <h1 className="text-2xl font-black font-heading tracking-tight">Checkout</h1>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
+                            <Lock className="h-4 w-4 text-primary" />
+                            <span className="hidden sm:inline">Secure Transaction</span>
                         </div>
                     </div>
 
@@ -320,11 +320,11 @@ const Checkout: React.FC = () => {
                     <div className="lg:col-span-2 space-y-6">
                         {/* Cart Review Step */}
                         {currentStep === 'cart' && (
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <ShoppingBag className="h-5 w-5 text-primary" />
-                                        Review Your Cart
+                            <Card className="glass border-none shadow-soft overflow-hidden">
+                                <CardHeader className="border-b border-border/10 bg-muted/20">
+                                    <CardTitle className="flex items-center gap-2 text-2xl font-black font-heading">
+                                        <ShoppingBag className="h-6 w-6 text-primary" />
+                                        Review Your Selection
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
@@ -368,26 +368,26 @@ const Checkout: React.FC = () => {
                             <>
                                 {/* Account Options - Show only if not logged in */}
                                 {!user && (
-                                    <Card className="mb-6">
-                                        <CardHeader>
-                                            <CardTitle className="flex items-center gap-2">
+                                    <Card className="mb-6 glass border-none shadow-soft overflow-hidden">
+                                        <CardHeader className="border-b border-border/10 bg-muted/20">
+                                            <CardTitle className="flex items-center gap-2 text-xl font-black font-heading">
                                                 <User className="h-5 w-5 text-primary" />
-                                                Account Options
+                                                Identification
                                             </CardTitle>
                                         </CardHeader>
-                                        <CardContent>
+                                        <CardContent className="pt-6">
                                             {/* Auth Mode Selector */}
                                             <div className="grid grid-cols-3 gap-3 mb-6">
                                                 <button
                                                     type="button"
                                                     onClick={() => setAuthMode('guest')}
                                                     className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${authMode === 'guest'
-                                                        ? 'border-primary bg-primary/5'
-                                                        : 'border-border hover:border-primary/50'
+                                                        ? 'border-primary bg-primary/10 shadow-glow shadow-primary/20'
+                                                        : 'border-border/50 hover:border-primary/50'
                                                         }`}
                                                 >
                                                     <User className={`h-6 w-6 ${authMode === 'guest' ? 'text-primary' : 'text-muted-foreground'}`} />
-                                                    <span className="text-sm font-medium">Guest</span>
+                                                    <span className="text-xs font-black uppercase tracking-widest">Guest</span>
                                                 </button>
                                                 <button
                                                     type="button"
@@ -463,28 +463,28 @@ const Checkout: React.FC = () => {
 
                                 {/* Shipping Details Form - Show for guest or logged in users */}
                                 {(authMode === 'guest' || user) && (
-                                    <Card>
-                                        <CardHeader>
-                                            <CardTitle className="flex items-center gap-2">
+                                    <Card className="glass border-none shadow-soft overflow-hidden">
+                                        <CardHeader className="border-b border-border/10 bg-muted/20">
+                                            <CardTitle className="flex items-center gap-2 text-xl font-black font-heading">
                                                 <MapPin className="h-5 w-5 text-primary" />
-                                                Shipping Details
+                                                Delivery Matrix
                                             </CardTitle>
                                         </CardHeader>
-                                        <CardContent>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <CardContent className="pt-6">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                 <div className="md:col-span-2">
-                                                    <Label htmlFor="fullName">Full Name *</Label>
+                                                    <Label htmlFor="fullName" className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-2 block">Full Legal Name *</Label>
                                                     <Input
                                                         id="fullName"
                                                         name="fullName"
                                                         value={shippingDetails.fullName}
                                                         onChange={handleInputChange}
                                                         placeholder="John Doe"
-                                                        className="mt-1"
+                                                        className="h-14 bg-background/50 border-border/50 focus:border-primary focus:ring-primary/20 rounded-xl"
                                                     />
                                                 </div>
                                                 <div>
-                                                    <Label htmlFor="email">Email Address *</Label>
+                                                    <Label htmlFor="email" className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-2 block">Contact Email *</Label>
                                                     <Input
                                                         id="email"
                                                         name="email"
@@ -492,73 +492,73 @@ const Checkout: React.FC = () => {
                                                         value={shippingDetails.email}
                                                         onChange={handleInputChange}
                                                         placeholder="john@example.com"
-                                                        className="mt-1"
+                                                        className="h-14 bg-background/50 border-border/50 focus:border-primary focus:ring-primary/20 rounded-xl"
                                                     />
                                                 </div>
                                                 <div>
-                                                    <Label htmlFor="phone">Phone Number *</Label>
+                                                    <Label htmlFor="phone" className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-2 block">Phone Identifier *</Label>
                                                     <Input
                                                         id="phone"
                                                         name="phone"
                                                         value={shippingDetails.phone}
                                                         onChange={handleInputChange}
                                                         placeholder="+254 712 345 678"
-                                                        className="mt-1"
+                                                        className="h-14 bg-background/50 border-border/50 focus:border-primary focus:ring-primary/20 rounded-xl"
                                                     />
                                                 </div>
                                                 <div className="md:col-span-2">
-                                                    <Label htmlFor="address">Street Address *</Label>
+                                                    <Label htmlFor="address" className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-2 block">Precise Location / Street Address *</Label>
                                                     <Input
                                                         id="address"
                                                         name="address"
                                                         value={shippingDetails.address}
                                                         onChange={handleInputChange}
                                                         placeholder="123 Bee Street, Apartment 4B"
-                                                        className="mt-1"
+                                                        className="h-14 bg-background/50 border-border/50 focus:border-primary focus:ring-primary/20 rounded-xl"
                                                     />
                                                 </div>
                                                 <div>
-                                                    <Label htmlFor="city">City *</Label>
+                                                    <Label htmlFor="city" className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-2 block">City / Municipality *</Label>
                                                     <Input
                                                         id="city"
                                                         name="city"
                                                         value={shippingDetails.city}
                                                         onChange={handleInputChange}
                                                         placeholder="Nairobi"
-                                                        className="mt-1"
+                                                        className="h-14 bg-background/50 border-border/50 focus:border-primary focus:ring-primary/20 rounded-xl"
                                                     />
                                                 </div>
                                                 <div>
-                                                    <Label htmlFor="county">County *</Label>
+                                                    <Label htmlFor="county" className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-2 block">County *</Label>
                                                     <Input
                                                         id="county"
                                                         name="county"
                                                         value={shippingDetails.county}
                                                         onChange={handleInputChange}
                                                         placeholder="Nairobi County"
-                                                        className="mt-1"
+                                                        className="h-14 bg-background/50 border-border/50 focus:border-primary focus:ring-primary/20 rounded-xl"
                                                     />
                                                 </div>
                                                 <div>
-                                                    <Label htmlFor="postalCode">Postal Code</Label>
+                                                    <Label htmlFor="postalCode" className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-2 block">Postal Code</Label>
                                                     <Input
                                                         id="postalCode"
                                                         name="postalCode"
                                                         value={shippingDetails.postalCode}
                                                         onChange={handleInputChange}
                                                         placeholder="00100"
-                                                        className="mt-1"
+                                                        className="h-14 bg-background/50 border-border/50 focus:border-primary focus:ring-primary/20 rounded-xl"
                                                     />
                                                 </div>
                                                 <div className="md:col-span-2">
-                                                    <Label htmlFor="notes">Delivery Notes (Optional)</Label>
+                                                    <Label htmlFor="notes" className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-2 block">Special Logistics Notes (Optional)</Label>
                                                     <Textarea
                                                         id="notes"
                                                         name="notes"
                                                         value={shippingDetails.notes}
                                                         onChange={handleInputChange}
                                                         placeholder="Any special instructions for delivery..."
-                                                        className="mt-1"
+                                                        className="bg-background/50 border-border/50 focus:border-primary focus:ring-primary/20 rounded-xl min-h-[100px]"
                                                         rows={3}
                                                     />
                                                 </div>
@@ -608,14 +608,14 @@ const Checkout: React.FC = () => {
                         {/* Payment Step */}
                         {/* Payment Step */}
                         {currentStep === 'payment' && (
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
+                            <Card className="glass border-none shadow-soft overflow-hidden">
+                                <CardHeader className="border-b border-border/10 bg-muted/20">
+                                    <CardTitle className="flex items-center gap-2 text-xl font-black font-heading">
                                         <CreditCard className="h-5 w-5 text-primary" />
-                                        Payment Method
+                                        Payment Protocol
                                     </CardTitle>
                                 </CardHeader>
-                                <CardContent>
+                                <CardContent className="pt-6">
                                     <RadioGroup
                                         value={paymentMethod}
                                         onValueChange={(value) => setPaymentMethod(value as 'mpesa' | 'card')}
@@ -673,12 +673,14 @@ const Checkout: React.FC = () => {
                                     </RadioGroup>
 
                                     {/* Security Badge */}
-                                    <div className="mt-6 p-4 bg-muted/50 rounded-lg flex items-center gap-3">
-                                        <Shield className="h-10 w-10 text-green-600" />
+                                    <div className="mt-6 p-6 bg-primary/5 rounded-2xl border border-primary/10 flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                            <Shield className="h-6 w-6 text-primary" />
+                                        </div>
                                         <div>
-                                            <h4 className="font-medium text-sm">Secure Payment</h4>
-                                            <p className="text-xs text-muted-foreground">
-                                                Your payment information is encrypted and secure. We never store your card details.
+                                            <h4 className="font-black text-xs uppercase tracking-widest text-primary mb-1">Encrypted Transaction</h4>
+                                            <p className="text-sm text-muted-foreground leading-relaxed">
+                                                Your payment information is processed through secure, bank-grade encryption protocols.
                                             </p>
                                         </div>
                                     </div>
@@ -754,11 +756,11 @@ const Checkout: React.FC = () => {
                     {/* Order Summary Sidebar */}
                     {currentStep !== 'confirmation' && (
                         <div className="lg:col-span-1">
-                            <Card className="sticky top-32">
-                                <CardHeader>
-                                    <CardTitle>Order Summary</CardTitle>
+                            <Card className="sticky top-32 glass border-none shadow-soft overflow-hidden">
+                                <CardHeader className="border-b border-border/10 bg-muted/20">
+                                    <CardTitle className="font-black font-heading tracking-tight">Order Summary</CardTitle>
                                 </CardHeader>
-                                <CardContent className="space-y-4">
+                                <CardContent className="space-y-6 pt-6">
                                     {/* Items */}
                                     <div className="space-y-3">
                                         {items.slice(0, 3).map((item) => (
