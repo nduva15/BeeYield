@@ -1,62 +1,26 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { Sprout, Droplets, TreePine, Bug, Download, ArrowRight, Loader2, Check } from "lucide-react";
+import { Sprout, Droplets, TreePine, Bug, Download, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { getCompanyStats, getImpactStories, CompanyStat, ImpactStory } from "@/services/companyService";
-import { getESGMetrics, ESGMetric } from "@/services/servicesService";
+import impactImage from "@/assets/impact-beekeeping.jpg";
 
 const Impact = () => {
-  const [stats, setStats] = useState<CompanyStat[]>([]);
-  const [stories, setStories] = useState<ImpactStory[]>([]);
-  const [esgMetrics, setEsgMetrics] = useState<ESGMetric[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const initData = async () => {
-      try {
-        const [fetchedStats, fetchedStories, fetchedMetrics] = await Promise.all([
-          getCompanyStats(),
-          getImpactStories(),
-          getESGMetrics()
-        ]);
-        setStats(fetchedStats);
-        setStories(fetchedStories);
-        setEsgMetrics(fetchedMetrics);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    initData();
-  }, []);
-
-  const getIcon = (iconName: string) => {
-    switch (iconName.toLowerCase()) {
-      case 'bug': return Bug;
-      case 'treepine': return TreePine;
-      case 'droplets': return Droplets;
-      case 'sprout': return Sprout;
-      case 'hexagon': return Bug; // Fallback
-      case 'users': return Sprout; // Fallback
-      case 'flower': return Sprout; // Fallback
-      default: return Bug;
-    }
-  };
+  const stats = [
+    { label: "Beehives Protected", value: "150+", icon: Bug },
+    { label: "Trees Planted", value: "2500+", icon: TreePine },
+    { label: "Bees Saved (Colonies)", value: "2M+", icon: Droplets },
+    { label: "Carbon Offset (Tons)", value: "2+", icon: Sprout },
+  ];
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-24">
-        <div className="mb-20 text-center space-y-6">
-          <Badge variant="outline" className="text-primary border-primary px-4 py-1">Environment & Sustainability</Badge>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground tracking-tight leading-tight">
-            Our Environmental <span className="text-primary italic">Impact</span>
+      <div className="container mx-auto px-4 py-16">
+        <div className="mb-12 text-center">
+          <h1 className="mb-4 text-4xl font-bold text-foreground md:text-5xl">
+            Our Environmental Impact
           </h1>
-          <p className="mx-auto max-w-2xl text-xl text-muted-foreground font-medium">
-            Every jar of BeeYield contributes to a healthier planet and thriving bee populations through our data-driven conservation efforts.
+          <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+            Every jar of BeeYield contributes to a healthier planet and thriving bee populations.
           </p>
           <button
             onClick={() => {
@@ -67,174 +31,128 @@ const Impact = () => {
               link.click();
               document.body.removeChild(link);
             }}
-            className="mb-12 mt-8 inline-flex items-center gap-3 rounded-2xl bg-primary px-8 py-4 text-primary-foreground font-black hover:shadow-glow transition-all shadow-xl text-lg"
+            className="mb-12 inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
           >
-            <Download className="h-6 w-6" />
-            Download 2024 Impact Report
+            <Download className="h-5 w-5" />
+            Download Our Impact Report
           </button>
         </div>
 
-        {/* Non-blocking load - content will appear when stats/stories/metrics arrive */}
+        <div className="relative mb-16 overflow-hidden rounded-2xl">
+          <img src={impactImage} alt="Impact" className="h-[400px] w-full object-cover" />
+        </div>
 
-        <>
-          <div className="relative mb-16 overflow-hidden rounded-2xl shadow-xl group">
-            <img
-              src="https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=1600&auto=format&fit=crop&q=80"
-              alt="Impact"
-              className="h-[400px] w-full object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-black/30" />
-          </div>
-
-          <div className="mb-24 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-            {stats.map((stat, index) => {
-              const IconComp = getIcon(stat.icon || '');
-              return (
-                <Card key={index} className="text-center glass-dark sm:glass border-none shadow-soft hover:shadow-glow transition-all duration-500 hover:-translate-y-2">
-                  <CardContent className="p-8">
-                    <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-primary/10 shadow-inner">
-                      <IconComp className="h-10 w-10 text-primary" />
-                    </div>
-                    <h3 className="mb-2 text-4xl font-black text-foreground tracking-tighter">{stat.stat_value}</h3>
-                    <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs">{stat.stat_label}</p>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-
-          <div className="mb-12 text-center space-y-4">
-            <Badge variant="outline" className="text-primary tracking-widest uppercase text-xs">Stories from the Field</Badge>
-            <h2 className="text-3xl md:text-5xl font-bold text-foreground tracking-tight leading-tight">Impact Stories</h2>
-          </div>
-          <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3 mb-24">
-            {stories.map((story) => (
-              <Card key={story.id} className="overflow-hidden border-none shadow-soft hover:shadow-glow transition-all">
-                <div className="aspect-video relative overflow-hidden">
-                  <img
-                    src={story.image_url || "https://images.unsplash.com/photo-1471943311424-646960669fbc?w=800"}
-                    className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                    alt={story.title}
-                  />
-                  <Badge className="absolute top-4 right-4 bg-primary/90">{story.impact_type}</Badge>
+        <div className="mb-16 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {stats.map((stat, index) => (
+            <Card key={index} className="text-center">
+              <CardContent className="pt-6">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                  <stat.icon className="h-8 w-8 text-primary" />
                 </div>
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold mb-2">{story.title}</h3>
-                  <p className="text-muted-foreground text-sm mb-4 line-clamp-3">{story.summary}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-primary font-bold">{story.beneficiaries_count} Beneficiaries</span>
-                    <Link to={`/impact/${story.slug}`} className="text-primary hover:underline text-sm font-semibold flex items-center gap-1">
-                      Read Story <ArrowRight className="h-3 w-3" />
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </>
+                <h3 className="mb-2 text-3xl font-bold text-foreground">{stat.value}</h3>
+                <p className="text-muted-foreground">{stat.label}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 mb-24">
-          <Card className="lg:col-span-1 flex flex-col border-none shadow-soft glass hover:shadow-glow transition-all duration-500">
-            <CardContent className="p-8 flex flex-col flex-grow">
-              <h3 className="mb-4 text-2xl font-black text-foreground tracking-tight font-heading">Pollinator Protection</h3>
-              <p className="mb-6 text-muted-foreground text-sm font-medium leading-relaxed">
+        <div className="grid gap-8 lg:grid-cols-3">
+          <Card className="lg:col-span-1">
+            <CardContent className="p-6">
+              <h3 className="mb-4 text-xl font-semibold text-foreground">Pollinator Protection</h3>
+              <p className="mb-6 text-muted-foreground">
                 We're committed to protecting bee populations through sustainable beekeeping practices and habitat conservation.
               </p>
-              <div className="space-y-6 flex-grow">
-                {esgMetrics.filter(m => m.category === 'environmental').map((m, i) => (
-                  <div key={i}>
-                    <div className="mb-2 flex justify-between text-xs font-black uppercase tracking-widest">
-                      <span className="text-foreground">{m.metric_name}</span>
-                      <span className="text-primary">{m.metric_value}{m.metric_unit}</span>
-                    </div>
-                    <Progress value={Math.min(100, m.metric_value)} className="h-2 bg-muted/30" />
+              <div className="space-y-4">
+                <div>
+                  <div className="mb-2 flex justify-between text-sm">
+                    <span className="text-foreground">Habitat Conservation</span>
+                    <span className="text-primary">95%</span>
                   </div>
-                ))}
+                  <Progress value={95} className="h-2" />
+                </div>
+                <div>
+                  <div className="mb-2 flex justify-between text-sm">
+                    <span className="text-foreground">Chemical-Free Practices</span>
+                    <span className="text-primary">100%</span>
+                  </div>
+                  <Progress value={100} className="h-2" />
+                </div>
+                <div>
+                  <div className="mb-2 flex justify-between text-sm">
+                    <span className="text-foreground">Native Plant Restoration</span>
+                    <span className="text-primary">88%</span>
+                  </div>
+                  <Progress value={88} className="h-2" />
+                </div>
               </div>
-              <Link to="/commitment" className="mt-8 inline-flex items-center gap-2 text-primary hover:text-honey-dark font-black text-sm uppercase tracking-widest transition-colors">
-                Read Detailed Commitment <ArrowRight className="h-4 w-4" />
+              <Link to="/commitment" className="mt-6 inline-flex items-center gap-2 text-primary hover:underline">
+                Read More <ArrowRight className="h-4 w-4" />
               </Link>
             </CardContent>
           </Card>
 
-          <Card className="lg:col-span-1 flex flex-col border-none shadow-soft glass hover:shadow-glow transition-all duration-500">
-            <CardContent className="p-8 flex flex-col flex-grow">
-              <h3 className="mb-4 text-2xl font-black text-foreground tracking-tight font-heading">Community Impact</h3>
-              <div className="space-y-4 text-muted-foreground text-sm font-medium flex-grow leading-relaxed">
+          <Card className="lg:col-span-1">
+            <CardContent className="p-6">
+              <h3 className="mb-4 text-xl font-semibold text-foreground">Community Impact</h3>
+              <div className="space-y-4 text-muted-foreground">
                 <p>
-                  Beyond environmental conservation, BeeYield is dedicated to supporting local beekeeping communities.
+                  Beyond environmental conservation, BeeYield is dedicated to supporting local beekeeping communities. We provide fair compensation, training, and resources to help our partner beekeepers thrive.
                 </p>
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-3">
-                    <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <div className="h-2 w-2 rounded-full bg-primary"></div>
-                    </div>
+                <ul className="space-y-2">
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary">•</span>
                     Fair trade pricing ensuring sustainable livelihoods
                   </li>
-                  <li className="flex items-start gap-3">
-                    <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <div className="h-2 w-2 rounded-full bg-primary"></div>
-                    </div>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary">•</span>
                     Educational programs for new beekeepers
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary">•</span>
+                    Equipment grants for sustainable practices
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary">•</span>
+                    Support for bee health research initiatives
                   </li>
                 </ul>
               </div>
-              <Link to="/commitment" className="mt-8 inline-flex items-center gap-2 text-primary hover:text-honey-dark font-black text-sm uppercase tracking-widest transition-colors">
-                Community Reports <ArrowRight className="h-4 w-4" />
+              <Link to="/commitment" className="mt-6 inline-flex items-center gap-2 text-primary hover:underline">
+                Read More <ArrowRight className="h-4 w-4" />
               </Link>
             </CardContent>
           </Card>
 
-          <Card className="bg-primary text-primary-foreground lg:col-span-1 flex flex-col shadow-glow shadow-primary/30 border-none rounded-[2rem] overflow-hidden">
-            <CardContent className="p-8 flex flex-col flex-grow relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl" />
-              <h3 className="mb-6 text-2xl font-black font-heading tracking-tight">Our 2030 Goals</h3>
-              <ul className="space-y-4 flex-grow text-sm font-black uppercase tracking-widest">
-                <li className="flex items-center gap-3">
-                  <div className="h-6 w-6 rounded-lg bg-white/20 flex items-center justify-center">
-                    <Check className="h-4 w-4" />
-                  </div>
-                  Protect 10,000 Hives
+          <Card className="bg-primary text-primary-foreground lg:col-span-1">
+            <CardContent className="p-6">
+              <h3 className="mb-4 text-xl font-semibold">Our 2030 Goals</h3>
+              <ul className="space-y-3">
+                <li className="flex items-center gap-2">
+                  <span className="text-lg">✓</span>
+                  Protect 10,000 additional beehives
                 </li>
-                <li className="flex items-center gap-3">
-                  <div className="h-6 w-6 rounded-lg bg-white/20 flex items-center justify-center">
-                    <Check className="h-4 w-4" />
-                  </div>
-                  Plant 10k Native Flowers
+                <li className="flex items-center gap-2">
+                  <span className="text-lg">✓</span>
+                  Plant 10,000 native flowering plants
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-lg">✓</span>
+                  Achieve carbon-neutral operations
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-lg">✓</span>
+                  Expand to 200+ partner beekeepers
                 </li>
               </ul>
-              <Link
-                to="/global-hive-network"
-                className="mt-6 inline-flex items-center gap-2 bg-white text-primary px-4 py-2 rounded-lg font-bold hover:bg-opacity-90 transition-all text-sm justify-center"
+              <Link 
+                to="/GlobalHiveNetwork" 
+                className="mt-6 inline-flex items-center gap-2 bg-primary-foreground text-primary px-4 py-2 rounded-lg font-semibold hover:opacity-90 transition-opacity"
               >
                 Join Our Global Hive Network <ArrowRight className="h-4 w-4" />
               </Link>
             </CardContent>
           </Card>
-
-          <Card className="lg:col-span-1 flex flex-col border-none shadow-soft">
-            <CardContent className="p-6 flex flex-col flex-grow">
-              <h3 className="mb-4 text-xl font-bold text-foreground">ESG Commitment</h3>
-              <p className="mb-4 text-muted-foreground text-sm">
-                Environmental, Social, and Governance principles guide everything we do at BeeYield.
-              </p>
-              <Link to="/esg" className="mt-auto inline-flex items-center gap-2 text-primary hover:underline font-bold text-sm">
-                Explore Our ESG Framework <ArrowRight className="h-4 w-4" />
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Full-width Video Section */}
-        <div className="relative mt-16 overflow-hidden rounded-2xl shadow-2xl h-[70vh]">
-          <iframe
-            className="absolute inset-0 w-full h-full"
-            src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-            title="About BeeYield"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
         </div>
       </div>
     </div>

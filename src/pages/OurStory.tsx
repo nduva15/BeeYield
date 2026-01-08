@@ -1,55 +1,33 @@
-
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  Users, Cpu, Sprout, Play, ArrowRight, Heart, TreePine, Home, Loader2
+  Users, Cpu, Sprout, Play, ArrowRight, Heart, TreePine, Home
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { getCompanyStory, CompanyStory } from "@/services/companyService";
 
 const OurStory = () => {
-  const [story, setStory] = useState<CompanyStory | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchStory = async () => {
-      try {
-        const data = await getCompanyStory();
-        setStory(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchStory();
-  }, []);
-
-  // Non-blocking load for better UX
-
   return (
     <div className="min-h-screen bg-background">
-
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-accent/10 py-20 sm:py-28 lg:py-32">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-3xl text-center relative z-10">
+          <div className="mx-auto max-w-3xl text-center">
             <Badge variant="secondary" className="mb-4">
               About Us
             </Badge>
-            <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl drop-shadow-sm">
-              {story?.title || "The Story of BeeYield"}
+            <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+              The Story of BeeYield
             </h1>
-            <p className="text-lg text-muted-foreground sm:text-xl font-medium">
-              {story?.intro || "Born in Kibwezi, Makueni County, Kenya, a story of family, resilience, and a mission to transform pollination."}
+            <p className="text-lg text-muted-foreground sm:text-xl">
+              Born in Kibwezi, Makueni County, Kenya — a story of family, resilience, and a mission to transform pollination.
             </p>
           </div>
 
           {/* Background Decorations */}
-          <div className="absolute -left-20 top-20 h-72 w-72 rounded-full bg-primary/10 blur-3xl animate-pulse" />
-          <div className="absolute -right-20 bottom-20 h-72 w-72 rounded-full bg-accent/10 blur-3xl animate-pulse delay-700" />
+          <div className="absolute -left-20 top-20 h-72 w-72 rounded-full bg-primary/5 blur-3xl" />
+          <div className="absolute -right-20 bottom-20 h-72 w-72 rounded-full bg-accent/5 blur-3xl" />
         </div>
       </section>
 
@@ -58,29 +36,32 @@ const OurStory = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
             <div className="order-2 lg:order-1">
-              <Card className="border-none bg-primary/5 shadow-soft hover:shadow-glow transition-all">
-                <CardContent className="p-6 sm:p-10">
-                  <blockquote className="text-xl font-bold italic text-foreground sm:text-2xl leading-relaxed">
-                    "{story?.founders_message || "Where would three beekeepers meet? In our case, around the family dinner table."}"
+              <Card className="border-none bg-primary/5 shadow-none">
+                <CardContent className="p-6 sm:p-8">
+                  <blockquote className="text-xl font-medium italic text-foreground sm:text-2xl">
+                    "Where would three beekeepers meet? In our case — around the family dinner table."
                   </blockquote>
                 </CardContent>
               </Card>
             </div>
 
             <div className="order-1 lg:order-2 space-y-6">
-              <Badge variant="outline" className="mb-2 shadow-sm border-primary/20 bg-primary/5">
-                <Home className="mr-2 h-3 w-3 text-primary" />
+              <Badge variant="outline" className="mb-2">
+                <Home className="mr-2 h-3 w-3" />
                 Kibwezi, Kenya • 2020
               </Badge>
-              <h2 className="text-3xl font-bold text-foreground sm:text-4xl leading-tight">
+              <h2 className="text-3xl font-bold text-foreground sm:text-4xl">
                 A Family Mission Born in a Pandemic
               </h2>
-              <div className="space-y-4 text-muted-foreground text-lg leading-relaxed">
+              <div className="space-y-4 text-muted-foreground">
                 <p>
-                  In 2020, while the world stood still, <strong className="text-foreground">Timothy</strong>, a Strathmore University student, saw an opportunity in the quiet of rural Kibwezi. With just <strong className="text-foreground">5 acres and 4 beehives</strong>, BeeYield was born.
+                  In 2020, while the world stood still amid a global pandemic, <strong className="text-foreground">Timothy</strong>, a Strathmore University student, saw an opportunity in the quiet of rural Kibwezi, Makueni County. With just <strong className="text-foreground">half an acre of land and 4 beehives</strong>, BeeYield was born.
                 </p>
                 <p>
-                  What started as a small venture quickly became a family affair. Timothy's sisters, <strong className="text-foreground">Agatha</strong> and <strong className="text-foreground">Carole</strong>, brought their expertise in IT and growth to help give BeeYield its technological edge and visibility.
+                  What started as a small venture quickly became a family affair. Timothy's two sisters, <strong className="text-foreground">Agatha</strong> and <strong className="text-foreground">Carole</strong>, brought their unique expertise to shape the company's direction — from web development and product design to IoT research, they helped give BeeYield its visibility and technological edge.
+                </p>
+                <p>
+                  Together, the three siblings transformed a modest apiary into something much greater — proving that innovation can flourish anywhere, even in the most unexpected places.
                 </p>
               </div>
             </div>
@@ -88,90 +69,160 @@ const OurStory = () => {
         </div>
       </section>
 
-      {/* Timeline Section */}
-      <section className="py-24 bg-muted/20 relative">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">Our Growth Journey</h2>
-            <p className="text-muted-foreground">Key milestones that shaped BeeYield</p>
+      {/* Growth Journey */}
+      <section className="bg-muted/30 py-16 sm:py-20 lg:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl text-center mb-12">
+            <h2 className="text-3xl font-bold text-foreground sm:text-4xl mb-4">
+              From 4 Hives to 184 — Our Growth Journey
+            </h2>
+            <p className="text-muted-foreground">
+              What began on half an acre has grown into a thriving 5-acre apiary, fenced and flourishing.
+            </p>
           </div>
 
-          <div className="relative max-w-4xl mx-auto">
-            {/* Vertical Line */}
-            <div className="absolute left-1/2 -translate-x-1/2 h-full w-0.5 bg-primary/20 hidden md:block" />
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              { number: "184+", label: "Beehives", desc: "From 4 to 184 hives" },
+              { number: "1M+", label: "Bee Colonies", desc: "Thriving colonies" },
+              { number: "1,500+", label: "Trees Planted", desc: "Restoring the ecosystem" },
+              { number: "25+", label: "Acres Pollinated", desc: "Client farmlands served" },
+            ].map((stat, i) => (
+              <Card key={i} className="text-center border-border/50">
+                <CardContent className="p-6">
+                  <p className="text-4xl font-bold text-primary mb-1">{stat.number}</p>
+                  <p className="text-lg font-semibold text-foreground">{stat.label}</p>
+                  <p className="text-sm text-muted-foreground mt-1">{stat.desc}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
 
-            <div className="space-y-12">
-              {story?.milestones.map((ms, i) => (
-                <div key={ms.id} className={`flex flex-col md:flex-row items-center gap-8 ${i % 2 === 0 ? '' : 'md:flex-row-reverse'}`}>
-                  <div className="flex-1 text-center md:text-right">
-                    {i % 2 === 0 ? (
-                      <div className="space-y-2">
-                        <span className="text-4xl font-black text-primary/20">{ms.year}</span>
-                        <h3 className="text-xl font-bold">{ms.title}</h3>
-                        <p className="text-muted-foreground text-sm">{ms.description}</p>
+      {/* Values / Who We Are */}
+      <section className="py-16 sm:py-20 lg:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl text-center mb-12">
+            <h2 className="text-3xl font-bold text-foreground sm:text-4xl">
+              Who We Are And What We Stand For
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              Three siblings, one mission: revolutionizing pollination in Kenya and beyond.
+            </p>
+          </div>
+
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              {
+                icon: Users,
+                title: "Family-Driven",
+                desc: "Built by siblings Timothy, Agatha, and Carole — we combine passion with purpose, bringing diverse skills under one shared vision."
+              },
+              {
+                icon: Sprout,
+                title: "Guardians of Nature",
+                desc: "With 1,500+ trees planted, we're not just beekeepers — we're ecosystem builders committed to environmental restoration."
+              },
+              {
+                icon: Cpu,
+                title: "Precision Pollination",
+                desc: "We're now directing BeeYield toward precision pollination, using technology to maximize impact for farmers across Kenya."
+              }
+            ].map((item, i) => (
+              <Card key={i} className="group border-border/50 transition-all hover:border-primary/50 hover:shadow-lg">
+                <CardContent className="p-6 sm:p-8">
+                  <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                    <item.icon className="h-6 w-6" />
+                  </div>
+                  <h3 className="mb-2 text-xl font-semibold text-foreground">{item.title}</h3>
+                  <p className="text-muted-foreground">
+                    {item.desc}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pollination Services Section */}
+      <section className="bg-gradient-to-br from-primary/5 via-background to-accent/5 py-16 sm:py-20 lg:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
+            <div className="space-y-6">
+              <Badge variant="outline">
+                <TreePine className="mr-2 h-3 w-3" />
+                Our Services
+              </Badge>
+              <h2 className="text-3xl font-bold text-foreground sm:text-4xl">
+                From Traditional to Precision Pollination
+              </h2>
+              <div className="space-y-4 text-muted-foreground">
+                <p>
+                  Our pollination journey started with traditional methods — moving hives to client farms and letting nature do its work. We successfully pollinated <strong className="text-foreground">25 acres+</strong> of farmland, proving the value of managed pollination services in Kenya.
+                </p>
+                <p>
+                  But we knew we could do more. Today, BeeYield is evolving toward <strong className="text-foreground">precision pollination</strong> — leveraging IoT sensors, data analytics, and smart hive management to deliver measurable, optimized pollination outcomes.
+                </p>
+                <p>
+                  Our goal is to help farmers across the world increase their yields while supporting bee health and biodiversity.
+                </p>
+              </div>
+              <Button asChild className="mt-4">
+                <Link to="/PollinationSolutions">
+                  Explore Our Solutions <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+
+            <div className="relative">
+              <Card className="overflow-hidden border-border/50">
+                <CardContent className="p-0">
+                  <div className="aspect-video bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                    <div className="text-center p-8">
+                      <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary/20 text-primary mb-4">
+                        <Heart className="h-8 w-8" />
                       </div>
-                    ) : null}
+                      <p className="text-lg font-semibold text-foreground">Growing Together</p>
+                      <p className="text-sm text-muted-foreground mt-2">Kibwezi, Kenya → Africa → Beeyond</p>
+                    </div>
                   </div>
-
-                  <div className="relative z-10 hidden md:flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white shadow-glow">
-                    <Sprout className="h-6 w-6" />
-                  </div>
-
-                  <div className="flex-1 text-center md:text-left">
-                    {i % 2 !== 0 ? (
-                      <div className="space-y-2">
-                        <span className="text-4xl font-black text-primary/20">{ms.year}</span>
-                        <h3 className="text-xl font-bold">{ms.title}</h3>
-                        <p className="text-muted-foreground text-sm">{ms.description}</p>
-                      </div>
-                    ) : null}
-                  </div>
-
-                  {/* Mobile view for all */}
-                  <div className="md:hidden space-y-2 text-center bg-white p-6 rounded-2xl shadow-soft">
-                    <span className="text-3xl font-black text-primary">{ms.year}</span>
-                    <h3 className="text-xl font-bold">{ms.title}</h3>
-                    <p className="text-muted-foreground text-sm">{ms.description}</p>
-                  </div>
-                </div>
-              ))}
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-24">
+      <section className="py-16 sm:py-20 lg:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <Card className="bg-primary text-primary-foreground border-none overflow-hidden relative shadow-2xl">
-            <CardContent className="p-8 sm:p-16 text-center relative z-10">
-              <h2 className="text-3xl font-bold sm:text-5xl mb-6">
+          <Card className="bg-primary text-primary-foreground border-none">
+            <CardContent className="p-8 sm:p-12 text-center">
+              <h2 className="text-2xl font-bold sm:text-3xl mb-4">
                 Join Us on Our Journey
               </h2>
-              <p className="text-primary-foreground/90 max-w-2xl mx-auto mb-10 text-lg">
-                From a family dream in rural Kenya to a growing force in precision pollination, we're just getting started. Partner with us to transform agriculture.
+              <p className="text-primary-foreground/80 max-w-2xl mx-auto mb-6">
+                From a family dream in rural Kenya to a growing force in precision pollination — we're just getting started. Partner with us to transform agriculture.
               </p>
-              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                <Button variant="secondary" size="lg" asChild className="font-bold px-8 shadow-lg">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button variant="secondary" asChild>
                   <Link to="/contact">Get In Touch</Link>
                 </Button>
-                <Button className="bg-nature-green hover:bg-nature-green-light text-white font-bold px-8 shadow-lg border-none" size="lg" asChild>
-                  <Link to="/team">Meet the Family</Link>
+                <Button variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10" asChild>
+                  <Link to="/careers">Join Our Team</Link>
                 </Button>
               </div>
             </CardContent>
-            {/* Background elements */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-20 -mt-20 blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-secondary/20 rounded-full -ml-20 -mb-20 blur-3xl" />
           </Card>
         </div>
       </section>
-
-      {/* Video Section */}
-      <div className="relative w-full h-[80vh] bg-foreground shadow-inner">
+      {/* Full-width Video Section - Before Footer */}
+      <div className="relative w-full h-[70vh] bg-foreground">
         <iframe
           className="absolute inset-0 w-full h-full"
-          src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+          src="https://www.youtube.com/embed/VIDEO_ID_HERE"
           title="About BeeYield"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
