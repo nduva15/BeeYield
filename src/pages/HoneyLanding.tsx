@@ -27,17 +27,15 @@ const HoneyLanding = () => {
           getProducts(),
           getCompanyStats()
         ]);
-        // Filter for honey products
-        const honeyItems = fetchedProducts.filter(p => p.category === 'honey');
+        // Filter for honey products with variants
+        const honeyItems = fetchedProducts.filter(p => p.category === 'honey' && p.variants && p.variants.length > 0);
         setProducts(honeyItems.slice(0, 3));
         setStats(fetchedStats);
 
         // Initialize variants
         const variants: Record<string, string> = {};
         honeyItems.slice(0, 3).forEach(p => {
-          if (p.variants && p.variants.length > 0) {
-            variants[p.id] = p.variants[0].id;
-          }
+          variants[p.id] = p.variants[0].id; // Safe now due to filter
         });
         setSelectedVariants(variants);
 
@@ -58,7 +56,7 @@ const HoneyLanding = () => {
   const getSelectedPrice = (product: Product) => {
     const variantId = selectedVariants[product.id];
     const variant = product.variants.find(v => v.id === variantId);
-    return variant ? variant.price_kes : (product.variants[0]?.price_kes || 0);
+    return variant ? variant.price_kes : (product.variants?.[0]?.price_kes || 0);
   };
 
   // Products and stats will load in background to avoid blocking the main page content
@@ -252,7 +250,7 @@ const HoneyLanding = () => {
                         <SelectValue placeholder="Select weight" />
                       </SelectTrigger>
                       <SelectContent className="rounded-2xl">
-                        {product.variants.map(v => (
+                        {product.variants?.map(v => (
                           <SelectItem key={v.id} value={v.id} className="font-bold">{v.size} - KES {v.price_kes}</SelectItem>
                         ))}
                       </SelectContent>

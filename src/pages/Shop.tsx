@@ -23,7 +23,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
-import { Product, ProductVariant } from "@/services/shopService";
+import { Product, ProductVariant, getProducts } from "@/services/shopService";
 import SEO from "@/components/SEO";
 
 const Shop = () => {
@@ -39,9 +39,10 @@ const Shop = () => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        const { getProducts } = await import("@/services/shopService");
         const data = await getProducts();
-        setProducts(data);
+        // Filter out products with no variants to prevent crashes
+        const validProducts = data.filter(p => p.variants && p.variants.length > 0);
+        setProducts(validProducts);
       } catch (error) {
         console.error("Error fetching products:", error);
       } finally {
@@ -333,7 +334,7 @@ const Shop = () => {
           {/* Hardware Tab */}
           <TabsContent value="hardware" className="mt-0">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-              {products.filter(p => p.category === 'hardware').map((product) => (
+              {products.filter(p => p.category === 'hardware' && p.variants && p.variants.length > 0).map((product) => (
                 <Card key={product.id} className="group overflow-hidden border-none shadow-premium hover:shadow-glow-primary transition-all duration-700 bg-white dark:bg-card rounded-[3rem]">
                   <div className="relative aspect-[4/3] bg-muted overflow-hidden">
                     <img

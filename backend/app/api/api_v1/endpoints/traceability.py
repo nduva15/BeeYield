@@ -15,15 +15,19 @@ async def get_trace_by_code(code: str, request: Request):
     Public endpoint to trace honey by its batch code (e.g. from jar).
     Returns full journey: Farmer -> Apiary -> Hive -> Harvest -> Processing.
     """
+    print(f"🔍 Trace Request for Code: {code}")
     result = traceability_service.get_trace_journey(code)
     
     if result:
+        print(f"✅ Found in Blockchain: {code}")
         return result
         
     # Demo Fallback (if real data not found, return a rich demo response for the user to see UI)
     if code.startswith("DEMO"):
+        print(f"ℹ️ Returning Demo Data for: {code}")
         return _get_demo_trace(code)
     
+    print(f"❌ Code Not Found: {code}")
     raise HTTPException(status_code=404, detail=f"Traceability code '{code}' not found on the blockchain.")
 
 @router.get("/chain", response_model=Dict[str, Any])

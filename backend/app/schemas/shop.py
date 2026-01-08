@@ -19,12 +19,15 @@ class ProductBase(BaseModel):
 class ProductCreate(ProductBase):
     variants: List[ProductVariantBase]
 
+class ProductVariant(ProductVariantBase):
+    id: str
+
 class Product(ProductBase):
     id: str
     rating: float
     review_count: int
     is_active: bool
-    variants: List[ProductVariantBase] = []
+    variants: List[ProductVariant] = []
 
 # --- Cart ---
 class CartItemAdd(BaseModel):

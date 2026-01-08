@@ -21,13 +21,24 @@ if settings.BACKEND_CORS_ORIGINS:
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
+
 @app.get("/")
 def read_root():
+    from app.db.supabase_db import get_supabase
+    from app.db.clickhouse_db import ClickHouseService
+    
+    supabase_status = "connected" if get_supabase() is not None else "not configured"
+    clickhouse_status = "connected" if ClickHouseService.get_client() is not None else "not configured"
+    
     return {
         "message": f"Welcome to {settings.PROJECT_NAME} API",
         "docs": "/docs",
         "version": "1.0.0",
-        "status": "online"
+        "status": "online",
+        "connections": {
+            "supabase": supabase_status,
+            "clickhouse": clickhouse_status
+        }
     }
 
 if __name__ == "__main__":

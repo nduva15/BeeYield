@@ -37,11 +37,13 @@ class HoneyBlockchain:
         self.crypto = BeeYieldCrypto()
         self._lock = threading.Lock()
         
-        # Create genesis block
-        self._create_genesis_block()
-        
-        # Seed demo data if in development mode or explicitly requested
-        self._bootstrap_demo_data()
+        # Try to load existing chain
+        if not self._load_chain():
+            # Create genesis block
+            self._create_genesis_block()
+            
+            # Seed demo data if in development mode or explicitly requested
+            self._bootstrap_demo_data()
     
     def _create_genesis_block(self) -> None:
         """Create the first block in the chain"""
@@ -120,7 +122,67 @@ class HoneyBlockchain:
                 new_block.mine_block()
             
             self.chain.append(new_block)
+            self._save_chain()
             return new_block
+    
+    def _get_chain_path(self) -> str:
+        """Get absolute path for the blockchain data file"""
+        import os
+        # Save in the same directory as this file
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)), "traceability_chain.json")
+
+    def _save_chain(self) -> None:
+        """Save the blockchain to disk"""
+        try:
+            chain_data = [block.to_dict() for block in self.chain]
+            with open(self._get_chain_path(), "w") as f:
+                json.dump(chain_data, f, indent=2)
+            print(f"💾 Blockchain saved to {self._get_chain_path()}")
+        except Exception as e:
+            print(f"⚠️ Failed to save blockchain: {e}")
+
+    def _load_chain(self) -> bool:
+        """Load blockchain from disk"""
+        try:
+             import os
+             import json
+             path = self._get_chain_path()
+             if not os.path.exists(path):
+                 print(f"ℹ️ No existing blockchain found at {path}")
+                 return False
+                 
+             print(f"📂 Loading blockchain from {path}...")
+             with open(path, "r") as f:
+                 chain_data = json.load(f)
+             
+             self.chain = []
+             for b_data in chain_data:
+                 # Helper to safely convert string to Enum
+                 b_type_str = b_data["block_type"]
+                 try:
+                    b_type = BlockType(b_type_str)
+                 except ValueError:
+                    # Fallback for old/mismatched data
+                    b_type = BlockType.GENESIS 
+
+                 block = HoneyBlock(
+                     index=b_data["index"],
+                     block_type=b_type,
+                     data=b_data["data"],
+                     previous_hash=b_data["previous_hash"],
+                     creator_signature=b_data["creator_signature"],
+                     timestamp=b_data["timestamp"],
+                     nonce=b_data["nonce"],
+                     merkle_root=b_data["merkle_root"]
+                 )
+                 block.hash = b_data["hash"] # Restore hash
+                 self.chain.append(block)
+             
+             print(f"✅ Loaded {len(self.chain)} blocks from disk.")
+             return True
+        except Exception as e:
+            print(f"⚠️ Failed to load blockchain: {e}")
+            return False
     
     # ==================== FARMER OPERATIONS ====================
     
