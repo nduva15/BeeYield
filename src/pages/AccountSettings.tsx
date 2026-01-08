@@ -94,7 +94,7 @@ const AccountSettings = () => {
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">Email Verified</span>
-                                <span className={user.email_confirmed_at ? 'text-green-500' : 'text-orange-500'}>
+                                <span className={user.email_confirmed_at ? 'text-nature-green' : 'text-honey-dark'}>
                                     {user.email_confirmed_at ? '✓ Verified' : '⚠ Not verified'}
                                 </span>
                             </div>

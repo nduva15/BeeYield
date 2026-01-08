@@ -161,7 +161,7 @@ const OurStory = () => {
                 <Button variant="secondary" size="lg" asChild className="font-bold px-8 shadow-lg">
                   <Link to="/contact">Get In Touch</Link>
                 </Button>
-                <Button className="bg-green-500 hover:bg-green-600 text-white font-bold px-8 shadow-lg border-none" size="lg" asChild>
+                <Button className="bg-nature-green hover:bg-nature-green-light text-white font-bold px-8 shadow-lg border-none" size="lg" asChild>
                   <Link to="/Team">Meet the Family</Link>
                 </Button>
               </div>

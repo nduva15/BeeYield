@@ -66,11 +66,11 @@ const InLandPollinationPlatform = () => {
       {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden">
         {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-900 via-amber-800 to-yellow-700">
+        <div className="absolute inset-0 bg-gradient-to-br from-secondary via-primary to-accent">
           <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-20 left-10 w-72 h-72 bg-yellow-400 rounded-full blur-3xl animate-pulse" />
-            <div className="absolute bottom-20 right-10 w-96 h-96 bg-amber-300 rounded-full blur-3xl animate-pulse delay-1000" />
-            <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-orange-400 rounded-full blur-3xl animate-pulse delay-500" />
+            <div className="absolute top-20 left-10 w-72 h-72 bg-honey-light rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent rounded-full blur-3xl animate-pulse delay-1000" />
+            <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-honey-dark rounded-full blur-3xl animate-pulse delay-500" />
           </div>
           {/* Honeycomb Pattern */}
           <svg className="absolute inset-0 w-full h-full opacity-10" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -101,7 +101,7 @@ const InLandPollinationPlatform = () => {
               </p>
 
               <div className="flex flex-wrap gap-4">
-                <Button size="lg" className="bg-white text-amber-900 hover:bg-yellow-100 text-lg px-8 py-6 font-semibold shadow-2xl" asChild>
+                <Button size="lg" className="bg-background text-primary hover:bg-accent/20 text-lg px-8 py-6 font-semibold shadow-2xl" asChild>
                   <Link to="/pollination-request">
                     Start Your Pollination Journey
                     <ArrowRight className="ml-2 h-5 w-5" />
@@ -115,15 +115,15 @@ const InLandPollinationPlatform = () => {
               {/* Quick Stats */}
               <div className="grid grid-cols-3 gap-6 pt-8 border-t border-white/20">
                 <div>
-                  <p className="text-3xl font-bold text-yellow-300">35%</p>
+                  <p className="text-3xl font-bold text-honey-light">35%</p>
                   <p className="text-white/70 text-sm">Average Yield Increase</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-yellow-300">150+</p>
+                  <p className="text-3xl font-bold text-honey-light">150+</p>
                   <p className="text-white/70 text-sm">Managed Hives</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-yellow-300">24/7</p>
+                  <p className="text-3xl font-bold text-honey-light">24/7</p>
                   <p className="text-white/70 text-sm">Monitoring Active</p>
                 </div>
               </div>
@@ -173,7 +173,7 @@ const InLandPollinationPlatform = () => {
               Our Philosophy
             </Badge>
             <h2 className="text-4xl md:text-5xl font-bold text-foreground">
-              Pollination is an <span className="text-amber-600">Art</span> and a <span className="text-amber-600">Science</span>
+              Pollination is an <span className="text-primary">Art</span> and a <span className="text-primary">Science</span>
             </h2>
             <p className="text-xl text-muted-foreground leading-relaxed">
               For centuries, farmers relied on hope and good weather. Bees came, bees went,

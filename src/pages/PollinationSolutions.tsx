@@ -16,8 +16,8 @@ const PollinationSolutions = () => {
       <section className="relative py-24 md:py-32 overflow-hidden bg-[#0A0A0A]">
         {/* Abstract Background */}
         <div className="absolute inset-0">
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-600/20 rounded-full blur-[120px] -mr-64 -mt-64" />
-          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-emerald-600/20 rounded-full blur-[120px] -ml-64 -mb-64" />
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px] -mr-64 -mt-64" />
+          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-nature-green/20 rounded-full blur-[120px] -ml-64 -mb-64" />
           <svg className="absolute inset-0 w-full h-full opacity-5" viewBox="0 0 100 100" preserveAspectRatio="none">
             <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
               <path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" strokeWidth="0.5" />
@@ -50,11 +50,11 @@ const PollinationSolutions = () => {
             <Card className="group relative overflow-hidden border-none shadow-2xl bg-white dark:bg-gray-950 rounded-[3rem] p-1">
               <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <CardContent className="relative z-10 bg-white dark:bg-gray-950 rounded-[2.9rem] p-10 md:p-14 h-full flex flex-col">
-                <div className="w-20 h-20 rounded-2xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform">
-                  <Cpu className="h-10 w-10 text-indigo-600 dark:text-indigo-400 group-hover:text-indigo-500 transition-colors" />
+                <div className="w-20 h-20 rounded-2xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform">
+                  <Cpu className="h-10 w-10 text-primary dark:text-primary group-hover:text-primary transition-colors" />
                 </div>
                 <div className="flex-1 space-y-6">
-                  <h3 className="text-4xl font-black tracking-tight text-foreground">In-Hive <br /><span className="text-indigo-600">Precision</span></h3>
+                  <h3 className="text-4xl font-black tracking-tight text-foreground">In-Hive <br /><span className="text-primary">Precision</span></h3>
                   <p className="text-lg text-muted-foreground leading-relaxed">
                     X-ray vision into every hive. Monitor colony health, population dynamics, and queen status in real-time using in-hive sensors.
                   </p>
@@ -67,7 +67,7 @@ const PollinationSolutions = () => {
                     ))}
                   </ul>
                 </div>
-                <Button asChild size="lg" className="mt-12 bg-indigo-600 hover:bg-indigo-700 text-white w-full h-16 text-lg font-black rounded-2xl">
+                <Button asChild size="lg" className="mt-12 bg-primary hover:bg-primary/90 text-white w-full h-16 text-lg font-black rounded-2xl">
                   <Link to="/precision-pollination">
                     Explore In-Hive Technology
                     <ArrowRight className="ml-2 h-5 w-5" />
@@ -80,11 +80,11 @@ const PollinationSolutions = () => {
             <Card className="group relative overflow-hidden border-none shadow-2xl bg-white dark:bg-gray-950 rounded-[3rem] p-1">
               <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <CardContent className="relative z-10 bg-white dark:bg-gray-950 rounded-[2.9rem] p-10 md:p-14 h-full flex flex-col">
-                <div className="w-20 h-20 rounded-2xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform">
-                  <Eye className="h-10 w-10 text-emerald-600 dark:text-emerald-400 group-hover:text-emerald-500 transition-colors" />
+                <div className="w-20 h-20 rounded-2xl bg-nature-green/10 dark:bg-nature-green/20 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform">
+                  <Eye className="h-10 w-10 text-nature-green dark:text-nature-green-light group-hover:text-nature-green transition-colors" />
                 </div>
                 <div className="flex-1 space-y-6">
-                  <h3 className="text-4xl font-black tracking-tight text-foreground">In-Field <br /><span className="text-emerald-600">Insights</span></h3>
+                  <h3 className="text-4xl font-black tracking-tight text-foreground">In-Field <br /><span className="text-nature-green">Insights</span></h3>
                   <p className="text-lg text-muted-foreground leading-relaxed">
                     Measure the work where it happens. Track per-flower bee visits, identify coverage gaps, and optimize hive placement across every acre.
                   </p>
@@ -97,7 +97,7 @@ const PollinationSolutions = () => {
                     ))}
                   </ul>
                 </div>
-                <Button asChild size="lg" className="mt-12 bg-emerald-600 hover:bg-emerald-700 text-white w-full h-16 text-lg font-black rounded-2xl">
+                <Button asChild size="lg" className="mt-12 bg-nature-green hover:bg-nature-green-light text-white w-full h-16 text-lg font-black rounded-2xl">
                   <Link to="/in-land-pollination">
                     Explore Field Analytics
                     <ArrowRight className="ml-2 h-5 w-5" />

@@ -59,7 +59,7 @@ const ESG = () => {
     {
       title: "Environmental",
       icon: Sprout,
-      color: "from-emerald-500 to-green-600",
+      color: "from-nature-green to-nature-green-light",
       initiatives: [
         "2,500+ indigenous trees planted across Kibwezi, Makueni County",
         "Only 50% honey harvest policy. Bees keep what they need",
@@ -70,7 +70,7 @@ const ESG = () => {
     {
       title: "Social",
       icon: Users,
-      color: "from-amber-500 to-orange-600",
+      color: "from-honey-light to-honey-dark",
       initiatives: [
         "20+ local beekeepers trained and earning sustainable income",
         "Women-led beekeeping cooperatives supported"
@@ -185,7 +185,7 @@ const ESG = () => {
       </section>
 
       {/* CEO Quote */}
-      <section className="py-32 bg-yellow-900 text-white relative overflow-hidden">
+      <section className="py-32 bg-secondary text-white relative overflow-hidden">
         <div className="container mx-auto px-4 text-center relative z-10">
           <Quote className="w-16 h-16 text-primary/40 mx-auto mb-10" />
           <blockquote className="text-2xl md:text-4xl font-black italic max-w-4xl mx-auto leading-tight mb-12">
@@ -197,7 +197,7 @@ const ESG = () => {
             </div>
             <div className="text-left">
               <div className="text-2xl font-black">Timothy Nduva</div>
-              <div className="text-yellow-400 font-bold uppercase tracking-widest text-sm">CEO & Founder</div>
+              <div className="text-honey-light font-bold uppercase tracking-widest text-sm">CEO & Founder</div>
             </div>
           </div>
         </div>

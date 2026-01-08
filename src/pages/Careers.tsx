@@ -173,8 +173,8 @@ const Careers = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             <Card className="border-none shadow-lg hover:shadow-xl transition-all">
               <CardContent className="p-6">
-                <div className="bg-blue-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                  <Compass className="h-6 w-6 text-blue-600" />
+                <div className="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                  <Compass className="h-6 w-6 text-primary" />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-foreground">We are Pioneers</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
@@ -185,8 +185,8 @@ const Careers = () => {
 
             <Card className="border-none shadow-lg hover:shadow-xl transition-all">
               <CardContent className="p-6">
-                <div className="bg-purple-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                  <Cpu className="h-6 w-6 text-purple-600" />
+                <div className="bg-secondary/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                  <Cpu className="h-6 w-6 text-secondary" />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-foreground">We are Technologists</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
@@ -197,8 +197,8 @@ const Careers = () => {
 
             <Card className="border-none shadow-lg hover:shadow-xl transition-all">
               <CardContent className="p-6">
-                <div className="bg-yellow-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                  <Sun className="h-6 w-6 text-yellow-600" />
+                <div className="bg-honey-light/20 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                  <Sun className="h-6 w-6 text-honey-light" />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-foreground">We are Optimists</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
@@ -209,8 +209,8 @@ const Careers = () => {
 
             <Card className="border-none shadow-lg hover:shadow-xl transition-all">
               <CardContent className="p-6">
-                <div className="bg-green-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                  <Users className="h-6 w-6 text-green-600" />
+                <div className="bg-nature-green/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                  <Users className="h-6 w-6 text-nature-green" />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-foreground">We are Bridge Builders</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
@@ -221,8 +221,8 @@ const Careers = () => {
 
             <Card className="border-none shadow-lg hover:shadow-xl transition-all">
               <CardContent className="p-6">
-                <div className="bg-indigo-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                  <Database className="h-6 w-6 text-indigo-600" />
+                <div className="bg-accent/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                  <Database className="h-6 w-6 text-accent" />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-foreground">We are Data-Driven</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
@@ -233,8 +233,8 @@ const Careers = () => {
 
             <Card className="border-none shadow-lg hover:shadow-xl transition-all">
               <CardContent className="p-6">
-                <div className="bg-orange-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                  <Zap className="h-6 w-6 text-orange-600" />
+                <div className="bg-honey-dark/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                  <Zap className="h-6 w-6 text-honey-dark" />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-foreground">Innovation is in our DNA</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
