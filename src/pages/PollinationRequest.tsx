@@ -82,7 +82,7 @@ const PollinationRequest = () => {
     <div className="min-h-screen bg-background selection:bg-amber-500/30">
 
       {/* Hero Header */}
-      <section className="relative py-20 overflow-hidden bg-gradient-to-br from-amber-600 to-orange-700 text-white">
+      <section className="relative py-20 overflow-hidden bg-gradient-to-br from-primary to-secondary text-white">
         <div className="absolute inset-0 opacity-10">
           <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
             <pattern id="hex-request" x="0" y="0" width="10" height="8.66" patternUnits="userSpaceOnUse">
@@ -93,7 +93,7 @@ const PollinationRequest = () => {
         </div>
         <div className="container mx-auto px-4 relative z-10 text-center">
           <Badge className="bg-white/20 text-white border-white/30 mb-6">Securing Your Harvest</Badge>
-          <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-4">Request <span className="text-yellow-300 italic">Pollination</span></h1>
+          <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-4">Request <span className="text-honey-light italic">Pollination</span></h1>
           <p className="text-xl text-white/80 max-w-2xl mx-auto font-medium">
             Take the first step towards a precision-powered harvest. Tell us about your farm,
             and our team will craft a custom pollination strategy for you.
@@ -239,7 +239,7 @@ const PollinationRequest = () => {
                   {/* Service Group */}
                   <div className="space-y-6">
                     <div className="flex items-center gap-2 mb-4">
-                      <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-600">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
                         <Calendar className="h-4 w-4" />
                       </div>
                       <h3 className="text-lg font-black uppercase tracking-widest text-muted-foreground">Service Schedule</h3>
@@ -286,7 +286,7 @@ const PollinationRequest = () => {
 
           {/* Sidebar Info */}
           <div className="space-y-6">
-            <Card className="border-none shadow-lg bg-amber-50 dark:bg-amber-950/20 rounded-[2rem] p-8">
+            <Card className="border-none shadow-lg bg-secondary/10 dark:bg-secondary/20 rounded-[2rem] p-8">
               <h3 className="text-xl font-black mb-6 tracking-tight">What Happens Next?</h3>
               <div className="space-y-6">
                 {[

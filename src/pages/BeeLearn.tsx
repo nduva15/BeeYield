@@ -14,7 +14,7 @@ function renderStars(rating: number) {
   return (
     <div className="flex items-center gap-0.5">
       {[...Array(5)].map((_, i) => (
-        <Star key={i} className={`h-4 w-4 ${i < fullStars ? 'text-yellow-400 fill-yellow-400' : 'text-muted'}`} />
+        <Star key={i} className={`h-4 w-4 ${i < fullStars ? 'text-honey-light fill-honey-light' : 'text-muted'}`} />
       ))}
     </div>
   );
@@ -49,20 +49,20 @@ const BeeLearn = () => {
   return (
     <main className="min-h-screen bg-background">
       {/* BeeLearn Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-yellow-50 via-background to-primary/10 py-24 sm:py-32">
+      <section className="relative overflow-hidden bg-gradient-to-br from-secondary/5 via-background to-primary/10 py-24 sm:py-32">
         <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-12 relative z-10">
           {/* Left: Text */}
           <div className="flex-1 text-center md:text-left">
             <div className="mb-6 flex justify-center md:justify-start">
-              <span className="inline-flex items-center gap-2 bg-yellow-100 text-yellow-800 px-4 py-2 rounded-full font-bold text-sm border border-yellow-200 shadow-sm">
+              <span className="inline-flex items-center gap-2 bg-honey-light/10 text-honey-dark px-4 py-2 rounded-full font-bold text-sm border border-honey-light/20 shadow-sm">
                 <ShieldCheck className="h-4 w-4" />
                 Curated by African Experts
               </span>
             </div>
-            <h1 className="text-4xl md:text-7xl font-black text-yellow-900 mb-6 leading-tight">
+            <h1 className="text-4xl md:text-7xl font-black text-honey-dark mb-6 leading-tight">
               Learning That <span className="text-primary">Gives Back</span>
             </h1>
-            <p className="text-lg md:text-2xl text-yellow-900/80 mb-8 max-w-xl font-medium leading-relaxed">
+            <p className="text-lg md:text-2xl text-honey-dark/80 mb-8 max-w-xl font-medium leading-relaxed">
               We share only the best, most sustainable knowledge. Every course contributes to pollinator health and farmers' success.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mb-8 justify-center md:justify-start">
@@ -83,14 +83,14 @@ const BeeLearn = () => {
                 alt="Learning Hub"
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-yellow-900/40 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-honey-dark/40 to-transparent" />
 
               {/* Floating elements */}
               <div className="absolute top-6 left-6 bg-white rounded-2xl p-3 shadow-2xl animate-bounce-slow">
                 <BookOpen className="h-8 w-8 text-primary" />
               </div>
               <div className="absolute top-20 right-6 bg-white rounded-2xl p-3 shadow-2xl animate-pulse">
-                <Star className="h-8 w-8 text-yellow-500 fill-yellow-500" />
+                <Star className="h-8 w-8 text-honey-light fill-honey-light" />
               </div>
 
               <div className="absolute bottom-8 left-0 right-0 p-8 text-white">
@@ -103,7 +103,7 @@ const BeeLearn = () => {
 
         {/* Abstract Backgrounds */}
         <div className="absolute top-0 right-0 w-1/2 h-full bg-primary/5 -skew-x-12 origin-top-right -z-0" />
-        <div className="absolute -left-20 top-20 w-80 h-80 bg-yellow-400/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute -left-20 top-20 w-80 h-80 bg-honey-light/10 rounded-full blur-3xl animate-pulse" />
       </section>
 
       {/* Value Props */}
@@ -118,7 +118,7 @@ const BeeLearn = () => {
               <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 text-primary">
                 <prop.icon className="h-8 w-8" />
               </div>
-              <h3 className="font-black text-xl mb-3 text-yellow-900">{prop.title}</h3>
+              <h3 className="font-black text-xl mb-3 text-honey-dark">{prop.title}</h3>
               <p className="text-muted-foreground text-sm font-medium leading-relaxed">{prop.content}</p>
             </Card>
           ))}
@@ -222,12 +222,12 @@ const BeeLearn = () => {
       </section>
 
       {/* Trust Quote */}
-      <section className="py-20 bg-yellow-900 text-white relative overflow-hidden">
+      <section className="py-20 bg-secondary text-white relative overflow-hidden">
         <div className="container mx-auto px-4 text-center relative z-10">
           <blockquote className="text-2xl md:text-4xl font-black italic max-w-4xl mx-auto leading-tight">
             "Knowledge is like honey; it's best when shared, and it never expires. We're seeding a future where everyone can be a guardian of the honey bee."
           </blockquote>
-          <p className="mt-8 text-yellow-400 font-bold">— Timothy Mathuva, CEO</p>
+          <p className="mt-8 text-honey-light font-bold">— Timothy Mathuva, CEO</p>
         </div>
         <div className="absolute -top-10 -left-10 w-40 h-40 bg-white/5 rounded-full blur-2xl" />
         <div className="absolute -bottom-10 -right-10 w-60 h-60 bg-primary/10 rounded-full blur-2xl" />

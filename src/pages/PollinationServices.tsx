@@ -60,11 +60,11 @@ const PollinationServices = () => {
             {/* Hero Section */}
             <section className="relative min-h-[90vh] flex items-center overflow-hidden">
                 {/* Animated Background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-900 via-amber-800 to-yellow-700">
+                <div className="absolute inset-0 bg-gradient-to-br from-secondary via-primary to-accent">
                     <div className="absolute inset-0 opacity-20">
-                        <div className="absolute top-20 left-10 w-72 h-72 bg-yellow-400 rounded-full blur-3xl animate-pulse" />
-                        <div className="absolute bottom-20 right-10 w-96 h-96 bg-amber-300 rounded-full blur-3xl animate-pulse delay-1000" />
-                        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-orange-400 rounded-full blur-3xl animate-pulse delay-500" />
+                        <div className="absolute top-20 left-10 w-72 h-72 bg-honey-light rounded-full blur-3xl animate-pulse" />
+                        <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent rounded-full blur-3xl animate-pulse delay-1000" />
+                        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-honey-dark rounded-full blur-3xl animate-pulse delay-500" />
                     </div>
                     {/* Honeycomb Pattern */}
                     <svg className="absolute inset-0 w-full h-full opacity-10" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -84,9 +84,9 @@ const PollinationServices = () => {
 
                             <h1 className="text-5xl md:text-8xl font-black leading-tight tracking-tighter">
                                 Where
-                                <span className="text-yellow-300 block italic">Technology</span>
+                                <span className="text-honey-light block italic">Technology</span>
                                 Meets the
-                                <span className="text-yellow-300 block">Hive</span>
+                                <span className="text-honey-light block">Hive</span>
                             </h1>
 
                             <p className="text-xl text-white/90 max-w-lg leading-relaxed font-medium">
@@ -96,7 +96,7 @@ const PollinationServices = () => {
 
                             <div className="flex flex-wrap gap-4">
                                 <Link to="/pollination-request">
-                                    <Button size="lg" className="bg-white text-amber-900 hover:bg-yellow-100 text-lg px-8 py-6 font-black shadow-2xl rounded-2xl">
+                                    <Button size="lg" className="bg-background text-primary hover:bg-accent/20 text-lg px-8 py-6 font-black shadow-2xl rounded-2xl">
                                         Start Your Journey
                                         <ArrowRight className="ml-2 h-5 w-5" />
                                     </Button>
@@ -111,15 +111,15 @@ const PollinationServices = () => {
                             {/* Quick Stats */}
                             <div className="grid grid-cols-3 gap-6 pt-8 border-t border-white/20 font-black">
                                 <div>
-                                    <p className="text-4xl text-yellow-300 tracking-tighter">35%</p>
+                                    <p className="text-4xl text-honey-light tracking-tighter">35%</p>
                                     <p className="text-white/70 text-xs uppercase tracking-widest">Yield Increase</p>
                                 </div>
                                 <div>
-                                    <p className="text-4xl text-yellow-300 tracking-tighter">150+</p>
+                                    <p className="text-4xl text-honey-light tracking-tighter">150+</p>
                                     <p className="text-white/70 text-xs uppercase tracking-widest">Managed Hives</p>
                                 </div>
                                 <div>
-                                    <p className="text-4xl text-yellow-300 tracking-tighter">24/7</p>
+                                    <p className="text-4xl text-honey-light tracking-tighter">24/7</p>
                                     <p className="text-white/70 text-xs uppercase tracking-widest">Active Monitoring</p>
                                 </div>
                             </div>
@@ -140,10 +140,10 @@ const PollinationServices = () => {
                                 </div>
                                 {/* Floating Elements */}
                                 <div className="absolute top-10 right-10 bg-white/20 backdrop-blur-md rounded-2xl p-6 border border-white/30 animate-float shadow-2xl">
-                                    <Activity className="h-10 w-10 text-yellow-300" />
+                                    <Activity className="h-10 w-10 text-honey-light" />
                                 </div>
                                 <div className="absolute bottom-20 left-0 bg-white/20 backdrop-blur-md rounded-2xl p-6 border border-white/30 animate-float-delayed shadow-2xl">
-                                    <Smartphone className="h-10 w-10 text-yellow-300" />
+                                    <Smartphone className="h-10 w-10 text-honey-light" />
                                 </div>
                             </div>
                         </div>

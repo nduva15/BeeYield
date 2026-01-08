@@ -8,22 +8,30 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
-import { getCrops, Crop } from "@/services/servicesService";
 import { getCompanyStats, CompanyStat } from "@/services/companyService";
 
 const CropsWePollinate = () => {
-  const [crops, setCrops] = useState<Crop[]>([]);
   const [stats, setStats] = useState<CompanyStat[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const crops = [
+    { name: "Maize", image_url: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&q=80&w=400", description: "Maize varies in its dependence on insect pollination, but bee activity can significantly enhance kernel set and quality." },
+    { name: "Sisal", image_url: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=400", description: "Sisal plants produce abundant nectar that attracts bees. Our monitoring solutions help track bee activity around sisal plantations." },
+    { name: "Mangoes", image_url: "https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&q=80&w=400", description: "Mangoes are highly dependent on insect pollination for fruit set. Managed hives ensure adequate coverage during the critical bloom period." },
+    { name: "Beans", image_url: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&q=80&w=400", description: "Bean yields are greatly improved by bee pollination, resulting in more pods and heavier seeds." },
+    { name: "Sunflower", image_url: "https://images.unsplash.com/photo-1597848212624-a19eb35e2651?auto=format&fit=crop&q=80&w=400", description: "Sunflowers are highly dependent on insect pollination, especially by bees, for optimal seed production and oil yield." },
+    { name: "Oranges", image_url: "https://images.unsplash.com/photo-1547514701-42782101795e?auto=format&fit=crop&q=80&w=400", description: "Citrus crops like oranges require bee pollination for fruit set and development. We optimize hive placement for maximum visits." },
+    { name: "Vegetables", image_url: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&q=80&w=400", description: "Diverse vegetable crops benefit from consistent pollination, leading to better shapes, sizes, and overall farm productivity." },
+    { name: "Tomatoes", image_url: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&q=80&w=400", description: "Bumblebees are often the best pollinators for tomatoes due to buzz pollination, but honey bees also contribute to open field production." },
+    { name: "Onions", image_url: "https://images.unsplash.com/photo-1618512496248-a07fe83aa829?auto=format&fit=crop&q=80&w=400", description: "Onion seed production relies heavily on insect pollination. Our services ensure high seed set and quality." },
+  ];
 
   useEffect(() => {
     const initData = async () => {
       try {
-        const [fetchedCrops, fetchedStats] = await Promise.all([
-          getCrops(),
+        const [fetchedStats] = await Promise.all([
           getCompanyStats()
         ]);
-        setCrops(fetchedCrops);
         setStats(fetchedStats);
       } catch (err) {
         console.error(err);
@@ -34,29 +42,6 @@ const CropsWePollinate = () => {
     initData();
   }, []);
 
-  // Fallback crops for display if backend data is empty or missing
-  const fallbackCrops = [
-    {
-      id: "fallback-maize",
-      name: "Maize",
-      image_url: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&q=80&w=600",
-      description: "Maize is a wind-pollinated crop, but bee activity can enhance pollination efficiency and improve yield quality."
-    },
-    {
-      id: "fallback-sisal",
-      name: "Sisal",
-      image_url: "https://images.unsplash.com/photo-1509587584298-0f3b3a3a1797?auto=format&fit=crop&q=80&w=600",
-      description: "Sisal plants produce abundant nectar that attracts bees. Our monitoring solutions help track bee activity around sisal plantations."
-    },
-    {
-      id: "fallback-sunflower",
-      name: "Sunflower",
-      image_url: "https://images.unsplash.com/photo-1553279761-de8a66699195?w=500",
-      description: "Sunflowers are highly dependent on insect pollination, especially by bees, for optimal seed production and oil yield."
-    }
-  ];
-
-  // Accurate world map TopoJSON from world-atlas
   const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
   const getStatValue = (key: string, defaultValue: string) => {
@@ -64,7 +49,7 @@ const CropsWePollinate = () => {
     return s ? s.stat_value : defaultValue;
   };
 
-  const cropsToDisplay = crops.length > 0 ? crops : fallbackCrops;
+  const cropsToDisplay = crops;
 
   if (loading) {
     return (
@@ -219,7 +204,7 @@ const CropsWePollinate = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {cropsToDisplay.map((crop, index) => (
-              <Card key={crop.id || index} className="overflow-hidden group hover:shadow-glow transition-all duration-500 border-none shadow-soft flex flex-col h-full bg-white">
+              <Card key={crop.id || index} className="overflow-hidden group hover:shadow-glow transition-all duration-500 border-none shadow-soft flex flex-col h-full bg-card">
                 <div className="relative h-56 overflow-hidden">
                   <img
                     src={crop.image_url || "https://images.unsplash.com/photo-1597848212624-a19eb35e2651?auto=format&fit=crop&q=80&w=600"}

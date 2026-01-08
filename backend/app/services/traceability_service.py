@@ -142,7 +142,7 @@ def get_trace_journey(batch_code: str) -> Optional[schemas.TraceResponse]:
             title="Harvest Day",
             date=harvest_data.get('harvest_date', ''),
             location="Apiary Site", # We'll fill this with Apiary name if avail
-            description=f"Harvested by {harvest_data.get('harvester_name')}. {harvest_data.get('quantity_kg')}kg collected, {harvest_data.get('quantity_left_for_bees_kg')}kg left for bees.",
+            description=f"Harvested by {harvest_data.get('harvester_name')}. {harvest_data.get('quantity_kg')}kg collected. 50% left for the bees ({harvest_data.get('quantity_left_for_bees_kg')}kg).",
             icon="Basket",
             data=harvest_data,
             hash=harvest_block['hash']

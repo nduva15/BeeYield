@@ -9,22 +9,30 @@ import {
   Activity, Database, Radio, Smartphone, Loader2
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { getCrops, Crop } from "@/services/servicesService";
 import { getCompanyStats, CompanyStat } from "@/services/companyService";
 
 const Home = () => {
-  const [crops, setCrops] = useState<Crop[]>([]);
   const [stats, setStats] = useState<CompanyStat[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const crops = [
+    { name: "Maize", image_url: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&q=80&w=400" },
+    { name: "Sisal", image_url: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=400" },
+    { name: "Mangoes", image_url: "https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&q=80&w=400" },
+    { name: "Beans", image_url: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&q=80&w=400" },
+    { name: "Sunflower", image_url: "https://images.unsplash.com/photo-1597848212624-a19eb35e2651?auto=format&fit=crop&q=80&w=400" },
+    { name: "Oranges", image_url: "https://images.unsplash.com/photo-1547514701-42782101795e?auto=format&fit=crop&q=80&w=400" },
+    { name: "Vegetables", image_url: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&q=80&w=400" },
+    { name: "Tomatoes", image_url: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&q=80&w=400" },
+    { name: "Onions", image_url: "https://images.unsplash.com/photo-1618512496248-a07fe83aa829?auto=format&fit=crop&q=80&w=400" },
+  ];
 
   useEffect(() => {
     const initData = async () => {
       try {
-        const [fetchedCrops, fetchedStats] = await Promise.all([
-          getCrops(),
+        const [fetchedStats] = await Promise.all([
           getCompanyStats()
         ]);
-        setCrops(fetchedCrops);
         setStats(fetchedStats);
       } catch (err) {
         console.error(err);
@@ -197,12 +205,12 @@ const Home = () => {
 
             <Card className="group overflow-hidden border-none shadow-soft hover:shadow-glow transition-all duration-500 bg-white p-10">
               <CardContent className="p-0 space-y-8">
-                <div className="w-20 h-20 rounded-3xl bg-green-100 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Eye className="h-10 w-10 text-green-600" />
+                <div className="w-20 h-20 rounded-3xl bg-nature-green/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Eye className="h-10 w-10 text-nature-green" />
                 </div>
                 <h3 className="text-3xl font-black">In-Land PLIP</h3>
                 <p className="text-lg text-muted-foreground font-medium">Measure real bee activity in the field to correlate colony strength with yield outcomes.</p>
-                <Button className="h-12 px-8 font-black bg-green-600 hover:bg-green-700" asChild>
+                <Button className="h-12 px-8 font-black bg-secondary hover:bg-secondary/90" asChild>
                   <Link to="/InLandPollinationPlatform">Explore Platform <ArrowRight className="ml-2 w-5 h-5" /></Link>
                 </Button>
               </CardContent>

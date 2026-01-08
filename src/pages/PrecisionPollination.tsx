@@ -299,7 +299,7 @@ const PrecisionPollination = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {sensorMetrics.map((metric, index) => (
-              <Card key={index} className="group bg-card/80 backdrop-blur-sm border-border/50 hover:border-indigo-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/10">
+              <Card key={index} className="group bg-card/80 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
                 <CardContent className="p-6">
                   <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${metric.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
                     <metric.icon className="h-6 w-6 text-white" />
@@ -318,8 +318,8 @@ const PrecisionPollination = () => {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8 max-w-5xl mx-auto">
             {dataPoints.map((point, index) => (
-              <div key={index} className="text-center p-8 bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-border hover:border-indigo-400 transition-all">
-                <point.icon className="h-12 w-12 text-indigo-600 mx-auto mb-4" />
+              <div key={index} className="text-center p-8 bg-card rounded-2xl shadow-lg border border-border hover:border-primary transition-all">
+                <point.icon className="h-12 w-12 text-primary mx-auto mb-4" />
                 <p className="text-4xl font-bold text-foreground mb-2">{point.value}</p>
                 <p className="text-sm text-muted-foreground font-medium">{point.label}</p>
               </div>
@@ -341,11 +341,11 @@ const PrecisionPollination = () => {
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16 space-y-4">
-            <Badge className="bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300">
+            <Badge className="bg-primary/20 text-primary dark:bg-primary/30 dark:text-honey-light">
               The Technology
             </Badge>
             <h2 className="text-4xl md:text-5xl font-bold text-foreground">
-              Hardware That <span className="text-indigo-600">Thinks</span>
+              Hardware That <span className="text-primary">Thinks</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Two pieces of cutting-edge hardware work together to give you unprecedented visibility into hive performance
@@ -354,11 +354,11 @@ const PrecisionPollination = () => {
 
           <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto mb-16">
             {/* In-Hive Sensor */}
-            <Card className="group relative overflow-hidden border-2 border-transparent hover:border-indigo-400 transition-all duration-500 bg-gradient-to-br from-card to-indigo-50/50 dark:to-indigo-950/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <Card className="group relative overflow-hidden border-2 border-transparent hover:border-primary transition-all duration-500 bg-gradient-to-br from-card to-honey-light/10">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <CardContent className="p-8 relative z-10">
                 <div className="flex items-start gap-6">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-500 flex items-center justify-center flex-shrink-0 shadow-lg">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center flex-shrink-0 shadow-lg">
                     <Mic className="h-8 w-8 text-white" />
                   </div>
                   <div className="space-y-4 flex-1">
@@ -371,7 +371,7 @@ const PrecisionPollination = () => {
                     <ul className="space-y-2">
                       {["Temperature ±0.5°C accuracy", "16kHz acoustic sampling", "12-month battery life", "Bluetooth Low Energy"].map((feature, i) => (
                         <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Check className="h-4 w-4 text-indigo-500" />
+                          <Check className="h-4 w-4 text-primary" />
                           {feature}
                         </li>
                       ))}
@@ -382,11 +382,11 @@ const PrecisionPollination = () => {
             </Card>
 
             {/* Gateway Unit */}
-            <Card className="group relative overflow-hidden border-2 border-transparent hover:border-purple-400 transition-all duration-500 bg-gradient-to-br from-card to-purple-50/50 dark:to-purple-950/20">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <Card className="group relative overflow-hidden border-2 border-transparent hover:border-secondary transition-all duration-500 bg-gradient-to-br from-card to-secondary/10">
+              <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-nature-green/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <CardContent className="p-8 relative z-10">
                 <div className="flex items-start gap-6">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0 shadow-lg">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-secondary to-nature-green flex items-center justify-center flex-shrink-0 shadow-lg">
                     <Wifi className="h-8 w-8 text-white" />
                   </div>
                   <div className="space-y-4 flex-1">
@@ -399,7 +399,7 @@ const PrecisionPollination = () => {
                     <ul className="space-y-2">
                       {["100m Bluetooth range", "Solar + 3-day battery backup", "4G LTE cellular uplink", "IP67 weatherproof"].map((feature, i) => (
                         <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Check className="h-4 w-4 text-purple-500" />
+                          <Check className="h-4 w-4 text-secondary" />
                           {feature}
                         </li>
                       ))}
@@ -415,13 +415,13 @@ const PrecisionPollination = () => {
             <h3 className="text-3xl font-bold text-center mb-12">Complete Technical Specifications</h3>
             <div className="grid md:grid-cols-3 gap-6">
               {technicalSpecs.map((section, index) => (
-                <Card key={index} className="bg-white dark:bg-gray-900">
+                <Card key={index} className="bg-card">
                   <CardContent className="p-6">
-                    <h4 className="text-lg font-bold mb-4 text-indigo-600">{section.category}</h4>
+                    <h4 className="text-lg font-bold mb-4 text-primary">{section.category}</h4>
                     <ul className="space-y-2">
                       {section.specs.map((spec, i) => (
                         <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-                          <Check className="h-4 w-4 text-green-500 shrink-0 mt-0.5" />
+                          <Check className="h-4 w-4 text-secondary shrink-0 mt-0.5" />
                           <span>{spec}</span>
                         </li>
                       ))}
@@ -438,11 +438,11 @@ const PrecisionPollination = () => {
       <section className="py-24 bg-gradient-to-b from-muted/30 to-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 space-y-4">
-            <Badge variant="outline" className="text-indigo-600 border-indigo-300">
+            <Badge variant="outline" className="text-primary border-primary">
               Your Benefits
             </Badge>
             <h2 className="text-4xl md:text-5xl font-bold text-foreground">
-              From Data to <span className="text-indigo-600">Dollars</span>
+              From Data to <span className="text-primary">Dollars</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               All this technology translates into real, measurable improvements for your farm
@@ -451,16 +451,16 @@ const PrecisionPollination = () => {
 
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             {benefits.map((benefit, index) => (
-              <Card key={index} className="group relative overflow-hidden border-2 hover:border-indigo-400 transition-all">
+              <Card key={index} className="group relative overflow-hidden border-2 hover:border-primary transition-all">
                 <CardContent className="p-8">
                   <div className="flex items-start gap-6">
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-500 flex items-center justify-center flex-shrink-0">
+                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center flex-shrink-0">
                       <benefit.icon className="h-7 w-7 text-white" />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-start justify-between mb-3">
                         <h3 className="text-xl font-bold text-foreground">{benefit.title}</h3>
-                        <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                        <Badge className="bg-nature-green-light text-nature-green">
                           {benefit.stat}
                         </Badge>
                       </div>
@@ -478,11 +478,11 @@ const PrecisionPollination = () => {
       <section className="py-24 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 space-y-4">
-            <Badge className="bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300">
+            <Badge className="bg-primary/20 text-primary">
               The Proof
             </Badge>
             <h2 className="text-4xl md:text-5xl font-bold text-foreground">
-              Traditional vs. <span className="text-indigo-600">Precision</span>
+              Traditional vs. <span className="text-primary">Precision</span>
             </h2>
           </div>
 
@@ -493,8 +493,8 @@ const PrecisionPollination = () => {
                   <tr className="bg-muted/50">
                     <th className="text-left p-6 font-bold text-foreground">Performance Metric</th>
                     <th className="text-center p-6 font-bold text-muted-foreground">Traditional Pollination</th>
-                    <th className="text-center p-6 font-bold text-indigo-600">BeeYield Precision</th>
-                    <th className="text-center p-6 font-bold text-green-600">Improvement</th>
+                    <th className="text-center p-6 font-bold text-primary">BeeYield Precision</th>
+                    <th className="text-center p-6 font-bold text-secondary">Improvement</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -502,8 +502,8 @@ const PrecisionPollination = () => {
                     <tr key={index} className="border-t border-border hover:bg-muted/20 transition-colors">
                       <td className="p-6 font-semibold text-foreground">{row.metric}</td>
                       <td className="p-6 text-center text-muted-foreground">{row.traditional}</td>
-                      <td className="p-6 text-center font-bold text-indigo-600">{row.precision}</td>
-                      <td className="p-6 text-center font-bold text-green-600">{row.improvement}</td>
+                      <td className="p-6 text-center font-bold text-primary">{row.precision}</td>
+                      <td className="p-6 text-center font-bold text-secondary">{row.improvement}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -515,15 +515,15 @@ const PrecisionPollination = () => {
 
       {/* Dashboard Preview Section */}
       <section className="py-24 bg-gradient-to-b from-muted/30 to-background relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5" />
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16 space-y-4">
-            <Badge variant="outline" className="text-indigo-600 border-indigo-300">
+            <Badge variant="outline" className="text-primary border-primary">
               Your Command Center
             </Badge>
             <h2 className="text-4xl md:text-5xl font-bold text-foreground">
-              Real-Time Dashboard, <span className="text-indigo-600">Real Power</span>
+              Real-Time Dashboard, <span className="text-primary">Real Power</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Access your entire pollination operation from any device—desktop, tablet, or smartphone
@@ -531,7 +531,7 @@ const PrecisionPollination = () => {
           </div>
 
           <div className="max-w-4xl mx-auto">
-            <Card className="bg-gradient-to-br from-gray-900 to-gray-800 text-white border-none shadow-2xl overflow-hidden">
+            <Card className="bg-foreground text-background border-none shadow-2xl overflow-hidden">
               <CardContent className="p-8">
                 <div className="flex justify-between items-center mb-8">
                   <div>
@@ -539,7 +539,7 @@ const PrecisionPollination = () => {
                     <p className="text-gray-400">Updated every 15 minutes</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="h-3 w-3 rounded-full bg-green-500 animate-pulse" />
+                    <div className="h-3 w-3 rounded-full bg-secondary animate-pulse" />
                     <span className="text-sm font-semibold">LIVE</span>
                   </div>
                 </div>
@@ -547,24 +547,24 @@ const PrecisionPollination = () => {
                 <div className="grid md:grid-cols-3 gap-6 mb-8">
                   <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
                     <div className="flex items-center justify-between mb-4">
-                      <Thermometer className="h-8 w-8 text-red-400" />
-                      <CheckCircle2 className="h-6 w-6 text-green-400" />
+                      <Thermometer className="h-8 w-8 text-destructive" />
+                      <CheckCircle2 className="h-6 w-6 text-nature-green" />
                     </div>
                     <p className="text-3xl font-bold mb-1">35.2°C</p>
                     <p className="text-sm text-gray-400">Avg. Hive Temperature</p>
                   </div>
                   <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
                     <div className="flex items-center justify-between mb-4">
-                      <Activity className="h-8 w-8 text-blue-400" />
-                      <CheckCircle2 className="h-6 w-6 text-green-400" />
+                      <Activity className="h-8 w-8 text-primary" />
+                      <CheckCircle2 className="h-6 w-6 text-nature-green" />
                     </div>
                     <p className="text-3xl font-bold mb-1">52%</p>
                     <p className="text-sm text-gray-400">Avg. Humidity</p>
                   </div>
                   <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
                     <div className="flex items-center justify-between mb-4">
-                      <Heart className="h-8 w-8 text-pink-400" />
-                      <CheckCircle2 className="h-6 w-6 text-green-400" />
+                      <Heart className="h-8 w-8 text-honey-light" />
+                      <CheckCircle2 className="h-6 w-6 text-nature-green" />
                     </div>
                     <p className="text-3xl font-bold mb-1">148</p>
                     <p className="text-sm text-gray-400">Healthy Hives</p>
@@ -573,7 +573,7 @@ const PrecisionPollination = () => {
 
                 <div className="bg-white/5 rounded-xl p-6 border border-white/10">
                   <h4 className="font-bold mb-4 flex items-center gap-2">
-                    <BarChart3 className="h-5 w-5 text-indigo-400" />
+                    <BarChart3 className="h-5 w-5 text-primary" />
                     Activity Trends (Last 7 Days)
                   </h4>
                   <div className="space-y-3">
@@ -586,7 +586,7 @@ const PrecisionPollination = () => {
                         <span className="text-sm w-24 text-gray-400">{item.day}</span>
                         <div className="flex-1 h-8 bg-white/5 rounded-lg overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-end pr-3"
+                            className="h-full bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-end pr-3"
                             style={{ width: `${item.value}%` }}
                           >
                             <span className="text-xs font-bold">{item.value}%</span>
@@ -601,7 +601,7 @@ const PrecisionPollination = () => {
 
             <div className="text-center mt-8">
               <Link to="/dashboard">
-                <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
                   Explore Live Dashboard Demo
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
@@ -615,27 +615,27 @@ const PrecisionPollination = () => {
       <section className="py-24 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center space-y-8">
-            <Badge variant="outline" className="text-indigo-600 border-indigo-300">
+            <Badge variant="outline" className="text-primary border-primary">
               Seamless Integration
             </Badge>
             <h2 className="text-4xl md:text-5xl font-bold text-foreground">
-              Plug Into Your <span className="text-indigo-600">Existing Systems</span>
+              Plug Into Your <span className="text-primary">Existing Systems</span>
             </h2>
             <p className="text-xl text-muted-foreground leading-relaxed">
               Our platform provides robust APIs and webhooks so you can integrate hive data into
               your farm management software, ERP systems, or custom analytics dashboards.
             </p>
             <div className="grid md:grid-cols-2 gap-6 pt-8">
-              <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border-indigo-200 dark:border-indigo-900">
+              <Card className="bg-gradient-to-br from-background to-muted border-border">
                 <CardContent className="p-6">
-                  <Settings className="h-10 w-10 text-indigo-600 mb-4" />
+                  <Settings className="h-10 w-10 text-primary mb-4" />
                   <h3 className="font-bold text-lg mb-2">RESTful API</h3>
                   <p className="text-sm text-muted-foreground">Full CRUD access to all hive data with comprehensive documentation</p>
                 </CardContent>
               </Card>
-              <Card className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20 border-purple-200 dark:border-purple-900">
+              <Card className="bg-gradient-to-br from-background to-muted border-border">
                 <CardContent className="p-6">
-                  <Smartphone className="h-10 w-10 text-purple-600 mb-4" />
+                  <Smartphone className="h-10 w-10 text-secondary mb-4" />
                   <h3 className="font-bold text-lg mb-2">Mobile Apps</h3>
                   <p className="text-sm text-muted-foreground">Native iOS and Android apps for field teams and managers</p>
                 </CardContent>
@@ -647,7 +647,7 @@ const PrecisionPollination = () => {
 
       {/* Final CTA Section */}
       <section className="py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-purple-700 to-blue-700">
+        <div className="absolute inset-0 bg-gradient-to-br from-foreground via-secondary to-foreground">
           <div className="absolute inset-0 opacity-20">
             <div className="absolute top-10 left-20 w-64 h-64 bg-blue-400 rounded-full blur-3xl" />
             <div className="absolute bottom-10 right-20 w-80 h-80 bg-purple-300 rounded-full blur-3xl" />
@@ -665,7 +665,7 @@ const PrecisionPollination = () => {
             </p>
             <div className="flex flex-wrap justify-center gap-4 pt-4">
               <Link to="/pollination-request">
-                <Button size="lg" className="bg-white text-indigo-700 hover:bg-blue-100 text-lg px-8 py-6 font-semibold shadow-xl">
+                <Button size="lg" className="bg-white text-primary hover:bg-honey-light/20 text-lg px-8 py-6 font-semibold shadow-xl">
                   Request Pollination Service
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>

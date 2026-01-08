@@ -384,7 +384,7 @@ def seed_traceability():
         {
             "harvest_id": str(uuid.uuid4()), "harvest_code": "HRV-24-KIB-01", 
             "hive_id": h_map["KIB-01-H01"], "farmer_id": f_map["F-MAT-001"],
-            "harvest_date": "2024-01-15", "quantity_kg": 15.5, "quantity_left_for_bees_kg": 12.0,
+            "harvest_date": "2024-01-15", "quantity_kg": 15.5, "quantity_left_for_bees_kg": 15.5,
             "extraction_method": "Centrifuge", "nectar_source": "Acacia Tortilis",
             "weather_conditions": "Sunny, 32°C", "moisture_content_percent": 17.2, "quality_score": 98
         },
@@ -392,7 +392,7 @@ def seed_traceability():
         {
             "harvest_id": str(uuid.uuid4()), "harvest_code": "HRV-24-KIB-02", 
             "hive_id": h_map["KIB-02-H05"], "farmer_id": f_map["F-SAR-002"],
-            "harvest_date": "2024-02-20", "quantity_kg": 12.8, "quantity_left_for_bees_kg": 10.5,
+            "harvest_date": "2024-02-20", "quantity_kg": 12.8, "quantity_left_for_bees_kg": 12.8,
             "extraction_method": "Centrifuge", "nectar_source": "Multi-floral",
             "weather_conditions": "Partly Cloudy, 29°C", "moisture_content_percent": 18.1, "quality_score": 96
         },
@@ -400,7 +400,7 @@ def seed_traceability():
         {
             "harvest_id": str(uuid.uuid4()), "harvest_code": "HRV-24-KIB-03", 
             "hive_id": h_map["KIB-03-H12"], "farmer_id": f_map["F-DAV-003"],
-            "harvest_date": "2024-03-05", "quantity_kg": 18.2, "quantity_left_for_bees_kg": 15.0,
+            "harvest_date": "2024-03-05", "quantity_kg": 18.2, "quantity_left_for_bees_kg": 18.2,
             "extraction_method": "Press", "nectar_source": "Riverine Wildflowers",
             "weather_conditions": "Clear, 30°C", "moisture_content_percent": 17.5, "quality_score": 99
         }

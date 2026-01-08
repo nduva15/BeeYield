@@ -11,6 +11,14 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { traceBatch, TraceResponse, TraceJourneyStep } from "@/services/traceabilityService";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Html5QrcodeScanner } from "html5-qrcode";
 
 const Traceability = () => {
   const [qrCode, setQrCode] = useState("");
@@ -18,6 +26,49 @@ const Traceability = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const [batchData, setBatchData] = useState<TraceResponse | null>(null);
+  const [isScanning, setIsScanning] = useState(false);
+
+  useEffect(() => {
+    let scanner: Html5QrcodeScanner | null = null;
+
+    if (isScanning) {
+      // Small timeout to ensure DOM is ready inside Dialog
+      const timer = setTimeout(() => {
+        scanner = new Html5QrcodeScanner(
+          "reader",
+          {
+            fps: 10,
+            qrbox: { width: 250, height: 250 },
+            aspectRatio: 1.0
+          },
+          false
+        );
+
+        scanner.render(
+          (decodedText) => {
+            setQrCode(decodedText);
+            setIsScanning(false);
+            // Optional: Auto-submit or just let user click
+            // handleSubmit(new Event('submit') as any); // Might be safer to just fill it
+            toast({
+              title: "QR Code Scanned",
+              description: `Found code: ${decodedText}`,
+            });
+          },
+          (error) => {
+            // console.warn(error); // Ignore scan errors as they happen every frame
+          }
+        );
+      }, 100);
+
+      return () => {
+        clearTimeout(timer);
+        if (scanner) {
+          scanner.clear().catch(console.error);
+        }
+      };
+    }
+  }, [isScanning, toast]);
 
   useEffect(() => {
     document.title = "Verified Traceability | BeeYield Blockchain & Sensor Network";
@@ -115,7 +166,11 @@ const Traceability = () => {
                 </form>
                 <div className="mt-4 flex items-center justify-between px-2 text-xs font-medium text-muted-foreground">
                   <span>Enter the code found on the back of your jar</span>
-                  <button className="flex items-center text-primary hover:underline">
+                  <button
+                    type="button"
+                    onClick={() => setIsScanning(true)}
+                    className="flex items-center text-primary hover:underline"
+                  >
                     <QrCode className="mr-1 h-3 w-3" />
                     Scan QR
                   </button>
@@ -296,11 +351,11 @@ const Traceability = () => {
                     <div className="space-y-3 pt-4 border-t border-white/10">
                       <p className="text-xs font-bold uppercase tracking-widest text-primary mb-2">Active Sensors</p>
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-white/70">Intelligent Hives™</span>
+                        <span className="text-white/70">BeeYield Sensors™</span>
                         <span className="font-mono text-xs bg-white/10 px-2 py-1 rounded">Scale + Temp</span>
                       </div>
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-white/70">ApiSense.io</span>
+                        <span className="text-white/70">BeeYield Acoustic Node</span>
                         <span className="font-mono text-xs bg-white/10 px-2 py-1 rounded">Acoustic Analysis</span>
                       </div>
                       <div className="flex items-center justify-between text-sm">
@@ -361,14 +416,14 @@ const Traceability = () => {
                 <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mb-2">
                   <Activity className="h-8 w-8 text-primary" />
                 </div>
-                <span className="font-bold text-foreground">ApiSense.io</span>
+                <span className="font-bold text-foreground">BeeYield Acoustic Node</span>
                 <span className="text-xs text-muted-foreground">Acoustic Disease Diagnostics</span>
               </div>
               <div className="flex flex-col items-center gap-2">
                 <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mb-2">
                   <Cpu className="h-8 w-8 text-secondary" />
                 </div>
-                <span className="font-bold text-foreground">Intelligent Hives™</span>
+                <span className="font-bold text-foreground">BeeYield Sensors™</span>
                 <span className="text-xs text-muted-foreground">Precision GPS & Weight</span>
               </div>
             </div>
