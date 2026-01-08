@@ -385,32 +385,36 @@ def create_order(order_in: schemas.OrderCreate, user_id: Optional[str] = None) -
         }
         db_insert("order_items", item_data)
     
-    return {
-        "order_id": order_id,
-        "order_number": order_number,
-        "status": "success",
-        "message": "Order created successfully"
-    }
-
     # Send confirmation email
     try:
-        # Re-fetch the full order items details we just inserted for the email
-        # Or just use the data we have, which is slightly sparse but enough for now
-        # We can construct the item list from our inserted data
-        email_items = []
-        for item in order_in.items:
-             # Find variant details again or use what we had
-             # For efficiency, we should have probably stored them. 
-             # Let's quickly re-fetch or use a helper. 
-             # Actually, let's just use a simple lookup since we are in the loop above.
-             # Refactoring the loop above to store details for email would be cleaner.
-             pass
-             
-        # Better approach: Call get_order to get full details then send email
+        # Check if order contains honey to assign a batch number
+        batch_number = None
+        has_honey = False
+        
+        # We need to know the category of items for this check
+        # Since we just inserted them, we can check the products we looked up.
+        # But we didn't store the full product info in the loop above in a way we can easily access outside without re-fetching.
+        # To avoid re-fetching, let's just do a quick check on the order_in items against the DB/Mock products again or assume for now.
+        # A better way is to fetch the full order we just created which has everything.
+        
         full_order = get_order(order_id)
         if full_order:
-             from app.services.email_service import email_service
-             email_service.send_order_confirmation(full_order, full_order.get('items', []))
+            # Check for honey in items
+            for item in full_order.get('items', []):
+                # We need to join with products to know the category, or check if we store category in order_items (we don't currently)
+                # Let's fetch the product details for each item to check category
+                prod = get_product_by_id(item['product_id'])
+                if prod and prod.get('category') == 'honey':
+                    has_honey = True
+                    break
+            
+            if has_honey:
+                # Assign a batch number for traceability
+                # In a real system, this would come from inventory management
+                batch_number = "BATCH-2024-001" 
+            
+            from app.services.email_service import email_service
+            email_service.send_order_confirmation(full_order, full_order.get('items', []), batch_number=batch_number)
              
     except Exception as e:
         print(f"Failed to send confirmation email: {e}")

@@ -261,7 +261,7 @@ const InLandPollinationPlatform = () => {
                         </li>
                       ))}
                     </ul>
-                    <Link to="/inland-pollination-platform">
+                    <Link to="/in-land-pollination">
                       <Button className="mt-4 bg-green-600 hover:bg-green-700 text-white">
                         Explore Field Insights
                         <ArrowRight className="ml-2 h-4 w-4" />

@@ -195,7 +195,7 @@ const Impact = () => {
                 </li>
               </ul>
               <Link
-                to="/GlobalHiveNetwork"
+                to="/global-hive-network"
                 className="mt-6 inline-flex items-center gap-2 bg-white text-primary px-4 py-2 rounded-lg font-bold hover:bg-opacity-90 transition-all text-sm justify-center"
               >
                 Join Our Global Hive Network <ArrowRight className="h-4 w-4" />
@@ -209,7 +209,7 @@ const Impact = () => {
               <p className="mb-4 text-muted-foreground text-sm">
                 Environmental, Social, and Governance principles guide everything we do at BeeYield.
               </p>
-              <Link to="/ESG" className="mt-auto inline-flex items-center gap-2 text-primary hover:underline font-bold text-sm">
+              <Link to="/esg" className="mt-auto inline-flex items-center gap-2 text-primary hover:underline font-bold text-sm">
                 Explore Our ESG Framework <ArrowRight className="h-4 w-4" />
               </Link>
             </CardContent>

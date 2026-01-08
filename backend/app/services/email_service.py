@@ -43,7 +43,7 @@ class EmailService:
         except Exception as e:
             print(f"Failed to send email: {e}")
 
-    def send_order_confirmation(self, order: Dict[str, Any], items: List[Dict[str, Any]]):
+    def send_order_confirmation(self, order: Dict[str, Any], items: List[Dict[str, Any]], batch_number: Optional[str] = None):
         """
         Send order confirmation email.
         """
@@ -62,6 +62,22 @@ class EmailService:
             
         shipping = order.get('shipping_address', {})
         
+        traceability_section = ""
+        if batch_number:
+            traceability_section = f"""
+            <div style="margin-top: 30px; background-color: #f0fdf4; padding: 20px; border-radius: 8px; border: 1px solid #bbf7d0;">
+                <h3 style="color: #166534; margin-top: 0;">Trace Your Honey 🍯</h3>
+                <p style="color: #14532d; font-size: 14px;">Your honey has a unique story. Trace its verified journey from the hive to your home using our blockchain technology.</p>
+                <div style="margin: 20px 0;">
+                    <p style="margin-bottom: 5px; font-weight: bold; color: #166534;">Batch Number:</p>
+                    <div style="background: white; padding: 10px; border: 1px dashed #166534; border-radius: 4px; display: inline-block; font-family: monospace; font-size: 16px; color: #166534;">
+                        {batch_number}
+                    </div>
+                </div>
+                <a href="http://localhost:5173/traceability" style="display: inline-block; background-color: #16a34a; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; font-size: 14px;">Track Journey</a>
+            </div>
+            """
+
         html_content = f"""
         <html>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
@@ -101,8 +117,10 @@ class EmailService:
                     </p>
                 </div>
                 
+                {traceability_section}
+                
                 <p style="margin-top: 30px; font-size: 12px; color: #888;">
-                    You can track the journey of your honey using our <a href="https://beeyield.co.ke/traceability">Traceability</a> page.
+                    You can also track your order status by logging into your account or searching for your order number.
                 </p>
             </div>
         </body>

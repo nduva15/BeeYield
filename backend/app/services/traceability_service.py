@@ -92,9 +92,12 @@ def get_trace_journey(batch_code: str) -> Optional[schemas.TraceResponse]:
     """
     
     # 1. Find Batch Block
-    raise Exception("I AM RUNNING!")
     trace_result = honey_blockchain.trace_batch(batch_code)
-    # ... (rest of logic) ...
+    if not trace_result['found']:
+        return None
+    
+    batch_data = trace_result['batch_details']
+    journey_timeline = []
 
     # Step D: Hive Life (Sensor Data)
     hive_id = harvest_data.get('hive_id') or batch_data.get('hive_id')
@@ -117,12 +120,9 @@ def get_trace_journey(batch_code: str) -> Optional[schemas.TraceResponse]:
             material=h_data.get('material', 'Wood')
         )
         
-        with open("debug_GOLD.txt", "a") as f:
-            f.write(f"Hive found: {hive_id}. Scanning chain of length {len(honey_blockchain.chain)}\n")
-            for b in honey_blockchain.chain:
-                if b.block_type == BlockType.HIVE_SENSOR_DATA:
-                    f.write(f"Sensor Block {b.index}: Hive {b.data.get('hive_id')} | Anomalies: {b.data.get('anomalies_detected')}\n")
-
+        # --- NEW: Check for Disease/Health Events (Sensor History) ---
+        # In a real app, we'd query all sensor blocks for this hive. 
+        # Here we scan the chain for any sensor data for this hive with anomalies.
         sensor_blocks = [
             b for b in honey_blockchain.chain 
             if b.block_type == BlockType.HIVE_SENSOR_DATA 

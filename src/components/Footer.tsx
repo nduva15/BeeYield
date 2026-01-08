@@ -30,12 +30,12 @@ const Footer = () => {
             <h3 className="mb-4 text-sm font-semibold text-foreground uppercase tracking-wider">Solutions</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link to="/HoneyLanding" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/honey" className="text-muted-foreground hover:text-primary transition-colors">
                   Honey
                 </Link>
               </li>
               <li>
-                <Link to="/BeeLearn" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/learn" className="text-muted-foreground hover:text-primary transition-colors">
                   Learn
                 </Link>
               </li>
@@ -69,22 +69,22 @@ const Footer = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/PollinationSolutions" className="text-muted-foreground hover:text-primary transition-colors">
+                  <Link to="/pollination-solutions" className="text-muted-foreground hover:text-primary transition-colors">
                     Pollination Solutions
                   </Link>
                 </li>
                 <li>
-                  <Link to="/PrecisionPollination" className="text-muted-foreground hover:text-primary transition-colors">
+                  <Link to="/precision-pollination" className="text-muted-foreground hover:text-primary transition-colors">
                     Precision Pollination
                   </Link>
                 </li>
                 <li>
-                  <Link to="/InLandPollinationPlatform" className="text-muted-foreground hover:text-primary transition-colors">
-                    InLand Pollination
+                  <Link to="/in-land-pollination" className="text-muted-foreground hover:text-primary transition-colors">
+                    In-Land Pollination
                   </Link>
                 </li>
                 <li>
-                  <Link to="/GlobalHiveNetwork" className="text-muted-foreground hover:text-primary transition-colors">
+                  <Link to="/global-hive-network" className="text-muted-foreground hover:text-primary transition-colors">
                     Global Hive Network
                   </Link>
                 </li>
