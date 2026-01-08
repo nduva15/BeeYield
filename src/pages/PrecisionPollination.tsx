@@ -16,37 +16,37 @@ const PrecisionPollination = () => {
       icon: Thermometer,
       title: "Temperature Monitoring",
       description: "Continuous tracking of hive internal temperature (33-36°C optimal range) to ensure colony comfort and brood health.",
-      color: "from-red-500 to-orange-500"
+      color: "from-destructive to-primary"
     },
     {
       icon: Activity,
       title: "Humidity Levels",
       description: "Real-time humidity measurements (40-60% ideal) prevent moisture-related diseases and maintain optimal hive conditions.",
-      color: "from-blue-500 to-cyan-500"
+      color: "from-secondary to-nature-green"
     },
     {
       icon: Mic,
       title: "Acoustic Analysis",
       description: "AI-powered sound pattern recognition identifies queen presence, swarming behavior, and colony stress levels.",
-      color: "from-purple-500 to-pink-500"
+      color: "from-honey-dark to-accent"
     },
     {
       icon: Database,
       title: "Population Tracking",
       description: "Estimate bee population dynamics through activity patterns and hive weight changes over time.",
-      color: "from-green-500 to-emerald-500"
+      color: "from-nature-green to-secondary"
     },
     {
       icon: Bell,
       title: "Health Alerts",
       description: "Instant notifications when sensors detect anomalies like disease signatures, pest invasions, or queen loss.",
-      color: "from-amber-500 to-yellow-500"
+      color: "from-primary to-honey-light"
     },
     {
       icon: LineChart,
       title: "Productivity Metrics",
       description: "Track foraging activity, honey production rates, and pollination efficiency across your entire operation.",
-      color: "from-indigo-500 to-violet-500"
+      color: "from-secondary to-honey-dark"
     }
   ];
 
@@ -168,7 +168,7 @@ const PrecisionPollination = () => {
               </p>
 
               <div className="flex flex-wrap gap-4">
-                <Button size="lg" className="bg-white text-indigo-900 hover:bg-blue-100 text-lg px-8 py-6 font-semibold shadow-2xl">
+                <Button size="lg" className="bg-white text-secondary hover:bg-nature-green-light/20 text-lg px-8 py-6 font-semibold shadow-2xl">
                   Request Free Consultation
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
@@ -199,37 +199,37 @@ const PrecisionPollination = () => {
               <div className="relative w-full aspect-square">
                 {/* Central Device Mockup */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-80 h-80 bg-gradient-to-br from-blue-400/30 to-purple-500/30 backdrop-blur-sm rounded-3xl rotate-45 border border-white/20 shadow-2xl">
+                  <div className="w-80 h-80 bg-gradient-to-br from-secondary/30 to-accent/30 backdrop-blur-sm rounded-3xl rotate-45 border border-white/20 shadow-2xl">
                     <div className="w-full h-full -rotate-45 flex items-center justify-center p-8">
                       <div className="bg-white/90 backdrop-blur-md rounded-2xl p-8 shadow-xl w-full h-full flex flex-col justify-between">
                         <div className="flex justify-between items-center">
-                          <Badge className="bg-green-500 text-white">Live</Badge>
-                          <Wifi className="h-6 w-6 text-blue-600" />
+                          <Badge className="bg-secondary text-white">Live</Badge>
+                          <Wifi className="h-6 w-6 text-secondary" />
                         </div>
                         <div className="space-y-4">
                           <div className="flex items-center justify-between">
-                            <span className="text-sm font-semibold text-gray-700">Temp</span>
-                            <span className="text-2xl font-bold text-gray-900">35.2°C</span>
+                            <span className="text-sm font-semibold text-muted-foreground">Temp</span>
+                            <span className="text-2xl font-bold text-foreground">35.2°C</span>
                           </div>
-                          <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                            <div className="h-full w-4/5 bg-green-500 rounded-full"></div>
+                          <div className="h-2 bg-muted rounded-full overflow-hidden">
+                            <div className="h-full w-4/5 bg-secondary rounded-full"></div>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-sm font-semibold text-gray-700">Activity</span>
-                            <CheckCircle2 className="h-6 w-6 text-green-500" />
+                            <span className="text-sm font-semibold text-muted-foreground">Activity</span>
+                            <CheckCircle2 className="h-6 w-6 text-secondary" />
                           </div>
                         </div>
-                        <Cpu className="h-12 w-12 text-blue-600 mx-auto" />
+                        <Cpu className="h-12 w-12 text-secondary mx-auto" />
                       </div>
                     </div>
                   </div>
                 </div>
                 {/* Floating Elements */}
                 <div className="absolute top-10 right-10 bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/30 animate-bounce">
-                  <Database className="h-8 w-8 text-blue-300" />
+                  <Database className="h-8 w-8 text-nature-green-light" />
                 </div>
                 <div className="absolute bottom-20 left-0 bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/30 animate-pulse">
-                  <Radio className="h-8 w-8 text-purple-300" />
+                  <Radio className="h-8 w-8 text-honey-dark" />
                 </div>
               </div>
             </div>
@@ -536,7 +536,7 @@ const PrecisionPollination = () => {
                 <div className="flex justify-between items-center mb-8">
                   <div>
                     <h3 className="text-2xl font-bold mb-1">Live Hive Monitoring</h3>
-                    <p className="text-gray-400">Updated every 15 minutes</p>
+                    <p className="text-muted-foreground">Updated every 15 minutes</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="h-3 w-3 rounded-full bg-secondary animate-pulse" />
@@ -551,7 +551,7 @@ const PrecisionPollination = () => {
                       <CheckCircle2 className="h-6 w-6 text-nature-green" />
                     </div>
                     <p className="text-3xl font-bold mb-1">35.2°C</p>
-                    <p className="text-sm text-gray-400">Avg. Hive Temperature</p>
+                    <p className="text-sm text-muted-foreground">Avg. Hive Temperature</p>
                   </div>
                   <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
                     <div className="flex items-center justify-between mb-4">
@@ -559,7 +559,7 @@ const PrecisionPollination = () => {
                       <CheckCircle2 className="h-6 w-6 text-nature-green" />
                     </div>
                     <p className="text-3xl font-bold mb-1">52%</p>
-                    <p className="text-sm text-gray-400">Avg. Humidity</p>
+                    <p className="text-sm text-muted-foreground">Avg. Humidity</p>
                   </div>
                   <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
                     <div className="flex items-center justify-between mb-4">
@@ -567,7 +567,7 @@ const PrecisionPollination = () => {
                       <CheckCircle2 className="h-6 w-6 text-nature-green" />
                     </div>
                     <p className="text-3xl font-bold mb-1">148</p>
-                    <p className="text-sm text-gray-400">Healthy Hives</p>
+                    <p className="text-sm text-muted-foreground">Healthy Hives</p>
                   </div>
                 </div>
 
@@ -583,7 +583,7 @@ const PrecisionPollination = () => {
                       { day: "2 days ago", value: 85 }
                     ].map((item, i) => (
                       <div key={i} className="flex items-center gap-4">
-                        <span className="text-sm w-24 text-gray-400">{item.day}</span>
+                        <span className="text-sm w-24 text-muted-foreground">{item.day}</span>
                         <div className="flex-1 h-8 bg-white/5 rounded-lg overflow-hidden">
                           <div
                             className="h-full bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-end pr-3"
@@ -649,8 +649,8 @@ const PrecisionPollination = () => {
       <section className="py-24 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-foreground via-secondary to-foreground">
           <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-10 left-20 w-64 h-64 bg-blue-400 rounded-full blur-3xl" />
-            <div className="absolute bottom-10 right-20 w-80 h-80 bg-purple-300 rounded-full blur-3xl" />
+            <div className="absolute top-10 left-20 w-64 h-64 bg-secondary rounded-full blur-3xl" />
+            <div className="absolute bottom-10 right-20 w-80 h-80 bg-accent rounded-full blur-3xl" />
           </div>
         </div>
 

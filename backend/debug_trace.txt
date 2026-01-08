@@ -1,0 +1,4 @@
+
+--- Trace Request for KIB-ACACIA-24 ---
+DEBUG: Searching sensors for hive H-KIB-01-01
+DEBUG: Found 0 sensor blocks for hive H-KIB-01-01

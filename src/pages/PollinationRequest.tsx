@@ -79,7 +79,7 @@ const PollinationRequest = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background selection:bg-amber-500/30">
+    <div className="min-h-screen bg-background selection:bg-primary/30">
 
       {/* Hero Header */}
       <section className="relative py-20 overflow-hidden bg-gradient-to-br from-primary to-secondary text-white">
@@ -109,7 +109,7 @@ const PollinationRequest = () => {
             <Card className="border-none shadow-premium bg-white dark:bg-gray-950 rounded-[2.5rem] overflow-hidden">
               <CardHeader className="bg-muted/30 border-b border-border/50 p-8">
                 <CardTitle className="text-2xl font-black flex items-center gap-3">
-                  <Sparkles className="h-6 w-6 text-amber-500" />
+                  <Sparkles className="h-6 w-6 text-primary" />
                   Service Request Form
                 </CardTitle>
               </CardHeader>
@@ -168,7 +168,7 @@ const PollinationRequest = () => {
                   {/* Farm Group */}
                   <div className="space-y-6">
                     <div className="flex items-center gap-2 mb-4">
-                      <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center text-green-600">
+                      <div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center text-secondary">
                         <Sprout className="h-4 w-4" />
                       </div>
                       <h3 className="text-lg font-black uppercase tracking-widest text-muted-foreground">Farm Information</h3>
@@ -276,7 +276,7 @@ const PollinationRequest = () => {
                   </Button>
 
                   <p className="text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
-                    <ShieldCheck className="h-4 w-4 text-green-500" />
+                    <ShieldCheck className="h-4 w-4 text-nature-green" />
                     Your data is secure and will only be used for service consultation.
                   </p>
                 </form>
@@ -296,7 +296,7 @@ const PollinationRequest = () => {
                 ].map((step, i) => (
                   <div key={i} className="flex gap-4">
                     <div className="w-10 h-10 rounded-xl bg-white dark:bg-gray-900 flex items-center justify-center flex-shrink-0 shadow-sm">
-                      <step.icon className="h-5 w-5 text-amber-600" />
+                      <step.icon className="h-5 w-5 text-primary" />
                     </div>
                     <div>
                       <p className="font-bold text-sm">{step.title}</p>
