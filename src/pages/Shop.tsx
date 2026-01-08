@@ -121,7 +121,7 @@ const Shop = () => {
             <Leaf className="h-4 w-4 mr-2" />
             Sustainably sourced with love
           </Badge>
-          <h1 className="text-display-xl md:text-display-2xl font-black text-foreground tracking-tightest leading-none">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground tracking-tight leading-tight">
             The BeeYield <span className="text-primary italic">Shop</span>
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto font-medium leading-relaxed">
@@ -208,7 +208,7 @@ const Shop = () => {
                   <CardContent className="p-10 space-y-6">
                     <div className="flex flex-col gap-2">
                       {renderStars(product.rating)}
-                      <h3 className="font-black text-3xl text-foreground tracking-tight leading-none group-hover:text-primary transition-colors">{product.name}</h3>
+                      <h3 className="font-bold text-2xl text-foreground tracking-tight leading-tight group-hover:text-primary transition-colors">{product.name}</h3>
                     </div>
                     <p className="text-base text-muted-foreground font-semibold leading-relaxed line-clamp-2">{product.description}</p>
 
@@ -283,7 +283,7 @@ const Shop = () => {
                     <CardContent className="p-10 space-y-6">
                       <div className="flex flex-col gap-2">
                         {renderStars(product.rating)}
-                        <h3 className="font-black text-3xl text-foreground tracking-tight leading-none group-hover:text-primary transition-colors">{product.name}</h3>
+                        <h3 className="font-bold text-2xl text-foreground tracking-tight leading-tight group-hover:text-primary transition-colors">{product.name}</h3>
                       </div>
                       <p className="text-base text-muted-foreground font-semibold leading-relaxed line-clamp-2">{product.description}</p>
 
@@ -357,7 +357,7 @@ const Shop = () => {
                       {renderStars(product.rating)}
                       <span className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-3 py-1 rounded-full">Systems v2.0 Live</span>
                     </div>
-                    <h3 className="font-black text-3xl text-foreground tracking-tight leading-none group-hover:text-primary transition-colors">{product.name}</h3>
+                    <h3 className="font-bold text-2xl text-foreground tracking-tight leading-tight group-hover:text-primary transition-colors">{product.name}</h3>
                     <p className="text-base text-muted-foreground font-semibold leading-relaxed line-clamp-2 min-h-[48px]">{product.description}</p>
 
                     <div className="flex items-center justify-between pt-6 border-t border-border/50">
@@ -408,7 +408,7 @@ const Shop = () => {
                       {renderStars(product.rating)}
                       <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Professional Guide</span>
                     </div>
-                    <h3 className="font-black text-3xl text-foreground tracking-tight leading-none group-hover:text-primary transition-colors">{product.name}</h3>
+                    <h3 className="font-bold text-2xl text-foreground tracking-tight leading-tight group-hover:text-primary transition-colors">{product.name}</h3>
                     <p className="text-base text-muted-foreground font-semibold leading-relaxed line-clamp-2 min-h-[48px]">{product.description}</p>
 
                     <div className="flex items-center justify-between pt-6 border-t border-border/50">

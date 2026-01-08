@@ -72,34 +72,39 @@ def create_batch(batch_in: Dict[str, Any]):
 def _get_demo_trace(code: str) -> schemas.TraceResponse:
     from datetime import date
     
-    # Mock data for demonstration
+    # Mock data for demonstration - Timothy Nduva is our main farmer in Kibwezi
     return schemas.TraceResponse(
         batch_code=code,
-        product_name="Premium Acacia Honey",
+        product_name="Kibwezi Wildflower Honey",
         verified=True,
         blockchain_verified=True,
-        verification_url="https://beeyield.co.ke/verify/demo",
+        verification_url="https://beeyield.com/verify/demo",
         farmer=schemas.Farmer(
-            farmer_id="F-DEMO", name="John Kamau", region="Nyeri", county="Nyeri",
-            location_name="Nyeri", latitude=-0.416, longitude=36.95,
-            story="John has been beekeeping for 20 years in the foothills of Mt. Kenya.",
-            registration_date=date.today()
+            farmer_id="F-MAT-001", name="Timothy Nduva", region="Kibwezi", county="Makueni",
+            location_name="Kibwezi HQ", latitude=-2.41, longitude=37.97,
+            story="Timothy is a master beekeeper and conservationist in Kibwezi, leading the way in sustainable honey production.",
+            registration_date=date(2020, 5, 15)
         ),
         apiary=schemas.Apiary(
-            apiary_id="A-DEMO", apiary_code="NYR-01", name="Mt Kenya Forest Edge",
-            farmer_id="F-DEMO", environment_type="Highland Forest",
-            flora_types=["Acacia", "Croton"], location_name="Forest Edge",
-            latitude=-0.416, longitude=36.95, region="Central", county="Nyeri",
-            established_date=date(2020, 1, 1)
+            apiary_id="A-KIB-01", apiary_code="KIB-01", name="Kibwezi Savannah Apiary",
+            farmer_id="F-MAT-001", environment_type="Savannah Wooded",
+            flora_types=["Acacia Tortilis", "Citrus", "Wildflowers"], location_name="Kibwezi",
+            latitude=-2.41, longitude=37.97, region="Eastern", county="Makueni",
+            established_date=date(2020, 5, 15)
         ),
         hive=schemas.Hive(
-            hive_id="H-DEMO", hive_code="NYR-01-H05", hive_type="Langstroth",
-            bee_type="African Honey Bee", apiary_id="A-DEMO", farmer_id="F-DEMO",
-            installation_date=date(2021, 5, 20), has_sensors=True
+            hive_id="H-KIB-01-01", hive_code="KIB-01-H01", hive_type="Langstroth",
+            bee_type="African Honey Bee", apiary_id="A-KIB-01", farmer_id="F-MAT-001",
+            installation_date=date(2020, 5, 20), has_sensors=True
         ),
-        story_title="A Tradition of Excellence",
-        story_content="Harvested from the pristine forests of Mount Kenya, this honey represents the perfect harmony between nature and sustainable farming.",
-        impact_stats={"farmers": 1, "bees": 50000, "biodiversity": "Preserved"},
+        story_title="A Legacy of Conservation",
+        story_content="Harvested from the diverse wildflower meadows of Kibwezi, Makueni. This honey supports local biodiversity and sustainable livelihoods.",
+        impact_stats={
+            "acres_pollinated": "25+ Acres",
+            "beekeepers": "1 Master Beekeeper",
+            "trees_planted": "2,500+",
+            "farmer_fair_pay": "100%"
+        },
         sensor_snapshot={
             "avg_temp": 34.2,
             "avg_humidity": 52,
@@ -108,12 +113,16 @@ def _get_demo_trace(code: str) -> schemas.TraceResponse:
         },
         timeline=[
             schemas.TraceJourneyStep(
-                title="Harvested", date="2024-01-15", location="Nyeri", 
-                description="Harvested with care. 12kg collected.", icon="Basket", data={}
+                title="Harvested", date="2024-01-15", location="Kibwezi", 
+                description="Harvested with care. 15.5kg collected.", icon="Basket", data={}
             ),
              schemas.TraceJourneyStep(
-                title="Processed", date="2024-01-18", location="Nairobi", 
+                title="Processed", date="2024-01-18", location="Kibwezi HQ", 
                 description="Cold filtered to preserve enzymes.", icon="Factory", data={}
+            ),
+            schemas.TraceJourneyStep(
+                title="Verified", date="2024-01-20", location="Blockchain Node", 
+                description="Quality verified and hashed to HoneyChain™.", icon="Shield", data={}
             )
         ]
     )

@@ -71,11 +71,11 @@ const CropsWePollinate = () => {
               <Badge variant="outline" className="border-primary/30 text-primary px-4 py-2">
                 Precision Agriculture
               </Badge>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
                 Get Data-Driven <br />
                 <span className="text-primary">Crop Pollination</span>
               </h1>
-              <p className="text-lg text-muted-foreground max-w-xl">
+              <p className="text-base text-muted-foreground max-w-xl">
                 Our end-to-end solution gives unprecedented control and visibility into pollination, ensuring 40% crop yields and sustainable practices.
               </p>
               <div className="flex flex-wrap gap-4">
@@ -103,7 +103,7 @@ const CropsWePollinate = () => {
       {/* Expert Section */}
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Work With the Pollination Experts</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-4">Work With the Pollination Experts</h2>
           <div className="w-24 h-1 bg-primary mx-auto mb-8" />
           <p className="text-lg text-muted-foreground max-w-4xl mx-auto mb-12">
             BeeYield is comprised of leading experts in the field of pollination. Bee biologists and researchers, data-science experts, electrical engineers, leading agronomists, and veteran beekeepers make up our team.

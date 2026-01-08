@@ -5,7 +5,8 @@
 
 // Use relative path to leverage the Vite proxy (defined in vite.config.ts)
 // This will work both in development (proxying to :8000) and production (if served from same origin)
-export const API_BASE_URL = "";
+// Use environment variable for the API base URL, fallback to empty string (same origin)
+export const API_BASE_URL = (import.meta.env.VITE_API_URL as string) || "";
 export const API_V1_URL = `${API_BASE_URL}/api/v1`;
 
 // Helper function for API calls with error handling

@@ -42,7 +42,7 @@ const GlobalHiveNetwork = () => {
           <Badge className="mb-6 bg-primary/10 text-primary border-primary/20 px-4 py-1.5 font-bold">
             A Planetary Initiative
           </Badge>
-          <h1 className="text-5xl md:text-8xl font-black mb-8 tracking-tighter text-foreground leading-[1.1]">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 tracking-tight text-foreground leading-tight">
             Saving Africa's <span className="text-primary italic">Pollinators</span>
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed mb-10 max-w-3xl mx-auto font-medium">
@@ -157,7 +157,7 @@ const GlobalHiveNetwork = () => {
               </Card>
             </div>
             <div className="order-1 lg:order-2">
-              <h2 className="text-5xl md:text-6xl font-black mb-8 leading-tight">Food Security <br /><span className="text-primary italic">At Risk</span></h2>
+              <h2 className="text-4xl md:text-5xl font-bold mb-8 leading-tight">Food Security <br /><span className="text-primary italic">At Risk</span></h2>
               <p className="text-white/70 leading-relaxed mb-8 text-xl font-medium">
                 With 75% of food crops relying on pollinators, the decline of African bee populations threatens agricultural productivity and millions of livelihoods.
               </p>
@@ -175,7 +175,7 @@ const GlobalHiveNetwork = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
             <Heart className="h-16 w-16 mx-auto mb-6 text-white/80 animate-pulse" />
-            <h2 className="text-5xl md:text-7xl font-black mb-6 text-white tracking-tighter">Support Our Mission</h2>
+            <h2 className="text-4xl md:text-6xl font-bold mb-6 text-white tracking-tight">Support Our Mission</h2>
             <p className="text-xl md:text-2xl text-white/80 max-w-3xl mx-auto font-medium">
               Join our community of supporters strengthening pollinator health and food security.
             </p>

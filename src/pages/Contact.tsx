@@ -135,8 +135,8 @@ const Contact = () => {
 
         {/* Header */}
         <div className="mx-auto max-w-3xl text-center mb-8 sm:mb-12">
-          <h1 className="mb-4 sm:mb-6 text-3xl sm:text-4xl md:text-5xl font-bold">Contact Us Today</h1>
-          <p className="mb-8 sm:mb-12 text-base sm:text-xl text-muted-foreground">
+          <h1 className="mb-4 sm:mb-6 text-3xl sm:text-4xl font-bold">Contact Us Today</h1>
+          <p className="mb-8 sm:mb-12 text-sm sm:text-lg text-muted-foreground">
             Fill in the form, and we will get back to you at our earliest convenience.
           </p>
         </div>

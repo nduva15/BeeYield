@@ -17,43 +17,43 @@ def seed_demo_data():
     print("🐝 Seeding HoneyChain with premium demo data...")
 
     # 1. Register a Farmer
-    print("👨‍🌾 Registering Farmer: John Kamau...")
+    print("👨‍🌾 Registering Farmer: Timothy Nduva...")
     farmer = schemas.FarmerCreate(
-        name="John Kamau",
-        phone="+254 712 345 678",
-        experience_years=15,
-        story="John has been beekeeping in the foothills of Mt. Kenya for over a decade. He is a champion for organic practices and leads a local cooperative of 20 young beekeepers.",
-        location_name="Nyeri Orchard",
-        region="Central",
-        county="Nyeri",
-        latitude=-0.4264,
-        longitude=36.9476
+        name="Timothy Nduva",
+        phone="+254 700 000 000",
+        experience_years=8,
+        story="Timothy is a master beekeeper and conservationist in Kibwezi, leading the way in sustainable honey production.",
+        location_name="Kibwezi HQ",
+        region="Kibwezi",
+        county="Makueni",
+        latitude=-2.41,
+        longitude=37.97
     )
     farmer_data = traceability_service.register_farmer(farmer)
     farmer_id = farmer_data['farmer_id']
 
     # 2. Register an Apiary
-    print("🏡 Registering Apiary: Mt. Kenya Highland Grove...")
+    print("🏡 Registering Apiary: Kibwezi Savannah Apiary...")
     apiary = schemas.ApiaryCreate(
-        apiary_code="MK-NY-01",
-        name="Mt. Kenya Highland Grove",
-        environment_type="Indigineous Forest Edge",
-        flora_types=["Acacia", "Croton", "Wild Jasmine"],
-        water_source="Chania River Stream",
+        apiary_code="KIB-01",
+        name="Kibwezi Savannah Apiary",
+        environment_type="Savannah Wooded",
+        flora_types=["Acacia Tortilis", "Citrus", "Wildflowers"],
+        water_source="Natural Spring Water",
         farmer_id=farmer_id,
-        location_name="Nyeri Forest Edge",
-        region="Central",
-        county="Nyeri",
-        latitude=-0.4300,
-        longitude=36.9500
+        location_name="Kibwezi",
+        region="Eastern",
+        county="Makueni",
+        latitude=-2.41,
+        longitude=37.97
     )
     apiary_data = traceability_service.register_apiary(apiary)
     apiary_id = apiary_data['apiary_id']
 
     # 3. Register a Hive
-    print("🐝 Registering Hive: MK-01-H05...")
+    print("🐝 Registering Hive: KIB-01-H01...")
     hive = schemas.HiveCreate(
-        hive_code="MK-01-H05",
+        hive_code="KIB-01-H01",
         hive_type="Langstroth Precision Hive",
         bee_type="African Honey Bee (Apis mellifera scutellata)",
         apiary_id=apiary_id,
@@ -84,10 +84,10 @@ def seed_demo_data():
         hive_id=hive_id,
         farmer_id=farmer_id,
         harvest_date=(datetime.now() - timedelta(days=10)).date(),
-        quantity_kg=12.5,
-        quantity_left_for_bees_kg=12.5,  # 50/50 split
+        quantity_kg=15.5,
+        quantity_left_for_bees_kg=15.5,  # 50/50 split
         extraction_method="Cold Centrifuge",
-        nectar_source="Highland Acacia",
+        nectar_source="Acacia Tortilis",
         weather_conditions="Sunny & Dry",
         moisture_content_percent=17.2
     )
@@ -98,11 +98,11 @@ def seed_demo_data():
     print("📦 Creating Batch: DEMO-001...")
     batch_data = {
         "batch_code": "DEMO-001",
-        "honey_type": "Acacia",
+        "honey_type": "Wildflower",
         "harvest_id": harvest_id,
         "processing_id": "PROC-" + harvest_id[:8].upper(),
         "production_date": datetime.now().isoformat(),
-        "apiary_code": "MK-NY-01",
+        "apiary_code": "KIB-01",
         "created_by": "SYSTEM"
     }
     traceability_service.create_batch(batch_data)

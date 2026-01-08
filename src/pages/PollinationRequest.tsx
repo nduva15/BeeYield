@@ -195,7 +195,7 @@ const PollinationRequest = () => {
                             className="h-12 pl-12 rounded-xl bg-muted/20 border-border/50 focus:bg-white transition-all"
                             value={formData.location}
                             onChange={(e) => handleChange("location", e.target.value)}
-                            placeholder="e.g. Nyeri, Kenya"
+                            placeholder="e.g. Kibwezi, Kenya"
                             required
                           />
                         </div>
@@ -322,8 +322,8 @@ const PollinationRequest = () => {
 
             {/* Testimonial snippet */}
             <div className="p-6 italic text-muted-foreground text-sm leading-relaxed">
-              "BeeYield's response time was incredible. Within 48 hours of submitting this form, we had a full deployment plan for our 150-acre maize field."
-              <p className="font-black text-foreground not-italic mt-2">— David M. , Grower</p>
+              "BeeYield's response time was incredible. Within 48 hours of submitting this form, we had a full deployment plan for our 25-acre maize field."
+              <p className="font-black text-foreground not-italic mt-2">— Timothy N. , Master Beekeeper</p>
             </div>
           </div>
         </div>
