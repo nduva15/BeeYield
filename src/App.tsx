@@ -16,6 +16,7 @@ const About = lazy(() => import("./pages/About"));
 const Impact = lazy(() => import("./pages/Impact"));
 const Shop = lazy(() => import("./pages/Shop"));
 const Blogs = lazy(() => import("./pages/Blogs"));
+const BlogPost = lazy(() => import("./pages/BlogPost"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Traceability = lazy(() => import("./pages/Traceability"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -67,6 +68,7 @@ const App = () => (
                     <Route path="/shop" element={<Shop />} />
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/blogs" element={<Blogs />} />
+                    <Route path="/blog/:slug" element={<BlogPost />} />
                     <Route path="/contact" element={<Contact />} />
                     <Route path="/traceability" element={<Traceability />} />
                     <Route path="/PollinationServices" element={<PollinationServices />} />

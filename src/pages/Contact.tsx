@@ -149,7 +149,7 @@ const Contact = () => {
             return (
               <button
                 key={tab.id}
-                onClick={() => handleTabChange(tab.id as any)}
+                onClick={() => handleTabChange(tab.id)}
                 className={`flex items-center justify-center gap-3 p-4 rounded-xl border-2 transition-all duration-200 ${isActive
                   ? "border-primary bg-primary/5 text-primary shadow-soft"
                   : "border-transparent bg-white shadow-soft text-muted-foreground hover:bg-secondary/20"
