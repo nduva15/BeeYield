@@ -20,6 +20,7 @@ import {
   ShoppingCart,
   ShoppingBag,
   Cpu,
+  ShieldCheck,
 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { Product, ProductVariant } from "@/services/shopService";
@@ -109,25 +110,26 @@ const Shop = () => {
         description="Shop premium organic honey, professional beekeeping suits, and advanced IoT hive sensors from Intelligent Hives and ApiSense."
       />
       {/* Hero Section */}
-      <section className="relative py-16 sm:py-20 lg:py-24 bg-gradient-to-br from-primary/10 via-background to-accent/10 overflow-hidden">
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-20 left-10 w-32 h-32 bg-primary rounded-full blur-3xl" />
-          <div className="absolute bottom-20 right-10 w-48 h-48 bg-accent rounded-full blur-3xl" />
+      <section className="relative py-24 sm:py-32 bg-gradient-to-br from-primary/10 via-background to-accent/10 overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-10 w-64 h-64 bg-primary rounded-full blur-[100px] animate-pulse" />
+          <div className="absolute bottom-20 right-10 w-80 h-80 bg-accent rounded-full blur-[120px] animate-pulse-delayed" />
         </div>
 
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <Badge variant="outline" className="mb-4 px-4 py-1">
-            <Leaf className="h-3 w-3 mr-1" />
+        <div className="container mx-auto px-4 text-center relative z-10 space-y-8">
+          <Badge variant="outline" className="mb-4 px-6 py-2 border-primary/30 bg-primary/5 text-primary font-black uppercase tracking-widest backdrop-blur-md">
+            <Leaf className="h-4 w-4 mr-2" />
             Sustainably sourced with love
           </Badge>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6">
-            The BeeYield <span className="text-primary">Shop</span>
+          <h1 className="text-display-xl md:text-display-2xl font-black text-foreground tracking-tightest leading-none">
+            The BeeYield <span className="text-primary italic">Shop</span>
           </h1>
-          <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+          <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto font-medium leading-relaxed">
             Premium honey, sustainable merch, and expert knowledge, all supporting our mission to revolutionize pollination in Kenya.
           </p>
-          <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
-            <span className="flex items-center gap-2 bg-card px-4 py-2 rounded-full border border-border">
+          <div className="flex flex-wrap justify-center gap-6 text-sm font-black uppercase tracking-widest text-muted-foreground">
+            <span className="flex items-center gap-3 bg-white/50 dark:bg-card/50 px-6 py-3 rounded-2xl border border-border/50 backdrop-blur-md shadow-soft">
+              <ShieldCheck className="h-5 w-5 text-primary" />
               100% Traceable Products
             </span>
           </div>
@@ -137,39 +139,41 @@ const Shop = () => {
       {/* Shop Content */}
       <section className="container mx-auto px-4 py-12 sm:py-16">
         <Tabs defaultValue="honey" className="w-full">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-            <TabsList className="grid w-full sm:w-auto grid-cols-2 sm:grid-cols-4 bg-muted/50 p-1">
-              <TabsTrigger value="honey" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                <Leaf className="h-4 w-4" />
-                <span className="hidden sm:inline">Honey</span>
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 mb-16">
+            <TabsList className="flex w-full lg:w-auto overflow-x-auto bg-muted/30 p-2 rounded-3xl backdrop-blur-sm border border-border/50 scrollbar-hide">
+              <TabsTrigger value="honey" className="flex-1 lg:flex-none h-14 px-8 flex items-center gap-3 rounded-2xl font-black uppercase tracking-widest text-xs transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow">
+                <Leaf className="h-5 w-5" />
+                <span>Honey</span>
               </TabsTrigger>
-              <TabsTrigger value="merch" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                <Shirt className="h-4 w-4" />
-                <span className="hidden sm:inline">Merch</span>
+              <TabsTrigger value="merch" className="flex-1 lg:flex-none h-14 px-8 flex items-center gap-3 rounded-2xl font-black uppercase tracking-widest text-xs transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow">
+                <Shirt className="h-5 w-5" />
+                <span>Merch</span>
               </TabsTrigger>
-              <TabsTrigger value="hardware" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                <Cpu className="h-4 w-4" />
-                <span className="hidden sm:inline">Hardware</span>
+              <TabsTrigger value="hardware" className="flex-1 lg:flex-none h-14 px-8 flex items-center gap-3 rounded-2xl font-black uppercase tracking-widest text-xs transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow">
+                <Cpu className="h-5 w-5" />
+                <span>Hardware</span>
               </TabsTrigger>
-              <TabsTrigger value="learn" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                <BookOpen className="h-4 w-4" />
-                <span className="hidden sm:inline">Learn</span>
+              <TabsTrigger value="learn" className="flex-1 lg:flex-none h-14 px-8 flex items-center gap-3 rounded-2xl font-black uppercase tracking-widest text-xs transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow">
+                <BookOpen className="h-5 w-5" />
+                <span>Learn</span>
               </TabsTrigger>
             </TabsList>
 
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-muted-foreground" />
-              <Select defaultValue="featured">
-                <SelectTrigger className="w-[160px]">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="featured">Featured</SelectItem>
-                  <SelectItem value="price-low">Price: Low to High</SelectItem>
-                  <SelectItem value="price-high">Price: High to Low</SelectItem>
-                  <SelectItem value="rating">Top Rated</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="flex items-center gap-4 self-end lg:self-auto">
+              <div className="relative group">
+                <Filter className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                <Select defaultValue="featured">
+                  <SelectTrigger className="w-[200px] h-14 pl-12 border-2 rounded-2xl font-bold bg-muted/20 hover:bg-muted/30 transition-all">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-2xl">
+                    <SelectItem value="featured" className="font-bold">Featured</SelectItem>
+                    <SelectItem value="price-low" className="font-bold">Price: Low to High</SelectItem>
+                    <SelectItem value="price-high" className="font-bold">Price: High to Low</SelectItem>
+                    <SelectItem value="rating" className="font-bold">Top Rated</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
 
@@ -177,53 +181,60 @@ const Shop = () => {
           <TabsContent value="honey" className="mt-0">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {honeyProducts.map((product) => (
-                <Card key={product.id} className="group overflow-hidden border-border/50 hover:border-primary/50 hover:shadow-lg transition-all duration-300">
-                  <div className="relative aspect-square bg-muted flex items-center justify-center overflow-hidden">
+                <Card key={product.id} className="group overflow-hidden border-none shadow-premium hover:shadow-glow-primary transition-all duration-700 bg-white dark:bg-card rounded-[3rem]">
+                  <div className="relative aspect-[4/5] bg-muted overflow-hidden">
                     <img
                       src={product.images[0] || "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=800"}
                       alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                     {product.badge && (
-                      <Badge variant={getBadgeVariant(product.badge)} className="absolute top-3 left-3">
+                      <Badge variant={getBadgeVariant(product.badge)} className="absolute top-6 left-6 font-black uppercase tracking-widest px-4 py-1.5 rounded-xl shadow-lg border-none">
                         {product.badge}
                       </Badge>
                     )}
                     <button
                       aria-label="Add to wishlist"
-                      className="absolute top-3 right-3 p-2 bg-background/80 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
+                      className="absolute top-6 right-6 p-4 bg-white/80 backdrop-blur-md rounded-2xl opacity-0 group-hover:opacity-100 transition-all hover:bg-white shadow-xl hover:scale-110 active:scale-95 translate-x-4 group-hover:translate-x-0"
                     >
-                      <Heart className="h-4 w-4 text-muted-foreground hover:text-primary transition-colors" />
+                      <Heart className="h-6 w-6 text-muted-foreground hover:text-primary transition-colors" />
                     </button>
+                    <div className="absolute inset-x-0 bottom-0 p-8 translate-y-full group-hover:translate-y-0 transition-transform duration-500 bg-gradient-to-t from-black/60 to-transparent">
+                      <Button className="w-full h-14 bg-white text-black hover:bg-white/90 font-black rounded-2xl shadow-xl">
+                        Verify Traceability
+                      </Button>
+                    </div>
                   </div>
-                  <CardContent className="p-5">
-                    <div className="mb-2">{renderStars(product.rating)}</div>
-                    <h3 className="font-semibold text-lg text-foreground mb-1">{product.name}</h3>
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{product.description}</p>
+                  <CardContent className="p-10 space-y-6">
+                    <div className="flex flex-col gap-2">
+                      {renderStars(product.rating)}
+                      <h3 className="font-black text-3xl text-foreground tracking-tight leading-none group-hover:text-primary transition-colors">{product.name}</h3>
+                    </div>
+                    <p className="text-base text-muted-foreground font-semibold leading-relaxed line-clamp-2">{product.description}</p>
 
-                    <div className="space-y-3">
+                    <div className="pt-6 space-y-6 border-t border-border/50">
                       <Select
                         value={selectedSizes[product.id] || product.variants[0].size}
                         onValueChange={(value) => setSelectedSizes({ ...selectedSizes, [product.id]: value })}
                       >
-                        <SelectTrigger className="w-full">
+                        <SelectTrigger className="w-full h-14 border-2 rounded-2xl font-bold bg-muted/20">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="rounded-2xl">
                           {product.variants.map((variant) => (
-                            <SelectItem key={variant.size} value={variant.size}>
-                              {variant.size}, {formatPrice(variant.price_kes)}
+                            <SelectItem key={variant.size} value={variant.size} className="font-bold">
+                              {variant.size} — {formatPrice(variant.price_kes)}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
 
                       <Button
-                        className="w-full gap-2"
+                        className="w-full h-16 gap-3 font-black text-lg rounded-2xl shadow-glow"
                         onClick={() => handleAddToCart(product, 'honey')}
                       >
-                        <ShoppingCart className="h-4 w-4" />
-                        Add to Cart
+                        <ShoppingCart className="h-6 w-6" />
+                        Add to Hive Cart
                       </Button>
                     </div>
                   </CardContent>
@@ -234,52 +245,55 @@ const Shop = () => {
 
           {/* Merch Tab */}
           <TabsContent value="merch" className="mt-0">
-            <div className="flex flex-wrap gap-2 mb-6">
+            <div className="flex flex-wrap gap-3 mb-12">
               {["All", "Unisex", "Women", "Kids", "Accessories"].map((cat) => (
                 <Button
                   key={cat}
                   variant={selectedMerchCategory === cat ? "default" : "outline"}
-                  size="sm"
+                  size="lg"
+                  className={`h-12 px-8 rounded-2xl font-black uppercase tracking-widest text-xs transition-all ${selectedMerchCategory === cat ? "shadow-glow" : "border-2 bg-muted/20 hover:bg-muted/30"}`}
                   onClick={() => setSelectedMerchCategory(cat)}
                 >
                   {cat}
                 </Button>
               ))}
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
               {merchProducts
                 .filter((p) =>
                   selectedMerchCategory === "All" ? true : p.category === selectedMerchCategory
                 )
                 .map((product) => (
-                  <Card key={product.id} className="group overflow-hidden border-border/50 hover:border-primary/50 hover:shadow-lg transition-all duration-300">
-                    <div className="relative aspect-square bg-muted flex items-center justify-center overflow-hidden">
+                  <Card key={product.id} className="group overflow-hidden border-none shadow-premium hover:shadow-glow-primary transition-all duration-700 bg-white dark:bg-card rounded-[3rem]">
+                    <div className="relative aspect-[4/5] bg-muted overflow-hidden">
                       <img
                         src={product.images[0] || "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800"}
                         alt={product.name}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                       {product.badge && (
-                        <Badge variant={getBadgeVariant(product.badge)} className="absolute top-3 left-3">
+                        <Badge variant={getBadgeVariant(product.badge)} className="absolute top-6 left-6 font-black uppercase tracking-widest px-4 py-1.5 rounded-xl shadow-lg border-none">
                           {product.badge}
                         </Badge>
                       )}
-                      <Badge variant="secondary" className="absolute top-3 right-3">
+                      <Badge variant="secondary" className="absolute top-6 right-6 font-black uppercase tracking-widest px-4 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 transition-all">
                         {product.category}
                       </Badge>
                     </div>
-                    <CardContent className="p-5">
-                      <div className="mb-2">{renderStars(product.rating)}</div>
-                      <h3 className="font-semibold text-lg text-foreground mb-1">{product.name}</h3>
-                      <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{product.description}</p>
+                    <CardContent className="p-10 space-y-6">
+                      <div className="flex flex-col gap-2">
+                        {renderStars(product.rating)}
+                        <h3 className="font-black text-3xl text-foreground tracking-tight leading-none group-hover:text-primary transition-colors">{product.name}</h3>
+                      </div>
+                      <p className="text-base text-muted-foreground font-semibold leading-relaxed line-clamp-2">{product.description}</p>
 
-                      <div className="space-y-3">
-                        <div className="flex flex-wrap gap-2">
+                      <div className="pt-6 space-y-6 border-t border-border/50">
+                        <div className="flex flex-wrap gap-3">
                           {product.variants.map((variant: ProductVariant) => (
                             <button
                               key={variant.size}
-                              className={`px-3 py-1 text-xs rounded-md border transition-colors ${(selectedSizes[product.id] || product.variants[0].size) === variant.size
-                                ? "border-primary bg-primary/10 text-primary"
+                              className={`h-10 px-4 text-xs font-black uppercase tracking-widest rounded-xl border-2 transition-all ${(selectedSizes[product.id] || product.variants[0].size) === variant.size
+                                ? "border-primary bg-primary/10 text-primary shadow-sm"
                                 : "border-border text-muted-foreground hover:border-primary/50"
                                 }`}
                               onClick={() => setSelectedSizes({ ...selectedSizes, [product.id]: variant.size })}
@@ -290,19 +304,22 @@ const Shop = () => {
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <span className="text-lg font-bold text-foreground">
-                            {formatPrice(
-                              product.variants.find(
-                                (v: ProductVariant) => v.size === (selectedSizes[product.id] || product.variants[0].size)
-                              )?.price_kes || product.variants[0].price_kes
-                            )}
-                          </span>
+                          <div className="flex flex-col">
+                            <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Price</span>
+                            <span className="text-3xl font-black text-foreground tracking-tighter">
+                              {formatPrice(
+                                product.variants.find(
+                                  (v: ProductVariant) => v.size === (selectedSizes[product.id] || product.variants[0].size)
+                                )?.price_kes || product.variants[0].price_kes
+                              )}
+                            </span>
+                          </div>
                           <Button
-                            size="sm"
-                            className="gap-2"
+                            size="lg"
+                            className="h-14 px-10 gap-3 font-black rounded-2xl shadow-glow"
                             onClick={() => handleAddToCart(product, 'merch')}
                           >
-                            <ShoppingCart className="h-4 w-4" />
+                            <ShoppingCart className="h-5 w-5" />
                             Add
                           </Button>
                         </div>
@@ -315,49 +332,49 @@ const Shop = () => {
 
           {/* Hardware Tab */}
           <TabsContent value="hardware" className="mt-0">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
               {products.filter(p => p.category === 'hardware').map((product) => (
-                <Card key={product.id} className="group overflow-hidden border-border/50 hover:border-primary/50 hover:shadow-lg transition-all duration-300">
-                  <div className="relative aspect-[4/3] bg-muted flex items-center justify-center overflow-hidden">
+                <Card key={product.id} className="group overflow-hidden border-none shadow-premium hover:shadow-glow-primary transition-all duration-700 bg-white dark:bg-card rounded-[3rem]">
+                  <div className="relative aspect-[4/3] bg-muted overflow-hidden">
                     <img
                       src={product.images[0] || "https://images.unsplash.com/photo-1558383331-f520f2888351?w=800"}
                       alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                     {product.badge && (
-                      <Badge variant={getBadgeVariant(product.badge)} className="absolute top-3 left-3 z-10">
+                      <Badge variant={getBadgeVariant(product.badge)} className="absolute top-6 left-6 z-10 font-black uppercase tracking-widest px-4 py-1.5 rounded-xl shadow-lg border-none">
                         {product.badge}
                       </Badge>
                     )}
-                    <div className="absolute bottom-3 right-3 z-10">
-                      <Badge variant="outline" className="bg-background/80 backdrop-blur-sm">
+                    <div className="absolute bottom-6 right-6 z-10">
+                      <Badge variant="outline" className="bg-white/80 backdrop-blur-md font-black uppercase tracking-widest px-4 py-1.5 rounded-xl border-none shadow-premium">
                         IoT Ready
                       </Badge>
                     </div>
                   </div>
-                  <CardContent className="p-5">
+                  <CardContent className="p-10 space-y-6">
                     <div className="flex items-center justify-between mb-2">
                       {renderStars(product.rating)}
-                      <span className="text-xs font-mono text-muted-foreground">V 2.0</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-3 py-1 rounded-full">Systems v2.0 Live</span>
                     </div>
-                    <h3 className="font-semibold text-lg text-foreground mb-1">{product.name}</h3>
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2 min-h-[40px]">{product.description}</p>
+                    <h3 className="font-black text-3xl text-foreground tracking-tight leading-none group-hover:text-primary transition-colors">{product.name}</h3>
+                    <p className="text-base text-muted-foreground font-semibold leading-relaxed line-clamp-2 min-h-[48px]">{product.description}</p>
 
-                    <div className="flex items-center justify-between pt-2 border-t border-border/50">
+                    <div className="flex items-center justify-between pt-6 border-t border-border/50">
                       <div className="flex flex-col">
-                        <span className="text-xs text-muted-foreground uppercase font-bold">Starting at</span>
-                        <span className="text-xl font-bold text-foreground">{formatPrice(product.variants[0]?.price_kes || 0)}</span>
+                        <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Starting at</span>
+                        <span className="text-3xl font-black text-foreground tracking-tighter">{formatPrice(product.variants[0]?.price_kes || 0)}</span>
                       </div>
                       <Button
                         variant="default"
-                        className="gap-2 shadow-lg hover:shadow-xl transition-all"
+                        className="h-14 px-8 gap-3 font-black rounded-2xl shadow-glow transition-all"
                         onClick={() => {
                           handleAddToCart(product, 'hardware');
                           openCart();
                         }}
                       >
-                        <ShoppingCart className="h-4 w-4" />
-                        Order Now
+                        <ShoppingCart className="h-5 w-5" />
+                        Order
                       </Button>
                     </div>
                   </CardContent>
@@ -368,43 +385,46 @@ const Shop = () => {
 
           {/* Educational Tab */}
           <TabsContent value="learn" className="mt-0">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
               {educationalProducts.map((product) => (
-                <Card key={product.id} className="group overflow-hidden border-border/50 hover:border-primary/50 hover:shadow-lg transition-all duration-300">
-                  <div className="relative aspect-[4/3] bg-muted flex items-center justify-center overflow-hidden">
+                <Card key={product.id} className="group overflow-hidden border-none shadow-premium hover:shadow-glow-primary transition-all duration-700 bg-white dark:bg-card rounded-[3rem]">
+                  <div className="relative aspect-[4/3] bg-muted overflow-hidden">
                     <img
                       src={product.images[0] || "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800"}
                       alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                     {product.badge && (
-                      <Badge variant={getBadgeVariant(product.badge)} className="absolute top-3 left-3">
+                      <Badge variant={getBadgeVariant(product.badge)} className="absolute top-6 left-6 font-black uppercase tracking-widest px-4 py-1.5 rounded-xl shadow-lg border-none">
                         {product.badge}
                       </Badge>
                     )}
-                    <Badge variant="outline" className="absolute top-3 right-3 bg-background/80 backdrop-blur-sm">
+                    <Badge variant="outline" className="absolute top-6 right-6 bg-white/80 backdrop-blur-md font-black uppercase tracking-widest px-4 py-1.5 rounded-xl border-none shadow-premium">
                       {product.variants[0]?.size || "PDF"}
                     </Badge>
                   </div>
-                  <CardContent className="p-5">
+                  <CardContent className="p-10 space-y-6">
                     <div className="flex items-center justify-between mb-2">
                       {renderStars(product.rating)}
-                      <span className="text-xs text-muted-foreground">Professional Guide</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Professional Guide</span>
                     </div>
-                    <h3 className="font-semibold text-lg text-foreground mb-1">{product.name}</h3>
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{product.description}</p>
+                    <h3 className="font-black text-3xl text-foreground tracking-tight leading-none group-hover:text-primary transition-colors">{product.name}</h3>
+                    <p className="text-base text-muted-foreground font-semibold leading-relaxed line-clamp-2 min-h-[48px]">{product.description}</p>
 
-                    <div className="flex items-center justify-between">
-                      <span className="text-xl font-bold text-foreground">{formatPrice(product.variants[0]?.price_kes || 0)}</span>
+                    <div className="flex items-center justify-between pt-6 border-t border-border/50">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Price</span>
+                        <span className="text-3xl font-black text-foreground tracking-tighter">{formatPrice(product.variants[0]?.price_kes || 0)}</span>
+                      </div>
                       <Button
-                        className="gap-2"
+                        className="h-14 px-10 gap-3 font-black rounded-2xl shadow-glow"
                         onClick={() => {
                           handleAddToCart(product, 'education');
                           openCart();
                         }}
                       >
-                        <ShoppingCart className="h-4 w-4" />
-                        Buy Now
+                        <ShoppingCart className="h-5 w-5" />
+                        Enroll
                       </Button>
                     </div>
                   </CardContent>

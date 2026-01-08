@@ -162,7 +162,8 @@ def get_trace_journey(batch_code: str) -> Optional[schemas.TraceResponse]:
                 material=h_data.get('material', 'Wood')
             )
             
-            # Check for Disease/Health Events
+            # Check for Disease/Health Events and get latest readings
+            sensor_snapshot = {}
             try:
                 sensor_blocks = [
                     b for b in honey_blockchain.chain 
@@ -170,6 +171,15 @@ def get_trace_journey(batch_code: str) -> Optional[schemas.TraceResponse]:
                     and b.data.get('hive_id') == hive_id
                 ]
                 
+                if sensor_blocks:
+                    latest = sensor_blocks[-1].data
+                    sensor_snapshot = {
+                        "avg_temp": latest.get('temperature'),
+                        "avg_humidity": latest.get('humidity'),
+                        "weight_kg": latest.get('weight'),
+                        "acoustic_health": latest.get('acoustic_frequency')
+                    }
+
                 for s_block in sensor_blocks:
                     anomalies = s_block.data.get('anomalies_detected', [])
                     if "ACOUSTIC_VARROA_PATTERN" in anomalies:
@@ -177,7 +187,7 @@ def get_trace_journey(batch_code: str) -> Optional[schemas.TraceResponse]:
                             title="Health Shield Activated",
                             date=s_block.data.get('timestamp', '')[:10],
                             location=f"Hive {h_data.get('hive_code')}",
-                            description="BeeYield Acoustic Sensors (ApiSense) detected early Varroa mite signature. Automatic alert sent to Beekeeper. Organic intervention applied immediately. Colony health restored.",
+                            description="BeeYield Acoustic Sensors detected early Varroa mite signature. Automatic alert sent to Beekeeper. Organic intervention applied immediately. Colony health restored.",
                             icon="Shield",
                             data={"anomalies": anomalies, "sensor_reading": s_block.data},
                             hash=s_block.hash
@@ -260,6 +270,7 @@ def get_trace_journey(batch_code: str) -> Optional[schemas.TraceResponse]:
                 "bees_protected": "Yes",
                 "biodiversity_score": "High"
             },
+            sensor_snapshot=sensor_snapshot,
             timeline=journey_timeline
         )
     except Exception as e:

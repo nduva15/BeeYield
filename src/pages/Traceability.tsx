@@ -6,7 +6,7 @@ import {
   QrCode, MapPin, Calendar, Leaf, Info, Heart,
   Shield, Droplets, Home, Users, Award,
   CheckCircle2, Thermometer, CloudRain,
-  Activity, Zap, Box, Factory, Package, Cpu
+  Activity, Zap, Box, Factory, Package, Cpu, Loader2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { traceBatch, TraceResponse, TraceJourneyStep } from "@/services/traceabilityService";
@@ -133,48 +133,46 @@ const Traceability = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-primary/20 via-primary/5 to-white py-20 lg:py-32">
-        <div className="container mx-auto px-6 lg:px-12">
-          <div className="relative z-10 mx-auto max-w-4xl text-center">
-            <Badge variant="outline" className="mb-6 border-primary/30 bg-primary/10 px-4 py-1 text-primary">
-              <Shield className="mr-2 h-3.5 w-3.5" />
+      <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-accent/10 py-24 sm:py-32">
+        <div className="container relative z-10 mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center space-y-8">
+            <Badge variant="outline" className="mb-6 border-primary/30 bg-primary/10 px-6 py-2 text-primary font-black uppercase tracking-widest backdrop-blur-md">
+              <Shield className="mr-3 h-4 w-4" />
               Powered by HoneyChain™ Blockchain
             </Badge>
-            <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground sm:text-6xl">
-              Authenticity <span className="text-primary italic">You Can Trace</span>
+            <h1 className="text-display-xl md:text-display-2xl font-black text-foreground tracking-tightest leading-none">
+              Authenticity <br /><span className="text-primary italic">You Can Trace</span>
             </h1>
-            <p className="mb-10 text-lg text-muted-foreground sm:text-xl">
-              Hey there! 👋 We believe in radical transparency.
-              Every drop of BeeYield honey tells a unique story of sustainable beekeeping and local empowerment. 🐝✨
-              Trace your jar's journey below! 👇
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed">
+              Every drop of BeeYield honey tells a unique story of sustainable beekeeping, verified through our immutable sensor network.
             </p>
 
-            <Card className="mx-auto max-w-xl border-none bg-white/60 shadow-2xl backdrop-blur-md">
-              <CardContent className="p-4 sm:p-6">
-                <form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:flex-row">
+            <Card className="mx-auto max-w-2xl border-none glass-dark sm:glass shadow-premium rounded-[2.5rem] overflow-hidden">
+              <CardContent className="p-8">
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4 sm:flex-row">
                   <div className="relative flex-1">
-                    <QrCode className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                    <QrCode className="absolute left-4 top-1/2 h-6 w-6 -translate-y-1/2 text-primary" />
                     <Input
                       id="qrCode"
                       value={qrCode}
                       onChange={(e) => setQrCode(e.target.value)}
                       placeholder="Enter Batch ID (e.g. DEMO-001)"
-                      className="h-12 border-none bg-white/80 pl-11 focus-visible:ring-primary shadow-inner"
+                      className="h-16 border-none bg-background/50 pl-14 text-lg font-bold focus-visible:ring-primary shadow-inner rounded-2xl placeholder:text-muted-foreground/50"
                     />
                   </div>
-                  <Button type="submit" size="lg" disabled={isLoading} className="h-12 px-8 font-semibold shadow-lg shadow-primary/20">
-                    {isLoading ? "Verifying..." : "Trace Journey"}
+                  <Button type="submit" size="lg" disabled={isLoading} className="h-16 px-10 text-lg font-black shadow-glow rounded-2xl">
+                    {isLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : "Verify Identity"}
                   </Button>
                 </form>
-                <div className="mt-4 flex items-center justify-between px-2 text-xs font-medium text-muted-foreground">
-                  <span>Enter the code found on the back of your jar</span>
+                <div className="mt-6 flex items-center justify-between px-2 text-xs font-black uppercase tracking-widest text-muted-foreground/70">
+                  <span>Code found on your jar label</span>
                   <button
                     type="button"
                     onClick={() => setIsScanning(true)}
-                    className="flex items-center text-primary hover:underline"
+                    className="flex items-center text-primary hover:text-honey-dark transition-colors"
                   >
-                    <QrCode className="mr-1 h-3 w-3" />
-                    Scan QR
+                    <QrCode className="mr-2 h-4 w-4" />
+                    Scan QR Code
                   </button>
                 </div>
               </CardContent>
@@ -193,52 +191,66 @@ const Traceability = () => {
             {/* Left Column: Product & Journey */}
             <div className="lg:col-span-2 space-y-8">
               {/* Product Card */}
-              <Card className="overflow-hidden border-none shadow-premium bg-white">
-                <div className="bg-primary/5 p-8 border-b border-primary/10">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <Card className="overflow-hidden border-none shadow-premium bg-white dark:bg-card rounded-[3rem]">
+                <div className="bg-primary/5 p-10 border-b border-primary/10">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div>
-                      <h2 className="text-3xl font-bold text-foreground">{batchData.product_name}</h2>
-                      <p className="font-mono text-sm text-muted-foreground mt-1">Batch ID: {batchData.batch_code}</p>
+                      <h2 className="text-4xl font-black text-foreground tracking-tightest">{batchData.product_name}</h2>
+                      <div className="flex items-center gap-3 mt-2">
+                        <span className="font-mono text-sm text-primary font-bold bg-primary/10 px-3 py-1 rounded-lg">ID: {batchData.batch_code}</span>
+                        <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">Certified Premium</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 rounded-full bg-nature-green/10 px-4 py-2 text-nature-green">
-                      <CheckCircle2 className="h-5 w-5" />
-                      <span className="text-sm font-bold uppercase tracking-wider">Blockchain Verified</span>
+                    <div className="flex items-center gap-3 rounded-2xl bg-nature-green/10 border border-nature-green/20 px-6 py-3 text-nature-green shadow-glow shadow-nature-green/20">
+                      <CheckCircle2 className="h-6 w-6" />
+                      <span className="text-sm font-black uppercase tracking-widest">HoneyChain Verified</span>
                     </div>
                   </div>
                 </div>
-                <CardContent className="p-8">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    <div className="space-y-1">
-                      <p className="text-xs uppercase font-bold text-muted-foreground flex items-center">
-                        <Thermometer className="mr-1 h-3 w-3" /> Temp
-                      </p>
-                      <p className="text-xl font-semibold">34.2°C</p>
+                <CardContent className="p-10">
+                  <div className="flex items-center gap-3 mb-8">
+                    <div className="relative flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-nature-green opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-nature-green"></span>
                     </div>
-                    <div className="space-y-1">
-                      <p className="text-xs uppercase font-bold text-muted-foreground flex items-center">
-                        <Droplets className="mr-1 h-3 w-3" /> Humidity
+                    <span className="text-xs font-black uppercase tracking-widest text-nature-green">Live Sensor Feed Active</span>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                    <div className="p-6 rounded-3xl bg-muted/20 border border-border/50 group/sensor hover:bg-primary/5 transition-colors">
+                      <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground flex items-center mb-3">
+                        <Thermometer className="mr-2 h-4 w-4 text-primary" /> Temp
                       </p>
-                      <p className="text-xl font-semibold">52%</p>
+                      <p className="text-4xl font-black tracking-tightest text-foreground">
+                        {(batchData.sensor_snapshot as any)?.avg_temp || "34.2"}°C
+                      </p>
                     </div>
-                    <div className="space-y-1">
-                      <p className="text-xs uppercase font-bold text-muted-foreground flex items-center">
-                        <Leaf className="mr-1 h-3 w-3" /> Purity
+                    <div className="p-6 rounded-3xl bg-muted/20 border border-border/50 group/sensor hover:bg-primary/5 transition-colors">
+                      <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground flex items-center mb-3">
+                        <Droplets className="mr-2 h-4 w-4 text-primary" /> Humidity
                       </p>
-                      <p className="text-xl font-semibold">100% Raw</p>
+                      <p className="text-4xl font-black tracking-tightest text-foreground">
+                        {(batchData.sensor_snapshot as any)?.avg_humidity || "52"}%
+                      </p>
                     </div>
-                    <div className="space-y-1">
-                      <p className="text-xs uppercase font-bold text-muted-foreground flex items-center">
-                        <Users className="mr-1 h-3 w-3" /> Fair Pay
+                    <div className="p-6 rounded-3xl bg-muted/20 border border-border/50 group/sensor hover:bg-primary/5 transition-colors">
+                      <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground flex items-center mb-3">
+                        <Leaf className="mr-2 h-4 w-4 text-primary" /> Purity
                       </p>
-                      <p className="text-xl font-semibold text-nature-green">Guaranteed</p>
+                      <p className="text-4xl font-black tracking-tightest text-foreground">100% Raw</p>
+                    </div>
+                    <div className="p-6 rounded-3xl bg-muted/20 border border-border/50 group/sensor hover:bg-primary/5 transition-colors">
+                      <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground flex items-center mb-3">
+                        <Users className="mr-2 h-4 w-4 text-primary" /> Fair Pay
+                      </p>
+                      <p className="text-2xl font-black text-nature-green tracking-tight uppercase">Verified</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
               {/* Journey Timeline */}
-              <h3 className="text-2xl font-bold flex items-center gap-2">
-                <Activity className="h-6 w-6 text-primary" />
+              <h3 className="text-4xl font-black flex items-center gap-4 tracking-tightest">
+                <Activity className="h-10 w-10 text-primary" />
                 Immutable Journey
               </h3>
               <div className="relative space-y-8 pl-8 before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-gradient-to-b before:from-primary before:to-muted">
@@ -247,25 +259,27 @@ const Traceability = () => {
                     <div className={`absolute -left-8 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white ring-2 ${idx === 0 ? 'ring-primary' : 'ring-muted shadow-sm'}`}>
                       {idx === 0 ? <Package className="h-3 w-3 text-primary" /> : <div className="h-1.5 w-1.5 rounded-full bg-muted-foreground" />}
                     </div>
-                    <Card className="border-none shadow-soft hover:shadow-md transition-shadow">
-                      <CardContent className="p-5">
-                        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-3">
-                          <h4 className="font-bold text-lg">{step.title}</h4>
-                          <span className="text-xs font-medium text-muted-foreground bg-muted/30 px-2 py-1 rounded-md">{step.date}</span>
+                    <Card className="border-none shadow-soft hover:shadow-premium transition-all duration-500 rounded-3xl overflow-hidden">
+                      <CardContent className="p-8">
+                        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
+                          <h4 className="font-black text-2xl tracking-tight">{step.title}</h4>
+                          <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full">{step.date}</span>
                         </div>
-                        <div className="flex items-start gap-4">
-                          <div className="rounded-lg bg-primary/5 p-3 text-primary">
+                        <div className="flex items-start gap-6">
+                          <div className="rounded-2xl bg-primary/10 p-4 text-primary shadow-inner">
                             {getIcon(step.icon)}
                           </div>
-                          <div>
-                            <p className="text-sm font-medium text-muted-foreground mb-1 flex items-center">
-                              <MapPin className="mr-1 h-3 w-3" /> {step.location}
+                          <div className="space-y-3">
+                            <p className="text-xs font-black uppercase tracking-widest text-primary/70 flex items-center">
+                              <MapPin className="mr-2 h-4 w-4" /> {step.location}
                             </p>
-                            <p className="text-sm leading-relaxed">{step.description}</p>
+                            <p className="text-base font-medium leading-relaxed text-muted-foreground">{step.description}</p>
                             {step.hash && (
-                              <p className="mt-3 font-mono text-[10px] text-muted-foreground bg-muted/20 p-2 rounded truncate max-w-[200px] sm:max-w-md">
-                                BLOCK HASH: {step.hash}
-                              </p>
+                              <div className="mt-6 pt-4 border-t border-border/50">
+                                <p className="font-mono text-[9px] text-muted-foreground bg-muted/20 p-3 rounded-xl truncate max-w-full">
+                                  HONEYCHAIN BLOCK HASH: {step.hash}
+                                </p>
+                              </div>
                             )}
                           </div>
                         </div>

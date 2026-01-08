@@ -59,8 +59,9 @@ const BeeLearn = () => {
                 Curated by African Experts
               </span>
             </div>
-            <h1 className="text-4xl md:text-7xl font-black text-honey-dark mb-6 leading-tight">
-              Learning That <span className="text-primary">Gives Back</span>
+            <h1 className="text-display-xl md:text-display-2xl font-black text-honey-dark mb-8 leading-none tracking-tightest">
+              Learning That <br />
+              <span className="text-primary italic">Gives Back</span>
             </h1>
             <p className="text-lg md:text-2xl text-honey-dark/80 mb-8 max-w-xl font-medium leading-relaxed">
               We share only the best, most sustainable knowledge. Every course contributes to pollinator health and farmers' success.
@@ -128,13 +129,13 @@ const BeeLearn = () => {
       {/* Products Section */}
       <section className="py-24">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-20">
-            <div className="flex items-center justify-center gap-2 mb-6">
+          <div className="text-center mb-24 space-y-6">
+            <div className="flex items-center justify-center gap-2">
               <BookOpen className="h-6 w-6 text-primary" />
-              <Badge variant="outline" className="border-primary text-primary font-bold px-4 py-1">Education Hub</Badge>
+              <Badge variant="outline" className="border-primary text-primary font-black uppercase tracking-widest px-4 py-1">Expert-Led Curriculum</Badge>
             </div>
-            <h2 className="text-4xl md:text-6xl font-black text-foreground mb-6">Our Learning Pathways</h2>
-            <p className="text-muted-foreground text-xl max-w-3xl mx-auto font-medium">
+            <h2 className="text-5xl md:text-7xl font-black text-foreground tracking-tightest leading-none">Our Learning Pathways</h2>
+            <p className="text-muted-foreground text-xl md:text-2xl max-w-3xl mx-auto font-medium leading-relaxed">
               Join thousands of beekeepers and conservationists in mastering the art of sustainable pollination.
             </p>
           </div>
@@ -143,31 +144,31 @@ const BeeLearn = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {products.length > 0 ? (
               products.map((product) => (
-                <Card key={product.id} className="group overflow-hidden border-none shadow-soft hover:shadow-glow transition-all bg-white">
+                <Card key={product.id} className="group overflow-hidden border-none shadow-premium hover:shadow-glow transition-all duration-700 bg-white dark:bg-card rounded-[3rem]">
                   <div className="aspect-[4/5] relative overflow-hidden">
                     <img
                       src={product.images?.[0] || "https://images.unsplash.com/photo-1471943311424-646960669fbc?w=800"}
                       alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                     {product.badge && (
-                      <Badge className="absolute top-4 right-4 bg-primary shadow-lg">{product.badge}</Badge>
+                      <Badge className="absolute top-6 right-6 bg-primary shadow-glow font-black border-none px-4 py-2 rounded-xl">{product.badge}</Badge>
                     )}
                   </div>
-                  <CardContent className="p-6">
-                    <div className="flex justify-between items-start mb-4">
-                      <h3 className="text-xl font-bold group-hover:text-primary transition-colors">{product.name}</h3>
+                  <CardContent className="p-10">
+                    <div className="flex justify-between items-start mb-6">
+                      <h3 className="text-3xl font-black tracking-tight leading-tight group-hover:text-primary transition-colors">{product.name}</h3>
                       <div className="text-right">
-                        <p className="text-lg font-black text-primary">KES {product.variants?.[0]?.price_kes?.toLocaleString() || "0"}</p>
+                        <p className="text-2xl font-black text-primary tracking-tighter">KES {product.variants?.[0]?.price_kes?.toLocaleString() || "0"}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 mb-6 text-sm">
+                    <div className="flex items-center gap-3 mb-8">
                       {renderStars(product.rating || 5)}
-                      <span className="text-muted-foreground font-medium">({product.review_count || 0} reviews)</span>
+                      <span className="text-muted-foreground font-black text-xs uppercase tracking-widest">({product.review_count || 0} reviews)</span>
                     </div>
-                    <Button asChild className="w-full font-bold h-12">
+                    <Button asChild className="w-full font-black h-14 rounded-2xl shadow-glow text-lg">
                       <Link to={`/shop?product=${product.id}`}>
-                        <ShoppingCart className="mr-2 h-4 w-4" /> Enroll Now
+                        <ShoppingCart className="mr-2 h-5 w-5" /> Enroll Now
                       </Link>
                     </Button>
                   </CardContent>

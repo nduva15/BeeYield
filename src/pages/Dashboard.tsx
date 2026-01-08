@@ -50,17 +50,19 @@ const Dashboard: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-muted/10 p-8 space-y-8">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold text-foreground tracking-tight">Analytics Dashboard</h1>
-                    <p className="text-muted-foreground mt-1">Real-time insights into your platform's performance.</p>
+        <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10 p-8 space-y-12">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
+                <div className="space-y-2">
+                    <h1 className="text-5xl font-black text-foreground tracking-tightest leading-none">
+                        Intelligence <span className="text-primary italic">Pulse</span>
+                    </h1>
+                    <p className="text-xl text-muted-foreground font-medium">Real-time insights into your platform's performance.</p>
                 </div>
-                <Tabs defaultValue="30" onValueChange={(v) => setTimeRange(Number(v))} className="w-[400px]">
-                    <TabsList className="grid w-full grid-cols-3">
-                        <TabsTrigger value="7">7 Days</TabsTrigger>
-                        <TabsTrigger value="30">30 Days</TabsTrigger>
-                        <TabsTrigger value="90">90 Days</TabsTrigger>
+                <Tabs defaultValue="30" onValueChange={(v) => setTimeRange(Number(v))} className="w-full lg:w-[400px]">
+                    <TabsList className="grid w-full grid-cols-3 bg-muted/30 p-1.5 rounded-2xl backdrop-blur-sm border border-border/50">
+                        <TabsTrigger value="7" className="rounded-xl font-black text-xs uppercase tracking-widest transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow">7 Days</TabsTrigger>
+                        <TabsTrigger value="30" className="rounded-xl font-black text-xs uppercase tracking-widest transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow">30 Days</TabsTrigger>
+                        <TabsTrigger value="90" className="rounded-xl font-black text-xs uppercase tracking-widest transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow">90 Days</TabsTrigger>
                     </TabsList>
                 </Tabs>
             </div>
@@ -93,63 +95,82 @@ const Dashboard: React.FC = () => {
                 />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                 {/* Main Traffic Chart */}
-                <Card className="col-span-1 lg:col-span-2 shadow-sm border-border">
-                    <CardHeader>
-                        <CardTitle>Traffic Overview</CardTitle>
+                <Card className="col-span-1 lg:col-span-2 border-none glass-dark sm:glass shadow-premium rounded-[3rem] overflow-hidden">
+                    <CardHeader className="p-10 pb-0">
+                        <CardTitle className="text-3xl font-black tracking-tightest flex items-center gap-3">
+                            <TrendingUp className="h-8 w-8 text-primary" />
+                            Traffic Overview
+                        </CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[400px]">
+                    <CardContent className="h-[500px] p-10 pt-6">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={pageViews}>
                                 <defs>
                                     <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.2} />
+                                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
                                         <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                                     </linearGradient>
                                     <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="hsl(var(--secondary))" stopOpacity={0.2} />
+                                        <stop offset="5%" stopColor="hsl(var(--secondary))" stopOpacity={0.3} />
                                         <stop offset="95%" stopColor="hsl(var(--secondary))" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e5e5" />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.5} />
                                 <XAxis
                                     dataKey="date"
-                                    tickFormatter={(str) => new Date(str).toLocaleDateString()}
-                                    stroke="#a3a3a3"
-                                    fontSize={12}
+                                    tickFormatter={(str) => new Date(str).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                                    stroke="hsl(var(--muted-foreground))"
+                                    fontSize={10}
+                                    fontWeight="bold"
+                                    axisLine={false}
+                                    tickLine={false}
                                 />
-                                <YAxis stroke="#a3a3a3" fontSize={12} />
+                                <YAxis
+                                    stroke="hsl(var(--muted-foreground))"
+                                    fontSize={10}
+                                    fontWeight="bold"
+                                    axisLine={false}
+                                    tickLine={false}
+                                />
                                 <Tooltip
-                                    contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '8px', border: '1px solid hsl(var(--border))' }}
+                                    contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', backdropFilter: 'blur(10px)', borderRadius: '16px', border: '1px solid rgba(0,0,0,0.1)', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
+                                    labelClassName="font-black text-xs uppercase tracking-widest text-muted-foreground mr-2"
                                     labelFormatter={(label) => new Date(label).toLocaleDateString()}
                                 />
-                                <Legend />
-                                <Area type="monotone" dataKey="views" stroke="hsl(var(--primary))" fillOpacity={1} fill="url(#colorViews)" name="Page Views" strokeWidth={2} />
-                                <Area type="monotone" dataKey="visitors" stroke="hsl(var(--secondary))" fillOpacity={1} fill="url(#colorVisitors)" name="Unique Visitors" strokeWidth={2} />
+                                <Legend wrapperStyle={{ paddingTop: '20px', fontWeight: 'bold', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' }} />
+                                <Area type="monotone" dataKey="views" stroke="hsl(var(--primary))" fillOpacity={1} fill="url(#colorViews)" name="Page Views" strokeWidth={4} />
+                                <Area type="monotone" dataKey="visitors" stroke="hsl(var(--secondary))" fillOpacity={1} fill="url(#colorVisitors)" name="Unique Visitors" strokeWidth={4} />
                             </AreaChart>
                         </ResponsiveContainer>
                     </CardContent>
                 </Card>
 
                 {/* Top Pages */}
-                <Card className="shadow-sm border-border">
-                    <CardHeader>
-                        <CardTitle>Top Pages</CardTitle>
+                <Card className="border-none glass-dark sm:glass shadow-premium rounded-[3rem] overflow-hidden">
+                    <CardHeader className="p-10 pb-0">
+                        <CardTitle className="text-3xl font-black tracking-tightest flex items-center gap-3">
+                            <Users className="h-8 w-8 text-secondary" />
+                            Engagement Hub
+                        </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-10 pt-6">
                         <div className="space-y-4">
                             {topPages.map((page, index) => (
-                                <div key={index} className="flex items-center justify-between p-3 bg-card rounded-lg border border-border hover:border-primary/20 transition-colors">
-                                    <span className="text-sm font-medium text-foreground truncate max-w-[200px]">{page.page_path}</span>
-                                    <div className="flex items-center gap-3">
-                                        <span className="text-sm font-semibold text-foreground">{page.views.toLocaleString()} views</span>
-                                        <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
-                                            <div
-                                                className="h-full bg-primary rounded-full"
-                                                style={{ width: `${(page.views / (topPages[0]?.views || 1)) * 100}%` }}
-                                            />
+                                <div key={index} className="flex items-center justify-between p-4 bg-white/40 dark:bg-card/40 rounded-2xl border border-border/50 hover:border-primary transition-all group/item">
+                                    <div className="space-y-1">
+                                        <span className="text-xs font-black uppercase tracking-widest text-muted-foreground group-hover/item:text-primary transition-colors">{page.page_path}</span>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-lg font-black text-foreground">{page.views.toLocaleString()}</span>
+                                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Interactions</span>
                                         </div>
+                                    </div>
+                                    <div className="w-24 h-2 bg-muted/30 rounded-full overflow-hidden shrink-0">
+                                        <div
+                                            className="h-full bg-secondary rounded-full"
+                                            style={{ width: `${(page.views / (topPages[0]?.views || 1)) * 100}%` }}
+                                        />
                                     </div>
                                 </div>
                             ))}
@@ -158,27 +179,40 @@ const Dashboard: React.FC = () => {
                 </Card>
 
                 {/* Traceability Scans */}
-                <Card className="shadow-sm border-border">
-                    <CardHeader>
-                        <CardTitle>Traceability Scans</CardTitle>
+                <Card className="border-none glass-dark sm:glass shadow-premium rounded-[3rem] overflow-hidden">
+                    <CardHeader className="p-10 pb-0">
+                        <CardTitle className="text-3xl font-black tracking-tightest flex items-center gap-3">
+                            <QrCode className="h-8 w-8 text-honey-light" />
+                            Pulse Scans
+                        </CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[350px]">
+                    <CardContent className="h-[400px] p-10 pt-6">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={scans}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e5e5" />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.5} />
                                 <XAxis
                                     dataKey="date"
-                                    tickFormatter={(str) => new Date(str).toLocaleDateString()}
-                                    stroke="#a3a3a3"
-                                    fontSize={12}
+                                    tickFormatter={(str) => new Date(str).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                                    stroke="hsl(var(--muted-foreground))"
+                                    fontSize={10}
+                                    fontWeight="bold"
+                                    axisLine={false}
+                                    tickLine={false}
                                 />
-                                <YAxis stroke="#a3a3a3" fontSize={12} />
+                                <YAxis
+                                    stroke="hsl(var(--muted-foreground))"
+                                    fontSize={10}
+                                    fontWeight="bold"
+                                    axisLine={false}
+                                    tickLine={false}
+                                />
                                 <Tooltip
-                                    cursor={{ fill: 'hsl(var(--muted))' }}
-                                    contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '8px', border: '1px solid hsl(var(--border))' }}
+                                    cursor={{ fill: 'rgba(0,0,0,0.05)', radius: 12 }}
+                                    contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', backdropFilter: 'blur(10px)', borderRadius: '16px', border: '1px solid rgba(0,0,0,0.1)', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
+                                    labelClassName="font-black text-xs uppercase tracking-widest text-muted-foreground"
                                     labelFormatter={(label) => new Date(label).toLocaleDateString()}
                                 />
-                                <Bar dataKey="scans" fill="hsl(var(--honey-light))" radius={[4, 4, 0, 0]} name="QR Scans" />
+                                <Bar dataKey="scans" fill="hsl(var(--honey-light))" radius={[12, 12, 4, 4]} name="QR Scans" />
                             </BarChart>
                         </ResponsiveContainer>
                     </CardContent>
@@ -189,20 +223,20 @@ const Dashboard: React.FC = () => {
 };
 
 const SummaryCard = ({ title, value, icon, trend }: { title: string, value: string, icon: React.ReactNode, trend: string }) => (
-    <Card className="shadow-sm border-border hover:shadow-md transition-shadow">
-        <CardContent className="p-6">
+    <Card className="border-none glass sm:glass-dark shadow-premium hover:shadow-glow transition-all duration-500 rounded-[2rem] overflow-hidden group">
+        <CardContent className="p-8">
             <div className="flex justify-between items-start">
-                <div>
-                    <p className="text-sm font-medium text-muted-foreground">{title}</p>
-                    <h3 className="text-2xl font-bold text-foreground mt-1">{value}</h3>
+                <div className="space-y-1">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-primary transition-colors">{title}</p>
+                    <h3 className="text-4xl font-black text-foreground tracking-tightest">{value}</h3>
                 </div>
-                <div className="p-2 bg-muted rounded-lg">
+                <div className="p-4 bg-primary/10 rounded-2xl text-primary transition-transform group-hover:scale-110">
                     {icon}
                 </div>
             </div>
-            <div className="flex items-center mt-4 text-xs font-medium text-nature-green bg-nature-green/10 w-fit px-2 py-1 rounded-full">
-                <ArrowUpRight className="h-3 w-3 mr-1" />
-                {trend} vs last period
+            <div className="flex items-center mt-6 text-[10px] font-black uppercase tracking-widest text-nature-green bg-nature-green/10 w-fit px-4 py-2 rounded-xl shadow-inner">
+                <ArrowUpRight className="h-3 w-3 mr-2" />
+                {trend} Growth
             </div>
         </CardContent>
     </Card>

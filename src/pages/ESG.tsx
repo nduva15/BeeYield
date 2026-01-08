@@ -96,15 +96,15 @@ const ESG = () => {
       <section className="relative py-24 md:py-32 overflow-hidden bg-gradient-to-br from-primary/10 via-background to-accent/10">
         <div className="container relative z-10 mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <Badge variant="outline" className="mb-6 px-4 py-2 text-sm font-medium border-primary/30 bg-primary/5">
-              <Globe className="w-4 h-4 mr-2" />
-              Corporate Responsibility
+            <Badge variant="outline" className="mb-8 px-5 py-2 text-sm font-black tracking-tighter border-primary/30 bg-primary/5 text-primary backdrop-blur-sm">
+              <Globe className="w-5 h-5 mr-3" />
+              CORPORATE SUSTAINABILITY
             </Badge>
-            <h1 className="text-4xl md:text-6xl font-black mb-6 leading-tight">
-              Our <span className="text-primary">ESG</span> Commitment
+            <h1 className="text-display-xl md:text-display-2xl font-black mb-8 leading-none tracking-tightest">
+              Our <span className="text-primary italic">ESG</span> Promise
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 font-medium">
-              Environmental, Social, and Governance practices are the foundation of BeeYield. From Kibwezi, Kenya, we're proving that sustainable beekeeping can transform ecosystems.
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-12 font-medium leading-relaxed">
+              Environmental, Social, and Governance practices are the heartbeat of BeeYield. From the acacia forests of Kibwezi, we're proving that technology and nature thrive together.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Button size="lg" className="h-14 px-8 font-bold shadow-glow">
@@ -117,21 +117,22 @@ const ESG = () => {
       </section>
 
       {/* Impact Numbers Grid */}
-      <section className="py-24 bg-muted/30">
+      <section className="py-32 bg-muted/20 relative">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-black mb-4">Our Impact in Numbers</h2>
+          <div className="text-center mb-20 space-y-4">
+            <Badge variant="outline" className="text-primary uppercase tracking-widest text-xs font-black">Performance Metrics</Badge>
+            <h2 className="text-5xl md:text-6xl font-black tracking-tightest leading-none text-foreground">Our Impact in Numbers</h2>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
             {impactStats.map((stat, index) => (
-              <Card key={index} className="text-center hover:shadow-glow transition-all border-none shadow-soft bg-white">
-                <CardContent className="pt-8 pb-6">
-                  <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-primary/10 flex items-center justify-center">
-                    <stat.icon className="w-7 h-7 text-primary" />
+              <Card key={index} className="text-center border-none shadow-soft glass bg-white/50 hover:shadow-glow transition-all duration-500 hover:-translate-y-2 group">
+                <CardContent className="p-8">
+                  <div className="w-16 h-16 mx-auto mb-6 rounded-3xl bg-primary/10 flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
+                    <stat.icon className="w-8 h-8 text-primary" />
                   </div>
-                  <div className="text-3xl font-black text-primary mb-1">{stat.value}</div>
-                  <div className="text-sm font-bold uppercase tracking-wider mb-2">{stat.label}</div>
-                  <div className="text-xs text-muted-foreground font-medium">{stat.description}</div>
+                  <div className="text-4xl font-black text-primary mb-2 tracking-tighter">{stat.value}</div>
+                  <div className="text-xs font-black uppercase tracking-widest mb-3 text-foreground">{stat.label}</div>
+                  <div className="text-[10px] text-muted-foreground font-black uppercase tracking-tight">{stat.description}</div>
                 </CardContent>
               </Card>
             ))}
@@ -140,37 +141,43 @@ const ESG = () => {
       </section>
 
       {/* ESG Pillars */}
-      <section className="py-24">
+      <section className="py-32">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-20">
-              <h2 className="text-4xl md:text-5xl font-black mb-6">Built on Strong Foundations</h2>
-              <p className="text-xl text-muted-foreground font-medium max-w-3xl mx-auto">
-                Our pillars guide our daily operations, ensuring every action contributes to long-term sustainability.
+            <div className="text-center mb-24 space-y-6">
+              <Badge variant="outline" className="text-secondary uppercase tracking-widest text-xs font-black">Strategic Pillars</Badge>
+              <h2 className="text-5xl md:text-7xl font-black tracking-tightest leading-none text-foreground">Built on Foundation</h2>
+              <p className="text-xl md:text-2xl text-muted-foreground font-medium max-w-3xl mx-auto leading-relaxed">
+                Our pillars guide every operational decision, ensuring that BeeYield remains a force for good in the global ecosystem.
               </p>
             </div>
 
-            <div className="space-y-12">
+            <div className="space-y-16">
               {displayPillars.map((pillar: Pillar, index) => (
-                <Card key={index} className="overflow-hidden border-none shadow-premium bg-white group hover:shadow-glow transition-all duration-500">
+                <Card key={index} className="overflow-hidden border-none shadow-premium bg-white group hover:shadow-glow transition-all duration-700 rounded-[3rem]">
                   <CardContent className="p-0">
-                    <div className="grid md:grid-cols-3">
-                      <div className={`p-10 bg-gradient-to-br ${pillar.color || 'from-primary to-primary-foreground'} text-white`}>
-                        <div className="flex items-center gap-4 mb-6">
-                          <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center">
-                            {pillar.icon ? (typeof pillar.icon === 'string' ? <Sprout className="w-7 h-7" /> : <pillar.icon className="w-7 h-7" />) : <Sprout className="w-7 h-7" />}
+                    <div className="grid md:grid-cols-5">
+                      <div className={`p-12 md:col-span-2 bg-gradient-to-br ${pillar.color || 'from-primary to-primary-foreground'} text-white relative overflow-hidden`}>
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl opacity-50" />
+                        <div className="relative z-10">
+                          <div className="flex items-center gap-6 mb-8">
+                            <div className="w-16 h-16 rounded-3xl bg-white/20 backdrop-blur-md flex items-center justify-center shadow-lg">
+                              {pillar.icon ? (typeof pillar.icon === 'string' ? <Sprout className="w-8 h-8" /> : <pillar.icon className="w-8 h-8" />) : <Sprout className="w-8 h-8" />}
+                            </div>
+                            <h3 className="text-4xl font-black tracking-tighter">{pillar.title || pillar.name}</h3>
                           </div>
-                          <h3 className="text-3xl font-black">{pillar.title || pillar.name}</h3>
+                          <p className="text-lg text-white/90 font-black leading-relaxed italic">{pillar.impact || pillar.description}</p>
                         </div>
-                        <p className="text-white/90 font-bold leading-relaxed">{pillar.impact || pillar.description}</p>
                       </div>
-                      <div className="p-10 md:col-span-2">
-                        <h4 className="text-xl font-black mb-6 text-foreground">Key Initiatives</h4>
-                        <ul className="space-y-4">
+                      <div className="p-12 md:col-span-3 bg-card/10">
+                        <h4 className="text-xs font-black uppercase tracking-widest mb-8 text-primary">Strategic Key Initiatives</h4>
+                        <ul className="space-y-6">
                           {(pillar.initiatives || pillar.metrics || []).map((initiative: string, i: number) => (
-                            <li key={i} className="flex items-start gap-4">
-                              <Check className="w-6 h-6 text-primary mt-0.5 flex-shrink-0" />
-                              <span className="text-muted-foreground font-medium">{initiative}</span>
+                            <li key={i} className="flex items-start gap-4 group/item">
+                              <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover/item:bg-primary/20 transition-colors">
+                                <Check className="w-4 h-4 text-primary" />
+                              </div>
+                              <span className="text-muted-foreground font-bold leading-relaxed">{initiative}</span>
                             </li>
                           ))}
                         </ul>

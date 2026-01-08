@@ -100,6 +100,12 @@ def _get_demo_trace(code: str) -> schemas.TraceResponse:
         story_title="A Tradition of Excellence",
         story_content="Harvested from the pristine forests of Mount Kenya, this honey represents the perfect harmony between nature and sustainable farming.",
         impact_stats={"farmers": 1, "bees": 50000, "biodiversity": "Preserved"},
+        sensor_snapshot={
+            "avg_temp": 34.2,
+            "avg_humidity": 52,
+            "weight_kg": 42.5,
+            "acoustic_health": "OPTIMAL"
+        },
         timeline=[
             schemas.TraceJourneyStep(
                 title="Harvested", date="2024-01-15", location="Nyeri", 
