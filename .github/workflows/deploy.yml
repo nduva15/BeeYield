@@ -40,7 +40,18 @@ jobs:
           target: "public_html"
           strip_components: 1
 
-      - name: Restart Backend (Optional)
+      - name: Deploy Backend Files
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USERNAME }}
+          password: ${{ secrets.HOSTINGER_PASSWORD }}
+          port: ${{ secrets.HOSTINGER_PORT || 22 }}
+          source: "backend"
+          target: "backend"
+          strip_components: 1
+
+      - name: Restart Backend
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOSTINGER_HOST }}
@@ -48,6 +59,16 @@ jobs:
           password: ${{ secrets.HOSTINGER_PASSWORD }}
           port: ${{ secrets.HOSTINGER_PORT || 22 }}
           script: |
-            cd ~/backend || exit
-            # Any command to restart the python service if it's running on the same server
-            # e.g., pm2 restart beeyield-backend or systemctl restart beeyield
+            cd backend || exit
+            
+            # Create .env file from secrets
+            echo "VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}" > .env
+            echo "VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}" >> .env
+            # Add other secrets here if needed
+            
+            # Install dependencies if needed (ensure pip is available)
+            # pip install -r requirements.txt
+            
+            # Restart Uvicorn (Simple approach)
+            pkill -f uvicorn || true
+            nohup python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &

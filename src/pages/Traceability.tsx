@@ -255,7 +255,7 @@ const Traceability = () => {
                             <Thermometer className="mr-2 h-4 w-4 text-primary" /> Temp
                           </p>
                           <p className="text-4xl font-black tracking-tightest text-foreground">
-                            {(batchData.sensor_snapshot as any)?.avg_temp || "34.2"}°C
+                            {batchData.sensor_snapshot?.avg_temp || "34.2"}°C
                           </p>
                         </div>
                         <div className="p-6 rounded-3xl bg-muted/20 border border-border/50 group/sensor hover:bg-primary/5 transition-colors">
@@ -263,7 +263,7 @@ const Traceability = () => {
                             <Droplets className="mr-2 h-4 w-4 text-primary" /> Humidity
                           </p>
                           <p className="text-4xl font-black tracking-tightest text-foreground">
-                            {(batchData.sensor_snapshot as any)?.avg_humidity || "52"}%
+                            {batchData.sensor_snapshot?.avg_humidity || "52"}%
                           </p>
                         </div>
                         <div className="p-6 rounded-3xl bg-muted/20 border border-border/50 group/sensor hover:bg-primary/5 transition-colors">
@@ -316,10 +316,10 @@ const Traceability = () => {
                           ].map((item, i) => (
                             <div key={i} className="space-y-2">
                               <div className="flex items-center gap-2 text-primary/70">
-                                {React.createElement(item.icon as any, { className: "h-3 w-3" })}
+                                <item.icon className="h-3 w-3" />
                                 <span className="text-[10px] font-black uppercase tracking-widest">{item.label}</span>
                               </div>
-                              <p className="text-xl font-black text-foreground tracking-tight">{item.value as any}</p>
+                              <p className="text-xl font-black text-foreground tracking-tight">{String(item.value)}</p>
                             </div>
                           ))}
                         </div>

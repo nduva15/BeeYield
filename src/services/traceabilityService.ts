@@ -70,13 +70,21 @@ export interface TraceResponse {
     story_content: string;
 
     // Stats / Impact
-    impact_stats: Record<string, unknown>;
+    impact_stats: ImpactStats | Record<string, unknown>;
 
     // Sensor Snapshot
-    sensor_snapshot?: Record<string, unknown>;
+    sensor_snapshot?: SensorSnapshot;
 
     // Full Journey
     timeline: TraceJourneyStep[];
+}
+
+export interface SensorSnapshot {
+    avg_temp?: number;
+    avg_humidity?: number;
+    weight_kg?: number;
+    acoustic_health?: string;
+    [key: string]: unknown;
 }
 
 export interface ImpactStats {
