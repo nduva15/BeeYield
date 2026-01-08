@@ -2,7 +2,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Sprout, Droplets, TreePine, Bug, Download, ArrowRight, Loader2 } from "lucide-react";
+import { Sprout, Droplets, TreePine, Bug, Download, ArrowRight, Loader2, Check } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getCompanyStats, getImpactStories, CompanyStat, ImpactStory } from "@/services/companyService";
