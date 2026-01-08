@@ -82,14 +82,14 @@ const PollinationServices = () => {
                                 🐝 East Africa's Premier Pollination Partner
                             </Badge>
 
-                            <h1 className="text-5xl md:text-8xl font-black leading-tight tracking-tighter">
+                            <h1 className="text-display-xl md:text-display-2xl font-black leading-none tracking-tightest">
                                 Where
                                 <span className="text-honey-light block italic">Technology</span>
                                 Meets the
                                 <span className="text-honey-light block">Hive</span>
                             </h1>
 
-                            <p className="text-xl text-white/90 max-w-lg leading-relaxed font-medium">
+                            <p className="text-xl md:text-2xl text-white/90 max-w-lg leading-relaxed font-medium">
                                 We don't just bring bees to your fields. We bring intelligence, precision, and
                                 a promise — every flower visited, every yield maximized, every harvest transformed.
                             </p>
@@ -109,18 +109,18 @@ const PollinationServices = () => {
                             </div>
 
                             {/* Quick Stats */}
-                            <div className="grid grid-cols-3 gap-6 pt-8 border-t border-white/20 font-black">
+                            <div className="grid grid-cols-3 gap-6 pt-8 border-t border-white/20">
                                 <div>
-                                    <p className="text-4xl text-honey-light tracking-tighter">35%</p>
-                                    <p className="text-white/70 text-xs uppercase tracking-widest">Yield Increase</p>
+                                    <p className="text-4xl md:text-5xl font-black text-honey-light tracking-tightest">35%</p>
+                                    <p className="text-white/70 text-2xs md:text-xs font-black uppercase tracking-widest">Yield Increase</p>
                                 </div>
                                 <div>
-                                    <p className="text-4xl text-honey-light tracking-tighter">150+</p>
-                                    <p className="text-white/70 text-xs uppercase tracking-widest">Managed Hives</p>
+                                    <p className="text-4xl md:text-5xl font-black text-honey-light tracking-tightest">150+</p>
+                                    <p className="text-white/70 text-2xs md:text-xs font-black uppercase tracking-widest">Managed Hives</p>
                                 </div>
                                 <div>
-                                    <p className="text-4xl text-honey-light tracking-tighter">24/7</p>
-                                    <p className="text-white/70 text-xs uppercase tracking-widest">Active Monitoring</p>
+                                    <p className="text-4xl md:text-5xl font-black text-honey-light tracking-tightest">24/7</p>
+                                    <p className="text-white/70 text-2xs md:text-xs font-black uppercase tracking-widest">Monitoring</p>
                                 </div>
                             </div>
                         </div>
@@ -199,30 +199,30 @@ const PollinationServices = () => {
 
                     <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
                         {/* In-Hive Precision */}
-                        <Card className="group relative overflow-hidden border-none shadow-premium bg-white dark:bg-gray-950 rounded-[4rem] transition-all duration-700 hover:-translate-y-2">
+                        <Card className="group relative overflow-hidden border-none shadow-premium bg-white dark:bg-card rounded-[3rem] transition-all duration-700 hover:-translate-y-2 hover:shadow-glow">
                             <CardContent className="p-12 md:p-16 relative z-10 h-full flex flex-col">
                                 <div className="flex items-start gap-8">
-                                    <div className="w-24 h-24 rounded-3xl bg-honey-light dark:bg-honey-dark/30 flex items-center justify-center flex-shrink-0 animate-pulse">
-                                        <Cpu className="h-12 w-12 text-primary dark:text-honey-light" />
+                                    <div className="w-24 h-24 rounded-3xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                        <Cpu className="h-12 w-12 text-primary" />
                                     </div>
                                     <div className="space-y-6 flex-1">
                                         <h3 className="text-4xl font-black text-foreground tracking-tight">In-Hive <br /> Precision</h3>
-                                        <p className="text-lg text-muted-foreground leading-relaxed font-medium">
+                                        <p className="text-lg text-muted-foreground leading-relaxed font-semibold">
                                             Smart sensors inside every hive monitor colony strength, population,
                                             and activity levels. Know exactly what you're paying for.
                                         </p>
                                         <ul className="space-y-3">
                                             {["Real-time colony metrics", "Bee count verification", "Acoustic health alerts"].map((feature, i) => (
-                                                <li key={i} className="flex items-center gap-3 text-sm font-bold">
+                                                <li key={i} className="flex items-center gap-3 text-sm font-black">
                                                     <Check className="h-5 w-5 text-primary" />
                                                     {feature}
                                                 </li>
                                             ))}
                                         </ul>
                                         <Link to="/precision-pollination">
-                                            <Button className="mt-8 bg-primary hover:bg-honey-dark text-white font-black px-10 h-14 rounded-2xl">
+                                            <Button className="mt-8 bg-primary hover:bg-primary/90 text-white font-black px-10 h-16 text-lg rounded-2xl shadow-glow">
                                                 Explore In-Hive Tech
-                                                <ArrowRight className="ml-2 h-5 w-5" />
+                                                <ArrowRight className="ml-2 h-6 w-6" />
                                             </Button>
                                         </Link>
                                     </div>
@@ -231,30 +231,30 @@ const PollinationServices = () => {
                         </Card>
 
                         {/* In-Field Insights */}
-                        <Card className="group relative overflow-hidden border-none shadow-premium bg-white dark:bg-gray-950 rounded-[4rem] transition-all duration-700 hover:-translate-y-2">
+                        <Card className="group relative overflow-hidden border-none shadow-premium bg-white dark:bg-card rounded-[3rem] transition-all duration-700 hover:-translate-y-2 hover:shadow-glow">
                             <CardContent className="p-12 md:p-16 relative z-10 h-full flex flex-col">
                                 <div className="flex items-start gap-8">
-                                    <div className="w-24 h-24 rounded-3xl bg-nature-green-light dark:bg-nature-green/30 flex items-center justify-center flex-shrink-0 animate-pulse">
-                                        <Eye className="h-12 w-12 text-nature-green dark:text-nature-green-light" />
+                                    <div className="w-24 h-24 rounded-3xl bg-nature-green/10 flex items-center justify-center flex-shrink-0">
+                                        <Eye className="h-12 w-12 text-nature-green" />
                                     </div>
                                     <div className="space-y-6 flex-1">
                                         <h3 className="text-4xl font-black text-foreground tracking-tight">In-Field <br /> Insights</h3>
-                                        <p className="text-lg text-muted-foreground leading-relaxed font-medium">
+                                        <p className="text-lg text-muted-foreground leading-relaxed font-semibold">
                                             Measure actual bee activity across your crops. See which areas are pollinated
                                             and identify gaps in real-time.
                                         </p>
                                         <ul className="space-y-3">
                                             {["Flower visitation tracking", "Pollination heatmaps", "Weather correlation data"].map((feature, i) => (
-                                                <li key={i} className="flex items-center gap-3 text-sm font-bold">
-                                                    <Check className="h-5 w-5 text-nature-green" />
+                                                <li key={i} className="flex items-center gap-3 text-sm font-black text-nature-green">
+                                                    <Check className="h-5 w-5" />
                                                     {feature}
                                                 </li>
                                             ))}
                                         </ul>
                                         <Link to="/in-land-pollination">
-                                            <Button className="mt-8 bg-nature-green hover:bg-nature-green/90 text-white font-black px-10 h-14 rounded-2xl">
+                                            <Button className="mt-8 bg-secondary hover:bg-secondary/90 text-white font-black px-10 h-16 text-lg rounded-2xl shadow-glow">
                                                 Explore Field Insights
-                                                <ArrowRight className="ml-2 h-5 w-5" />
+                                                <ArrowRight className="ml-2 h-6 w-6" />
                                             </Button>
                                         </Link>
                                     </div>

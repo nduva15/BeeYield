@@ -2,18 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* ============================================
+   BeeYield Design System
+   All colors MUST be HSL for consistency
+   ============================================ */
 
 @layer base {
   :root {
+    /* Base colors */
     --background: 42 45% 97%;
     --foreground: 28 25% 15%;
 
+    /* Card/Popover */
     --card: 0 0% 100%;
     --card-foreground: 28 25% 15%;
-
     --popover: 0 0% 100%;
     --popover-foreground: 28 25% 15%;
 
@@ -34,46 +36,43 @@ All colors MUST be HSL.
     --accent: 32 75% 60%;
     --accent-foreground: 0 0% 100%;
 
+    /* Destructive */
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
+    /* Input/Border */
     --border: 35 30% 88%;
     --input: 35 30% 88%;
     --ring: 35 65% 55%;
-
     --radius: 0.75rem;
-    
+
     /* Custom tokens */
     --honey-light: 42 80% 85%;
     --honey-dark: 32 60% 40%;
     --nature-green: 142 45% 35%;
     --nature-green-light: 142 35% 85%;
-    
+
     /* Gradients */
     --gradient-hero: linear-gradient(135deg, hsl(35 65% 55%) 0%, hsl(32 75% 60%) 100%);
     --gradient-subtle: linear-gradient(180deg, hsl(42 45% 97%) 0%, hsl(40 35% 92%) 100%);
-    
+
     /* Shadows */
     --shadow-soft: 0 4px 20px -2px hsl(35 65% 55% / 0.15);
     --shadow-glow: 0 8px 32px -4px hsl(38 80% 65% / 0.3);
-    
+    --shadow-elegant: 0 10px 40px -10px hsl(28 25% 15% / 0.15);
+    --shadow-premium: 0 25px 50px -12px hsl(28 25% 15% / 0.25);
+
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
+    /* Sidebar */
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -106,11 +105,12 @@ All colors MUST be HSL.
     --border: 28 25% 25%;
     --input: 28 25% 25%;
     --ring: 35 65% 55%;
-    
+
     --honey-light: 42 60% 35%;
     --honey-dark: 32 80% 65%;
     --nature-green: 142 40% 40%;
     --nature-green-light: 142 25% 25%;
+
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -122,17 +122,400 @@ All colors MUST be HSL.
   }
 }
 
+/* ============================================
+   Base Styles & Typography
+   ============================================ */
+
 @layer base {
   * {
     @apply border-border;
   }
 
-  body {
-    @apply bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Outfit', sans-serif;
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Headings use Outfit font for visual hierarchy */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+    @apply tracking-tight;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl font-black leading-tight;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl lg:text-5xl font-black leading-tight;
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl font-bold leading-snug;
+  }
+
+  h4 {
+    @apply text-xl md:text-2xl font-bold;
+  }
+
+  h5 {
+    @apply text-lg md:text-xl font-semibold;
+  }
+
+  h6 {
+    @apply text-base md:text-lg font-semibold;
+  }
+
+  /* Improve paragraph readability */
+  p {
+    @apply leading-relaxed;
+  }
+
+  /* Better focus styles */
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
+  }
+
+  /* Selection color */
+  ::selection {
+    @apply bg-primary/20 text-foreground;
+  }
+}
+
+/* ============================================
+   Component Utilities
+   ============================================ */
+
+@layer components {
+
+  /* Shadow utilities */
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .shadow-elegant {
+    box-shadow: var(--shadow-elegant);
+  }
+
+  .shadow-premium {
+    box-shadow: var(--shadow-premium);
+  }
+
+  /* Gradient text utility */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-hero);
+  }
+
+  /* Glass morphism cards */
+  .glass {
+    @apply bg-white/70 backdrop-blur-lg border border-white/20;
+  }
+
+  .glass-dark {
+    @apply bg-black/30 backdrop-blur-lg border border-white/10;
+  }
+
+  /* Premium button hover effect */
+  .btn-glow {
+    @apply relative overflow-hidden;
+  }
+
+  .btn-glow::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent;
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+  }
+
+  .btn-glow:hover::before {
+    transform: translateX(100%);
+  }
+
+  /* Container with consistent max-width */
+  .container-narrow {
+    @apply max-w-4xl mx-auto px-4;
+  }
+
+  .container-wide {
+    @apply max-w-7xl mx-auto px-4;
+  }
+
+  /* Section spacing utility */
+  .section {
+    @apply py-16 md:py-24 lg:py-32;
+  }
+
+  .section-sm {
+    @apply py-12 md:py-16 lg:py-20;
+  }
+
+  /* Card hover lift effect */
+  .card-hover {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .card-hover:hover {
+    @apply -translate-y-1 shadow-glow;
+  }
+
+  /* Badge styles */
+  .badge-premium {
+    @apply bg-primary/10 text-primary border-primary/30 px-4 py-1.5 rounded-full font-bold text-sm uppercase tracking-widest;
+  }
+
+  /* Stat card style */
+  .stat-card {
+    @apply text-center p-6 rounded-2xl bg-white shadow-soft;
+  }
+
+  .stat-value {
+    @apply text-3xl md:text-4xl font-black text-primary mb-1;
+  }
+
+  .stat-label {
+    @apply text-xs md:text-sm font-bold uppercase tracking-wider text-muted-foreground;
+  }
+}
+
+/* ============================================
+   Utility Classes
+   ============================================ */
+
+@layer utilities {
+
+  /* Line clamp utilities */
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Text balance for better headline wrapping */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Aspect ratio utilities */
+  .aspect-golden {
+    aspect-ratio: 1.618 / 1;
+  }
+
+  /* Animation delays */
+  .animation-delay-100 {
+    animation-delay: 100ms;
+  }
+
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+
+  .animation-delay-500 {
+    animation-delay: 500ms;
+  }
+
+  /* Smooth image loading placeholder */
+  .img-loading {
+    @apply bg-muted animate-pulse;
+  }
+}
+
+/* ============================================
+   Custom Animations
+   ============================================ */
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-soft {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.5s ease-out forwards;
+}
+
+.animate-slide-down {
+  animation: slide-down 0.5s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s ease-out forwards;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
+}
+
+/* ============================================
+   Form Enhancements
+   ============================================ */
+
+@layer components {
+
+  /* Consistent input styling */
+  .input-field {
+    @apply w-full rounded-lg border border-input bg-background px-4 py-3 text-sm;
+    @apply transition-all duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+    @apply placeholder:text-muted-foreground/60;
+  }
+
+  .input-label {
+    @apply text-sm font-medium text-foreground mb-2 block;
+  }
+
+  .input-error {
+    @apply text-sm text-destructive mt-1;
+  }
+}
+
+/* ============================================
+   Dark Mode Specific Adjustments
+   ============================================ */
+
+.dark {
+  color-scheme: dark;
+}
+
+.dark .shadow-soft {
+  box-shadow: 0 4px 20px -2px hsl(0 0% 0% / 0.3);
+}
+
+.dark .shadow-glow {
+  box-shadow: 0 8px 32px -4px hsl(35 65% 55% / 0.2);
+}
+
+/* ============================================
+   Print Styles
+   ============================================ */
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    @apply text-black bg-white;
+  }
+
+  a {
+    text-decoration: underline;
   }
 }
