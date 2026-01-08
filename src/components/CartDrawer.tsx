@@ -99,8 +99,12 @@ const CartDrawer: React.FC = () => {
                                         className="group flex gap-4 p-4 bg-card rounded-xl border border-border hover:border-primary/30 transition-all duration-200"
                                     >
                                         {/* Product Icon */}
-                                        <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-amber-100 to-amber-50 dark:from-amber-900/20 dark:to-amber-800/10 flex items-center justify-center flex-shrink-0">
-                                            <span className="text-3xl">{getCategoryEmoji(item.category)}</span>
+                                        <div className="w-16 h-16 rounded-lg bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                            {item.image ? (
+                                                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <span className="text-3xl">{getCategoryEmoji(item.category)}</span>
+                                            )}
                                         </div>
 
                                         {/* Product Info */}

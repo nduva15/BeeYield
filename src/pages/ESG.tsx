@@ -1,27 +1,28 @@
 import { useState, useEffect } from "react";
-import { Database, Check, Heart, Sprout, Globe, ArrowRight, Quote, Users, TreePine, Bug, Package, MapPin, Loader2 } from "lucide-react";
+import { Database, Check, Heart, Sprout, Globe, ArrowRight, Quote, Users, TreePine, Bug, Package, MapPin, Loader2, LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { getESGMetrics, getESGPillars, ESGMetric } from "@/services/servicesService";
 
+interface Pillar {
+  title?: string;
+  name?: string;
+  icon?: LucideIcon;
+  color?: string;
+  impact?: string;
+  description?: string;
+  initiatives?: string[];
+  metrics?: string[];
+}
+
 const ESG = () => {
   const [metrics, setMetrics] = useState<ESGMetric[]>([]);
-  const [pillars, setPillars] = useState<unknown[]>([]);
+  const [pillars, setPillars] = useState<Pillar[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Inject GTM script into head
-    const script = document.createElement('script');
-    script.innerHTML = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-      })(window,document,'script','dataLayer','GTM-KF284247');`;
-    script.async = true;
-    document.head.appendChild(script);
-
     const fetchData = async () => {
       try {
         const [fetchedMetrics, fetchedPillars] = await Promise.all([
@@ -37,10 +38,6 @@ const ESG = () => {
       }
     };
     fetchData();
-
-    return () => {
-      document.head.removeChild(script);
-    };
   }, []);
 
   const getMetricValue = (key: string, defaultValue: string) => {
@@ -58,7 +55,7 @@ const ESG = () => {
     { value: "2M+", label: "Bees Protected", icon: Heart, description: "Pollinators saved & thriving" },
   ];
 
-  const fallbackPillars = [
+  const fallbackPillars: Pillar[] = [
     {
       title: "Environmental",
       icon: Sprout,
@@ -94,16 +91,6 @@ const ESG = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Google Tag Manager (noscript) */}
-      <noscript>
-        <iframe
-          src="https://www.googletagmanager.com/ns.html?id=GTM-KF284247"
-          height="0"
-          width="0"
-          style={{ display: "none", visibility: "hidden" }}
-          title="Google Tag Manager"
-        ></iframe>
-      </noscript>
 
       {/* Hero Section */}
       <section className="relative py-24 md:py-32 overflow-hidden bg-gradient-to-br from-primary/10 via-background to-accent/10">
@@ -164,23 +151,23 @@ const ESG = () => {
             </div>
 
             <div className="space-y-12">
-              {displayPillars.map((pillar, index) => (
+              {displayPillars.map((pillar: Pillar, index) => (
                 <Card key={index} className="overflow-hidden border-none shadow-premium bg-white group hover:shadow-glow transition-all duration-500">
                   <CardContent className="p-0">
                     <div className="grid md:grid-cols-3">
                       <div className={`p-10 bg-gradient-to-br ${pillar.color || 'from-primary to-primary-foreground'} text-white`}>
                         <div className="flex items-center gap-4 mb-6">
                           <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center">
-                            {pillar.icon ? <pillar.icon className="w-7 h-7" /> : <Sprout className="w-7 h-7" />}
+                            {pillar.icon ? (typeof pillar.icon === 'string' ? <Sprout className="w-7 h-7" /> : <pillar.icon className="w-7 h-7" />) : <Sprout className="w-7 h-7" />}
                           </div>
-                          <h3 className="text-3xl font-black">{pillar.title}</h3>
+                          <h3 className="text-3xl font-black">{pillar.title || pillar.name}</h3>
                         </div>
                         <p className="text-white/90 font-bold leading-relaxed">{pillar.impact || pillar.description}</p>
                       </div>
                       <div className="p-10 md:col-span-2">
                         <h4 className="text-xl font-black mb-6 text-foreground">Key Initiatives</h4>
                         <ul className="space-y-4">
-                          {pillar.initiatives.map((initiative: string, i: number) => (
+                          {(pillar.initiatives || pillar.metrics || []).map((initiative: string, i: number) => (
                             <li key={i} className="flex items-start gap-4">
                               <Check className="w-6 h-6 text-primary mt-0.5 flex-shrink-0" />
                               <span className="text-muted-foreground font-medium">{initiative}</span>

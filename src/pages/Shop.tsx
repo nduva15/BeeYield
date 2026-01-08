@@ -75,11 +75,13 @@ const Shop = () => {
 
     addToCart({
       productId: product.id,
+      variantId: variant.id,
       name: product.name,
       description: product.description,
       size: selectedSize,
       price: variant.price_kes,
       quantity: 1,
+      image: product.images[0],
       badge: product.badge,
       category,
     });
@@ -106,16 +108,6 @@ const Shop = () => {
         title="Shop | Premium Honey & Beekeeping Hardware"
         description="Shop premium organic honey, professional beekeeping suits, and advanced IoT hive sensors from Intelligent Hives and ApiSense."
       />
-      {/* Google Tag Manager (noscript) */}
-      <noscript>
-        <iframe
-          src="https://www.googletagmanager.com/ns.html?id=GTM-KF284247"
-          height="0"
-          width="0"
-          style={{ display: "none", visibility: "hidden" }}
-          title="Google Tag Manager"
-        ></iframe>
-      </noscript>
       {/* Hero Section */}
       <section className="relative py-16 sm:py-20 lg:py-24 bg-gradient-to-br from-primary/10 via-background to-accent/10 overflow-hidden">
         <div className="absolute inset-0 opacity-5">
@@ -186,11 +178,12 @@ const Shop = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {honeyProducts.map((product) => (
                 <Card key={product.id} className="group overflow-hidden border-border/50 hover:border-primary/50 hover:shadow-lg transition-all duration-300">
-                  <div className="relative aspect-square bg-gradient-to-br from-amber-100 to-amber-50 dark:from-amber-900/20 dark:to-amber-800/10 flex items-center justify-center overflow-hidden">
-                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 opacity-80 group-hover:scale-110 transition-transform duration-500" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-6xl">🍯</span>
-                    </div>
+                  <div className="relative aspect-square bg-muted flex items-center justify-center overflow-hidden">
+                    <img
+                      src={product.images[0] || "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=800"}
+                      alt={product.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
                     {product.badge && (
                       <Badge variant={getBadgeVariant(product.badge)} className="absolute top-3 left-3">
                         {product.badge}
@@ -260,10 +253,12 @@ const Shop = () => {
                 )
                 .map((product) => (
                   <Card key={product.id} className="group overflow-hidden border-border/50 hover:border-primary/50 hover:shadow-lg transition-all duration-300">
-                    <div className="relative aspect-square bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center overflow-hidden">
-                      <div className="w-24 h-24 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-                        <Shirt className="h-12 w-12 text-primary/50" />
-                      </div>
+                    <div className="relative aspect-square bg-muted flex items-center justify-center overflow-hidden">
+                      <img
+                        src={product.images[0] || "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800"}
+                        alt={product.name}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
                       {product.badge && (
                         <Badge variant={getBadgeVariant(product.badge)} className="absolute top-3 left-3">
                           {product.badge}
@@ -323,10 +318,12 @@ const Shop = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {products.filter(p => p.category === 'hardware').map((product) => (
                 <Card key={product.id} className="group overflow-hidden border-border/50 hover:border-primary/50 hover:shadow-lg transition-all duration-300">
-                  <div className="relative aspect-[4/3] bg-gradient-to-br from-zinc-100 to-zinc-50 dark:from-zinc-900/50 dark:to-zinc-800/20 flex items-center justify-center overflow-hidden">
-                    <div className="absolute inset-4 border border-zinc-200 rounded-lg flex items-center justify-center bg-white/50 backdrop-blur-sm">
-                      <Cpu className="h-16 w-16 text-zinc-400 group-hover:text-primary transition-colors duration-500" />
-                    </div>
+                  <div className="relative aspect-[4/3] bg-muted flex items-center justify-center overflow-hidden">
+                    <img
+                      src={product.images[0] || "https://images.unsplash.com/photo-1558383331-f520f2888351?w=800"}
+                      alt={product.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
                     {product.badge && (
                       <Badge variant={getBadgeVariant(product.badge)} className="absolute top-3 left-3 z-10">
                         {product.badge}
@@ -374,10 +371,12 @@ const Shop = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {educationalProducts.map((product) => (
                 <Card key={product.id} className="group overflow-hidden border-border/50 hover:border-primary/50 hover:shadow-lg transition-all duration-300">
-                  <div className="relative aspect-[4/3] bg-gradient-to-br from-primary/5 to-accent/5 flex items-center justify-center overflow-hidden">
-                    <div className="absolute inset-4 border-2 border-dashed border-primary/20 rounded-lg flex items-center justify-center">
-                      <BookOpen className="h-16 w-16 text-primary/30 group-hover:text-primary/50 transition-colors" />
-                    </div>
+                  <div className="relative aspect-[4/3] bg-muted flex items-center justify-center overflow-hidden">
+                    <img
+                      src={product.images[0] || "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800"}
+                      alt={product.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
                     {product.badge && (
                       <Badge variant={getBadgeVariant(product.badge)} className="absolute top-3 left-3">
                         {product.badge}

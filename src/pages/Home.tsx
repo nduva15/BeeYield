@@ -87,16 +87,6 @@ const Home = () => {
         title="Home"
         description="BeeYield - Your Partner in Pollination. Precision pollination services, sustainable beekeeping, and traceable honey."
       />
-      {/* Google Tag Manager (noscript) */}
-      <noscript>
-        <iframe
-          src="https://www.googletagmanager.com/ns.html?id=GTM-KF284247"
-          height="0"
-          width="0"
-          style={{ display: "none", visibility: "hidden" }}
-          title="Google Tag Manager"
-        ></iframe>
-      </noscript>
 
       {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br from-white via-primary/5 to-white">

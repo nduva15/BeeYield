@@ -14,16 +14,6 @@ const Blogs = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Inject GTM script into head
-    const script = document.createElement('script');
-    script.innerHTML = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-      })(window,document,'script','dataLayer','GTM-KF284247');`;
-    script.async = true;
-    document.head.appendChild(script);
-
     // Initial Fetch
     const initData = async () => {
       try {
@@ -43,10 +33,6 @@ const Blogs = () => {
       }
     };
     initData();
-
-    return () => {
-      document.head.removeChild(script);
-    };
   }, []);
 
   const handleCategoryClick = async (categorySlug: string) => {
@@ -64,16 +50,6 @@ const Blogs = () => {
 
   return (
     <>
-      {/* Google Tag Manager (noscript) */}
-      <noscript>
-        <iframe
-          src="https://www.googletagmanager.com/ns.html?id=GTM-KF284247"
-          height="0"
-          width="0"
-          style={{ display: "none", visibility: "hidden" }}
-          title="Google Tag Manager"
-        ></iframe>
-      </noscript>
       <div className="min-h-screen py-20">
         <div className="container mx-auto px-4">
           <div className="mb-12 text-center relative rounded-2xl overflow-hidden shadow-xl group">

@@ -139,14 +139,73 @@ const Header = () => {
           />
 
           {/* Menu Panel */}
-          <div className="fixed right-2 sm:right-4 top-14 sm:top-16 z-50 w-[calc(100%-1rem)] sm:w-72 max-h-[calc(100vh-4rem)] overflow-y-auto rounded-2xl bg-primary p-4 sm:p-6 shadow-xl animate-in fade-in slide-in-from-top-2">
-            <div className="flex flex-col space-y-1 sm:space-y-2">
+          <div className="fixed right-2 sm:right-4 top-14 sm:top-16 z-50 w-[calc(100%-1rem)] sm:w-80 max-h-[calc(100vh-4rem)] overflow-y-auto rounded-2xl bg-primary p-4 sm:p-6 shadow-xl animate-in fade-in slide-in-from-top-2">
+            {/* Main Navigation Section */}
+            <div className="flex flex-col space-y-1 pb-4 border-b border-primary-foreground/20">
+              <span className="text-xs uppercase tracking-wider text-primary-foreground/60 px-3 py-1 font-medium">Main Navigation</span>
+              <Link
+                to="/crops-we-pollinate"
+                onClick={() => setIsMenuOpen(false)}
+                className={`text-sm sm:text-base font-semibold hover:bg-primary-foreground/10 rounded-lg px-3 py-2.5 sm:py-3 transition-colors ${isActive("/crops-we-pollinate") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground"
+                  }`}
+              >
+                Professional Pollination
+              </Link>
+
+              {/* Pollination Solutions Sub-menu */}
+              <div className="flex flex-col">
+                <span className="text-sm sm:text-base font-semibold text-primary-foreground px-3 py-2.5 sm:py-3 flex items-center gap-1">
+                  Pollination Solutions
+                  <ChevronDown className="h-4 w-4" />
+                </span>
+                <div className="pl-4 flex flex-col space-y-1">
+                  <Link
+                    to="/PrecisionPollination"
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`text-sm font-medium hover:bg-primary-foreground/10 rounded-lg px-3 py-2 transition-colors ${isActive("/PrecisionPollination") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground/90"
+                      }`}
+                  >
+                    In-Hive Precision Pollination
+                  </Link>
+                  <Link
+                    to="/InLandPollinationPlatform"
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`text-sm font-medium hover:bg-primary-foreground/10 rounded-lg px-3 py-2 transition-colors ${isActive("/InLandPollinationPlatform") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground/90"
+                      }`}
+                  >
+                    In-Land Pollination Insights
+                  </Link>
+                </div>
+              </div>
+
+              <Link
+                to="/PollinationSolutions"
+                onClick={() => setIsMenuOpen(false)}
+                className={`text-sm sm:text-base font-semibold hover:bg-primary-foreground/10 rounded-lg px-3 py-2.5 sm:py-3 transition-colors ${isActive("/PollinationSolutions") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground"
+                  }`}
+              >
+                Beekeeping Network
+              </Link>
+              <Link
+                to="/shop"
+                onClick={() => setIsMenuOpen(false)}
+                className={`text-sm sm:text-base font-semibold hover:bg-primary-foreground/10 rounded-lg px-3 py-2.5 sm:py-3 transition-colors ${isActive("/shop") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground"
+                  }`}
+              >
+                Shop
+              </Link>
+            </div>
+
+            {/* Secondary Links Section */}
+            <div className="flex flex-col space-y-1 pt-4">
+              <span className="text-xs uppercase tracking-wider text-primary-foreground/60 px-3 py-1 font-medium">More</span>
               {menuLinks.map((link) => (
                 <Link
                   key={link.to}
                   to={link.to}
                   onClick={() => setIsMenuOpen(false)}
-                  className="text-sm sm:text-base font-semibold text-primary-foreground hover:bg-primary-foreground/10 rounded-lg px-3 py-2.5 sm:py-3 transition-colors"
+                  className={`text-sm sm:text-base font-semibold hover:bg-primary-foreground/10 rounded-lg px-3 py-2.5 sm:py-3 transition-colors ${isActive(link.to) ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground"
+                    }`}
                 >
                   {link.label}
                 </Link>
