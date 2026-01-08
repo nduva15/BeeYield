@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,27 +9,14 @@ import { useToast } from "@/hooks/use-toast";
 import {
   Calendar, MapPin, Sprout, Briefcase,
   Mail, Phone, Info, CheckCircle2, ShieldCheck,
-  ArrowRight, Sparkles, Clock
+  ArrowRight, Sparkles, Clock, Loader2
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { submitPollinationRequest } from "@/services/contactService";
 
 const PollinationRequest = () => {
-  useEffect(() => {
-    // Inject GTM script into head
-    const script = document.createElement('script');
-    script.innerHTML = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-      })(window,document,'script','dataLayer','GTM-KF284247');`;
-    script.async = true;
-    document.head.appendChild(script);
-    return () => {
-      document.head.removeChild(script);
-    };
-  }, []);
-
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -42,24 +29,49 @@ const PollinationRequest = () => {
     additionalInfo: ""
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Request Submitted!",
-      description: "Our experts have received your request and will contact you within 24 hours.",
-    });
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      farmName: "",
-      location: "",
-      cropType: "",
-      acres: "",
-      pollinationDate: "",
-      additionalInfo: ""
-    });
+    setIsSubmitting(true);
+
+    try {
+      await submitPollinationRequest({
+        full_name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        farm_name: formData.farmName,
+        farm_location: formData.location,
+        crop_type: formData.cropType,
+        acres: parseInt(formData.acres) || 0,
+        preferred_start_date: formData.pollinationDate,
+        additional_info: formData.additionalInfo || undefined
+      });
+
+      toast({
+        title: "Request Submitted!",
+        description: "Our experts have received your request and will contact you within 24 hours.",
+      });
+
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        farmName: "",
+        location: "",
+        cropType: "",
+        acres: "",
+        pollinationDate: "",
+        additionalInfo: ""
+      });
+    } catch (error) {
+      toast({
+        title: "Submission Failed",
+        description: "There was an error submitting your request. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (field: string, value: string) => {
@@ -68,16 +80,6 @@ const PollinationRequest = () => {
 
   return (
     <div className="min-h-screen bg-background selection:bg-amber-500/30">
-      {/* Google Tag Manager (noscript) */}
-      <noscript>
-        <iframe
-          src="https://www.googletagmanager.com/ns.html?id=GTM-KF284247"
-          height="0"
-          width="0"
-          style={{ display: "none", visibility: "hidden" }}
-          title="Google Tag Manager"
-        ></iframe>
-      </noscript>
 
       {/* Hero Header */}
       <section className="relative py-20 overflow-hidden bg-gradient-to-br from-amber-600 to-orange-700 text-white">

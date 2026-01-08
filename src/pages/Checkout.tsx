@@ -79,20 +79,7 @@ const Checkout: React.FC = () => {
         }
     }, [user]);
 
-    // Google Tag Manager
-    useEffect(() => {
-        const script = document.createElement('script');
-        script.innerHTML = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-KF284247');`;
-        script.async = true;
-        document.head.appendChild(script);
-        return () => {
-            document.head.removeChild(script);
-        };
-    }, []);
+
 
     const formatPrice = (price: number) => `KES ${price.toLocaleString()}`;
 
@@ -193,15 +180,25 @@ const Checkout: React.FC = () => {
         try {
             const { initializeCheckout } = await import('@/services/shopService');
 
-            const orderData = {
-                shipping_address: shippingDetails,
+            const orderData: Record<string, unknown> = {
+                shipping_address: {
+                    first_name: shippingDetails.fullName.split(' ')[0] || '',
+                    last_name: shippingDetails.fullName.split(' ').slice(1).join(' ') || '',
+                    email: shippingDetails.email,
+                    phone: shippingDetails.phone,
+                    address: shippingDetails.address,
+                    city: shippingDetails.city,
+                    county: shippingDetails.county,
+                    postal_code: shippingDetails.postalCode,
+                },
                 payment_method: paymentMethod,
                 items: items.map(item => ({
                     product_id: item.productId.toString(),
-                    variant_id: item.size, // Using size as variant_id for now
+                    variant_id: item.variantId,
                     quantity: item.quantity
                 })),
-                total_kes: totalWithShipping
+                total_kes: totalWithShipping,
+                notes: shippingDetails.notes
             };
 
             const response = await initializeCheckout(orderData);
@@ -337,8 +334,12 @@ const Checkout: React.FC = () => {
                                             key={item.id}
                                             className="flex gap-4 p-4 bg-muted/50 rounded-lg"
                                         >
-                                            <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-amber-100 to-amber-50 dark:from-amber-900/20 dark:to-amber-800/10 flex items-center justify-center">
-                                                <span className="text-3xl">{getCategoryEmoji(item.category)}</span>
+                                            <div className="w-16 h-16 rounded-lg bg-muted flex items-center justify-center overflow-hidden">
+                                                {item.image ? (
+                                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <span className="text-3xl">{getCategoryEmoji(item.category)}</span>
+                                                )}
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <h4 className="font-medium truncate">{item.name}</h4>

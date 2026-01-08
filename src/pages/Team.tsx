@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Linkedin, Award, Users, Briefcase, Code, Loader2,
   Globe, Heart, Zap, Sparkles, ArrowRight
@@ -13,16 +14,6 @@ const Team = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Inject GTM script into head
-    const script = document.createElement('script');
-    script.innerHTML = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-      })(window,document,'script','dataLayer','GTM-KF284247');`;
-    script.async = true;
-    document.head.appendChild(script);
-
     const fetchData = async () => {
       try {
         const data = await getTeamMembers();
@@ -34,10 +25,6 @@ const Team = () => {
       }
     };
     fetchData();
-
-    return () => {
-      document.head.removeChild(script);
-    };
   }, []);
 
   if (loading) {
@@ -57,14 +44,6 @@ const Team = () => {
 
   return (
     <main className="min-h-screen bg-background selection:bg-primary selection:text-white">
-      {/* Google Tag Manager (noscript) */}
-      <noscript>
-        <iframe
-          src="https://www.googletagmanager.com/ns.html?id=GTM-KF284247"
-          height="0" width="0" style={{ display: "none", visibility: "hidden" }}
-          title="Google Tag Manager"
-        ></iframe>
-      </noscript>
 
       {/* Hero Section - Extremely Premium */}
       <section className="relative min-h-[60vh] flex items-center overflow-hidden bg-gradient-to-br from-primary/5 via-background to-accent/5 pt-32 pb-24">

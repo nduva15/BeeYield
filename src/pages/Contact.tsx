@@ -7,20 +7,6 @@ import {
 } from "lucide-react";
 
 const Contact = () => {
-  useEffect(() => {
-    // Inject GTM script into head
-    const script = document.createElement('script');
-    script.innerHTML = ` (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-      })(window,document,'script','dataLayer','GTM-KF284247');`;
-    script.async = true;
-    document.head.appendChild(script);
-    return () => {
-      document.head.removeChild(script);
-    };
-  }, []);
   const [activeTab, setActiveTab] = useState("grower");
 
   const tabs = [
@@ -31,18 +17,8 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen py-12 sm:py-20">
-      {/* Google Tag Manager (noscript) */}
-      <noscript>
-        <iframe
-          src="https://www.googletagmanager.com/ns.html?id=GTM-KF284247"
-          height="0"
-          width="0"
-          style={{ display: "none", visibility: "hidden" }}
-          title="Google Tag Manager"
-        ></iframe>
-      </noscript>
       <div className="container mx-auto px-4">
-        
+
         {/* Header */}
         <div className="mx-auto max-w-3xl text-center mb-8 sm:mb-12">
           <h1 className="mb-4 sm:mb-6 text-3xl sm:text-4xl md:text-5xl font-bold">Contact Us Today</h1>
@@ -60,11 +36,10 @@ const Contact = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center justify-center gap-3 p-4 rounded-xl border-2 transition-all duration-200 ${
-                  isActive
+                className={`flex items-center justify-center gap-3 p-4 rounded-xl border-2 transition-all duration-200 ${isActive
                     ? "border-primary bg-primary/5 text-primary shadow-soft"
                     : "border-transparent bg-white shadow-soft text-muted-foreground hover:bg-secondary/20"
-                }`}
+                  }`}
               >
                 <Icon className={`h-5 w-5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
                 <span className="font-bold">{tab.label}</span>

@@ -1,12 +1,15 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Facebook, Instagram, Twitter, Linkedin } from "lucide-react";
+import { Facebook, Instagram, Twitter, Linkedin, ChevronDown } from "lucide-react";
 import Logo from "@/assets/Logo.png";
 
 const Footer = () => {
+  const [pollinationOpen, setPollinationOpen] = useState(false);
+
   return (
     <footer className="border-t border-border/40 bg-muted/30">
       <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-10 lg:py-12">
-        <div className="grid gap-8 sm:gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-8 sm:gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {/* Logo & Tagline */}
           <div className="space-y-4 text-center sm:text-left">
             <div className="flex items-center space-x-2 justify-center sm:justify-start">
@@ -49,68 +52,44 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Pollination */}
+          {/* Pollination with Dropdown */}
           <div className="text-center sm:text-left">
-            <h3 className="mb-4 text-sm font-semibold text-foreground uppercase tracking-wider">Pollination</h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link to="/crops-we-pollinate" className="text-muted-foreground hover:text-primary transition-colors">
-                  Professional Pollination
-                </Link>
-              </li>
-              <li>
-                <Link to="/PollinationSolutions" className="text-muted-foreground hover:text-primary transition-colors">
-                  Pollination Solutions
-                </Link>
-              </li>
-              <li>
-                <Link to="/PrecisionPollination" className="text-muted-foreground hover:text-primary transition-colors">
-                  Precision Pollination
-                </Link>
-              </li>
-              <li>
-                <Link to="/InLandPollinationPlatform" className="text-muted-foreground hover:text-primary transition-colors">
-                  InLand Pollination
-                </Link>
-              </li>
-              <li>
-                <Link to="/GlobalHiveNetwork" className="text-muted-foreground hover:text-primary transition-colors">
-                  Global Hive Network
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Company */}
-          <div className="text-center sm:text-left">
-            <h3 className="mb-4 text-sm font-semibold text-foreground uppercase tracking-wider">Company</h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link to="/impact" className="text-muted-foreground hover:text-primary transition-colors">
-                  Our Impact
-                </Link>
-              </li>
-              <li>
-                <Link to="/blogs" className="text-muted-foreground hover:text-primary transition-colors">
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link to="/careers" className="text-muted-foreground hover:text-primary transition-colors">
-                  Careers
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">
-                  Contact
-                </Link>
-              </li>
-            </ul>
+            <button
+              onClick={() => setPollinationOpen(!pollinationOpen)}
+              className="mb-4 text-sm font-semibold text-foreground uppercase tracking-wider flex items-center gap-1.5 mx-auto sm:mx-0 hover:text-primary transition-colors"
+            >
+              Pollination Solutions
+              <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${pollinationOpen ? 'rotate-180' : ''}`} />
+            </button>
+            <div className={`overflow-hidden transition-all duration-300 ${pollinationOpen ? 'max-h-60 opacity-100' : 'max-h-0 opacity-0'}`}>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <Link to="/crops-we-pollinate" className="text-muted-foreground hover:text-primary transition-colors">
+                    Professional Pollination
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/PollinationSolutions" className="text-muted-foreground hover:text-primary transition-colors">
+                    Pollination Solutions
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/PrecisionPollination" className="text-muted-foreground hover:text-primary transition-colors">
+                    Precision Pollination
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/InLandPollinationPlatform" className="text-muted-foreground hover:text-primary transition-colors">
+                    InLand Pollination
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/GlobalHiveNetwork" className="text-muted-foreground hover:text-primary transition-colors">
+                    Global Hive Network
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </div>
 
           {/* Connect */}

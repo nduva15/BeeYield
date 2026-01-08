@@ -16,16 +16,6 @@ const GlobalHiveNetwork = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Inject GTM script into head
-    const script = document.createElement('script');
-    script.innerHTML = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-      })(window,document,'script','dataLayer','GTM-KF284247');`;
-    script.async = true;
-    document.head.appendChild(script);
-
     const initData = async () => {
       try {
         const [fetchedApiaries, fetchedStats] = await Promise.all([
@@ -41,24 +31,10 @@ const GlobalHiveNetwork = () => {
       }
     };
     initData();
-
-    return () => {
-      document.head.removeChild(script);
-    };
   }, []);
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Google Tag Manager (noscript) */}
-      <noscript>
-        <iframe
-          src="https://www.googletagmanager.com/ns.html?id=GTM-KF284247"
-          height="0"
-          width="0"
-          style={{ display: "none", visibility: "hidden" }}
-          title="Google Tag Manager"
-        ></iframe>
-      </noscript>
 
       {/* Hero Section */}
       <section className="relative py-24 md:py-40 bg-gradient-to-br from-secondary via-background to-primary/10 overflow-hidden">
@@ -120,7 +96,7 @@ const GlobalHiveNetwork = () => {
                   <Card key={apiary.id} className="border-none shadow-soft hover:shadow-glow transition-all group">
                     <div className="aspect-video relative overflow-hidden bg-muted">
                       <img
-                        src={apiary.image_url || "https://images.unsplash.com/photo-1553279768-865429fa0078?w=800"}
+                        src={(apiary as any).image_url || "https://images.unsplash.com/photo-1553279768-865429fa0078?w=800"}
                         className="w-full h-full object-cover transition-transform group-hover:scale-105"
                         alt={apiary.name}
                       />
@@ -129,10 +105,10 @@ const GlobalHiveNetwork = () => {
                     <CardContent className="p-8">
                       <div className="flex items-center gap-2 mb-3 text-primary">
                         <MapPin className="h-4 w-4" />
-                        <span className="text-sm font-black uppercase tracking-widest">{apiary.region}, {apiary.county}</span>
+                        <span className="text-sm font-black uppercase tracking-widest">{apiary.region}, {apiary.location_name}</span>
                       </div>
                       <h3 className="text-2xl font-black mb-3">{apiary.name}</h3>
-                      <p className="text-muted-foreground text-sm font-medium line-clamp-3 mb-6">{apiary.description || "Active apiary node contributing to regional pollination and honey production."}</p>
+                      <p className="text-muted-foreground text-sm font-medium line-clamp-3 mb-6">{"Active apiary node contributing to regional pollination and honey production."}</p>
                       <div className="flex items-center justify-between pt-6 border-t font-bold text-xs uppercase tracking-tighter text-muted-foreground">
                         <div className="flex items-center gap-1"><Hexagon className="h-3 w-3" /> {apiary.hive_count} Active Units</div>
                         <div className="text-primary hover:underline cursor-pointer">View Node Data</div>
@@ -166,15 +142,15 @@ const GlobalHiveNetwork = () => {
               <Card className="bg-white/5 border-white/10 backdrop-blur-xl overflow-hidden shadow-2xl">
                 <CardContent className="p-10">
                   <div className="flex items-center gap-3 mb-6">
-                    <AlertTriangle className="h-6 w-6 text-red-500" />
-                    <span className="text-xs font-black text-red-500 uppercase tracking-[0.2em]">Global Emergency</span>
+                    <AlertTriangle className="h-6 w-6 text-destructive" />
+                    <span className="text-xs font-black text-destructive uppercase tracking-[0.2em]">Global Emergency</span>
                   </div>
                   <h3 className="text-4xl font-black mb-6 text-white leading-tight">The Bee Crisis</h3>
                   <p className="text-white/70 leading-relaxed mb-8 text-lg">
                     Across Africa, beekeepers are discovering devastating losses. African bee colonies face unique challenges from climate change and limited technology.
                   </p>
-                  <div className="bg-red-500/20 p-6 rounded-2xl border border-red-500/30">
-                    <p className="text-6xl font-black text-red-500 mb-1">60%</p>
+                  <div className="bg-destructive/20 p-6 rounded-2xl border border-destructive/30">
+                    <p className="text-6xl font-black text-destructive mb-1">60%</p>
                     <p className="text-sm font-bold text-white/50 uppercase tracking-widest">Annual colony mortality rate in Africa</p>
                   </div>
                 </CardContent>
@@ -222,14 +198,14 @@ const GlobalHiveNetwork = () => {
             </Card>
 
             {/* Option 2 */}
-            <Card className="border-4 border-yellow-400 shadow-2xl rounded-3xl relative overflow-hidden group">
-              <div className="absolute top-0 right-0 bg-yellow-400 text-yellow-900 font-black px-6 py-2 rounded-bl-3xl text-xs uppercase tracking-widest z-10">Patron</div>
+            <Card className="border-4 border-accent shadow-2xl rounded-3xl relative overflow-hidden group">
+              <div className="absolute top-0 right-0 bg-accent text-accent-foreground font-black px-6 py-2 rounded-bl-3xl text-xs uppercase tracking-widest z-10">Patron</div>
               <CardContent className="p-10">
                 <div className="mb-10 mt-12">
                   <span className="text-7xl font-black text-foreground">{supportType === "monthly" ? "$100" : "$500"}</span>
                   {supportType === "monthly" && <span className="text-muted-foreground font-bold">/mo</span>}
                 </div>
-                <Button className="w-full h-14 font-black shadow-glow bg-yellow-400 hover:bg-yellow-500 text-yellow-950 border-none">Adopt a Full Hive</Button>
+                <Button className="w-full h-14 font-black shadow-glow bg-accent hover:bg-accent/90 text-accent-foreground border-none">Adopt a Full Hive</Button>
               </CardContent>
             </Card>
           </div>

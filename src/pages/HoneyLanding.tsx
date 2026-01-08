@@ -21,16 +21,6 @@ const HoneyLanding = () => {
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    // Inject GTM script into head
-    const script = document.createElement('script');
-    script.innerHTML = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-      })(window,document,'script','dataLayer','GTM-KF284247');`;
-    script.async = true;
-    document.head.appendChild(script);
-
     const initData = async () => {
       try {
         const [fetchedProducts, fetchedStats] = await Promise.all([
@@ -58,10 +48,6 @@ const HoneyLanding = () => {
       }
     };
     initData();
-
-    return () => {
-      document.head.removeChild(script);
-    };
   }, []);
 
   const getStatValue = (key: string, defaultValue: string) => {
@@ -72,7 +58,7 @@ const HoneyLanding = () => {
   const getSelectedPrice = (product: Product) => {
     const variantId = selectedVariants[product.id];
     const variant = product.variants.find(v => v.id === variantId);
-    return variant ? variant.price : (product.variants[0]?.price || 0);
+    return variant ? variant.price_kes : (product.variants[0]?.price_kes || 0);
   };
 
   if (loading) {
@@ -85,17 +71,6 @@ const HoneyLanding = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Google Tag Manager (noscript) */}
-      <noscript>
-        <iframe
-          src="https://www.googletagmanager.com/ns.html?id=GTM-KF284247"
-          height="0"
-          width="0"
-          style={{ display: "none", visibility: "hidden" }}
-          title="Google Tag Manager"
-        ></iframe>
-      </noscript>
-
       {/* Hero Section */}
       <section className="relative min-h-[90vh] overflow-hidden flex items-center bg-gradient-to-br from-primary/10 via-background to-accent/10">
         <div className="container relative mx-auto px-4 py-20">
@@ -184,7 +159,7 @@ const HoneyLanding = () => {
             {products.map((product) => (
               <Card key={product.id} className="group overflow-hidden border-none shadow-soft hover:shadow-glow transition-all duration-500 bg-white">
                 <div className="aspect-square relative overflow-hidden bg-amber-50">
-                  <img src={product.image_url || "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=800"} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                  <img src={product.images[0] || "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=800"} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
                 <CardContent className="p-8 space-y-6">
@@ -201,7 +176,7 @@ const HoneyLanding = () => {
                       </SelectTrigger>
                       <SelectContent>
                         {product.variants.map(v => (
-                          <SelectItem key={v.id} value={v.id}>{v.size} - KES {v.price}</SelectItem>
+                          <SelectItem key={v.id} value={v.id}>{v.size} - KES {v.price_kes}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>

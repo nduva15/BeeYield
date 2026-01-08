@@ -6,11 +6,13 @@ import { toast } from 'sonner';
 export interface CartItem {
     id: string;
     productId: string;
+    variantId: string;
     name: string;
     description: string;
     size: string;
     price: number;
     quantity: number;
+    image?: string;
     badge: string | null;
     category: 'honey' | 'merch' | 'education' | 'hardware';
 }

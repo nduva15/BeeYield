@@ -58,6 +58,14 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        "honey-light": "hsl(var(--honey-light))",
+        "honey-dark": "hsl(var(--honey-dark))",
+        "nature-green": "hsl(var(--nature-green))",
+        "nature-green-light": "hsl(var(--nature-green-light))",
+      },
+      fontFamily: {
+        sans: ["Inter", "sans-serif"],
+        heading: ["Outfit", "sans-serif"],
       },
       borderRadius: {
         lg: "var(--radius)",
