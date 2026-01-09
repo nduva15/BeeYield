@@ -50,7 +50,7 @@ def initialize_checkout(
             # Using Supabase JWT secret for verification
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[security.ALGORITHM])
             user_id = payload.get("sub")
-        except jwt.JWTError as e:
+        except JWTError as e:
             print(f"JWT verification failed: {e}")
             # Invalid token - proceed without user_id (anonymous order)
         except Exception as e:
