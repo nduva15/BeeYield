@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Header
 from typing import List, Optional
-from jose import jwt
+from jose import jwt, JWTError
 from app.core.config import settings
 from app.core import security
 from app.schemas import shop as schemas
@@ -46,11 +46,13 @@ def initialize_checkout(
     if authorization:
         try:
             token = authorization.split(" ")[1]
-            # Try to decode token to get user_id. 
-            # Note: In production, verify signature with Supabase JWT secret.
-            # Here we attempt to decode assuming standard JWT structure.
-            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[security.ALGORITHM], options={"verify_signature": False})
+            # Decode and verify the JWT token signature
+            # Using Supabase JWT secret for verification
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[security.ALGORITHM])
             user_id = payload.get("sub")
+        except jwt.JWTError as e:
+            print(f"JWT verification failed: {e}")
+            # Invalid token - proceed without user_id (anonymous order)
         except Exception as e:
             print(f"Auth token decode error: {e}")
 
