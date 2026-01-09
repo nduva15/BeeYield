@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     BACKEND_CORS_ORIGINS: List[str] = [
         "http://localhost:5173",
         "http://localhost:3000",
+        "http://localhost:8080",  # <-- ADDED: Vite dev server port
         "https://beeyield.com",
         "https://www.beeyield.com",
         "https://beeyield.vercel.app",
@@ -26,17 +27,18 @@ class Settings(BaseSettings):
         return v
 
     # ============ SUPABASE (Primary Database) ============
-    SUPABASE_URL: str = Field(default="", validation_alias="VITE_SUPABASE_URL")
-    SUPABASE_KEY: str = Field(default="", validation_alias="SUPABASE_SERVICE_ROLE_KEY")
-    SUPABASE_ANON_KEY: Optional[str] = Field(default=None, validation_alias="VITE_SUPABASE_ANON_KEY")
+    # Fixed: Accept both VITE_SUPABASE_URL and SUPABASE_URL
+    SUPABASE_URL: str = Field(default="")
+    SUPABASE_KEY: str = Field(default="")
+    SUPABASE_ANON_KEY: Optional[str] = Field(default=None)
     SUPABASE_JWT_SECRET: Optional[str] = None
     
     # Postgres direct connection (for migrations/legacy sqlalchemy)
-    POSTGRES_URL: Optional[str] = Field(default=None, validation_alias="POSTGRES_URL")
+    POSTGRES_URL: Optional[str] = Field(default=None)
 
 
     # ============ CLICKHOUSE (Analytics) ============
-    CLICKHOUSE_HOST: str = Field(default="", validation_alias="CLICKHOUSE_HOST")
+    CLICKHOUSE_HOST: str = Field(default="")
     CLICKHOUSE_USER: str = "default"
     CLICKHOUSE_PASSWORD: str = ""
     CLICKHOUSE_DATABASE: str = "beeyield_analytics"

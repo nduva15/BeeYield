@@ -7,11 +7,42 @@ import { useToast } from "@/hooks/use-toast";
 
 import { apiGet } from "@/services/api";
 
+interface TraceData {
+  blockchain_verified?: boolean;
+  batch_code: string;
+  product_name: string;
+  timeline?: Array<{
+    title: string;
+    date: string;
+    description: string;
+    hash?: string;
+  }>;
+  apiary?: {
+    name: string;
+    location_name: string;
+    flora_types?: string[];
+  };
+  farmer?: {
+    region: string;
+    county: string;
+    name: string;
+    role?: string;
+    story?: string;
+    registration_date: string;
+  };
+  sensor_snapshot?: {
+    avg_temp: number;
+    avg_humidity: number;
+    weight_kg: number;
+    acoustic_health: string;
+  };
+}
+
 const Traceability = () => {
   const [qrCode, setQrCode] = useState("");
   const [showResults, setShowResults] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [traceData, setTraceData] = useState<any>(null);
+  const [traceData, setTraceData] = useState<TraceData | null>(null);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,18 +51,19 @@ const Traceability = () => {
 
     setIsLoading(true);
     try {
-      const data = await apiGet<any>(`/traceability/code/${qrCode.trim()}`);
+      const data = await apiGet<TraceData>(`/traceability/code/${qrCode.trim()}`);
       setTraceData(data);
       setShowResults(true);
       toast({
         title: "Code verified!",
         description: `Successfully traced batch ${qrCode}`,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Trace error:", error);
+      const errorMessage = error instanceof Error ? error.message : "Could not find this code on our blockchain.";
       toast({
         title: "Trace failed",
-        description: error.message || "Could not find this code on our blockchain.",
+        description: errorMessage,
         variant: "destructive",
       });
       setShowResults(false);
@@ -153,7 +185,7 @@ const Traceability = () => {
                         <div>
                           <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Harvest Date</h3>
                           <p className="text-lg font-medium">
-                            {traceData.timeline?.find((s: any) => s.title === "Harvested")?.date || "Unknown"}
+                            {traceData.timeline?.find((s) => s.title === "Harvested")?.date || "Unknown"}
                           </p>
                         </div>
                       </div>
@@ -240,7 +272,7 @@ const Traceability = () => {
                   <CardContent className="p-8">
                     <h3 className="mb-6 font-bold text-xl">Journey Timeline</h3>
                     <div className="space-y-8 relative before:absolute before:inset-0 before:left-4 before:h-full before:w-0.5 before:bg-muted-foreground/10">
-                      {traceData.timeline?.map((step: any, idx: number) => (
+                      {traceData.timeline?.map((step, idx) => (
                         <div key={idx} className="relative pl-12">
                           <div className="absolute left-0 top-1 w-8 h-8 rounded-full bg-background border-2 border-primary flex items-center justify-center z-10">
                             <span className="w-2 h-2 rounded-full bg-primary" />

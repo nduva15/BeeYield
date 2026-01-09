@@ -1,9 +1,35 @@
 import { useState, useEffect } from "react";
 import { apiGet } from "@/services/api";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Leaf, Shirt, BookOpen, Filter, Heart, ShoppingCart, Star } from "lucide-react";
+
+interface ProductVariant {
+  size: string;
+  price?: number;
+  price_kes?: number;
+}
+
+interface Product {
+  id: number | string;
+  name: string;
+  description: string;
+  category?: string;
+  variants: ProductVariant[];
+  badge?: string | null;
+  rating: number;
+  reviews: number;
+  format?: string;
+  pages?: number;
+  price?: number;
+}
 
 const Shop = () => {
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -11,7 +37,7 @@ const Shop = () => {
     const fetchProducts = async () => {
       try {
         setIsLoading(true);
-        const data = await apiGet<any[]>("/shop/products");
+        const data = await apiGet<Product[]>("/shop/products");
         setProducts(data || []);
 
         // Initialize default sizes for each product
@@ -22,7 +48,7 @@ const Shop = () => {
           }
         });
         setSelectedSizes(initialSizes);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Failed to fetch products:", err);
         setError("Unable to load products. Showing offline collection.");
       } finally {
@@ -35,11 +61,11 @@ const Shop = () => {
 
   // Group products by category
   const honeyProducts = products.filter(p => p.category?.toLowerCase().includes("honey") || p.category === "Food");
-  const merchProducts = products.filter(p => ["merch", "apparel", "accessories"].includes(p.category?.toLowerCase()));
-  const educationalProducts = products.filter(p => ["learn", "education", "guides"].includes(p.category?.toLowerCase()));
+  const merchProducts = products.filter(p => ["merch", "apparel", "accessories"].includes(p.category?.toLowerCase() || ""));
+  const educationalProducts = products.filter(p => ["learn", "education", "guides"].includes(p.category?.toLowerCase() || ""));
 
   // Fallback to mock data if API fails or returns nothing
-  const displayHoney = honeyProducts.length > 0 ? honeyProducts : [
+  const displayHoney: Product[] = honeyProducts.length > 0 ? honeyProducts : [
     {
       id: 1,
       name: "Kibwezi Wildflower",
@@ -118,7 +144,7 @@ const Shop = () => {
     },
   ];
 
-  const displayMerch = merchProducts.length > 0 ? merchProducts : [
+  const displayMerch: Product[] = merchProducts.length > 0 ? merchProducts : [
     {
       id: 101,
       name: "BeeYield Classic Tee",
@@ -165,7 +191,7 @@ const Shop = () => {
     }
   ];
 
-  const displayLearn = educationalProducts.length > 0 ? educationalProducts : [
+  const displayLearn: Product[] = educationalProducts.length > 0 ? educationalProducts : [
     {
       id: 201,
       name: "Beginner's Beekeeping Guide",
@@ -392,8 +418,8 @@ const Shop = () => {
                         <span className="text-lg font-bold text-foreground">
                           {formatPrice(
                             product.variants.find(
-                              (v: any) => v.size === (selectedSizes[product.id] || product.variants[0].size)
-                            )?.price_kes || product.variants[0].price_kes
+                              (v) => v.size === (selectedSizes[product.id] || product.variants[0].size)
+                            )?.price_kes || product.variants[0].price_kes || 0
                           )}
                         </span>
                         <Button size="sm" className="gap-2">
