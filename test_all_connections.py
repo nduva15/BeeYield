@@ -13,6 +13,10 @@ load_dotenv()
 # Add backend to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'backend'))
 
+# Constants
+WEAK_KEY_INDICATORS = ["change_this", "secret", "password", "123", "test", "default"]
+MIN_SECRET_KEY_LENGTH = 32
+
 def print_header(text):
     print(f"\n{'='*60}")
     print(f"  {text}")
@@ -23,6 +27,12 @@ def print_test(name, status, message=""):
     print(f"{status_symbol} {name}")
     if message:
         print(f"   └─ {message}")
+
+def is_weak_secret_key(key):
+    """Check if a secret key is weak or default"""
+    if not key or len(key) < MIN_SECRET_KEY_LENGTH:
+        return True
+    return any(indicator in key.lower() for indicator in WEAK_KEY_INDICATORS)
 
 def test_environment_variables():
     """Check if essential environment variables are set"""
@@ -53,7 +63,7 @@ def test_environment_variables():
         
         # Check for default/insecure values
         warning = ""
-        if var == "SECRET_KEY" and value and "change_this" in value.lower():
+        if var == "SECRET_KEY" and value and is_weak_secret_key(value):
             warning = "⚠️  Using default key - Change for production!"
             is_set = False
         
@@ -233,10 +243,7 @@ def test_security():
         return False
     
     # Check for default/weak keys
-    weak_indicators = ["change_this", "secret", "password", "123", "test", "default"]
-    is_weak = any(indicator in secret_key.lower() for indicator in weak_indicators)
-    
-    if is_weak or len(secret_key) < 32:
+    if is_weak_secret_key(secret_key):
         print_test("Secret Key", False, "⚠️  Weak or default key - Generate a new one!")
         print("   └─ Generate with: python -c \"import secrets; print(secrets.token_urlsafe(64))\"")
         return False
