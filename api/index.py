@@ -41,6 +41,7 @@ app.add_middleware(
         "https://beeyield.com",
         "https://www.beeyield.com",
         "https://beeyield.vercel.app",
+        "https://*.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
