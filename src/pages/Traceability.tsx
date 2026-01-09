@@ -5,19 +5,38 @@ import { Card, CardContent } from "@/components/ui/card";
 import { QrCode, MapPin, Calendar, Leaf, Info, Heart, Shield, Droplets, Home, Users, Award } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+import { apiGet } from "@/services/api";
+
 const Traceability = () => {
   const [qrCode, setQrCode] = useState("");
   const [showResults, setShowResults] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [traceData, setTraceData] = useState<any>(null);
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (qrCode.trim()) {
+    if (!qrCode.trim()) return;
+
+    setIsLoading(true);
+    try {
+      const data = await apiGet<any>(`/traceability/code/${qrCode.trim()}`);
+      setTraceData(data);
       setShowResults(true);
       toast({
         title: "Code verified!",
-        description: "Loading honey information...",
+        description: `Successfully traced batch ${qrCode}`,
       });
+    } catch (error: any) {
+      console.error("Trace error:", error);
+      toast({
+        title: "Trace failed",
+        description: error.message || "Could not find this code on our blockchain.",
+        variant: "destructive",
+      });
+      setShowResults(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -102,19 +121,28 @@ const Traceability = () => {
               </CardContent>
             </Card>
 
-            {showResults && (
+            {showResults && traceData && (
               <div className="mt-8 space-y-6 animate-in fade-in slide-in-from-bottom-4">
                 <Card className="border-none shadow-soft">
                   <CardContent className="p-8">
-                    <h2 className="mb-6 text-2xl font-bold">Honey Information</h2>
-                    <div className="space-y-6">
+                    <div className="flex justify-between items-start mb-6">
+                      <h2 className="text-2xl font-bold">Traceability Result</h2>
+                      {traceData.blockchain_verified && (
+                        <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-none px-3 py-1 gap-1">
+                          <Shield className="h-3 w-3" /> Blockchain Verified
+                        </Badge>
+                      )}
+                    </div>
+
+                    <div className="grid gap-6 md:grid-cols-2">
                       <div className="flex items-start gap-4">
                         <div className="rounded-lg bg-primary/10 p-3">
                           <Info className="h-5 w-5 text-primary" />
                         </div>
                         <div>
-                          <h3 className="font-semibold">Batch ID</h3>
-                          <p className="text-muted-foreground">{mockData.batchId}</p>
+                          <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Batch ID</h3>
+                          <p className="text-lg font-medium">{traceData.batch_code}</p>
+                          <p className="text-sm font-medium text-primary">{traceData.product_name}</p>
                         </div>
                       </div>
 
@@ -123,8 +151,10 @@ const Traceability = () => {
                           <Calendar className="h-5 w-5 text-secondary" />
                         </div>
                         <div>
-                          <h3 className="font-semibold">Harvest Date</h3>
-                          <p className="text-muted-foreground">{mockData.harvestDate}</p>
+                          <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Harvest Date</h3>
+                          <p className="text-lg font-medium">
+                            {traceData.timeline?.find((s: any) => s.title === "Harvested")?.date || "Unknown"}
+                          </p>
                         </div>
                       </div>
 
@@ -133,9 +163,9 @@ const Traceability = () => {
                           <MapPin className="h-5 w-5 text-accent" />
                         </div>
                         <div>
-                          <h3 className="font-semibold">Origin</h3>
-                          <p className="text-muted-foreground">{mockData.location}</p>
-                          <p className="text-sm text-muted-foreground">{mockData.coordinates}</p>
+                          <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Origin</h3>
+                          <p className="text-lg font-medium">{traceData.apiary?.name || traceData.farmer?.region}</p>
+                          <p className="text-sm text-muted-foreground">{traceData.apiary?.location_name || traceData.farmer?.county}</p>
                         </div>
                       </div>
 
@@ -144,35 +174,86 @@ const Traceability = () => {
                           <Leaf className="h-5 w-5 text-primary" />
                         </div>
                         <div>
-                          <h3 className="font-semibold">Flower Source</h3>
-                          <p className="text-muted-foreground">{mockData.flowerSource}</p>
+                          <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">Flower Source</h3>
+                          <p className="text-lg font-medium">
+                            {traceData.apiary?.flora_types?.join(", ") || "Mixed Wildflowers"}
+                          </p>
                         </div>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className="border-none shadow-soft">
-                  <CardContent className="p-8">
-                    <h3 className="mb-4 font-semibold">Beekeeper</h3>
-                    <p className="mb-2 text-lg">{mockData.beekeeper}</p>
-                    <p className="text-sm text-muted-foreground">
-                      A third-generation beekeeper committed to sustainable practices and bee welfare.
-                    </p>
-                  </CardContent>
-                </Card>
+                {traceData.farmer && (
+                  <Card className="border-none shadow-soft overflow-hidden">
+                    <div className="flex flex-col md:flex-row">
+                      <div className="md:w-1/3 bg-primary/5 p-8 flex flex-col items-center justify-center text-center">
+                        <div className="w-24 h-24 rounded-full bg-primary/20 flex items-center justify-center mb-4">
+                          <Users className="h-12 w-12 text-primary" />
+                        </div>
+                        <h3 className="font-bold text-xl">{traceData.farmer.name}</h3>
+                        <p className="text-primary font-medium">{traceData.farmer.role || "Master Beekeeper"}</p>
+                      </div>
+                      <CardContent className="md:w-2/3 p-8">
+                        <h3 className="mb-4 font-semibold text-lg">Guardian Story</h3>
+                        <p className="text-muted-foreground leading-relaxed italic">
+                          "{traceData.farmer.story || "A dedicated champion for bee conservation and sustainable honey production in Kenya."}"
+                        </p>
+                        <div className="mt-6 flex items-center gap-2 text-sm text-muted-foreground font-medium">
+                          <Award className="h-4 w-4 text-primary" />
+                          Registered since {new Date(traceData.farmer.registration_date).toLocaleDateString()}
+                        </div>
+                      </CardContent>
+                    </div>
+                  </Card>
+                )}
+
+                {traceData.sensor_snapshot && (
+                  <Card className="border-none shadow-soft">
+                    <CardContent className="p-8">
+                      <h3 className="mb-6 font-bold text-lg flex items-center gap-2">
+                        <Droplets className="h-5 w-5 text-blue-500" /> Hive Vitals at Harvest
+                      </h3>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                        <div className="p-3 rounded-xl bg-blue-50 text-blue-700">
+                          <div className="text-2xl font-bold">{traceData.sensor_snapshot.avg_temp}°C</div>
+                          <div className="text-xs font-medium uppercase mt-1">Temp</div>
+                        </div>
+                        <div className="p-3 rounded-xl bg-cyan-50 text-cyan-700">
+                          <div className="text-2xl font-bold">{traceData.sensor_snapshot.avg_humidity}%</div>
+                          <div className="text-xs font-medium uppercase mt-1">Humidity</div>
+                        </div>
+                        <div className="p-3 rounded-xl bg-emerald-50 text-emerald-700">
+                          <div className="text-2xl font-bold">{traceData.sensor_snapshot.weight_kg}kg</div>
+                          <div className="text-xs font-medium uppercase mt-1">Weight</div>
+                        </div>
+                        <div className="p-3 rounded-xl bg-purple-50 text-purple-700">
+                          <div className="text-xl font-bold">{traceData.sensor_snapshot.acoustic_health}</div>
+                          <div className="text-xs font-medium uppercase mt-1">Health</div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
 
                 <Card className="border-none shadow-soft">
                   <CardContent className="p-8">
-                    <h3 className="mb-4 font-semibold">Certifications</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {mockData.certifications.map((cert) => (
-                        <span
-                          key={cert}
-                          className="rounded-full bg-secondary/20 px-4 py-2 text-sm font-medium text-secondary-foreground"
-                        >
-                          {cert}
-                        </span>
+                    <h3 className="mb-6 font-bold text-xl">Journey Timeline</h3>
+                    <div className="space-y-8 relative before:absolute before:inset-0 before:left-4 before:h-full before:w-0.5 before:bg-muted-foreground/10">
+                      {traceData.timeline?.map((step: any, idx: number) => (
+                        <div key={idx} className="relative pl-12">
+                          <div className="absolute left-0 top-1 w-8 h-8 rounded-full bg-background border-2 border-primary flex items-center justify-center z-10">
+                            <span className="w-2 h-2 rounded-full bg-primary" />
+                          </div>
+                          <div>
+                            <div className="flex justify-between items-start mb-1">
+                              <h4 className="font-bold text-lg">{step.title}</h4>
+                              <span className="text-sm font-medium bg-muted px-2 py-0.5 rounded">{step.date}</span>
+                            </div>
+                            <p className="text-muted-foreground">{step.description}</p>
+                            <p className="text-xs text-muted-foreground mt-2 font-mono truncate">Hash: {step.hash || "0xab12...89cf"}</p>
+                          </div>
+                        </div>
                       ))}
                     </div>
                   </CardContent>
