@@ -17,8 +17,8 @@ These variables must be set in Vercel Project Settings → Environment Variables
 
 ```bash
 # Supabase Configuration
-VITE_SUPABASE_URL=https://lqdxsgnoeickomhsgeco.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxxZHhzZ25vZWlja29taHNnZWNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4NTIwMDEsImV4cCI6MjA4MzQyODAwMX0.UtOsTUJS2Z8uqi7pzDqn8eZdv9T5CvZRVGDsOrC_gms
+VITE_SUPABASE_URL=<your-supabase-project-url>
+VITE_SUPABASE_ANON_KEY=<your-supabase-anon-key>
 
 # Production URLs (already in .env, but can be overridden)
 VITE_APP_URL=https://beeyield.com
@@ -97,12 +97,14 @@ ACCESS_TOKEN_EXPIRE_MINUTES=11520
 For local development, create a `.env.local` file (already gitignored):
 
 ```bash
-# Copy from .env.local.example
+# Copy from .env.local.example and update with your values
 cp .env.local.example .env.local
 
 # Edit .env.local with your local settings
 VITE_APP_URL=http://localhost:5173
 VITE_API_URL=http://localhost:8000/api/v1
+VITE_SUPABASE_URL=<your-supabase-url>
+VITE_SUPABASE_ANON_KEY=<your-supabase-anon-key>
 ```
 
 ## 🔐 Security Notes
