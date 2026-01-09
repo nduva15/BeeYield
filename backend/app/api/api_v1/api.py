@@ -51,11 +51,11 @@ def get_impact_stats():
     
     if stats:
         return {
-            "total_honey_kg": next((s["metric_value"] for s in stats if s["metric_name"] == "honey_produced_kg"), "50,000+"),
-            "hive_count": next((s["metric_value"] for s in stats if s["metric_name"] == "hives_deployed"), "2,500+"),
-            "beekeepers": next((s["metric_value"] for s in stats if s["metric_name"] == "beekeepers_trained"), "500+"),
-            "farmers_served": next((s["metric_value"] for s in stats if s["metric_name"] == "farmers_served"), "1,200+"),
-            "acres_pollinated": next((s["metric_value"] for s in stats if s["metric_name"] == "acres_pollinated"), "25,000+")
+            "total_honey_kg": next((s["stat_value"] for s in stats if s["stat_key"] == "honey_produced"), "50,000+"),
+            "hive_count": next((s["stat_value"] for s in stats if s["stat_key"] == "hives_managed"), "2,500+"),
+            "beekeepers": next((s["stat_value"] for s in stats if s["stat_key"] == "beekeepers_trained"), "500+"),
+            "farmers_served": next((s["stat_value"] for s in stats if s["stat_key"] == "farmers_supported"), "1,200+"),
+            "acres_pollinated": next((s["stat_value"] for s in stats if s["stat_key"] == "acres_pollinated"), "25,000+")
         }
     
     return {
