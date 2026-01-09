@@ -2,6 +2,37 @@
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
+## 🌐 BeeYield Website
+
+**Production URL**: https://beeyield.com/
+
+### Important Deployment Information
+
+If the website https://beeyield.com/ is not working, please check:
+
+1. **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Complete deployment guide
+2. **[TROUBLESHOOTING.md](./TROUBLESHOOTING.md)** - Fix common issues  
+3. **GitHub Actions** - Check deployment status in Actions tab
+
+The site deploys to **Hostinger** (not Vercel) via GitHub Actions when pushing to `main` branch.
+
+### Quick Local Setup
+
+```bash
+# Install dependencies
+npm ci --legacy-peer-deps
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+```
+
+---
+
+## React Configuration
+
 Currently, two official plugins are available:
 
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
