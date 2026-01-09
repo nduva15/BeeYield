@@ -9,6 +9,7 @@ import impactImage from "@/assets/impact-beekeeping.jpg";
 interface ImpactStats {
   hive_count?: string | number;
   beekeepers?: string | number;
+  total_honey_kg?: string | number;
   [key: string]: unknown;
 }
 

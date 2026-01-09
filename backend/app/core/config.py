@@ -14,7 +14,6 @@ class Settings(BaseSettings):
         "https://beeyield.com",
         "https://www.beeyield.com",
         "https://beeyield.vercel.app",
-        "https://*.vercel.app",
     ]
 
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")
