@@ -1,73 +1,193 @@
-# React + TypeScript + Vite
+# 🐝 BeeYield - Honey Traceability & E-commerce Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+BeeYield is a comprehensive platform for honey traceability, e-commerce, and beekeeping services. Built with modern technologies to ensure transparency from hive to table.
 
-Currently, two official plugins are available:
+## 🌟 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 🔍 **Blockchain-based Traceability** - Track honey from hive to table
+- 🛒 **E-commerce Platform** - Buy authentic honey and bee products
+- 📊 **Analytics Dashboard** - Track business metrics and user behavior
+- 🔐 **Secure Authentication** - User accounts with JWT tokens
+- 💳 **Multiple Payment Options** - Stripe (international) and M-Pesa (Kenya)
+- 📧 **Email Notifications** - Order confirmations and updates
+- 🌍 **International & Local** - Serves both Kenyan and international markets
 
-## React Compiler
+## 🚀 Quick Start
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Prerequisites
 
-## Expanding the ESLint configuration
+- Node.js 18+ and npm
+- Python 3.11+
+- Git
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Setup
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+```bash
+# Clone the repository
+git clone https://github.com/nduva15/BeeYield.git
+cd BeeYield
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+# Install dependencies
+npm install
+cd backend && pip install -r requirements.txt && cd ..
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Configure environment variables
+cp .env.example .env
+# Edit .env with your API keys (see SETUP_GUIDE.md)
+
+# Run the application
+# Terminal 1 - Backend
+cd backend && uvicorn main:app --reload
+
+# Terminal 2 - Frontend
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Visit http://localhost:5173 to see the app!
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 📚 Documentation
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 🎯 Start Here
+- **[Configuration Report](CONFIGURATION_REPORT.md)** - Quick overview of what's configured and what's missing
+- **[Setup Guide](SETUP_GUIDE.md)** - Step-by-step setup instructions
+
+### 📖 Detailed Documentation
+- **[Connections Checklist](CONNECTIONS_CHECKLIST.md)** - Complete reference for all API keys and services
+- **[Complete Guide](COMPLETE_GUIDE.md)** - Full technical documentation
+- **[Backend Guide](backend_guide_and_prds.md)** - Backend architecture and API reference
+
+## 🔌 Required Services
+
+### Essential (for basic functionality)
+- ✅ **Supabase** - Database and authentication
+- ✅ **ClickHouse** - Analytics database
+- ⚠️ **SECRET_KEY** - Must be changed from default!
+
+### Optional (for full features)
+- ⚡ **Stripe** - International credit/debit card payments
+- 📱 **M-Pesa** - Kenyan mobile money payments
+- 📧 **Email Service** - SMTP or Resend for notifications
+
+## 🧪 Test Your Configuration
+
+Run the automated connection test:
+
+```bash
+python test_all_connections.py
 ```
+
+This will check all your services and tell you what needs attention.
+
+## 🛠️ Technology Stack
+
+### Frontend
+- React 18 + TypeScript
+- Vite for build tooling
+- Tailwind CSS + shadcn/ui components
+- TanStack Query for data fetching
+- React Router for navigation
+
+### Backend
+- Python 3.11 + FastAPI
+- Supabase (PostgreSQL) for data storage
+- ClickHouse for analytics
+- Custom Python blockchain for traceability
+- JWT authentication
+
+### Deployment
+- Frontend: Vercel
+- Backend: Vercel Serverless Functions / Render
+- Database: Supabase Cloud
+- Analytics: ClickHouse Cloud
+
+## 📦 Project Structure
+
+```
+BeeYield/
+├── src/                    # Frontend React application
+├── backend/                # Python FastAPI backend
+│   ├── app/               # Application code
+│   ├── migrations/        # Database migrations
+│   └── main.py           # Backend entry point
+├── api/                   # Vercel serverless functions
+├── public/                # Static assets
+└── docs/                  # Documentation files
+```
+
+## 🔐 Security
+
+- JWT-based authentication
+- Row-level security in Supabase
+- HTTPS enforced in production
+- API key encryption
+- CORS protection
+
+**Important:** Change the `SECRET_KEY` before production deployment!
+
+## 🚢 Deployment
+
+### Deploy to Vercel (Recommended)
+
+1. Push code to GitHub
+2. Import repository in Vercel
+3. Add environment variables
+4. Deploy!
+
+See [SETUP_GUIDE.md](SETUP_GUIDE.md) for detailed deployment instructions.
+
+## 🐛 Troubleshooting
+
+**Connection issues?**
+```bash
+python test_all_connections.py
+```
+
+**Module not found?**
+```bash
+npm install  # Frontend
+pip install -r backend/requirements.txt  # Backend
+```
+
+**CORS errors?**
+- Check `backend/app/core/config.py` CORS settings
+- Add your domain to allowed origins
+
+See [CONFIGURATION_REPORT.md](CONFIGURATION_REPORT.md) for more troubleshooting tips.
+
+## 📊 Current Status
+
+Check [CONFIGURATION_REPORT.md](CONFIGURATION_REPORT.md) for:
+- ✅ What's currently working
+- ⚠️ What needs attention
+- ❌ What's missing
+- 📝 Action items for production
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Open a Pull Request
+
+## 📄 License
+
+[Add your license here]
+
+## 🆘 Support
+
+- Check the documentation files for detailed guides
+- Run `python test_all_connections.py` to diagnose issues
+- Review application logs for error messages
+
+## 🎉 Credits
+
+Built with ❤️ for sustainable beekeeping and transparent honey sourcing.
+
+---
+
+**Quick Links:**
+- [Setup Guide](SETUP_GUIDE.md) - Get started in 30 minutes
+- [Configuration Report](CONFIGURATION_REPORT.md) - See what's configured
+- [Connections Checklist](CONNECTIONS_CHECKLIST.md) - All API keys explained
+- [Test Connections](test_all_connections.py) - Automated testing
