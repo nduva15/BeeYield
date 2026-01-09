@@ -6,14 +6,20 @@ import { Progress } from "@/components/ui/progress";
 import { Link } from "react-router-dom";
 import impactImage from "@/assets/impact-beekeeping.jpg";
 
+interface ImpactStats {
+  hive_count?: number;
+  beekeepers?: number;
+  total_honey_kg?: number;
+}
+
 const Impact = () => {
-  const [impactStats, setImpactStats] = useState<any>(null);
+  const [impactStats, setImpactStats] = useState<ImpactStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const data = await apiGet<any>("/stats/impact");
+        const data = await apiGet<ImpactStats>("/stats/impact");
         setImpactStats(data);
       } catch (err) {
         console.error("Failed to fetch impact stats:", err);
