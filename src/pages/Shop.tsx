@@ -63,6 +63,7 @@ const Shop = () => {
   const honeyProducts = products.filter(p => p.category?.toLowerCase().includes("honey") || p.category === "Food");
   const merchProducts = products.filter(p => ["merch", "apparel", "accessories"].includes(p.category?.toLowerCase() || ""));
   const educationalProducts = products.filter(p => ["learn", "education", "guides"].includes(p.category?.toLowerCase() || ""));
+  const hardwareProducts = products.filter(p => ["hardware", "systems", "technology"].includes(p.category?.toLowerCase() || ""));
 
   // Fallback to mock data if API fails or returns nothing
   const displayHoney: Product[] = honeyProducts.length > 0 ? honeyProducts : [
@@ -218,6 +219,29 @@ const Shop = () => {
     }
   ];
 
+  const displayHardware: Product[] = hardwareProducts.length > 0 ? hardwareProducts : [
+    {
+      id: 301,
+      name: "ApiSense Sentinel Node",
+      description: "IoT hive monitor with acoustic disease detection and gas sensing.",
+      variants: [{ size: "Unit", price_kes: 15000 }],
+      badge: "New Tech",
+      rating: 5.0,
+      reviews: 12,
+      category: "Hardware",
+    },
+    {
+      id: 302,
+      name: "Intelligent Hive Scale",
+      description: "Precision weight and environment monitoring with 4G connectivity.",
+      variants: [{ size: "Unit", price_kes: 12500 }],
+      badge: "Best Value",
+      rating: 4.8,
+      reviews: 24,
+      category: "Hardware",
+    }
+  ];
+
   const formatPrice = (price: number) => {
     return `KES ${price.toLocaleString()}`;
   };
@@ -293,6 +317,10 @@ const Shop = () => {
               <TabsTrigger value="learn" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <BookOpen className="h-4 w-4" />
                 <span className="hidden sm:inline">Learn</span>
+              </TabsTrigger>
+              <TabsTrigger value="hardware" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Cpu className="h-4 w-4" />
+                <span className="hidden sm:inline">Systems</span>
               </TabsTrigger>
             </TabsList>
 
@@ -465,6 +493,41 @@ const Shop = () => {
                       <Button className="gap-2">
                         <ShoppingCart className="h-4 w-4" />
                         Buy Now
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          {/* Hardware Tab */}
+          <TabsContent value="hardware" className="mt-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {displayHardware.map((product) => (
+                <Card key={product.id} className="group overflow-hidden border-border/50 hover:border-primary/50 hover:shadow-lg transition-all duration-300">
+                  <div className="relative aspect-square bg-gradient-to-br from-neutral-100 to-neutral-50 dark:from-neutral-900/20 dark:to-neutral-800/10 flex items-center justify-center overflow-hidden">
+                    <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-nature-green/10 to-nature-green/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                      <Cpu className="h-16 w-16 text-nature-green/40" />
+                    </div>
+                    {product.badge && (
+                      <Badge variant={getBadgeVariant(product.badge)} className="absolute top-3 left-3">
+                        {product.badge}
+                      </Badge>
+                    )}
+                  </div>
+                  <CardContent className="p-5">
+                    <div className="mb-2">{renderStars(product.rating)}</div>
+                    <h3 className="font-semibold text-lg text-foreground mb-1">{product.name}</h3>
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{product.description}</p>
+
+                    <div className="flex items-center justify-between">
+                      <span className="text-xl font-bold text-foreground">
+                        {formatPrice(product.variants?.[0]?.price_kes || 0)}
+                      </span>
+                      <Button className="gap-2">
+                        <ShoppingCart className="h-4 w-4" />
+                        Add to Cart
                       </Button>
                     </div>
                   </CardContent>
