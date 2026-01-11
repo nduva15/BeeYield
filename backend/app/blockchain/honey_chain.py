@@ -137,9 +137,9 @@ class HoneyBlockchain:
             chain_data = [block.to_dict() for block in self.chain]
             with open(self._get_chain_path(), "w") as f:
                 json.dump(chain_data, f, indent=2)
-            print(f"💾 Blockchain saved to {self._get_chain_path()}")
+            print(f"BLOCKCHAIN saved to {self._get_chain_path()}")
         except Exception as e:
-            print(f"⚠️ Failed to save blockchain: {e}")
+            print(f"FAILED to save blockchain: {e}")
 
     def _load_chain(self) -> bool:
         """Load blockchain from disk"""
@@ -148,10 +148,10 @@ class HoneyBlockchain:
              import json
              path = self._get_chain_path()
              if not os.path.exists(path):
-                 print(f"ℹ️ No existing blockchain found at {path}")
+                 print(f"INFO: No existing blockchain found at {path}")
                  return False
                  
-             print(f"📂 Loading blockchain from {path}...")
+             print(f"LOAD: Loading blockchain from {path}...")
              with open(path, "r") as f:
                  chain_data = json.load(f)
              
@@ -178,10 +178,10 @@ class HoneyBlockchain:
                  block.hash = b_data["hash"] # Restore hash
                  self.chain.append(block)
              
-             print(f"✅ Loaded {len(self.chain)} blocks from disk.")
+             print(f"OK: Loaded {len(self.chain)} blocks from disk.")
              return True
         except Exception as e:
-            print(f"⚠️ Failed to load blockchain: {e}")
+            print(f"ERROR: Failed to load blockchain: {e}")
             return False
     
     # ==================== FARMER OPERATIONS ====================
@@ -717,7 +717,7 @@ class HoneyBlockchain:
         if self.chain_length > 1:
             return  # Already has data
 
-        print("🐝 Initializing HoneyChain Bootstrap...")
+        print("BEE: Initializing HoneyChain Bootstrap...")
         
         try:
             # 1. Register Only One Farmer: Timothy Nduva

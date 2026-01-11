@@ -20,11 +20,11 @@ def get_supabase() -> Optional[Client]:
             key = settings.SUPABASE_KEY
             if url and key:
                 _supabase_client = create_client(url, key)
-                print(f"✅ Connected to Supabase: {url}")
+                print(f"OK: Connected to Supabase: {url}")
             else:
-                print("⚠️ Supabase credentials not configured")
+                print("WARNING: Supabase credentials not configured")
         except Exception as e:
-            print(f"⚠️ Supabase connection failed: {e}")
+            print(f"ERROR: Supabase connection failed: {e}")
             _supabase_client = None
     
     return _supabase_client
