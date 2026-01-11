@@ -43,7 +43,7 @@ const App = () => (
           <CartDrawer />
           <Layout>
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<PollinationServices />} />
               <Route path="/about" element={<About />} />
               <Route path="/impact" element={<Impact />} />
               <Route path="/shop" element={<Shop />} />

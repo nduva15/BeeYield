@@ -6,10 +6,9 @@ import {
   QrCode, MapPin, Calendar, Leaf, Info, Heart,
   Shield, Droplets, Home, Users, Award,
   CheckCircle2, Thermometer, CloudRain,
-  Activity, Zap, Box, Factory, Package, Cpu, Loader2, Bug, Sprout, Smartphone, Database, TreePine
+  Activity, Loader2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { apiGet } from "@/services/api";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -20,64 +19,38 @@ import {
 } from "@/components/ui/dialog";
 import { Html5QrcodeScanner } from "html5-qrcode";
 
-interface TraceJourneyStep {
-  title: string;
-  date: string;
-  location: string;
-  description: string;
-  icon: string;
-  data: any;
-  hash?: string;
-}
-
-interface TraceResponse {
-  batch_code: string;
-  product_name: string;
-  verified: boolean;
-  blockchain_verified: boolean;
-  verification_url: string;
-  farmer: {
-    name: string;
-    region: string;
-    county: string;
-    story: string;
-    registration_date: string;
-  } | null;
-  apiary: {
-    name: string;
-    location_name: string;
-    region: string;
-    county: string;
-    environment_type: string;
-    flora_types: string[];
-    latitude: number;
-    longitude: number;
-  } | null;
-  hive: {
-    hive_code: string;
-    hive_type: string;
-    bee_type: string;
-    has_sensors: boolean;
-  } | null;
-  story_title: string;
-  story_content: string;
-  impact_stats: Record<string, string>;
-  sensor_snapshot: {
-    avg_temp: number;
-    avg_humidity: number;
-    weight_kg: number;
-    acoustic_health: string;
-  } | null;
-  timeline: TraceJourneyStep[];
-}
-
 const Traceability = () => {
   const [qrCode, setQrCode] = useState("");
   const [showResults, setShowResults] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const [batchData, setBatchData] = useState<TraceResponse | null>(null);
   const [isScanning, setIsScanning] = useState(false);
+
+  // Mock data with Timothy Nduva as the only farmer/beekeeper
+  const mockData = {
+    batchId: "PH2024-WF-0342",
+    harvestDate: "August 15, 2025",
+    location: "BeeYield Kibwezi Apiary, Kenya",
+    coordinates: "42.3601° N, 71.0589° W",
+    beekeeper: "Timothy Nduva",
+    flowerSource: "Acacia, Maize, Mangoes (Mixed)",
+    certifications: ["Organic", "Fair Trade", "Non-GMO"],
+    sensorData: {
+      temperature: "34.5",
+      humidity: "52",
+      colonyHealth: "OPTIMAL"
+    },
+    story: "A third-generation beekeeper committed to sustainable practices and bee welfare. Timothy has been nurturing bees in the Kibwezi region for over 15 years, preserving traditional techniques while embracing modern technology."
+  };
+
+  const traceabilityFeatures = [
+    { icon: Home, label: "Hive Location", description: "Know exactly which hive your honey came from" },
+    { icon: Users, label: "Beekeeper", description: "Meet the guardian who nurtured your honey" },
+    { icon: Leaf, label: "Flower Source", description: "Discover the blooms that flavored your jar" },
+    { icon: Droplets, label: "Water Source", description: "Trace the pure water that sustained the colony" },
+    { icon: MapPin, label: "Geographic Origin", description: "GPS coordinates of every harvest" },
+    { icon: Calendar, label: "Harvest Date", description: "Know when your honey was collected" },
+  ];
 
   useEffect(() => {
     let scanner: Html5QrcodeScanner | null = null;
@@ -127,63 +100,44 @@ const Traceability = () => {
     if (qrCode.trim()) {
       setIsLoading(true);
       setShowResults(false);
-      try {
-        toast({
-          title: "Accessing HoneyChain... 🔗",
-          description: "Verifying cryptographic records... 🕵️‍♂️",
-        });
 
-        const data = await apiGet<TraceResponse>(`/traceability/code/${qrCode.trim()}`);
+      // Show accessing blockchain toast
+      toast({
+        title: "Accessing HoneyChain... 🔗",
+        description: "Verifying cryptographic records... 🕵️‍♂️",
+      });
 
-        if (data) {
-          setBatchData(data);
-          setShowResults(true);
-          toast({
-            title: "Verified Authenticity! ✅",
-            description: "Success! 🐝 Full journey found on the BeeYield Blockchain.",
-          });
-        }
-      } catch (error) {
-        console.error("Trace error:", error);
-        toast({
-          variant: "destructive",
-          title: "Code Not Found",
-          description: "This code was not found in our blockchain records. Please check the bottom of your jar.",
-        });
-      } finally {
+      // Simulate blockchain verification delay
+      setTimeout(() => {
+        setShowResults(true);
         setIsLoading(false);
-      }
+        toast({
+          title: "Verified Authenticity! ✅",
+          description: "Success! 🐝 Full journey found on the BeeYield Blockchain.",
+        });
+      }, 1500);
     }
   };
 
-  const IconMap: Record<string, any> = {
-    Basket: Bug,
-    Factory: Factory,
-    Shield: Shield,
-    Jar: Droplets,
-    Hexagon: Home,
-    MapPin: MapPin,
-  };
-
   return (
-    <div className="min-h-screen bg-[#fafaf9]">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden bg-white/50 border-b border-border/40 py-24 sm:py-32">
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,theme(colors.amber.100),white)] opacity-20" />
-        <div className="absolute inset-y-0 right-1/2 -z-10 mr-16 w-[200%] origin-bottom-left skew-x-[-30deg] bg-white shadow-xl shadow-amber-600/10 ring-1 ring-amber-50 sm:mr-28 lg:mr-0 xl:mr-16 xl:origin-center" />
+    <div className="min-h-screen">
+      {/* Hero Section - GREEN STYLED */}
+      <div className="relative overflow-hidden bg-gradient-to-b from-nature-green to-nature-green/80 py-24 sm:py-32">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,theme(colors.green.200),transparent)] opacity-30" />
+        <div className="absolute inset-y-0 right-1/2 -z-10 mr-16 w-[200%] origin-bottom-left skew-x-[-30deg] bg-white/10 shadow-xl shadow-green-900/10 ring-1 ring-green-50/20 sm:mr-28 lg:mr-0 xl:mr-16 xl:origin-center" />
 
         <div className="container mx-auto px-6 lg:px-12 text-center">
-          <Badge className="mb-6 bg-nature-green/10 text-nature-green border-nature-green/20 px-4 py-1.5 text-xs font-black uppercase tracking-widest">
+          <Badge className="mb-6 bg-white/20 text-white border-white/30 px-4 py-1.5 text-xs font-black uppercase tracking-widest">
             Verified Traceability
           </Badge>
-          <h1 className="text-5xl font-black tracking-tight text-neutral-900 sm:text-7xl mb-8">
-            From Hive to <span className="text-nature-green">Home</span>
+          <h1 className="text-5xl font-black tracking-tight text-white sm:text-7xl mb-8">
+            From Hive to <span className="text-green-100">Home</span>
           </h1>
-          <p className="mx-auto max-w-2xl text-xl text-neutral-600 leading-relaxed mb-12">
+          <p className="mx-auto max-w-2xl text-xl text-white/90 leading-relaxed mb-12">
             Every jar of BeeYield honey tells a story. Use your unique batch code to unlock the precise cryptographic journey of your purchase.
           </p>
 
-          <Card className="mx-auto max-w-xl border-none shadow-2xl shadow-neutral-200/50 overflow-hidden rounded-3xl">
+          <Card className="mx-auto max-w-xl border-none shadow-2xl shadow-green-900/20 overflow-hidden rounded-3xl">
             <CardContent className="p-8 sm:p-10">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-3 text-left">
@@ -197,7 +151,7 @@ const Traceability = () => {
                       value={qrCode}
                       onChange={(e) => setQrCode(e.target.value)}
                       placeholder="e.g. PH2024-WF-0342"
-                      className="h-16 px-6 rounded-2xl border-2 border-neutral-100 group-hover:border-primary/50 focus:border-primary transition-all text-lg font-bold placeholder:text-neutral-300"
+                      className="h-16 px-6 rounded-2xl border-2 border-neutral-100 group-hover:border-nature-green/50 focus:border-nature-green transition-all text-lg font-bold placeholder:text-neutral-300"
                     />
                     <div className="absolute right-2 top-2">
                       <Button
@@ -205,7 +159,7 @@ const Traceability = () => {
                         variant="ghost"
                         size="icon"
                         onClick={() => setIsScanning(true)}
-                        className="h-12 w-12 rounded-xl hover:bg-primary/10 hover:text-primary"
+                        className="h-12 w-12 rounded-xl hover:bg-nature-green/10 hover:text-nature-green"
                       >
                         <QrCode className="h-6 w-6" />
                       </Button>
@@ -215,7 +169,7 @@ const Traceability = () => {
                 <Button
                   type="submit"
                   disabled={isLoading || !qrCode.trim()}
-                  className="w-full h-16 rounded-2xl bg-neutral-900 hover:bg-neutral-800 text-white font-black text-lg transition-all shadow-xl shadow-neutral-900/10"
+                  className="w-full h-16 rounded-2xl bg-nature-green hover:bg-nature-green/90 text-white font-black text-lg transition-all shadow-xl shadow-nature-green/20"
                 >
                   {isLoading ? (
                     <span className="flex items-center gap-3">
@@ -248,7 +202,7 @@ const Traceability = () => {
       </Dialog>
 
       {/* Results Section */}
-      {showResults && batchData && (
+      {showResults && (
         <div className="container mx-auto px-6 py-20 lg:px-12 max-w-7xl animate-in fade-in slide-in-from-bottom-8 duration-700">
           <div className="grid lg:grid-cols-3 gap-12">
 
@@ -259,15 +213,13 @@ const Traceability = () => {
               <div className="flex flex-col sm:flex-row justify-between items-start gap-6 border-b border-neutral-200 pb-12">
                 <div>
                   <div className="flex items-center gap-3 mb-4">
-                    {batchData.blockchain_verified && (
-                      <Badge className="bg-nature-green text-white border-none px-3 py-1 gap-1.5 font-bold">
-                        <Shield className="h-3.5 w-3.5" /> CRYPTO-VERIFIED
-                      </Badge>
-                    )}
-                    <span className="text-sm font-black text-neutral-400 uppercase tracking-widest">BATCH ID: {batchData.batch_code}</span>
+                    <Badge className="bg-nature-green text-white border-none px-3 py-1 gap-1.5 font-bold">
+                      <Shield className="h-3.5 w-3.5" /> CRYPTO-VERIFIED
+                    </Badge>
+                    <span className="text-sm font-black text-neutral-400 uppercase tracking-widest">BATCH ID: {mockData.batchId}</span>
                   </div>
                   <h2 className="text-4xl sm:text-6xl font-black text-neutral-900 leading-tight">
-                    {batchData.product_name}
+                    Pure Wildflower Honey
                   </h2>
                 </div>
                 <div className="bg-nature-green/10 p-6 rounded-3xl border border-nature-green/20 text-center">
@@ -283,7 +235,7 @@ const Traceability = () => {
                     <Thermometer className="h-6 w-6 text-blue-600" />
                   </div>
                   <p className="text-xs font-black text-blue-400 uppercase tracking-widest mb-1">Nest Temp</p>
-                  <p className="text-3xl font-black text-neutral-900">{batchData.sensor_snapshot?.avg_temp || "34.5"}°C</p>
+                  <p className="text-3xl font-black text-neutral-900">{mockData.sensorData.temperature}°C</p>
                 </Card>
 
                 <Card className="rounded-3xl border-none shadow-sm bg-cyan-50/50 p-8">
@@ -291,7 +243,7 @@ const Traceability = () => {
                     <Droplets className="h-6 w-6 text-cyan-600" />
                   </div>
                   <p className="text-xs font-black text-cyan-400 uppercase tracking-widest mb-1">Humidity</p>
-                  <p className="text-3xl font-black text-neutral-900">{batchData.sensor_snapshot?.avg_humidity || "52"}%</p>
+                  <p className="text-3xl font-black text-neutral-900">{mockData.sensorData.humidity}%</p>
                 </Card>
 
                 <Card className="rounded-3xl border-none shadow-sm bg-nature-green/5 p-8">
@@ -299,108 +251,103 @@ const Traceability = () => {
                     <Activity className="h-6 w-6 text-nature-green" />
                   </div>
                   <p className="text-xs font-black text-nature-green uppercase tracking-widest mb-1">Colony Health</p>
-                  <p className="text-3xl font-black text-neutral-900">{batchData.sensor_snapshot?.acoustic_health || "OPTIMAL"}</p>
+                  <p className="text-3xl font-black text-neutral-900">{mockData.sensorData.colonyHealth}</p>
                 </Card>
               </div>
 
-              {/* Journey Timeline */}
-              <div className="space-y-10">
-                <div className="flex items-center gap-4">
-                  <div className="h-px bg-neutral-200 flex-grow" />
-                  <h3 className="text-sm font-black text-neutral-400 uppercase tracking-widest">Full Journey Records</h3>
-                  <div className="h-px bg-neutral-200 flex-grow" />
-                </div>
-
-                <div className="relative space-y-16 before:absolute before:inset-0 before:left-8 before:h-full before:w-[2px] before:bg-neutral-200">
-                  {batchData.timeline.map((step, idx) => {
-                    const StepIcon = IconMap[step.icon] || Info;
-                    return (
-                      <div key={idx} className="relative pl-24 group">
-                        <div className="absolute left-0 top-0 w-16 h-16 rounded-2xl bg-white border-2 border-neutral-100 flex items-center justify-center z-10 shadow-sm group-hover:border-primary/30 transition-colors">
-                          <StepIcon className="h-7 w-7 text-neutral-400 group-hover:text-primary transition-colors" />
-                        </div>
-                        <div className="bg-white p-8 rounded-3xl border border-neutral-100 shadow-sm group-hover:shadow-md transition-all">
-                          <div className="flex justify-between items-start mb-4">
-                            <h4 className="text-2xl font-black text-neutral-900">{step.title}</h4>
-                            <span className="text-xs font-black text-neutral-400 uppercase tracking-widest bg-neutral-50 px-3 py-1 rounded-full">{step.date}</span>
-                          </div>
-                          <p className="text-neutral-600 text-lg leading-relaxed mb-6">
-                            {step.description}
-                          </p>
-                          <div className="flex items-center gap-2 text-xs font-mono text-neutral-400 bg-neutral-50 p-3 rounded-xl border border-neutral-100 overflow-hidden">
-                            <Database className="h-3.5 w-3.5 flex-shrink-0" />
-                            <span className="truncate">BLOCK_HASH: {step.hash || "0xab12...89cf"}</span>
-                          </div>
-                        </div>
+              {/* Honey Information Details */}
+              <Card className="border-none shadow-soft rounded-3xl">
+                <CardContent className="p-8">
+                  <h2 className="mb-6 text-2xl font-bold">Honey Information</h2>
+                  <div className="space-y-6">
+                    <div className="flex items-start gap-4">
+                      <div className="rounded-lg bg-nature-green/10 p-3">
+                        <Info className="h-5 w-5 text-nature-green" />
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
+                      <div>
+                        <h3 className="font-semibold">Batch ID</h3>
+                        <p className="text-muted-foreground">{mockData.batchId}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-4">
+                      <div className="rounded-lg bg-nature-green/10 p-3">
+                        <Calendar className="h-5 w-5 text-nature-green" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold">Harvest Date</h3>
+                        <p className="text-muted-foreground">{mockData.harvestDate}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-4">
+                      <div className="rounded-lg bg-nature-green/10 p-3">
+                        <MapPin className="h-5 w-5 text-nature-green" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold">Origin</h3>
+                        <p className="text-muted-foreground">{mockData.location}</p>
+                        <p className="text-sm text-muted-foreground">{mockData.coordinates}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-4">
+                      <div className="rounded-lg bg-nature-green/10 p-3">
+                        <Leaf className="h-5 w-5 text-nature-green" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold">Flower Source</h3>
+                        <p className="text-muted-foreground">{mockData.flowerSource}</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Right Column: Farmer & Environment */}
             <div className="space-y-8">
-              {batchData.farmer && (
-                <Card className="rounded-[2.5rem] border-none shadow-xl bg-neutral-900 text-white overflow-hidden p-10">
-                  <div className="flex items-center gap-6 mb-8">
-                    <div className="w-20 h-20 rounded-2xl bg-white/10 flex items-center justify-center border border-white/10 p-4">
-                      <Users className="h-full w-full text-nature-green" />
-                    </div>
-                    <div>
-                      <h4 className="text-2xl font-black">{batchData.farmer.name}</h4>
-                      <p className="text-nature-green font-bold text-sm">Master Beekeeper</p>
-                    </div>
+              {/* Timothy Nduva Beekeeper Card */}
+              <Card className="rounded-[2.5rem] border-none shadow-xl bg-neutral-900 text-white overflow-hidden p-10">
+                <div className="flex items-center gap-6 mb-8">
+                  <div className="w-20 h-20 rounded-2xl bg-white/10 flex items-center justify-center border border-white/10 p-4">
+                    <Users className="h-full w-full text-nature-green" />
                   </div>
-                  <p className="text-neutral-400 italic leading-relaxed mb-8">
-                    "{batchData.farmer.story}"
-                  </p>
-                  <div className="space-y-4 pt-8 border-t border-white/10">
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-neutral-500 font-bold uppercase tracking-widest">Location</span>
-                      <span className="font-bold">{batchData.farmer.region}, {batchData.farmer.county}</span>
-                    </div>
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-neutral-500 font-bold uppercase tracking-widest">Since</span>
-                      <span className="font-bold">2020</span>
-                    </div>
-                  </div>
-                </Card>
-              )}
-
-              <Card className="rounded-[2.5rem] border-border/40 shadow-xl bg-white p-10">
-                <h4 className="text-xl font-black mb-8">Environmental Context</h4>
-                <div className="space-y-8">
-                  <div className="flex gap-5">
-                    <div className="w-12 h-12 rounded-xl bg-neutral-100 flex items-center justify-center flex-shrink-0">
-                      <Leaf className="h-6 w-6 text-neutral-900" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-black text-neutral-400 uppercase tracking-widest mb-1">Primary Flora</p>
-                      <p className="font-bold text-neutral-900">{batchData.apiary?.flora_types.join(", ") || "Mixed Wildflowers"}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-5">
-                    <div className="w-12 h-12 rounded-xl bg-neutral-100 flex items-center justify-center flex-shrink-0">
-                      <Sprout className="h-6 w-6 text-neutral-900" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-black text-neutral-400 uppercase tracking-widest mb-1">Hive Condition</p>
-                      <p className="font-bold text-neutral-900">{batchData.hive?.hive_type} - {batchData.hive?.bee_type}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-5">
-                    <div className="w-12 h-12 rounded-xl bg-neutral-100 flex items-center justify-center flex-shrink-0">
-                      <Home className="h-6 w-6 text-neutral-900" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-black text-neutral-400 uppercase tracking-widest mb-1">Environment</p>
-                      <p className="font-bold text-neutral-900">{batchData.apiary?.environment_type || "Savannah Forest"}</p>
-                    </div>
+                  <div>
+                    <h4 className="text-2xl font-black">{mockData.beekeeper}</h4>
+                    <p className="text-nature-green font-bold text-sm">Master Beekeeper</p>
                   </div>
                 </div>
+                <p className="text-neutral-400 italic leading-relaxed mb-8">
+                  "{mockData.story}"
+                </p>
+                <div className="space-y-4 pt-8 border-t border-white/10">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-neutral-500 font-bold uppercase tracking-widest">Location</span>
+                    <span className="font-bold">Kibwezi, Kenya</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-neutral-500 font-bold uppercase tracking-widest">Since</span>
+                    <span className="font-bold">2010</span>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Certifications */}
+              <Card className="border-none shadow-soft rounded-3xl">
+                <CardContent className="p-8">
+                  <h3 className="mb-4 font-semibold">Certifications</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {mockData.certifications.map((cert) => (
+                      <span
+                        key={cert}
+                        className="rounded-full bg-nature-green/20 px-4 py-2 text-sm font-medium text-nature-green"
+                      >
+                        {cert}
+                      </span>
+                    ))}
+                  </div>
+                </CardContent>
               </Card>
 
               {/* Impact Card */}
@@ -429,7 +376,135 @@ const Traceability = () => {
         </div>
       )}
 
-      {/* Education/Mission - Only show if not scrolling through results */}
+      {/* Mission Statement - Champions for Bees */}
+      <div className="bg-nature-green/5 py-20">
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className="mx-auto max-w-6xl text-center">
+            <div className="mb-6 inline-block rounded-full bg-nature-green/20 p-4">
+              <Heart className="h-10 w-10 text-nature-green" />
+            </div>
+            <h2 className="mb-6 text-4xl font-bold">Champions for Saving Bees</h2>
+            <p className="mb-8 text-xl leading-relaxed text-muted-foreground">
+              At BeeYield, we believe that the future of our planet depends on the health of our pollinators.
+              That's why we've made a radical commitment: <span className="font-semibold text-nature-green">we only harvest 50% of the honey our bees produce</span>.
+              The other half? It stays exactly where it belongs—with the bees who made it.
+            </p>
+            <p className="text-lg leading-relaxed text-muted-foreground">
+              While others chase profits, we chase purpose. Our bees aren't just workers; they're partners in a mission
+              to restore balance to our ecosystem. Every jar you purchase directly supports sustainable beekeeping practices
+              and funds our bee conservation initiatives across the region.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Section */}
+      <div className="py-20">
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className="grid gap-8 md:grid-cols-3">
+            <Card className="border-none bg-nature-green/5 text-center shadow-soft">
+              <CardContent className="pt-8 pb-8">
+                <div className="mb-4 text-5xl font-bold text-nature-green">883 kg</div>
+                <p className="text-lg font-medium">Pure Traceable Honey</p>
+                <p className="mt-2 text-sm text-muted-foreground">Harvested and verified to date</p>
+              </CardContent>
+            </Card>
+            <Card className="border-none bg-nature-green/5 text-center shadow-soft">
+              <CardContent className="pt-8 pb-8">
+                <div className="mb-4 text-5xl font-bold text-nature-green">50%</div>
+                <p className="text-lg font-medium">Ethical Harvest Rate</p>
+                <p className="mt-2 text-sm text-muted-foreground">Half stays with the bees, always</p>
+              </CardContent>
+            </Card>
+            <Card className="border-none bg-nature-green/5 text-center shadow-soft">
+              <CardContent className="pt-8 pb-8">
+                <div className="mb-4 text-5xl font-bold text-nature-green">100%</div>
+                <p className="text-lg font-medium">Full Transparency</p>
+                <p className="mt-2 text-sm text-muted-foreground">Every drop traceable to source</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+
+      {/* Why Traceability Matters */}
+      <div className="bg-foreground/5 py-20">
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className="mx-auto max-w-6xl">
+            <div className="mb-12 text-center">
+              <div className="mb-4 inline-block rounded-full bg-nature-green/10 p-4">
+                <Shield className="h-10 w-10 text-nature-green" />
+              </div>
+              <h2 className="mb-4 text-4xl font-bold">Trust in Every Drop</h2>
+              <p className="text-xl text-muted-foreground">
+                In a booming honey market flooded with adulterated products, we're setting a new standard for transparency.
+              </p>
+            </div>
+
+            <div className="mb-12 rounded-2xl bg-background p-8 shadow-soft">
+              <p className="mb-6 text-lg leading-relaxed text-muted-foreground">
+                Did you know that up to <span className="font-semibold text-destructive">70% of honey on supermarket shelves</span> may be
+                adulterated with cheap syrups or mislabeled about its origin? In an industry plagued by fraud,
+                we believe you deserve to know exactly what you're putting on your table.
+              </p>
+              <p className="text-lg leading-relaxed text-muted-foreground">
+                Our revolutionary traceability system lets you trace every jar back to its source—not just the country
+                or region, but the <span className="font-semibold text-nature-green">exact hive, the beekeeper who cared for it,
+                  the flowers the bees visited, and even the water sources that sustained the colony</span>.
+                This isn't just honey; it's a story you can verify.
+              </p>
+            </div>
+
+            {/* What We Trace Grid */}
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {traceabilityFeatures.map((feature) => (
+                <div
+                  key={feature.label}
+                  className="flex items-start gap-4 rounded-xl bg-background p-4 shadow-soft transition-all hover:shadow-md"
+                >
+                  <div className="rounded-lg bg-nature-green/10 p-3">
+                    <feature.icon className="h-5 w-5 text-nature-green" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold">{feature.label}</h4>
+                    <p className="text-sm text-muted-foreground">{feature.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* The Promise Section */}
+      <div className="bg-nature-green/5 py-20">
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className="mx-auto max-w-6xl text-center">
+            <div className="mb-6 inline-block rounded-full bg-nature-green/10 p-4">
+              <Award className="h-10 w-10 text-nature-green" />
+            </div>
+            <h2 className="mb-6 text-4xl font-bold">Our Promise to You</h2>
+            <p className="mb-8 text-xl leading-relaxed text-muted-foreground">
+              Every jar of BeeYield honey carries more than just sweetness—it carries a story of ethical beekeeping,
+              environmental stewardship, and unwavering commitment to quality. When you choose our honey, you're not
+              just buying a product; you're joining a movement to protect the pollinators that sustain our world.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <div className="rounded-full bg-background px-6 py-3 shadow-soft">
+                <span className="font-medium">🐝 Bee-First Philosophy</span>
+              </div>
+              <div className="rounded-full bg-background px-6 py-3 shadow-soft">
+                <span className="font-medium">🌸 Single-Origin Purity</span>
+              </div>
+              <div className="rounded-full bg-background px-6 py-3 shadow-soft">
+                <span className="font-medium">🔍 Complete Transparency</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Education/Mission - Data Philosophy */}
       {!showResults && (
         <div className="py-24 sm:py-32 bg-white">
           <div className="container mx-auto px-6 lg:px-12 text-center">
