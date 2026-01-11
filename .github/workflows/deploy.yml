@@ -26,17 +26,17 @@ jobs:
       - name: Build Frontend
         run: npm run build
         env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_SUPABASE_URL: "${{ secrets.VITE_SUPABASE_URL }}"
+          VITE_SUPABASE_ANON_KEY: "${{ secrets.VITE_SUPABASE_ANON_KEY }}"
+          VITE_API_URL: "${{ secrets.VITE_API_URL }}"
 
       - name: Deploy to Hostinger via SSH
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.HOSTINGER_HOST }}
-          username: ${{ secrets.HOSTINGER_USERNAME }}
-          password: ${{ secrets.HOSTINGER_PASSWORD }}
-          port: ${{ secrets.HOSTINGER_PORT || 22 }}
+          host: "${{ secrets.HOSTINGER_HOST }}"
+          username: "${{ secrets.HOSTINGER_USERNAME }}"
+          password: "${{ secrets.HOSTINGER_PASSWORD }}"
+          port: ${{ secrets.HOSTINGER_PORT || '22' }}
           source: "dist/*"
           target: "public_html"
           strip_components: 1

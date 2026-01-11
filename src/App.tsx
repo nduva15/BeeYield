@@ -29,6 +29,7 @@ import Media from "./pages/Media";
 import Notes from "./pages/Notes";
 import BeeLearn from "./pages/BeeLearn";
 import Checkout from "./pages/Checkout";
+import AccountSettings from "./pages/AccountSettings";
 import CartDrawer from "./components/CartDrawer";
 
 const queryClient = new QueryClient();
@@ -72,6 +73,7 @@ const App = () => (
               <Route path="/honey" element={<Home />} />
               <Route path="/learn" element={<BeeLearn />} />
               <Route path="/checkout" element={<Checkout />} />
+              <Route path="/account" element={<AccountSettings />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Layout>

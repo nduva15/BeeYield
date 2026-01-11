@@ -1,37 +1,15 @@
-import { useState, useEffect } from "react";
-import { apiGet } from "@/services/api";
-import { Sprout, Droplets, TreePine, Bug, Download, ArrowRight, Heart } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Sprout, Droplets, TreePine, Bug, Download, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import impactImage from "@/assets/impact-beekeeping.jpg";
 
-interface ImpactStats {
-  hive_count?: string | number;
-  beekeepers?: string | number;
-  total_honey_kg?: string | number;
-}
-
 const Impact = () => {
-  const [impactStats, setImpactStats] = useState<ImpactStats | null>(null);
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const data = await apiGet<ImpactStats>("/stats/impact");
-        setImpactStats(data);
-      } catch (err: unknown) {
-        console.error("Failed to fetch impact stats:", err);
-      }
-    };
-    fetchStats();
-  }, []);
-
   const stats = [
-    { label: "Beehives Protected", value: impactStats?.hive_count || "2,500+", icon: Bug },
-    { label: "Trees Planted", value: "1,500+", icon: TreePine },
-    { label: "Beekeepers Trained", value: impactStats?.beekeepers || "500+", icon: Heart },
-    { label: "Honey Produced (kg)", value: impactStats?.total_honey_kg || "50,000", icon: Droplets },
+    { label: "Beehives Protected", value: "150+", icon: Bug },
+    { label: "Trees Planted", value: "2500+", icon: TreePine },
+    { label: "Bees Saved (Colonies)", value: "2M+", icon: Droplets },
+    { label: "Carbon Offset (Tons)", value: "2+", icon: Sprout },
   ];
 
   return (
@@ -167,8 +145,8 @@ const Impact = () => {
                   Expand to 200+ partner beekeepers
                 </li>
               </ul>
-              <Link
-                to="/GlobalHiveNetwork"
+              <Link 
+                to="/GlobalHiveNetwork" 
                 className="mt-6 inline-flex items-center gap-2 bg-primary-foreground text-primary px-4 py-2 rounded-lg font-semibold hover:opacity-90 transition-opacity"
               >
                 Join Our Global Hive Network <ArrowRight className="h-4 w-4" />
