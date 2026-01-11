@@ -1,10 +1,10 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Cpu, Wifi, LayoutDashboard, ArrowRight,
   Quote, Check, BookOpen, Mail, ChevronRight,
   BarChart3, Thermometer, Mic
 } from "lucide-react";
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 

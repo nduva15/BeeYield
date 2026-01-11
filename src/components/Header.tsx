@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ChevronDown, ShoppingBag } from "lucide-react";
+import { Menu, X, ChevronDown, ShoppingBag, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/hooks/useAuth";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -102,6 +103,14 @@ const Header = () => {
               Traceability
             </Link>
           </Button>
+
+          <Link
+            to="/account"
+            className="p-2 hover:bg-muted rounded-full transition-all active:scale-90 group"
+            aria-label="Account settings"
+          >
+            <User className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
+          </Link>
 
           <button
             onClick={openCart}

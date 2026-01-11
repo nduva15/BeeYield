@@ -1,10 +1,11 @@
+import React from "react";
+import { Link } from "react-router-dom";
 import {
   ArrowRight, Activity, Sprout, BarChart3,
   Cpu, Wifi, Check
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "react-router-dom";
 
 const PollinationSolutions = () => {
   return (
@@ -59,11 +60,9 @@ const PollinationSolutions = () => {
                   </div>
                 </div>
 
-                <Link to="/precision-pollination">
-                  <Button size="lg" className="w-full gap-2">
-                    Explore In-Hive Technology <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </Link>
+                <Button size="lg" className="w-full gap-2" asChild>
+                  <Link to="/precision-pollination">Explore In-Hive Technology <ArrowRight className="h-4 w-4" /></Link>
+                </Button>
               </div>
 
               {/* Background Image Overlay */}
@@ -104,11 +103,9 @@ const PollinationSolutions = () => {
                   </div>
                 </div>
 
-                <Link to="/in-land-pollination">
-                  <Button size="lg" variant="outline" className="w-full gap-2 border-accent-foreground/20 text-accent-foreground hover:bg-accent-foreground hover:text-background">
-                    Explore In-Field Technology <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </Link>
+                <Button size="lg" variant="outline" className="w-full gap-2 border-accent-foreground/20 text-accent-foreground hover:bg-accent-foreground hover:text-background" asChild>
+                  <Link to="/in-land-pollination">Explore In-Field Technology <ArrowRight className="h-4 w-4" /></Link>
+                </Button>
               </div>
 
               {/* Background Image Overlay */}
