@@ -5,7 +5,7 @@ from fastapi import APIRouter
 from app.api.api_v1.endpoints import (
     company, auth, traceability, contact, 
     forms, shop, blog, careers, media, 
-    services, jobs, analytics, notes
+    services, jobs, analytics, notes, admin
 )
 
 api_router = APIRouter()
@@ -38,6 +38,9 @@ api_router.include_router(auth.router, prefix="/auth", tags=["Auth"])
 
 # Notes
 api_router.include_router(notes.router, prefix="/notes", tags=["Notes"])
+
+# Admin
+api_router.include_router(admin.router, prefix="/admin", tags=["Admin"])
 
 # Stats endpoint at root level
 @api_router.get("/stats/impact")

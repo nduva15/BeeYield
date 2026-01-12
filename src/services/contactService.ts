@@ -1,7 +1,7 @@
 /**
- * Contact Service - Connects to Python Backend
+ * Contact Service - Connects to Supabase
  */
-import { API_V1_URL } from "./api";
+import { supabase } from "@/lib/supabase";
 
 export interface ContactSubmission {
     first_name: string;
@@ -42,25 +42,17 @@ export interface NewsletterSubscription {
 }
 
 export const submitContactForm = async (data: ContactSubmission) => {
+    if (!supabase) {
+        throw new Error("Supabase client is not initialized");
+    }
+
     try {
-        const payload = {
-            ...data,
-            company: data.company
-        };
+        const { error } = await supabase
+            .from("contact_submissions")
+            .insert([data]);
 
-        const response = await fetch(`${API_V1_URL}/contact/submit`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-        });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.detail || "Failed to submit contact form");
-        }
-        return await response.json();
+        if (error) throw error;
+        return { success: true };
     } catch (error) {
         console.error("Error submitting contact form:", error);
         throw error;
@@ -68,20 +60,17 @@ export const submitContactForm = async (data: ContactSubmission) => {
 };
 
 export const submitPollinationRequest = async (data: PollinationRequest) => {
-    try {
-        const response = await fetch(`${API_V1_URL}/contact/pollination`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        });
+    if (!supabase) {
+        throw new Error("Supabase client is not initialized");
+    }
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.detail || "Failed to submit pollination request");
-        }
-        return await response.json();
+    try {
+        const { error } = await supabase
+            .from("pollination_requests")
+            .insert([data]);
+
+        if (error) throw error;
+        return { success: true };
     } catch (error) {
         console.error("Error submitting pollination request:", error);
         throw error;
@@ -89,22 +78,31 @@ export const submitPollinationRequest = async (data: PollinationRequest) => {
 };
 
 export const submitNewsletterSubscription = async (data: NewsletterSubscription) => {
-    try {
-        const response = await fetch(`${API_V1_URL}/contact/newsletter`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        });
+    if (!supabase) {
+        throw new Error("Supabase client is not initialized");
+    }
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.detail || "Failed to subscribe to newsletter");
+    try {
+        // Check if already subscribed
+        const { data: existing } = await supabase
+            .from("newsletter_subscribers")
+            .select("email")
+            .eq("email", data.email)
+            .single();
+
+        if (existing) {
+            return { status: "success", message: "Already subscribed" };
         }
-        return await response.json();
+
+        const { error } = await supabase
+            .from("newsletter_subscribers")
+            .insert([data]);
+
+        if (error) throw error;
+        return { success: true };
     } catch (error) {
         console.error("Error subscribing to newsletter:", error);
         throw error;
     }
 };
+

@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
-import { apiGet, apiPost } from "@/services/api";
+import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2, Plus, StickyNote, Ghost } from "lucide-react";
+import { Loader2, Plus, StickyNote, Ghost, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Helmet } from "react-helmet";
 
 interface Note {
     id: number;
     title: string;
+    created_at?: string;
 }
 
 const Notes = () => {
@@ -19,13 +20,19 @@ const Notes = () => {
     const [submitting, setSubmitting] = useState(false);
 
     const fetchNotes = async () => {
+        if (!supabase) return;
         try {
             setLoading(true);
-            const data = await apiGet<Note[]>("/notes");
+            const { data, error } = await supabase
+                .from("notes")
+                .select("*")
+                .order("id", { ascending: true });
+
+            if (error) throw error;
             setNotes(data || []);
         } catch (error) {
             console.error("Failed to fetch notes:", error);
-            toast.error("Could not load notes. Please check if the backend is running.");
+            toast.error("Could not load notes.");
         } finally {
             setLoading(false);
         }
@@ -37,12 +44,16 @@ const Notes = () => {
 
     const handleAddNote = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!newNote.trim()) return;
+        if (!newNote.trim() || !supabase) return;
 
         try {
             setSubmitting(true);
-            // Backend expects title as query param based on our implementation
-            await apiPost(`/notes/?title=${encodeURIComponent(newNote)}`, {});
+            const { error } = await supabase
+                .from("notes" as any)
+                .insert([{ title: newNote.trim() }]);
+
+            if (error) throw error;
+
             toast.success("Note added successfully!");
             setNewNote("");
             fetchNotes();
@@ -51,6 +62,23 @@ const Notes = () => {
             toast.error("Could not add note.");
         } finally {
             setSubmitting(false);
+        }
+    };
+
+    const handleDeleteNote = async (id: number) => {
+        if (!supabase) return;
+        try {
+            const { error } = await supabase
+                .from("notes")
+                .delete()
+                .eq("id", id);
+
+            if (error) throw error;
+            toast.success("Note deleted");
+            fetchNotes();
+        } catch (error) {
+            console.error("Failed to delete note:", error);
+            toast.error("Could not delete note.");
         }
     };
 
@@ -117,10 +145,10 @@ const Notes = () => {
                         {notes.map((note, index) => (
                             <div
                                 key={note.id}
-                                className="group p-6 rounded-[2rem] bg-white dark:bg-white/5 border border-white/20 shadow-soft hover:shadow-premium transition-all duration-500 hover:-translate-y-1 animate-slide-in-bottom"
+                                className="group p-6 rounded-[2rem] bg-white dark:bg-white/5 border border-white/20 shadow-soft hover:shadow-premium transition-all duration-500 hover:-translate-y-1 animate-slide-in-bottom relative"
                                 style={{ animationDelay: `${index * 100}ms` }}
                             >
-                                <div className="flex items-start gap-4">
+                                <div className="flex items-start gap-4 pr-8">
                                     <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                                         <span className="font-bold">{note.id}</span>
                                     </div>
@@ -128,6 +156,13 @@ const Notes = () => {
                                         {note.title}
                                     </p>
                                 </div>
+                                <button
+                                    onClick={() => handleDeleteNote(note.id)}
+                                    className="absolute top-6 right-6 p-2 text-muted-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30"
+                                    title="Delete note"
+                                >
+                                    <Trash2 size={18} />
+                                </button>
                             </div>
                         ))}
                     </div>
@@ -148,3 +183,4 @@ const Notes = () => {
 };
 
 export default Notes;
+
