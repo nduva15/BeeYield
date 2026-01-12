@@ -389,7 +389,20 @@ def get_batches_db():
     """
     Get all batches from the DB (Source of Truth for Admin).
     """
-    return db_select("honey_batches", order_by="created_at", ascending=False)
+    # Try honey_batches first
+    data = db_select("honey_batches", order_by="created_at", ascending=False)
+    if not data:
+        # Fallback to 'batches' table
+        data = db_select("batches", order_by="created_at", ascending=False)
+        # Normalize fields if from legacy 'batches' table
+        for item in data:
+            if 'total_quantity_kg' in item and 'quantity_kg' not in item:
+                item['quantity_kg'] = item['total_quantity_kg']
+            if 'honey_type' not in item:
+                item['honey_type'] = "Multi-floral Honey"
+            if 'harvest_date' not in item and 'bottle_date' in item:
+                item['harvest_date'] = item['bottle_date']
+    return data
 
 @router.put("/batches/{batch_id}", response_model=Dict[str, Any])
 def update_batch(batch_id: str, batch_in: Dict[str, Any]):
@@ -418,20 +431,32 @@ def create_farmer_admin(farmer_in: Dict[str, Any]):
     Create a new farmer record.
     Uses the traceability service to ensure blockchain registration if needed.
     """
-    # For now, direct DB insert is often used by admin, 
-    # but let's use the service if it's available for consistency.
     from app.schemas import traceability as schemas
     try:
         f_schema = schemas.FarmerCreate(**farmer_in)
         return traceability_service.register_farmer(f_schema)
-    except:
-        # Fallback to direct insert if schema doesn't match or service fails
-        return db_insert("farmers", farmer_in)
+    except Exception as e:
+        # Fallback to direct insert
+        # Ensure we have a farmer_id if missing
+        if not farmer_in.get('farmer_id'):
+            import uuid
+            farmer_in['farmer_id'] = f"F-{str(uuid.uuid4())[:8].upper()}"
+        
+        res = db_insert("farmers", farmer_in)
+        if not res.get("success"):
+            raise HTTPException(status_code=500, detail=f"Failed to register farmer: {res.get('error') or str(e)}")
+        return res.get("data")[0] if res.get("data") else farmer_in
 
 @router.put("/farmers/{farmer_id}", response_model=Dict[str, Any])
 def update_farmer_admin(farmer_id: str, farmer_in: Dict[str, Any]):
-    return db_update("farmers", farmer_in, {"id": farmer_id})
+    res = db_update("farmers", farmer_in, {"id": farmer_id})
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=f"Update failed: {res.get('error')}")
+    return res.get("data")[0] if res.get("data") else farmer_in
 
 @router.delete("/farmers/{farmer_id}")
 def delete_farmer_admin(farmer_id: str):
-    return db_delete("farmers", {"id": farmer_id})
+    res = db_delete("farmers", {"id": farmer_id})
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=f"Deletion failed: {res.get('error')}")
+    return {"status": "success"}

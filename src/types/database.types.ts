@@ -11,31 +11,79 @@ export type Database = {
     Tables: {
       contact_submissions: {
         Row: {
-          id: number
+          id: string
           created_at: string
-          full_name: string
+          first_name: string | null
+          last_name: string | null
+          name: string | null
           email: string
           phone: string | null
-          message: string
-          type: string
+          city: string | null
+          state: string | null
+          country: string | null
+          inquiry_type: string | null
+          topic: string | null
+          subject: string | null
+          message: string | null
+          company: string | null
+          farm_name: string | null
+          crop_type: string | null
+          acres: number | null
+          apiary_name: string | null
+          hive_count: number | null
+          experience_years: string | null
+          form_specific_data: Record<string, unknown> | null
+          status: string
         }
         Insert: {
-          id?: number
+          id?: string
           created_at?: string
-          full_name: string
+          first_name?: string | null
+          last_name?: string | null
+          name?: string | null
           email: string
           phone?: string | null
-          message: string
-          type: string
+          city?: string | null
+          state?: string | null
+          country?: string | null
+          inquiry_type?: string | null
+          topic?: string | null
+          subject?: string | null
+          message?: string | null
+          company?: string | null
+          farm_name?: string | null
+          crop_type?: string | null
+          acres?: number | null
+          apiary_name?: string | null
+          hive_count?: number | null
+          experience_years?: string | null
+          form_specific_data?: Record<string, unknown> | null
+          status?: string
         }
         Update: {
-          id?: number
+          id?: string
           created_at?: string
-          full_name?: string
+          first_name?: string | null
+          last_name?: string | null
+          name?: string | null
           email?: string
           phone?: string | null
-          message?: string
-          type?: string
+          city?: string | null
+          state?: string | null
+          country?: string | null
+          inquiry_type?: string | null
+          topic?: string | null
+          subject?: string | null
+          message?: string | null
+          company?: string | null
+          farm_name?: string | null
+          crop_type?: string | null
+          acres?: number | null
+          apiary_name?: string | null
+          hive_count?: number | null
+          experience_years?: string | null
+          form_specific_data?: Record<string, unknown> | null
+          status?: string
         }
         Relationships: []
       }

@@ -22,6 +22,9 @@ interface AuthContextType {
     signUp: (email: string, password: string, metadata?: { first_name?: string; last_name?: string }) => Promise<{ error: AuthError | null; data?: { user: User | null } }>;
     signInWithGoogle: () => Promise<{ error: AuthError | null }>;
     signOut: () => Promise<void>;
+    // Password Reset Methods
+    resetPassword: (email: string) => Promise<{ error: AuthError | null }>;
+    updatePassword: (newPassword: string) => Promise<{ error: AuthError | null }>;
     // MFA Methods
     enrollMFA: () => Promise<{ data: MFAEnrollResult | null; error: Error | null }>;
     verifyMFAEnrollment: (factorId: string, code: string) => Promise<{ error: Error | null }>;
@@ -142,6 +145,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         await supabase.auth.signOut();
     };
 
+    // Password Reset: Send reset email
+    const resetPassword = async (email: string) => {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${window.location.origin}/update-password`,
+        });
+        return { error };
+    };
+
+    // Password Reset: Update password after clicking reset link
+    const updatePassword = async (newPassword: string) => {
+        const { error } = await supabase.auth.updateUser({
+            password: newPassword,
+        });
+        return { error };
+    };
+
     // MFA: Enroll a new TOTP factor
     const enrollMFA = async (): Promise<{ data: MFAEnrollResult | null; error: Error | null }> => {
         try {
@@ -256,6 +275,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         signUp,
         signInWithGoogle,
         signOut,
+        resetPassword,
+        updatePassword,
         enrollMFA,
         verifyMFAEnrollment,
         verifyMFAChallenge,

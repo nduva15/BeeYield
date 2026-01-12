@@ -86,9 +86,26 @@ create table if not exists public.contact_submissions (
   name text,
   first_name text,
   last_name text,
-  email text,
+  email text not null,
+  phone text,
+  city text,
+  state text,
+  country text,
+  inquiry_type text, -- grower, beekeeper, general
+  topic text,
   subject text,
   message text,
+  company text,
+  -- Grower-specific fields
+  farm_name text,
+  crop_type text,
+  acres numeric,
+  -- Beekeeper-specific fields
+  apiary_name text,
+  hive_count integer,
+  experience_years text,
+  -- Catch-all for additional data
+  form_specific_data jsonb,
   status text default 'new'
 );
 
