@@ -90,13 +90,13 @@ def subscribe_newsletter(request: schemas.NewsletterSubscriptionCreate, backgrou
     Handle newsletter subscriptions.
     """
     # 1. Check if already subscribed
-    existing = db_select("newsletter_subscriptions", filters={"email": request.email})
+    existing = db_select("newsletter_subscribers", filters={"email": request.email})
     if existing:
         return {"status": "success", "message": "Already subscribed"}
 
     # 2. Save to Database
     db_data = request.dict()
-    result = db_insert("newsletter_subscriptions", db_data)
+    result = db_insert("newsletter_subscribers", db_data)
     
     if not result.get("success"):
         raise HTTPException(status_code=500, detail=f"Database error: {result.get('error')}")
