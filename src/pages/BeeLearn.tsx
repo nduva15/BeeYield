@@ -1,50 +1,123 @@
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, ShoppingCart, Star, Download, Loader2, PlayCircle, ShieldCheck, Heart, Users } from "lucide-react";
-import { getProducts, Product } from "@/services/shopService";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  ShoppingCart,
+  Leaf,
+  BookOpen,
+  Shirt,
+  Filter,
+  Star,
+  Heart,
+  Cpu,
+  Zap,
+  Loader2,
+  ShieldCheck,
+  Users,
+  PlayCircle,
+  Truck,
+} from "lucide-react";
+import { getProducts, Product, FALLBACK_PRODUCTS } from "@/services/shopService";
 import { getLearningModules, LearningModule } from "@/services/servicesService";
-
-function renderStars(rating: number) {
-  const fullStars = Math.floor(rating || 0);
-  const halfStar = (rating || 0) % 1 >= 0.5;
-  return (
-    <div className="flex items-center gap-0.5">
-      {[...Array(5)].map((_, i) => (
-        <Star key={i} className={`h-4 w-4 ${i < fullStars ? 'text-honey-light fill-honey-light' : 'text-muted'}`} />
-      ))}
-    </div>
-  );
-}
+import { toast } from "sonner";
 
 const BeeLearn = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
+  const [activeProducts, setActiveProducts] = useState<Product[]>([]);
   const [freeModules, setFreeModules] = useState<LearningModule[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const { addToCart } = useCart();
 
   useEffect(() => {
-    const fetchLearnProducts = async () => {
+    const fetchData = async () => {
+      setIsLoading(true);
       try {
         const [allProducts, modules] = await Promise.all([
           getProducts(),
           getLearningModules()
         ]);
 
-        // Filter for education category
-        const learnProducts = allProducts.filter(p => p.category === 'education');
-        setProducts(learnProducts);
+        if (allProducts && allProducts.length > 0) {
+          setActiveProducts(allProducts);
+        }
         setFreeModules(modules);
-      } catch (err) {
-        console.error(err);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+        toast.error("Could not load products. Please try again later.");
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
-    fetchLearnProducts();
+
+    fetchData();
   }, []);
+
+  // Combine live products with fallbacks for missing categories
+  const products = [...activeProducts];
+  const fetchedCategories = new Set(activeProducts.map(p => p.category));
+
+  FALLBACK_PRODUCTS.forEach(fallback => {
+    if (!fetchedCategories.has(fallback.category)) {
+      products.push(fallback);
+    }
+  });
+
+  const handleAddToCart = (product: Product) => {
+    const selectedSize = selectedSizes[product.id] || product.variants[0].size;
+    const variant = product.variants.find((v) => v.size === selectedSize) || product.variants[0];
+
+    addToCart({
+      productId: product.id,
+      variantId: variant.id,
+      name: product.name,
+      description: product.description,
+      size: selectedSize,
+      price: variant.price_kes,
+      quantity: 1,
+      category: product.category as any,
+      badge: product.badge,
+      image: product.images[0]
+    });
+  };
+
+  const formatPrice = (price: number) => {
+    return `KES ${price.toLocaleString()}`;
+  };
+
+  const renderStars = (rating: number, count: number) => {
+    return (
+      <div className="flex items-center gap-1">
+        <div className="flex items-center">
+          {[...Array(5)].map((_, i) => (
+            <Star
+              key={i}
+              className={`h-3 w-3 ${i < Math.floor(rating) ? "fill-primary text-primary" : "text-muted-foreground/30"
+                }`}
+            />
+          ))}
+        </div>
+        <span className="text-xs text-muted-foreground font-medium ml-1">{rating} ({count})</span>
+      </div>
+    );
+  };
+
+  const categories = [
+    { value: "education", label: "Learn", icon: BookOpen, description: "Expert guides and handbooks" },
+    { value: "honey", label: "Honey", icon: Leaf, description: "Pure, traceable honey from Kibwezi" },
+    { value: "hardware", label: "Sensors", icon: Cpu, description: "Precision IoT hive monitoring" },
+    { value: "merch", label: "Merch", icon: Shirt, description: "Sustainable gear for beekeepers" },
+  ];
 
   return (
     <main className="min-h-screen bg-background">
@@ -68,11 +141,22 @@ const BeeLearn = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mb-8 justify-center md:justify-start">
               <Button asChild size="lg" className="bg-primary text-white font-bold h-14 px-8 text-lg shadow-glow shadow-primary/20">
-                <Link to="/shop#learn">Explore Courses</Link>
+                <a href="#courses">Explore Courses</a>
               </Button>
               <Button variant="outline" size="lg" className="h-14 px-8 text-lg font-bold border-2 border-primary/20 hover:bg-primary/5">
                 <PlayCircle className="mr-2 h-5 w-5" /> Free Lessons
               </Button>
+            </div>
+
+            <div className="flex flex-wrap gap-4 animate-in fade-in mt-2 duration-1000 delay-500">
+              <div className="flex items-center gap-3 bg-card px-5 py-3 rounded-2xl border border-border/50 shadow-sm">
+                <Truck className="h-5 w-5 text-primary" />
+                <span className="text-sm font-bold">Instant Digital Access</span>
+              </div>
+              <div className="flex items-center gap-3 bg-card px-5 py-3 rounded-2xl border border-border/50 shadow-sm">
+                <ShieldCheck className="h-5 w-5 text-primary" />
+                <span className="text-sm font-bold">Lifetime Updates</span>
+              </div>
             </div>
           </div>
 
@@ -126,61 +210,159 @@ const BeeLearn = () => {
         </div>
       </section>
 
-      {/* Products Section */}
-      <section className="py-24">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-24 space-y-6">
-            <div className="flex items-center justify-center gap-2">
-              <BookOpen className="h-6 w-6 text-primary" />
-              <Badge variant="outline" className="border-primary text-primary font-black uppercase tracking-widest px-4 py-1">Expert-Led Curriculum</Badge>
+      {/* Shop Content with Tabs - Same as Shop Page */}
+      <section id="courses" className="container mx-auto px-4 py-24">
+        <div className="text-center mb-16 space-y-6">
+          <div className="flex items-center justify-center gap-2">
+            <BookOpen className="h-6 w-6 text-primary" />
+            <Badge variant="outline" className="border-primary text-primary font-black uppercase tracking-widest px-4 py-1">Full Learning Store</Badge>
+          </div>
+          <h2 className="text-5xl md:text-7xl font-black text-foreground tracking-tightest leading-none">Shop All Products</h2>
+          <p className="text-muted-foreground text-xl md:text-2xl max-w-3xl mx-auto font-medium leading-relaxed">
+            Browse our complete catalog — from learning materials to honey, sensors, and merchandise.
+          </p>
+        </div>
+
+        <Tabs defaultValue="education" className="w-full">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 mb-12">
+            <TabsList className="h-auto p-1 bg-muted/30 border border-border/50 rounded-2xl self-start">
+              {categories.map((cat) => (
+                <TabsTrigger
+                  key={cat.value}
+                  value={cat.value}
+                  className="px-6 py-3 rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-300"
+                >
+                  <cat.icon className="h-4 w-4 mr-2" />
+                  <span className="font-bold tracking-tight">{cat.label}</span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+
+            <div className="flex items-center gap-4">
+              <div className="hidden sm:flex items-center gap-2">
+                <Filter className="h-4 w-4 text-muted-foreground" />
+                <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">Order By</span>
+              </div>
+              <Select defaultValue="featured">
+                <SelectTrigger className="w-[180px] h-12 rounded-xl border-border/50 bg-card">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="featured">Featured Status</SelectItem>
+                  <SelectItem value="price-low">Economic to Premium</SelectItem>
+                  <SelectItem value="price-high">Premium to Economic</SelectItem>
+                  <SelectItem value="rating">Technical Rating</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            <h2 className="text-5xl md:text-7xl font-black text-foreground tracking-tightest leading-none">Our Learning Pathways</h2>
-            <p className="text-muted-foreground text-xl md:text-2xl max-w-3xl mx-auto font-medium leading-relaxed">
-              Join thousands of beekeepers and conservationists in mastering the art of sustainable pollination.
-            </p>
           </div>
 
-          {/* Course Products Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {products.length > 0 ? (
-              products.map((product) => (
-                <Card key={product.id} className="group overflow-hidden border-none shadow-premium hover:shadow-glow transition-all duration-700 bg-white dark:bg-card rounded-[3rem]">
-                  <div className="aspect-[4/5] relative overflow-hidden">
-                    <img
-                      src={product.images?.[0] || "https://images.unsplash.com/photo-1471943311424-646960669fbc?w=800"}
-                      alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                    {product.badge && (
-                      <Badge className="absolute top-6 right-6 bg-primary shadow-glow font-black border-none px-4 py-2 rounded-xl">{product.badge}</Badge>
-                    )}
-                  </div>
-                  <CardContent className="p-10">
-                    <div className="flex justify-between items-start mb-6">
-                      <h3 className="text-3xl font-black tracking-tight leading-tight group-hover:text-primary transition-colors">{product.name}</h3>
-                      <div className="text-right">
-                        <p className="text-2xl font-black text-primary tracking-tighter">KES {product.variants?.[0]?.price_kes?.toLocaleString() || "0"}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 mb-8">
-                      {renderStars(product.rating || 5)}
-                      <span className="text-muted-foreground font-black text-xs uppercase tracking-widest">({product.review_count || 0} reviews)</span>
-                    </div>
-                    <Button asChild className="w-full font-black h-14 rounded-2xl shadow-glow text-lg">
-                      <Link to={`/shop?product=${product.id}`}>
-                        <ShoppingCart className="mr-2 h-5 w-5" /> Enroll Now
-                      </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              <div className="col-span-full py-20 text-center bg-muted/20 rounded-3xl">
-                <p className="text-muted-foreground font-bold">No courses available currently. Check back soon!</p>
-              </div>
-            )}
-          </div>
-        </div>
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-24 space-y-4">
+              <Loader2 className="h-12 w-12 animate-spin text-primary opacity-50" />
+              <p className="text-muted-foreground font-medium">Synchronizing Learning Inventory...</p>
+            </div>
+          ) : (
+            categories.map((category) => (
+              <TabsContent key={category.value} value={category.value} className="mt-0 animate-in fade-in zoom-in-95 duration-500">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {products
+                    .filter(p => p.category === category.value)
+                    .map((product) => (
+                      <Card
+                        key={product.id}
+                        className="group overflow-hidden border-none bg-card hover:bg-white/50 transition-all duration-500 shadow-premium hover:shadow-glow hover:shadow-primary/5 rounded-[2.5rem]"
+                      >
+                        <div className="relative aspect-square overflow-hidden bg-muted m-2 rounded-[2rem]">
+                          <img
+                            src={product.images[0]}
+                            alt={product.name}
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            onError={(e) => {
+                              e.currentTarget.src = "/placeholder.svg";
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                          {product.badge && (
+                            <Badge className="absolute top-4 left-4 min-h-[1.5rem] px-3 font-black uppercase tracking-tighter text-[10px]">
+                              {product.badge}
+                            </Badge>
+                          )}
+
+                          <button
+                            aria-label="Add to wishlist"
+                            className="absolute top-4 right-4 p-2.5 bg-background/80 backdrop-blur-md rounded-xl opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 hover:bg-primary hover:text-white"
+                          >
+                            <Heart className="h-4 w-4" />
+                          </button>
+                        </div>
+
+                        <CardContent className="p-8 pt-4">
+                          <div className="flex justify-between items-start mb-2">
+                            {renderStars(product.rating, product.review_count)}
+                          </div>
+
+                          <h3 className="text-2xl font-black text-foreground mb-2 group-hover:text-primary transition-colors">
+                            {product.name}
+                          </h3>
+                          <p className="text-sm text-muted-foreground font-medium mb-6 line-clamp-2 leading-relaxed">
+                            {product.description}
+                          </p>
+
+                          <div className="space-y-4">
+                            {product.variants.length > 1 ? (
+                              <Select
+                                value={selectedSizes[product.id] || product.variants[0].size}
+                                onValueChange={(value) => setSelectedSizes({ ...selectedSizes, [product.id]: value })}
+                              >
+                                <SelectTrigger className="w-full h-12 bg-muted/30 border-none rounded-xl font-bold">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl">
+                                  {product.variants.map((v) => (
+                                    <SelectItem key={v.id} value={v.size} className="font-medium">
+                                      {v.size} — {formatPrice(v.price_kes)}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <div className="h-12 flex items-center px-4 bg-muted/30 rounded-xl">
+                                <span className="text-sm font-black uppercase tracking-widest text-muted-foreground mr-2">Edition:</span>
+                                <span className="text-sm font-bold">{product.variants[0].size}</span>
+                              </div>
+                            )}
+
+                            <div className="flex items-center gap-3">
+                              <div className="flex-1">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Investment</p>
+                                <p className="text-2xl font-black text-foreground">
+                                  {formatPrice(
+                                    product.variants.find(
+                                      (v) => v.size === (selectedSizes[product.id] || product.variants[0].size)
+                                    )?.price_kes || product.variants[0].price_kes
+                                  )}
+                                </p>
+                              </div>
+                              <Button
+                                className="h-14 px-8 rounded-2xl gap-2 font-black transition-all active:scale-95 shadow-lg hover:shadow-primary/20"
+                                onClick={() => handleAddToCart(product)}
+                              >
+                                <ShoppingCart className="h-5 w-5" />
+                                <span className="hidden sm:inline">Add to Cart</span>
+                                <span className="sm:hidden">Add</span>
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                </div>
+              </TabsContent>
+            ))
+          )}
+        </Tabs>
       </section>
 
       {/* Free learning modules section */}
@@ -196,7 +378,7 @@ const BeeLearn = () => {
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {freeModules.length > 0 ? (
               freeModules.map((module) => (
-                <Card key={module.id} className="border-none shadow-soft hover:shadow-glow transition-all bg-white flex flex-col md:flex-row overflow-hidden">
+                <Card key={module.id} className="border-none shadow-soft hover:shadow-glow transition-all bg-white flex flex-col md:flex-row overflow-hidden rounded-2xl">
                   <div className="md:w-1/3 bg-primary/10 flex items-center justify-center p-8">
                     <BookOpen className="h-12 w-12 text-primary" />
                   </div>

@@ -12,6 +12,7 @@ interface RegisterFormProps {
     prefillEmail?: string;
     prefillFirstName?: string;
     prefillLastName?: string;
+    defaultRole?: string;
 }
 
 const RegisterForm: React.FC<RegisterFormProps> = ({
@@ -20,6 +21,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
     prefillEmail = '',
     prefillFirstName = '',
     prefillLastName = '',
+    defaultRole = 'user',
 }) => {
     const { signUp, signInWithGoogle } = useAuth();
     const [firstName, setFirstName] = useState(prefillFirstName);
@@ -48,6 +50,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
         const { error } = await signUp(email, password, {
             first_name: firstName,
             last_name: lastName,
+            role: defaultRole,
         });
 
         if (error) {

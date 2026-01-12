@@ -99,13 +99,13 @@ const Traceability = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section - Premium Orange/Amber */}
-      <section className="relative min-h-[60vh] flex items-center overflow-hidden">
+      {/* Hero Section - Premium Orange/Amber - Mobile Responsive */}
+      <section className="relative min-h-[50vh] sm:min-h-[55vh] md:min-h-[60vh] flex items-center overflow-hidden py-12 sm:py-16 md:py-20">
         <div className="absolute inset-0 bg-gradient-to-br from-amber-900 via-amber-800 to-orange-700">
           <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-20 left-10 w-72 h-72 bg-yellow-400 rounded-full blur-3xl animate-pulse" />
-            <div className="absolute bottom-20 right-10 w-96 h-96 bg-amber-300 rounded-full blur-3xl animate-pulse delay-1000" />
-            <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-orange-400 rounded-full blur-3xl animate-pulse delay-500" />
+            <div className="absolute top-10 sm:top-20 left-4 sm:left-10 w-40 sm:w-72 h-40 sm:h-72 bg-yellow-400 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-10 sm:bottom-20 right-4 sm:right-10 w-48 sm:w-96 h-48 sm:h-96 bg-amber-300 rounded-full blur-3xl animate-pulse delay-1000" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 sm:w-64 h-32 sm:h-64 bg-orange-400 rounded-full blur-3xl animate-pulse delay-500" />
           </div>
           {/* Honeycomb Pattern */}
           <svg className="absolute inset-0 w-full h-full opacity-10" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -116,17 +116,17 @@ const Traceability = () => {
           </svg>
         </div>
 
-        <div className="container mx-auto px-6 lg:px-12 relative z-10">
-          <div className="max-w-4xl mx-auto text-center text-white space-y-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
+          <div className="max-w-4xl mx-auto text-center text-white space-y-4 sm:space-y-6 md:space-y-8">
             <div className="flex justify-center">
-              <Badge className="bg-white/20 text-white border-white/30 text-sm px-4 py-2 hover:bg-white/30 transition-colors inline-flex items-center">
-                <ShieldCheck className="mr-2 h-4 w-4" /> 100% HoneyChain™ Verified
+              <Badge className="bg-white/20 text-white border-white/30 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 hover:bg-white/30 transition-colors inline-flex items-center">
+                <ShieldCheck className="mr-1.5 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" /> 100% HoneyChain™ Verified
               </Badge>
             </div>
-            <h1 className="text-5xl md:text-7xl font-black leading-tight tracking-tighter">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black leading-tight tracking-tighter px-2">
               The Journey of <span className="text-yellow-400 italic">Every Drop</span>
             </h1>
-            <p className="text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed px-4">
               Transparent. Ethical. Traceable. Scan your jar's QR code to meet your bees,
               view real-time hive metrics, and verify our 50/50 harvest promise.
             </p>

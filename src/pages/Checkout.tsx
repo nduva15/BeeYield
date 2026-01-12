@@ -168,7 +168,7 @@ const Checkout: React.FC = () => {
     const handlePrevStep = () => {
         if (currentStep === 'shipping') setCurrentStep('cart');
         else if (currentStep === 'payment') setCurrentStep('shipping');
-        else if (currentStep === 'confirmation') {
+        else if (currentStep === 'cart' || currentStep === 'confirmation') {
             navigate('/shop');
         }
     };

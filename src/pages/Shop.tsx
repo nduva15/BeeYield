@@ -608,35 +608,35 @@ const Shop = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="relative py-20 lg:py-32 overflow-hidden">
+      {/* Hero Section - Mobile Responsive */}
+      <section className="relative py-12 sm:py-16 md:py-20 lg:py-32 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <div className="absolute top-0 right-0 w-1/2 h-full bg-primary/5 rounded-l-full blur-3xl opacity-50" />
           <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-accent/10 rounded-r-full blur-3xl opacity-30" />
         </div>
 
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto px-4 sm:px-6 relative z-10">
           <div className="max-w-3xl">
-            <Badge variant="outline" className="mb-6 px-4 py-1.5 border-primary/20 bg-primary/5 text-primary animate-in fade-in slide-in-from-bottom-2 duration-700">
-              <Zap className="h-3.5 w-3.5 mr-2 fill-primary/20" />
+            <Badge variant="outline" className="mb-4 sm:mb-6 px-3 sm:px-4 py-1 sm:py-1.5 border-primary/20 bg-primary/5 text-primary animate-in fade-in slide-in-from-bottom-2 duration-700 text-xs sm:text-sm">
+              <Zap className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1.5 sm:mr-2 fill-primary/20" />
               The Future of Apiculture Is Here
             </Badge>
-            <h1 className="text-5xl lg:text-7xl font-black text-foreground mb-6 tracking-tightest leading-[0.9] animate-in fade-in slide-in-from-bottom-4 duration-1000">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-foreground mb-4 sm:mb-6 tracking-tightest leading-[1.1] animate-in fade-in slide-in-from-bottom-4 duration-1000">
               Harvest the <span className="text-primary italic">Precision.</span>
             </h1>
-            <p className="text-xl text-muted-foreground font-medium mb-10 leading-relaxed max-w-2xl animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground font-medium mb-6 sm:mb-8 md:mb-10 leading-relaxed max-w-2xl animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
               From our award-winning traceable honey to cutting-edge IoT hive sensors,
               everything in our shop supports the mission of sustainable pollination in Kenya.
             </p>
 
-            <div className="flex flex-wrap gap-4 animate-in fade-in mt-2 duration-1000 delay-500">
-              <div className="flex items-center gap-3 bg-card px-5 py-3 rounded-2xl border border-border/50 shadow-sm">
-                <Truck className="h-5 w-5 text-primary" />
-                <span className="text-sm font-bold">Fast Delivery Nationwide</span>
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 animate-in fade-in mt-2 duration-1000 delay-500">
+              <div className="flex items-center gap-2 sm:gap-3 bg-card px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-border/50 shadow-sm">
+                <Truck className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
+                <span className="text-xs sm:text-sm font-bold">Fast Delivery Nationwide</span>
               </div>
-              <div className="flex items-center gap-3 bg-card px-5 py-3 rounded-2xl border border-border/50 shadow-sm">
-                <ShieldCheck className="h-5 w-5 text-primary" />
-                <span className="text-sm font-bold">Secure Transactions</span>
+              <div className="flex items-center gap-2 sm:gap-3 bg-card px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-border/50 shadow-sm">
+                <ShieldCheck className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
+                <span className="text-xs sm:text-sm font-bold">Secure Transactions</span>
               </div>
             </div>
           </div>

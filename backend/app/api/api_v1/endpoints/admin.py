@@ -217,6 +217,14 @@ def delete_user(user_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.get("/contact", response_model=List[Dict[str, Any]])
+def get_contact_submissions():
+    """
+    Get all contact submissions.
+    """
+    return db_select("contact_submissions", order_by="created_at", ascending=False)
+
+
 # --- Traceability (Honey Chain) ---
 
 @router.post("/batches", response_model=Dict[str, Any])
@@ -227,19 +235,8 @@ def create_batch(batch_in: Dict[str, Any]):
     return traceability_service.create_batch(batch_in)
 
 @router.get("/batches", response_model=List[Dict[str, Any]])
-def get_batches():
+def get_batches_db():
     """
-    Get all batches from the blockchain (mocked/simulated or from DB cache).
-    Since blockchain is a list of blocks, we can iterate and filter.
+    Get all batches from the DB (Source of Truth for Admin).
     """
-    from app.blockchain.honey_chain import honey_blockchain, BlockType
-    
-    batches = []
-    for block in honey_blockchain.chain:
-        if block.block_type == BlockType.BATCH_CREATION:
-            batch_data = block.data
-            batch_data['block_hash'] = block.hash
-            batch_data['created_at'] = block.timestamp
-            batches.append(batch_data)
-            
-    return batches
+    return db_select("honey_batches", order_by="created_at", ascending=False)
