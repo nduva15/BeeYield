@@ -428,10 +428,41 @@ export const adminService = {
         } catch (error) {
             if (!supabase) return [];
             const { data } = await supabase
-                .from('farmers')
+                .from('farmers' as any)
                 .select('*')
                 .order('created_at', { ascending: false });
             return data || [];
+        }
+    },
+
+    createFarmer: async (farmerData: any) => {
+        try {
+            return await apiPost('/admin/farmers', farmerData);
+        } catch {
+            if (!supabase) return null;
+            const { data, error } = await supabase
+                .from('farmers' as any)
+                .insert([farmerData])
+                .select()
+                .single();
+            if (error) throw error;
+            return data;
+        }
+    },
+
+    updateFarmer: async (id: string, farmerData: any) => {
+        try {
+            return await apiPut(`/admin/farmers/${id}`, farmerData);
+        } catch {
+            if (!supabase) return null;
+            const { data, error } = await supabase
+                .from('farmers' as any)
+                .update(farmerData)
+                .eq('id', id)
+                .select()
+                .single();
+            if (error) throw error;
+            return data;
         }
     },
 
