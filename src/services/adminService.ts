@@ -175,19 +175,28 @@ export const adminService = {
             let batchCount = 0;
             for (const b of batches) {
                 // Try honey_batches first (preferred by backend)
-                const { data: existingHB } = await supabase.from('honey_batches' as any).select('id').eq('batch_code', b.batch_code).maybeSingle();
+                const { data: existingHB, error: checkError } = await supabase.from('honey_batches' as any).select('id').eq('batch_code', b.batch_code).maybeSingle();
+
+                if (checkError) console.warn(`Note: honey_batches check returned error: ${checkError.message}. This usually means the table is missing or RLS is blocking access.`);
+
                 if (!existingHB) {
                     const { error: hbError } = await supabase.from('honey_batches' as any).insert([b]);
-                    if (!hbError) batchCount++;
-                    else {
+                    if (!hbError) {
+                        batchCount++;
+                    } else {
+                        console.warn(`Could not insert into 'honey_batches': ${hbError.message}. Trying 'batches' table...`);
                         // Fallback to batches table
-                        const { data: existingB } = await supabase.from('batches' as any).select('id').eq('batch_code', b.batch_code).maybeSingle();
+                        const { data: existingB, error: bCheckError } = await supabase.from('batches' as any).select('id').eq('batch_code', b.batch_code).maybeSingle();
                         if (!existingB) {
                             const { error: bError } = await supabase.from('batches' as any).insert([{
                                 ...b,
                                 total_quantity_kg: b.quantity_kg
                             }]);
-                            if (!bError) batchCount++;
+                            if (!bError) {
+                                batchCount++;
+                            } else {
+                                console.error(`Fallback failed: Could not insert into 'batches' table either: ${bError.message}. Ensure RLS policies allow inserts.`);
+                            }
                         }
                     }
                 }
@@ -430,21 +439,29 @@ export const adminService = {
     getBatches: async () => {
         let data: any[] = [];
         try {
+            console.log("Fetching batches from API...");
             data = await apiGet<any[]>('/admin/batches');
+            console.log(`API returned ${data?.length || 0} batches.`);
         } catch (error) {
-            console.warn("API getBatches failed", error);
+            console.warn("API getBatches failed, logic falling back to Supabase", error);
         }
 
-        // If API returned empty or failed, try Supabase directly
-        // This ensures that if the backend is connected to an empty DB but the frontend 
-        // has access to the correct one, we still see data.
-        if (supabase && (!data || data.length === 0)) {
-            const { data: sbData } = await supabase
-                .from('honey_batches')
-                .select('*')
-                .order('created_at', { ascending: false });
-            if (sbData && sbData.length > 0) {
-                return sbData;
+        // Robust fallback: if API returned nothing, check Supabase directly with multiple table names
+        if (!data || data.length === 0) {
+            if (!supabase) return [];
+
+            const tableVariants = ['honey_batches', 'hney-batches', 'batches', 'harvests'];
+            for (const table of tableVariants) {
+                console.log(`Attempting direct Supabase fallback for ${table}...`);
+                const { data: sbData, error: sbError } = await supabase
+                    .from(table as any)
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (!sbError && sbData && sbData.length > 0) {
+                    console.log(`Success! Found ${sbData.length} rows in ${table}.`);
+                    return sbData;
+                }
             }
         }
 
