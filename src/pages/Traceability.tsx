@@ -5,11 +5,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   QrCode, MapPin, Calendar, Leaf, Info, Heart, Shield, Droplets, Home, Users, Award,
-  CheckCircle2, Box, Activity, Thermometer, Waves, Loader2, X, Search, Globe, ShieldCheck, Zap, Lock
+  CheckCircle2, Box, Activity, Thermometer, Waves, Loader2, X, Search, Globe, ShieldCheck, Zap, Lock, FileDown
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiGet } from "@/services/api";
 import { Html5QrcodeScanner } from "html5-qrcode";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import HoneyTracePDF from "@/components/HoneyTracePDF";
 
 const Traceability = () => {
   const [qrCode, setQrCode] = useState("");
@@ -230,6 +232,33 @@ const Traceability = () => {
                     <span className="text-sm font-black text-green-600 uppercase tracking-widest">Authenticated on HoneyChain™</span>
                   </div>
                   <div className="h-px bg-slate-200 dark:bg-slate-800 flex-1" />
+                </div>
+
+                {/* PDF Download Button */}
+                <div className="flex justify-center">
+                  <PDFDownloadLink
+                    document={<HoneyTracePDF traceData={traceData} />}
+                    fileName={`BeeYield-Traceability-${traceData.batch_code || 'Certificate'}.pdf`}
+                  >
+                    {({ loading }) => (
+                      <Button
+                        className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-black px-8 py-6 rounded-2xl shadow-xl hover:shadow-amber-500/30 transition-all flex items-center gap-3 text-lg"
+                        disabled={loading}
+                      >
+                        {loading ? (
+                          <>
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                            Generating PDF...
+                          </>
+                        ) : (
+                          <>
+                            <FileDown className="h-5 w-5" />
+                            Download Traceability Certificate
+                          </>
+                        )}
+                      </Button>
+                    )}
+                  </PDFDownloadLink>
                 </div>
 
                 <div className="grid gap-8 md:grid-cols-2">

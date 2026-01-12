@@ -11,7 +11,7 @@ from app.schemas import traceability as schemas
 def register_farmer(farmer_in: schemas.FarmerCreate) -> Dict[str, Any]:
     """Register a farmer in DB and Blockchain"""
     data = farmer_in.dict()
-    data['farmer_id'] = str(uuid.uuid4())
+    data['farmer_id'] = f"F-{str(uuid.uuid4())[:8].upper()}" if not data.get('farmer_id') else data.get('farmer_id')
     data['registration_date'] = datetime.utcnow().isoformat()
     
     # 1. Blockchain
@@ -19,7 +19,9 @@ def register_farmer(farmer_in: schemas.FarmerCreate) -> Dict[str, Any]:
     data['blockchain_hash'] = block.hash
     
     # 2. DB
-    db_insert("farmers", data)
+    res = db_insert("farmers", data)
+    if not res.get("success"):
+        raise Exception(f"Database insertion failed: {res.get('error')}")
     
     return data
 
@@ -87,7 +89,12 @@ def create_batch(batch_data: Dict[str, Any]) -> Dict[str, Any]:
     final_data['block_hash'] = block.hash
     
     # 2. DB (Source of Truth for Admin Dashboard)
-    db_insert("honey_batches", final_data)
+    res = db_insert("honey_batches", final_data)
+    if not res.get("success"):
+        # Try fallback if honey_batches failed - maybe it's named 'batches' in this environment
+        res_fallback = db_insert("batches", final_data)
+        if not res_fallback.get("success"):
+            raise Exception(f"Database insertion failed for both honey_batches and batches: {res.get('error')}")
     
     return final_data
 
