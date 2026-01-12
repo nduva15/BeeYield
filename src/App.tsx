@@ -35,6 +35,7 @@ import AccountSettings from "./pages/AccountSettings";
 import CartDrawer from "./components/CartDrawer";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminAuth from "./pages/AdminAuth";
+import UpdatePassword from "./pages/UpdatePassword";
 import BuyerDashboard from "./pages/BuyerDashboard";
 
 const queryClient = new QueryClient();
@@ -77,6 +78,7 @@ const App = () => (
                 <Route path="/account-settings" element={<AccountSettings />} />
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/admin/login" element={<AdminAuth />} />
+                <Route path="/update-password" element={<UpdatePassword />} />
                 <Route path="/my-account" element={<BuyerDashboard />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

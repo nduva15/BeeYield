@@ -2,7 +2,7 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
+import {
   Users, Cpu, Sprout, ArrowRight, Check,
   Globe, Flower2, Wheat, MapPin, Mail
 } from "lucide-react";
@@ -91,7 +91,7 @@ const CropsWePollinate = () => {
                 </Button>
               </div>
             </div>
-            
+
             <div className="relative hidden lg:block">
               {/* Decorative grid of crop images */}
               <div className="absolute -right-4 -top-4 h-32 w-32 rounded-2xl bg-primary/20 blur-3xl" />
@@ -115,7 +115,7 @@ const CropsWePollinate = () => {
           <p className="max-w-3xl mx-auto text-lg text-muted-foreground mb-12">
             BeeYield is comprised of leading experts in the field of pollination. Bee biologists and researchers, data-science experts, electrical engineers, leading agronomists, and veteran beekeepers make up our team, and all are committed to creating improved pollination outcomes for our customers.
           </p>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             <Card className="bg-card border-none shadow-lg">
               <CardContent className="p-8 text-center">
@@ -238,9 +238,9 @@ const CropsWePollinate = () => {
           {/* Crop Navigation Pills */}
           <div className="flex flex-wrap justify-center gap-3 mb-12">
             {crops.map((c, i) => (
-              <Badge 
-                key={i} 
-                variant="outline" 
+              <Badge
+                key={i}
+                variant="outline"
                 className="px-4 py-2 text-sm cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors rounded-full"
               >
                 {c.name}
@@ -253,8 +253,8 @@ const CropsWePollinate = () => {
             {crops.map((crop, index) => (
               <Card key={index} className="overflow-hidden border-none shadow-lg hover:shadow-xl transition-shadow group">
                 <div className="relative h-48 overflow-hidden">
-                  <img 
-                    src={crop.image} 
+                  <img
+                    src={crop.image}
                     alt={crop.name}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
@@ -265,8 +265,10 @@ const CropsWePollinate = () => {
                   <p className="text-muted-foreground text-sm leading-relaxed mb-4">
                     {crop.desc}
                   </p>
-                  <Button variant="link" className="p-0 h-auto text-primary">
-                    View Case Study <ArrowRight className="ml-2 h-4 w-4" />
+                  <Button variant="link" className="p-0 h-auto text-primary" asChild>
+                    <Link to={`/media#${crop.name.toLowerCase()}`}>
+                      View Case Study <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
                   </Button>
                 </CardContent>
               </Card>
@@ -286,7 +288,7 @@ const CropsWePollinate = () => {
             <rect width="100%" height="100%" fill="url(#hexagons)" />
           </svg>
         </div>
-        
+
         <div className="container mx-auto px-4 text-center relative z-10">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-foreground/20 mb-6">
             <Flower2 className="w-8 h-8" />

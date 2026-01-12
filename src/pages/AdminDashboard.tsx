@@ -16,7 +16,7 @@ import {
     Database, Trash2, Edit, Shield, Crown, UserMinus,
     CheckCircle2, XCircle, Clock, AlertTriangle, LayoutDashboard,
     MessageSquare, Bug, Mail, History, TrendingUp, ChevronRight,
-    LogOut, Search, MapPin, Eye
+    LogOut, Search, MapPin, Eye, Phone, Leaf
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -316,6 +316,26 @@ const AdminDashboard: React.FC = () => {
         } catch (error) {
             console.error(error);
             toast.error("Failed to sync shop content");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleSeedTraceability = async () => {
+        if (!confirm("This will seed default Farmer (Timothy) and 3 Honey Batches. Continue?")) return;
+        setIsLoading(true);
+        try {
+            // @ts-ignore
+            const result = await adminService.seedTraceabilityData();
+            if (result.success) {
+                toast.success(`Seeded successfully! Added ${result.batchCount} batches.`);
+                await loadAllData();
+            } else {
+                toast.error("Failed to seed data. " + (result.error || ""));
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed executing seed.");
         } finally {
             setIsLoading(false);
         }
@@ -1058,9 +1078,14 @@ const AdminDashboard: React.FC = () => {
                                 <CardTitle className="text-2xl font-black font-heading">Honey Chain Blocks</CardTitle>
                                 <CardDescription>Immutable blockchain ledger of authenticated batches.</CardDescription>
                             </div>
-                            <Button onClick={() => setIsBatchModalOpen(true)} className="rounded-full font-black uppercase tracking-widest text-xs py-5 bg-honey hover:bg-honey-dark text-black border-none px-6 shadow-glow transition-all active:scale-95">
-                                <Plus className="mr-2 h-4 w-4" /> Mint Block
-                            </Button>
+                            <div className="flex gap-2">
+                                <Button onClick={handleSeedTraceability} className="rounded-full font-black uppercase tracking-widest text-xs py-5 bg-blue-500 hover:bg-blue-600 text-white border-none px-6 shadow-glow transition-all active:scale-95">
+                                    <Database className="mr-2 h-4 w-4" /> Seed Demo
+                                </Button>
+                                <Button onClick={() => setIsBatchModalOpen(true)} className="rounded-full font-black uppercase tracking-widest text-xs py-5 bg-honey hover:bg-honey-dark text-black border-none px-6 shadow-glow transition-all active:scale-95">
+                                    <Plus className="mr-2 h-4 w-4" /> Mint Block
+                                </Button>
+                            </div>
                         </CardHeader>
                         <CardContent className="p-0">
                             <div className="overflow-x-auto">
@@ -1946,29 +1971,107 @@ const AdminDashboard: React.FC = () => {
 
                     {/* Contact Details Dialog */}
                     <Dialog open={isContactDetailsOpen} onOpenChange={setIsContactDetailsOpen}>
-                        <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-md">
+                        <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-xl max-h-[85vh] overflow-y-auto">
                             <DialogHeader>
                                 <DialogTitle className="text-2xl font-black flex gap-2 items-center">
                                     <MessageSquare className="w-6 h-6 text-primary" /> Message Details
                                 </DialogTitle>
                             </DialogHeader>
                             {selectedContact && (
-                                <div className="space-y-4">
+                                <div className="space-y-6">
+                                    {/* Header Section */}
                                     <div className="flex justify-between items-start border-b border-border/10 pb-4">
                                         <div>
                                             <p className="font-bold text-lg">{selectedContact.name || `${selectedContact.first_name} ${selectedContact.last_name}`}</p>
-                                            <p className="text-sm text-muted-foreground">{selectedContact.email}</p>
+                                            <div className="flex flex-col gap-0.5 mt-1">
+                                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                    <Mail className="w-3 h-3" /> {selectedContact.email}
+                                                </div>
+                                                {selectedContact.phone && (
+                                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                        <Phone className="w-3 h-3" /> {selectedContact.phone}
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
-                                        <Badge variant="outline">{new Date(selectedContact.created_at).toLocaleDateString()}</Badge>
+                                        <div className="text-right">
+                                            <Badge variant="outline" className="mb-2">{new Date(selectedContact.created_at).toLocaleDateString()}</Badge>
+                                            <div className="flex justify-end">
+                                                <Badge className="bg-primary/10 text-primary border-none uppercase text-[10px] tracking-wider">
+                                                    {selectedContact.inquiry_type || 'General'}
+                                                </Badge>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="space-y-1">
-                                        <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Subject</p>
-                                        <p className="font-medium">{selectedContact.subject || 'General Inquiry'}</p>
+
+                                    {/* Location & Context */}
+                                    <div className="grid grid-cols-2 gap-4">
+                                        {(selectedContact.city || selectedContact.state || selectedContact.country) && (
+                                            <div className="space-y-1">
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Location</p>
+                                                <p className="text-sm font-medium">
+                                                    {[selectedContact.city, selectedContact.state, selectedContact.country].filter(Boolean).join(', ')}
+                                                </p>
+                                            </div>
+                                        )}
+                                        {selectedContact.company && (
+                                            <div className="space-y-1">
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Company</p>
+                                                <p className="text-sm font-medium">{selectedContact.company}</p>
+                                            </div>
+                                        )}
                                     </div>
-                                    <div className="space-y-2 bg-muted/30 p-4 rounded-xl">
-                                        <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Message Body</p>
-                                        <p className="text-sm leading-relaxed whitespace-pre-wrap">{selectedContact.message}</p>
+
+                                    {/* Grower Specifics */}
+                                    {(selectedContact.farm_name || selectedContact.crop_type) && (
+                                        <div className="bg-muted/30 p-3 rounded-xl space-y-3">
+                                            <p className="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2">
+                                                <Leaf className="w-3 h-3" /> Farm Details
+                                            </p>
+                                            <div className="grid grid-cols-2 gap-4 text-sm">
+                                                {selectedContact.farm_name && (
+                                                    <div><span className="text-muted-foreground text-xs block">Farm Name</span>{selectedContact.farm_name}</div>
+                                                )}
+                                                {selectedContact.crop_type && (
+                                                    <div><span className="text-muted-foreground text-xs block">Crop</span>{selectedContact.crop_type}</div>
+                                                )}
+                                                {selectedContact.acres && (
+                                                    <div><span className="text-muted-foreground text-xs block">Size</span>{selectedContact.acres} Acres</div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Beekeeper Specifics */}
+                                    {(selectedContact.apiary_name || selectedContact.hive_count) && (
+                                        <div className="bg-muted/30 p-3 rounded-xl space-y-3">
+                                            <p className="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2">
+                                                <Database className="w-3 h-3" /> Apiary Details
+                                            </p>
+                                            <div className="grid grid-cols-2 gap-4 text-sm">
+                                                {selectedContact.apiary_name && (
+                                                    <div><span className="text-muted-foreground text-xs block">Apiary Name</span>{selectedContact.apiary_name}</div>
+                                                )}
+                                                {selectedContact.hive_count && (
+                                                    <div><span className="text-muted-foreground text-xs block">Hive Count</span>{selectedContact.hive_count}</div>
+                                                )}
+                                                {selectedContact.experience_years && (
+                                                    <div><span className="text-muted-foreground text-xs block">Experience</span>{selectedContact.experience_years} Years</div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Message Body */}
+                                    <div className="space-y-2">
+                                        <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">
+                                            {selectedContact.topic || selectedContact.subject || 'Message'}
+                                        </p>
+                                        <div className="bg-muted/20 p-4 rounded-xl border border-border/50">
+                                            <p className="text-sm leading-relaxed whitespace-pre-wrap">{selectedContact.message}</p>
+                                        </div>
                                     </div>
+
                                     <div className="pt-2 flex justify-end">
                                         <Button variant="outline" className="rounded-full text-xs font-bold" onClick={() => window.open(`mailto:${selectedContact.email}`)}>
                                             <Mail className="w-3 h-3 mr-2" /> Reply via Email

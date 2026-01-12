@@ -76,6 +76,109 @@ export const adminService = {
         }
     },
 
+    seedTraceabilityData: async () => {
+        if (!supabase) return { success: false, error: "Supabase client not available" };
+
+        try {
+            // 1. Seed Farmer Timothy Nduva
+            const farmerData = {
+                farmer_id: "F-MAT-001",
+                name: "Timothy Nduva",
+                email: "timothy@beeyield.com",
+                phone: "+254712345678",
+                region: "Eastern",
+                county: "Makueni",
+                location_name: "Kibwezi HQ",
+                latitude: -2.41,
+                longitude: 37.97,
+                experience_years: 15,
+                story: "Timothy Nduva is a master beekeeper and conservationist in Kibwezi, leading the way in sustainable honey production.",
+                certification_status: "CERTIFIED",
+                registration_date: "2020-05-15"
+            };
+
+            // Check if exists
+            const { data: existingFarmer } = await supabase.from('farmers' as any).select('id').eq('farmer_id', 'F-MAT-001').maybeSingle();
+
+            if (!existingFarmer) {
+                const { error: farmerError } = await supabase.from('farmers' as any).insert([farmerData]);
+                if (farmerError) console.error("Failed to seed farmer:", farmerError);
+            }
+
+            // 2. Seed 3 Batches
+            const batches = [
+                {
+                    batch_code: "DEMO-001",
+                    honey_type: "Kibwezi Wildflower Honey",
+                    packaged_date: "2024-01-20",
+                    quantity_jars: 30,
+                    jar_size_grams: 500,
+                    blockchain_hash: "0x0dab75f233d2ac30ca09f41148ac2e5b9069a65314db4981b8d8d65862644ea",
+                    quantity_kg: 15,
+                    processing_method: "Raw Filtered",
+                    quality_grade: "A",
+                    farmer_name: "Timothy Nduva",
+                    location_county: "Makueni",
+                    processing_date: "2024-01-18"
+                },
+                {
+                    batch_code: "KIB-ACACIA-24",
+                    honey_type: "Pure Acacia Honey",
+                    packaged_date: "2024-02-25",
+                    quantity_jars: 45,
+                    jar_size_grams: 500,
+                    blockchain_hash: "0x00b50ac6f4fd4e5fca9583ceb47a6ae95af06f2ddba798df7c474e1e1765eb7a",
+                    quantity_kg: 22.5,
+                    processing_method: "Raw Filtered",
+                    quality_grade: "A",
+                    farmer_name: "Timothy Nduva",
+                    location_county: "Makueni",
+                    processing_date: "2024-02-20"
+                },
+                {
+                    batch_code: "KIB-GOLD-24",
+                    honey_type: "Premium Golden Honey",
+                    packaged_date: "2024-03-10",
+                    quantity_jars: 60,
+                    jar_size_grams: 500,
+                    blockchain_hash: "0x00a77b296b1fcc6db13ce20593ff45da29d0168233fbe0056ff1981541ae72e2",
+                    quantity_kg: 30,
+                    processing_method: "Raw Filtered",
+                    quality_grade: "A",
+                    farmer_name: "Timothy Nduva",
+                    location_county: "Makueni",
+                    processing_date: "2024-03-05"
+                }
+            ];
+
+            let batchCount = 0;
+            for (const b of batches) {
+                // Try honey_batches first (preferred by backend)
+                const { data: existingHB } = await supabase.from('honey_batches' as any).select('id').eq('batch_code', b.batch_code).maybeSingle();
+                if (!existingHB) {
+                    const { error: hbError } = await supabase.from('honey_batches' as any).insert([b]);
+                    if (!hbError) batchCount++;
+                    else {
+                        // Fallback to batches table
+                        const { data: existingB } = await supabase.from('batches' as any).select('id').eq('batch_code', b.batch_code).maybeSingle();
+                        if (!existingB) {
+                            const { error: bError } = await supabase.from('batches' as any).insert([{
+                                ...b,
+                                total_quantity_kg: b.quantity_kg
+                            }]);
+                            if (!bError) batchCount++;
+                        }
+                    }
+                }
+            }
+
+            return { success: true, batchCount };
+        } catch (error) {
+            console.error("Seed traceability error:", error);
+            throw error;
+        }
+    },
+
     // ============== ORDERS ==============
     getOrders: async () => {
         try {
@@ -331,7 +434,7 @@ export const adminService = {
         } catch {
             if (!supabase) return null;
             const { data, error } = await supabase
-                .from('pollination_requests' as any)
+                .from('pollination_requests')
                 .update({ status })
                 .eq('id', id)
                 .select()
@@ -347,7 +450,7 @@ export const adminService = {
         } catch {
             if (!supabase) return null;
             const { error } = await supabase
-                .from('pollination_requests' as any)
+                .from('pollination_requests')
                 .delete()
                 .eq('id', id);
             if (error) throw error;
@@ -375,7 +478,7 @@ export const adminService = {
         } catch {
             if (!supabase) return null;
             const { data, error } = await supabase
-                .from('contact_submissions' as any)
+                .from('contact_submissions')
                 .update({ status })
                 .eq('id', id)
                 .select()
@@ -391,7 +494,7 @@ export const adminService = {
         } catch {
             if (!supabase) return null;
             const { error } = await supabase
-                .from('contact_submissions' as any)
+                .from('contact_submissions')
                 .delete()
                 .eq('id', id);
             if (error) throw error;

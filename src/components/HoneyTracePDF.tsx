@@ -277,15 +277,21 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
 
                     <View style={styles.row}>
                         <Text style={styles.label}>Harvest Date:</Text>
-                        <Text style={styles.value}>{traceData.harvest_date || 'November 2024'}</Text>
+                        <Text style={styles.value}>
+                            {traceData.timeline?.find((t: any) => t.title === 'Harvested')?.date || 'Unknown'}
+                        </Text>
                     </View>
 
                     <View style={styles.row}>
                         <Text style={styles.label}>Flora Sources:</Text>
                         <View style={styles.floraContainer}>
-                            {traceData.apiary?.flora_types?.map((flora: string, idx: number) => (
-                                <Text key={idx} style={styles.floraTag}>{flora}</Text>
-                            )) || <Text style={styles.value}>Acacia, Wildflower</Text>}
+                            {traceData.apiary?.flora_types && traceData.apiary.flora_types.length > 0 ? (
+                                traceData.apiary.flora_types.map((flora: string, idx: number) => (
+                                    <Text key={idx} style={styles.floraTag}>{flora}</Text>
+                                ))
+                            ) : (
+                                <Text style={styles.value}>Acacia, Wildflower</Text>
+                            )}
                         </View>
                     </View>
                 </View>

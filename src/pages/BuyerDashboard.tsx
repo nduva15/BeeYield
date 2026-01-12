@@ -6,16 +6,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
+import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
 import {
     User, Mail, Shield, LogOut, Loader2, UserPlus, LogIn,
     Package, ShoppingBag, MapPin, Phone, Clock, CheckCircle2,
     XCircle, Truck, CreditCard, RefreshCw
 } from 'lucide-react';
 
-type AuthMode = 'login' | 'register';
+type AuthMode = 'login' | 'register' | 'forgot-password';
 
 interface Order {
     id: string;
@@ -115,36 +115,39 @@ const BuyerDashboard = () => {
                     <Card className="border-none glass shadow-premium rounded-[2rem] overflow-hidden">
                         <CardContent className="pt-6 pb-8 px-8">
                             {/* Tab Switcher */}
-                            <div className="grid grid-cols-2 gap-2 mb-8 p-1 bg-muted rounded-2xl">
-                                <button
-                                    type="button"
-                                    onClick={() => setAuthMode('login')}
-                                    className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition-all ${authMode === 'login'
-                                        ? 'bg-primary text-primary-foreground shadow-lg'
-                                        : 'text-muted-foreground hover:text-foreground'
-                                        }`}
-                                >
-                                    <LogIn className="h-4 w-4" />
-                                    Sign In
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setAuthMode('register')}
-                                    className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition-all ${authMode === 'register'
-                                        ? 'bg-primary text-primary-foreground shadow-lg'
-                                        : 'text-muted-foreground hover:text-foreground'
-                                        }`}
-                                >
-                                    <UserPlus className="h-4 w-4" />
-                                    Create Account
-                                </button>
-                            </div>
+                            {authMode !== 'forgot-password' && (
+                                <div className="grid grid-cols-2 gap-2 mb-8 p-1 bg-muted rounded-2xl">
+                                    <button
+                                        type="button"
+                                        onClick={() => setAuthMode('login')}
+                                        className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition-all ${authMode === 'login'
+                                            ? 'bg-primary text-primary-foreground shadow-lg'
+                                            : 'text-muted-foreground hover:text-foreground'
+                                            }`}
+                                    >
+                                        <LogIn className="h-4 w-4" />
+                                        Sign In
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setAuthMode('register')}
+                                        className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition-all ${authMode === 'register'
+                                            ? 'bg-primary text-primary-foreground shadow-lg'
+                                            : 'text-muted-foreground hover:text-foreground'
+                                            }`}
+                                    >
+                                        <UserPlus className="h-4 w-4" />
+                                        Create Account
+                                    </button>
+                                </div>
+                            )}
 
                             {/* Login Form */}
                             {authMode === 'login' && (
                                 <LoginForm
                                     onSuccess={() => { }}
                                     onSwitchToRegister={() => setAuthMode('register')}
+                                    onForgotPassword={() => setAuthMode('forgot-password')}
                                 />
                             )}
 
@@ -154,6 +157,13 @@ const BuyerDashboard = () => {
                                     defaultRole="user"
                                     onSuccess={() => setAuthMode('login')}
                                     onSwitchToLogin={() => setAuthMode('login')}
+                                />
+                            )}
+
+                            {/* Forgot Password Form */}
+                            {authMode === 'forgot-password' && (
+                                <ForgotPasswordForm
+                                    onBackToLogin={() => setAuthMode('login')}
                                 />
                             )}
                         </CardContent>

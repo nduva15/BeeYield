@@ -3,10 +3,11 @@ import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent } from '@/components/ui/card';
 import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
+import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
 import { Shield, Lock, UserPlus, LogIn, Loader2 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
-type AuthMode = 'login' | 'register';
+type AuthMode = 'login' | 'register' | 'forgot-password';
 
 const AdminAuth = () => {
     const { user, loading } = useAuth();
@@ -63,30 +64,32 @@ const AdminAuth = () => {
                 <Card className="border-none glass sm:glass-dark shadow-2xl rounded-[2.5rem] overflow-hidden border border-white/5">
                     <CardContent className="pt-6 pb-8 px-8">
                         {/* Tab Switcher */}
-                        <div className="grid grid-cols-2 gap-2 mb-8 p-1 bg-white/5 rounded-2xl backdrop-blur-xl">
-                            <button
-                                type="button"
-                                onClick={() => setAuthMode('login')}
-                                className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition-all ${authMode === 'login'
-                                    ? 'bg-primary text-primary-foreground shadow-glow'
-                                    : 'text-muted-foreground hover:text-white'
-                                    }`}
-                            >
-                                <LogIn className="h-4 w-4" />
-                                Gateway
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setAuthMode('register')}
-                                className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition-all ${authMode === 'register'
-                                    ? 'bg-primary text-primary-foreground shadow-glow'
-                                    : 'text-muted-foreground hover:text-white'
-                                    }`}
-                            >
-                                <UserPlus className="h-4 w-4" />
-                                Recruit
-                            </button>
-                        </div>
+                        {authMode !== 'forgot-password' && (
+                            <div className="grid grid-cols-2 gap-2 mb-8 p-1 bg-white/5 rounded-2xl backdrop-blur-xl">
+                                <button
+                                    type="button"
+                                    onClick={() => setAuthMode('login')}
+                                    className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition-all ${authMode === 'login'
+                                        ? 'bg-primary text-primary-foreground shadow-glow'
+                                        : 'text-muted-foreground hover:text-white'
+                                        }`}
+                                >
+                                    <LogIn className="h-4 w-4" />
+                                    Gateway
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setAuthMode('register')}
+                                    className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition-all ${authMode === 'register'
+                                        ? 'bg-primary text-primary-foreground shadow-glow'
+                                        : 'text-muted-foreground hover:text-white'
+                                        }`}
+                                >
+                                    <UserPlus className="h-4 w-4" />
+                                    Recruit
+                                </button>
+                            </div>
+                        )}
 
                         {/* Login Form */}
                         {authMode === 'login' && (
@@ -94,6 +97,7 @@ const AdminAuth = () => {
                                 <LoginForm
                                     onSuccess={() => navigate(redirectPath)}
                                     onSwitchToRegister={() => setAuthMode('register')}
+                                    onForgotPassword={() => setAuthMode('forgot-password')}
                                 />
                             </div>
                         )}
@@ -109,6 +113,15 @@ const AdminAuth = () => {
                                 <p className="mt-4 text-[10px] text-center text-muted-foreground italic">
                                     Note: New admin accounts require Level 2 clearance approval.
                                 </p>
+                            </div>
+                        )}
+
+                        {/* Forgot Password Form */}
+                        {authMode === 'forgot-password' && (
+                            <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+                                <ForgotPasswordForm
+                                    onBackToLogin={() => setAuthMode('login')}
+                                />
                             </div>
                         )}
                     </CardContent>

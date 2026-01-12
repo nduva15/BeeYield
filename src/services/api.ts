@@ -6,7 +6,11 @@
 // Use environment variable for the API base URL
 // In development with Vite proxy: use relative path "/api/v1"
 // In production: use the full URL from environment
-const rawBaseUrl = (import.meta.env.VITE_API_URL as string) || "/api/v1";
+// Use environment variable for the API base URL
+// In development with Vite proxy: use relative path "/api/v1"
+// In production: use the full URL from environment
+const isDev = import.meta.env.DEV;
+const rawBaseUrl = (import.meta.env.VITE_API_URL as string) || (isDev ? "http://localhost:8000/api/v1" : "/api/v1");
 export const API_BASE_URL = rawBaseUrl.endsWith("/") ? rawBaseUrl.slice(0, -1) : rawBaseUrl;
 
 // Ensure we have /api/v1 path
@@ -31,13 +35,23 @@ export async function apiRequest<T>(
         });
 
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
+            let errorData: any = {};
+            try {
+                errorData = await response.json();
+            } catch (e) {
+                // If JSON parse fails, it might be HTML or empty
+                errorData = { detail: `API Error ${response.status}: ${response.statusText}` };
+            }
             throw new Error(errorData.detail || `API Error: ${response.status}`);
         }
 
         return await response.json();
-    } catch (error) {
+    } catch (error: any) {
         console.error(`API Error for ${endpoint}:`, error);
+        // Better error message for common JSON parse error (HTML returned)
+        if (error.message?.includes("Unexpected token") || error.message?.includes("not valid JSON")) {
+            throw new Error(`Connection Error: The server returned an invalid response (HTML). Please check if the backend is running at ${API_V1_URL}.`);
+        }
         throw error;
     }
 }
