@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List, Dict, Any, Optional
-from app.db.supabase_db import db_select, db_insert, db_update, db_delete, db_get_by_id
+from app.db.supabase_db import db_select, db_insert, db_update, db_delete, db_get_by_id, get_supabase
 from app.services import traceability_service
 from pydantic import BaseModel
 
@@ -33,6 +33,19 @@ class ProductUpdate(BaseModel):
     is_active: Optional[bool] = None
     images: Optional[List[str]] = None
     variants: Optional[List[VariantCreate]] = None
+
+class UserCreate(BaseModel):
+    email: str
+    password: str
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    role: str = "user"
+
+class UserUpdate(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[str] = None
+    role: Optional[str] = None
 
 # --- Orders ---
 
@@ -221,6 +234,89 @@ def update_user_role(user_id: str, role_update: Dict[str, str]):
         
         return {"status": "success", "message": f"User role updated to {role}"}
     except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/users", response_model=Dict[str, Any])
+def create_user(user_in: UserCreate):
+    """
+    Create a new user.
+    """
+    supabase = get_supabase()
+    if not supabase:
+        raise HTTPException(status_code=500, detail="Database connection failed")
+        
+    try:
+        # 1. Create in auth
+        # email_confirm: True means they don't need to verify email to login
+        auth_res = supabase.auth.admin.create_user({
+            "email": user_in.email,
+            "password": user_in.password,
+            "user_metadata": {
+                "first_name": user_in.first_name,
+                "last_name": user_in.last_name,
+                "role": user_in.role
+            },
+            "email_confirm": True
+        })
+        
+        # In current supabase-py, create_user returns the User object directly or via .user
+        user_id = getattr(auth_res, 'id', None)
+        if not user_id and hasattr(auth_res, 'user'):
+            user_id = auth_res.user.id
+            
+        if not user_id:
+             raise HTTPException(status_code=400, detail="Failed to create user in auth")
+            
+        # 2. Create in profiles
+        profile_data = {
+            "id": user_id,
+            "email": user_in.email,
+            "first_name": user_in.first_name,
+            "last_name": user_in.last_name,
+            "role": user_in.role
+        }
+        db_insert("profiles", profile_data)
+        
+        return {"status": "success", "user_id": user_id}
+
+    except Exception as e:
+        print(f"Error creating user: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.put("/users/{user_id}", response_model=Dict[str, Any])
+def update_user_details(user_id: str, user_in: UserUpdate):
+    """
+    Update a user's details.
+    """
+    data = user_in.dict(exclude_unset=True)
+    if not data:
+        raise HTTPException(status_code=400, detail="No data to update")
+        
+    supabase = get_supabase()
+    if not supabase:
+         raise HTTPException(status_code=500, detail="Database connection failed")
+         
+    try:
+        # Update auth metadata if role or names changed
+        meta = {}
+        if "first_name" in data: meta["first_name"] = data["first_name"]
+        if "last_name" in data: meta["last_name"] = data["last_name"]
+        if "role" in data: meta["role"] = data["role"]
+        
+        updates = {}
+        if meta: updates["user_metadata"] = meta
+        if "email" in data: updates["email"] = data["email"]
+        
+        if updates:
+            supabase.auth.admin.update_user_by_id(user_id, attributes=updates)
+            
+        # Update profiles table
+        db_update("profiles", data, {"id": user_id})
+        
+        return {"status": "success", "message": "User updated"}
+
+    except Exception as e:
+        print(f"Error updating user: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.delete("/users/{user_id}")

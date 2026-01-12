@@ -421,6 +421,34 @@ export const adminService = {
         return data;
     },
 
+    // ============== FARMERS ==============
+    getFarmers: async () => {
+        try {
+            return await apiGet<any[]>('/admin/farmers');
+        } catch (error) {
+            if (!supabase) return [];
+            const { data } = await supabase
+                .from('farmers')
+                .select('*')
+                .order('created_at', { ascending: false });
+            return data || [];
+        }
+    },
+
+    deleteFarmer: async (id: string) => {
+        try {
+            return await apiDelete(`/admin/farmers/${id}`);
+        } catch {
+            if (!supabase) return null;
+            const { error } = await supabase
+                .from('farmers' as any)
+                .delete()
+                .eq('id', id);
+            if (error) throw error;
+            return { success: true };
+        }
+    },
+
     // ============== USER MANAGEMENT (Super Admin) ==============
     getUsers: async () => {
         try {
@@ -432,6 +460,26 @@ export const adminService = {
                 .select('*')
                 .order('created_at', { ascending: false });
             return data || [];
+        }
+    },
+
+    createUser: async (userData: any) => {
+        return apiPost<any>('/admin/users', userData);
+    },
+
+    updateUser: async (userId: string, userData: any) => {
+        try {
+            return await apiPut<any>(`/admin/users/${userId}`, userData);
+        } catch {
+            if (!supabase) return null;
+            const { data, error } = await supabase
+                .from('profiles' as any)
+                .update(userData)
+                .eq('id', userId)
+                .select()
+                .single();
+            if (error) throw error;
+            return data;
         }
     },
 
@@ -452,7 +500,17 @@ export const adminService = {
     },
 
     deleteUser: async (userId: string) => {
-        return apiDelete<{ status: string }>(`/admin/users/${userId}`);
+        try {
+            return await apiDelete<{ status: string }>(`/admin/users/${userId}`);
+        } catch {
+            if (!supabase) return null;
+            const { error } = await supabase
+                .from('profiles' as any)
+                .delete()
+                .eq('id', userId);
+            if (error) throw error;
+            return { status: 'success' };
+        }
     },
 
     // ============== DASHBOARD STATS ==============
