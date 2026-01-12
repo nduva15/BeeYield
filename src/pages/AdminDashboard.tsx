@@ -40,6 +40,7 @@ const AdminDashboard: React.FC = () => {
     const [systemUsers, setSystemUsers] = useState<any[]>([]);
     const [pollinationRequests, setPollinationRequests] = useState<any[]>([]);
     const [contacts, setContacts] = useState<any[]>([]);
+    const [farmers, setFarmers] = useState<any[]>([]);
     const [stockMovements, setStockMovements] = useState<any[]>([]);
     const [activeTab, setActiveTab] = useState('overview');
 
@@ -62,10 +63,16 @@ const AdminDashboard: React.FC = () => {
         beekeeper_name: '', beekeeper_id: '', location_region: '', latitude: 0, longitude: 0,
         quality_grade: 'A', moisture_content: 0, color_grade: ''
     });
-    const [isStockModalOpen, setIsStockModalOpen] = useState(false);
     const [stockForm, setStockForm] = useState({
         product_id: '', type: 'addition', quantity: 0, reason: ''
     });
+
+    const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+    const [editingUser, setEditingUser] = useState<any | null>(null);
+    const [userForm, setUserForm] = useState({
+        first_name: '', last_name: '', email: '', password: '', role: 'user'
+    });
+
 
     const [dashboardStats, setDashboardStats] = useState({
         totalRevenue: 0,
@@ -102,7 +109,8 @@ const AdminDashboard: React.FC = () => {
                 adminService.getBatches(),
                 adminService.getPollinationRequests(),
                 adminService.getContactRequests(),
-                adminService.getStockMovements()
+                adminService.getStockMovements(),
+                adminService.getFarmers()
             ];
 
             let userPromiseIndex = -1;
@@ -131,6 +139,7 @@ const AdminDashboard: React.FC = () => {
             const fetchedPollination = getResult(4, 'pollination');
             const fetchedContacts = getResult(5, 'contacts');
             const fetchedStock = getResult(6, 'stock');
+            const fetchedFarmers = getResult(7, 'farmers');
 
             setOrders(fetchedOrders);
             setSubscribers(fetchedSubscribers);
@@ -139,6 +148,7 @@ const AdminDashboard: React.FC = () => {
             setPollinationRequests(fetchedPollination);
             setContacts(fetchedContacts);
             setStockMovements(fetchedStock);
+            setFarmers(fetchedFarmers);
 
             // Calculate Stats
             const revenue = fetchedOrders.reduce((sum: number, o: any) => sum + (o.total_amount || 0), 0);
@@ -413,6 +423,55 @@ const AdminDashboard: React.FC = () => {
         }
     };
 
+    const handleEditUser = (user: any) => {
+        setEditingUser(user);
+        setUserForm({
+            first_name: user.first_name || '',
+            last_name: user.last_name || '',
+            email: user.email || '',
+            password: '',
+            role: user.role || 'user'
+        });
+        setIsUserModalOpen(true);
+    };
+
+    const handleSaveUser = async () => {
+        try {
+            if (!userForm.email || (!editingUser && !userForm.password)) {
+                toast.error("Please fill in all required fields");
+                return;
+            }
+
+            if (editingUser) {
+                const { password, ...updateData } = userForm;
+                await adminService.updateUser(editingUser.id, updateData);
+                toast.success("User updated successfully");
+            } else {
+                await adminService.createUser(userForm);
+                toast.success("New operator authenticated");
+            }
+            setIsUserModalOpen(false);
+            setEditingUser(null);
+            setUserForm({ first_name: '', last_name: '', email: '', password: '', role: 'user' });
+            loadAllData();
+        } catch (error) {
+            toast.error(editingUser ? "Failed to update user" : "Failed to create user");
+        }
+    };
+
+    const handleDeleteFarmer = async (id: string) => {
+        if (confirm("Permanently remove this farmer record?")) {
+            try {
+                await adminService.deleteFarmer(id);
+                toast.success("Farmer record removed");
+                loadAllData();
+            } catch (error) {
+                toast.error("Failed to remove farmer");
+            }
+        }
+    };
+
+
     if (authLoading || isLoading) {
         return (
             <div className="flex flex-col justify-center items-center h-screen bg-muted/10 space-y-4">
@@ -488,6 +547,9 @@ const AdminDashboard: React.FC = () => {
                         </TabsTrigger>
                         <TabsTrigger value="batches" className="rounded-full px-6 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow transition-all font-bold text-xs uppercase tracking-widest flex gap-2">
                             <Database className="h-4 w-4" /> Traceability
+                        </TabsTrigger>
+                        <TabsTrigger value="farmers" className="rounded-full px-6 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow transition-all font-bold text-xs uppercase tracking-widest flex gap-2">
+                            <Users className="h-4 w-4" /> Farmers
                         </TabsTrigger>
                         <TabsTrigger value="pollination" className="rounded-full px-6 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow transition-all font-bold text-xs uppercase tracking-widest flex gap-2">
                             <Bug className="h-4 w-4" /> Pollination
@@ -1299,6 +1361,83 @@ const AdminDashboard: React.FC = () => {
                     </Dialog>
                 </TabsContent>
 
+                {/* --- FARMERS TAB --- */}
+                <TabsContent value="farmers" className="space-y-6">
+                    <Card className="border-none shadow-2xl glass bg-white/50 dark:bg-black/20 rounded-3xl overflow-hidden">
+                        <CardHeader className="bg-muted/30 border-b border-border/10 flex flex-row items-center justify-between">
+                            <div>
+                                <CardTitle className="text-2xl font-black font-heading">Agricultural Partners</CardTitle>
+                                <CardDescription>Authenticated network of honey harvesters and growers.</CardDescription>
+                            </div>
+                            <Button variant="outline" className="rounded-full font-black uppercase tracking-widest text-xs h-auto py-4 border-dashed border-primary/30">
+                                <Plus className="mr-2 h-4 w-4" /> Register Farmer
+                            </Button>
+                        </CardHeader>
+                        <CardContent className="p-0">
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="bg-muted/20 border-border/10">
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Farmer</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Contact</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Location</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Experience</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {farmers.length === 0 ? (
+                                            <TableRow><TableCell colSpan={6} className="text-center h-48 text-muted-foreground font-medium italic">No registered farmers found.</TableCell></TableRow>
+                                        ) : (
+                                            farmers.map((farmer) => (
+                                                <TableRow key={farmer.id} className="hover:bg-muted/20 transition-colors border-border/10">
+                                                    <TableCell className="px-6">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-10 h-10 rounded-full bg-honey/20 flex items-center justify-center font-black text-honey">
+                                                                {farmer.name?.[0]?.toUpperCase() || 'F'}
+                                                            </div>
+                                                            <div className="flex flex-col">
+                                                                <span className="font-bold">{farmer.name}</span>
+                                                                <span className="text-[10px] text-muted-foreground uppercase font-mono">{farmer.farmer_id || 'ID-PENDING'}</span>
+                                                            </div>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="px-6">
+                                                        <div className="text-sm font-medium">{farmer.phone}</div>
+                                                        <div className="text-[10px] text-muted-foreground">{farmer.email || 'No email'}</div>
+                                                    </TableCell>
+                                                    <TableCell className="px-6">
+                                                        <div className="text-sm">{farmer.county || 'N/A'}</div>
+                                                        <div className="text-[10px] text-muted-foreground">{farmer.region || farmer.location_name || ''}</div>
+                                                    </TableCell>
+                                                    <TableCell className="px-6">
+                                                        <Badge variant="outline" className="bg-blue-500/5 text-blue-600 border-blue-200">
+                                                            {farmer.experience_years} Years
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell className="px-6">
+                                                        <Badge className={farmer.certification_status === 'CERTIFIED' ? 'bg-green-500/10 text-green-600 border-none' : 'bg-amber-500/10 text-amber-600 border-none'}>
+                                                            {farmer.certification_status || 'PENDING'}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell className="px-6 text-right">
+                                                        <div className="flex justify-end gap-2">
+                                                            <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteFarmer(farmer.id)}>
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
                 {/* --- TEAM MANAGEMENT (SUPER ADMIN ONLY) --- */}
                 {isSuperAdmin && (
                     <TabsContent value="team" className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
@@ -1355,24 +1494,86 @@ const AdminDashboard: React.FC = () => {
                                         <div className="flex gap-2 pt-2">
                                             <Button
                                                 variant="outline"
-                                                className="flex-1 rounded-2xl h-10 border-border/50 text-[10px] font-black uppercase tracking-widest hover:bg-destructive/10 hover:text-destructive group-hover:border-destructive/30"
+                                                className="flex-1 rounded-2xl h-10 border-border/50 text-[10px] font-black uppercase tracking-widest hover:bg-primary/10 hover:text-primary transition-colors"
+                                                onClick={() => handleEditUser(userObj)}
+                                            >
+                                                <Edit className="h-4 w-4 mr-2" /> Modify
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                className="flex-1 rounded-2xl h-10 border-border/50 text-[10px] font-black uppercase tracking-widest hover:bg-destructive/10 hover:text-destructive group-hover:border-destructive/30 transition-colors"
                                                 onClick={() => handleDeleteUser(userObj.id)}
                                                 disabled={userObj.email === user?.email} // Can't delete self
                                             >
                                                 <UserMinus className="h-4 w-4 mr-2" /> De-Authenticate
                                             </Button>
                                         </div>
+
                                     </CardContent>
                                 </Card>
                             ))}
 
                             {/* Add User Simulation Card */}
-                            <Card className="border-dashed border-2 border-border bg-transparent rounded-3xl flex flex-col items-center justify-center p-8 text-muted-foreground hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition-all group h-full min-h-[160px]">
+                            <Card
+                                onClick={() => { setEditingUser(null); setUserForm({ first_name: '', last_name: '', email: '', password: '', role: 'user' }); setIsUserModalOpen(true); }}
+                                className="border-dashed border-2 border-border bg-transparent rounded-3xl flex flex-col items-center justify-center p-8 text-muted-foreground hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition-all group h-full min-h-[160px]"
+                            >
                                 <Users className="h-10 w-10 mb-4 group-hover:scale-110 transition-transform text-muted-foreground/40 group-hover:text-primary/40" />
                                 <h3 className="font-black uppercase tracking-widest text-xs">Awaiting New Operator</h3>
-                                <p className="text-[10px] font-medium text-center mt-2 opacity-60">Authentication protocols active</p>
+                                <p className="text-[10px] font-medium text-center mt-2 opacity-60">Initialize authentication protocols</p>
                             </Card>
                         </div>
+
+                        {/* User CRUD Dialog */}
+                        <Dialog open={isUserModalOpen} onOpenChange={setIsUserModalOpen}>
+                            <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-md">
+                                <DialogHeader>
+                                    <DialogTitle className="text-3xl font-black tracking-tighter">{editingUser ? 'Modify Operator' : 'Initialize Operator'}</DialogTitle>
+                                    <DialogDescription>Configure system access and identity parameters.</DialogDescription>
+                                </DialogHeader>
+                                <div className="grid gap-5 py-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">First Name</Label>
+                                            <Input placeholder="John" value={userForm.first_name} onChange={e => setUserForm({ ...userForm, first_name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Last Name</Label>
+                                            <Input placeholder="Doe" value={userForm.last_name} onChange={e => setUserForm({ ...userForm, last_name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Email Address</Label>
+                                        <Input type="email" placeholder="operator@beeyield.com" value={userForm.email} onChange={e => setUserForm({ ...userForm, email: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                    </div>
+                                    {!editingUser && (
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Access Password</Label>
+                                            <Input type="password" placeholder="••••••••" value={userForm.password} onChange={e => setUserForm({ ...userForm, password: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                        </div>
+                                    )}
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Clearance Level</Label>
+                                        <Select value={userForm.role} onValueChange={(val) => setUserForm({ ...userForm, role: val })}>
+                                            <SelectTrigger className="w-full h-12 rounded-xl bg-muted/50 border-border/50">
+                                                <SelectValue placeholder="Select Role" />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-xl">
+                                                <SelectItem value="user" className="font-bold">OPERATIVE (USER)</SelectItem>
+                                                <SelectItem value="admin" className="font-bold">OVERSEER (ADMIN)</SelectItem>
+                                                <SelectItem value="super_admin" className="font-bold">ENTITY (SUPER ADMIN)</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+                                <DialogFooter>
+                                    <Button onClick={handleSaveUser} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
+                                        {editingUser ? 'Update Operator' : 'Finalize Authentication'}
+                                    </Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+
                     </TabsContent>
                 )}
 
