@@ -214,7 +214,7 @@ export const adminService = {
 
         try {
             // 1. Get Timothy Nduva's ID
-            const { data: farmer } = await supabase.from('farmers' as any).select('id').eq('farmer_id', 'F-MAT-001').maybeSingle();
+            const { data: farmer } = await supabase.from('farmers' as any).select('id').eq('farmer_id', 'F-MAT-001').maybeSingle() as any;
             if (!farmer) return { success: false, error: "Farmer Timothy Nduva not found. Seed traceability first." };
 
             // 2. Seed Apiaries
@@ -241,7 +241,7 @@ export const adminService = {
                 }
             ];
 
-            const createdApiaries = [];
+            const createdApiaries: any[] = [];
             for (const a of apiariesToSeed) {
                 const { data: existing } = await supabase.from('apiaries' as any).select('id').eq('name', a.name).maybeSingle();
                 if (!existing) {
@@ -542,8 +542,8 @@ export const adminService = {
             if (!supabase) return null;
             const { data, error } = await supabase
                 .from('pollination_requests')
-                .update({ status })
-                .eq('id', id)
+                .update({ status } as any)
+                .eq('id', parseInt(id))
                 .select()
                 .single();
             if (error) throw error;
@@ -559,7 +559,7 @@ export const adminService = {
             const { error } = await supabase
                 .from('pollination_requests')
                 .delete()
-                .eq('id', id);
+                .eq('id', parseInt(id));
             if (error) throw error;
             return { success: true };
         }
