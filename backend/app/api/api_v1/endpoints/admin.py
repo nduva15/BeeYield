@@ -141,6 +141,82 @@ def delete_product(product_id: str):
     return db_update("products", {"is_active": False}, {"id": product_id})
 
 
+# --- Users / Team ---
+
+@router.get("/users", response_model=List[Dict[str, Any]])
+def get_all_users():
+    """
+    Get all users. This requires service role permissions.
+    If no profiles table exists, we try to list from auth.admin.
+    """
+    supabase = get_supabase()
+    if not supabase:
+        raise HTTPException(status_code=500, detail="Database connection failed")
+    
+    try:
+        # Note: listing users via auth.admin requires the SERVICE_ROLE key.
+        # If the provided key is only anon/authenticated, this might fail unless a profiles table exists.
+        # For BeeYield, let's look for a profiles table first as it's cleaner.
+        users = db_select("profiles")
+        if not users:
+            # Fallback to auth.admin if the profiles table doesn't exist or is empty
+            # and we have the right permissions.
+            admin_users = supabase.auth.admin.list_users()
+            users = [
+                {
+                    "id": u.id,
+                    "email": u.email,
+                    "role": u.user_metadata.get("role", "user") if u.user_metadata else "user",
+                    "first_name": u.user_metadata.get("first_name") if u.user_metadata else "",
+                    "last_name": u.user_metadata.get("last_name") if u.user_metadata else "",
+                    "created_at": u.created_at
+                } for u in admin_users.users
+            ]
+        return users
+    except Exception as e:
+        # If both fail, return empty list or mock for demo
+        print(f"User Fetch Error: {e}")
+        return []
+
+@router.put("/users/{user_id}/role")
+def update_user_role(user_id: str, role_update: Dict[str, str]):
+    """
+    Update a user's role in their metadata.
+    """
+    role = role_update.get("role")
+    if not role:
+        raise HTTPException(status_code=400, detail="Role is required")
+    
+    supabase = get_supabase()
+    if not supabase:
+         raise HTTPException(status_code=500, detail="Database connection failed")
+         
+    try:
+        # Update auth metadata
+        supabase.auth.admin.update_user_by_id(
+            user_id,
+            attributes={"user_metadata": {"role": role}}
+        )
+        # Also update profiles table if it exists
+        db_update("profiles", {"role": role}, {"id": user_id})
+        
+        return {"status": "success", "message": f"User role updated to {role}"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.delete("/users/{user_id}")
+def delete_user(user_id: str):
+    """
+    Delete a user.
+    """
+    supabase = get_supabase()
+    try:
+        supabase.auth.admin.delete_user(user_id)
+        db_delete("profiles", {"id": user_id})
+        return {"status": "success"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 # --- Traceability (Honey Chain) ---
 
 @router.post("/batches", response_model=Dict[str, Any])

@@ -25,16 +25,24 @@ export interface Product {
     variants: ProductVariant[];
 }
 
-export const getProducts = async (category?: string): Promise<Product[]> => {
+export const getProducts = async (category_name?: string): Promise<Product[]> => {
+    if (!supabase) return [];
     try {
-        const url = category
-            ? `${API_V1_URL}/shop/products?category=${category}`
-            : `${API_V1_URL}/shop/products`;
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error("Failed to fetch products");
+        let query = supabase
+            .from('products' as any)
+            .select('*, variants:product_variants(*)');
+
+        if (category_name) {
+            query = query.eq('category', category_name);
         }
-        return await response.json();
+
+        const { data, error } = await query;
+        if (error) throw error;
+
+        return (data || []).map((p: any) => ({
+            ...p,
+            variants: p.variants || []
+        }));
     } catch (error) {
         console.error("Error fetching products:", error);
         return [];
@@ -42,12 +50,19 @@ export const getProducts = async (category?: string): Promise<Product[]> => {
 };
 
 export const getProduct = async (productId: string): Promise<Product | null> => {
+    if (!supabase) return null;
     try {
-        const response = await fetch(`${API_V1_URL}/shop/products/${productId}`);
-        if (!response.ok) {
-            throw new Error("Failed to fetch product");
-        }
-        return await response.json();
+        const { data, error } = await supabase
+            .from('products' as any)
+            .select('*, variants:product_variants(*)')
+            .eq('id', productId)
+            .single();
+
+        if (error) throw error;
+        return {
+            ...data,
+            variants: data.variants || []
+        };
     } catch (error) {
         console.error("Error fetching product:", error);
         return null;

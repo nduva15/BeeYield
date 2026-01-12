@@ -538,7 +538,15 @@ const Shop = () => {
     }
   ];
 
-  const products = activeProducts.length > 0 ? activeProducts : fallbackProducts;
+  // Combine live products with fallbacks for missing categories
+  const products = [...activeProducts];
+  const fetchedCategories = new Set(activeProducts.map(p => p.category));
+
+  fallbackProducts.forEach(fallback => {
+    if (!fetchedCategories.has(fallback.category)) {
+      products.push(fallback);
+    }
+  });
 
   const handleAddToCart = (product: Product) => {
     const selectedSize = selectedSizes[product.id] || product.variants[0].size;
