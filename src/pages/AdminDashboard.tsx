@@ -51,6 +51,7 @@ const AdminDashboard: React.FC = () => {
     const [isProductModalOpen, setIsProductModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<any | null>(null);
     const [isBatchModalOpen, setIsBatchModalOpen] = useState(false);
+    const [isStockModalOpen, setIsStockModalOpen] = useState(false);
 
     // Form States
     const [productForm, setProductForm] = useState({
@@ -71,6 +72,14 @@ const AdminDashboard: React.FC = () => {
     const [editingUser, setEditingUser] = useState<any | null>(null);
     const [userForm, setUserForm] = useState({
         first_name: '', last_name: '', email: '', password: '', role: 'user'
+    });
+
+    const [isFarmerModalOpen, setIsFarmerModalOpen] = useState(false);
+    const [editingFarmer, setEditingFarmer] = useState<any | null>(null);
+    const [farmerForm, setFarmerForm] = useState({
+        name: '', phone: '', email: '', id_number: '', experience_years: 0,
+        story: '', latitude: -1.286389, longitude: 36.817223, location_name: '',
+        region: '', county: '', ward: ''
     });
 
 
@@ -233,7 +242,7 @@ const AdminDashboard: React.FC = () => {
             setIsBatchModalOpen(false);
             setEditingBatchId(null);
             setBatchForm({
-                honey_type: '', harvest_date: '', quantity_kg: 0, processing_method: 'Raw Filtered',
+                honey_type: '', harvest_date: '', packaged_date: '', quantity_kg: 0, processing_method: 'Raw Filtered',
                 farmer_name: '', farmer_phone: '', location_county: '', apiary_name: '',
                 beekeeper_name: '', beekeeper_id: '', location_region: '', latitude: 0, longitude: 0,
                 quality_grade: 'A', moisture_content: 0, color_grade: ''
@@ -271,6 +280,7 @@ const AdminDashboard: React.FC = () => {
         setBatchForm({
             honey_type: batch.honey_type || '',
             harvest_date: batch.harvest_date || '',
+            packaged_date: batch.packaged_date || '',
             quantity_kg: batch.quantity_kg || 0,
             processing_method: batch.processing_method || 'Raw Filtered',
             farmer_name: batch.farmer_name || '',
@@ -457,6 +467,47 @@ const AdminDashboard: React.FC = () => {
         } catch (error) {
             toast.error(editingUser ? "Failed to update user" : "Failed to create user");
         }
+    };
+
+    const handleSaveFarmer = async () => {
+        try {
+            if (editingFarmer) {
+                await adminService.updateFarmer(editingFarmer.id, farmerForm);
+                toast.success("Farmer profile recalibrated");
+            } else {
+                await adminService.createFarmer(farmerForm);
+                toast.success("Farmer registration protocol complete");
+            }
+            setIsFarmerModalOpen(false);
+            setEditingFarmer(null);
+            setFarmerForm({
+                name: '', phone: '', email: '', id_number: '', experience_years: 0,
+                story: '', latitude: -1.286389, longitude: 36.817223, location_name: '',
+                region: '', county: '', ward: ''
+            });
+            loadAllData();
+        } catch (error) {
+            toast.error(editingFarmer ? "Failed to recalibrate profile" : "Failed to register farmer on network");
+        }
+    };
+
+    const handleEditFarmer = (farmer: any) => {
+        setEditingFarmer(farmer);
+        setFarmerForm({
+            name: farmer.name || '',
+            phone: farmer.phone || '',
+            email: farmer.email || '',
+            id_number: farmer.id_number || '',
+            experience_years: farmer.experience_years || 0,
+            story: farmer.story || '',
+            latitude: farmer.latitude || -1.286389,
+            longitude: farmer.longitude || 36.817223,
+            location_name: farmer.location_name || '',
+            region: farmer.region || '',
+            county: farmer.county || '',
+            ward: farmer.ward || ''
+        });
+        setIsFarmerModalOpen(true);
     };
 
     const handleDeleteFarmer = async (id: string) => {
@@ -899,9 +950,14 @@ const AdminDashboard: React.FC = () => {
                                     </CardTitle>
                                     <CardDescription>Track inventory additions, removals, and adjustments.</CardDescription>
                                 </div>
-                                <Badge className="bg-green-500/10 text-green-600 border-green-200 px-4 py-1.5 rounded-full font-black text-[10px]">
-                                    {stockMovements.length} RECORDS
-                                </Badge>
+                                <div className="flex gap-2">
+                                    <Badge className="bg-green-500/10 text-green-600 border-green-200 px-4 py-1.5 rounded-full font-black text-[10px]">
+                                        {stockMovements.length} RECORDS
+                                    </Badge>
+                                    <Button onClick={() => setIsStockModalOpen(true)} size="sm" className="rounded-full h-8 px-4 font-black uppercase tracking-widest text-[10px]">
+                                        <Plus className="w-3 h-3 mr-1" /> New Movement
+                                    </Button>
+                                </div>
                             </div>
                         </CardHeader>
                         <CardContent className="p-0">
@@ -940,6 +996,58 @@ const AdminDashboard: React.FC = () => {
                             </div>
                         </CardContent>
                     </Card>
+
+                    {/* Stock Movement Dialog */}
+                    <Dialog open={isStockModalOpen} onOpenChange={setIsStockModalOpen}>
+                        <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-md">
+                            <DialogHeader>
+                                <DialogTitle className="text-3xl font-black tracking-tighter text-foreground">Record Movement</DialogTitle>
+                                <DialogDescription>Register an addition or removal from product inventory.</DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-5 py-4">
+                                <div className="space-y-2">
+                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Asset Selection</Label>
+                                    <Select value={stockForm.product_id} onValueChange={(val) => setStockForm({ ...stockForm, product_id: val })}>
+                                        <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
+                                            <SelectValue placeholder="Select Product" />
+                                        </SelectTrigger>
+                                        <SelectContent className="rounded-xl">
+                                            {products.map(p => (
+                                                <SelectItem key={p.id} value={p.id} className="font-bold">{p.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Movement Type</Label>
+                                        <Select value={stockForm.type} onValueChange={(val) => setStockForm({ ...stockForm, type: val })}>
+                                            <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-xl">
+                                                <SelectItem value="addition" className="font-bold">ADDITION (+)</SelectItem>
+                                                <SelectItem value="removal" className="font-bold">REMOVAL (-)</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Quantity</Label>
+                                        <Input type="number" value={stockForm.quantity} onChange={e => setStockForm({ ...stockForm, quantity: parseInt(e.target.value) || 0 })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Protocol Reasoning</Label>
+                                    <Input placeholder="e.g. New harvest arrival" value={stockForm.reason} onChange={e => setStockForm({ ...stockForm, reason: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                </div>
+                            </div>
+                            <DialogFooter>
+                                <Button onClick={handleCreateStockMovement} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
+                                    Commit Inventory Update
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
                 </TabsContent>
 
                 {/* --- BATCHES TAB --- */}
@@ -1369,7 +1477,11 @@ const AdminDashboard: React.FC = () => {
                                 <CardTitle className="text-2xl font-black font-heading">Agricultural Partners</CardTitle>
                                 <CardDescription>Authenticated network of honey harvesters and growers.</CardDescription>
                             </div>
-                            <Button variant="outline" className="rounded-full font-black uppercase tracking-widest text-xs h-auto py-4 border-dashed border-primary/30">
+                            <Button
+                                onClick={() => setIsFarmerModalOpen(true)}
+                                variant="outline"
+                                className="rounded-full font-black uppercase tracking-widest text-xs h-auto py-4 border-dashed border-primary/30"
+                            >
                                 <Plus className="mr-2 h-4 w-4" /> Register Farmer
                             </Button>
                         </CardHeader>
@@ -1423,6 +1535,9 @@ const AdminDashboard: React.FC = () => {
                                                     </TableCell>
                                                     <TableCell className="px-6 text-right">
                                                         <div className="flex justify-end gap-2">
+                                                            <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 text-primary hover:bg-primary/10 ml-1" onClick={() => handleEditFarmer(farmer)}>
+                                                                <Edit className="h-4 w-4" />
+                                                            </Button>
                                                             <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteFarmer(farmer.id)}>
                                                                 <Trash2 className="h-4 w-4" />
                                                             </Button>
@@ -1436,6 +1551,70 @@ const AdminDashboard: React.FC = () => {
                             </div>
                         </CardContent>
                     </Card>
+
+                    {/* Farmer Registration Dialog */}
+                    <Dialog open={isFarmerModalOpen} onOpenChange={(open) => { setIsFarmerModalOpen(open); if (!open) setEditingFarmer(null); }}>
+                        <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-2xl max-h-[90vh] overflow-y-auto">
+                            <DialogHeader>
+                                <DialogTitle className="text-3xl font-black tracking-tighter">{editingFarmer ? 'Modify Partner' : 'Register Partner'}</DialogTitle>
+                                <DialogDescription>{editingFarmer ? 'Update beekeeper credentials and parameters.' : 'Initialize a new beekeeper record on the BeeYield network.'}</DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-6 py-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Full Name</Label>
+                                        <Input placeholder="Timothy Nduva" value={farmerForm.name} onChange={e => setFarmerForm({ ...farmerForm, name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Phone Number</Label>
+                                        <Input placeholder="+254 7XX XXX XXX" value={farmerForm.phone} onChange={e => setFarmerForm({ ...farmerForm, phone: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Email Address</Label>
+                                        <Input type="email" placeholder="timothy@beeyield.com" value={farmerForm.email} onChange={e => setFarmerForm({ ...farmerForm, email: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">ID Number</Label>
+                                        <Input placeholder="National ID or Passport" value={farmerForm.id_number} onChange={e => setFarmerForm({ ...farmerForm, id_number: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-3 gap-4">
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">County</Label>
+                                        <Input placeholder="Makueni" value={farmerForm.county} onChange={e => setFarmerForm({ ...farmerForm, county: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Region</Label>
+                                        <Input placeholder="Eastern" value={farmerForm.region} onChange={e => setFarmerForm({ ...farmerForm, region: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Years Experience</Label>
+                                        <Input type="number" value={farmerForm.experience_years} onChange={e => setFarmerForm({ ...farmerForm, experience_years: parseInt(e.target.value) || 0 })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Location Details / Ward</Label>
+                                    <Input placeholder="Kibwezi East, Mtito Andei" value={farmerForm.location_name} onChange={e => setFarmerForm({ ...farmerForm, location_name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">The Beekeeper's Story</Label>
+                                    <Textarea
+                                        placeholder="Brief background about the farmer..."
+                                        value={farmerForm.story}
+                                        onChange={e => setFarmerForm({ ...farmerForm, story: e.target.value })}
+                                        className="rounded-xl min-h-[100px] bg-muted/50 border-border/50"
+                                    />
+                                </div>
+                            </div>
+                            <DialogFooter>
+                                <Button onClick={handleSaveFarmer} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
+                                    {editingFarmer ? 'Update Partner Records' : 'Complete Network Registration'}
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
                 </TabsContent>
 
                 {/* --- TEAM MANAGEMENT (SUPER ADMIN ONLY) --- */}

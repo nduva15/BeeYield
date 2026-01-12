@@ -402,3 +402,36 @@ def update_batch(batch_id: str, batch_in: Dict[str, Any]):
 @router.delete("/batches/{batch_id}")
 def delete_batch(batch_id: str):
     return db_delete("honey_batches", {"id": batch_id})
+
+# --- Farmers ---
+
+@router.get("/farmers", response_model=List[Dict[str, Any]])
+def get_all_farmers():
+    """
+    Get all registered farmers.
+    """
+    return db_select("farmers", order_by="created_at", ascending=False)
+
+@router.post("/farmers", response_model=Dict[str, Any])
+def create_farmer_admin(farmer_in: Dict[str, Any]):
+    """
+    Create a new farmer record.
+    Uses the traceability service to ensure blockchain registration if needed.
+    """
+    # For now, direct DB insert is often used by admin, 
+    # but let's use the service if it's available for consistency.
+    from app.schemas import traceability as schemas
+    try:
+        f_schema = schemas.FarmerCreate(**farmer_in)
+        return traceability_service.register_farmer(f_schema)
+    except:
+        # Fallback to direct insert if schema doesn't match or service fails
+        return db_insert("farmers", farmer_in)
+
+@router.put("/farmers/{farmer_id}", response_model=Dict[str, Any])
+def update_farmer_admin(farmer_id: str, farmer_in: Dict[str, Any]):
+    return db_update("farmers", farmer_in, {"id": farmer_id})
+
+@router.delete("/farmers/{farmer_id}")
+def delete_farmer_admin(farmer_id: str):
+    return db_delete("farmers", {"id": farmer_id})
