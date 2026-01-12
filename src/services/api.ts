@@ -36,16 +36,24 @@ export async function apiRequest<T>(
 
         if (!response.ok) {
             let errorData: any = {};
+            const text = await response.text();
             try {
-                errorData = await response.json();
+                errorData = JSON.parse(text);
             } catch (e) {
                 // If JSON parse fails, it might be HTML or empty
-                errorData = { detail: `API Error ${response.status}: ${response.statusText}` };
+                console.error("Non-JSON error response from server:", text.substring(0, 200));
+                errorData = { detail: `API Error ${response.status}: ${response.statusText}. The server returned HTML instead of JSON. Please ensure the backend is running.` };
             }
             throw new Error(errorData.detail || `API Error: ${response.status}`);
         }
 
-        return await response.json();
+        const responseText = await response.text();
+        try {
+            return JSON.parse(responseText);
+        } catch (e: any) {
+            console.error("Failed to parse JSON response:", responseText.substring(0, 200));
+            throw new Error(`Connection Error: The server returned an invalid response (HTML). Please check if the backend is running at ${API_V1_URL}. Technical: ${e.message}`);
+        }
     } catch (error: any) {
         console.error(`API Error for ${endpoint}:`, error);
         // Better error message for common JSON parse error (HTML returned)
