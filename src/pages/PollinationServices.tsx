@@ -182,7 +182,7 @@ const PollinationServices = () => {
                 </div>
             </section>
 
-            {/* Two Pollination Types Section */}
+            {/* Three Pollination Types Section */}
             <section className="py-32 bg-muted/20 relative overflow-hidden">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-24 space-y-4">
@@ -190,28 +190,28 @@ const PollinationServices = () => {
                             Our Solutions
                         </Badge>
                         <h2 className="text-5xl md:text-7xl font-black text-foreground tracking-tighter">
-                            Two Paths to <span className="text-amber-600 italic">Perfection</span>
+                            Three Paths to <span className="text-amber-600 italic">Perfection</span>
                         </h2>
                         <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-medium">
-                            Choose the approach that fits your operation, or combine both for complete visibility.
+                            Complete protection and optimization: In-Hive, In-Field, and Disease Defense.
                         </p>
                     </div>
 
-                    <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+                    <div className="grid lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
                         {/* In-Hive Precision */}
-                        <Card className="group relative overflow-hidden border-none shadow-premium bg-white dark:bg-gray-950 rounded-[4rem] transition-all duration-700 hover:-translate-y-2">
-                            <CardContent className="p-12 md:p-16 relative z-10 h-full flex flex-col">
-                                <div className="flex items-start gap-8">
-                                    <div className="w-24 h-24 rounded-3xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 animate-pulse">
-                                        <Cpu className="h-12 w-12 text-amber-600 dark:text-amber-400" />
+                        <Card className="group relative overflow-hidden border-none shadow-premium bg-white dark:bg-gray-950 rounded-[3rem] transition-all duration-700 hover:-translate-y-2">
+                            <CardContent className="p-10 relative z-10 h-full flex flex-col">
+                                <div className="flex flex-col gap-6 h-full">
+                                    <div className="w-20 h-20 rounded-3xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 animate-pulse">
+                                        <Cpu className="h-10 w-10 text-amber-600 dark:text-amber-400" />
                                     </div>
-                                    <div className="space-y-6 flex-1">
-                                        <h3 className="text-4xl font-black text-foreground tracking-tight">In-Hive <br /> Precision</h3>
-                                        <p className="text-lg text-muted-foreground leading-relaxed font-medium">
+                                    <div className="space-y-4 flex-1">
+                                        <h3 className="text-3xl font-black text-foreground tracking-tight">In-Hive <br /> Precision</h3>
+                                        <p className="text-base text-muted-foreground leading-relaxed font-medium">
                                             Smart sensors inside every hive monitor colony strength, population,
                                             and activity levels. Know exactly what you're paying for.
                                         </p>
-                                        <ul className="space-y-3">
+                                        <ul className="space-y-3 pt-2">
                                             {["Real-time colony metrics", "Bee count verification", "Acoustic health alerts"].map((feature, i) => (
                                                 <li key={i} className="flex items-center gap-3 text-sm font-bold">
                                                     <Check className="h-5 w-5 text-amber-500" />
@@ -219,31 +219,31 @@ const PollinationServices = () => {
                                                 </li>
                                             ))}
                                         </ul>
-                                        <Link to="/precision-pollination">
-                                            <Button className="mt-8 bg-amber-600 hover:bg-amber-700 text-white font-black px-10 h-14 rounded-2xl">
-                                                Explore In-Hive Tech
-                                                <ArrowRight className="ml-2 h-5 w-5" />
-                                            </Button>
-                                        </Link>
                                     </div>
+                                    <Link to="/precision-pollination" className="mt-auto pt-8">
+                                        <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white font-black h-12 rounded-xl">
+                                            Explore In-Hive Tech
+                                            <ArrowRight className="ml-2 h-4 w-4" />
+                                        </Button>
+                                    </Link>
                                 </div>
                             </CardContent>
                         </Card>
 
                         {/* In-Field Insights */}
-                        <Card className="group relative overflow-hidden border-none shadow-premium bg-white dark:bg-gray-950 rounded-[4rem] transition-all duration-700 hover:-translate-y-2">
-                            <CardContent className="p-12 md:p-16 relative z-10 h-full flex flex-col">
-                                <div className="flex items-start gap-8">
-                                    <div className="w-24 h-24 rounded-3xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0 animate-pulse">
-                                        <Eye className="h-12 w-12 text-green-600 dark:text-green-400" />
+                        <Card className="group relative overflow-hidden border-none shadow-premium bg-white dark:bg-gray-950 rounded-[3rem] transition-all duration-700 hover:-translate-y-2">
+                            <CardContent className="p-10 relative z-10 h-full flex flex-col">
+                                <div className="flex flex-col gap-6 h-full">
+                                    <div className="w-20 h-20 rounded-3xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0 animate-pulse">
+                                        <Eye className="h-10 w-10 text-green-600 dark:text-green-400" />
                                     </div>
-                                    <div className="space-y-6 flex-1">
-                                        <h3 className="text-4xl font-black text-foreground tracking-tight">In-Field <br /> Insights</h3>
-                                        <p className="text-lg text-muted-foreground leading-relaxed font-medium">
+                                    <div className="space-y-4 flex-1">
+                                        <h3 className="text-3xl font-black text-foreground tracking-tight">In-Field <br /> Insights</h3>
+                                        <p className="text-base text-muted-foreground leading-relaxed font-medium">
                                             Measure actual bee activity across your crops. See which areas are pollinated
                                             and identify gaps in real-time.
                                         </p>
-                                        <ul className="space-y-3">
+                                        <ul className="space-y-3 pt-2">
                                             {["Flower visitation tracking", "Pollination heatmaps", "Weather correlation data"].map((feature, i) => (
                                                 <li key={i} className="flex items-center gap-3 text-sm font-bold">
                                                     <Check className="h-5 w-5 text-green-500" />
@@ -251,13 +251,44 @@ const PollinationServices = () => {
                                                 </li>
                                             ))}
                                         </ul>
-                                        <Link to="/in-land-pollination">
-                                            <Button className="mt-8 bg-green-600 hover:bg-green-700 text-white font-black px-10 h-14 rounded-2xl">
-                                                Explore Field Insights
-                                                <ArrowRight className="ml-2 h-5 w-5" />
-                                            </Button>
-                                        </Link>
                                     </div>
+                                    <Link to="/in-land-pollination" className="mt-auto pt-8">
+                                        <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-black h-12 rounded-xl">
+                                            Explore Field Insights
+                                            <ArrowRight className="ml-2 h-4 w-4" />
+                                        </Button>
+                                    </Link>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Disease Defense */}
+                        <Card className="group relative overflow-hidden border-none shadow-premium bg-white dark:bg-gray-950 rounded-[3rem] transition-all duration-700 hover:-translate-y-2">
+                            <CardContent className="p-10 relative z-10 h-full flex flex-col">
+                                <div className="flex flex-col gap-6 h-full">
+                                    <div className="w-20 h-20 rounded-3xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0 animate-pulse">
+                                        <Shield className="h-10 w-10 text-red-600 dark:text-red-400" />
+                                    </div>
+                                    <div className="space-y-4 flex-1">
+                                        <h3 className="text-3xl font-black text-foreground tracking-tight">Disease <br /> Defense</h3>
+                                        <p className="text-base text-muted-foreground leading-relaxed font-medium">
+                                            Proactive protection for your apiary. Detect threats in the hive and across the land before they impact your harvest.
+                                        </p>
+                                        <ul className="space-y-3 pt-2">
+                                            {["Early pathogen detection", "In-Hive & In-Land safety", "AI-driven health alerts"].map((feature, i) => (
+                                                <li key={i} className="flex items-center gap-3 text-sm font-bold">
+                                                    <Check className="h-5 w-5 text-red-500" />
+                                                    {feature}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                    <Link to="/diseases" className="mt-auto pt-8">
+                                        <Button className="w-full bg-red-600 hover:bg-red-700 text-white font-black h-12 rounded-xl">
+                                            View Disease Solutions
+                                            <ArrowRight className="ml-2 h-4 w-4" />
+                                        </Button>
+                                    </Link>
                                 </div>
                             </CardContent>
                         </Card>
