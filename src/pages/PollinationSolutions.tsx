@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight, Activity, Sprout, BarChart3,
-  Cpu, Wifi, Check
+  Cpu, Wifi, Check, Shield
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,7 +30,7 @@ const PollinationSolutions = () => {
       {/* The Two Paths Section */}
       <section className="py-12 bg-background">
         <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-8 items-stretch">
+          <div className="grid lg:grid-cols-3 gap-8 items-stretch">
 
             {/* Path 1: In-Hive */}
             <div className="relative group rounded-3xl overflow-hidden border border-border shadow-sm hover:shadow-lg transition-all duration-300">
@@ -114,6 +114,49 @@ const PollinationSolutions = () => {
                   src="https://images.unsplash.com/photo-1621252179027-94459d27d3ee?auto=format&fit=crop&q=80&w=800"
                   className="w-full h-full object-cover"
                   alt="Field bg"
+                />
+              </div>
+            </div>
+
+            {/* Path 3: Disease & Health */}
+            <div className="relative group rounded-3xl overflow-hidden border border-border shadow-sm hover:shadow-lg transition-all duration-300">
+              <div className="absolute top-0 left-0 w-full h-2 bg-amber-500"></div>
+              <div className="p-8 md:p-12 flex flex-col h-full bg-card relative z-10">
+                <div className="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300">
+                  <Shield className="h-8 w-8 text-amber-600" />
+                </div>
+
+                <h2 className="text-3xl font-bold mb-4 text-foreground">Disease Defense</h2>
+                <p className="text-lg text-muted-foreground mb-8 flex-grow">
+                  Intelligent protection for your beehives. Detect diseases early and monitor colony health with AI-driven analysis and real-time alerts.
+                </p>
+
+                <div className="space-y-4 mb-8">
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-green-600 flex-shrink-0" />
+                    <span className="font-medium text-foreground">Early disease detection</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-green-600 flex-shrink-0" />
+                    <span className="font-medium text-foreground">Colony health grading</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-green-600 flex-shrink-0" />
+                    <span className="font-medium text-foreground">Reduced chemical use</span>
+                  </div>
+                </div>
+
+                <Button size="lg" variant="outline" className="w-full gap-2 border-amber-500/20 text-amber-600 hover:bg-amber-500 hover:text-white" asChild>
+                  <Link to="/diseases">Explore Disease Technology <ArrowRight className="h-4 w-4" /></Link>
+                </Button>
+              </div>
+
+              {/* Background Image Overlay */}
+              <div className="absolute inset-0 z-0 opacity-0 group-hover:opacity-5 transition-opacity duration-500">
+                <img
+                  src="https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&q=80&w=800"
+                  className="w-full h-full object-cover"
+                  alt="Disease bg"
                 />
               </div>
             </div>

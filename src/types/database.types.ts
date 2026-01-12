@@ -1,13 +1,267 @@
-// Auto-generated types - will be updated by Supabase CLI
-// Run: supabase gen types typescript --project-id your-project-id > src/types/database.types.ts
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
 
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
-
-export interface Database {
+export type Database = {
   public: {
-    Tables: Record<string, never>;
-    Views: Record<string, never>;
-    Functions: Record<string, never>;
-    Enums: Record<string, never>;
-  };
+    Tables: {
+      contact_submissions: {
+        Row: {
+          id: number
+          created_at: string
+          full_name: string
+          email: string
+          phone: string | null
+          message: string
+          type: string
+        }
+        Insert: {
+          id?: number
+          created_at?: string
+          full_name: string
+          email: string
+          phone?: string | null
+          message: string
+          type: string
+        }
+        Update: {
+          id?: number
+          created_at?: string
+          full_name?: string
+          email?: string
+          phone?: string | null
+          message?: string
+          type?: string
+        }
+        Relationships: []
+      }
+      pollination_requests: {
+        Row: {
+          id: number
+          created_at: string
+          full_name: string
+          email: string
+          phone: string
+          farm_name: string
+          farm_location: string
+          crop_type: string
+          acres: number
+          preferred_start_date: string
+          additional_info: string | null
+        }
+        Insert: {
+          id?: number
+          created_at?: string
+          full_name: string
+          email: string
+          phone: string
+          farm_name: string
+          farm_location: string
+          crop_type: string
+          acres: number
+          preferred_start_date: string
+          additional_info?: string | null
+        }
+        Update: {
+          id?: number
+          created_at?: string
+          full_name?: string
+          email?: string
+          phone?: string
+          farm_name?: string
+          farm_location?: string
+          crop_type?: string
+          acres?: number
+          preferred_start_date?: string
+          additional_info?: string | null
+        }
+        Relationships: []
+      }
+      newsletter_subscribers: {
+        Row: {
+          id: number
+          created_at: string
+          email: string
+          first_name: string | null
+        }
+        Insert: {
+          id?: number
+          created_at?: string
+          email: string
+          first_name?: string | null
+        }
+        Update: {
+          id?: number
+          created_at?: string
+          email?: string
+          first_name?: string | null
+        }
+        Relationships: []
+      }
+      notes: {
+        Row: {
+          id: number
+          created_at: string
+          title: string
+        }
+        Insert: {
+          id?: number
+          created_at?: string
+          title: string
+        }
+        Update: {
+          id?: number
+          created_at?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          id: number
+          created_at: string
+          customer_email: string
+          customer_phone: string
+          shipping_address: Json
+          payment_method: string
+          total_amount: number
+          status: string
+          notes: string | null
+        }
+        Insert: {
+          id?: number
+          created_at?: string
+          customer_email: string
+          customer_phone: string
+          shipping_address: Json
+          payment_method: string
+          total_amount: number
+          status?: string
+          notes?: string | null
+        }
+        Update: {
+          id?: number
+          created_at?: string
+          customer_email?: string
+          customer_phone?: string
+          shipping_address?: Json
+          payment_method?: string
+          total_amount?: number
+          status?: string
+          notes?: string | null
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          id: string
+          created_at: string
+          name: string
+          description: string | null
+          category: string
+          images: string[] | null
+          is_active: boolean
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          name: string
+          description?: string | null
+          category: string
+          images?: string[] | null
+          is_active?: boolean
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          name?: string
+          description?: string | null
+          category?: string
+          images?: string[] | null
+          is_active?: boolean
+        }
+        Relationships: []
+      }
+      product_variants: {
+        Row: {
+          id: string
+          product_id: string
+          size: string
+          price_kes: number
+          stock_quantity: number
+          is_available: boolean
+        }
+        Insert: {
+          id?: string
+          product_id: string
+          size: string
+          price_kes: number
+          stock_quantity: number
+          is_available?: boolean
+        }
+        Update: {
+          id?: string
+          product_id?: string
+          size?: string
+          price_kes?: number
+          stock_quantity?: number
+          is_available?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_variants_product_id_fkey"
+            columns: ["product_id"]
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      honey_batches: {
+        Row: {
+          id: number
+          created_at: string
+          batch_code: string
+          honey_type: string
+          harvest_date: string
+          quantity_kg: number
+          processing_method: string
+          block_hash: string | null
+        }
+        Insert: {
+          id?: number
+          created_at?: string
+          batch_code: string
+          honey_type: string
+          harvest_date: string
+          quantity_kg: number
+          processing_method: string
+          block_hash?: string | null
+        }
+        Update: {
+          id?: number
+          created_at?: string
+          batch_code?: string
+          honey_type?: string
+          harvest_date?: string
+          quantity_kg?: number
+          processing_method?: string
+          block_hash?: string | null
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+  }
 }

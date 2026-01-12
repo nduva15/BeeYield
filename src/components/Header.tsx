@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ChevronDown, ShoppingBag, User } from "lucide-react";
+import { Menu, X, ChevronDown, ShoppingBag, User, Shield } from "lucide-react";
 import { Button } from "./ui/button";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/hooks/useAuth";
@@ -216,6 +216,16 @@ const Header = () => {
             {/* Secondary Links Section */}
             <div className="flex flex-col space-y-1 pt-4">
               <span className="text-xs uppercase tracking-wider text-primary-foreground/60 px-3 py-1 font-medium">More</span>
+              {user?.user_metadata?.role === 'admin' && (
+                <Link
+                  to="/admin"
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`text-sm sm:text-base font-black hover:bg-white/20 rounded-lg px-3 py-2.5 sm:py-3 transition-colors bg-white/10 text-yellow-300 border border-yellow-300/30 flex items-center justify-between mb-2 ${isActive("/admin") ? "ring-2 ring-yellow-300" : ""}`}
+                >
+                  Admin Dashboard
+                  <Shield className="h-4 w-4" />
+                </Link>
+              )}
               {menuLinks.map((link) => (
                 <Link
                   key={link.to}

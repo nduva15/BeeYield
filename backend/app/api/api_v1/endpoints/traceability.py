@@ -28,7 +28,7 @@ async def get_trace_by_code(code: str, request: Request, background_tasks: Backg
     # Demo Fallback (if real data not found, return a rich demo response for the user to see UI)
     # Support all three demo batch codes: DEMO-001, KIB-ACACIA-24, KIB-GOLD-24
     demo_codes = ["DEMO-001", "KIB-ACACIA-24", "KIB-GOLD-24"]
-    if code.upper() in demo_codes or code.upper().startswith("DEMO"):
+    if code.upper() in demo_codes:
         print(f"ℹ️ Returning Demo Data for: {code}")
         background_tasks.add_task(track_traceability_scan, code, scan_location="Demo")
         return _get_demo_trace(code.upper())
