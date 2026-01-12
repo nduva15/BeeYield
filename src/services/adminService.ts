@@ -40,7 +40,7 @@ export const adminService = {
         if (!supabase) return [];
         const { data, error } = await supabase
             .from('products')
-            .select('*, variants(*)');
+            .select('*, variants:product_variants(*)');
         if (error) throw error;
         return data;
     },
@@ -145,6 +145,22 @@ export const adminService = {
 
         if (error) throw error;
         return data;
+    },
+
+    // User Management (Super Admin)
+    getUsers: async () => {
+        const { apiGet } = await import('./api');
+        return apiGet<any[]>('/admin/users');
+    },
+
+    updateUserRole: async (userId: string, role: string) => {
+        const { apiPut } = await import('./api');
+        return apiPut<{ status: string; message: string }>(`/admin/users/${userId}/role`, { role });
+    },
+
+    deleteUser: async (userId: string) => {
+        const { apiDelete } = await import('./api');
+        return apiDelete<{ status: string }>(`/admin/users/${userId}`);
     }
 };
 
