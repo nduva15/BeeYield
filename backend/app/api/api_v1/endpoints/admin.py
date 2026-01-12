@@ -8,6 +8,12 @@ router = APIRouter()
 
 # --- Schemas ---
 
+class VariantCreate(BaseModel):
+    size: str
+    price_kes: float
+    stock_quantity: int
+    is_available: bool = True
+
 class ProductCreate(BaseModel):
     name: str
     description: Optional[str] = None
@@ -16,6 +22,7 @@ class ProductCreate(BaseModel):
     stock_quantity: Optional[int] = 0
     is_active: bool = True
     images: List[str] = []
+    variants: Optional[List[VariantCreate]] = []
 
 class ProductUpdate(BaseModel):
     name: Optional[str] = None
@@ -25,6 +32,7 @@ class ProductUpdate(BaseModel):
     stock_quantity: Optional[int] = None
     is_active: Optional[bool] = None
     images: Optional[List[str]] = None
+    variants: Optional[List[VariantCreate]] = None
 
 # --- Orders ---
 
@@ -83,8 +91,7 @@ def create_product(product_in: ProductCreate):
     # This is a simplified version, ideally we deal with variants separately or together
     # For now assuming simple product structure or user manages variants separately
     data = product_in.dict()
-    # price and stock are actually on variants usually, but if we want to support simple products:
-    # We might need to create a default variant
+    variants_data = data.pop("variants", [])
     
     # 1. Create Product
     product_data = {
@@ -106,16 +113,28 @@ def create_product(product_in: ProductCreate):
          
     product_id = inserted_data[0].get("id")
     
-    # 2. Create Default Variant if price/stock provided
-    if product_id and (data.get("price_kes") is not None or data.get("stock_quantity") is not None):
-        variant_data = {
-            "product_id": product_id,
-            "size": "Standard",
-            "price_kes": data.get("price_kes", 0),
-            "stock_quantity": data.get("stock_quantity", 0),
-            "is_available": True
-        }
-        db_insert("product_variants", variant_data)
+    # 2. Create Variants
+    if variants_data:
+        for v in variants_data:
+            variant_insert = {
+                "product_id": product_id,
+                "size": v.get("size", "Standard"),
+                "price_kes": v.get("price_kes", 0),
+                "stock_quantity": v.get("stock_quantity", 0),
+                "is_available": v.get("is_available", True)
+            }
+            db_insert("product_variants", variant_insert)
+    # Fallback to default variant if no variants list but price/stock provided at top level
+    elif product_id and (data.get("price_kes") is not None or data.get("stock_quantity") is not None):
+        if data.get("price_kes") > 0 or data.get("stock_quantity") > 0:
+            variant_data = {
+                "product_id": product_id,
+                "size": "Standard",
+                "price_kes": data.get("price_kes", 0),
+                "stock_quantity": data.get("stock_quantity", 0),
+                "is_available": True
+            }
+            db_insert("product_variants", variant_data)
         
     return {"status": "success", "id": product_id, "data": inserted_data[0]}
 
@@ -224,6 +243,41 @@ def get_contact_submissions():
     """
     return db_select("contact_submissions", order_by="created_at", ascending=False)
 
+@router.put("/contact/{contact_id}/status", response_model=Dict[str, Any])
+def update_contact_status(contact_id: str, status_update: Dict[str, str]):
+    """
+    Update contact request status.
+    """
+    status = status_update.get("status")
+    if not status:
+         raise HTTPException(status_code=400, detail="Status is required")
+    return db_update("contact_submissions", {"status": status}, {"id": contact_id})
+
+@router.delete("/contact/{contact_id}")
+def delete_contact(contact_id: str):
+    return db_delete("contact_submissions", {"id": contact_id})
+
+# --- Newsletter CRUD ---
+@router.delete("/newsletter/{subscriber_id}")
+def delete_subscriber(subscriber_id: str):
+    return db_delete("newsletter_subscribers", {"id": subscriber_id})
+
+# --- Pollination Requests ---
+@router.get("/pollination", response_model=List[Dict[str, Any]])
+def get_pollination_requests():
+    return db_select("pollination_requests", order_by="created_at", ascending=False)
+
+@router.put("/pollination/{request_id}/status", response_model=Dict[str, Any])
+def update_pollination_status(request_id: str, status_update: Dict[str, str]):
+    status = status_update.get("status")
+    if not status:
+         raise HTTPException(status_code=400, detail="Status is required")
+    return db_update("pollination_requests", {"status": status}, {"id": request_id})
+
+@router.delete("/pollination/{request_id}")
+def delete_pollination_request(request_id: str):
+    return db_delete("pollination_requests", {"id": request_id})
+
 
 # --- Traceability (Honey Chain) ---
 
@@ -240,3 +294,15 @@ def get_batches_db():
     Get all batches from the DB (Source of Truth for Admin).
     """
     return db_select("honey_batches", order_by="created_at", ascending=False)
+
+@router.put("/batches/{batch_id}", response_model=Dict[str, Any])
+def update_batch(batch_id: str, batch_in: Dict[str, Any]):
+    """
+    Update a batch in DB.
+    """
+    # Exclude fields that shouldn't be updated loosely if needed, but for admin we allow it
+    return db_update("honey_batches", batch_in, {"id": batch_id})
+
+@router.delete("/batches/{batch_id}")
+def delete_batch(batch_id: str):
+    return db_delete("honey_batches", {"id": batch_id})
