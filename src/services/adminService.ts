@@ -39,6 +39,27 @@ export interface ProductInput {
     }[];
 }
 
+export interface ApiaryInput {
+    name: string;
+    location_name?: string;
+    county?: string;
+    region?: string;
+    latitude?: number;
+    longitude?: number;
+    farmer_id?: string;
+    status?: string;
+}
+
+export interface HiveInput {
+    hive_code: string;
+    apiary_id: string;
+    type?: string;
+    installation_date?: string;
+    last_inspection_date?: string;
+    status?: string;
+    notes?: string;
+}
+
 export const adminService = {
     // ============== SEEDING ==============
     seedShopContent: async () => {
@@ -175,6 +196,75 @@ export const adminService = {
             return { success: true, batchCount };
         } catch (error) {
             console.error("Seed traceability error:", error);
+            throw error;
+        }
+    },
+
+    seedApiaryHiveData: async () => {
+        if (!supabase) return { success: false, error: "Supabase client not available" };
+
+        try {
+            // 1. Get Timothy Nduva's ID
+            const { data: farmer } = await supabase.from('farmers' as any).select('id').eq('farmer_id', 'F-MAT-001').maybeSingle();
+            if (!farmer) return { success: false, error: "Farmer Timothy Nduva not found. Seed traceability first." };
+
+            // 2. Seed Apiaries
+            const apiariesToSeed = [
+                {
+                    name: "Kibwezi East Cluster A",
+                    location_name: "Kibwezi HQ",
+                    county: "Makueni",
+                    region: "Eastern",
+                    latitude: -2.41,
+                    longitude: 37.97,
+                    farmer_id: farmer.id,
+                    status: "active"
+                },
+                {
+                    name: "Kibwezi West Outpost",
+                    location_name: "West Riverside",
+                    county: "Makueni",
+                    region: "Eastern",
+                    latitude: -2.42,
+                    longitude: 37.95,
+                    farmer_id: farmer.id,
+                    status: "active"
+                }
+            ];
+
+            const createdApiaries = [];
+            for (const a of apiariesToSeed) {
+                const { data: existing } = await supabase.from('apiaries' as any).select('id').eq('name', a.name).maybeSingle();
+                if (!existing) {
+                    const { data, error } = await supabase.from('apiaries' as any).insert([a]).select().single();
+                    if (!error) createdApiaries.push(data);
+                } else {
+                    createdApiaries.push(existing);
+                }
+            }
+
+            if (createdApiaries.length === 0) return { success: true, apiaryCount: 0, hiveCount: 0 };
+
+            // 3. Seed Hives
+            const hivesToSeed = [
+                { hive_code: "HIVE-KIB-001", apiary_id: createdApiaries[0].id, type: "Langstroth", status: "active", notes: "Superior colony strength" },
+                { hive_code: "HIVE-KIB-002", apiary_id: createdApiaries[0].id, type: "Langstroth", status: "active", notes: "Recently split" },
+                { hive_code: "HIVE-KIB-003", apiary_id: createdApiaries[1].id, type: "KTB", status: "active", notes: "Traditional Kenya Top Bar" },
+                { hive_code: "HIVE-KIB-004", apiary_id: createdApiaries[1].id, type: "Langstroth", status: "weak", notes: "Monitoring for mites" }
+            ];
+
+            let hiveCount = 0;
+            for (const h of hivesToSeed) {
+                const { data: existing } = await supabase.from('hives' as any).select('id').eq('hive_code', h.hive_code).maybeSingle();
+                if (!existing) {
+                    const { error } = await supabase.from('hives' as any).insert([h]);
+                    if (!error) hiveCount++;
+                }
+            }
+
+            return { success: true, apiaryCount: createdApiaries.length, hiveCount };
+        } catch (error) {
+            console.error("Seed apiary/hive error:", error);
             throw error;
         }
     },
@@ -651,5 +741,123 @@ export const adminService = {
     getDashboardStats: async () => {
         // Can be calculated frontend side from fetched data now
         return null;
+    },
+
+    // ============== APIARIES ==============
+    getApiaries: async () => {
+        try {
+            return await apiGet<any[]>('/admin/apiaries');
+        } catch (error) {
+            if (!supabase) return [];
+            const { data } = await supabase
+                .from('apiaries' as any)
+                .select('*, farmers(name)')
+                .order('created_at', { ascending: false });
+            return data || [];
+        }
+    },
+
+    createApiary: async (apiaryData: ApiaryInput) => {
+        try {
+            return await apiPost('/admin/apiaries', apiaryData);
+        } catch {
+            if (!supabase) return null;
+            const { data, error } = await supabase
+                .from('apiaries' as any)
+                .insert([apiaryData])
+                .select()
+                .single();
+            if (error) throw error;
+            return data;
+        }
+    },
+
+    updateApiary: async (id: string, apiaryData: ApiaryInput) => {
+        try {
+            return await apiPut(`/admin/apiaries/${id}`, apiaryData);
+        } catch {
+            if (!supabase) return null;
+            const { data, error } = await supabase
+                .from('apiaries' as any)
+                .update(apiaryData)
+                .eq('id', id)
+                .select()
+                .single();
+            if (error) throw error;
+            return data;
+        }
+    },
+
+    deleteApiary: async (id: string) => {
+        try {
+            return await apiDelete(`/admin/apiaries/${id}`);
+        } catch {
+            if (!supabase) return null;
+            const { error } = await supabase
+                .from('apiaries' as any)
+                .delete()
+                .eq('id', id);
+            if (error) throw error;
+            return { success: true };
+        }
+    },
+
+    // ============== HIVES ==============
+    getHives: async () => {
+        try {
+            return await apiGet<any[]>('/admin/hives');
+        } catch (error) {
+            if (!supabase) return [];
+            const { data } = await supabase
+                .from('hives' as any)
+                .select('*, apiaries(name)')
+                .order('created_at', { ascending: false });
+            return data || [];
+        }
+    },
+
+    createHive: async (hiveData: HiveInput) => {
+        try {
+            return await apiPost('/admin/hives', hiveData);
+        } catch {
+            if (!supabase) return null;
+            const { data, error } = await supabase
+                .from('hives' as any)
+                .insert([hiveData])
+                .select()
+                .single();
+            if (error) throw error;
+            return data;
+        }
+    },
+
+    updateHive: async (id: string, hiveData: HiveInput) => {
+        try {
+            return await apiPut(`/admin/hives/${id}`, hiveData);
+        } catch {
+            if (!supabase) return null;
+            const { data, error } = await supabase
+                .from('hives' as any)
+                .update(hiveData)
+                .eq('id', id)
+                .select()
+                .single();
+            if (error) throw error;
+            return data;
+        }
+    },
+
+    deleteHive: async (id: string) => {
+        try {
+            return await apiDelete(`/admin/hives/${id}`);
+        } catch {
+            if (!supabase) return null;
+            const { error } = await supabase
+                .from('hives' as any)
+                .delete()
+                .eq('id', id);
+            if (error) throw error;
+            return { success: true };
+        }
     }
 };

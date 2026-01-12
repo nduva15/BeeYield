@@ -42,6 +42,8 @@ const AdminDashboard: React.FC = () => {
     const [contacts, setContacts] = useState<any[]>([]);
     const [farmers, setFarmers] = useState<any[]>([]);
     const [stockMovements, setStockMovements] = useState<any[]>([]);
+    const [apiaries, setApiaries] = useState<any[]>([]);
+    const [hives, setHives] = useState<any[]>([]);
     const [activeTab, setActiveTab] = useState('overview');
 
     // Loading States
@@ -52,6 +54,8 @@ const AdminDashboard: React.FC = () => {
     const [editingProduct, setEditingProduct] = useState<any | null>(null);
     const [isBatchModalOpen, setIsBatchModalOpen] = useState(false);
     const [isStockModalOpen, setIsStockModalOpen] = useState(false);
+    const [isApiaryModalOpen, setIsApiaryModalOpen] = useState(false);
+    const [isHiveModalOpen, setIsHiveModalOpen] = useState(false);
 
     // Form States
     const [productForm, setProductForm] = useState({
@@ -80,6 +84,19 @@ const AdminDashboard: React.FC = () => {
         name: '', phone: '', email: '', id_number: '', experience_years: 0,
         story: '', latitude: -1.286389, longitude: 36.817223, location_name: '',
         region: '', county: '', ward: ''
+    });
+
+    const [editingApiary, setEditingApiary] = useState<any | null>(null);
+    const [apiaryForm, setApiaryForm] = useState({
+        name: '', location_name: '', county: '', region: '',
+        latitude: -1.286389, longitude: 36.817223, farmer_id: '', status: 'active'
+    });
+
+    const [editingHive, setEditingHive] = useState<any | null>(null);
+    const [hiveForm, setHiveForm] = useState({
+        hive_code: '', apiary_id: '', type: 'Langstroth',
+        installation_date: new Date().toISOString().split('T')[0],
+        status: 'active', notes: ''
     });
 
 
@@ -119,7 +136,9 @@ const AdminDashboard: React.FC = () => {
                 adminService.getPollinationRequests(),
                 adminService.getContactRequests(),
                 adminService.getStockMovements(),
-                adminService.getFarmers()
+                adminService.getFarmers(),
+                adminService.getApiaries(),
+                adminService.getHives()
             ];
 
             let userPromiseIndex = -1;
@@ -149,6 +168,8 @@ const AdminDashboard: React.FC = () => {
             const fetchedContacts = getResult(5, 'contacts');
             const fetchedStock = getResult(6, 'stock');
             const fetchedFarmers = getResult(7, 'farmers');
+            const fetchedApiaries = getResult(8, 'apiaries');
+            const fetchedHives = getResult(9, 'hives');
 
             setOrders(fetchedOrders);
             setSubscribers(fetchedSubscribers);
@@ -158,6 +179,8 @@ const AdminDashboard: React.FC = () => {
             setContacts(fetchedContacts);
             setStockMovements(fetchedStock);
             setFarmers(fetchedFarmers);
+            setApiaries(fetchedApiaries);
+            setHives(fetchedHives);
 
             // Calculate Stats
             const revenue = fetchedOrders.reduce((sum: number, o: any) => sum + (o.total_amount || 0), 0);
@@ -329,6 +352,26 @@ const AdminDashboard: React.FC = () => {
             const result = await adminService.seedTraceabilityData();
             if (result.success) {
                 toast.success(`Seeded successfully! Added ${result.batchCount} batches.`);
+                await loadAllData();
+            } else {
+                toast.error("Failed to seed data. " + (result.error || ""));
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed executing seed.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleSeedApiaries = async () => {
+        if (!confirm("This will seed default Apiaries and Hives for Timothy Nduva. Continue?")) return;
+        setIsLoading(true);
+        try {
+            // @ts-ignore
+            const result = await adminService.seedApiaryHiveData();
+            if (result.success) {
+                toast.success(`Seeded successfully! Added ${result.apiaryCount} apiaries and ${result.hiveCount} hives.`);
                 await loadAllData();
             } else {
                 toast.error("Failed to seed data. " + (result.error || ""));
@@ -542,6 +585,101 @@ const AdminDashboard: React.FC = () => {
         }
     };
 
+    const handleSaveApiary = async () => {
+        try {
+            if (editingApiary) {
+                await adminService.updateApiary(editingApiary.id, apiaryForm);
+                toast.success("Apiary updated");
+            } else {
+                await adminService.createApiary(apiaryForm);
+                toast.success("Apiary registered");
+            }
+            setIsApiaryModalOpen(false);
+            setEditingApiary(null);
+            setApiaryForm({
+                name: '', location_name: '', county: '', region: '',
+                latitude: -1.286389, longitude: 36.817223, farmer_id: '', status: 'active'
+            });
+            loadAllData();
+        } catch (error) {
+            toast.error(editingApiary ? "Failed to update apiary" : "Failed to register apiary");
+        }
+    };
+
+    const handleEditApiary = (apiary: any) => {
+        setEditingApiary(apiary);
+        setApiaryForm({
+            name: apiary.name || '',
+            location_name: apiary.location_name || '',
+            county: apiary.county || '',
+            region: apiary.region || '',
+            latitude: apiary.latitude || -1.286389,
+            longitude: apiary.longitude || 36.817223,
+            farmer_id: apiary.farmer_id || '',
+            status: apiary.status || 'active'
+        });
+        setIsApiaryModalOpen(true);
+    };
+
+    const handleDeleteApiary = async (id: string) => {
+        if (confirm("Delete this apiary and all associated records?")) {
+            try {
+                await adminService.deleteApiary(id);
+                toast.success("Apiary removed");
+                loadAllData();
+            } catch (error) {
+                toast.error("Failed to remove apiary");
+            }
+        }
+    };
+
+    const handleSaveHive = async () => {
+        try {
+            if (editingHive) {
+                await adminService.updateHive(editingHive.id, hiveForm);
+                toast.success("Hive record updated");
+            } else {
+                await adminService.createHive(hiveForm);
+                toast.success("New hive registered");
+            }
+            setIsHiveModalOpen(false);
+            setEditingHive(null);
+            setHiveForm({
+                hive_code: '', apiary_id: '', type: 'Langstroth',
+                installation_date: new Date().toISOString().split('T')[0],
+                status: 'active', notes: ''
+            });
+            loadAllData();
+        } catch (error) {
+            toast.error(editingHive ? "Failed to update hive" : "Failed to register hive");
+        }
+    };
+
+    const handleEditHive = (hive: any) => {
+        setEditingHive(hive);
+        setHiveForm({
+            hive_code: hive.hive_code || '',
+            apiary_id: hive.apiary_id || '',
+            type: hive.type || 'Langstroth',
+            installation_date: hive.installation_date || new Date().toISOString().split('T')[0],
+            status: hive.status || 'active',
+            notes: hive.notes || ''
+        });
+        setIsHiveModalOpen(true);
+    };
+
+    const handleDeleteHive = async (id: string) => {
+        if (confirm("Permanently decommission this hive?")) {
+            try {
+                await adminService.deleteHive(id);
+                toast.success("Hive decommissioned");
+                loadAllData();
+            } catch (error) {
+                toast.error("Failed to decommission hive");
+            }
+        }
+    };
+
 
     if (authLoading || isLoading) {
         return (
@@ -622,6 +760,12 @@ const AdminDashboard: React.FC = () => {
                         <TabsTrigger value="farmers" className="rounded-full px-6 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow transition-all font-bold text-xs uppercase tracking-widest flex gap-2">
                             <Users className="h-4 w-4" /> Farmers
                         </TabsTrigger>
+                        <TabsTrigger value="apiaries" className="rounded-full px-6 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow transition-all font-bold text-xs uppercase tracking-widest flex gap-2">
+                            <MapPin className="h-4 w-4" /> Apiaries
+                        </TabsTrigger>
+                        <TabsTrigger value="hives" className="rounded-full px-6 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow transition-all font-bold text-xs uppercase tracking-widest flex gap-2">
+                            <Leaf className="h-4 w-4" /> Hives
+                        </TabsTrigger>
                         <TabsTrigger value="pollination" className="rounded-full px-6 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow transition-all font-bold text-xs uppercase tracking-widest flex gap-2">
                             <Bug className="h-4 w-4" /> Pollination
                         </TabsTrigger>
@@ -686,6 +830,15 @@ const AdminDashboard: React.FC = () => {
                                 </div>
                             </CardContent>
                         </Card>
+                    </div>
+
+                    <div className="flex gap-4">
+                        <Button onClick={handleSeedTraceability} variant="outline" className="rounded-2xl border-dashed border-primary/40 text-primary hover:bg-primary/5">
+                            <Database className="w-4 h-4 mr-2" /> Seed Demo Batches
+                        </Button>
+                        <Button onClick={handleSeedApiaries} variant="outline" className="rounded-2xl border-dashed border-primary/40 text-primary hover:bg-primary/5">
+                            <MapPin className="w-4 h-4 mr-2" /> Seed Apiaries & Hives
+                        </Button>
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1636,6 +1789,266 @@ const AdminDashboard: React.FC = () => {
                             <DialogFooter>
                                 <Button onClick={handleSaveFarmer} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
                                     {editingFarmer ? 'Update Partner Records' : 'Complete Network Registration'}
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                </TabsContent>
+
+                {/* --- APIARIES TAB --- */}
+                <TabsContent value="apiaries" className="space-y-6">
+                    <Card className="border-none shadow-2xl glass bg-white/50 dark:bg-black/20 rounded-3xl overflow-hidden">
+                        <CardHeader className="bg-muted/30 border-b border-border/10 flex flex-row items-center justify-between">
+                            <div>
+                                <CardTitle className="text-2xl font-black font-heading">Apiary Locations</CardTitle>
+                                <CardDescription>Geospatial management of hive clusters and honey production sites.</CardDescription>
+                            </div>
+                            <Button
+                                onClick={() => setIsApiaryModalOpen(true)}
+                                variant="outline"
+                                className="rounded-full font-black uppercase tracking-widest text-xs h-auto py-4 border-dashed border-primary/30"
+                            >
+                                <Plus className="mr-2 h-4 w-4" /> Register Apiary
+                            </Button>
+                        </CardHeader>
+                        <CardContent className="p-0">
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="bg-muted/20 border-border/10">
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Farmer</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Location</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Hives</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {apiaries.length === 0 ? (
+                                            <TableRow><TableCell colSpan={6} className="text-center h-48 text-muted-foreground font-medium">No apiaries registered on the BeeYield grid.</TableCell></TableRow>
+                                        ) : (
+                                            apiaries.map((apiary) => (
+                                                <TableRow key={apiary.id} className="hover:bg-muted/20 transition-colors border-border/10">
+                                                    <TableCell className="px-6 font-bold">{apiary.name}</TableCell>
+                                                    <TableCell className="px-6">{apiary.farmers?.name || 'Assigned Partner'}</TableCell>
+                                                    <TableCell className="px-6">
+                                                        <div className="text-sm font-medium">{apiary.location_name || apiary.county}</div>
+                                                        <div className="text-[10px] text-muted-foreground">{apiary.region}</div>
+                                                    </TableCell>
+                                                    <TableCell className="px-6 text-right font-black">
+                                                        {hives.filter(h => h.apiary_id === apiary.id).length}
+                                                    </TableCell>
+                                                    <TableCell className="px-6">
+                                                        <Badge variant="outline" className={apiary.status === 'active' ? "bg-green-500/10 text-green-600 border-green-200" : "bg-muted text-muted-foreground"}>
+                                                            {apiary.status?.toUpperCase()}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell className="px-6 text-right">
+                                                        <div className="flex justify-end gap-2">
+                                                            <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleEditApiary(apiary)}>
+                                                                <Edit className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteApiary(apiary.id)}>
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Apiary Modal */}
+                    <Dialog open={isApiaryModalOpen} onOpenChange={(open) => { setIsApiaryModalOpen(open); if (!open) setEditingApiary(null); }}>
+                        <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-xl">
+                            <DialogHeader>
+                                <DialogTitle className="text-3xl font-black tracking-tighter">{editingApiary ? 'Calibrate Apiary' : 'Map New Apiary'}</DialogTitle>
+                                <DialogDescription>Define production site parameters and associate with agricultural partners.</DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-6 py-4">
+                                <div className="space-y-2">
+                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Apiary Name</Label>
+                                    <Input placeholder="Kibwezi East Cluster A" value={apiaryForm.name} onChange={e => setApiaryForm({ ...apiaryForm, name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">County</Label>
+                                        <Input placeholder="Makueni" value={apiaryForm.county} onChange={e => setApiaryForm({ ...apiaryForm, county: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Region</Label>
+                                        <Input placeholder="Eastern" value={apiaryForm.region} onChange={e => setApiaryForm({ ...apiaryForm, region: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Assigned Farmer</Label>
+                                    <Select value={apiaryForm.farmer_id} onValueChange={val => setApiaryForm({ ...apiaryForm, farmer_id: val })}>
+                                        <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
+                                            <SelectValue placeholder="Select Partner" />
+                                        </SelectTrigger>
+                                        <SelectContent className="rounded-xl border-border/50">
+                                            {farmers.map(f => (
+                                                <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Latitude</Label>
+                                        <Input type="number" step="any" value={apiaryForm.latitude} onChange={e => setApiaryForm({ ...apiaryForm, latitude: parseFloat(e.target.value) })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Longitude</Label>
+                                        <Input type="number" step="any" value={apiaryForm.longitude} onChange={e => setApiaryForm({ ...apiaryForm, longitude: parseFloat(e.target.value) })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                    </div>
+                                </div>
+                            </div>
+                            <DialogFooter>
+                                <Button onClick={handleSaveApiary} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
+                                    {editingApiary ? 'Update Production Site' : 'Authenticate Site Registration'}
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                </TabsContent>
+
+                {/* --- HIVES TAB --- */}
+                <TabsContent value="hives" className="space-y-6">
+                    <Card className="border-none shadow-2xl glass bg-white/50 dark:bg-black/20 rounded-3xl overflow-hidden">
+                        <CardHeader className="bg-muted/30 border-b border-border/10 flex flex-row items-center justify-between">
+                            <div>
+                                <CardTitle className="text-2xl font-black font-heading">Smart Hive Ledger</CardTitle>
+                                <CardDescription>Inventory and health status of individual colony units.</CardDescription>
+                            </div>
+                            <Button
+                                onClick={() => setIsHiveModalOpen(true)}
+                                variant="outline"
+                                className="rounded-full font-black uppercase tracking-widest text-xs h-auto py-4 border-dashed border-primary/30"
+                            >
+                                <Plus className="mr-2 h-4 w-4" /> Deploy Hive
+                            </Button>
+                        </CardHeader>
+                        <CardContent className="p-0">
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="bg-muted/20 border-border/10">
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Hive Code</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Apiary</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Type</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Installed</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {hives.length === 0 ? (
+                                            <TableRow><TableCell colSpan={6} className="text-center h-48 text-muted-foreground font-medium">No hives deployed in the honeycomb network.</TableCell></TableRow>
+                                        ) : (
+                                            hives.map((hive) => (
+                                                <TableRow key={hive.id} className="hover:bg-muted/20 transition-colors border-border/10">
+                                                    <TableCell className="px-6 font-mono font-bold text-primary">{hive.hive_code}</TableCell>
+                                                    <TableCell className="px-6 font-semibold">{hive.apiaries?.name || 'Assigned Site'}</TableCell>
+                                                    <TableCell className="px-6">{hive.type}</TableCell>
+                                                    <TableCell className="px-6 text-sm text-muted-foreground">{new Date(hive.installation_date).toLocaleDateString()}</TableCell>
+                                                    <TableCell className="px-6">
+                                                        <Badge variant="outline" className={hive.status === 'active' ? "bg-green-500/10 text-green-600 border-green-200" : "bg-yellow-500/10 text-yellow-600 border-yellow-200"}>
+                                                            {hive.status?.toUpperCase()}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell className="px-6 text-right">
+                                                        <div className="flex justify-end gap-2">
+                                                            <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleEditHive(hive)}>
+                                                                <Edit className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteHive(hive.id)}>
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Hive Modal */}
+                    <Dialog open={isHiveModalOpen} onOpenChange={(open) => { setIsHiveModalOpen(open); if (!open) setEditingHive(null); }}>
+                        <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-xl">
+                            <DialogHeader>
+                                <DialogTitle className="text-3xl font-black tracking-tighter">{editingHive ? 'Sync Hive Sensors' : 'Deploy New Unit'}</DialogTitle>
+                                <DialogDescription>Register individual colony components and their mechanical signatures.</DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-6 py-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Hive Code</Label>
+                                        <Input placeholder="HIVE-KIB-001" value={hiveForm.hive_code} onChange={e => setHiveForm({ ...hiveForm, hive_code: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Hive Type</Label>
+                                        <Select value={hiveForm.type} onValueChange={val => setHiveForm({ ...hiveForm, type: val })}>
+                                            <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-xl border-border/50">
+                                                <SelectItem value="Langstroth">Langstroth</SelectItem>
+                                                <SelectItem value="KTB">Kenya Top Bar (KTB)</SelectItem>
+                                                <SelectItem value="Traditional">Traditional Log</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Target Apiary</Label>
+                                    <Select value={hiveForm.apiary_id} onValueChange={val => setHiveForm({ ...hiveForm, apiary_id: val })}>
+                                        <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
+                                            <SelectValue placeholder="Select Site" />
+                                        </SelectTrigger>
+                                        <SelectContent className="rounded-xl border-border/50">
+                                            {apiaries.map(a => (
+                                                <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Installation Date</Label>
+                                        <Input type="date" value={hiveForm.installation_date} onChange={e => setHiveForm({ ...hiveForm, installation_date: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Health Status</Label>
+                                        <Select value={hiveForm.status} onValueChange={val => setHiveForm({ ...hiveForm, status: val })}>
+                                            <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-xl border-border/50">
+                                                <SelectItem value="active">Active & Healthy</SelectItem>
+                                                <SelectItem value="weak">Weak Colony</SelectItem>
+                                                <SelectItem value="abandoned">Abandoned</SelectItem>
+                                                <SelectItem value="harvested">Recently Harvested</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Mechanical Notes</Label>
+                                    <Textarea placeholder="Condition of the box, queen status, etc." value={hiveForm.notes} onChange={e => setHiveForm({ ...hiveForm, notes: e.target.value })} className="rounded-xl bg-muted/50 border-border/50" />
+                                </div>
+                            </div>
+                            <DialogFooter>
+                                <Button onClick={handleSaveHive} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
+                                    {editingHive ? 'Sync Unit Parameters' : 'Authorize Deployment'}
                                 </Button>
                             </DialogFooter>
                         </DialogContent>
