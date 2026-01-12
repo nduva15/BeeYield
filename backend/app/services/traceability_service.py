@@ -77,9 +77,19 @@ def record_harvest(harvest_in: schemas.HarvestCreate) -> Dict[str, Any]:
 
 def create_batch(batch_data: Dict[str, Any]) -> Dict[str, Any]:
     """Create a final product batch"""
-    # Simply wrap the blockchain call
+    # Ensure ID
+    if not batch_data.get('id'):
+        batch_data['id'] = str(uuid.uuid4())
+    
+    # 1. Blockchain
     block = honey_blockchain.create_batch(batch_data)
-    return block.data
+    final_data = block.data
+    final_data['block_hash'] = block.hash
+    
+    # 2. DB (Source of Truth for Admin Dashboard)
+    db_insert("honey_batches", final_data)
+    
+    return final_data
 
 # --- Read Operations (Traceability Journey) ---
 

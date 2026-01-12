@@ -35,10 +35,47 @@ export interface ProductInput {
         size: string;
         price_kes: number;
         stock_quantity: number;
+        is_available?: boolean;
     }[];
 }
 
 export const adminService = {
+    // ============== SEEDING ==============
+    seedShopContent: async () => {
+        try {
+            const { FALLBACK_PRODUCTS } = await import('./shopService');
+            console.log(`Seeding ${FALLBACK_PRODUCTS.length} products...`);
+
+            const results: any[] = [];
+            for (const p of FALLBACK_PRODUCTS) {
+                const productInput: ProductInput = {
+                    name: p.name,
+                    description: p.description,
+                    category: p.category,
+                    badge: p.badge || undefined,
+                    images: p.images,
+                    is_active: p.is_active,
+                    variants: p.variants.map(v => ({
+                        size: v.size,
+                        price_kes: v.price_kes,
+                        stock_quantity: v.stock_quantity,
+                        is_available: v.is_available
+                    }))
+                };
+                try {
+                    const res = await adminService.createProduct(productInput);
+                    results.push(res);
+                } catch (e) {
+                    // console.error(`Failed to seed ${p.name}`, e);
+                }
+            }
+            return { success: true, count: results.length };
+        } catch (error) {
+            console.error("Failed to seed shop content:", error);
+            throw error;
+        }
+    },
+
     // ============== ORDERS ==============
     getOrders: async () => {
         try {
@@ -74,7 +111,7 @@ export const adminService = {
     deleteOrder: async (orderId: string) => {
         if (!supabase) return null;
         const { error } = await supabase
-            .from('orders')
+            .from('orders' as any)
             .delete()
             .eq('id', orderId);
         if (error) throw error;
@@ -96,13 +133,17 @@ export const adminService = {
     },
 
     deleteNewsletterSubscriber: async (id: string) => {
-        if (!supabase) return null;
-        const { error } = await supabase
-            .from('newsletter_subscribers')
-            .delete()
-            .eq('id', id);
-        if (error) throw error;
-        return { success: true };
+        try {
+            return await apiDelete(`/admin/newsletter/${id}`);
+        } catch {
+            if (!supabase) return null;
+            const { error } = await supabase
+                .from('newsletter_subscribers' as any)
+                .delete()
+                .eq('id', id);
+            if (error) throw error;
+            return { success: true };
+        }
     },
 
     // ============== PRODUCTS ==============
@@ -130,6 +171,7 @@ export const adminService = {
                     name: productData.name,
                     description: productData.description,
                     category: productData.category,
+                    badge: productData.badge,
                     images: productData.images || [],
                     is_active: productData.is_active !== false
                 }])
@@ -137,7 +179,22 @@ export const adminService = {
                 .single();
 
             if (productError) throw productError;
-            // Variants logic omitted for brevity in fallback, user should use API
+
+            // Handle variants
+            if (productData.variants && productData.variants.length > 0) {
+                const variantsToInsert = productData.variants.map(v => ({
+                    product_id: product.id,
+                    size: v.size,
+                    price_kes: v.price_kes,
+                    stock_quantity: v.stock_quantity,
+                    is_available: v.is_available ?? true
+                }));
+                const { error: variantError } = await supabase
+                    .from('product_variants')
+                    .insert(variantsToInsert);
+                if (variantError) console.error("Failed to create variants in fallback", variantError);
+            }
+
             return product;
         }
     },
@@ -178,17 +235,27 @@ export const adminService = {
 
     // ============== HONEY BATCHES (TRACEABILITY) ==============
     getBatches: async () => {
+        let data: any[] = [];
         try {
-            return await apiGet<any[]>('/admin/batches');
+            data = await apiGet<any[]>('/admin/batches');
         } catch (error) {
             console.warn("API getBatches failed", error);
-            if (!supabase) return [];
-            const { data } = await supabase
+        }
+
+        // If API returned empty or failed, try Supabase directly
+        // This ensures that if the backend is connected to an empty DB but the frontend 
+        // has access to the correct one, we still see data.
+        if (supabase && (!data || data.length === 0)) {
+            const { data: sbData } = await supabase
                 .from('honey_batches')
                 .select('*')
                 .order('created_at', { ascending: false });
-            return data || [];
+            if (sbData && sbData.length > 0) {
+                return sbData;
+            }
         }
+
+        return data || [];
     },
 
     createBatch: async (batchData: HoneyBatchInput) => {
@@ -214,58 +281,78 @@ export const adminService = {
     },
 
     updateBatch: async (id: string, batchData: Partial<HoneyBatchInput>) => {
-        if (!supabase) return null;
-        const { data, error } = await supabase
-            .from('honey_batches' as any)
-            .update(batchData)
-            .eq('id', id)
-            .select()
-            .single();
-        if (error) throw error;
-        return data;
+        try {
+            return await apiPut(`/admin/batches/${id}`, batchData);
+        } catch {
+            if (!supabase) return null;
+            const { data, error } = await supabase
+                .from('honey_batches' as any)
+                .update(batchData)
+                .eq('id', id)
+                .select()
+                .single();
+            if (error) throw error;
+            return data;
+        }
     },
 
     deleteBatch: async (id: string) => {
-        if (!supabase) return null;
-        const { error } = await supabase
-            .from('honey_batches')
-            .delete()
-            .eq('id', id);
-        if (error) throw error;
-        return { success: true };
+        try {
+            return await apiDelete(`/admin/batches/${id}`);
+        } catch {
+            if (!supabase) return null;
+            const { error } = await supabase
+                .from('honey_batches' as any)
+                .delete()
+                .eq('id', id);
+            if (error) throw error;
+            return { success: true };
+        }
     },
 
     // ============== POLLINATION REQUESTS ==============
     getPollinationRequests: async () => {
-        if (!supabase) return [];
-        const { data, error } = await supabase
-            .from('pollination_requests')
-            .select('*')
-            .order('created_at', { ascending: false });
-        if (error) throw error;
-        return data;
+        try {
+            return await apiGet<any[]>('/admin/pollination');
+        } catch {
+            if (!supabase) return [];
+            const { data, error } = await supabase
+                .from('pollination_requests')
+                .select('*')
+                .order('created_at', { ascending: false });
+            if (error) throw error;
+            return data;
+        }
     },
 
     updatePollinationRequestStatus: async (id: string, status: string) => {
-        if (!supabase) return null;
-        const { data, error } = await supabase
-            .from('pollination_requests' as any)
-            .update({ status })
-            .eq('id', id)
-            .select()
-            .single();
-        if (error) throw error;
-        return data;
+        try {
+            return await apiPut(`/admin/pollination/${id}/status`, { status });
+        } catch {
+            if (!supabase) return null;
+            const { data, error } = await supabase
+                .from('pollination_requests' as any)
+                .update({ status })
+                .eq('id', id)
+                .select()
+                .single();
+            if (error) throw error;
+            return data;
+        }
     },
 
     deletePollinationRequest: async (id: string) => {
-        if (!supabase) return null;
-        const { error } = await supabase
-            .from('pollination_requests')
-            .delete()
-            .eq('id', id);
-        if (error) throw error;
-        return { success: true };
+        try {
+            return await apiDelete(`/admin/pollination/${id}`);
+        } catch {
+            if (!supabase) return null;
+            const { error } = await supabase
+                .from('pollination_requests' as any)
+                .delete()
+                .eq('id', id);
+            if (error) throw error;
+            return { success: true };
+        }
     },
 
     // ============== CONTACT REQUESTS ==============
@@ -283,32 +370,40 @@ export const adminService = {
     },
 
     updateContactRequestStatus: async (id: string, status: string) => {
-        if (!supabase) return null;
-        const { data, error } = await supabase
-            .from('contact_submissions' as any)
-            .update({ status })
-            .eq('id', id)
-            .select()
-            .single();
-        if (error) throw error;
-        return data;
+        try {
+            return await apiPut(`/admin/contact/${id}/status`, { status });
+        } catch {
+            if (!supabase) return null;
+            const { data, error } = await supabase
+                .from('contact_submissions' as any)
+                .update({ status })
+                .eq('id', id)
+                .select()
+                .single();
+            if (error) throw error;
+            return data;
+        }
     },
 
     deleteContactRequest: async (id: string) => {
-        if (!supabase) return null;
-        const { error } = await supabase
-            .from('contact_submissions')
-            .delete()
-            .eq('id', id);
-        if (error) throw error;
-        return { success: true };
+        try {
+            return await apiDelete(`/admin/contact/${id}`);
+        } catch {
+            if (!supabase) return null;
+            const { error } = await supabase
+                .from('contact_submissions' as any)
+                .delete()
+                .eq('id', id);
+            if (error) throw error;
+            return { success: true };
+        }
     },
 
     // ============== STOCK MOVEMENTS ==============
     getStockMovements: async () => {
         if (!supabase) return [];
         const { data, error } = await supabase
-            .from('stock_movements')
+            .from('stock_movements' as any)
             .select('*, products(name)')
             .order('created_at', { ascending: false });
         if (error) throw error;
@@ -366,4 +461,3 @@ export const adminService = {
         return null;
     }
 };
-

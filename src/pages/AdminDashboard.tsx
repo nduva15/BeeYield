@@ -16,7 +16,7 @@ import {
     Database, Trash2, Edit, Shield, Crown, UserMinus,
     CheckCircle2, XCircle, Clock, AlertTriangle, LayoutDashboard,
     MessageSquare, Bug, Mail, History, TrendingUp, ChevronRight,
-    LogOut, Search
+    LogOut, Search, MapPin, Eye
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -57,8 +57,9 @@ const AdminDashboard: React.FC = () => {
     });
     const [editingBatchId, setEditingBatchId] = useState<string | null>(null);
     const [batchForm, setBatchForm] = useState({
-        honey_type: '', harvest_date: '', quantity_kg: 0, processing_method: 'Raw Filtered',
+        honey_type: '', harvest_date: '', packaged_date: '', quantity_kg: 0, processing_method: 'Raw Filtered',
         farmer_name: '', farmer_phone: '', location_county: '', apiary_name: '',
+        beekeeper_name: '', beekeeper_id: '', location_region: '', latitude: 0, longitude: 0,
         quality_grade: 'A', moisture_content: 0, color_grade: ''
     });
     const [isStockModalOpen, setIsStockModalOpen] = useState(false);
@@ -72,6 +73,16 @@ const AdminDashboard: React.FC = () => {
         totalHoneyKg: 0,
         totalAcres: 0
     });
+
+    // Details Modals State
+    const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
+    const [isOrderDetailsOpen, setIsOrderDetailsOpen] = useState(false);
+    const [selectedPollination, setSelectedPollination] = useState<any | null>(null);
+    const [isPollinationDetailsOpen, setIsPollinationDetailsOpen] = useState(false);
+    const [selectedContact, setSelectedContact] = useState<any | null>(null);
+    const [isContactDetailsOpen, setIsContactDetailsOpen] = useState(false);
+    const [selectedBatch, setSelectedBatch] = useState<any | null>(null);
+    const [isBatchDetailsOpen, setIsBatchDetailsOpen] = useState(false);
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -214,6 +225,7 @@ const AdminDashboard: React.FC = () => {
             setBatchForm({
                 honey_type: '', harvest_date: '', quantity_kg: 0, processing_method: 'Raw Filtered',
                 farmer_name: '', farmer_phone: '', location_county: '', apiary_name: '',
+                beekeeper_name: '', beekeeper_id: '', location_region: '', latitude: 0, longitude: 0,
                 quality_grade: 'A', moisture_content: 0, color_grade: ''
             });
             loadAllData();
@@ -255,6 +267,11 @@ const AdminDashboard: React.FC = () => {
             farmer_phone: batch.farmer_phone || '',
             location_county: batch.location_county || '',
             apiary_name: batch.apiary_name || '',
+            beekeeper_name: batch.beekeeper_name || '',
+            beekeeper_id: batch.beekeeper_id || '',
+            location_region: batch.location_region || '',
+            latitude: batch.latitude || 0,
+            longitude: batch.longitude || 0,
             quality_grade: batch.quality_grade || 'A',
             moisture_content: batch.moisture_content || 0,
             color_grade: batch.color_grade || ''
@@ -264,6 +281,24 @@ const AdminDashboard: React.FC = () => {
         // I need to add an 'editingBatchId' state or similar.
         setEditingBatchId(batch.id);
         setIsBatchModalOpen(true);
+    };
+
+    const handleSeedContent = async () => {
+        // Confirmation is key to prevent accidental duplicates if checking logic fails
+        if (!confirm("This will populate the database with default shop products. Continue?")) return;
+
+        setIsLoading(true);
+        try {
+            // @ts-ignore - Valid method added to service
+            await adminService.seedShopContent();
+            toast.success("Shop content synced successfully");
+            await loadAllData();
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to sync shop content");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleCreateStockMovement = async () => {
@@ -285,6 +320,74 @@ const AdminDashboard: React.FC = () => {
             loadAllData();
         } catch (error) {
             toast.error("Failed to update order status");
+        }
+    };
+
+    const handleDeleteOrder = async (orderId: string) => {
+        if (confirm("Are you sure you want to delete this order?")) {
+            try {
+                await adminService.deleteOrder(orderId);
+                toast.success("Order deleted");
+                loadAllData();
+            } catch (error) {
+                toast.error("Failed to delete order");
+            }
+        }
+    };
+
+    const handleViewOrder = (order: any) => {
+        setSelectedOrder(order);
+        setIsOrderDetailsOpen(true);
+    };
+
+    const handleDeletePollination = async (id: string) => {
+        if (confirm("Delete this pollination request?")) {
+            try {
+                await adminService.deletePollinationRequest(id);
+                toast.success("Request deleted");
+                loadAllData();
+            } catch (error) {
+                toast.error("Failed to delete request");
+            }
+        }
+    };
+
+    const handleViewPollination = (req: any) => {
+        setSelectedPollination(req);
+        setIsPollinationDetailsOpen(true);
+    };
+
+    const handleDeleteContact = async (id: string) => {
+        if (confirm("Delete this contact message?")) {
+            try {
+                await adminService.deleteContactRequest(id);
+                toast.success("Message deleted");
+                loadAllData();
+            } catch (error) {
+                toast.error("Failed to delete message");
+            }
+        }
+    };
+
+    const handleViewContact = (contact: any) => {
+        setSelectedContact(contact);
+        setIsContactDetailsOpen(true);
+    };
+
+    const handleViewBatch = (batch: any) => {
+        setSelectedBatch(batch);
+        setIsBatchDetailsOpen(true);
+    };
+
+    const handleDeleteSubscriber = async (id: string) => {
+        if (confirm("Remove this subscriber?")) {
+            try {
+                await adminService.deleteNewsletterSubscriber(id);
+                toast.success("Subscriber removed");
+                loadAllData();
+            } catch (error) {
+                toast.error("Failed to remove subscriber");
+            }
         }
     };
 
@@ -505,11 +608,12 @@ const AdminDashboard: React.FC = () => {
                                             <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Total (KES)</TableHead>
                                             <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
                                             <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {orders.length === 0 ? (
-                                            <TableRow><TableCell colSpan={6} className="text-center h-48 text-muted-foreground font-medium">No order data synchronized.</TableCell></TableRow>
+                                            <TableRow><TableCell colSpan={7} className="text-center h-48 text-muted-foreground font-medium">No order data synchronized.</TableCell></TableRow>
                                         ) : (
                                             orders.map((order) => (
                                                 <TableRow key={order.id} className="hover:bg-muted/20 transition-colors border-border/10">
@@ -538,6 +642,16 @@ const AdminDashboard: React.FC = () => {
                                                         </Select>
                                                     </TableCell>
                                                     <TableCell className="px-6 text-xs text-muted-foreground font-medium">{new Date(order.created_at).toLocaleDateString()}</TableCell>
+                                                    <TableCell className="px-6 text-right">
+                                                        <div className="flex justify-end gap-2">
+                                                            <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleViewOrder(order)}>
+                                                                <Search className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteOrder(order.id)}>
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    </TableCell>
                                                 </TableRow>
                                             ))
                                         )}
@@ -546,6 +660,71 @@ const AdminDashboard: React.FC = () => {
                             </div>
                         </CardContent>
                     </Card>
+
+                    {/* Order Details Dialog */}
+                    <Dialog open={isOrderDetailsOpen} onOpenChange={setIsOrderDetailsOpen}>
+                        <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-2xl">
+                            <DialogHeader>
+                                <DialogTitle className="text-2xl font-black font-heading flex gap-2 items-center">
+                                    <Package className="w-6 h-6 text-primary" /> Order Details
+                                </DialogTitle>
+                                <DialogDescription>Full transaction manifest.</DialogDescription>
+                            </DialogHeader>
+                            {selectedOrder && (
+                                <div className="space-y-6">
+                                    <div className="grid grid-cols-2 gap-4 text-sm">
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Order ID</p>
+                                            <p className="font-mono font-bold">{selectedOrder.order_number || selectedOrder.id}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Status</p>
+                                            <Badge variant="outline">{selectedOrder.status}</Badge>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Customer</p>
+                                            <p className="font-bold">{selectedOrder.shipping_address?.first_name} {selectedOrder.shipping_address?.last_name}</p>
+                                            <p className="text-muted-foreground">{selectedOrder.customer_email}</p>
+                                            <p className="text-muted-foreground">{selectedOrder.shipping_address?.phone}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Shipping Address</p>
+                                            <p className="whitespace-pre-wrap">{selectedOrder.shipping_address?.address}, {selectedOrder.shipping_address?.city}</p>
+                                            <p>{selectedOrder.shipping_address?.postal_code}, {selectedOrder.shipping_address?.country}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="border-t border-border/10 pt-4">
+                                        <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground mb-3">Items Manifest</p>
+                                        <div className="space-y-2">
+                                            {selectedOrder.items?.map((item: any, i: number) => (
+                                                <div key={i} className="flex justify-between items-center bg-muted/30 p-2 rounded-lg">
+                                                    <div className="flex gap-3 items-center">
+                                                        <div className="w-8 h-8 rounded bg-background flex items-center justify-center text-xs font-bold border border-border/20">
+                                                            {item.quantity}x
+                                                        </div>
+                                                        <span className="font-medium text-sm">{item.product_name || 'Product'}</span>
+                                                    </div>
+                                                    <span className="font-mono font-bold text-sm">KES {item.price_at_purchase?.toLocaleString()}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="border-t border-border/10 pt-4 flex justify-between items-end">
+                                        <div className="text-xs text-muted-foreground">
+                                            <p>Placed on: {new Date(selectedOrder.created_at).toLocaleString()}</p>
+                                            <p>Payment Method: {selectedOrder.payment_method || 'Stripe'}</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Total Value</p>
+                                            <p className="text-2xl font-black font-heading text-primary">KES {selectedOrder.total_amount?.toLocaleString()}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </DialogContent>
+                    </Dialog>
                 </TabsContent>
 
                 {/* --- PRODUCTS TAB --- */}
@@ -555,9 +734,16 @@ const AdminDashboard: React.FC = () => {
                             <h2 className="text-2xl font-black font-heading tracking-tight">Venture Inventory</h2>
                             <p className="text-muted-foreground font-medium">Manage and deploy products to the digital storefront.</p>
                         </div>
-                        <Button onClick={() => { setEditingProduct(null); setIsProductModalOpen(true); }} className="rounded-full px-6 py-6 shadow-glow hover:scale-105 transition-all bg-primary font-black uppercase tracking-widest text-xs h-auto">
-                            <Plus className="mr-2 h-5 w-5" /> Add New Asset
-                        </Button>
+                        <div className="flex gap-2">
+                            {products.length === 0 && (
+                                <Button onClick={handleSeedContent} variant="outline" className="rounded-full px-6 py-6 border-dashed border-primary/30 font-black uppercase tracking-widest text-xs h-auto hover:bg-primary/5">
+                                    <RefreshCw className="mr-2 h-4 w-4" /> Sync Default Content
+                                </Button>
+                            )}
+                            <Button onClick={() => { setEditingProduct(null); setIsProductModalOpen(true); }} className="rounded-full px-6 py-6 shadow-glow hover:scale-105 transition-all bg-primary font-black uppercase tracking-widest text-xs h-auto">
+                                <Plus className="mr-2 h-5 w-5" /> Add New Asset
+                            </Button>
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -726,7 +912,11 @@ const AdminDashboard: React.FC = () => {
                                             <TableRow><TableCell colSpan={8} className="text-center h-48 text-muted-foreground font-medium italic">No honey batches in the blockchain yet.</TableCell></TableRow>
                                         ) : (
                                             batches.map((batch, i) => (
-                                                <TableRow key={batch.id || i} className="hover:bg-muted/20 transition-colors border-border/10">
+                                                <TableRow
+                                                    key={batch.id || i}
+                                                    className="hover:bg-muted/20 transition-colors border-border/10 cursor-pointer"
+                                                    onClick={() => handleViewBatch(batch)}
+                                                >
                                                     <TableCell className="px-6">
                                                         <div className="font-black text-primary tracking-tighter flex items-center gap-2">
                                                             <CheckCircle2 className="w-4 h-4" />
@@ -735,20 +925,42 @@ const AdminDashboard: React.FC = () => {
                                                     </TableCell>
                                                     <TableCell className="px-6 font-semibold">{batch.honey_type}</TableCell>
                                                     <TableCell className="px-6 text-sm">
-                                                        {batch.location_county ? (
-                                                            <div className="flex flex-col">
+                                                        {(batch.location_county || batch.location_region) ? (
+                                                            <div className="flex flex-col gap-0.5">
                                                                 <span className="font-bold text-xs">{batch.location_county}</span>
                                                                 <span className="text-[10px] text-muted-foreground">{batch.location_region || batch.apiary_name}</span>
+                                                                {batch.latitude && batch.longitude && (
+                                                                    <a
+                                                                        href={`https://www.google.com/maps?q=${batch.latitude},${batch.longitude}`}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="flex items-center gap-1 text-[10px] text-blue-500 hover:text-blue-400 hover:underline mt-1 transition-colors"
+                                                                        onClick={(e) => e.stopPropagation()}
+                                                                    >
+                                                                        <MapPin className="w-3 h-3" /> View Map
+                                                                    </a>
+                                                                )}
                                                             </div>
                                                         ) : <span className="text-muted-foreground">-</span>}
                                                     </TableCell>
                                                     <TableCell className="px-6 text-sm">
-                                                        {(batch.farmer_name || batch.beekeeper_name) ? (
-                                                            <div className="flex flex-col">
-                                                                <span className="font-semibold text-xs">{batch.farmer_name || batch.beekeeper_name}</span>
-                                                                <span className="text-[10px] text-muted-foreground">{batch.farmer_phone || batch.beekeeper_id}</span>
-                                                            </div>
-                                                        ) : <span className="text-muted-foreground">-</span>}
+                                                        <div className="flex flex-col gap-1">
+                                                            {batch.farmer_name && (
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Farmer</span>
+                                                                    <span className="font-semibold text-xs">{batch.farmer_name}</span>
+                                                                </div>
+                                                            )}
+                                                            {batch.beekeeper_name && (
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Beekeeper</span>
+                                                                    <span className="font-semibold text-xs">{batch.beekeeper_name}</span>
+                                                                </div>
+                                                            )}
+                                                            <span className="text-[10px] text-muted-foreground pt-1 border-t border-border/10">
+                                                                {batch.farmer_phone || batch.beekeeper_id || '-'}
+                                                            </span>
+                                                        </div>
                                                     </TableCell>
                                                     <TableCell className="px-6 text-sm tabular-nums">{batch.harvest_date}</TableCell>
                                                     <TableCell className="px-6 text-right font-black italic">{batch.quantity_kg}</TableCell>
@@ -761,10 +973,13 @@ const AdminDashboard: React.FC = () => {
                                                         </div>
                                                     </TableCell>
                                                     <TableCell className="px-6">
-                                                        <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteBatch(batch.id)}>
+                                                        <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={(e) => { e.stopPropagation(); handleDeleteBatch(batch.id); }}>
                                                             <Trash2 className="h-4 w-4" />
                                                         </Button>
-                                                        <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 text-primary hover:bg-primary/10 ml-1" onClick={() => handleEditBatch(batch)}>
+                                                        <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 text-blue-500 hover:bg-blue-500/10 ml-1" onClick={(e) => { e.stopPropagation(); handleViewBatch(batch); }}>
+                                                            <Eye className="h-4 w-4" />
+                                                        </Button>
+                                                        <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 text-primary hover:bg-primary/10 ml-1" onClick={(e) => { e.stopPropagation(); handleEditBatch(batch); }}>
                                                             <Edit className="h-4 w-4" />
                                                         </Button>
                                                     </TableCell>
@@ -827,7 +1042,7 @@ const AdminDashboard: React.FC = () => {
                                     <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-white/10 pb-2">Source Origin</h4>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Farmer / Beekeeper Name</Label>
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Farmer Name</Label>
                                             <Input
                                                 value={(batchForm as any).farmer_name || ''}
                                                 onChange={e => setBatchForm({ ...batchForm, farmer_name: e.target.value } as any)}
@@ -845,6 +1060,24 @@ const AdminDashboard: React.FC = () => {
                                             />
                                         </div>
                                         <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Beekeeper Name</Label>
+                                            <Input
+                                                value={(batchForm as any).beekeeper_name || ''}
+                                                onChange={e => setBatchForm({ ...batchForm, beekeeper_name: e.target.value } as any)}
+                                                placeholder="e.g. Jane Smith"
+                                                className="rounded-xl h-11 bg-muted/50"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Beekeeper ID</Label>
+                                            <Input
+                                                value={(batchForm as any).beekeeper_id || ''}
+                                                onChange={e => setBatchForm({ ...batchForm, beekeeper_id: e.target.value } as any)}
+                                                placeholder="ID-..."
+                                                className="rounded-xl h-11 bg-muted/50"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
                                             <Label className="uppercase text-[10px] font-black tracking-widest ml-1">County</Label>
                                             <Input
                                                 value={(batchForm as any).location_county || ''}
@@ -854,13 +1087,44 @@ const AdminDashboard: React.FC = () => {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Region / Apiary</Label>
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Region</Label>
+                                            <Input
+                                                value={(batchForm as any).location_region || ''}
+                                                onChange={e => setBatchForm({ ...batchForm, location_region: e.target.value } as any)}
+                                                placeholder="e.g. Mwingi North"
+                                                className="rounded-xl h-11 bg-muted/50"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Apiary Name</Label>
                                             <Input
                                                 value={(batchForm as any).apiary_name || ''}
                                                 onChange={e => setBatchForm({ ...batchForm, apiary_name: e.target.value } as any)}
                                                 placeholder="e.g. Acacia Grove"
                                                 className="rounded-xl h-11 bg-muted/50"
                                             />
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <div className="space-y-2">
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Lat</Label>
+                                                <Input
+                                                    type="number" step="any"
+                                                    value={(batchForm as any).latitude || ''}
+                                                    onChange={e => setBatchForm({ ...batchForm, latitude: parseFloat(e.target.value) } as any)}
+                                                    placeholder="-1.23"
+                                                    className="rounded-xl h-11 bg-muted/50"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Long</Label>
+                                                <Input
+                                                    type="number" step="any"
+                                                    value={(batchForm as any).longitude || ''}
+                                                    onChange={e => setBatchForm({ ...batchForm, longitude: parseFloat(e.target.value) } as any)}
+                                                    placeholder="36.8"
+                                                    className="rounded-xl h-11 bg-muted/50"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -915,6 +1179,121 @@ const AdminDashboard: React.FC = () => {
                             </div>
                             <DialogFooter>
                                 <Button onClick={handleSaveBatch} className="w-full rounded-2xl py-6 font-black uppercase tracking-widest text-xs bg-honey hover:bg-honey-dark text-black border-none shadow-glow">Initialize Block Minting</Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+
+                    {/* Batch Details Dialog */}
+                    <Dialog open={isBatchDetailsOpen} onOpenChange={setIsBatchDetailsOpen}>
+                        <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-2xl max-h-[90vh] overflow-y-auto">
+                            <DialogHeader>
+                                <DialogTitle className="text-2xl font-black flex items-center gap-2">
+                                    <Shield className="w-6 h-6 text-green-500" />
+                                    Batch Verification
+                                </DialogTitle>
+                                <DialogDescription className="font-mono text-xs">
+                                    BLOCKCHAIN ID: {selectedBatch?.block_hash}
+                                </DialogDescription>
+                            </DialogHeader>
+
+                            {selectedBatch && (
+                                <div className="space-y-8 py-4">
+                                    {/* Header Status Card */}
+                                    <div className="bg-muted/30 p-4 rounded-2xl flex justify-between items-center border border-border/50">
+                                        <div>
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Batch Code</p>
+                                            <p className="text-xl font-black font-mono text-primary">{selectedBatch.batch_code}</p>
+                                        </div>
+                                        <Badge className="bg-green-500/20 text-green-600 px-4 py-1 h-8 rounded-full font-black uppercase tracking-widest border-none">
+                                            VERIFIED ON LEDGER
+                                        </Badge>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-8">
+                                        <div className="space-y-4">
+                                            <h4 className="font-black uppercase tracking-widest text-xs border-b border-border/50 pb-2 flex items-center gap-2">
+                                                <Package className="w-4 h-4" /> Product Details
+                                            </h4>
+                                            <div className="space-y-3">
+                                                <div>
+                                                    <p className="text-[10px] uppercase text-muted-foreground font-bold">Honey Type</p>
+                                                    <p className="font-semibold">{selectedBatch.honey_type}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[10px] uppercase text-muted-foreground font-bold">Quantity</p>
+                                                    <p className="font-semibold">{selectedBatch.quantity_kg} KG</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[10px] uppercase text-muted-foreground font-bold">Processing</p>
+                                                    <p className="font-semibold">{selectedBatch.processing_method}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[10px] uppercase text-muted-foreground font-bold">Harvest Date</p>
+                                                    <p className="font-mono text-sm">{selectedBatch.harvest_date}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            <h4 className="font-black uppercase tracking-widest text-xs border-b border-border/50 pb-2 flex items-center gap-2">
+                                                <Users className="w-4 h-4" /> Origin Source
+                                            </h4>
+                                            <div className="space-y-3">
+                                                <div>
+                                                    <p className="text-[10px] uppercase text-muted-foreground font-bold">Farmer</p>
+                                                    <p className="font-semibold">{selectedBatch.farmer_name || 'N/A'}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[10px] uppercase text-muted-foreground font-bold">Beekeeper</p>
+                                                    <p className="font-semibold">{selectedBatch.beekeeper_name || 'N/A'}</p>
+                                                    <p className="text-xs text-muted-foreground">{selectedBatch.beekeeper_id}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[10px] uppercase text-muted-foreground font-bold">Location</p>
+                                                    <p className="font-semibold">{selectedBatch.location_county || 'N/A'}, {selectedBatch.location_region || ''}</p>
+                                                    <p className="text-xs text-muted-foreground">{selectedBatch.apiary_name}</p>
+                                                    {selectedBatch.latitude && (
+                                                        <a
+                                                            href={`https://www.google.com/maps?q=${selectedBatch.latitude},${selectedBatch.longitude}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="text-[10px] text-blue-500 hover:underline flex items-center gap-1 mt-1"
+                                                        >
+                                                            <MapPin className="w-3 h-3" /> View Map
+                                                        </a>
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    <p className="text-[10px] uppercase text-muted-foreground font-bold">Contact</p>
+                                                    <p className="font-mono text-sm">{selectedBatch.farmer_phone || 'N/A'}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <h4 className="font-black uppercase tracking-widest text-xs border-b border-border/50 pb-2 flex items-center gap-2">
+                                            <Shield className="w-4 h-4" /> Quality Assurance
+                                        </h4>
+                                        <div className="grid grid-cols-3 gap-4">
+                                            <div className="bg-muted/30 p-3 rounded-xl text-center">
+                                                <p className="text-[10px] uppercase text-muted-foreground font-bold">Grade</p>
+                                                <p className="text-lg font-black">{selectedBatch.quality_grade || 'A'}</p>
+                                            </div>
+                                            <div className="bg-muted/30 p-3 rounded-xl text-center">
+                                                <p className="text-[10px] uppercase text-muted-foreground font-bold">Moisture</p>
+                                                <p className="text-lg font-black">{selectedBatch.moisture_content || 0}%</p>
+                                            </div>
+                                            <div className="bg-muted/30 p-3 rounded-xl text-center">
+                                                <p className="text-[10px] uppercase text-muted-foreground font-bold">Color</p>
+                                                <p className="text-sm font-black mt-1">{selectedBatch.color_grade || 'N/A'}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            <DialogFooter>
+                                <Button onClick={() => setIsBatchDetailsOpen(false)} className="rounded-full w-full">Close Verification</Button>
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>
@@ -1024,11 +1403,12 @@ const AdminDashboard: React.FC = () => {
                                             <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Location</TableHead>
                                             <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
                                             <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {pollinationRequests.length === 0 ? (
-                                            <TableRow><TableCell colSpan={7} className="text-center h-48 text-muted-foreground font-medium">No pollination requests yet.</TableCell></TableRow>
+                                            <TableRow><TableCell colSpan={9} className="text-center h-48 text-muted-foreground font-medium">No pollination requests yet.</TableCell></TableRow>
                                         ) : (
                                             pollinationRequests.map((req) => (
                                                 <TableRow key={req.id} className="hover:bg-muted/20 transition-colors border-border/10">
@@ -1050,6 +1430,16 @@ const AdminDashboard: React.FC = () => {
                                                             </SelectContent>
                                                         </Select>
                                                     </TableCell>
+                                                    <TableCell className="px-6 text-right">
+                                                        <div className="flex justify-end gap-2">
+                                                            <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleViewPollination(req)}>
+                                                                <Search className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeletePollination(req.id)}>
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    </TableCell>
                                                 </TableRow>
                                             ))
                                         )}
@@ -1058,6 +1448,52 @@ const AdminDashboard: React.FC = () => {
                             </div>
                         </CardContent>
                     </Card>
+
+                    {/* Pollination Details Dialog */}
+                    <Dialog open={isPollinationDetailsOpen} onOpenChange={setIsPollinationDetailsOpen}>
+                        <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-md">
+                            <DialogHeader>
+                                <DialogTitle className="text-2xl font-black flex gap-2 items-center">
+                                    <Bug className="w-6 h-6 text-primary" /> Service Request
+                                </DialogTitle>
+                            </DialogHeader>
+                            {selectedPollination && (
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Farmer</p>
+                                            <p className="font-bold">{selectedPollination.name || selectedPollination.first_name}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Contact</p>
+                                            <p className="text-xs">{selectedPollination.email}</p>
+                                            <p className="text-xs font-mono">{selectedPollination.phone}</p>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Crop</p>
+                                            <Badge variant="secondary">{selectedPollination.crop_type || selectedPollination.crop}</Badge>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Size</p>
+                                            <p className="font-bold">{selectedPollination.farm_size || selectedPollination.acreage} Acres</p>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Location</p>
+                                        <p className="font-medium">{selectedPollination.location || selectedPollination.county}</p>
+                                    </div>
+                                    <div className="space-y-1 pt-2 border-t border-border/10">
+                                        <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Additional Notes</p>
+                                        <p className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-xl italic">
+                                            "{selectedPollination.notes || selectedPollination.message || 'No additional notes provided.'}"
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                        </DialogContent>
+                    </Dialog>
                 </TabsContent>
 
                 {/* --- CONTACT REQUESTS TAB --- */}
@@ -1085,11 +1521,12 @@ const AdminDashboard: React.FC = () => {
                                             <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest max-w-md">Message</TableHead>
                                             <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
                                             <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {contacts.length === 0 ? (
-                                            <TableRow><TableCell colSpan={5} className="text-center h-48 text-muted-foreground font-medium">No contact messages yet.</TableCell></TableRow>
+                                            <TableRow><TableCell colSpan={7} className="text-center h-48 text-muted-foreground font-medium">No contact messages yet.</TableCell></TableRow>
                                         ) : (
                                             contacts.map((contact) => (
                                                 <TableRow key={contact.id} className="hover:bg-muted/20 transition-colors border-border/10">
@@ -1108,6 +1545,16 @@ const AdminDashboard: React.FC = () => {
                                                             </SelectContent>
                                                         </Select>
                                                     </TableCell>
+                                                    <TableCell className="px-6 text-right">
+                                                        <div className="flex justify-end gap-2">
+                                                            <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleViewContact(contact)}>
+                                                                <Search className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteContact(contact.id)}>
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    </TableCell>
                                                 </TableRow>
                                             ))
                                         )}
@@ -1116,6 +1563,41 @@ const AdminDashboard: React.FC = () => {
                             </div>
                         </CardContent>
                     </Card>
+
+                    {/* Contact Details Dialog */}
+                    <Dialog open={isContactDetailsOpen} onOpenChange={setIsContactDetailsOpen}>
+                        <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-md">
+                            <DialogHeader>
+                                <DialogTitle className="text-2xl font-black flex gap-2 items-center">
+                                    <MessageSquare className="w-6 h-6 text-primary" /> Message Details
+                                </DialogTitle>
+                            </DialogHeader>
+                            {selectedContact && (
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-start border-b border-border/10 pb-4">
+                                        <div>
+                                            <p className="font-bold text-lg">{selectedContact.name || `${selectedContact.first_name} ${selectedContact.last_name}`}</p>
+                                            <p className="text-sm text-muted-foreground">{selectedContact.email}</p>
+                                        </div>
+                                        <Badge variant="outline">{new Date(selectedContact.created_at).toLocaleDateString()}</Badge>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Subject</p>
+                                        <p className="font-medium">{selectedContact.subject || 'General Inquiry'}</p>
+                                    </div>
+                                    <div className="space-y-2 bg-muted/30 p-4 rounded-xl">
+                                        <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Message Body</p>
+                                        <p className="text-sm leading-relaxed whitespace-pre-wrap">{selectedContact.message}</p>
+                                    </div>
+                                    <div className="pt-2 flex justify-end">
+                                        <Button variant="outline" className="rounded-full text-xs font-bold" onClick={() => window.open(`mailto:${selectedContact.email}`)}>
+                                            <Mail className="w-3 h-3 mr-2" /> Reply via Email
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
+                        </DialogContent>
+                    </Dialog>
                 </TabsContent>
 
                 {/* --- NEWSLETTER TAB --- */}
@@ -1132,17 +1614,23 @@ const AdminDashboard: React.FC = () => {
                                         <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Email</TableHead>
                                         <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
                                         <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Subscribed On</TableHead>
+                                        <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {subscribers.length === 0 ? (
-                                        <TableRow><TableCell colSpan={3} className="text-center h-48 text-muted-foreground font-medium">No subscribers yet.</TableCell></TableRow>
+                                        <TableRow><TableCell colSpan={4} className="text-center h-48 text-muted-foreground font-medium">No subscribers yet.</TableCell></TableRow>
                                     ) : (
                                         subscribers.map((sub) => (
                                             <TableRow key={sub.id} className="hover:bg-muted/20 transition-colors border-border/10">
                                                 <TableCell className="px-6 font-semibold">{sub.email}</TableCell>
                                                 <TableCell className="px-6 font-medium text-muted-foreground">{sub.first_name || 'Anonymous'}</TableCell>
                                                 <TableCell className="px-6 text-xs font-mono">{new Date(sub.created_at).toLocaleString()}</TableCell>
+                                                <TableCell className="px-6 text-right">
+                                                    <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteSubscriber(sub.id)}>
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </TableCell>
                                             </TableRow>
                                         ))
                                     )}
