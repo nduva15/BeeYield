@@ -34,6 +34,8 @@ import Checkout from "./pages/Checkout";
 import AccountSettings from "./pages/AccountSettings";
 import CartDrawer from "./components/CartDrawer";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminAuth from "./pages/AdminAuth";
+import BuyerDashboard from "./pages/BuyerDashboard";
 
 const queryClient = new QueryClient();
 
@@ -44,7 +46,7 @@ const App = () => (
         <CartProvider>
           <Toaster />
           <Sonner />
-          <BrowserRouter>
+          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <CartDrawer />
             <Layout>
               <Routes>
@@ -74,6 +76,8 @@ const App = () => (
                 <Route path="/team" element={<Team />} />
                 <Route path="/account-settings" element={<AccountSettings />} />
                 <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin/login" element={<AdminAuth />} />
+                <Route path="/my-account" element={<BuyerDashboard />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Layout>

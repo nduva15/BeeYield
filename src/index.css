@@ -42,21 +42,21 @@ All colors MUST be HSL.
     --ring: 35 65% 55%;
 
     --radius: 0.75rem;
-    
+
     /* Custom tokens */
     --honey-light: 42 80% 85%;
     --honey-dark: 32 60% 40%;
     --nature-green: 142 45% 35%;
     --nature-green-light: 142 35% 85%;
-    
+
     /* Gradients */
     --gradient-hero: linear-gradient(135deg, hsl(35 65% 55%) 0%, hsl(32 75% 60%) 100%);
     --gradient-subtle: linear-gradient(180deg, hsl(42 45% 97%) 0%, hsl(40 35% 92%) 100%);
-    
+
     /* Shadows */
     --shadow-soft: 0 4px 20px -2px hsl(35 65% 55% / 0.15);
     --shadow-glow: 0 8px 32px -4px hsl(38 80% 65% / 0.3);
-    
+
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -106,7 +106,7 @@ All colors MUST be HSL.
     --border: 28 25% 25%;
     --input: 28 25% 25%;
     --ring: 35 65% 55%;
-    
+
     --honey-light: 42 60% 35%;
     --honey-dark: 32 80% 65%;
     --nature-green: 142 40% 40%;
@@ -129,5 +129,220 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* ===== MOBILE RESPONSIVENESS UTILITIES ===== */
+
+/* Ensure hero sections are always visible on mobile */
+@layer components {
+
+  /* Hero section mobile optimization */
+  .hero-section {
+    @apply min-h-[60vh] sm:min-h-[70vh] md:min-h-[80vh] lg:min-h-[90vh];
+    @apply py-12 sm:py-16 md:py-20 lg:py-24;
+  }
+
+  /* Responsive text sizes for headings */
+  .hero-title {
+    @apply text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl;
+    @apply leading-tight tracking-tight;
+  }
+
+  .hero-subtitle {
+    @apply text-base sm:text-lg md:text-xl;
+    @apply leading-relaxed;
+  }
+
+  /* Mobile-friendly container padding */
+  .container-mobile {
+    @apply px-4 sm:px-6 md:px-8 lg:px-12;
+  }
+
+  /* Consistent card styling across devices */
+  .card-responsive {
+    @apply rounded-2xl sm:rounded-3xl md:rounded-[2rem] lg:rounded-[2.5rem];
+    @apply p-4 sm:p-6 md:p-8 lg:p-10;
+  }
+
+  /* Mobile-first grid layouts */
+  .grid-responsive {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8;
+  }
+
+  /* Button sizing for touch targets */
+  .btn-touch {
+    @apply min-h-[44px] min-w-[44px];
+    @apply px-4 sm:px-6 md:px-8;
+  }
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes float-delayed {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float-delayed 6s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+/* ===== SHADOW UTILITIES ===== */
+@layer utilities {
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .shadow-premium {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  }
+
+  .shadow-elegant {
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Mobile touch-friendly spacing */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Prevent text overflow on mobile */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Ensure visible hero elements on mobile */
+  .hero-visible {
+    display: flex !important;
+    visibility: visible !important;
+  }
+}
+
+/* ===== RESPONSIVE TYPOGRAPHY ===== */
+@layer utilities {
+
+  /* Fluid typography for better mobile experience */
+  .text-fluid-sm {
+    font-size: clamp(0.875rem, 2vw, 1rem);
+  }
+
+  .text-fluid-base {
+    font-size: clamp(1rem, 2.5vw, 1.125rem);
+  }
+
+  .text-fluid-lg {
+    font-size: clamp(1.125rem, 3vw, 1.25rem);
+  }
+
+  .text-fluid-xl {
+    font-size: clamp(1.25rem, 3.5vw, 1.5rem);
+  }
+
+  .text-fluid-2xl {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+  }
+
+  .text-fluid-3xl {
+    font-size: clamp(1.875rem, 5vw, 2.5rem);
+  }
+
+  .text-fluid-4xl {
+    font-size: clamp(2.25rem, 6vw, 3rem);
+  }
+
+  .text-fluid-5xl {
+    font-size: clamp(2.5rem, 7vw, 4rem);
+  }
+}
+
+/* ===== MOBILE-SPECIFIC OVERRIDES ===== */
+@media (max-width: 640px) {
+
+  /* Ensure hero content is visible */
+  .hero-content {
+    padding: 1rem;
+  }
+
+  /* Make floating elements visible on mobile */
+  .floating-element {
+    display: block !important;
+    position: relative !important;
+    margin: 1rem auto;
+  }
+
+  /* Adjust large rounded corners for mobile */
+  .rounded-\[3rem\],
+  .rounded-\[4rem\],
+  .rounded-\[5rem\] {
+    border-radius: 1.5rem;
+  }
+
+  /* Ensure grids collapse properly */
+  .grid-cols-3,
+  .grid-cols-4,
+  .grid-cols-5 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Fix card padding on mobile */
+  .p-10,
+  .p-12,
+  .p-16 {
+    padding: 1.5rem;
+  }
+
+  /* Ensure buttons are full width on mobile when needed */
+  .btn-mobile-full {
+    width: 100%;
+  }
+}
+
+/* ===== TABLET ADJUSTMENTS ===== */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .hero-visual {
+    display: block;
+    max-width: 60%;
+    margin: 2rem auto 0;
   }
 }

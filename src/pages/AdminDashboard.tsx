@@ -14,7 +14,9 @@ import { Textarea } from "@/components/ui/textarea";
 import {
     Loader2, Plus, RefreshCw, Package, Users, ShoppingBag,
     Database, Trash2, Edit, Shield, Crown, UserMinus,
-    CheckCircle2, XCircle, Clock, AlertTriangle
+    CheckCircle2, XCircle, Clock, AlertTriangle, LayoutDashboard,
+    MessageSquare, Bug, Mail, History, TrendingUp, ChevronRight,
+    LogOut, Search
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -36,6 +38,10 @@ const AdminDashboard: React.FC = () => {
     const [products, setProducts] = useState<any[]>([]);
     const [batches, setBatches] = useState<any[]>([]);
     const [systemUsers, setSystemUsers] = useState<any[]>([]);
+    const [pollinationRequests, setPollinationRequests] = useState<any[]>([]);
+    const [contacts, setContacts] = useState<any[]>([]);
+    const [stockMovements, setStockMovements] = useState<any[]>([]);
+    const [activeTab, setActiveTab] = useState('overview');
 
     // Loading States
     const [isLoading, setIsLoading] = useState(true);
@@ -49,13 +55,27 @@ const AdminDashboard: React.FC = () => {
     const [productForm, setProductForm] = useState({
         name: '', description: '', category: 'honey', price_kes: 0, stock_quantity: 0, images: ''
     });
+    const [editingBatchId, setEditingBatchId] = useState<string | null>(null);
     const [batchForm, setBatchForm] = useState({
-        honey_type: '', harvest_date: '', quantity_kg: 0, processing_method: 'Raw Filtered'
+        honey_type: '', harvest_date: '', quantity_kg: 0, processing_method: 'Raw Filtered',
+        farmer_name: '', farmer_phone: '', location_county: '', apiary_name: '',
+        quality_grade: 'A', moisture_content: 0, color_grade: ''
+    });
+    const [isStockModalOpen, setIsStockModalOpen] = useState(false);
+    const [stockForm, setStockForm] = useState({
+        product_id: '', type: 'addition', quantity: 0, reason: ''
+    });
+
+    const [dashboardStats, setDashboardStats] = useState({
+        totalRevenue: 0,
+        pendingOrders: 0,
+        totalHoneyKg: 0,
+        totalAcres: 0
     });
 
     useEffect(() => {
         if (!authLoading && !user) {
-            navigate('/account-settings?redirect=/admin');
+            navigate('/admin/login');
         } else if (!authLoading && user && isAdmin) {
             loadAllData();
         }
@@ -68,27 +88,66 @@ const AdminDashboard: React.FC = () => {
                 adminService.getOrders(),
                 adminService.getNewsletterSubscribers(),
                 adminService.getProducts(),
-                adminService.getBatches()
+                adminService.getBatches(),
+                adminService.getPollinationRequests(),
+                adminService.getContactRequests(),
+                adminService.getStockMovements()
             ];
 
+            let userPromiseIndex = -1;
             // Only fetch users if super admin
             if (isSuperAdmin) {
-                promises.push(adminService.getUsers().catch(() => []));
+                promises.push(adminService.getUsers());
+                userPromiseIndex = promises.length - 1;
             }
 
-            const results = await Promise.all(promises);
+            const results = await Promise.allSettled(promises);
 
-            setOrders(results[0] || []);
-            setSubscribers(results[1] || []);
-            setProducts(results[2] || []);
-            setBatches((results[3] || []).reverse()); // newest first
+            const getResult = (index: number, name: string) => {
+                const result = results[index];
+                if (result.status === 'fulfilled') {
+                    return result.value || [];
+                } else {
+                    console.error(`Failed to load ${name}:`, result.reason);
+                    return [];
+                }
+            };
 
-            if (isSuperAdmin) {
-                setSystemUsers(results[4] || []);
+            const fetchedOrders = getResult(0, 'orders');
+            const fetchedSubscribers = getResult(1, 'subscribers');
+            const fetchedProducts = getResult(2, 'products');
+            const fetchedBatches = getResult(3, 'batches').reverse();
+            const fetchedPollination = getResult(4, 'pollination');
+            const fetchedContacts = getResult(5, 'contacts');
+            const fetchedStock = getResult(6, 'stock');
+
+            setOrders(fetchedOrders);
+            setSubscribers(fetchedSubscribers);
+            setProducts(fetchedProducts);
+            setBatches(fetchedBatches);
+            setPollinationRequests(fetchedPollination);
+            setContacts(fetchedContacts);
+            setStockMovements(fetchedStock);
+
+            // Calculate Stats
+            const revenue = fetchedOrders.reduce((sum: number, o: any) => sum + (o.total_amount || 0), 0);
+            const pending = fetchedOrders.filter((o: any) => o.status === 'pending').length;
+            const honeyKg = fetchedBatches.reduce((sum: number, b: any) => sum + (b.quantity_kg || 0), 0);
+            const acres = fetchedPollination.reduce((sum: number, p: any) => sum + (p.acres || 0), 0);
+
+            setDashboardStats({
+                totalRevenue: revenue,
+                pendingOrders: pending,
+                totalHoneyKg: honeyKg,
+                totalAcres: acres
+            });
+
+            if (isSuperAdmin && userPromiseIndex !== -1) {
+                setSystemUsers(getResult(userPromiseIndex, 'users'));
             }
         } catch (error) {
-            console.error("Failed to load admin data:", error);
-            toast.error("Failed to load dashboard data");
+            console.error("Critical error in dashboard loader:", error);
+            toast.error("Dashboard loaded with some errors");
         } finally {
             setIsLoading(false);
         }
@@ -141,15 +200,81 @@ const AdminDashboard: React.FC = () => {
         setIsProductModalOpen(true);
     };
 
-    const handleCreateBatch = async () => {
+    const handleSaveBatch = async () => {
         try {
-            await adminService.createBatch(batchForm);
-            toast.success("Batch created on Blockchain");
+            if (editingBatchId) {
+                await adminService.updateBatch(editingBatchId, batchForm);
+                toast.success("Batch record updated");
+            } else {
+                await adminService.createBatch(batchForm as any);
+                toast.success("Batch created on Blockchain");
+            }
             setIsBatchModalOpen(false);
-            setBatchForm({ honey_type: '', harvest_date: '', quantity_kg: 0, processing_method: 'Raw Filtered' });
+            setEditingBatchId(null);
+            setBatchForm({
+                honey_type: '', harvest_date: '', quantity_kg: 0, processing_method: 'Raw Filtered',
+                farmer_name: '', farmer_phone: '', location_county: '', apiary_name: '',
+                quality_grade: 'A', moisture_content: 0, color_grade: ''
+            });
             loadAllData();
         } catch (error) {
-            toast.error("Failed to create batch");
+            toast.error(editingBatchId ? "Failed to update batch" : "Failed to create batch");
+        }
+    };
+
+    const handleUpdateBatch = async (id: string, data: any) => {
+        try {
+            await adminService.updateBatch(id, data);
+            toast.success("Batch updated");
+            loadAllData();
+        } catch (error) {
+            toast.error("Failed to update batch");
+        }
+    };
+
+    const handleDeleteBatch = async (id: string) => {
+        if (confirm("Permanently remove this batch from the ledger? (Note: Blockchain records are technically immutable, this removes it from the UI/metadata)")) {
+            try {
+                await adminService.deleteBatch(id);
+                toast.success("Batch entry removed");
+                loadAllData();
+            } catch (error) {
+                toast.error("Failed to remove batch");
+            }
+        }
+    };
+
+    const handleEditBatch = (batch: any) => {
+        // Populate the batch form with existing data
+        setBatchForm({
+            honey_type: batch.honey_type || '',
+            harvest_date: batch.harvest_date || '',
+            quantity_kg: batch.quantity_kg || 0,
+            processing_method: batch.processing_method || 'Raw Filtered',
+            farmer_name: batch.farmer_name || '',
+            farmer_phone: batch.farmer_phone || '',
+            location_county: batch.location_county || '',
+            apiary_name: batch.apiary_name || '',
+            quality_grade: batch.quality_grade || 'A',
+            moisture_content: batch.moisture_content || 0,
+            color_grade: batch.color_grade || ''
+        });
+        // We need a way to track we are editing. 
+        // For now, I'll just open the modal. But wait, handleCreateBatch calls createBatch.
+        // I need to add an 'editingBatchId' state or similar.
+        setEditingBatchId(batch.id);
+        setIsBatchModalOpen(true);
+    };
+
+    const handleCreateStockMovement = async () => {
+        try {
+            await adminService.createStockMovement(stockForm);
+            toast.success("Stock movement recorded");
+            setIsStockModalOpen(false);
+            setStockForm({ product_id: '', type: 'addition', quantity: 0, reason: '' });
+            loadAllData();
+        } catch (error) {
+            toast.error("Failed to record stock movement");
         }
     };
 
@@ -249,25 +374,114 @@ const AdminDashboard: React.FC = () => {
             <Tabs defaultValue="orders" className="w-full space-y-8">
                 <div className="overflow-x-auto pb-2 scrollbar-hide">
                     <TabsList className="bg-muted/40 p-1.5 rounded-full backdrop-blur border inline-flex h-auto w-auto gap-2">
+                        <TabsTrigger value="overview" className="rounded-full px-6 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow transition-all font-bold text-xs uppercase tracking-widest flex gap-2">
+                            <LayoutDashboard className="h-4 w-4" /> Overview
+                        </TabsTrigger>
                         <TabsTrigger value="orders" className="rounded-full px-6 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow transition-all font-bold text-xs uppercase tracking-widest flex gap-2">
                             <Package className="h-4 w-4" /> Orders
                         </TabsTrigger>
                         <TabsTrigger value="products" className="rounded-full px-6 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow transition-all font-bold text-xs uppercase tracking-widest flex gap-2">
-                            <ShoppingBag className="h-4 w-4" /> Products
+                            <ShoppingBag className="h-4 w-4" /> Shop
                         </TabsTrigger>
                         <TabsTrigger value="batches" className="rounded-full px-6 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow transition-all font-bold text-xs uppercase tracking-widest flex gap-2">
-                            <Database className="h-4 w-4" /> Honey Chain
+                            <Database className="h-4 w-4" /> Traceability
+                        </TabsTrigger>
+                        <TabsTrigger value="pollination" className="rounded-full px-6 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow transition-all font-bold text-xs uppercase tracking-widest flex gap-2">
+                            <Bug className="h-4 w-4" /> Pollination
+                        </TabsTrigger>
+                        <TabsTrigger value="contact" className="rounded-full px-6 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow transition-all font-bold text-xs uppercase tracking-widest flex gap-2">
+                            <MessageSquare className="h-4 w-4" /> Contact
+                        </TabsTrigger>
+                        <TabsTrigger value="newsletter" className="rounded-full px-6 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow transition-all font-bold text-xs uppercase tracking-widest flex gap-2">
+                            <Mail className="h-4 w-4" /> Newsletter
                         </TabsTrigger>
                         {isSuperAdmin && (
                             <TabsTrigger value="team" className="rounded-full px-6 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow transition-all font-bold text-xs uppercase tracking-widest flex gap-2">
-                                <Shield className="h-4 w-4" /> Team Management
+                                <Shield className="h-4 w-4" /> Team
                             </TabsTrigger>
                         )}
-                        <TabsTrigger value="newsletter" className="rounded-full px-6 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow transition-all font-bold text-xs uppercase tracking-widest flex gap-2">
-                            <Users className="h-4 w-4" /> Newsletter
-                        </TabsTrigger>
                     </TabsList>
                 </div>
+
+                {/* --- OVERVIEW TAB --- */}
+                <TabsContent value="overview" className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <Card className="border-none shadow-xl glass bg-primary/5 dark:bg-primary/10 rounded-3xl relative overflow-hidden group hover:scale-105 transition-all duration-500">
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-sm font-black uppercase tracking-widest text-muted-foreground z-10">Total Revenue</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-3xl font-black z-10 relative">KES {dashboardStats.totalRevenue.toLocaleString()}</div>
+                                <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:opacity-20 transition-opacity z-0">
+                                    <ShoppingBag className="w-24 h-24" />
+                                </div>
+                            </CardContent>
+                        </Card>
+                        <Card className="border-none shadow-xl glass bg-amber-500/5 dark:bg-amber-500/10 rounded-3xl relative overflow-hidden group hover:scale-105 transition-all duration-500">
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-sm font-black uppercase tracking-widest text-muted-foreground z-10">Honey Harvest</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-3xl font-black z-10 relative">{dashboardStats.totalHoneyKg.toLocaleString()} KG</div>
+                                <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:opacity-20 transition-opacity z-0">
+                                    <Database className="w-24 h-24" />
+                                </div>
+                            </CardContent>
+                        </Card>
+                        <Card className="border-none shadow-xl glass bg-blue-500/5 dark:bg-blue-500/10 rounded-3xl relative overflow-hidden group hover:scale-105 transition-all duration-500">
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-sm font-black uppercase tracking-widest text-muted-foreground z-10">Pollination Area</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-3xl font-black z-10 relative">{dashboardStats.totalAcres.toLocaleString()} ACRES</div>
+                                <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:opacity-20 transition-opacity z-0">
+                                    <Bug className="w-24 h-24" />
+                                </div>
+                            </CardContent>
+                        </Card>
+                        <Card className="border-none shadow-xl glass bg-destructive/5 dark:bg-destructive/10 rounded-3xl relative overflow-hidden group hover:scale-105 transition-all duration-500">
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-sm font-black uppercase tracking-widest text-muted-foreground z-10">Pending Actions</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-3xl font-black z-10 relative">{dashboardStats.pendingOrders} ORDERS</div>
+                                <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:opacity-20 transition-opacity z-0">
+                                    <AlertTriangle className="w-24 h-24" />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <Card className="border-none shadow-2xl glass bg-white/50 dark:bg-black/20 rounded-3xl overflow-hidden">
+                            <CardHeader>
+                                <CardTitle className="font-black">Recent Activity Log</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-4">
+                                    {orders.slice(0, 3).map(o => (
+                                        <div key={o.id} className="flex justify-between items-center border-b border-border/10 pb-2">
+                                            <div>
+                                                <p className="font-bold text-sm">New Order received</p>
+                                                <p className="text-xs text-muted-foreground">{new Date(o.created_at).toLocaleString()}</p>
+                                            </div>
+                                            <Badge variant="outline">{o.status}</Badge>
+                                        </div>
+                                    ))}
+                                    {batches.slice(0, 3).map(b => (
+                                        <div key={b.id} className="flex justify-between items-center border-b border-border/10 pb-2">
+                                            <div>
+                                                <p className="font-bold text-sm">Batch Minted: {b.batch_code}</p>
+                                                <p className="text-xs text-muted-foreground">{new Date(b.created_at).toLocaleString()}</p>
+                                            </div>
+                                            <Badge className="bg-green-500/20 text-green-600 border-none">Verified</Badge>
+                                        </div>
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </TabsContent>
 
                 {/* --- ORDERS TAB --- */}
                 <TabsContent value="orders" className="space-y-6">
@@ -426,6 +640,58 @@ const AdminDashboard: React.FC = () => {
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>
+
+                    {/* Stock Movements Section */}
+                    <Card className="border-none shadow-2xl glass bg-white/50 dark:bg-black/20 rounded-3xl overflow-hidden mt-8">
+                        <CardHeader className="bg-muted/30 border-b border-border/10">
+                            <div className="flex justify-between items-center">
+                                <div>
+                                    <CardTitle className="text-xl font-black flex items-center gap-2">
+                                        <History className="w-5 h-5" /> Stock Movements
+                                    </CardTitle>
+                                    <CardDescription>Track inventory additions, removals, and adjustments.</CardDescription>
+                                </div>
+                                <Badge className="bg-green-500/10 text-green-600 border-green-200 px-4 py-1.5 rounded-full font-black text-[10px]">
+                                    {stockMovements.length} RECORDS
+                                </Badge>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="p-0">
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="bg-muted/20 border-border/10">
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Product</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Type</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Quantity</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Reason</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {stockMovements.length === 0 ? (
+                                            <TableRow><TableCell colSpan={5} className="text-center h-32 text-muted-foreground font-medium">No stock movements recorded yet.</TableCell></TableRow>
+                                        ) : (
+                                            stockMovements.map((mov) => (
+                                                <TableRow key={mov.id} className="hover:bg-muted/20 transition-colors border-border/10">
+                                                    <TableCell className="px-6 font-semibold">{mov.products?.name || 'Unknown Product'}</TableCell>
+                                                    <TableCell className="px-6">
+                                                        <Badge variant="outline" className={mov.type === 'addition' ? 'bg-green-500/10 text-green-600 border-green-200' : 'bg-red-500/10 text-red-600 border-red-200'}>
+                                                            {mov.type === 'addition' ? <TrendingUp className="w-3 h-3 mr-1" /> : <AlertTriangle className="w-3 h-3 mr-1" />}
+                                                            {mov.type}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell className="px-6 text-right font-black">{mov.type === 'addition' ? '+' : '-'}{mov.quantity}</TableCell>
+                                                    <TableCell className="px-6 text-sm text-muted-foreground">{mov.reason || 'N/A'}</TableCell>
+                                                    <TableCell className="px-6 text-xs font-mono">{new Date(mov.created_at).toLocaleDateString()}</TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </CardContent>
+                    </Card>
                 </TabsContent>
 
                 {/* --- BATCHES TAB --- */}
@@ -445,16 +711,19 @@ const AdminDashboard: React.FC = () => {
                                 <Table>
                                     <TableHeader>
                                         <TableRow className="bg-muted/20 border-border/10">
-                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Protocol ID</TableHead>
-                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Matrix Type</TableHead>
-                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Harvest Timestamp</TableHead>
-                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Mass (KG)</TableHead>
-                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Blockchain Verification Hash</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Batch Code</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Honey Type</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Origin</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Farmer / Beekeeper</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Harvest Date</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Quantity (KG)</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Block Hash</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Actions</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {batches.length === 0 ? (
-                                            <TableRow><TableCell colSpan={5} className="text-center h-48 text-muted-foreground font-medium italic">No ledger entries detected.</TableCell></TableRow>
+                                            <TableRow><TableCell colSpan={8} className="text-center h-48 text-muted-foreground font-medium italic">No honey batches in the blockchain yet.</TableCell></TableRow>
                                         ) : (
                                             batches.map((batch, i) => (
                                                 <TableRow key={batch.id || i} className="hover:bg-muted/20 transition-colors border-border/10">
@@ -465,6 +734,22 @@ const AdminDashboard: React.FC = () => {
                                                         </div>
                                                     </TableCell>
                                                     <TableCell className="px-6 font-semibold">{batch.honey_type}</TableCell>
+                                                    <TableCell className="px-6 text-sm">
+                                                        {batch.location_county ? (
+                                                            <div className="flex flex-col">
+                                                                <span className="font-bold text-xs">{batch.location_county}</span>
+                                                                <span className="text-[10px] text-muted-foreground">{batch.location_region || batch.apiary_name}</span>
+                                                            </div>
+                                                        ) : <span className="text-muted-foreground">-</span>}
+                                                    </TableCell>
+                                                    <TableCell className="px-6 text-sm">
+                                                        {(batch.farmer_name || batch.beekeeper_name) ? (
+                                                            <div className="flex flex-col">
+                                                                <span className="font-semibold text-xs">{batch.farmer_name || batch.beekeeper_name}</span>
+                                                                <span className="text-[10px] text-muted-foreground">{batch.farmer_phone || batch.beekeeper_id}</span>
+                                                            </div>
+                                                        ) : <span className="text-muted-foreground">-</span>}
+                                                    </TableCell>
                                                     <TableCell className="px-6 text-sm tabular-nums">{batch.harvest_date}</TableCell>
                                                     <TableCell className="px-6 text-right font-black italic">{batch.quantity_kg}</TableCell>
                                                     <TableCell className="px-6">
@@ -474,6 +759,14 @@ const AdminDashboard: React.FC = () => {
                                                                 {batch.block_hash || '0x00...00'}
                                                             </code>
                                                         </div>
+                                                    </TableCell>
+                                                    <TableCell className="px-6">
+                                                        <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteBatch(batch.id)}>
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                        <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 text-primary hover:bg-primary/10 ml-1" onClick={() => handleEditBatch(batch)}>
+                                                            <Edit className="h-4 w-4" />
+                                                        </Button>
                                                     </TableCell>
                                                 </TableRow>
                                             ))
@@ -486,33 +779,142 @@ const AdminDashboard: React.FC = () => {
 
                     {/* Batch Creation Dialog */}
                     <Dialog open={isBatchModalOpen} onOpenChange={setIsBatchModalOpen}>
-                        <DialogContent className="rounded-3xl border-none shadow-2xl glass">
+                        <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-2xl max-h-[90vh] overflow-y-auto">
                             <DialogHeader>
                                 <DialogTitle className="text-2xl font-black">Mint New Ledger Entry</DialogTitle>
                                 <DialogDescription>This action will finalize the batch data on the irreversible HoneyChain network.</DialogDescription>
                             </DialogHeader>
-                            <div className="grid gap-5 py-4">
-                                <div className="space-y-2">
-                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Botanical Profile</Label>
-                                    <Input value={batchForm.honey_type} onChange={e => setBatchForm({ ...batchForm, honey_type: e.target.value })} placeholder="e.g. Acacia Noir" className="rounded-xl h-11 bg-muted/50" />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Chronological Stamp</Label>
-                                    <Input type="date" value={batchForm.harvest_date} onChange={e => setBatchForm({ ...batchForm, harvest_date: e.target.value })} className="rounded-xl h-11 bg-muted/50" />
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Yield (Total KG)</Label>
-                                        <Input type="number" value={batchForm.quantity_kg} onChange={e => setBatchForm({ ...batchForm, quantity_kg: parseFloat(e.target.value) })} className="rounded-xl h-11 bg-muted/50" />
+                            <div className="grid gap-6 py-4">
+                                {/* Basic Info */}
+                                <div className="space-y-4">
+                                    <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-white/10 pb-2">Batch Details</h4>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Botanical Profile</Label>
+                                            <Input value={batchForm.honey_type} onChange={e => setBatchForm({ ...batchForm, honey_type: e.target.value })} placeholder="e.g. Acacia Noir" className="rounded-xl h-11 bg-muted/50" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Harvest Date</Label>
+                                            <Input type="date" value={batchForm.harvest_date} onChange={e => setBatchForm({ ...batchForm, harvest_date: e.target.value })} className="rounded-xl h-11 bg-muted/50" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Packaged Date</Label>
+                                            <Input type="date" value={(batchForm as any).packaged_date || ''} onChange={e => setBatchForm({ ...batchForm, packaged_date: e.target.value } as any)} className="rounded-xl h-11 bg-muted/50" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Yield (Total KG)</Label>
+                                            <Input type="number" value={batchForm.quantity_kg} onChange={e => setBatchForm({ ...batchForm, quantity_kg: parseFloat(e.target.value) })} className="rounded-xl h-11 bg-muted/50" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Processing Method</Label>
+                                            <Select onValueChange={(val) => setBatchForm({ ...batchForm, processing_method: val })} defaultValue={batchForm.processing_method}>
+                                                <SelectTrigger className="rounded-xl h-11 bg-muted/50">
+                                                    <SelectValue placeholder="Select Method" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="Raw Filtered">Raw Filtered</SelectItem>
+                                                    <SelectItem value="Creamed">Creamed</SelectItem>
+                                                    <SelectItem value="Pasteurized">Pasteurized</SelectItem>
+                                                    <SelectItem value="Comb Honey">Comb Honey</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Processing Vector</Label>
-                                        <Input value={batchForm.processing_method} onChange={e => setBatchForm({ ...batchForm, processing_method: e.target.value })} className="rounded-xl h-11 bg-muted/50" />
+                                </div>
+
+                                {/* Source Info */}
+                                <div className="space-y-4">
+                                    <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-white/10 pb-2">Source Origin</h4>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Farmer / Beekeeper Name</Label>
+                                            <Input
+                                                value={(batchForm as any).farmer_name || ''}
+                                                onChange={e => setBatchForm({ ...batchForm, farmer_name: e.target.value } as any)}
+                                                placeholder="e.g. John Doe"
+                                                className="rounded-xl h-11 bg-muted/50"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Contact Phone</Label>
+                                            <Input
+                                                value={(batchForm as any).farmer_phone || ''}
+                                                onChange={e => setBatchForm({ ...batchForm, farmer_phone: e.target.value } as any)}
+                                                placeholder="+254..."
+                                                className="rounded-xl h-11 bg-muted/50"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">County</Label>
+                                            <Input
+                                                value={(batchForm as any).location_county || ''}
+                                                onChange={e => setBatchForm({ ...batchForm, location_county: e.target.value } as any)}
+                                                placeholder="e.g. Kitui"
+                                                className="rounded-xl h-11 bg-muted/50"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Region / Apiary</Label>
+                                            <Input
+                                                value={(batchForm as any).apiary_name || ''}
+                                                onChange={e => setBatchForm({ ...batchForm, apiary_name: e.target.value } as any)}
+                                                placeholder="e.g. Acacia Grove"
+                                                className="rounded-xl h-11 bg-muted/50"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Quality Metrics */}
+                                <div className="space-y-4">
+                                    <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-white/10 pb-2">Quality Assurance</h4>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Grade</Label>
+                                            <Select onValueChange={(val) => setBatchForm({ ...batchForm, quality_grade: val } as any)} defaultValue="A">
+                                                <SelectTrigger className="rounded-xl h-11 bg-muted/50">
+                                                    <SelectValue placeholder="Grade" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="A">Grade A (Premium)</SelectItem>
+                                                    <SelectItem value="B">Grade B (Standard)</SelectItem>
+                                                    <SelectItem value="C">Grade C (Industrial)</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Moisture (%)</Label>
+                                            <Input
+                                                type="number"
+                                                step="0.1"
+                                                value={(batchForm as any).moisture_content || ''}
+                                                onChange={e => setBatchForm({ ...batchForm, moisture_content: parseFloat(e.target.value) } as any)}
+                                                placeholder="18.5"
+                                                className="rounded-xl h-11 bg-muted/50"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Color Grade</Label>
+                                            <Select onValueChange={(val) => setBatchForm({ ...batchForm, color_grade: val } as any)}>
+                                                <SelectTrigger className="rounded-xl h-11 bg-muted/50">
+                                                    <SelectValue placeholder="Select Color" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="Water White">Water White</SelectItem>
+                                                    <SelectItem value="Extra White">Extra White</SelectItem>
+                                                    <SelectItem value="White">White</SelectItem>
+                                                    <SelectItem value="Extra Light Amber">Extra Light Amber</SelectItem>
+                                                    <SelectItem value="Light Amber">Light Amber</SelectItem>
+                                                    <SelectItem value="Amber">Amber</SelectItem>
+                                                    <SelectItem value="Dark Amber">Dark Amber</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <DialogFooter>
-                                <Button onClick={handleCreateBatch} className="w-full rounded-2xl py-6 font-black uppercase tracking-widest text-xs bg-honey hover:bg-honey-dark text-black border-none shadow-glow">Initialize Block Minting</Button>
+                                <Button onClick={handleSaveBatch} className="w-full rounded-2xl py-6 font-black uppercase tracking-widest text-xs bg-honey hover:bg-honey-dark text-black border-none shadow-glow">Initialize Block Minting</Button>
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>
@@ -595,30 +997,151 @@ const AdminDashboard: React.FC = () => {
                     </TabsContent>
                 )}
 
+                {/* --- POLLINATION REQUESTS TAB --- */}
+                <TabsContent value="pollination" className="space-y-6">
+                    <Card className="border-none shadow-2xl glass bg-white/50 dark:bg-black/20 rounded-3xl overflow-hidden">
+                        <CardHeader className="bg-muted/30 border-b border-border/10">
+                            <div className="flex justify-between items-center">
+                                <div>
+                                    <CardTitle className="text-2xl font-black">Pollination Requests</CardTitle>
+                                    <CardDescription>All incoming pollination service requests from farmers.</CardDescription>
+                                </div>
+                                <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-1.5 rounded-full font-black text-[10px]">
+                                    {pollinationRequests.length} REQUESTS
+                                </Badge>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="p-0">
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="bg-muted/20 border-border/10">
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Email</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Phone</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Crop Type</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Farm Size</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Location</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {pollinationRequests.length === 0 ? (
+                                            <TableRow><TableCell colSpan={7} className="text-center h-48 text-muted-foreground font-medium">No pollination requests yet.</TableCell></TableRow>
+                                        ) : (
+                                            pollinationRequests.map((req) => (
+                                                <TableRow key={req.id} className="hover:bg-muted/20 transition-colors border-border/10">
+                                                    <TableCell className="px-6 font-semibold">{req.name || req.first_name}</TableCell>
+                                                    <TableCell className="px-6 text-sm">{req.email}</TableCell>
+                                                    <TableCell className="px-6 text-sm font-mono">{req.phone}</TableCell>
+                                                    <TableCell className="px-6"><Badge variant="outline" className="rounded-full">{req.crop_type || req.crop}</Badge></TableCell>
+                                                    <TableCell className="px-6 text-sm">{req.farm_size || req.acreage} acres</TableCell>
+                                                    <TableCell className="px-6 text-sm text-muted-foreground">{req.location || req.county}</TableCell>
+                                                    <TableCell className="px-6 text-xs font-mono">{new Date(req.created_at).toLocaleDateString()}</TableCell>
+                                                    <TableCell className="px-6">
+                                                        <Select defaultValue={req.status || 'pending'} onValueChange={(val) => adminService.updatePollinationRequestStatus(req.id, val).then(() => { toast.success('Status updated'); loadAllData(); })}>
+                                                            <SelectTrigger className="h-8 w-[120px] rounded-full text-[10px] font-black uppercase"><SelectValue /></SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="pending">Pending</SelectItem>
+                                                                <SelectItem value="contacted">Contacted</SelectItem>
+                                                                <SelectItem value="completed">Completed</SelectItem>
+                                                                <SelectItem value="rejected">Rejected</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                {/* --- CONTACT REQUESTS TAB --- */}
+                <TabsContent value="contact" className="space-y-6">
+                    <Card className="border-none shadow-2xl glass bg-white/50 dark:bg-black/20 rounded-3xl overflow-hidden">
+                        <CardHeader className="bg-muted/30 border-b border-border/10">
+                            <div className="flex justify-between items-center">
+                                <div>
+                                    <CardTitle className="text-2xl font-black">Contact Submissions</CardTitle>
+                                    <CardDescription>Messages received through the contact form.</CardDescription>
+                                </div>
+                                <Badge className="bg-amber-500/10 text-amber-600 border-amber-200 px-4 py-1.5 rounded-full font-black text-[10px]">
+                                    {contacts.length} MESSAGES
+                                </Badge>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="p-0">
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="bg-muted/20 border-border/10">
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Email</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Subject</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest max-w-md">Message</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {contacts.length === 0 ? (
+                                            <TableRow><TableCell colSpan={5} className="text-center h-48 text-muted-foreground font-medium">No contact messages yet.</TableCell></TableRow>
+                                        ) : (
+                                            contacts.map((contact) => (
+                                                <TableRow key={contact.id} className="hover:bg-muted/20 transition-colors border-border/10">
+                                                    <TableCell className="px-6 font-semibold">{contact.name || `${contact.first_name} ${contact.last_name}`}</TableCell>
+                                                    <TableCell className="px-6 text-sm">{contact.email}</TableCell>
+                                                    <TableCell className="px-6"><Badge variant="outline" className="rounded-full">{contact.subject || 'General'}</Badge></TableCell>
+                                                    <TableCell className="px-6 text-sm text-muted-foreground max-w-md truncate">{contact.message}</TableCell>
+                                                    <TableCell className="px-6 text-xs font-mono">{new Date(contact.created_at).toLocaleDateString()}</TableCell>
+                                                    <TableCell className="px-6">
+                                                        <Select defaultValue={contact.status || 'new'} onValueChange={(val) => adminService.updateContactRequestStatus(contact.id, val).then(() => { toast.success('Status updated'); loadAllData(); })}>
+                                                            <SelectTrigger className="h-8 w-[100px] rounded-full text-[10px] font-black uppercase"><SelectValue /></SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="new">New</SelectItem>
+                                                                <SelectItem value="read">Read</SelectItem>
+                                                                <SelectItem value="replied">Replied</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
                 {/* --- NEWSLETTER TAB --- */}
                 <TabsContent value="newsletter" className="space-y-6">
                     <Card className="border-none shadow-2xl glass bg-white/50 dark:bg-black/20 rounded-3xl overflow-hidden">
                         <CardHeader className="bg-muted/30 border-b border-border/10">
-                            <CardTitle className="text-2xl font-black">Transmission Subscribers</CardTitle>
-                            <CardDescription>Network nodes receiving regular updates.</CardDescription>
+                            <CardTitle className="text-2xl font-black">Newsletter Subscribers</CardTitle>
+                            <CardDescription>All email subscribers to the BeeYield newsletter.</CardDescription>
                         </CardHeader>
                         <CardContent className="p-0">
                             <Table>
                                 <TableHeader>
                                     <TableRow className="bg-muted/20 border-border/10">
-                                        <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Endpoint Email</TableHead>
-                                        <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Identified Name</TableHead>
-                                        <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Sync Timestamp</TableHead>
+                                        <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Email</TableHead>
+                                        <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
+                                        <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Subscribed On</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {subscribers.length === 0 ? (
-                                        <TableRow><TableCell colSpan={3} className="text-center h-48 text-muted-foreground font-medium">No subscriber data found.</TableCell></TableRow>
+                                        <TableRow><TableCell colSpan={3} className="text-center h-48 text-muted-foreground font-medium">No subscribers yet.</TableCell></TableRow>
                                     ) : (
                                         subscribers.map((sub) => (
                                             <TableRow key={sub.id} className="hover:bg-muted/20 transition-colors border-border/10">
                                                 <TableCell className="px-6 font-semibold">{sub.email}</TableCell>
-                                                <TableCell className="px-6 font-medium text-muted-foreground">{sub.first_name || 'Anonymous Identifier'}</TableCell>
+                                                <TableCell className="px-6 font-medium text-muted-foreground">{sub.first_name || 'Anonymous'}</TableCell>
                                                 <TableCell className="px-6 text-xs font-mono">{new Date(sub.created_at).toLocaleString()}</TableCell>
                                             </TableRow>
                                         ))

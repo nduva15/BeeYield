@@ -227,9 +227,28 @@ export type Database = {
           batch_code: string
           honey_type: string
           harvest_date: string
+          packaged_date: string | null
           quantity_kg: number
           processing_method: string
           block_hash: string | null
+          // Farmer/Beekeeper Info
+          farmer_name: string | null
+          farmer_phone: string | null
+          beekeeper_name: string | null
+          beekeeper_id: string | null
+          // Location Info
+          apiary_name: string | null
+          location_county: string | null
+          location_region: string | null
+          latitude: number | null
+          longitude: number | null
+          // Quality & Certifications
+          quality_grade: string | null
+          certifications: string[] | null
+          moisture_content: number | null
+          color_grade: string | null
+          // Status
+          status: string
         }
         Insert: {
           id?: number
@@ -237,9 +256,24 @@ export type Database = {
           batch_code: string
           honey_type: string
           harvest_date: string
+          packaged_date?: string | null
           quantity_kg: number
           processing_method: string
           block_hash?: string | null
+          farmer_name?: string | null
+          farmer_phone?: string | null
+          beekeeper_name?: string | null
+          beekeeper_id?: string | null
+          apiary_name?: string | null
+          location_county?: string | null
+          location_region?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          quality_grade?: string | null
+          certifications?: string[] | null
+          moisture_content?: number | null
+          color_grade?: string | null
+          status?: string
         }
         Update: {
           id?: number
@@ -247,9 +281,24 @@ export type Database = {
           batch_code?: string
           honey_type?: string
           harvest_date?: string
+          packaged_date?: string | null
           quantity_kg?: number
           processing_method?: string
           block_hash?: string | null
+          farmer_name?: string | null
+          farmer_phone?: string | null
+          beekeeper_name?: string | null
+          beekeeper_id?: string | null
+          apiary_name?: string | null
+          location_county?: string | null
+          location_region?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          quality_grade?: string | null
+          certifications?: string[] | null
+          moisture_content?: number | null
+          color_grade?: string | null
+          status?: string
         }
         Relationships: []
       }
