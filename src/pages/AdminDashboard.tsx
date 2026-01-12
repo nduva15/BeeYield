@@ -47,7 +47,7 @@ const AdminDashboard: React.FC = () => {
 
     useEffect(() => {
         if (!authLoading && !user) {
-            navigate('/auth?redirect=/admin');
+            navigate('/account-settings?redirect=/admin');
         } else if (!authLoading && user && isAdmin) {
             loadAllData();
         }

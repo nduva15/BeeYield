@@ -53,7 +53,6 @@ const App = () => (
                 <Route path="/shop" element={<Shop />} />
                 <Route path="/impact" element={<Impact />} />
                 <Route path="/traceability" element={<Traceability />} />
-                <Route path="/pollination-services" element={<PollinationServices />} />
                 <Route path="/pollination-request" element={<PollinationRequest />} />
                 <Route path="/crops-we-pollinate" element={<CropsWePollinate />} />
                 <Route path="/pollination-solutions" element={<PollinationSolutions />} />
