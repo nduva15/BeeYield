@@ -16,6 +16,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const { getTotalItems, openCart } = useCart();
+  const { user } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -124,6 +125,7 @@ const Header = () => {
             )}
           </button>
 
+
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
@@ -215,7 +217,7 @@ const Header = () => {
 
             {/* Secondary Links Section */}
             <div className="flex flex-col space-y-1 pt-4">
-              <span className="text-xs uppercase tracking-wider text-primary-foreground/60 px-3 py-1 font-medium">More</span>
+              <span className="text-xs uppercase tracking-wider text-primary-foreground/60 px-3 py-1 font-medium mt-2">More</span>
               {user?.user_metadata?.role === 'admin' && (
                 <Link
                   to="/admin"
