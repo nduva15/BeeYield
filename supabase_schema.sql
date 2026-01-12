@@ -164,3 +164,57 @@ create policy "Enable insert for all users" on public.contact_submissions for in
 create policy "Enable insert for all users" on public.newsletter_subscribers for insert with check (true);
 create policy "Enable insert for all users" on public.pollination_requests for insert with check (true);
 create policy "Enable insert for all users" on public.orders for insert with check (true);
+
+-- 9. Farmers
+create table if not exists public.farmers (
+  id uuid default gen_random_uuid() primary key,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  name text not null,
+  phone text,
+  email text,
+  id_number text,
+  experience_years integer,
+  story text,
+  latitude numeric,
+  longitude numeric,
+  location_name text,
+  region text,
+  county text,
+  ward text,
+  certification_status text default 'PENDING',
+  farmer_id text,
+  status text default 'active'
+);
+
+-- 10. Profiles (User Data)
+create table if not exists public.profiles (
+  id uuid references auth.users(id) on delete cascade primary key,
+  updated_at timestamp with time zone,
+  username text unique,
+  first_name text,
+  last_name text,
+  avatar_url text,
+  website text,
+  email text,
+  role text default 'user' check (role in ('user', 'admin', 'super_admin'))
+);
+
+-- Enable RLS for new tables
+alter table public.farmers enable row level security;
+alter table public.profiles enable row level security;
+
+-- Policies for Farmers
+create policy "Enable read access for all users" on public.farmers for select using (true);
+create policy "Enable all access for authenticated users" on public.farmers for all using (auth.role() = 'authenticated');
+
+-- Policies for Profiles
+create policy "Public profiles are viewable by everyone." on public.profiles for select using (true);
+create policy "Users can insert their own profile." on public.profiles for insert with check (auth.uid() = id);
+create policy "Users can update own profile." on public.profiles for update using (auth.uid() = id);
+create policy "Admins can update all profiles." on public.profiles for update using (
+  exists (
+    select 1 from public.profiles
+    where id = auth.uid() and role in ('admin', 'super_admin')
+  )
+);
+

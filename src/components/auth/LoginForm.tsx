@@ -9,9 +9,10 @@ import { Loader2, Mail, Lock, Shield } from 'lucide-react';
 interface LoginFormProps {
     onSuccess?: () => void;
     onSwitchToRegister?: () => void;
+    onForgotPassword?: () => void;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegister }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegister, onForgotPassword }) => {
     const { signIn, signInWithGoogle, verifyMFAChallenge, mfaRequired } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -181,7 +182,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegister }) 
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="login-password">Password</Label>
+                <div className="flex items-center justify-between">
+                    <Label htmlFor="login-password">Password</Label>
+                    {onForgotPassword && (
+                        <button
+                            type="button"
+                            onClick={onForgotPassword}
+                            className="text-xs font-medium text-primary hover:underline tabindex={-1}"
+                        >
+                            Forgot password?
+                        </button>
+                    )}
+                </div>
                 <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
