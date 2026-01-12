@@ -1,21 +1,20 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import TwoFactorSetup from '@/components/auth/TwoFactorSetup';
-import { User, Mail, Shield, LogOut, Loader2 } from 'lucide-react';
+import LoginForm from '@/components/auth/LoginForm';
+import RegisterForm from '@/components/auth/RegisterForm';
+import { User, Mail, Shield, LogOut, Loader2, UserPlus, LogIn } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
+type AuthMode = 'login' | 'register';
 
 const AccountSettings = () => {
     const { user, loading, signOut } = useAuth();
     const navigate = useNavigate();
-
-    useEffect(() => {
-        if (!loading && !user) {
-            navigate('/checkout');
-        }
-    }, [user, loading, navigate]);
+    const [authMode, setAuthMode] = useState<AuthMode>('login');
 
     const handleSignOut = async () => {
         await signOut();
@@ -30,10 +29,94 @@ const AccountSettings = () => {
         );
     }
 
+    // Show Login/Register forms when user is NOT logged in
     if (!user) {
-        return null;
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10 py-24">
+                <div className="container max-w-lg mx-auto px-4 space-y-8">
+                    {/* Header */}
+                    <div className="space-y-4 text-center">
+                        <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto border-2 border-primary/20">
+                            <User className="h-10 w-10 text-primary" />
+                        </div>
+                        <h1 className="text-4xl font-black text-foreground tracking-tightest leading-none">
+                            {authMode === 'login' ? 'Welcome Back' : 'Join BeeYield'}
+                        </h1>
+                        <p className="text-lg text-muted-foreground font-medium">
+                            {authMode === 'login'
+                                ? 'Sign in to access your account'
+                                : 'Create an account to track orders and more'}
+                        </p>
+                    </div>
+
+                    {/* Auth Mode Selector */}
+                    <Card className="border-none glass shadow-premium rounded-[2rem] overflow-hidden">
+                        <CardContent className="pt-6 pb-8 px-8">
+                            {/* Tab Switcher */}
+                            <div className="grid grid-cols-2 gap-2 mb-8 p-1 bg-muted rounded-2xl">
+                                <button
+                                    type="button"
+                                    onClick={() => setAuthMode('login')}
+                                    className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition-all ${authMode === 'login'
+                                        ? 'bg-primary text-primary-foreground shadow-lg'
+                                        : 'text-muted-foreground hover:text-foreground'
+                                        }`}
+                                >
+                                    <LogIn className="h-4 w-4" />
+                                    Sign In
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setAuthMode('register')}
+                                    className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition-all ${authMode === 'register'
+                                        ? 'bg-primary text-primary-foreground shadow-lg'
+                                        : 'text-muted-foreground hover:text-foreground'
+                                        }`}
+                                >
+                                    <UserPlus className="h-4 w-4" />
+                                    Create Account
+                                </button>
+                            </div>
+
+                            {/* Login Form */}
+                            {authMode === 'login' && (
+                                <LoginForm
+                                    onSuccess={() => { }}
+                                    onSwitchToRegister={() => setAuthMode('register')}
+                                />
+                            )}
+
+                            {/* Register Form */}
+                            {authMode === 'register' && (
+                                <RegisterForm
+                                    onSuccess={() => { }}
+                                    onSwitchToLogin={() => setAuthMode('login')}
+                                />
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    {/* Benefits */}
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                        <div className="p-4 rounded-2xl bg-card/50 border border-border/50">
+                            <span className="text-2xl">🍯</span>
+                            <p className="text-xs font-bold mt-2 text-muted-foreground">Track Orders</p>
+                        </div>
+                        <div className="p-4 rounded-2xl bg-card/50 border border-border/50">
+                            <span className="text-2xl">⚡</span>
+                            <p className="text-xs font-bold mt-2 text-muted-foreground">Fast Checkout</p>
+                        </div>
+                        <div className="p-4 rounded-2xl bg-card/50 border border-border/50">
+                            <span className="text-2xl">🎁</span>
+                            <p className="text-xs font-bold mt-2 text-muted-foreground">Exclusive Deals</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
+    // User is logged in - show account settings
     const userMetadata = user.user_metadata || {};
     const firstName = userMetadata.first_name || userMetadata.full_name?.split(' ')[0] || '';
     const lastName = userMetadata.last_name || userMetadata.full_name?.split(' ').slice(1).join(' ') || '';
@@ -55,7 +138,7 @@ const AccountSettings = () => {
                     <CardHeader className="p-10 pb-0">
                         <CardTitle className="text-2xl font-black tracking-widest uppercase flex items-center gap-3">
                             <User className="h-6 w-6 text-primary" />
-                            Profile Profile
+                            Profile
                         </CardTitle>
                         <CardDescription className="text-muted-foreground font-medium">Securely stored encrypted credentials</CardDescription>
                     </CardHeader>

@@ -10,6 +10,15 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
+    env:
+      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+      VITE_API_URL: ${{ secrets.VITE_API_URL }}
+      HOSTINGER_HOST: ${{ secrets.HOSTINGER_HOST }}
+      HOSTINGER_USERNAME: ${{ secrets.HOSTINGER_USERNAME }}
+      HOSTINGER_PASSWORD: ${{ secrets.HOSTINGER_PASSWORD }}
+      HOSTINGER_PORT: ${{ secrets.HOSTINGER_PORT || '22' }}
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -25,18 +34,14 @@ jobs:
 
       - name: Build Frontend
         run: npm run build
-        env:
-          VITE_SUPABASE_URL: "${{ secrets.VITE_SUPABASE_URL }}"
-          VITE_SUPABASE_ANON_KEY: "${{ secrets.VITE_SUPABASE_ANON_KEY }}"
-          VITE_API_URL: "${{ secrets.VITE_API_URL }}"
 
       - name: Deploy to Hostinger via SSH
-        uses: appleboy/scp-action@master
+        uses: appleboy/scp-action@v0.1.7
         with:
-          host: "${{ secrets.HOSTINGER_HOST }}"
-          username: "${{ secrets.HOSTINGER_USERNAME }}"
-          password: "${{ secrets.HOSTINGER_PASSWORD }}"
-          port: ${{ secrets.HOSTINGER_PORT || '22' }}
+          host: ${{ env.HOSTINGER_HOST }}
+          username: ${{ env.HOSTINGER_USERNAME }}
+          password: ${{ env.HOSTINGER_PASSWORD }}
+          port: ${{ env.HOSTINGER_PORT }}
           source: "dist/*"
           target: "public_html"
           strip_components: 1
