@@ -72,6 +72,11 @@ const Header = () => {
                   In-Land Pollination Insights Platform
                 </Link>
               </DropdownMenuItem>
+              <DropdownMenuItem asChild className="focus:bg-primary/80 focus:text-primary-foreground">
+                <Link to="/diseases" className="w-full cursor-pointer px-4 py-3 text-base font-medium text-primary-foreground hover:bg-primary/80 rounded-lg">
+                  Diseases
+                </Link>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -104,13 +109,7 @@ const Header = () => {
             </Link>
           </Button>
 
-          <Link
-            to="/account"
-            className="p-2 hover:bg-muted rounded-full transition-all active:scale-90 group"
-            aria-label="Account settings"
-          >
-            <User className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
-          </Link>
+
 
           <button
             onClick={openCart}
@@ -184,6 +183,14 @@ const Header = () => {
                       }`}
                   >
                     In-Land Pollination Insights
+                  </Link>
+                  <Link
+                    to="/diseases"
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`text-sm font-medium hover:bg-primary-foreground/10 rounded-lg px-3 py-2 transition-colors ${isActive("/diseases") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground/90"
+                      }`}
+                  >
+                    Diseases
                   </Link>
                 </div>
               </div>

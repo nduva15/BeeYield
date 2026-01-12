@@ -84,11 +84,26 @@ def create_batch(batch_in: Dict[str, Any]):
 def _get_demo_trace(code: str) -> schemas.TraceResponse:
     """
     Returns differentiated demo data for the three supported batch codes.
+    All three batches feature Timothy Nduva as the master beekeeper.
     All verified on HoneyChain™ - BeeYield's blockchain traceability platform.
     """
     from datetime import date
     
-    # DEMO-001: Timothy Nduva - Kibwezi Wildflower Honey (default demo)
+    # Shared farmer data - Timothy Nduva is our master beekeeper for all demo batches
+    timothy_nduva = schemas.Farmer(
+        farmer_id="F-MAT-001",
+        name="Timothy Nduva",
+        region="Kibwezi",
+        county="Makueni",
+        location_name="Kibwezi HQ",
+        latitude=-2.41,
+        longitude=37.97,
+        story="Timothy Nduva is a master beekeeper and conservationist in Kibwezi, leading the way in sustainable honey production. With 15 years of experience, he manages multiple apiaries across Makueni County, mentoring young beekeepers and championing the 50/50 harvest promise.",
+        experience_years=15,
+        registration_date=date(2020, 5, 15)
+    )
+    
+    # DEMO-001: Kibwezi Wildflower Honey
     if code == "DEMO-001":
         return schemas.TraceResponse(
             batch_code=code,
@@ -96,13 +111,7 @@ def _get_demo_trace(code: str) -> schemas.TraceResponse:
             verified=True,
             blockchain_verified=True,
             verification_url="https://beeyield.com/honeychain/verify/demo-001",
-            farmer=schemas.Farmer(
-                farmer_id="F-MAT-001", name="Timothy Nduva", region="Kibwezi", county="Makueni",
-                location_name="Kibwezi HQ", latitude=-2.41, longitude=37.97,
-                story="Timothy is a master beekeeper and conservationist in Kibwezi, leading the way in sustainable honey production. His 15 years of experience have made him a mentor to many young beekeepers in the region.",
-                experience_years=15,
-                registration_date=date(2020, 5, 15)
-            ),
+            farmer=timothy_nduva,
             apiary=schemas.Apiary(
                 apiary_id="A-KIB-01", apiary_code="KIB-01", name="Kibwezi Savannah Apiary",
                 farmer_id="F-MAT-001", environment_type="Savannah Woodland",
@@ -118,11 +127,11 @@ def _get_demo_trace(code: str) -> schemas.TraceResponse:
                 installation_date=date(2020, 5, 20), has_sensors=True,
                 frame_count=10, material="Cedar Wood"
             ),
-            story_title="A Legacy of Conservation",
+            story_title="Meet Timothy Nduva",
             story_content="Harvested from the diverse wildflower meadows of Kibwezi, Makueni. This honey supports local biodiversity and sustainable livelihoods. Timothy's commitment to leaving 50% of honey for the bees ensures colony health year-round.",
             impact_stats={
                 "acres_pollinated": "25+ Acres",
-                "beekeepers": "1 Master Beekeeper",
+                "beekeepers": "Timothy Nduva",
                 "trees_planted": "2,500+",
                 "farmer_fair_pay": "100%"
             },
@@ -152,7 +161,7 @@ def _get_demo_trace(code: str) -> schemas.TraceResponse:
             ]
         )
     
-    # KIB-ACACIA-24: Mary Wanjiku - Pure Acacia Honey from Kitui
+    # KIB-ACACIA-24: Pure Acacia Honey from Timothy's Acacia Apiary
     elif code == "KIB-ACACIA-24":
         return schemas.TraceResponse(
             batch_code=code,
@@ -160,34 +169,28 @@ def _get_demo_trace(code: str) -> schemas.TraceResponse:
             verified=True,
             blockchain_verified=True,
             verification_url="https://beeyield.com/honeychain/verify/kib-acacia-24",
-            farmer=schemas.Farmer(
-                farmer_id="F-KIT-002", name="Mary Wanjiku", region="Kitui", county="Kitui",
-                location_name="Mutomo Hills", latitude=-2.05, longitude=38.20,
-                story="Mary leads a women's beekeeping cooperative in Kitui, empowering 12 women farmers. Her acacia honey is prized for its delicate flavor and slow crystallization properties.",
-                experience_years=8,
-                registration_date=date(2021, 3, 8)
-            ),
+            farmer=timothy_nduva,
             apiary=schemas.Apiary(
-                apiary_id="A-KIT-02", apiary_code="KIT-02", name="Mutomo Acacia Reserve",
-                farmer_id="F-KIT-002", environment_type="Acacia Woodland",
+                apiary_id="A-KIB-02", apiary_code="KIB-02", name="Mutomo Acacia Reserve",
+                farmer_id="F-MAT-001", environment_type="Acacia Woodland",
                 flora_types=["Acacia senegal", "Acacia seyal", "Desert Rose"],
                 location_name="Mutomo", latitude=-2.05, longitude=38.20,
-                region="Eastern", county="Kitui",
+                region="Eastern", county="Makueni",
                 established_date=date(2021, 3, 15)
             ),
             hive=schemas.Hive(
-                hive_id="H-KIT-02-05", hive_code="KIT-02-H05", hive_type="Kenya Top Bar",
+                hive_id="H-KIB-02-05", hive_code="KIB-02-H05", hive_type="Kenya Top Bar",
                 bee_type="African Honey Bee (Apis mellifera scutellata)",
-                apiary_id="A-KIT-02", farmer_id="F-KIT-002",
+                apiary_id="A-KIB-02", farmer_id="F-MAT-001",
                 installation_date=date(2021, 4, 1), has_sensors=True,
                 frame_count=24, material="Local Hardwood"
             ),
-            story_title="Empowering Women Through Bees",
-            story_content="This acacia honey comes from the Mutomo Women's Cooperative in Kitui. Each jar supports 12 women farmers and their families, providing sustainable income in a semi-arid region. The acacia trees thrive here, producing honey with a distinctive light color and mild taste.",
+            story_title="Meet Timothy Nduva",
+            story_content="This pure acacia honey comes from Timothy's Mutomo Acacia Reserve in Makueni. The acacia trees thrive here, producing honey with a distinctive light color and mild taste. Each jar supports Timothy's sustainable beekeeping practices.",
             impact_stats={
                 "acres_pollinated": "40+ Acres",
-                "beekeepers": "12 Women Farmers",
-                "families_supported": "48",
+                "beekeepers": "Timothy Nduva",
+                "families_supported": "12",
                 "farmer_fair_pay": "100%"
             },
             sensor_snapshot={
@@ -199,11 +202,11 @@ def _get_demo_trace(code: str) -> schemas.TraceResponse:
             timeline=[
                 schemas.TraceJourneyStep(
                     title="Origin Verified", date="2024-02-01", location="Mutomo Acacia Reserve",
-                    description="Colony strength verified. Acacia bloom peak season confirmed.", icon="Hexagon", data={}, hash="0xACAC1A2024B1..."
+                    description="Colony strength verified by Timothy. Acacia bloom peak season confirmed.", icon="Hexagon", data={}, hash="0xACAC1A2024B1..."
                 ),
                 schemas.TraceJourneyStep(
-                    title="Harvested", date="2024-02-12", location="Mutomo, Kitui County",
-                    description="Cooperative harvest by 4 women farmers. 22kg collected, 22kg left for bees.", icon="Basket", data={}, hash="0xACAC1A2024B2..."
+                    title="Harvested", date="2024-02-12", location="Mutomo, Makueni County",
+                    description="Harvested by Timothy Nduva. 22kg collected, 22kg left for bees.", icon="Basket", data={}, hash="0xACAC1A2024B2..."
                 ),
                 schemas.TraceJourneyStep(
                     title="Quality Tested", date="2024-02-14", location="BeeYield Quality Lab",
@@ -216,42 +219,36 @@ def _get_demo_trace(code: str) -> schemas.TraceResponse:
             ]
         )
     
-    # KIB-GOLD-24: Joseph Mutua - Premium Golden Honey from Mwingi
-    else:  # KIB-GOLD-24 or any other code
+    # KIB-GOLD-24: Premium Golden Honey from Timothy's Heritage Apiary
+    else:  # KIB-GOLD-24 or any other DEMO code
         return schemas.TraceResponse(
-            batch_code=code if code in ["KIB-GOLD-24"] else "KIB-GOLD-24",
+            batch_code=code if code == "KIB-GOLD-24" else code,
             product_name="Premium Golden Honey",
             verified=True,
             blockchain_verified=True,
             verification_url="https://beeyield.com/honeychain/verify/kib-gold-24",
-            farmer=schemas.Farmer(
-                farmer_id="F-MWI-003", name="Joseph Mutua", region="Mwingi", county="Kitui",
-                location_name="Mwingi Central", latitude=-0.93, longitude=38.06,
-                story="Joseph is a third-generation beekeeper whose family has maintained hives in Mwingi for over 60 years. His golden honey is legendary in the region, known for its rich amber color and complex floral notes.",
-                experience_years=25,
-                registration_date=date(2019, 11, 1)
-            ),
+            farmer=timothy_nduva,
             apiary=schemas.Apiary(
-                apiary_id="A-MWI-03", apiary_code="MWI-03", name="Mutua Family Apiary",
-                farmer_id="F-MWI-003", environment_type="Mixed Savannah Forest",
+                apiary_id="A-KIB-03", apiary_code="KIB-03", name="Mwingi Heritage Apiary",
+                farmer_id="F-MAT-001", environment_type="Mixed Savannah Forest",
                 flora_types=["Croton", "Calotropis", "Acacia mellifera", "Wild Mango"],
                 location_name="Mwingi Central", latitude=-0.93, longitude=38.06,
-                region="Eastern", county="Kitui",
-                established_date=date(1965, 1, 1)  # Family heritage
+                region="Eastern", county="Makueni",
+                established_date=date(2019, 1, 1)
             ),
             hive=schemas.Hive(
-                hive_id="H-MWI-03-12", hive_code="MWI-03-H12", hive_type="Traditional Log Hive",
+                hive_id="H-KIB-03-12", hive_code="KIB-03-H12", hive_type="Traditional Log Hive",
                 bee_type="African Honey Bee (Apis mellifera scutellata)",
-                apiary_id="A-MWI-03", farmer_id="F-MWI-003",
+                apiary_id="A-KIB-03", farmer_id="F-MAT-001",
                 installation_date=date(2019, 12, 15), has_sensors=True,
                 frame_count=0, material="Hollow Mango Log (Traditional)"
             ),
-            story_title="Three Generations of Beekeeping",
-            story_content="The Mutua family has been keeping bees in Mwingi since 1965. Joseph's grandfather started with traditional log hives, and today Joseph combines ancestral knowledge with modern IoT monitoring. This golden honey represents the best of tradition and technology.",
+            story_title="Meet Timothy Nduva",
+            story_content="This premium golden honey comes from Timothy's heritage apiary. Timothy combines ancestral beekeeping knowledge with modern IoT monitoring. This golden honey represents the best of tradition and technology.",
             impact_stats={
                 "acres_pollinated": "100+ Acres",
-                "beekeepers": "1 Master + 3 Apprentices",
-                "heritage_years": "60+",
+                "beekeepers": "Timothy Nduva",
+                "heritage_years": "5+",
                 "farmer_fair_pay": "100%"
             },
             sensor_snapshot={
@@ -262,12 +259,12 @@ def _get_demo_trace(code: str) -> schemas.TraceResponse:
             },
             timeline=[
                 schemas.TraceJourneyStep(
-                    title="Heritage Site Verified", date="2024-03-01", location="Mutua Family Apiary, Mwingi",
-                    description="60-year heritage apiary confirmed. Multi-generation bee genetics preserved.", icon="Hexagon", data={}, hash="0xG0LD24000001..."
+                    title="Heritage Site Verified", date="2024-03-01", location="Mwingi Heritage Apiary",
+                    description="Traditional apiary confirmed active. Timothy's bee genetics preserved.", icon="Hexagon", data={}, hash="0xG0LD24000001..."
                 ),
                 schemas.TraceJourneyStep(
-                    title="Harvested", date="2024-03-15", location="Mwingi Central, Kitui County",
-                    description="Traditional harvest by Joseph and 2 sons. 28kg collected, 28kg left for bees.", icon="Basket", data={}, hash="0xG0LD24000002..."
+                    title="Harvested", date="2024-03-15", location="Mwingi, Makueni County",
+                    description="Traditional harvest by Timothy Nduva. 28kg collected, 28kg left for bees.", icon="Basket", data={}, hash="0xG0LD24000002..."
                 ),
                 schemas.TraceJourneyStep(
                     title="Quality Tested", date="2024-03-17", location="BeeYield Quality Lab",
@@ -279,4 +276,5 @@ def _get_demo_trace(code: str) -> schemas.TraceResponse:
                 )
             ]
         )
+
 

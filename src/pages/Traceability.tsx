@@ -78,6 +78,16 @@ const Traceability = () => {
     };
   }, [showScanner]);
 
+  // Scroll to results when trace data is loaded
+  useEffect(() => {
+    if (traceData) {
+      const resultsElement = document.getElementById("trace-results");
+      if (resultsElement) {
+        resultsElement.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }, [traceData]);
+
   const traceabilityFeatures = [
     { icon: Home, label: "Hive Location", description: "Know exactly which hive your honey came from" },
     { icon: Users, label: "Beekeeper", description: "Meet the guardian who nurtured your honey" },
@@ -110,7 +120,7 @@ const Traceability = () => {
           <div className="max-w-4xl mx-auto text-center text-white space-y-8">
             <div className="flex justify-center">
               <Badge className="bg-white/20 text-white border-white/30 text-sm px-4 py-2 hover:bg-white/30 transition-colors inline-flex items-center">
-                <ShieldCheck className="mr-2 h-4 w-4" /> 100% Blockchain Verified Honey
+                <ShieldCheck className="mr-2 h-4 w-4" /> 100% HoneyChain™ Verified
               </Badge>
             </div>
             <h1 className="text-5xl md:text-7xl font-black leading-tight tracking-tighter">
@@ -195,7 +205,7 @@ const Traceability = () => {
                       </div>
                       <h3 className="text-2xl font-black tracking-tight mb-4 text-slate-900 dark:text-white">Quick Scan</h3>
                       <p className="text-muted-foreground mb-8 text-sm">
-                        Use your smartphone camera to instantly verify authenticity and unlock the full story.
+                        Use your smartphone camera to instantly verify authenticity and unlock the full story on HoneyChain™.
                       </p>
                       <Button
                         variant="outline"
@@ -212,7 +222,7 @@ const Traceability = () => {
             </Card>
 
             {traceData && (
-              <div className="mt-16 space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
+              <div id="trace-results" className="mt-16 space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
                 <div className="flex items-center justify-center gap-4">
                   <div className="h-px bg-slate-200 dark:bg-slate-800 flex-1" />
                   <div className="flex items-center gap-2 px-6 py-2 bg-green-500/10 rounded-full border border-green-500/20 animate-pulse">
