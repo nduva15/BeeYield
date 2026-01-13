@@ -21,10 +21,15 @@ def get_supabase() -> Optional[Client]:
             if url and key:
                 _supabase_client = create_client(url, key)
                 print(f"OK: Connected to Supabase: {url}")
+                # Optional: Test the key immediately
+                # _supabase_client.table("products").select("id").limit(1).execute()
             else:
                 print("WARNING: Supabase credentials not configured")
         except Exception as e:
-            print(f"ERROR: Supabase connection failed: {e}")
+            if "401" in str(e) or "Unauthorized" in str(e) or "Invalid API key" in str(e):
+                print(f"CRITICAL ERROR: Supabase API Key is INVALID (401 Unauthorized). Check your SUPABASE_KEY in .env")
+            else:
+                print(f"ERROR: Supabase connection failed: {e}")
             _supabase_client = None
     
     return _supabase_client
