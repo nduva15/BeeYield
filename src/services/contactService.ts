@@ -41,67 +41,31 @@ export interface NewsletterSubscription {
     source?: string;
 }
 
+import { apiPost } from "./api";
+
 export const submitContactForm = async (data: ContactSubmission) => {
-    if (!supabase) {
-        throw new Error("Supabase client is not initialized");
-    }
-
     try {
-        const { error } = await supabase
-            .from("contact_submissions")
-            .insert([data]);
-
-        if (error) throw error;
-        return { success: true };
+        return await apiPost<any>('/contact/submit', data);
     } catch (error) {
-        console.error("Error submitting contact form:", error);
+        console.error("Error submitting contact form via API:", error);
         throw error;
     }
 };
 
 export const submitPollinationRequest = async (data: PollinationRequest) => {
-    if (!supabase) {
-        throw new Error("Supabase client is not initialized");
-    }
-
     try {
-        const { error } = await supabase
-            .from("pollination_requests")
-            .insert([data]);
-
-        if (error) throw error;
-        return { success: true };
+        return await apiPost<any>('/contact/pollination', data);
     } catch (error) {
-        console.error("Error submitting pollination request:", error);
+        console.error("Error submitting pollination request via API:", error);
         throw error;
     }
 };
 
 export const submitNewsletterSubscription = async (data: NewsletterSubscription) => {
-    if (!supabase) {
-        throw new Error("Supabase client is not initialized");
-    }
-
     try {
-        // Check if already subscribed
-        const { data: existing } = await supabase
-            .from("newsletter_subscribers")
-            .select("email")
-            .eq("email", data.email)
-            .single();
-
-        if (existing) {
-            return { status: "success", message: "Already subscribed" };
-        }
-
-        const { error } = await supabase
-            .from("newsletter_subscribers")
-            .insert([data]);
-
-        if (error) throw error;
-        return { success: true };
+        return await apiPost<any>('/contact/newsletter', data);
     } catch (error) {
-        console.error("Error subscribing to newsletter:", error);
+        console.error("Error subscribing to newsletter via API:", error);
         throw error;
     }
 };

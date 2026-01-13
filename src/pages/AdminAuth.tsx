@@ -27,6 +27,8 @@ const AdminAuth = () => {
             if (isAdmin) {
                 navigate(redirectPath);
             }
+            // If user exists but is NOT admin, we simply stay on this page 
+            // and let them log in via the form (which will overwrite the session)
         }
     }, [user, loading, navigate, redirectPath]);
 

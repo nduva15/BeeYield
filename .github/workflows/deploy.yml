@@ -28,15 +28,15 @@ jobs:
           VITE_SUPABASE_URL: https://ezfccfypwmuvbpujkqrg.supabase.co
           VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6ZmNjZnlwd211dmJwdWprcXJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3NjAxNzgsImV4cCI6MjA4MzMzNjE3OH0.y2Y_J_Rd45UNQjCV-qx1HzCmCyU2ozjTKH7iP5-WSsI
           VITE_API_URL: https://ezfccfypwmuvbpujkqrg.supabase.co
-        run: npm run build
+        run: npm run build:old
 
       - name: Deploy to Hostinger via SSH
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ftp://beeyield.com
-          username: u476083190.beeyield.com
-          password: 123CebaAro.
-          port: 65002
+          host: "${{ secrets.SSH_HOST }}"
+          username: "${{ secrets.SSH_USERNAME }}"
+          password: "${{ secrets.SSH_PASSWORD }}"
+          port: "${{ secrets.SSH_PORT }}"
           source: "dist/*"
           target: "public_html"
           strip_components: 1

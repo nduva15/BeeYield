@@ -37,22 +37,34 @@ def add_to_cart(item: schemas.CartItemAdd):
 @router.post("/checkout/init", response_model=dict)
 def initialize_checkout(
     order_in: schemas.OrderCreate,
-    authorization: Optional[str] = Header(None)
+    current_user: Dict = Depends(security.get_current_user)
 ):
     """
     Initialize payment for order.
+    Requires authentication.
     """
-    user_id = None
-    if authorization:
-        try:
-            token = authorization.split(" ")[1]
-            # Try to decode token to get user_id. 
-            # Note: In production, verify signature with Supabase JWT secret.
-            # Here we attempt to decode assuming standard JWT structure.
-            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[security.ALGORITHM], options={"verify_signature": False})
-            user_id = payload.get("sub")
-        except Exception as e:
-            print(f"Auth token decode error: {e}")
+    user_id = current_user.get("sub")
+    
+    # SECURITY: Validate price on server (Don't do math on the phone!)
+    calculated_total = 0
+    for item in order_in.items:
+        # Fetch actual product/variant from DB to get real price
+        product = shop_service.get_product_by_id(item.product_id)
+        if not product:
+            raise HTTPException(status_code=400, detail=f"Product {item.product_id} not found")
+        
+        variant = next((v for v in product.get("variants", []) if v.get("id") == item.variant_id), None)
+        if not variant:
+            raise HTTPException(status_code=400, detail=f"Variant {item.variant_id} not found")
+        
+        calculated_total += variant.get("price_kes", 0) * item.quantity
+    
+    # Check if the provided total matches what the server calculated
+    if abs(calculated_total - order_in.total_kes) > 0.01:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Price mismatch. Expected {calculated_total}, got {order_in.total_kes}. Logic must live on the server!"
+        )
 
     order_result = shop_service.create_order(order_in, user_id=user_id)
     
@@ -63,7 +75,7 @@ def initialize_checkout(
     order_number = order_result["order_number"]
     
     try:
-        track_order_event(order_id, "created", 0.0)
+        track_order_event(order_id, "created", float(order_in.total_kes))
     except Exception as e:
         print(f"ClickHouse tracking failed: {e}")
 
@@ -84,11 +96,17 @@ def initialize_checkout(
         "payment_info": payment_response
     }
 
-@router.post("/checkout/callback/mpesa")
-def mpesa_callback(payload: dict):
+@router.get("/orders", response_model=List[schemas.Order])
+def get_user_orders(
+    email: Optional[str] = None,
+    current_user: Dict = Depends(security.get_current_user)
+):
     """
-    Handle M-Pesa payment callback.
+    Get orders for the current user.
     """
-    print(f"M-Pesa Callback received: {payload}")
-    # Logic to update order status in Supabase based on callback data
-    return {"status": "success"}
+    user_id = current_user.get("sub")
+    # In a real app, we'd filter by user_id. 
+    # For now, if email is provided, verify it matches or just use user_id.
+    filters = {"user_id": user_id}
+    orders = shop_service.get_user_orders(user_id=user_id)
+    return orders

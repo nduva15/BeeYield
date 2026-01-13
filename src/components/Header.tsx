@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ChevronDown, ShoppingBag, User, Shield } from "lucide-react";
+import { Link, useLocation } from "@tanstack/react-router";
+import { Menu, X, ChevronDown, ShoppingBag, User, Shield, LogIn } from "lucide-react";
 import { Button } from "./ui/button";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/hooks/useAuth";
@@ -115,9 +115,13 @@ const Header = () => {
           <Link
             to="/beeyield-dashboard"
             className="p-2 hover:bg-muted rounded-full transition-all active:scale-90 group mr-1"
-            aria-label="BeeYield IoT Dashboard"
+            aria-label={user ? "BeeYield IoT Dashboard" : "Sign In / Sign Up"}
           >
-            <User className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
+            {user ? (
+              <User className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
+            ) : (
+              <LogIn className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
+            )}
           </Link>
 
           <button
@@ -226,6 +230,14 @@ const Header = () => {
             {/* Secondary Links Section */}
             <div className="flex flex-col space-y-1 pt-4">
               <span className="text-xs uppercase tracking-wider text-primary-foreground/60 px-3 py-1 font-medium mt-2">More</span>
+              <Link
+                to="/beeyield-dashboard"
+                onClick={() => setIsMenuOpen(false)}
+                className={`text-sm sm:text-base font-black hover:bg-white/20 rounded-lg px-3 py-2.5 sm:py-3 transition-colors bg-white/10 text-yellow-300 border border-yellow-300/30 flex items-center justify-between mb-2 ${isActive("/beeyield-dashboard") ? "ring-2 ring-yellow-300" : ""}`}
+              >
+                BeeYield Dashboard
+                {user ? <User className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}
+              </Link>
               {user?.user_metadata?.role === 'admin' && (
                 <Link
                   to="/admin"

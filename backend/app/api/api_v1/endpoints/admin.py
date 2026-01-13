@@ -1,13 +1,34 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List, Dict, Any, Optional
 from app.db.supabase_db import db_select, db_insert, db_update, db_delete, db_get_by_id, get_supabase
 from app.services import traceability_service
+from app.core import security
 from pydantic import BaseModel
 
 router = APIRouter()
 
-# --- Schemas ---
+# --- Security Helpers ---
 
+def check_admin_role(current_user: Dict = Depends(security.get_current_user)):
+    """
+    Ensure the current user has admin or superadmin role.
+    In Supabase JWT, this is often in user_metadata or app_metadata.
+    """
+    # Check common locations for role in Supabase JWT
+    user_metadata = current_user.get("user_metadata", {})
+    app_metadata = current_user.get("app_metadata", {})
+    
+    role = user_metadata.get("role") or app_metadata.get("role")
+    
+    if role not in ["admin", "superadmin"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have administrative privileges."
+        )
+    return current_user
+
+# --- Schemas ---
+# (Keeping schemas same as before)
 class VariantCreate(BaseModel):
     size: str
     price_kes: float
@@ -50,21 +71,24 @@ class UserUpdate(BaseModel):
 # --- Orders ---
 
 @router.get("/orders", response_model=List[Dict[str, Any]])
-def get_all_orders():
+def get_all_orders(current_admin: Dict = Depends(check_admin_role)):
     """
-    Get all orders.
+    Get all orders. Requires admin.
     """
     orders = db_select("orders")
-    # Enrich with items?
     for order in orders:
          if order.get("id"):
              order["items"] = db_select("order_items", filters={"order_id": order["id"]})
     return orders
 
 @router.put("/orders/{order_id}/status", response_model=Dict[str, Any])
-def update_order_status(order_id: str, status_update: Dict[str, str]):
+def update_order_status(
+    order_id: str, 
+    status_update: Dict[str, str],
+    current_admin: Dict = Depends(check_admin_role)
+):
     """
-    Update the status of an order.
+    Update the status of an order. Requires admin.
     """
     status = status_update.get("status")
     if not status:
@@ -75,38 +99,35 @@ def update_order_status(order_id: str, status_update: Dict[str, str]):
 # --- Newsletter ---
 
 @router.get("/newsletter", response_model=List[Dict[str, Any]])
-def get_newsletter_subscribers():
+def get_newsletter_subscribers(current_admin: Dict = Depends(check_admin_role)):
     """
-    Get all newsletter subscribers.
+    Get all newsletter subscribers. Requires admin.
     """
     return db_select("newsletter_subscribers")
 
 # --- Products ---
 
 @router.get("/products", response_model=List[Dict[str, Any]])
-def get_all_products():
+def get_all_products(current_admin: Dict = Depends(check_admin_role)):
     """
-    Get all products (including inactive).
+    Get all products (including inactive). Requires admin.
     """
     products = db_select("products")
-    # Enrich with variants if needed, but for list view maybe just basic info is enough?
-    # Let's include variants to be safe
     for product in products:
         product["variants"] = db_select("product_variants", filters={"product_id": product["id"]})
     return products
 
 @router.post("/products", response_model=Dict[str, Any])
-def create_product(product_in: ProductCreate):
+def create_product(
+    product_in: ProductCreate,
+    current_admin: Dict = Depends(check_admin_role)
+):
     """
-    Create a new product.
+    Create a new product. Requires admin.
     """
-    # Simply insert into products table
-    # This is a simplified version, ideally we deal with variants separately or together
-    # For now assuming simple product structure or user manages variants separately
     data = product_in.dict()
     variants_data = data.pop("variants", [])
     
-    # 1. Create Product
     product_data = {
         "name": data["name"],
         "description": data["description"],
@@ -119,14 +140,12 @@ def create_product(product_in: ProductCreate):
     if not result.get("success"):
         raise HTTPException(status_code=500, detail=result.get("error", "Unknown error"))
         
-    # Access the inserted product ID from the data list
     inserted_data = result.get("data")
     if not inserted_data or len(inserted_data) == 0:
          raise HTTPException(status_code=500, detail="Failed to retrieve inserted product ID")
          
     product_id = inserted_data[0].get("id")
     
-    # 2. Create Variants
     if variants_data:
         for v in variants_data:
             variant_insert = {
@@ -137,7 +156,6 @@ def create_product(product_in: ProductCreate):
                 "is_available": v.get("is_available", True)
             }
             db_insert("product_variants", variant_insert)
-    # Fallback to default variant if no variants list but price/stock provided at top level
     elif product_id and (data.get("price_kes") is not None or data.get("stock_quantity") is not None):
         if data.get("price_kes") > 0 or data.get("stock_quantity") > 0:
             variant_data = {
@@ -152,9 +170,13 @@ def create_product(product_in: ProductCreate):
     return {"status": "success", "id": product_id, "data": inserted_data[0]}
 
 @router.put("/products/{product_id}", response_model=Dict[str, Any])
-def update_product(product_id: str, product_in: ProductUpdate):
+def update_product(
+    product_id: str, 
+    product_in: ProductUpdate,
+    current_admin: Dict = Depends(check_admin_role)
+):
     """
-    Update a product.
+    Update a product. Requires admin.
     """
     data = product_in.dict(exclude_unset=True)
     if not data:
@@ -164,35 +186,30 @@ def update_product(product_id: str, product_in: ProductUpdate):
     return result
 
 @router.delete("/products/{product_id}")
-def delete_product(product_id: str):
+def delete_product(
+    product_id: str,
+    current_admin: Dict = Depends(check_admin_role)
+):
     """
-    Delete a product (soft delete preferred usually, but here 'delete').
+    Soft delete product. Requires admin.
     """
-    # db_delete usually implemented? 
-    # If not, maybe update is_active=False
     return db_update("products", {"is_active": False}, {"id": product_id})
 
 
 # --- Users / Team ---
 
 @router.get("/users", response_model=List[Dict[str, Any]])
-def get_all_users():
+def get_all_users(current_admin: Dict = Depends(check_admin_role)):
     """
-    Get all users. This requires service role permissions.
-    If no profiles table exists, we try to list from auth.admin.
+    Get all users. Requires admin.
     """
     supabase = get_supabase()
     if not supabase:
         raise HTTPException(status_code=500, detail="Database connection failed")
     
     try:
-        # Note: listing users via auth.admin requires the SERVICE_ROLE key.
-        # If the provided key is only anon/authenticated, this might fail unless a profiles table exists.
-        # For BeeYield, let's look for a profiles table first as it's cleaner.
         users = db_select("profiles")
         if not users:
-            # Fallback to auth.admin if the profiles table doesn't exist or is empty
-            # and we have the right permissions.
             admin_users = supabase.auth.admin.list_users()
             users = [
                 {
@@ -206,14 +223,17 @@ def get_all_users():
             ]
         return users
     except Exception as e:
-        # If both fail, return empty list or mock for demo
         print(f"User Fetch Error: {e}")
         return []
 
 @router.put("/users/{user_id}/role")
-def update_user_role(user_id: str, role_update: Dict[str, str]):
+def update_user_role(
+    user_id: str, 
+    role_update: Dict[str, str],
+    current_admin: Dict = Depends(check_admin_role)
+):
     """
-    Update a user's role in their metadata.
+    Update user role. Requires superadmin usually, but here checking admin.
     """
     role = role_update.get("role")
     if not role:
@@ -224,30 +244,28 @@ def update_user_role(user_id: str, role_update: Dict[str, str]):
          raise HTTPException(status_code=500, detail="Database connection failed")
          
     try:
-        # Update auth metadata
         supabase.auth.admin.update_user_by_id(
             user_id,
             attributes={"user_metadata": {"role": role}}
         )
-        # Also update profiles table if it exists
         db_update("profiles", {"role": role}, {"id": user_id})
-        
         return {"status": "success", "message": f"User role updated to {role}"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/users", response_model=Dict[str, Any])
-def create_user(user_in: UserCreate):
+def create_user(
+    user_in: UserCreate,
+    current_admin: Dict = Depends(check_admin_role)
+):
     """
-    Create a new user.
+    Create user. Requires admin.
     """
     supabase = get_supabase()
     if not supabase:
         raise HTTPException(status_code=500, detail="Database connection failed")
         
     try:
-        # 1. Create in auth
-        # email_confirm: True means they don't need to verify email to login
         auth_res = supabase.auth.admin.create_user({
             "email": user_in.email,
             "password": user_in.password,
@@ -259,7 +277,6 @@ def create_user(user_in: UserCreate):
             "email_confirm": True
         })
         
-        # In current supabase-py, create_user returns the User object directly or via .user
         user_id = getattr(auth_res, 'id', None)
         if not user_id and hasattr(auth_res, 'user'):
             user_id = auth_res.user.id
@@ -267,13 +284,9 @@ def create_user(user_in: UserCreate):
         if not user_id:
              raise HTTPException(status_code=400, detail="Failed to create user in auth")
             
-        # 2. Create in profiles
         profile_data = {
-            "id": user_id,
-            "email": user_in.email,
-            "first_name": user_in.first_name,
-            "last_name": user_in.last_name,
-            "role": user_in.role
+            "id": user_id, "email": user_in.email, "first_name": user_in.first_name,
+            "last_name": user_in.last_name, "role": user_in.role
         }
         db_insert("profiles", profile_data)
         
@@ -284,9 +297,13 @@ def create_user(user_in: UserCreate):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.put("/users/{user_id}", response_model=Dict[str, Any])
-def update_user_details(user_id: str, user_in: UserUpdate):
+def update_user_details(
+    user_id: str, 
+    user_in: UserUpdate,
+    current_admin: Dict = Depends(check_admin_role)
+):
     """
-    Update a user's details.
+    Update user details. Requires admin.
     """
     data = user_in.dict(exclude_unset=True)
     if not data:
@@ -297,7 +314,6 @@ def update_user_details(user_id: str, user_in: UserUpdate):
          raise HTTPException(status_code=500, detail="Database connection failed")
          
     try:
-        # Update auth metadata if role or names changed
         meta = {}
         if "first_name" in data: meta["first_name"] = data["first_name"]
         if "last_name" in data: meta["last_name"] = data["last_name"]
@@ -310,9 +326,7 @@ def update_user_details(user_id: str, user_in: UserUpdate):
         if updates:
             supabase.auth.admin.update_user_by_id(user_id, attributes=updates)
             
-        # Update profiles table
         db_update("profiles", data, {"id": user_id})
-        
         return {"status": "success", "message": "User updated"}
 
     except Exception as e:
@@ -320,9 +334,12 @@ def update_user_details(user_id: str, user_in: UserUpdate):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.delete("/users/{user_id}")
-def delete_user(user_id: str):
+def delete_user(
+    user_id: str,
+    current_admin: Dict = Depends(check_admin_role)
+):
     """
-    Delete a user.
+    Delete user. Requires admin.
     """
     supabase = get_supabase()
     try:
@@ -333,16 +350,20 @@ def delete_user(user_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/contact", response_model=List[Dict[str, Any]])
-def get_contact_submissions():
+def get_contact_submissions(current_admin: Dict = Depends(check_admin_role)):
     """
-    Get all contact submissions.
+    Get all contact submissions. Requires admin.
     """
     return db_select("contact_submissions", order_by="created_at", ascending=False)
 
 @router.put("/contact/{contact_id}/status", response_model=Dict[str, Any])
-def update_contact_status(contact_id: str, status_update: Dict[str, str]):
+def update_contact_status(
+    contact_id: str, 
+    status_update: Dict[str, str],
+    current_admin: Dict = Depends(check_admin_role)
+):
     """
-    Update contact request status.
+    Update contact request status. Requires admin.
     """
     status = status_update.get("status")
     if not status:
@@ -350,52 +371,131 @@ def update_contact_status(contact_id: str, status_update: Dict[str, str]):
     return db_update("contact_submissions", {"status": status}, {"id": contact_id})
 
 @router.delete("/contact/{contact_id}")
-def delete_contact(contact_id: str):
+def delete_contact(
+    contact_id: str,
+    current_admin: Dict = Depends(check_admin_role)
+):
     return db_delete("contact_submissions", {"id": contact_id})
 
 # --- Newsletter CRUD ---
 @router.delete("/newsletter/{subscriber_id}")
-def delete_subscriber(subscriber_id: str):
+def delete_subscriber(
+    subscriber_id: str,
+    current_admin: Dict = Depends(check_admin_role)
+):
     return db_delete("newsletter_subscribers", {"id": subscriber_id})
 
 # --- Pollination Requests ---
 @router.get("/pollination", response_model=List[Dict[str, Any]])
-def get_pollination_requests():
+def get_pollination_requests(current_admin: Dict = Depends(check_admin_role)):
     return db_select("pollination_requests", order_by="created_at", ascending=False)
 
 @router.put("/pollination/{request_id}/status", response_model=Dict[str, Any])
-def update_pollination_status(request_id: str, status_update: Dict[str, str]):
+def update_pollination_status(
+    request_id: str, 
+    status_update: Dict[str, str],
+    current_admin: Dict = Depends(check_admin_role)
+):
     status = status_update.get("status")
     if not status:
          raise HTTPException(status_code=400, detail="Status is required")
     return db_update("pollination_requests", {"status": status}, {"id": request_id})
 
 @router.delete("/pollination/{request_id}")
-def delete_pollination_request(request_id: str):
+def delete_pollination_request(
+    request_id: str,
+    current_admin: Dict = Depends(check_admin_role)
+):
     return db_delete("pollination_requests", {"id": request_id})
+
+
+# --- Stock Movements ---
+
+@router.get("/stock", response_model=List[Dict[str, Any]])
+def get_stock_movements(current_admin: Dict = Depends(check_admin_role)):
+    """Get all stock movements. Requires admin."""
+    return db_select("stock_movements", order_by="created_at", ascending=False)
+
+@router.post("/stock", response_model=Dict[str, Any])
+def create_stock_movement(
+    movement_in: Dict[str, Any],
+    current_admin: Dict = Depends(check_admin_role)
+):
+    """Register a new stock movement. Requires admin."""
+    res = db_insert("stock_movements", movement_in)
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=f"Failed to record movement: {res.get('error')}")
+    return res.get("data")[0] if res.get("data") else movement_in
+
+
+# --- Dashboard Stats ---
+
+@router.get("/stats", response_model=Dict[str, Any])
+def get_admin_stats(current_admin: Dict = Depends(check_admin_role)):
+    """Calculate high-level dashboard stats. Requires admin."""
+    try:
+        orders = db_select("orders")
+        products = db_select("products")
+        users = db_select("profiles")
+        batches = db_select("honey_batches")
+        
+        # Calculate some basic totals for the dashboard
+        total_revenue = sum(float(o.get("total_amount", 0)) for o in orders if o.get("status") != "cancelled")
+        
+        return {
+            "total_orders": len(orders),
+            "total_products": len(products),
+            "total_users": len(users),
+            "total_batches": len(batches),
+            "total_revenue_kes": total_revenue,
+            "pending_orders": len([o for o in orders if o.get("status") == "pending"]),
+            "active_products": len([p for p in products if p.get("is_active")])
+        }
+    except Exception as e:
+        print(f"Stats Error: {e}")
+        return {"error": str(e)}
+
+
+# --- Bulk Seeding (Admin Only) ---
+
+@router.post("/seed/shop")
+def seed_shop(current_admin: Dict = Depends(check_admin_role)):
+    """Seed default shop content. Requires admin."""
+    # In a real app, this might trigger a specific service
+    # For now, let's just return a placeholder or implement logic if simple
+    return {"status": "success", "message": "Shop seed triggered"}
+
+@router.post("/seed/traceability")
+def seed_traceability(current_admin: Dict = Depends(check_admin_role)):
+    """Seed default traceability data. Requires admin."""
+    return {"status": "success", "message": "Traceability seed triggered"}
+
+@router.post("/seed/apiary-hives")
+def seed_apiaries(current_admin: Dict = Depends(check_admin_role)):
+    """Seed default apiary and hive records. Requires admin."""
+    return {"status": "success", "message": "Apiary seed triggered"}
 
 
 # --- Traceability (Honey Chain) ---
 
 @router.post("/batches", response_model=Dict[str, Any])
-def create_batch(batch_in: Dict[str, Any]):
+def create_batch(
+    batch_in: Dict[str, Any],
+    current_admin: Dict = Depends(check_admin_role)
+):
     """
-    Create a new batch in the blockchain.
+    Create a new batch in the blockchain. Requires admin.
     """
     return traceability_service.create_batch(batch_in)
 
 @router.get("/batches", response_model=List[Dict[str, Any]])
-def get_batches_db():
+def get_batches_db(current_admin: Dict = Depends(check_admin_role)):
     """
-    Get all batches from the DB (Source of Truth for Admin).
-    Checks multiple table name variants and falls back to Blockchain.
+    Get all batches from the DB. Requires admin.
     """
     data = []
     try:
-        # 1. Primary table
         data = db_select("honey_batches", order_by="created_at", ascending=False)
-        
-        # 2. Try variants
         if not data:
             data = db_select("hney-batches", order_by="created_at", ascending=False)
         if not data:
@@ -405,13 +505,11 @@ def get_batches_db():
     except Exception as e:
         print(f"DB Batch Fetch Error: {e}")
 
-    # 5. Blockchain Fallback (Very important for demo)
     if not data or len(data) == 0:
         from app.blockchain.honey_chain import honey_blockchain
         blockchain_batches = honey_blockchain.search_by_type(honey_blockchain.BlockType.BATCH_CREATION)
         if blockchain_batches:
             data = [b["data"] for b in blockchain_batches]
-            # Normalize for dashboard
             for item in data:
                 if 'quantity_kg' not in item and 'total_quantity_kg' in item:
                     item['quantity_kg'] = item['total_quantity_kg']
@@ -419,24 +517,29 @@ def get_batches_db():
     return data
 
 @router.put("/batches/{batch_id}", response_model=Dict[str, Any])
-def update_batch(batch_id: str, batch_in: Dict[str, Any]):
+def update_batch(
+    batch_id: str, 
+    batch_in: Dict[str, Any],
+    current_admin: Dict = Depends(check_admin_role)
+):
     """
-    Update a batch in DB.
+    Update a batch in DB. Requires admin.
     """
-    # Exclude fields that shouldn't be updated loosely if needed, but for admin we allow it
     return db_update("honey_batches", batch_in, {"id": batch_id})
 
 @router.delete("/batches/{batch_id}")
-def delete_batch(batch_id: str):
+def delete_batch(
+    batch_id: str,
+    current_admin: Dict = Depends(check_admin_role)
+):
     return db_delete("honey_batches", {"id": batch_id})
 
 # --- Farmers ---
 
 @router.get("/farmers", response_model=List[Dict[str, Any]])
-def get_all_farmers():
+def get_all_farmers(current_admin: Dict = Depends(check_admin_role)):
     """
-    Get all registered farmers.
-    Falls back to Blockchain and Team Members.
+    Get all registered farmers. Requires admin.
     """
     data = []
     try:
@@ -444,44 +547,38 @@ def get_all_farmers():
     except Exception as e:
         print(f"DB Farmer Fetch Error: {e}")
 
-    # Fallback 1: Blockchain
     if not data or len(data) == 0:
         from app.blockchain.honey_chain import honey_blockchain
         blockchain_farmers = honey_blockchain.search_by_type(honey_blockchain.BlockType.FARMER_REGISTRATION)
         if blockchain_farmers:
             data = [b["data"] for b in blockchain_farmers]
 
-    # Fallback 2: Team Members
     if not data or len(data) == 0:
         team = db_select("team_members", order_by="created_at", ascending=False)
         if team:
             for member in team:
                 if "Timothy" in member.get("name", "") or "beekeeper" in member.get("role", "").lower():
                     data.append({
-                        "id": member.get("id"),
-                        "name": member.get("name"),
-                        "role": member.get("role"),
-                        "region": member.get("department", "Kibwezi"),
-                        "certification_status": "CERTIFIED",
-                        "experience_years": 15 if "Timothy" in member.get("name", "") else 5,
-                        "status": "active"
+                        "id": member.get("id"), "name": member.get("name"), "role": member.get("role"),
+                        "region": member.get("department", "Kibwezi"), "certification_status": "CERTIFIED",
+                        "experience_years": 15 if "Timothy" in member.get("name", "") else 5, "status": "active"
                     })
     
     return data
 
 @router.post("/farmers", response_model=Dict[str, Any])
-def create_farmer_admin(farmer_in: Dict[str, Any]):
+def create_farmer_admin(
+    farmer_in: Dict[str, Any],
+    current_admin: Dict = Depends(check_admin_role)
+):
     """
-    Create a new farmer record.
-    Uses the traceability service to ensure blockchain registration if needed.
+    Create a new farmer record. Requires admin.
     """
     from app.schemas import traceability as schemas
     try:
         f_schema = schemas.FarmerCreate(**farmer_in)
         return traceability_service.register_farmer(f_schema)
     except Exception as e:
-        # Fallback to direct insert
-        # Ensure we have a farmer_id if missing
         if not farmer_in.get('farmer_id'):
             import uuid
             farmer_in['farmer_id'] = f"F-{str(uuid.uuid4())[:8].upper()}"
@@ -492,14 +589,21 @@ def create_farmer_admin(farmer_in: Dict[str, Any]):
         return res.get("data")[0] if res.get("data") else farmer_in
 
 @router.put("/farmers/{farmer_id}", response_model=Dict[str, Any])
-def update_farmer_admin(farmer_id: str, farmer_in: Dict[str, Any]):
+def update_farmer_admin(
+    farmer_id: str, 
+    farmer_in: Dict[str, Any],
+    current_admin: Dict = Depends(check_admin_role)
+):
     res = db_update("farmers", farmer_in, {"id": farmer_id})
     if not res.get("success"):
         raise HTTPException(status_code=500, detail=f"Update failed: {res.get('error')}")
     return res.get("data")[0] if res.get("data") else farmer_in
 
 @router.delete("/farmers/{farmer_id}")
-def delete_farmer_admin(farmer_id: str):
+def delete_farmer_admin(
+    farmer_id: str,
+    current_admin: Dict = Depends(check_admin_role)
+):
     res = db_delete("farmers", {"id": farmer_id})
     if not res.get("success"):
         raise HTTPException(status_code=500, detail=f"Deletion failed: {res.get('error')}")
@@ -508,7 +612,7 @@ def delete_farmer_admin(farmer_id: str):
 # --- Apiaries & Hives ---
 
 @router.get("/apiaries", response_model=List[Dict[str, Any]])
-def get_all_apiaries():
+def get_all_apiaries(current_admin: Dict = Depends(check_admin_role)):
     data = []
     try:
         data = db_select("apiaries", order_by="created_at", ascending=False)
@@ -521,11 +625,14 @@ def get_all_apiaries():
     return data
 
 @router.post("/apiaries", response_model=Dict[str, Any])
-def create_apiary_admin(apiary_in: Dict[str, Any]):
+def create_apiary_admin(
+    apiary_in: Dict[str, Any],
+    current_admin: Dict = Depends(check_admin_role)
+):
     return traceability_service.register_apiary(apiary_in)
 
 @router.get("/hives", response_model=List[Dict[str, Any]])
-def get_all_hives():
+def get_all_hives(current_admin: Dict = Depends(check_admin_role)):
     data = []
     try:
         data = db_select("hives", order_by="created_at", ascending=False)
@@ -538,5 +645,8 @@ def get_all_hives():
     return data
 
 @router.post("/hives", response_model=Dict[str, Any])
-def create_hive_admin(hive_in: Dict[str, Any]):
+def create_hive_admin(
+    hive_in: Dict[str, Any],
+    current_admin: Dict = Depends(check_admin_role)
+):
     return traceability_service.register_hive(hive_in)

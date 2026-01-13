@@ -1,4 +1,4 @@
-import { createServerFn } from '@tanstack/react-start/server'
+import { createServerFn } from '@tanstack/start'
 import { createClient } from '@supabase/supabase-js'
 import { Product } from '@/services/shopService'
 
