@@ -27,36 +27,21 @@ import {
   Zap,
   Loader2
 } from "lucide-react";
-import { getProducts, Product } from "@/services/shopService";
+import { Product } from "@/services/shopService"; // Removed getProducts import
 import { toast } from "sonner";
 
-const Shop = () => {
+interface ShopProps {
+  initialProducts?: Product[];
+}
+
+const Shop = ({ initialProducts = [] }: ShopProps) => {
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
-  const [activeProducts, setActiveProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // Initialize with SSR data!
+  const [activeProducts, setActiveProducts] = useState<Product[]>(initialProducts);
+  const [isLoading, setIsLoading] = useState(false);
   const { addToCart, openCart } = useCart();
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setIsLoading(true);
-      try {
-        const data = await getProducts();
-        if (data && data.length > 0) {
-          setActiveProducts(data);
-        } else {
-          // Fallback handled by the service typically returns empty array
-          // If empty, we can show a message or use hardcoded fallbacks
-        }
-      } catch (error) {
-        console.error("Failed to fetch products:", error);
-        toast.error("Could not load products. Please try again later.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
+  // No useEffect for fetching anymore! SSR handles it.
 
   // Hardcoded rich fallbacks if backend is empty or for initial dev
   const fallbackProducts: Product[] = [

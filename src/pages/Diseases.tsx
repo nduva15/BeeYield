@@ -51,42 +51,42 @@ const Diseases = () => {
     const benefits = [
         {
             title: "Ease of use",
-            description: "Apisense can be used in both large and small apiaries. The more hives you have, the easier it becomes to manage your apiary.",
+            description: "BeeYield can be used in both large and small apiaries. The more hives you have, the easier it becomes to manage your apiary.",
             icon: <LayoutDashboard className="h-8 w-8 text-primary" />
         },
         {
             title: "Scalability",
-            description: "With Apisense, you can reduce the need for chemical protection and treatments.",
+            description: "With BeeYield, you can reduce the need for chemical protection and treatments.",
             icon: <Activity className="h-8 w-8 text-primary" /> /* Using Activity as placeholder for scalability/growth/health */
         },
         {
             title: "Reduced use of chemicals",
-            description: "Apisense reduces apiary management costs by minimizing hive inspections and lowering expenses for bee treatments.",
+            description: "BeeYield reduces apiary management costs by minimizing hive inspections and lowering expenses for bee treatments.",
             icon: <Droplets className="h-8 w-8 text-primary" />
         },
         {
             title: "Lower costs",
-            description: "Discover all the benefits of Apisense.",
+            description: "Discover all the benefits of BeeYield.",
             icon: <Zap className="h-8 w-8 text-primary" />
         },
         {
             title: "Healthy bees",
-            description: "With Apisense, you will quickly notice the first signs of diseases in your apiary and take action before the problem spreads.",
+            description: "With BeeYield, you will quickly notice the first signs of diseases in your apiary and take action before the problem spreads.",
             icon: <Leaf className="h-8 w-8 text-primary" />
         },
         {
             title: "Safe apiary",
-            description: "Apisense minimizes the risk of disease spreading within the apiary, helping to avoid costly treatments or the need to eliminate infected bee colonies.",
+            description: "BeeYield minimizes the risk of disease spreading within the apiary, helping to avoid costly treatments or the need to eliminate infected bee colonies.",
             icon: <CheckCircle className="h-8 w-8 text-primary" /> /* Shield was not imported as capitalized Shield, using CheckCircle or simply Shield if imported */
         },
         {
             title: "Knowledge and guidance",
-            description: "The Apisense app will guide you on what to do when a threat is detected. You will receive clear instructions and practical recommendations.",
+            description: "The BeeYield app will guide you on what to do when a threat is detected. You will receive clear instructions and practical recommendations.",
             icon: <HelpCircle className="h-8 w-8 text-primary" />
         },
         {
             title: "Continuous monitoring",
-            description: "Apisense gives you constant access to up-to-date information about the condition of your apiary. Remotely monitor your hives anytime, anywhere.",
+            description: "BeeYield gives you constant access to up-to-date information about the condition of your apiary. Remotely monitor your hives anytime, anywhere.",
             icon: <Activity className="h-8 w-8 text-primary" />
         }
     ];
@@ -135,28 +135,28 @@ const Diseases = () => {
 
     const faqs = [
         {
-            question: "Is the Apisense system resistant to harsh weather conditions?",
-            answer: "When installed according to the instructions, Apisense sensors are fully adapted to operate in harsh weather conditions – resistant to moisture, rain, snow, and extreme temperatures."
+            question: "Is the BeeYield system resistant to harsh weather conditions?",
+            answer: "When installed according to the instructions, BeeYield sensors are fully adapted to operate in harsh weather conditions – resistant to moisture, rain, snow, and extreme temperatures."
         },
         {
-            question: "Can I test Apisense before deciding on full implementation?",
-            answer: "If you want to experience how Apisense works, join our field testing program."
+            question: "Can I test BeeYield before deciding on full implementation?",
+            answer: "If you want to experience how BeeYield works, join our field testing program."
         },
         {
             question: "Why does the system use satellite data?",
             answer: "Satellite data enables the analysis of environmental conditions around the apiary, such as temperature, humidity, weather changes, and the availability of forage for bees. Combining this information with sensor data allows our machine learning algorithm to provide beekeepers with precise guidance on potential threats to their apiary."
         },
         {
-            question: "How does Apisense use artificial intelligence (AI)?",
-            answer: "Apisense uses proprietary machine learning algorithms to analyze the collected data, enabling rapid detection of anomalies and prediction of disease risks."
+            question: "How does BeeYield use artificial intelligence (AI)?",
+            answer: "BeeYield uses proprietary machine learning algorithms to analyze the collected data, enabling rapid detection of anomalies and prediction of disease risks."
         },
         {
             question: "What data do the in-hive sensors collect?",
             answer: "The sensors monitor gas levels such as volatile organic compounds (VOCs), carbon dioxide (CO₂), and nitrogen oxides (NOx). They also record temperature, humidity, and the sounds generated by bees. Analyzing this data makes it possible to detect health problems in bee colonies at an early stage."
         },
         {
-            question: "What is Apisense?",
-            answer: "Apisense is an intelligent hive monitoring system that enables early detection of bee diseases and other threats using IoT sensors, AI algorithms, and satellite data."
+            question: "What is BeeYield?",
+            answer: "BeeYield is an intelligent hive monitoring system that enables early detection of bee diseases and other threats using IoT sensors, AI algorithms, and satellite data."
         }
     ];
 
@@ -167,13 +167,13 @@ const Diseases = () => {
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="max-w-4xl mx-auto text-center">
                         <Badge className="mb-6 bg-primary text-primary-foreground hover:bg-primary/90">
-                            New: Apisense Technology
+                            New: BeeYield Technology
                         </Badge>
                         <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight">
                             Intelligent Protection for Your <span className="text-primary">Beehives</span>
                         </h1>
                         <p className="text-xl text-muted-foreground leading-relaxed mb-8 max-w-2xl mx-auto">
-                            Apisense is an innovative system that intelligently helps protect beehives from diseases and environmental threats. By combining modern technologies, we provide real-time monitoring of bee health – without disturbing their natural rhythm.
+                            BeeYield is an innovative system that intelligently helps protect beehives from diseases and environmental threats. By combining modern technologies, we provide real-time monitoring of bee health – without disturbing their natural rhythm.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Button size="lg" className="gap-2">
@@ -202,10 +202,10 @@ const Diseases = () => {
                         <div className="order-1 lg:order-2">
                             <h2 className="text-3xl font-bold mb-6">Innovative IoT Solution</h2>
                             <p className="text-lg text-muted-foreground mb-6">
-                                Apisense is a compact IoT device that can be easily installed inside a hive, together with an application that allows you to constantly monitor the condition of your apiary, no matter where you are.
+                                BeeYield is a compact IoT device that can be easily installed inside a hive, together with an application that allows you to constantly monitor the condition of your apiary, no matter where you are.
                             </p>
                             <p className="text-lg text-muted-foreground">
-                                Apisense consists of easy-to-install and user-friendly sensors that require no complex maintenance and do not interfere with the life of the bees.
+                                BeeYield consists of easy-to-install and user-friendly sensors that require no complex maintenance and do not interfere with the life of the bees.
                             </p>
                         </div>
                     </div>
@@ -216,7 +216,7 @@ const Diseases = () => {
             <section className="py-24 bg-background">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl font-bold mb-4">Why Choose Apisense?</h2>
+                        <h2 className="text-3xl font-bold mb-4">Why Choose BeeYield?</h2>
                         <p className="text-muted-foreground">Discover all the benefits of our monitoring system</p>
                     </div>
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -242,9 +242,9 @@ const Diseases = () => {
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-10"></div>
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="text-center mb-16 max-w-3xl mx-auto">
-                        <h2 className="text-3xl font-bold mb-6">System Apisense</h2>
+                        <h2 className="text-3xl font-bold mb-6">BeeYield System</h2>
                         <p className="text-lg opacity-90 leading-relaxed">
-                            Apisense is the central hub for managing your entire apiary – it combines data from hive-installed devices, weather information, satellite data, beekeeper’s notes and inspections, and AI analyses into one clear system.
+                            BeeYield is the central hub for managing your entire apiary – it combines data from hive-installed devices, weather information, satellite data, beekeeper’s notes and inspections, and AI analyses into one clear system.
                         </p>
                     </div>
 
@@ -265,7 +265,7 @@ const Diseases = () => {
                             <div className="relative w-64 h-[500px] border-8 border-primary-foreground/20 rounded-[3rem] bg-background shadow-2xl flex items-center justify-center overflow-hidden">
                                 <div className="text-primary p-4 text-center">
                                     <Smartphone className="h-12 w-12 mx-auto mb-2 text-primary/50" />
-                                    <p className="font-bold">Apisense App Interface</p>
+                                    <p className="font-bold">BeeYield App Interface</p>
                                 </div>
                             </div>
                         </div>
@@ -280,7 +280,7 @@ const Diseases = () => {
                     <div className="grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
                         <div>
                             <p className="text-lg text-muted-foreground mb-8">
-                                The Apisense solution is built on modern monitoring devices that collect data from the hive in real time, combined with satellite data and weather forecasts.
+                                The BeeYield solution is built on modern monitoring devices that collect data from the hive in real time, combined with satellite data and weather forecasts.
                             </p>
                             <div className="space-y-6">
                                 {hardwareFeatures.map((hardware, index) => (
@@ -310,9 +310,9 @@ const Diseases = () => {
             <section className="py-24 bg-muted/20">
                 <div className="container mx-auto px-4">
                     <div className="max-w-4xl mx-auto text-center mb-20 bg-background p-8 rounded-2xl shadow-xl">
-                        <h2 className="text-3xl font-bold mb-4">Try Apisense in your apiary</h2>
+                        <h2 className="text-3xl font-bold mb-4">Try BeeYield in your apiary</h2>
                         <p className="text-muted-foreground mb-6">
-                            Apisense is constantly evolving. We invite you to take part in the international testing of our system – together, we can advance technology that protects bees worldwide.
+                            BeeYield is constantly evolving. We invite you to take part in the international testing of our system – together, we can advance technology that protects bees worldwide.
                         </p>
                         <Button size="lg" className="w-full sm:w-auto">Join the Program</Button>
                     </div>
@@ -320,14 +320,12 @@ const Diseases = () => {
                     <div className="text-center">
                         <h2 className="text-3xl font-bold mb-6">We are building a global network of partners</h2>
                         <p className="text-muted-foreground max-w-2xl mx-auto mb-12">
-                            Apisense collaborates with leading partners worldwide, joining forces with beekeeping equipment manufacturers, industry organizations, and renowned universities.
+                            BeeYield collaborates with leading partners worldwide, joining forces with beekeeping equipment manufacturers, industry organizations, and renowned universities.
                         </p>
                         {/* Partner Logo Placeholders */}
                         <div className="flex flex-wrap justify-center gap-8 opacity-50 grayscale transition-all hover:grayscale-0">
-                            <div className="h-12 w-32 bg-foreground/10 rounded flex items-center justify-center font-bold">Partner 1</div>
-                            <div className="h-12 w-32 bg-foreground/10 rounded flex items-center justify-center font-bold">Partner 2</div>
-                            <div className="h-12 w-32 bg-foreground/10 rounded flex items-center justify-center font-bold">Partner 3</div>
-                            <div className="h-12 w-32 bg-foreground/10 rounded flex items-center justify-center font-bold">Partner 4</div>
+                            <div className="h-12 w-40 bg-foreground/10 rounded flex items-center justify-center font-bold">Intelligent Hives</div>
+                            <div className="h-12 w-32 bg-foreground/10 rounded flex items-center justify-center font-bold">ApiSense</div>
                         </div>
                     </div>
                 </div>

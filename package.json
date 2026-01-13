@@ -4,8 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "vinxi dev",
+    "build": "vinxi build",
+    "start": "vinxi start",
+    "dev:old": "vite",
+    "build:old": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -46,6 +49,8 @@
     "@supabase/auth-helpers-react": "^0.15.0",
     "@supabase/supabase-js": "^2.89.0",
     "@tanstack/react-query": "^5.83.0",
+    "@tanstack/react-router": "^1.147.3",
+    "@tanstack/react-start": "^1.149.2",
     "@vercel/analytics": "^1.6.1",
     "@vercel/speed-insights": "^1.3.1",
     "axios": "^1.13.2",
@@ -78,6 +83,7 @@
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^13.0.0",
     "vaul": "^0.9.9",
+    "vinxi": "^0.5.10",
     "world-atlas": "^2.0.2",
     "zod": "^3.25.76"
   },
@@ -105,6 +111,7 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.38.0",
     "vite": "^7.3.0",
+    "vite-tsconfig-paths": "^6.0.4",
     "vitest": "^4.0.16"
   }
 }

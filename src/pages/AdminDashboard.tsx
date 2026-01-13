@@ -719,7 +719,7 @@ const AdminDashboard: React.FC = () => {
                 <div>
                     <div className="flex items-center gap-3">
                         <h1 className="text-4xl font-black tracking-tighter text-foreground">
-                            Admin<span className="text-primary italic">Dashboard</span>
+                            BeeYield<span className="text-primary italic">Dashboard</span>
                         </h1>
                         {isSuperAdmin && (
                             <Badge className="bg-primary/20 text-primary border-primary/30 py-1 px-3 rounded-full flex gap-1 items-center animate-pulse">
