@@ -388,29 +388,34 @@ def create_batch(batch_in: Dict[str, Any]):
 def get_batches_db():
     """
     Get all batches from the DB (Source of Truth for Admin).
-    Checks multiple table name variants for maximum compatibility.
+    Checks multiple table name variants and falls back to Blockchain.
     """
-    # 1. Primary table
-    data = db_select("honey_batches", order_by="created_at", ascending=False)
-    
-    # 2. Try the typo variant the user mentioned
-    if not data:
-        data = db_select("hney-batches", order_by="created_at", ascending=False)
+    data = []
+    try:
+        # 1. Primary table
+        data = db_select("honey_batches", order_by="created_at", ascending=False)
         
-    # 3. Fallback to 'batches' table
-    if not data:
-        data = db_select("batches", order_by="created_at", ascending=False)
-        # Normalize fields if from legacy 'batches' table
-        for item in data:
-            if 'total_quantity_kg' in item and 'quantity_kg' not in item:
-                item['quantity_kg'] = item['total_quantity_kg']
-            if 'honey_type' not in item:
-                item['honey_type'] = "Multi-floral Honey"
-    
-    # 4. Final attempt: 'harvests' table
-    if not data:
-        data = db_select("harvests", order_by="created_at", ascending=False)
+        # 2. Try variants
+        if not data:
+            data = db_select("hney-batches", order_by="created_at", ascending=False)
+        if not data:
+            data = db_select("batches", order_by="created_at", ascending=False)
+        if not data:
+            data = db_select("harvests", order_by="created_at", ascending=False)
+    except Exception as e:
+        print(f"DB Batch Fetch Error: {e}")
 
+    # 5. Blockchain Fallback (Very important for demo)
+    if not data or len(data) == 0:
+        from app.blockchain.honey_chain import honey_blockchain
+        blockchain_batches = honey_blockchain.search_by_type(honey_blockchain.BlockType.BATCH_CREATION)
+        if blockchain_batches:
+            data = [b["data"] for b in blockchain_batches]
+            # Normalize for dashboard
+            for item in data:
+                if 'quantity_kg' not in item and 'total_quantity_kg' in item:
+                    item['quantity_kg'] = item['total_quantity_kg']
+    
     return data
 
 @router.put("/batches/{batch_id}", response_model=Dict[str, Any])
@@ -431,19 +436,27 @@ def delete_batch(batch_id: str):
 def get_all_farmers():
     """
     Get all registered farmers.
-    Also checks team_members as a fallback.
+    Falls back to Blockchain and Team Members.
     """
-    # Try farmers table first
-    data = db_select("farmers", order_by="created_at", ascending=False)
-    
-    # If empty, Timothy might be in team_members
-    if not data:
+    data = []
+    try:
+        data = db_select("farmers", order_by="created_at", ascending=False)
+    except Exception as e:
+        print(f"DB Farmer Fetch Error: {e}")
+
+    # Fallback 1: Blockchain
+    if not data or len(data) == 0:
+        from app.blockchain.honey_chain import honey_blockchain
+        blockchain_farmers = honey_blockchain.search_by_type(honey_blockchain.BlockType.FARMER_REGISTRATION)
+        if blockchain_farmers:
+            data = [b["data"] for b in blockchain_farmers]
+
+    # Fallback 2: Team Members
+    if not data or len(data) == 0:
         team = db_select("team_members", order_by="created_at", ascending=False)
         if team:
-            # Check for Timothy or anyone with a beekeeping/farmer role
             for member in team:
                 if "Timothy" in member.get("name", "") or "beekeeper" in member.get("role", "").lower():
-                    # Map teammate to farmer-like object
                     data.append({
                         "id": member.get("id"),
                         "name": member.get("name"),
@@ -491,3 +504,39 @@ def delete_farmer_admin(farmer_id: str):
     if not res.get("success"):
         raise HTTPException(status_code=500, detail=f"Deletion failed: {res.get('error')}")
     return {"status": "success"}
+
+# --- Apiaries & Hives ---
+
+@router.get("/apiaries", response_model=List[Dict[str, Any]])
+def get_all_apiaries():
+    data = []
+    try:
+        data = db_select("apiaries", order_by="created_at", ascending=False)
+    except: pass
+    
+    if not data:
+        from app.blockchain.honey_chain import honey_blockchain
+        blocks = honey_blockchain.search_by_type(honey_blockchain.BlockType.APIARY_REGISTRATION)
+        data = [b["data"] for b in blocks]
+    return data
+
+@router.post("/apiaries", response_model=Dict[str, Any])
+def create_apiary_admin(apiary_in: Dict[str, Any]):
+    return traceability_service.register_apiary(apiary_in)
+
+@router.get("/hives", response_model=List[Dict[str, Any]])
+def get_all_hives():
+    data = []
+    try:
+        data = db_select("hives", order_by="created_at", ascending=False)
+    except: pass
+    
+    if not data:
+        from app.blockchain.honey_chain import honey_blockchain
+        blocks = honey_blockchain.search_by_type(honey_blockchain.BlockType.HIVE_REGISTRATION)
+        data = [b["data"] for b in blocks]
+    return data
+
+@router.post("/hives", response_model=Dict[str, Any])
+def create_hive_admin(hive_in: Dict[str, Any]):
+    return traceability_service.register_hive(hive_in)
