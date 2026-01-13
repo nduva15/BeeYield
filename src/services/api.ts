@@ -65,7 +65,11 @@ export async function apiRequest<T>(
 }
 
 // GET request helper
-export async function apiGet<T>(endpoint: string, params?: Record<string, unknown>): Promise<T> {
+export async function apiGet<T>(
+    endpoint: string,
+    params?: Record<string, unknown>,
+    options?: RequestInit
+): Promise<T> {
     let url = endpoint;
     if (params) {
         const stringParams: Record<string, string> = {};
@@ -77,26 +81,39 @@ export async function apiGet<T>(endpoint: string, params?: Record<string, unknow
         const query = new URLSearchParams(stringParams).toString();
         url += `${url.includes('?') ? '&' : '?'}${query}`;
     }
-    return apiRequest<T>(url, { method: "GET" });
+    return apiRequest<T>(url, { method: "GET", ...options });
 }
 
 // POST request helper
-export async function apiPost<T>(endpoint: string, data: unknown): Promise<T> {
+export async function apiPost<T>(
+    endpoint: string,
+    data: unknown,
+    options?: RequestInit
+): Promise<T> {
     return apiRequest<T>(endpoint, {
         method: "POST",
         body: JSON.stringify(data),
+        ...options
     });
 }
 
 // PUT request helper
-export async function apiPut<T>(endpoint: string, data: unknown): Promise<T> {
+export async function apiPut<T>(
+    endpoint: string,
+    data: unknown,
+    options?: RequestInit
+): Promise<T> {
     return apiRequest<T>(endpoint, {
         method: "PUT",
         body: JSON.stringify(data),
+        ...options
     });
 }
 
 // DELETE request helper
-export async function apiDelete<T>(endpoint: string): Promise<T> {
-    return apiRequest<T>(endpoint, { method: "DELETE" });
+export async function apiDelete<T>(
+    endpoint: string,
+    options?: RequestInit
+): Promise<T> {
+    return apiRequest<T>(endpoint, { method: "DELETE", ...options });
 }

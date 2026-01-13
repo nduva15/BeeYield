@@ -349,6 +349,147 @@ export type Database = {
           status?: string
         }
         Relationships: []
+      },
+      iot_devices: {
+        Row: {
+          id: string
+          created_at: string
+          device_code: string
+          device_name: string
+          device_type: "infield" | "inland" | "disease"
+          location_name: string | null
+          latitude: number | null
+          longitude: number | null
+          farmer_id: string | null
+          apiary_id: string | null
+          hive_id: string | null
+          last_ping: string | null
+          battery_level: number | null
+          firmware_version: string | null
+          status: string
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          device_code: string
+          device_name: string
+          device_type: "infield" | "inland" | "disease"
+          location_name?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          farmer_id?: string | null
+          apiary_id?: string | null
+          hive_id?: string | null
+          last_ping?: string | null
+          battery_level?: number | null
+          firmware_version?: string | null
+          status?: string
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          device_code?: string
+          device_name?: string
+          device_type?: "infield" | "inland" | "disease"
+          location_name?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          farmer_id?: string | null
+          apiary_id?: string | null
+          hive_id?: string | null
+          last_ping?: string | null
+          battery_level?: number | null
+          firmware_version?: string | null
+          status?: string
+        }
+        Relationships: []
+      },
+      sensor_readings: {
+        Row: {
+          id: string
+          created_at: string
+          device_id: string
+          sensor_type: "infield" | "inland" | "disease"
+          timestamp: string
+          latitude: number | null
+          longitude: number | null
+          readings: Json
+          battery_level: number | null
+          signal_strength: number | null
+          status: string
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          device_id: string
+          sensor_type: "infield" | "inland" | "disease"
+          timestamp: string
+          latitude?: number | null
+          longitude?: number | null
+          readings: Json
+          battery_level?: number | null
+          signal_strength?: number | null
+          status?: string
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          device_id?: string
+          sensor_type?: "infield" | "inland" | "disease"
+          timestamp?: string
+          latitude?: number | null
+          longitude?: number | null
+          readings?: Json
+          battery_level?: number | null
+          signal_strength?: number | null
+          status?: string
+        }
+        Relationships: []
+      },
+      client_hives: {
+        Row: {
+          id: string
+          created_at: string
+          user_id: string
+          hive_name: string
+          hive_code: string | null
+          crop_type: string | null
+          farm_location: string | null
+          latitude: number | null
+          longitude: number | null
+          contract_start: string | null
+          contract_end: string | null
+          status: "active" | "inactive" | "pending"
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          user_id: string
+          hive_name: string
+          hive_code?: string | null
+          crop_type?: string | null
+          farm_location?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          contract_start?: string | null
+          contract_end?: string | null
+          status?: "active" | "inactive" | "pending"
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          user_id?: string
+          hive_name?: string
+          hive_code?: string | null
+          crop_type?: string | null
+          farm_location?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          contract_start?: string | null
+          contract_end?: string | null
+          status?: "active" | "inactive" | "pending"
+        }
+        Relationships: []
       }
     }
     Views: {

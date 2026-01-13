@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@tanstack/react-router";
 import { Facebook, Instagram, Twitter, Linkedin, ChevronDown } from "lucide-react";
 import Logo from "@/assets/Logo.png";
 import { Newsletter } from "@/components/Newsletter";

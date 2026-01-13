@@ -7,7 +7,7 @@ import {
     Cpu, Eye, Zap, Target, Leaf, Award, Clock, Users,
     Activity, Database, Radio, Smartphone, ChevronRight
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@tanstack/react-router";
 
 const PollinationServices = () => {
     const crops = [

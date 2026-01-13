@@ -442,3 +442,10 @@ def update_order_status(order_id: str, status: str, payment_status: Optional[str
         update_data["payment_status"] = payment_status
     
     return db_update("orders", update_data, {"id": order_id})
+
+def get_user_orders(user_id: str) -> List[Dict[str, Any]]:
+    """Fetch all orders for a specific user"""
+    orders = db_select("orders", filters={"user_id": user_id}, order_by="created_at", ascending=False)
+    for order in orders:
+        order["items"] = db_select("order_items", filters={"order_id": order["id"]})
+    return orders

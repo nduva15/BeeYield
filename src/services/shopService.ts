@@ -505,46 +505,27 @@ export const fallbackProducts: Product[] = [
 ];
 
 export const getProducts = async (category_name?: string): Promise<Product[]> => {
-    if (!supabase) return [];
     try {
-        let query = supabase
-            .from('products' as any)
-            .select('*, variants:product_variants(*)');
+        const params: any = {};
+        if (category_name) params.category = category_name;
 
-        if (category_name) {
-            query = query.eq('category', category_name);
-        }
-
-        const { data, error } = await query;
-        if (error) throw error;
-
-        return (data || []).map((p: any) => ({
-            ...p,
-            variants: p.variants || []
-        }));
+        const products = await apiGet<Product[]>('/shop/products', params);
+        return products;
     } catch (error) {
-        console.error("Error fetching products:", error);
-        return [];
+        console.error("Error fetching products from API:", error);
+        // Fallback to local products if API fails
+        return category_name
+            ? fallbackProducts.filter(p => p.category === category_name)
+            : fallbackProducts;
     }
 };
 
 export const getProduct = async (productId: string): Promise<Product | null> => {
-    if (!supabase) return null;
     try {
-        const { data, error } = await supabase
-            .from('products' as any)
-            .select('*, variants:product_variants(*)')
-            .eq('id', productId)
-            .single();
-
-        if (error) throw error;
-        return {
-            ...data,
-            variants: data.variants || []
-        };
+        return await apiGet<Product>(`/shop/products/${productId}`);
     } catch (error) {
-        console.error("Error fetching product:", error);
-        return null;
+        console.error("Error fetching product from API:", error);
+        return fallbackProducts.find(p => p.id === productId) || null;
     }
 };
 
@@ -574,46 +555,17 @@ export interface CheckoutResponse {
     order_number: string;
     status: string;
     message: string;
+    payment_info?: any;
 }
 
-export const initializeCheckout = async (orderData: CheckoutOrder, token?: string): Promise<CheckoutResponse> => {
-    if (!supabase) {
-        throw new Error("Supabase client is not initialized");
-    }
-
+export const initializeCheckout = async (orderData: CheckoutOrder): Promise<CheckoutResponse> => {
     try {
-        // 1. Create the order
-        const { data: order, error: orderError } = await (supabase
-            .from("orders" as any) as any)
-            .insert([{
-                customer_email: orderData.shipping_address.email,
-                customer_phone: orderData.shipping_address.phone,
-                shipping_address: orderData.shipping_address,
-                payment_method: orderData.payment_method,
-                total_amount: orderData.total_kes,
-                status: "pending",
-                notes: orderData.notes
-            }])
-            .select()
-            .single();
+        const { data: { session } } = await supabase?.auth.getSession() || { data: { session: null } };
+        const headers = session ? { Authorization: `Bearer ${session.access_token}` } : {};
 
-        if (orderError) throw orderError;
-
-        // 2. Clear items (if we had an items table)
-        // In this implementation, we can store items in the order itself or a separate table
-        // For simplicity and matching the expected response, we just return the order ID
-
-        const orderId = order.id;
-        const orderNumber = `BY-${orderId.toString().slice(0, 8).toUpperCase()}`;
-
-        return {
-            order_id: orderId,
-            order_number: orderNumber,
-            status: "pending",
-            message: "Order initialized successfully"
-        };
+        return await apiPost<CheckoutResponse>('/shop/checkout/init', orderData, { headers });
     } catch (error) {
-        console.error("Error initializing checkout:", error);
+        console.error("Error initializing checkout via API:", error);
         throw error;
     }
 };
@@ -1097,18 +1049,13 @@ export const FALLBACK_PRODUCTS: Product[] = [
 ];
 
 export const getUserOrders = async (email: string): Promise<any[]> => {
-    if (!supabase) return [];
     try {
-        const { data, error } = await (supabase
-            .from("orders" as any) as any)
-            .select("*")
-            .eq("customer_email", email)
-            .order("created_at", { ascending: false });
+        const { data: { session } } = await supabase?.auth.getSession() || { data: { session: null } };
+        const headers = session ? { Authorization: `Bearer ${session.access_token}` } : {};
 
-        if (error) throw error;
-        return data || [];
+        return await apiGet<any[]>('/shop/orders', { email }, { headers });
     } catch (error) {
-        console.error("Error fetching user orders:", error);
+        console.error("Error fetching user orders via API:", error);
         return [];
     }
 };

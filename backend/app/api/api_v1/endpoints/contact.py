@@ -1,20 +1,40 @@
-"""
-Contact Endpoints
-"""
-from fastapi import APIRouter, HTTPException, BackgroundTasks
+import time
+from fastapi import APIRouter, HTTPException, BackgroundTasks, Request
 from app.schemas import contact as schemas
 from app.services import email
 from app.db.supabase_db import db_insert, db_select
 
 router = APIRouter()
 
+# Simple in-memory rate limiter
+# In production, use Redis or a proper library like slowapi
+_rate_limit_store = {}
+
+def check_rate_limit(client_ip: str, limit_seconds: int = 60):
+    now = time.time()
+    if client_ip in _rate_limit_store:
+        last_request = _rate_limit_store[client_ip]
+        if now - last_request < limit_seconds:
+            return False
+    _rate_limit_store[client_ip] = now
+    return True
+
 @router.post("/submit", response_model=dict)
-def submit_contact_form(request: schemas.ContactSubmissionCreate, background_tasks: BackgroundTasks):
+def submit_contact_form(
+    request_in: schemas.ContactSubmissionCreate, 
+    background_tasks: BackgroundTasks,
+    request: Request
+):
     """
     Handle general contact forms (Grower, Beekeeper, General).
     """
+    # 0. Rate Limiting
+    client_ip = request.client.host if request.client else "unknown"
+    if not check_rate_limit(client_ip, limit_seconds=10): # 10s cooldown
+        raise HTTPException(status_code=429, detail="Too many submissions. Please wait a few seconds.")
+
     # 1. Prepare data for Database
-    db_data = request.dict()
+    db_data = request_in.dict()
     
     # Store form-specific fields in form_specific_data JSON field 
     # since they don't have their own columns in the table
@@ -56,12 +76,21 @@ def submit_contact_form(request: schemas.ContactSubmissionCreate, background_tas
 
 
 @router.post("/pollination", response_model=dict)
-def request_pollination(request: schemas.PollinationRequestCreate, background_tasks: BackgroundTasks):
+def request_pollination(
+    request_in: schemas.PollinationRequestCreate, 
+    background_tasks: BackgroundTasks,
+    request: Request
+):
     """
     Handle pollination service requests.
     """
+    # 0. Rate Limiting
+    client_ip = request.client.host if request.client else "unknown"
+    if not check_rate_limit(client_ip, limit_seconds=15): # 15s cooldown
+        raise HTTPException(status_code=429, detail="Too many submissions. Please wait.")
+
     # 1. Save to Database
-    db_data = request.dict()
+    db_data = request_in.dict()
     result = db_insert("pollination_requests", db_data)
     
     if not result.get("success"):
@@ -85,17 +114,26 @@ def request_pollination(request: schemas.PollinationRequestCreate, background_ta
     return {"status": "success", "message": "Pollination request submitted successfully"}
 
 @router.post("/newsletter", response_model=dict)
-def subscribe_newsletter(request: schemas.NewsletterSubscriptionCreate, background_tasks: BackgroundTasks):
+def subscribe_newsletter(
+    request_in: schemas.NewsletterSubscriptionCreate, 
+    background_tasks: BackgroundTasks,
+    request: Request
+):
     """
     Handle newsletter subscriptions.
     """
+    # 0. Rate Limiting
+    client_ip = request.client.host if request.client else "unknown"
+    if not check_rate_limit(client_ip + ":newsletter", limit_seconds=30): # 30s cooldown for newsletter
+        raise HTTPException(status_code=429, detail="Rate limit exceeded. Please try again later.")
+
     # 1. Check if already subscribed
-    existing = db_select("newsletter_subscribers", filters={"email": request.email})
+    existing = db_select("newsletter_subscribers", filters={"email": request_in.email})
     if existing:
         return {"status": "success", "message": "Already subscribed"}
 
     # 2. Save to Database
-    db_data = request.dict()
+    db_data = request_in.dict()
     result = db_insert("newsletter_subscribers", db_data)
     
     if not result.get("success"):
