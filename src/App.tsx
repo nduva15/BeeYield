@@ -37,6 +37,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminAuth from "./pages/AdminAuth";
 import UpdatePassword from "./pages/UpdatePassword";
 import BuyerDashboard from "./pages/BuyerDashboard";
+import BeeYieldDashboard from "./pages/BeeYieldDashboard";
 
 const queryClient = new QueryClient();
 
@@ -80,6 +81,7 @@ const App = () => (
                 <Route path="/admin/login" element={<AdminAuth />} />
                 <Route path="/update-password" element={<UpdatePassword />} />
                 <Route path="/my-account" element={<BuyerDashboard />} />
+                <Route path="/beeyield-dashboard" element={<BeeYieldDashboard />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Layout>

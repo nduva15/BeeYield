@@ -8,10 +8,10 @@ import {
   CheckCircle2, Box, Activity, Thermometer, Waves, Loader2, X, Search, Globe, ShieldCheck, Zap, Lock, FileDown
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { apiGet } from "@/services/api";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import HoneyTracePDF from "@/components/HoneyTracePDF";
+import { traceBatchFn } from "@/server/traceability";
 
 const Traceability = () => {
   const [qrCode, setQrCode] = useState("");
@@ -27,7 +27,13 @@ const Traceability = () => {
     setTraceData(null);
 
     try {
-      const data = await apiGet<any>(`/traceability/code/${code}`);
+      // Isomorphic function call - this looks like a normal function but runs on server!
+      const data = await traceBatchFn({ data: code });
+
+      if (!data) {
+        throw new Error("Batch not found using centralized ledger");
+      }
+
       setTraceData(data);
       toast({
         title: "Chain Verified!",
