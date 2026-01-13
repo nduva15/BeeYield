@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 import {
     Activity, Cpu, Droplets, ThermometerSun, Weight, Bug, Leaf,
     MapPin, Battery, Wifi, Clock, RefreshCw, LogIn, UserPlus,
@@ -107,14 +108,13 @@ const BeeYieldDashboard: React.FC = () => {
         );
     };
 
-    return (
     const navItems = [
-            { id: 'overview', label: 'Overview', icon: LayoutDashboard },
-            { id: 'infield', label: 'Infield', icon: ThermometerSun },
-            { id: 'inland', label: 'Inland', icon: Weight },
-            { id: 'disease', label: 'Disease', icon: Bug },
-            { id: 'hives', label: 'My Hives', icon: Hexagon },
-        ];
+        { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+        { id: 'infield', label: 'Infield', icon: ThermometerSun },
+        { id: 'inland', label: 'Inland', icon: Weight },
+        { id: 'disease', label: 'Disease', icon: Bug },
+        { id: 'hives', label: 'My Hives', icon: Hexagon },
+    ];
 
     return (
         <DashboardLayout
@@ -662,8 +662,8 @@ const BeeYieldDashboard: React.FC = () => {
                         />
                     </DialogContent>
                 </Dialog>
-            </Tabs>
-        </div>
+
+            </div>
         </DashboardLayout >
     );
 };

@@ -19,7 +19,7 @@ interface AuthContextType {
     mfaRequired: boolean;
     mfaFactorId: string | null;
     signIn: (email: string, password: string) => Promise<{ error: AuthError | null; mfaRequired?: boolean }>;
-    signUp: (email: string, password: string, metadata?: { first_name?: string; last_name?: string }) => Promise<{ error: AuthError | null; data?: { user: User | null } }>;
+    signUp: (email: string, password: string, metadata?: { first_name?: string; last_name?: string; role?: string }) => Promise<{ error: AuthError | null; data?: { user: User | null } }>;
     signInWithGoogle: () => Promise<{ error: AuthError | null }>;
     signOut: () => Promise<void>;
     // Password Reset Methods
