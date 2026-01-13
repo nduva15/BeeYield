@@ -27,7 +27,7 @@ import {
   Zap,
   Loader2
 } from "lucide-react";
-import { getProducts, Product, FALLBACK_PRODUCTS } from "@/services/shopService";
+import { getProducts, Product, fallbackProducts } from "@/services/shopService";
 import { toast } from "sonner";
 
 const HoneyLanding = () => {
@@ -45,11 +45,11 @@ const HoneyLanding = () => {
           setActiveProducts(data);
         } else {
           // Use fallback products if no data from backend
-          setActiveProducts(FALLBACK_PRODUCTS);
+          setActiveProducts(fallbackProducts);
         }
       } catch (error) {
         console.error("Failed to fetch products:", error);
-        setActiveProducts(FALLBACK_PRODUCTS);
+        setActiveProducts(fallbackProducts);
         toast.error("Could not load products. Showing cached inventory.");
       } finally {
         setIsLoading(false);
@@ -60,7 +60,7 @@ const HoneyLanding = () => {
   }, []);
 
   // Combine live products with fallbacks for missing categories
-  const products = activeProducts.length > 0 ? activeProducts : FALLBACK_PRODUCTS;
+  const products = activeProducts.length > 0 ? activeProducts : fallbackProducts;
 
   const handleAddToCart = (product: Product) => {
     const selectedSize = selectedSizes[product.id] || product.variants[0].size;

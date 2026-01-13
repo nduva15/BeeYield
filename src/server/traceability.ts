@@ -1,4 +1,4 @@
-import { createServerFn } from '@tanstack/start'
+import { createServerFn } from '@tanstack/react-start'
 import { TraceResponse } from '@/services/traceabilityService'
 
 // Define runtime environment variable access for the server

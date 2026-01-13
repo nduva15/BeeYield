@@ -1,8 +1,7 @@
-import { defineConfig } from '@tanstack/start/config'
-import viteTsConfigPaths from 'vite-tsconfig-paths'
+import { defineConfig } from '@tanstack/react-start/config'
 
 export default defineConfig({
     vite: {
-        plugins: [viteTsConfigPaths()],
+        plugins: [],
     },
 })

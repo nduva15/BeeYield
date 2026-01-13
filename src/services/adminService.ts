@@ -60,8 +60,9 @@ export interface HiveInput {
     notes?: string;
 }
 
-const getAuthHeaders = async () => {
-    const { data: { session } } = await supabase?.auth.getSession() || { data: { session: null } };
+const getAuthHeaders = async (): Promise<Record<string, string>> => {
+    if (!supabase) return {};
+    const { data: { session } } = await supabase.auth.getSession();
     return session ? { Authorization: `Bearer ${session.access_token}` } : {};
 };
 

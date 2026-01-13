@@ -28,7 +28,7 @@ import {
   PlayCircle,
   Truck,
 } from "lucide-react";
-import { getProducts, Product, FALLBACK_PRODUCTS } from "@/services/shopService";
+import { Product, fallbackProducts } from '@/services/shopService';
 import { getLearningModules, LearningModule } from "@/services/servicesService";
 import { toast } from "sonner";
 
@@ -67,7 +67,7 @@ const BeeLearn = () => {
   const products = [...activeProducts];
   const fetchedCategories = new Set(activeProducts.map(p => p.category));
 
-  FALLBACK_PRODUCTS.forEach(fallback => {
+  fallbackProducts.forEach(fallback => {
     if (!fetchedCategories.has(fallback.category)) {
       products.push(fallback);
     }

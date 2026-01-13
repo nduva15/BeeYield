@@ -16,14 +16,15 @@ import {
     Database, Trash2, Edit, Shield, Crown, UserMinus,
     CheckCircle2, XCircle, Clock, AlertTriangle, LayoutDashboard,
     MessageSquare, Bug, Mail, History, TrendingUp, ChevronRight,
-    LogOut, Search, MapPin, Eye, Phone, Leaf
+    LogOut, Search, MapPin, Eye, Phone, Leaf, Building2, Share2, CreditCard
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import DashboardLayout from '@/components/beeyield/DashboardLayout';
 import MetricCard from '@/components/beeyield/MetricCard';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, DonutChart } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const AdminDashboard: React.FC = () => {
     const { user, loading: authLoading } = useAuth();
@@ -872,1794 +873,1796 @@ const AdminDashboard: React.FC = () => {
                                 </div>
                             </Card>
                         </div>
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-black uppercase tracking-widest text-muted-foreground z-10">Honey Harvest</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-3xl font-black z-10 relative">{dashboardStats.totalHoneyKg.toLocaleString()} KG</div>
-                            <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:opacity-20 transition-opacity z-0">
-                                <Database className="w-24 h-24" />
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card className="border-none shadow-xl glass bg-blue-500/5 dark:bg-blue-500/10 rounded-3xl relative overflow-hidden group hover:scale-105 transition-all duration-500">
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-black uppercase tracking-widest text-muted-foreground z-10">Pollination Area</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-3xl font-black z-10 relative">{dashboardStats.totalAcres.toLocaleString()} ACRES</div>
-                            <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:opacity-20 transition-opacity z-0">
-                                <Bug className="w-24 h-24" />
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card className="border-none shadow-xl glass bg-destructive/5 dark:bg-destructive/10 rounded-3xl relative overflow-hidden group hover:scale-105 transition-all duration-500">
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-black uppercase tracking-widest text-muted-foreground z-10">Pending Actions</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-3xl font-black z-10 relative">{dashboardStats.pendingOrders} ORDERS</div>
-                            <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:opacity-20 transition-opacity z-0">
-                                <AlertTriangle className="w-24 h-24" />
-                            </div>
-                        </CardContent>
-                    </Card>
-            </div>
-
-            <div className="flex gap-4">
-                <Button onClick={handleSeedTraceability} variant="outline" className="rounded-2xl border-dashed border-primary/40 text-primary hover:bg-primary/5">
-                    <Database className="w-4 h-4 mr-2" /> Seed Demo Batches
-                </Button>
-                <Button onClick={handleSeedApiaries} variant="outline" className="rounded-2xl border-dashed border-primary/40 text-primary hover:bg-primary/5">
-                    <MapPin className="w-4 h-4 mr-2" /> Seed Apiaries & Hives
-                </Button>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
-                    <CardHeader>
-                        <CardTitle className="font-black">Recent Activity Log</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            {orders.slice(0, 3).map(o => (
-                                <div key={o.id} className="flex justify-between items-center border-b border-border/10 pb-2">
-                                    <div>
-                                        <p className="font-bold text-sm">New Order received</p>
-                                        <p className="text-xs text-muted-foreground">{new Date(o.created_at).toLocaleString()}</p>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <Card className="border-none shadow-xl glass bg-primary/5 dark:bg-primary/10 rounded-3xl relative overflow-hidden group hover:scale-105 transition-all duration-500">
+                                <CardHeader className="pb-2">
+                                    <CardTitle className="text-sm font-black uppercase tracking-widest text-muted-foreground z-10">Honey Harvest</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="text-3xl font-black z-10 relative">{dashboardStats.totalHoneyKg.toLocaleString()} KG</div>
+                                    <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:opacity-20 transition-opacity z-0">
+                                        <Database className="w-24 h-24" />
                                     </div>
-                                    <Badge variant="outline">{o.status}</Badge>
-                                </div>
-                            ))}
-                            {batches.slice(0, 3).map(b => (
-                                <div key={b.id} className="flex justify-between items-center border-b border-border/10 pb-2">
-                                    <div>
-                                        <p className="font-bold text-sm">Batch Minted: {b.batch_code}</p>
-                                        <p className="text-xs text-muted-foreground">{new Date(b.created_at).toLocaleString()}</p>
+                                </CardContent>
+                            </Card>
+                            <Card className="border-none shadow-xl glass bg-blue-500/5 dark:bg-blue-500/10 rounded-3xl relative overflow-hidden group hover:scale-105 transition-all duration-500">
+                                <CardHeader className="pb-2">
+                                    <CardTitle className="text-sm font-black uppercase tracking-widest text-muted-foreground z-10">Pollination Area</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="text-3xl font-black z-10 relative">{dashboardStats.totalAcres.toLocaleString()} ACRES</div>
+                                    <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:opacity-20 transition-opacity z-0">
+                                        <Bug className="w-24 h-24" />
                                     </div>
-                                    <Badge className="bg-green-500/20 text-green-600 border-none">Verified</Badge>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-        </TabsContent>
-
-                {/* --- ORDERS TAB --- */ }
-    <TabsContent value="orders" className="space-y-6">
-        <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
-            <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <div>
-                        <CardTitle className="text-xl font-bold">Recent Orders</CardTitle>
-                        <CardDescription>View and manage all customer transactions.</CardDescription>
-                    </div>
-                </div>
-            </CardHeader>
-            <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                    <Table>
-                        <TableHeader>
-                            <TableRow className="border-b border-[#1e1e1e] bg-[#1e1e1e]/20">
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Order #</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Customer</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Items</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Total (KES)</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {orders.length === 0 ? (
-                                <TableRow><TableCell colSpan={7} className="text-center h-48 text-muted-foreground font-medium">No order data synchronized.</TableCell></TableRow>
-                            ) : (
-                                orders.map((order) => (
-                                    <TableRow key={order.id} className="hover:bg-muted/20 transition-colors border-border/10">
-                                        <TableCell className="px-6 font-mono font-bold text-primary">{order.order_number || `BY-${order.id.toString().slice(0, 8)}`}</TableCell>
-                                        <TableCell className="px-6">
-                                            <div className="font-semibold">{order.shipping_address?.first_name || 'Anonymous'} {order.shipping_address?.last_name || ''}</div>
-                                            <div className="text-xs text-muted-foreground">{order.customer_email || order.shipping_address?.email}</div>
-                                        </TableCell>
-                                        <TableCell className="px-6 text-right font-medium">{order.items?.length || 0}</TableCell>
-                                        <TableCell className="px-6 text-right font-black italic">{order.total_amount?.toLocaleString()}</TableCell>
-                                        <TableCell className="px-6">
-                                            <Select
-                                                defaultValue={order.status}
-                                                onValueChange={(value) => handleUpdateOrderStatus(order.id, value)}
-                                            >
-                                                <SelectTrigger className="w-[140px] h-9 text-[10px] font-black uppercase tracking-wider rounded-xl bg-background/50 border-border/50">
-                                                    <SelectValue />
-                                                </SelectTrigger>
-                                                <SelectContent className="rounded-xl border-border/50">
-                                                    <SelectItem value="pending" className="text-xs font-bold">PENDING</SelectItem>
-                                                    <SelectItem value="processing" className="text-xs font-bold">PROCESSING</SelectItem>
-                                                    <SelectItem value="shipped" className="text-xs font-bold">SHIPPED</SelectItem>
-                                                    <SelectItem value="completed" className="text-xs font-bold">COMPLETED</SelectItem>
-                                                    <SelectItem value="cancelled" className="text-xs font-bold">CANCELLED</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </TableCell>
-                                        <TableCell className="px-6 text-xs text-muted-foreground font-medium">{new Date(order.created_at).toLocaleDateString()}</TableCell>
-                                        <TableCell className="px-6 text-right">
-                                            <div className="flex justify-end gap-2">
-                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleViewOrder(order)}>
-                                                    <Search className="h-4 w-4" />
-                                                </Button>
-                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteOrder(order.id)}>
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
-                </div>
-            </CardContent>
-        </Card>
-
-        {/* Order Details Dialog */}
-        <Dialog open={isOrderDetailsOpen} onOpenChange={setIsOrderDetailsOpen}>
-            <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-2xl">
-                <DialogHeader>
-                    <DialogTitle className="text-xl font-bold flex gap-2 items-center">
-                        <Package className="w-6 h-6 text-primary" /> Order Details
-                    </DialogTitle>
-                    <DialogDescription>Full transaction manifest.</DialogDescription>
-                </DialogHeader>
-                {selectedOrder && (
-                    <div className="space-y-6">
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                            <div className="space-y-1">
-                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Order ID</p>
-                                <p className="font-mono font-bold">{selectedOrder.order_number || selectedOrder.id}</p>
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Status</p>
-                                <Badge variant="outline">{selectedOrder.status}</Badge>
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Customer</p>
-                                <p className="font-bold">{selectedOrder.shipping_address?.first_name} {selectedOrder.shipping_address?.last_name}</p>
-                                <p className="text-muted-foreground">{selectedOrder.customer_email}</p>
-                                <p className="text-muted-foreground">{selectedOrder.shipping_address?.phone}</p>
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Shipping Address</p>
-                                <p className="whitespace-pre-wrap">{selectedOrder.shipping_address?.address}, {selectedOrder.shipping_address?.city}</p>
-                                <p>{selectedOrder.shipping_address?.postal_code}, {selectedOrder.shipping_address?.country}</p>
-                            </div>
-                        </div>
-
-                        <div className="border-t border-border/10 pt-4">
-                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground mb-3">Items Manifest</p>
-                            <div className="space-y-2">
-                                {selectedOrder.items?.map((item: any, i: number) => (
-                                    <div key={i} className="flex justify-between items-center bg-muted/30 p-2 rounded-lg">
-                                        <div className="flex gap-3 items-center">
-                                            <div className="w-8 h-8 rounded bg-background flex items-center justify-center text-xs font-bold border border-border/20">
-                                                {item.quantity}x
-                                            </div>
-                                            <span className="font-medium text-sm">{item.product_name || 'Product'}</span>
-                                        </div>
-                                        <span className="font-mono font-bold text-sm">KES {item.price_at_purchase?.toLocaleString()}</span>
+                                </CardContent>
+                            </Card>
+                            <Card className="border-none shadow-xl glass bg-destructive/5 dark:bg-destructive/10 rounded-3xl relative overflow-hidden group hover:scale-105 transition-all duration-500">
+                                <CardHeader className="pb-2">
+                                    <CardTitle className="text-sm font-black uppercase tracking-widest text-muted-foreground z-10">Pending Actions</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="text-3xl font-black z-10 relative">{dashboardStats.pendingOrders} ORDERS</div>
+                                    <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:opacity-20 transition-opacity z-0">
+                                        <AlertTriangle className="w-24 h-24" />
                                     </div>
-                                ))}
-                            </div>
+                                </CardContent>
+                            </Card>
                         </div>
 
-                        <div className="border-t border-border/10 pt-4 flex justify-between items-end">
-                            <div className="text-xs text-muted-foreground">
-                                <p>Placed on: {new Date(selectedOrder.created_at).toLocaleString()}</p>
-                                <p>Payment Method: {selectedOrder.payment_method || 'Stripe'}</p>
-                            </div>
-                            <div className="text-right">
-                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Total Value</p>
-                                <p className="text-xl font-bold text-primary">KES {selectedOrder.total_amount?.toLocaleString()}</p>
-                            </div>
+                        <div className="flex gap-4">
+                            <Button onClick={handleSeedTraceability} variant="outline" className="rounded-2xl border-dashed border-primary/40 text-primary hover:bg-primary/5">
+                                <Database className="w-4 h-4 mr-2" /> Seed Demo Batches
+                            </Button>
+                            <Button onClick={handleSeedApiaries} variant="outline" className="rounded-2xl border-dashed border-primary/40 text-primary hover:bg-primary/5">
+                                <MapPin className="w-4 h-4 mr-2" /> Seed Apiaries & Hives
+                            </Button>
                         </div>
-                    </div>
-                )}
-            </DialogContent>
-        </Dialog>
-    </TabsContent>
 
-    {/* --- PRODUCTS TAB --- */ }
-    <TabsContent value="products" className="space-y-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-                <h2 className="text-xl font-bold tracking-tight">Venture Inventory</h2>
-                <p className="text-muted-foreground font-medium">Manage and deploy products to the digital storefront.</p>
-            </div>
-            <div className="flex gap-2">
-                {products.length === 0 && (
-                    <Button onClick={handleSeedContent} variant="outline" className="rounded-xl px-6 py-6 border-dashed border-primary/30 font-black uppercase tracking-widest text-xs h-auto hover:bg-primary/5">
-                        <RefreshCw className="mr-2 h-4 w-4" /> Sync Default Content
-                    </Button>
-                )}
-                <Button onClick={() => { setEditingProduct(null); setIsProductModalOpen(true); }} className="rounded-xl px-6 py-6 shadow-glow hover:scale-105 transition-all bg-primary font-black uppercase tracking-widest text-xs h-auto">
-                    <Plus className="mr-2 h-5 w-5" /> Add New Asset
-                </Button>
-            </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product) => (
-                <div key={product.id} className="group relative bg-card/50 backdrop-blur hover:bg-card border-border/50 border rounded-3xl p-5 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
-                    <div className="aspect-square rounded-2xl overflow-hidden bg-muted mb-5 relative">
-                        {product.images?.[0] ? (
-                            <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                        ) : (
-                            <div className="w-full h-full grid place-items-center text-muted-foreground/30"><ShoppingBag className="w-12 h-12" /></div>
-                        )}
-                        <div className="absolute top-3 right-3">
-                            <Badge className="bg-background/80 backdrop-blur-md text-foreground border-none px-3 py-1 text-[10px] font-black uppercase tracking-widest">{product.category}</Badge>
-                        </div>
-                    </div>
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-start gap-2">
-                            <h3 className="font-black text-xl leading-none tracking-tight">{product.name}</h3>
-                        </div>
-                        <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed h-8">{product.description}</p>
-                        <div className="flex justify-between items-end pt-2">
-                            <div>
-                                <p className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground mb-1">MSRP</p>
-                                <span className="text-xl font-bold italic text-primary">KES {product.variants?.[0]?.price_kes?.toLocaleString() || 0}</span>
-                            </div>
-                            <div className="flex gap-1">
-                                <Button size="icon" variant="outline" onClick={() => handleEditProduct(product)} className="rounded-xl w-9 h-9 border-border/50 hover:bg-primary/10 hover:text-primary"><Edit className="h-4 w-4" /></Button>
-                                <Button size="icon" variant="outline" className="rounded-xl w-9 h-9 border-border/50 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDeleteProduct(product.id)}><Trash2 className="h-4 w-4" /></Button>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-2 pt-2 text-[10px] font-bold text-muted-foreground border-t border-border/50 mt-2">
-                            <Database className="w-3 h-3" />
-                            <span>Stock: {product.variants?.[0]?.stock_quantity || 0} units</span>
-                        </div>
-                    </div>
-                </div>
-            ))}
-        </div>
-
-        {/* Product Dialog */}
-        <Dialog open={isProductModalOpen} onOpenChange={setIsProductModalOpen}>
-            <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-md">
-                <DialogHeader>
-                    <DialogTitle className="text-3xl font-black tracking-tighter">{editingProduct ? 'Update Asset' : 'Create New Asset'}</DialogTitle>
-                    <DialogDescription>Populate the matrix with product configurations.</DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-5 py-4">
-                    <div className="space-y-2">
-                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Product Designation</Label>
-                        <Input placeholder="e.g. Amber Infusion VII" value={productForm.name} onChange={e => setProductForm({ ...productForm, name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                    </div>
-                    <div className="space-y-2">
-                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Asset Description</Label>
-                        <Textarea placeholder="Describe the sensory profile..." value={productForm.description} onChange={e => setProductForm({ ...productForm, description: e.target.value })} className="rounded-xl min-h-[100px] bg-muted/50 border-border/50" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Classification</Label>
-                            <Input value={productForm.category} onChange={e => setProductForm({ ...productForm, category: e.target.value })} className="rounded-xl h-11 bg-muted/50 border-border/50" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">MSRP (KES)</Label>
-                            <Input type="number" value={productForm.price_kes} onChange={e => setProductForm({ ...productForm, price_kes: parseFloat(e.target.value) })} className="rounded-xl h-11 bg-muted/50 border-border/50" />
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Initial Reserve</Label>
-                            <Input type="number" value={productForm.stock_quantity} onChange={e => setProductForm({ ...productForm, stock_quantity: parseInt(e.target.value) })} className="rounded-xl h-11 bg-muted/50 border-border/50" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Visual Matrix (URL)</Label>
-                            <Input value={productForm.images} onChange={e => setProductForm({ ...productForm, images: e.target.value })} placeholder="https://..." className="rounded-xl h-11 bg-muted/50 border-border/50 font-mono text-xs" />
-                        </div>
-                    </div>
-                </div>
-                <DialogFooter className="gap-2 sm:gap-0">
-                    <Button variant="ghost" onClick={() => setIsProductModalOpen(false)} className="rounded-xl font-bold">Cancel</Button>
-                    <Button onClick={handleCreateProduct} className="rounded-xl font-black uppercase tracking-widest text-xs px-8 shadow-glow">{editingProduct ? 'Commit Changes' : 'Initialize Asset'}</Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-
-        {/* Stock Movements Section */}
-        <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden mt-8">
-            <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30">
-                <div className="flex justify-between items-center">
-                    <div>
-                        <CardTitle className="text-xl font-black flex items-center gap-2">
-                            <History className="w-5 h-5" /> Stock Movements
-                        </CardTitle>
-                        <CardDescription>Track inventory additions, removals, and adjustments.</CardDescription>
-                    </div>
-                    <div className="flex gap-2">
-                        <Badge className="bg-green-500/10 text-green-600 border-green-200 px-4 py-1.5 rounded-xl font-black text-[10px]">
-                            {stockMovements.length} RECORDS
-                        </Badge>
-                        <Button onClick={() => setIsStockModalOpen(true)} size="sm" className="rounded-xl h-8 px-4 font-black uppercase tracking-widest text-[10px]">
-                            <Plus className="w-3 h-3 mr-1" /> New Movement
-                        </Button>
-                    </div>
-                </div>
-            </CardHeader>
-            <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                    <Table>
-                        <TableHeader>
-                            <TableRow className="border-b border-[#1e1e1e] bg-[#1e1e1e]/20">
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Product</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Type</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Quantity</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Reason</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {stockMovements.length === 0 ? (
-                                <TableRow><TableCell colSpan={5} className="text-center h-32 text-muted-foreground font-medium">No stock movements recorded yet.</TableCell></TableRow>
-                            ) : (
-                                stockMovements.map((mov) => (
-                                    <TableRow key={mov.id} className="hover:bg-muted/20 transition-colors border-border/10">
-                                        <TableCell className="px-6 font-semibold">{mov.products?.name || 'Unknown Product'}</TableCell>
-                                        <TableCell className="px-6">
-                                            <Badge variant="outline" className={mov.type === 'addition' ? 'bg-green-500/10 text-green-600 border-green-200' : 'bg-red-500/10 text-red-600 border-red-200'}>
-                                                {mov.type === 'addition' ? <TrendingUp className="w-3 h-3 mr-1" /> : <AlertTriangle className="w-3 h-3 mr-1" />}
-                                                {mov.type}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="px-6 text-right font-black">{mov.type === 'addition' ? '+' : '-'}{mov.quantity}</TableCell>
-                                        <TableCell className="px-6 text-sm text-muted-foreground">{mov.reason || 'N/A'}</TableCell>
-                                        <TableCell className="px-6 text-xs font-mono">{new Date(mov.created_at).toLocaleDateString()}</TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
-                </div>
-            </CardContent>
-        </Card>
-
-        {/* Stock Movement Dialog */}
-        <Dialog open={isStockModalOpen} onOpenChange={setIsStockModalOpen}>
-            <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-md">
-                <DialogHeader>
-                    <DialogTitle className="text-3xl font-black tracking-tighter text-foreground">Record Movement</DialogTitle>
-                    <DialogDescription>Register an addition or removal from product inventory.</DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-5 py-4">
-                    <div className="space-y-2">
-                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Asset Selection</Label>
-                        <Select value={stockForm.product_id} onValueChange={(val) => setStockForm({ ...stockForm, product_id: val })}>
-                            <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
-                                <SelectValue placeholder="Select Product" />
-                            </SelectTrigger>
-                            <SelectContent className="rounded-xl">
-                                {products.map(p => (
-                                    <SelectItem key={p.id} value={p.id} className="font-bold">{p.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Movement Type</Label>
-                            <Select value={stockForm.type} onValueChange={(val) => setStockForm({ ...stockForm, type: val })}>
-                                <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-xl">
-                                    <SelectItem value="addition" className="font-bold">ADDITION (+)</SelectItem>
-                                    <SelectItem value="removal" className="font-bold">REMOVAL (-)</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Quantity</Label>
-                            <Input type="number" value={stockForm.quantity} onChange={e => setStockForm({ ...stockForm, quantity: parseInt(e.target.value) || 0 })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                        </div>
-                    </div>
-                    <div className="space-y-2">
-                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Protocol Reasoning</Label>
-                        <Input placeholder="e.g. New harvest arrival" value={stockForm.reason} onChange={e => setStockForm({ ...stockForm, reason: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                    </div>
-                </div>
-                <DialogFooter>
-                    <Button onClick={handleCreateStockMovement} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
-                        Commit Inventory Update
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    </TabsContent>
-
-    {/* --- BATCHES TAB --- */ }
-    <TabsContent value="batches" className="space-y-6">
-        <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
-            <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30 flex flex-row items-center justify-between">
-                <div>
-                    <CardTitle className="text-xl font-bold">Honey Chain Blocks</CardTitle>
-                    <CardDescription>Immutable blockchain ledger of authenticated batches.</CardDescription>
-                </div>
-                <div className="flex gap-2">
-                    <Button onClick={handleSeedTraceability} className="rounded-xl font-black uppercase tracking-widest text-xs py-5 bg-blue-500 hover:bg-blue-600 text-white border-none px-6 shadow-glow transition-all active:scale-95">
-                        <Database className="mr-2 h-4 w-4" /> Seed Demo
-                    </Button>
-                    <Button onClick={() => setIsBatchModalOpen(true)} className="rounded-xl font-black uppercase tracking-widest text-xs py-5 bg-honey hover:bg-honey-dark text-black border-none px-6 shadow-glow transition-all active:scale-95">
-                        <Plus className="mr-2 h-4 w-4" /> Mint Block
-                    </Button>
-                </div>
-            </CardHeader>
-            <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                    <Table>
-                        <TableHeader>
-                            <TableRow className="border-b border-[#1e1e1e] bg-[#1e1e1e]/20">
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Batch Code</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Honey Type</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Origin</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Farmer / Beekeeper</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Harvest Date</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Quantity (KG)</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Block Hash</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {batches.length === 0 ? (
-                                <TableRow><TableCell colSpan={8} className="text-center h-48 text-muted-foreground font-medium italic">No honey batches in the blockchain yet.</TableCell></TableRow>
-                            ) : (
-                                batches.map((batch, i) => (
-                                    <TableRow
-                                        key={batch.id || i}
-                                        className="hover:bg-muted/20 transition-colors border-border/10 cursor-pointer"
-                                        onClick={() => handleViewBatch(batch)}
-                                    >
-                                        <TableCell className="px-6">
-                                            <div className="font-black text-primary tracking-tighter flex items-center gap-2">
-                                                <CheckCircle2 className="w-4 h-4" />
-                                                {batch.batch_code || `BC-00${i}`}
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="px-6 font-semibold">{batch.honey_type}</TableCell>
-                                        <TableCell className="px-6 text-sm">
-                                            {(batch.location_county || batch.location_region) ? (
-                                                <div className="flex flex-col gap-0.5">
-                                                    <span className="font-bold text-xs">{batch.location_county}</span>
-                                                    <span className="text-[10px] text-muted-foreground">{batch.location_region || batch.apiary_name}</span>
-                                                    {batch.latitude && batch.longitude && (
-                                                        <a
-                                                            href={`https://www.google.com/maps?q=${batch.latitude},${batch.longitude}`}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="flex items-center gap-1 text-[10px] text-blue-500 hover:text-blue-400 hover:underline mt-1 transition-colors"
-                                                            onClick={(e) => e.stopPropagation()}
-                                                        >
-                                                            <MapPin className="w-3 h-3" /> View Map
-                                                        </a>
-                                                    )}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
+                                <CardHeader>
+                                    <CardTitle className="font-black">Recent Activity Log</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-4">
+                                        {orders.slice(0, 3).map(o => (
+                                            <div key={o.id} className="flex justify-between items-center border-b border-border/10 pb-2">
+                                                <div>
+                                                    <p className="font-bold text-sm">New Order received</p>
+                                                    <p className="text-xs text-muted-foreground">{new Date(o.created_at).toLocaleString()}</p>
                                                 </div>
-                                            ) : <span className="text-muted-foreground">-</span>}
-                                        </TableCell>
-                                        <TableCell className="px-6 text-sm">
-                                            <div className="flex flex-col gap-1">
-                                                {batch.farmer_name && (
-                                                    <div className="flex flex-col">
-                                                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Farmer</span>
-                                                        <span className="font-semibold text-xs">{batch.farmer_name}</span>
-                                                    </div>
-                                                )}
-                                                {batch.beekeeper_name && (
-                                                    <div className="flex flex-col">
-                                                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Beekeeper</span>
-                                                        <span className="font-semibold text-xs">{batch.beekeeper_name}</span>
-                                                    </div>
-                                                )}
-                                                <span className="text-[10px] text-muted-foreground pt-1 border-t border-border/10">
-                                                    {batch.farmer_phone || batch.beekeeper_id || '-'}
-                                                </span>
+                                                <Badge variant="outline">{o.status}</Badge>
                                             </div>
-                                        </TableCell>
-                                        <TableCell className="px-6 text-sm tabular-nums">{batch.harvest_date}</TableCell>
-                                        <TableCell className="px-6 text-right font-black italic">{batch.quantity_kg}</TableCell>
-                                        <TableCell className="px-6">
-                                            <div className="flex items-center gap-2 group cursor-help" title={batch.block_hash}>
-                                                <div className="w-2 h-2 rounded-xl bg-green-500 animate-pulse" />
-                                                <code className="text-[10px] bg-muted px-2 py-1 rounded-md opacity-70 group-hover:opacity-100 transition-opacity truncate max-w-[120px] font-mono">
-                                                    {batch.block_hash || '0x00...00'}
-                                                </code>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="px-6">
-                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={(e) => { e.stopPropagation(); handleDeleteBatch(batch.id); }}>
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-blue-500 hover:bg-blue-500/10 ml-1" onClick={(e) => { e.stopPropagation(); handleViewBatch(batch); }}>
-                                                <Eye className="h-4 w-4" />
-                                            </Button>
-                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-primary hover:bg-primary/10 ml-1" onClick={(e) => { e.stopPropagation(); handleEditBatch(batch); }}>
-                                                <Edit className="h-4 w-4" />
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
-                </div>
-            </CardContent>
-        </Card>
-
-        {/* Batch Creation Dialog */}
-        <Dialog open={isBatchModalOpen} onOpenChange={setIsBatchModalOpen}>
-            <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-2xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                    <DialogTitle className="text-2xl font-black">Mint New Ledger Entry</DialogTitle>
-                    <DialogDescription>This action will finalize the batch data on the irreversible HoneyChain network.</DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-6 py-4">
-                    {/* Basic Info */}
-                    <div className="space-y-4">
-                        <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-white/10 pb-2">Batch Details</h4>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Botanical Profile</Label>
-                                <Input value={batchForm.honey_type} onChange={e => setBatchForm({ ...batchForm, honey_type: e.target.value })} placeholder="e.g. Acacia Noir" className="rounded-xl h-11 bg-muted/50" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Harvest Date</Label>
-                                <Input type="date" value={batchForm.harvest_date} onChange={e => setBatchForm({ ...batchForm, harvest_date: e.target.value })} className="rounded-xl h-11 bg-muted/50" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Packaged Date</Label>
-                                <Input type="date" value={(batchForm as any).packaged_date || ''} onChange={e => setBatchForm({ ...batchForm, packaged_date: e.target.value } as any)} className="rounded-xl h-11 bg-muted/50" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Yield (Total KG)</Label>
-                                <Input type="number" value={batchForm.quantity_kg} onChange={e => setBatchForm({ ...batchForm, quantity_kg: parseFloat(e.target.value) })} className="rounded-xl h-11 bg-muted/50" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Processing Method</Label>
-                                <Select onValueChange={(val) => setBatchForm({ ...batchForm, processing_method: val })} defaultValue={batchForm.processing_method}>
-                                    <SelectTrigger className="rounded-xl h-11 bg-muted/50">
-                                        <SelectValue placeholder="Select Method" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="Raw Filtered">Raw Filtered</SelectItem>
-                                        <SelectItem value="Creamed">Creamed</SelectItem>
-                                        <SelectItem value="Pasteurized">Pasteurized</SelectItem>
-                                        <SelectItem value="Comb Honey">Comb Honey</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Source Info */}
-                    <div className="space-y-4">
-                        <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-white/10 pb-2">Source Origin</h4>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Farmer Name</Label>
-                                <Input
-                                    value={(batchForm as any).farmer_name || ''}
-                                    onChange={e => setBatchForm({ ...batchForm, farmer_name: e.target.value } as any)}
-                                    placeholder="e.g. John Doe"
-                                    className="rounded-xl h-11 bg-muted/50"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Contact Phone</Label>
-                                <Input
-                                    value={(batchForm as any).farmer_phone || ''}
-                                    onChange={e => setBatchForm({ ...batchForm, farmer_phone: e.target.value } as any)}
-                                    placeholder="+254..."
-                                    className="rounded-xl h-11 bg-muted/50"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Beekeeper Name</Label>
-                                <Input
-                                    value={(batchForm as any).beekeeper_name || ''}
-                                    onChange={e => setBatchForm({ ...batchForm, beekeeper_name: e.target.value } as any)}
-                                    placeholder="e.g. Jane Smith"
-                                    className="rounded-xl h-11 bg-muted/50"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Beekeeper ID</Label>
-                                <Input
-                                    value={(batchForm as any).beekeeper_id || ''}
-                                    onChange={e => setBatchForm({ ...batchForm, beekeeper_id: e.target.value } as any)}
-                                    placeholder="ID-..."
-                                    className="rounded-xl h-11 bg-muted/50"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">County</Label>
-                                <Input
-                                    value={(batchForm as any).location_county || ''}
-                                    onChange={e => setBatchForm({ ...batchForm, location_county: e.target.value } as any)}
-                                    placeholder="e.g. Kitui"
-                                    className="rounded-xl h-11 bg-muted/50"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Region</Label>
-                                <Input
-                                    value={(batchForm as any).location_region || ''}
-                                    onChange={e => setBatchForm({ ...batchForm, location_region: e.target.value } as any)}
-                                    placeholder="e.g. Mwingi North"
-                                    className="rounded-xl h-11 bg-muted/50"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Apiary Name</Label>
-                                <Input
-                                    value={(batchForm as any).apiary_name || ''}
-                                    onChange={e => setBatchForm({ ...batchForm, apiary_name: e.target.value } as any)}
-                                    placeholder="e.g. Acacia Grove"
-                                    className="rounded-xl h-11 bg-muted/50"
-                                />
-                            </div>
-                            <div className="grid grid-cols-2 gap-2">
-                                <div className="space-y-2">
-                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Lat</Label>
-                                    <Input
-                                        type="number" step="any"
-                                        value={(batchForm as any).latitude || ''}
-                                        onChange={e => setBatchForm({ ...batchForm, latitude: parseFloat(e.target.value) } as any)}
-                                        placeholder="-1.23"
-                                        className="rounded-xl h-11 bg-muted/50"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Long</Label>
-                                    <Input
-                                        type="number" step="any"
-                                        value={(batchForm as any).longitude || ''}
-                                        onChange={e => setBatchForm({ ...batchForm, longitude: parseFloat(e.target.value) } as any)}
-                                        placeholder="36.8"
-                                        className="rounded-xl h-11 bg-muted/50"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Quality Metrics */}
-                    <div className="space-y-4">
-                        <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-white/10 pb-2">Quality Assurance</h4>
-                        <div className="grid grid-cols-3 gap-4">
-                            <div className="space-y-2">
-                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Grade</Label>
-                                <Select onValueChange={(val) => setBatchForm({ ...batchForm, quality_grade: val } as any)} defaultValue="A">
-                                    <SelectTrigger className="rounded-xl h-11 bg-muted/50">
-                                        <SelectValue placeholder="Grade" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="A">Grade A (Premium)</SelectItem>
-                                        <SelectItem value="B">Grade B (Standard)</SelectItem>
-                                        <SelectItem value="C">Grade C (Industrial)</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Moisture (%)</Label>
-                                <Input
-                                    type="number"
-                                    step="0.1"
-                                    value={(batchForm as any).moisture_content || ''}
-                                    onChange={e => setBatchForm({ ...batchForm, moisture_content: parseFloat(e.target.value) } as any)}
-                                    placeholder="18.5"
-                                    className="rounded-xl h-11 bg-muted/50"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Color Grade</Label>
-                                <Select onValueChange={(val) => setBatchForm({ ...batchForm, color_grade: val } as any)}>
-                                    <SelectTrigger className="rounded-xl h-11 bg-muted/50">
-                                        <SelectValue placeholder="Select Color" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="Water White">Water White</SelectItem>
-                                        <SelectItem value="Extra White">Extra White</SelectItem>
-                                        <SelectItem value="White">White</SelectItem>
-                                        <SelectItem value="Extra Light Amber">Extra Light Amber</SelectItem>
-                                        <SelectItem value="Light Amber">Light Amber</SelectItem>
-                                        <SelectItem value="Amber">Amber</SelectItem>
-                                        <SelectItem value="Dark Amber">Dark Amber</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <DialogFooter>
-                    <Button onClick={handleSaveBatch} className="w-full rounded-2xl py-6 font-black uppercase tracking-widest text-xs bg-honey hover:bg-honey-dark text-black border-none shadow-glow">Initialize Block Minting</Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-
-        {/* Batch Details Dialog */}
-        <Dialog open={isBatchDetailsOpen} onOpenChange={setIsBatchDetailsOpen}>
-            <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-2xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                    <DialogTitle className="text-2xl font-black flex items-center gap-2">
-                        <Shield className="w-6 h-6 text-green-500" />
-                        Batch Verification
-                    </DialogTitle>
-                    <DialogDescription className="font-mono text-xs">
-                        BLOCKCHAIN ID: {selectedBatch?.block_hash}
-                    </DialogDescription>
-                </DialogHeader>
-
-                {selectedBatch && (
-                    <div className="space-y-8 py-4">
-                        {/* Header Status Card */}
-                        <div className="bg-muted/30 p-4 rounded-2xl flex justify-between items-center border border-border/50">
-                            <div>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Batch Code</p>
-                                <p className="text-xl font-black font-mono text-primary">{selectedBatch.batch_code}</p>
-                            </div>
-                            <Badge className="bg-green-500/20 text-green-600 px-4 py-1 h-8 rounded-xl font-black uppercase tracking-widest border-none">
-                                VERIFIED ON LEDGER
-                            </Badge>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-8">
-                            <div className="space-y-4">
-                                <h4 className="font-black uppercase tracking-widest text-xs border-b border-border/50 pb-2 flex items-center gap-2">
-                                    <Package className="w-4 h-4" /> Product Details
-                                </h4>
-                                <div className="space-y-3">
-                                    <div>
-                                        <p className="text-[10px] uppercase text-muted-foreground font-bold">Honey Type</p>
-                                        <p className="font-semibold">{selectedBatch.honey_type}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] uppercase text-muted-foreground font-bold">Quantity</p>
-                                        <p className="font-semibold">{selectedBatch.quantity_kg} KG</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] uppercase text-muted-foreground font-bold">Processing</p>
-                                        <p className="font-semibold">{selectedBatch.processing_method}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] uppercase text-muted-foreground font-bold">Harvest Date</p>
-                                        <p className="font-mono text-sm">{selectedBatch.harvest_date}</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="space-y-4">
-                                <h4 className="font-black uppercase tracking-widest text-xs border-b border-border/50 pb-2 flex items-center gap-2">
-                                    <Users className="w-4 h-4" /> Origin Source
-                                </h4>
-                                <div className="space-y-3">
-                                    <div>
-                                        <p className="text-[10px] uppercase text-muted-foreground font-bold">Farmer</p>
-                                        <p className="font-semibold">{selectedBatch.farmer_name || 'N/A'}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] uppercase text-muted-foreground font-bold">Beekeeper</p>
-                                        <p className="font-semibold">{selectedBatch.beekeeper_name || 'N/A'}</p>
-                                        <p className="text-xs text-muted-foreground">{selectedBatch.beekeeper_id}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] uppercase text-muted-foreground font-bold">Location</p>
-                                        <p className="font-semibold">{selectedBatch.location_county || 'N/A'}, {selectedBatch.location_region || ''}</p>
-                                        <p className="text-xs text-muted-foreground">{selectedBatch.apiary_name}</p>
-                                        {selectedBatch.latitude && (
-                                            <a
-                                                href={`https://www.google.com/maps?q=${selectedBatch.latitude},${selectedBatch.longitude}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-[10px] text-blue-500 hover:underline flex items-center gap-1 mt-1"
-                                            >
-                                                <MapPin className="w-3 h-3" /> View Map
-                                            </a>
-                                        )}
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] uppercase text-muted-foreground font-bold">Contact</p>
-                                        <p className="font-mono text-sm">{selectedBatch.farmer_phone || 'N/A'}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="space-y-4">
-                            <h4 className="font-black uppercase tracking-widest text-xs border-b border-border/50 pb-2 flex items-center gap-2">
-                                <Shield className="w-4 h-4" /> Quality Assurance
-                            </h4>
-                            <div className="grid grid-cols-3 gap-4">
-                                <div className="bg-muted/30 p-3 rounded-xl text-center">
-                                    <p className="text-[10px] uppercase text-muted-foreground font-bold">Grade</p>
-                                    <p className="text-lg font-black">{selectedBatch.quality_grade || 'A'}</p>
-                                </div>
-                                <div className="bg-muted/30 p-3 rounded-xl text-center">
-                                    <p className="text-[10px] uppercase text-muted-foreground font-bold">Moisture</p>
-                                    <p className="text-lg font-black">{selectedBatch.moisture_content || 0}%</p>
-                                </div>
-                                <div className="bg-muted/30 p-3 rounded-xl text-center">
-                                    <p className="text-[10px] uppercase text-muted-foreground font-bold">Color</p>
-                                    <p className="text-sm font-black mt-1">{selectedBatch.color_grade || 'N/A'}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-                <DialogFooter>
-                    <Button onClick={() => setIsBatchDetailsOpen(false)} className="rounded-xl w-full">Close Verification</Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    </TabsContent>
-
-    {/* --- FARMERS TAB --- */ }
-    <TabsContent value="farmers" className="space-y-6">
-        <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
-            <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30 flex flex-row items-center justify-between">
-                <div>
-                    <CardTitle className="text-xl font-bold">Agricultural Partners</CardTitle>
-                    <CardDescription>Authenticated network of honey harvesters and growers.</CardDescription>
-                </div>
-                <Button
-                    onClick={() => setIsFarmerModalOpen(true)}
-                    variant="outline"
-                    className="rounded-xl font-black uppercase tracking-widest text-xs h-auto py-4 border-dashed border-primary/30"
-                >
-                    <Plus className="mr-2 h-4 w-4" /> Register Farmer
-                </Button>
-            </CardHeader>
-            <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                    <Table>
-                        <TableHeader>
-                            <TableRow className="border-b border-[#1e1e1e] bg-[#1e1e1e]/20">
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Farmer</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Contact</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Location</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Experience</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {farmers.length === 0 ? (
-                                <TableRow><TableCell colSpan={6} className="text-center h-48 text-muted-foreground font-medium italic">No registered farmers found.</TableCell></TableRow>
-                            ) : (
-                                farmers.map((farmer) => (
-                                    <TableRow key={farmer.id} className="hover:bg-muted/20 transition-colors border-border/10">
-                                        <TableCell className="px-6">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-xl bg-honey/20 flex items-center justify-center font-black text-honey">
-                                                    {farmer.name?.[0]?.toUpperCase() || 'F'}
+                                        ))}
+                                        {batches.slice(0, 3).map(b => (
+                                            <div key={b.id} className="flex justify-between items-center border-b border-border/10 pb-2">
+                                                <div>
+                                                    <p className="font-bold text-sm">Batch Minted: {b.batch_code}</p>
+                                                    <p className="text-xs text-muted-foreground">{new Date(b.created_at).toLocaleString()}</p>
                                                 </div>
-                                                <div className="flex flex-col">
-                                                    <span className="font-bold">{farmer.name}</span>
-                                                    <span className="text-[10px] text-muted-foreground uppercase font-mono">{farmer.farmer_id || 'ID-PENDING'}</span>
-                                                </div>
+                                                <Badge className="bg-green-500/20 text-green-600 border-none">Verified</Badge>
                                             </div>
-                                        </TableCell>
-                                        <TableCell className="px-6">
-                                            <div className="text-sm font-medium">{farmer.phone}</div>
-                                            <div className="text-[10px] text-muted-foreground">{farmer.email || 'No email'}</div>
-                                        </TableCell>
-                                        <TableCell className="px-6">
-                                            <div className="text-sm">{farmer.county || 'N/A'}</div>
-                                            <div className="text-[10px] text-muted-foreground">{farmer.region || farmer.location_name || ''}</div>
-                                        </TableCell>
-                                        <TableCell className="px-6">
-                                            <Badge variant="outline" className="bg-blue-500/5 text-blue-600 border-blue-200">
-                                                {farmer.experience_years} Years
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="px-6">
-                                            <Badge className={farmer.certification_status === 'CERTIFIED' ? 'bg-green-500/10 text-green-600 border-none' : 'bg-amber-500/10 text-amber-600 border-none'}>
-                                                {farmer.certification_status || 'PENDING'}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="px-6 text-right">
-                                            <div className="flex justify-end gap-2">
-                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-primary hover:bg-primary/10 ml-1" onClick={() => handleEditFarmer(farmer)}>
-                                                    <Edit className="h-4 w-4" />
-                                                </Button>
-                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteFarmer(farmer.id)}>
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
-                </div>
-            </CardContent>
-        </Card>
-
-        {/* Farmer Registration Dialog */}
-        <Dialog open={isFarmerModalOpen} onOpenChange={(open) => { setIsFarmerModalOpen(open); if (!open) setEditingFarmer(null); }}>
-            <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-2xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                    <DialogTitle className="text-3xl font-black tracking-tighter">{editingFarmer ? 'Modify Partner' : 'Register Partner'}</DialogTitle>
-                    <DialogDescription>{editingFarmer ? 'Update beekeeper credentials and parameters.' : 'Initialize a new beekeeper record on the BeeYield network.'}</DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-6 py-4">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Full Name</Label>
-                            <Input placeholder="Timothy Nduva" value={farmerForm.name} onChange={e => setFarmerForm({ ...farmerForm, name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Phone Number</Label>
-                            <Input placeholder="+254 7XX XXX XXX" value={farmerForm.phone} onChange={e => setFarmerForm({ ...farmerForm, phone: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Email Address</Label>
-                            <Input type="email" placeholder="timothy@beeyield.com" value={farmerForm.email} onChange={e => setFarmerForm({ ...farmerForm, email: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">ID Number</Label>
-                            <Input placeholder="National ID or Passport" value={farmerForm.id_number} onChange={e => setFarmerForm({ ...farmerForm, id_number: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-3 gap-4">
-                        <div className="space-y-2">
-                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">County</Label>
-                            <Input placeholder="Makueni" value={farmerForm.county} onChange={e => setFarmerForm({ ...farmerForm, county: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Region</Label>
-                            <Input placeholder="Eastern" value={farmerForm.region} onChange={e => setFarmerForm({ ...farmerForm, region: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Years Experience</Label>
-                            <Input type="number" value={farmerForm.experience_years} onChange={e => setFarmerForm({ ...farmerForm, experience_years: parseInt(e.target.value) || 0 })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                        </div>
-                    </div>
-                    <div className="space-y-2">
-                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Location Details / Ward</Label>
-                        <Input placeholder="Kibwezi East, Mtito Andei" value={farmerForm.location_name} onChange={e => setFarmerForm({ ...farmerForm, location_name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                    </div>
-                    <div className="space-y-2">
-                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">The Beekeeper's Story</Label>
-                        <Textarea
-                            placeholder="Brief background about the farmer..."
-                            value={farmerForm.story}
-                            onChange={e => setFarmerForm({ ...farmerForm, story: e.target.value })}
-                            className="rounded-xl min-h-[100px] bg-muted/50 border-border/50"
-                        />
-                    </div>
-                </div>
-                <DialogFooter>
-                    <Button onClick={handleSaveFarmer} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
-                        {editingFarmer ? 'Update Partner Records' : 'Complete Network Registration'}
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    </TabsContent>
-
-    {/* --- APIARIES TAB --- */ }
-    <TabsContent value="apiaries" className="space-y-6">
-        <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
-            <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30 flex flex-row items-center justify-between">
-                <div>
-                    <CardTitle className="text-xl font-bold">Apiary Locations</CardTitle>
-                    <CardDescription>Geospatial management of hive clusters and honey production sites.</CardDescription>
-                </div>
-                <Button
-                    onClick={() => setIsApiaryModalOpen(true)}
-                    variant="outline"
-                    className="rounded-xl font-black uppercase tracking-widest text-xs h-auto py-4 border-dashed border-primary/30"
-                >
-                    <Plus className="mr-2 h-4 w-4" /> Register Apiary
-                </Button>
-            </CardHeader>
-            <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                    <Table>
-                        <TableHeader>
-                            <TableRow className="border-b border-[#1e1e1e] bg-[#1e1e1e]/20">
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Farmer</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Location</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Hives</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {apiaries.length === 0 ? (
-                                <TableRow><TableCell colSpan={6} className="text-center h-48 text-muted-foreground font-medium">No apiaries registered on the BeeYield grid.</TableCell></TableRow>
-                            ) : (
-                                apiaries.map((apiary) => (
-                                    <TableRow key={apiary.id} className="hover:bg-muted/20 transition-colors border-border/10">
-                                        <TableCell className="px-6 font-bold">{apiary.name}</TableCell>
-                                        <TableCell className="px-6">{apiary.farmers?.name || 'Assigned Partner'}</TableCell>
-                                        <TableCell className="px-6">
-                                            <div className="text-sm font-medium">{apiary.location_name || apiary.county}</div>
-                                            <div className="text-[10px] text-muted-foreground">{apiary.region}</div>
-                                        </TableCell>
-                                        <TableCell className="px-6 text-right font-black">
-                                            {hives.filter(h => h.apiary_id === apiary.id).length}
-                                        </TableCell>
-                                        <TableCell className="px-6">
-                                            <Badge variant="outline" className={apiary.status === 'active' ? "bg-green-500/10 text-green-600 border-green-200" : "bg-muted text-muted-foreground"}>
-                                                {apiary.status?.toUpperCase()}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="px-6 text-right">
-                                            <div className="flex justify-end gap-2">
-                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleEditApiary(apiary)}>
-                                                    <Edit className="h-4 w-4" />
-                                                </Button>
-                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteApiary(apiary.id)}>
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
-                </div>
-            </CardContent>
-        </Card>
-
-        {/* Apiary Modal */}
-        <Dialog open={isApiaryModalOpen} onOpenChange={(open) => { setIsApiaryModalOpen(open); if (!open) setEditingApiary(null); }}>
-            <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-xl">
-                <DialogHeader>
-                    <DialogTitle className="text-3xl font-black tracking-tighter">{editingApiary ? 'Calibrate Apiary' : 'Map New Apiary'}</DialogTitle>
-                    <DialogDescription>Define production site parameters and associate with agricultural partners.</DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-6 py-4">
-                    <div className="space-y-2">
-                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Apiary Name</Label>
-                        <Input placeholder="Kibwezi East Cluster A" value={apiaryForm.name} onChange={e => setApiaryForm({ ...apiaryForm, name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">County</Label>
-                            <Input placeholder="Makueni" value={apiaryForm.county} onChange={e => setApiaryForm({ ...apiaryForm, county: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Region</Label>
-                            <Input placeholder="Eastern" value={apiaryForm.region} onChange={e => setApiaryForm({ ...apiaryForm, region: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                        </div>
-                    </div>
-                    <div className="space-y-2">
-                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Assigned Farmer</Label>
-                        <Select value={apiaryForm.farmer_id} onValueChange={val => setApiaryForm({ ...apiaryForm, farmer_id: val })}>
-                            <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
-                                <SelectValue placeholder="Select Partner" />
-                            </SelectTrigger>
-                            <SelectContent className="rounded-xl border-border/50">
-                                {farmers.map(f => (
-                                    <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Latitude</Label>
-                            <Input type="number" step="any" value={apiaryForm.latitude} onChange={e => setApiaryForm({ ...apiaryForm, latitude: parseFloat(e.target.value) })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Longitude</Label>
-                            <Input type="number" step="any" value={apiaryForm.longitude} onChange={e => setApiaryForm({ ...apiaryForm, longitude: parseFloat(e.target.value) })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                        </div>
-                    </div>
-                </div>
-                <DialogFooter>
-                    <Button onClick={handleSaveApiary} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
-                        {editingApiary ? 'Update Production Site' : 'Authenticate Site Registration'}
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    </TabsContent>
-
-    {/* --- HIVES TAB --- */ }
-    <TabsContent value="hives" className="space-y-6">
-        <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
-            <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30 flex flex-row items-center justify-between">
-                <div>
-                    <CardTitle className="text-xl font-bold">Smart Hive Ledger</CardTitle>
-                    <CardDescription>Inventory and health status of individual colony units.</CardDescription>
-                </div>
-                <Button
-                    onClick={() => setIsHiveModalOpen(true)}
-                    variant="outline"
-                    className="rounded-xl font-black uppercase tracking-widest text-xs h-auto py-4 border-dashed border-primary/30"
-                >
-                    <Plus className="mr-2 h-4 w-4" /> Deploy Hive
-                </Button>
-            </CardHeader>
-            <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                    <Table>
-                        <TableHeader>
-                            <TableRow className="border-b border-[#1e1e1e] bg-[#1e1e1e]/20">
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Hive Code</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Apiary</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Type</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Installed</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {hives.length === 0 ? (
-                                <TableRow><TableCell colSpan={6} className="text-center h-48 text-muted-foreground font-medium">No hives deployed in the honeycomb network.</TableCell></TableRow>
-                            ) : (
-                                hives.map((hive) => (
-                                    <TableRow key={hive.id} className="hover:bg-muted/20 transition-colors border-border/10">
-                                        <TableCell className="px-6 font-mono font-bold text-primary">{hive.hive_code}</TableCell>
-                                        <TableCell className="px-6 font-semibold">{hive.apiaries?.name || 'Assigned Site'}</TableCell>
-                                        <TableCell className="px-6">{hive.type}</TableCell>
-                                        <TableCell className="px-6 text-sm text-muted-foreground">{new Date(hive.installation_date).toLocaleDateString()}</TableCell>
-                                        <TableCell className="px-6">
-                                            <Badge variant="outline" className={hive.status === 'active' ? "bg-green-500/10 text-green-600 border-green-200" : "bg-yellow-500/10 text-yellow-600 border-yellow-200"}>
-                                                {hive.status?.toUpperCase()}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="px-6 text-right">
-                                            <div className="flex justify-end gap-2">
-                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleEditHive(hive)}>
-                                                    <Edit className="h-4 w-4" />
-                                                </Button>
-                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteHive(hive.id)}>
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
-                </div>
-            </CardContent>
-        </Card>
-
-        {/* --- ORDERS TAB --- */}
-        <TabsContent value="orders" className="space-y-6">
-            <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
-                <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30">
-                    <CardTitle className="text-xl font-bold">Recent Orders ({orders.length})</CardTitle>
-                    <CardDescription className="text-[#a1a1aa]">Manage and track all customer orders.</CardDescription>
-                </CardHeader>
-                <CardContent className="p-0">
-                    <Table>
-                        <TableHeader>
-                            <TableRow className="border-b border-[#1e1e1e] bg-[#1e1e1e]/20">
-                                <TableHead className="text-[#a1a1aa] font-bold uppercase text-[10px] tracking-wider px-6 py-4">Status</TableHead>
-                                <TableHead className="text-[#a1a1aa] font-bold uppercase text-[10px] tracking-wider px-6 py-4">Order ID</TableHead>
-                                <TableHead className="text-[#a1a1aa] font-bold uppercase text-[10px] tracking-wider px-6 py-4">Customer</TableHead>
-                                <TableHead className="text-[#a1a1aa] font-bold uppercase text-[10px] tracking-wider px-6 py-4">Amount</TableHead>
-                                <TableHead className="text-[#a1a1aa] font-bold uppercase text-[10px] tracking-wider px-6 py-4">Date</TableHead>
-                                <TableHead className="text-[#a1a1aa] font-bold uppercase text-[10px] tracking-wider text-right px-6 py-4">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {orders.length === 0 ? (
-                                <TableRow><TableCell colSpan={6} className="text-center h-32 text-[#71717a]">No orders found protocol.</TableCell></TableRow>
-                            ) : (
-                                orders.map((order) => (
-                                    <TableRow key={order.id} className="border-b border-[#1e1e1e] hover:bg-[#1e1e1e]/50 transition-colors">
-                                        <TableCell className="px-6 py-4">{getStatusLabel(order.status)}</TableCell>
-                                        <TableCell className="px-6 py-4 font-mono text-xs text-[#a1a1aa]">{order.id.slice(0, 8)}...</TableCell>
-                                        <TableCell className="px-6 py-4 font-medium">{order.shipping_address?.first_name || 'Guest'} {order.shipping_address?.last_name || ''}</TableCell>
-                                        <TableCell className="px-6 py-4">KES {order.total_amount?.toLocaleString()}</TableCell>
-                                        <TableCell className="px-6 py-4 text-[#a1a1aa]">{new Date(order.created_at).toLocaleDateString()}</TableCell>
-                                        <TableCell className="px-6 py-4 text-right">
-                                            <div className="flex justify-end gap-2">
-                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-[#a1a1aa] hover:text-white" onClick={() => handleViewOrder(order)}><Eye className="h-4 w-4" /></Button>
-                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500/50 hover:text-red-500" onClick={() => handleDeleteOrder(order.id)}><Trash2 className="h-4 w-4" /></Button>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
-        </TabsContent>
-
-        {/* Hive Modal */}
-        <Dialog open={isHiveModalOpen} onOpenChange={(open) => { setIsHiveModalOpen(open); if (!open) setEditingHive(null); }}>
-            <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-xl">
-                <DialogHeader>
-                    <DialogTitle className="text-3xl font-black tracking-tighter">{editingHive ? 'Sync Hive Sensors' : 'Deploy New Unit'}</DialogTitle>
-                    <DialogDescription>Register individual colony components and their mechanical signatures.</DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-6 py-4">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Hive Code</Label>
-                            <Input placeholder="HIVE-KIB-001" value={hiveForm.hive_code} onChange={e => setHiveForm({ ...hiveForm, hive_code: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Hive Type</Label>
-                            <Select value={hiveForm.type} onValueChange={val => setHiveForm({ ...hiveForm, type: val })}>
-                                <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-xl border-border/50">
-                                    <SelectItem value="Langstroth">Langstroth</SelectItem>
-                                    <SelectItem value="KTB">Kenya Top Bar (KTB)</SelectItem>
-                                    <SelectItem value="Traditional">Traditional Log</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-                    <div className="space-y-2">
-                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Target Apiary</Label>
-                        <Select value={hiveForm.apiary_id} onValueChange={val => setHiveForm({ ...hiveForm, apiary_id: val })}>
-                            <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
-                                <SelectValue placeholder="Select Site" />
-                            </SelectTrigger>
-                            <SelectContent className="rounded-xl border-border/50">
-                                {apiaries.map(a => (
-                                    <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Installation Date</Label>
-                            <Input type="date" value={hiveForm.installation_date} onChange={e => setHiveForm({ ...hiveForm, installation_date: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Health Status</Label>
-                            <Select value={hiveForm.status} onValueChange={val => setHiveForm({ ...hiveForm, status: val })}>
-                                <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-xl border-border/50">
-                                    <SelectItem value="active">Active & Healthy</SelectItem>
-                                    <SelectItem value="weak">Weak Colony</SelectItem>
-                                    <SelectItem value="abandoned">Abandoned</SelectItem>
-                                    <SelectItem value="harvested">Recently Harvested</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-                    <div className="space-y-2">
-                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Mechanical Notes</Label>
-                        <Textarea placeholder="Condition of the box, queen status, etc." value={hiveForm.notes} onChange={e => setHiveForm({ ...hiveForm, notes: e.target.value })} className="rounded-xl bg-muted/50 border-border/50" />
-                    </div>
-                </div>
-                <DialogFooter>
-                    <Button onClick={handleSaveHive} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
-                        {editingHive ? 'Sync Unit Parameters' : 'Authorize Deployment'}
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    </TabsContent>
-
-    {/* --- TEAM MANAGEMENT (SUPER ADMIN ONLY) --- */ }
-    {
-        isSuperAdmin && (
-            <TabsContent value="team" className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
-                <div className="flex justify-between items-center">
-                    <div>
-                        <h2 className="text-xl font-bold flex gap-2 items-center">
-                            <Shield className="w-6 h-6 text-primary" /> Admin Command Circle
-                        </h2>
-                        <p className="text-muted-foreground font-medium">Elevate user privileges or terminate access protocols.</p>
-                    </div>
-                    <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-1.5 rounded-xl font-black text-[10px] tracking-tighter">
-                        {systemUsers.length} MEMBERS
-                    </Badge>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {systemUsers.map((userObj) => (
-                        <Card key={userObj.id} className="border-border/50 bg-card/60 backdrop-blur rounded-3xl overflow-hidden hover:shadow-xl transition-all border group">
-                            <CardHeader className="pb-3 relative">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center font-black text-primary text-xl relative">
-                                        {userObj.email?.[0].toUpperCase()}
-                                        {userObj.role === 'super_admin' && (
-                                            <div className="absolute -top-1 -right-1 bg-yellow-400 text-black rounded-xl p-0.5 shadow-lg border-2 border-background">
-                                                <Crown className="w-3 h-3" />
-                                            </div>
-                                        )}
+                                        ))}
                                     </div>
-                                    <div className="flex-1 min-w-0">
-                                        <CardTitle className="text-lg font-black truncate">{userObj.first_name || 'Anonymous'} {userObj.last_name || ''}</CardTitle>
-                                        <CardDescription className="font-mono text-[10px] truncate opacity-80">{userObj.email}</CardDescription>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </TabsContent>
+
+                    {/* --- ORDERS TAB --- */}
+                    <TabsContent value="orders" className="space-y-6">
+                        <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
+                            <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30">
+                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                    <div>
+                                        <CardTitle className="text-xl font-bold">Recent Orders</CardTitle>
+                                        <CardDescription>View and manage all customer transactions.</CardDescription>
                                     </div>
                                 </div>
                             </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Clearance Level</span>
-                                    <Select
-                                        defaultValue={userObj.role}
-                                        onValueChange={(value) => handleUpdateUserRole(userObj.id, value)}
-                                        disabled={userObj.role === 'super_admin' && userObj.email === user?.email} // Can't de-rank self if last super admin (mock safety)
-                                    >
-                                        <SelectTrigger className="w-32 h-8 rounded-xl text-[10px] font-black uppercase tracking-widest border-none bg-muted/60">
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent className="rounded-xl">
-                                            <SelectItem value="user" className="text-xs font-bold">OPERATIVE (USER)</SelectItem>
-                                            <SelectItem value="admin" className="text-xs font-bold">OVERSEER (ADMIN)</SelectItem>
-                                            <SelectItem value="super_admin" className="text-xs font-bold">ENTITY (SUPER ADMIN)</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                            <CardContent className="p-0">
+                                <div className="overflow-x-auto">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow className="border-b border-[#1e1e1e] bg-[#1e1e1e]/20">
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Order #</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Customer</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Items</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Total (KES)</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {orders.length === 0 ? (
+                                                <TableRow><TableCell colSpan={7} className="text-center h-48 text-muted-foreground font-medium">No order data synchronized.</TableCell></TableRow>
+                                            ) : (
+                                                orders.map((order) => (
+                                                    <TableRow key={order.id} className="hover:bg-muted/20 transition-colors border-border/10">
+                                                        <TableCell className="px-6 font-mono font-bold text-primary">{order.order_number || `BY-${order.id.toString().slice(0, 8)}`}</TableCell>
+                                                        <TableCell className="px-6">
+                                                            <div className="font-semibold">{order.shipping_address?.first_name || 'Anonymous'} {order.shipping_address?.last_name || ''}</div>
+                                                            <div className="text-xs text-muted-foreground">{order.customer_email || order.shipping_address?.email}</div>
+                                                        </TableCell>
+                                                        <TableCell className="px-6 text-right font-medium">{order.items?.length || 0}</TableCell>
+                                                        <TableCell className="px-6 text-right font-black italic">{order.total_amount?.toLocaleString()}</TableCell>
+                                                        <TableCell className="px-6">
+                                                            <Select
+                                                                defaultValue={order.status}
+                                                                onValueChange={(value) => handleUpdateOrderStatus(order.id, value)}
+                                                            >
+                                                                <SelectTrigger className="w-[140px] h-9 text-[10px] font-black uppercase tracking-wider rounded-xl bg-background/50 border-border/50">
+                                                                    <SelectValue />
+                                                                </SelectTrigger>
+                                                                <SelectContent className="rounded-xl border-border/50">
+                                                                    <SelectItem value="pending" className="text-xs font-bold">PENDING</SelectItem>
+                                                                    <SelectItem value="processing" className="text-xs font-bold">PROCESSING</SelectItem>
+                                                                    <SelectItem value="shipped" className="text-xs font-bold">SHIPPED</SelectItem>
+                                                                    <SelectItem value="completed" className="text-xs font-bold">COMPLETED</SelectItem>
+                                                                    <SelectItem value="cancelled" className="text-xs font-bold">CANCELLED</SelectItem>
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </TableCell>
+                                                        <TableCell className="px-6 text-xs text-muted-foreground font-medium">{new Date(order.created_at).toLocaleDateString()}</TableCell>
+                                                        <TableCell className="px-6 text-right">
+                                                            <div className="flex justify-end gap-2">
+                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleViewOrder(order)}>
+                                                                    <Search className="h-4 w-4" />
+                                                                </Button>
+                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteOrder(order.id)}>
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                </Button>
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))
+                                            )}
+                                        </TableBody>
+                                    </Table>
                                 </div>
-
-                                <div className="flex gap-2 pt-2">
-                                    <Button
-                                        variant="outline"
-                                        className="flex-1 rounded-2xl h-10 border-border/50 text-[10px] font-black uppercase tracking-widest hover:bg-primary/10 hover:text-primary transition-colors"
-                                        onClick={() => handleEditUser(userObj)}
-                                    >
-                                        <Edit className="h-4 w-4 mr-2" /> Modify
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        className="flex-1 rounded-2xl h-10 border-border/50 text-[10px] font-black uppercase tracking-widest hover:bg-destructive/10 hover:text-destructive group-hover:border-destructive/30 transition-colors"
-                                        onClick={() => handleDeleteUser(userObj.id)}
-                                        disabled={userObj.email === user?.email} // Can't delete self
-                                    >
-                                        <UserMinus className="h-4 w-4 mr-2" /> De-Authenticate
-                                    </Button>
-                                </div>
-
                             </CardContent>
                         </Card>
-                    ))}
 
-                    {/* Add User Simulation Card */}
-                    <Card
-                        onClick={() => { setEditingUser(null); setUserForm({ first_name: '', last_name: '', email: '', password: '', role: 'user' }); setIsUserModalOpen(true); }}
-                        className="border-dashed border-2 border-border bg-transparent rounded-3xl flex flex-col items-center justify-center p-8 text-muted-foreground hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition-all group h-full min-h-[160px]"
-                    >
-                        <Users className="h-10 w-10 mb-4 group-hover:scale-110 transition-transform text-muted-foreground/40 group-hover:text-primary/40" />
-                        <h3 className="font-black uppercase tracking-widest text-xs">Awaiting New Operator</h3>
-                        <p className="text-[10px] font-medium text-center mt-2 opacity-60">Initialize authentication protocols</p>
-                    </Card>
-                </div>
-
-                {/* User CRUD Dialog */}
-                <Dialog open={isUserModalOpen} onOpenChange={setIsUserModalOpen}>
-                    <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-md">
-                        <DialogHeader>
-                            <DialogTitle className="text-3xl font-black tracking-tighter">{editingUser ? 'Modify Operator' : 'Initialize Operator'}</DialogTitle>
-                            <DialogDescription>Configure system access and identity parameters.</DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-5 py-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">First Name</Label>
-                                    <Input placeholder="John" value={userForm.first_name} onChange={e => setUserForm({ ...userForm, first_name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Last Name</Label>
-                                    <Input placeholder="Doe" value={userForm.last_name} onChange={e => setUserForm({ ...userForm, last_name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Email Address</Label>
-                                <Input type="email" placeholder="operator@beeyield.com" value={userForm.email} onChange={e => setUserForm({ ...userForm, email: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                            </div>
-                            {!editingUser && (
-                                <div className="space-y-2">
-                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Access Password</Label>
-                                    <Input type="password" placeholder="••••••••" value={userForm.password} onChange={e => setUserForm({ ...userForm, password: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                                </div>
-                            )}
-                            <div className="space-y-2">
-                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Clearance Level</Label>
-                                <Select value={userForm.role} onValueChange={(val) => setUserForm({ ...userForm, role: val })}>
-                                    <SelectTrigger className="w-full h-12 rounded-xl bg-muted/50 border-border/50">
-                                        <SelectValue placeholder="Select Role" />
-                                    </SelectTrigger>
-                                    <SelectContent className="rounded-xl">
-                                        <SelectItem value="user" className="font-bold">OPERATIVE (USER)</SelectItem>
-                                        <SelectItem value="admin" className="font-bold">OVERSEER (ADMIN)</SelectItem>
-                                        <SelectItem value="super_admin" className="font-bold">ENTITY (SUPER ADMIN)</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-                        <DialogFooter>
-                            <Button onClick={handleSaveUser} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
-                                {editingUser ? 'Update Operator' : 'Finalize Authentication'}
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
-
-            </TabsContent>
-        )
-    }
-
-    {/* --- POLLINATION REQUESTS TAB --- */ }
-    <TabsContent value="pollination" className="space-y-6">
-        <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
-            <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30">
-                <div className="flex justify-between items-center">
-                    <div>
-                        <CardTitle className="text-2xl font-black">Pollination Requests</CardTitle>
-                        <CardDescription>All incoming pollination service requests from farmers.</CardDescription>
-                    </div>
-                    <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-1.5 rounded-xl font-black text-[10px]">
-                        {pollinationRequests.length} REQUESTS
-                    </Badge>
-                </div>
-            </CardHeader>
-            <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                    <Table>
-                        <TableHeader>
-                            <TableRow className="border-b border-[#1e1e1e] bg-[#1e1e1e]/20">
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Email</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Phone</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Crop Type</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Farm Size</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Location</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {pollinationRequests.length === 0 ? (
-                                <TableRow><TableCell colSpan={9} className="text-center h-48 text-muted-foreground font-medium">No pollination requests yet.</TableCell></TableRow>
-                            ) : (
-                                pollinationRequests.map((req) => (
-                                    <TableRow key={req.id} className="hover:bg-muted/20 transition-colors border-border/10">
-                                        <TableCell className="px-6 font-semibold">{req.name || req.first_name}</TableCell>
-                                        <TableCell className="px-6 text-sm">{req.email}</TableCell>
-                                        <TableCell className="px-6 text-sm font-mono">{req.phone}</TableCell>
-                                        <TableCell className="px-6"><Badge variant="outline" className="rounded-xl">{req.crop_type || req.crop}</Badge></TableCell>
-                                        <TableCell className="px-6 text-sm">{req.farm_size || req.acreage} acres</TableCell>
-                                        <TableCell className="px-6 text-sm text-muted-foreground">{req.location || req.county}</TableCell>
-                                        <TableCell className="px-6 text-xs font-mono">{new Date(req.created_at).toLocaleDateString()}</TableCell>
-                                        <TableCell className="px-6">
-                                            <Select defaultValue={req.status || 'pending'} onValueChange={(val) => adminService.updatePollinationRequestStatus(req.id, val).then(() => { toast.success('Status updated'); loadAllData(); })}>
-                                                <SelectTrigger className="h-8 w-[120px] rounded-xl text-[10px] font-black uppercase"><SelectValue /></SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="pending">Pending</SelectItem>
-                                                    <SelectItem value="contacted">Contacted</SelectItem>
-                                                    <SelectItem value="completed">Completed</SelectItem>
-                                                    <SelectItem value="rejected">Rejected</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </TableCell>
-                                        <TableCell className="px-6 text-right">
-                                            <div className="flex justify-end gap-2">
-                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleViewPollination(req)}>
-                                                    <Search className="h-4 w-4" />
-                                                </Button>
-                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeletePollination(req.id)}>
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
+                        {/* Order Details Dialog */}
+                        <Dialog open={isOrderDetailsOpen} onOpenChange={setIsOrderDetailsOpen}>
+                            <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-2xl">
+                                <DialogHeader>
+                                    <DialogTitle className="text-xl font-bold flex gap-2 items-center">
+                                        <Package className="w-6 h-6 text-primary" /> Order Details
+                                    </DialogTitle>
+                                    <DialogDescription>Full transaction manifest.</DialogDescription>
+                                </DialogHeader>
+                                {selectedOrder && (
+                                    <div className="space-y-6">
+                                        <div className="grid grid-cols-2 gap-4 text-sm">
+                                            <div className="space-y-1">
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Order ID</p>
+                                                <p className="font-mono font-bold">{selectedOrder.order_number || selectedOrder.id}</p>
                                             </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
-                </div>
-            </CardContent>
-        </Card>
-
-        {/* Pollination Details Dialog */}
-        <Dialog open={isPollinationDetailsOpen} onOpenChange={setIsPollinationDetailsOpen}>
-            <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-md">
-                <DialogHeader>
-                    <DialogTitle className="text-2xl font-black flex gap-2 items-center">
-                        <Bug className="w-6 h-6 text-primary" /> Service Request
-                    </DialogTitle>
-                </DialogHeader>
-                {selectedPollination && (
-                    <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Farmer</p>
-                                <p className="font-bold">{selectedPollination.name || selectedPollination.first_name}</p>
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Contact</p>
-                                <p className="text-xs">{selectedPollination.email}</p>
-                                <p className="text-xs font-mono">{selectedPollination.phone}</p>
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Crop</p>
-                                <Badge variant="secondary">{selectedPollination.crop_type || selectedPollination.crop}</Badge>
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Size</p>
-                                <p className="font-bold">{selectedPollination.farm_size || selectedPollination.acreage} Acres</p>
-                            </div>
-                        </div>
-                        <div className="space-y-1">
-                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Location</p>
-                            <p className="font-medium">{selectedPollination.location || selectedPollination.county}</p>
-                        </div>
-                        <div className="space-y-1 pt-2 border-t border-border/10">
-                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Additional Notes</p>
-                            <p className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-xl italic">
-                                "{selectedPollination.notes || selectedPollination.message || 'No additional notes provided.'}"
-                            </p>
-                        </div>
-                    </div>
-                )}
-            </DialogContent>
-        </Dialog>
-    </TabsContent>
-
-    {/* --- CONTACT REQUESTS TAB --- */ }
-    <TabsContent value="contact" className="space-y-6">
-        <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
-            <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30">
-                <div className="flex justify-between items-center">
-                    <div>
-                        <CardTitle className="text-2xl font-black">Contact Submissions</CardTitle>
-                        <CardDescription>Messages received through the contact form.</CardDescription>
-                    </div>
-                    <Badge className="bg-amber-500/10 text-amber-600 border-amber-200 px-4 py-1.5 rounded-xl font-black text-[10px]">
-                        {contacts.length} MESSAGES
-                    </Badge>
-                </div>
-            </CardHeader>
-            <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                    <Table>
-                        <TableHeader>
-                            <TableRow className="border-b border-[#1e1e1e] bg-[#1e1e1e]/20">
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Email</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Subject</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest max-w-md">Message</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {contacts.length === 0 ? (
-                                <TableRow><TableCell colSpan={7} className="text-center h-48 text-muted-foreground font-medium">No contact messages yet.</TableCell></TableRow>
-                            ) : (
-                                contacts.map((contact) => (
-                                    <TableRow key={contact.id} className="hover:bg-muted/20 transition-colors border-border/10">
-                                        <TableCell className="px-6 font-semibold">{contact.name || `${contact.first_name} ${contact.last_name}`}</TableCell>
-                                        <TableCell className="px-6 text-sm">{contact.email}</TableCell>
-                                        <TableCell className="px-6"><Badge variant="outline" className="rounded-xl">{contact.subject || 'General'}</Badge></TableCell>
-                                        <TableCell className="px-6 text-sm text-muted-foreground max-w-md truncate">{contact.message}</TableCell>
-                                        <TableCell className="px-6 text-xs font-mono">{new Date(contact.created_at).toLocaleDateString()}</TableCell>
-                                        <TableCell className="px-6">
-                                            <Select defaultValue={contact.status || 'new'} onValueChange={(val) => adminService.updateContactRequestStatus(contact.id, val).then(() => { toast.success('Status updated'); loadAllData(); })}>
-                                                <SelectTrigger className="h-8 w-[100px] rounded-xl text-[10px] font-black uppercase"><SelectValue /></SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="new">New</SelectItem>
-                                                    <SelectItem value="read">Read</SelectItem>
-                                                    <SelectItem value="replied">Replied</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </TableCell>
-                                        <TableCell className="px-6 text-right">
-                                            <div className="flex justify-end gap-2">
-                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleViewContact(contact)}>
-                                                    <Search className="h-4 w-4" />
-                                                </Button>
-                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteContact(contact.id)}>
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
+                                            <div className="space-y-1">
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Status</p>
+                                                <Badge variant="outline">{selectedOrder.status}</Badge>
                                             </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
-                </div>
-            </CardContent>
-        </Card>
-
-        {/* Contact Details Dialog */}
-        <Dialog open={isContactDetailsOpen} onOpenChange={setIsContactDetailsOpen}>
-            <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-xl max-h-[85vh] overflow-y-auto">
-                <DialogHeader>
-                    <DialogTitle className="text-2xl font-black flex gap-2 items-center">
-                        <MessageSquare className="w-6 h-6 text-primary" /> Message Details
-                    </DialogTitle>
-                </DialogHeader>
-                {selectedContact && (
-                    <div className="space-y-6">
-                        {/* Header Section */}
-                        <div className="flex justify-between items-start border-b border-border/10 pb-4">
-                            <div>
-                                <p className="font-bold text-lg">{selectedContact.name || `${selectedContact.first_name} ${selectedContact.last_name}`}</p>
-                                <div className="flex flex-col gap-0.5 mt-1">
-                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                        <Mail className="w-3 h-3" /> {selectedContact.email}
-                                    </div>
-                                    {selectedContact.phone && (
-                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                            <Phone className="w-3 h-3" /> {selectedContact.phone}
+                                            <div className="space-y-1">
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Customer</p>
+                                                <p className="font-bold">{selectedOrder.shipping_address?.first_name} {selectedOrder.shipping_address?.last_name}</p>
+                                                <p className="text-muted-foreground">{selectedOrder.customer_email}</p>
+                                                <p className="text-muted-foreground">{selectedOrder.shipping_address?.phone}</p>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Shipping Address</p>
+                                                <p className="whitespace-pre-wrap">{selectedOrder.shipping_address?.address}, {selectedOrder.shipping_address?.city}</p>
+                                                <p>{selectedOrder.shipping_address?.postal_code}, {selectedOrder.shipping_address?.country}</p>
+                                            </div>
                                         </div>
-                                    )}
-                                </div>
+
+                                        <div className="border-t border-border/10 pt-4">
+                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground mb-3">Items Manifest</p>
+                                            <div className="space-y-2">
+                                                {selectedOrder.items?.map((item: any, i: number) => (
+                                                    <div key={i} className="flex justify-between items-center bg-muted/30 p-2 rounded-lg">
+                                                        <div className="flex gap-3 items-center">
+                                                            <div className="w-8 h-8 rounded bg-background flex items-center justify-center text-xs font-bold border border-border/20">
+                                                                {item.quantity}x
+                                                            </div>
+                                                            <span className="font-medium text-sm">{item.product_name || 'Product'}</span>
+                                                        </div>
+                                                        <span className="font-mono font-bold text-sm">KES {item.price_at_purchase?.toLocaleString()}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="border-t border-border/10 pt-4 flex justify-between items-end">
+                                            <div className="text-xs text-muted-foreground">
+                                                <p>Placed on: {new Date(selectedOrder.created_at).toLocaleString()}</p>
+                                                <p>Payment Method: {selectedOrder.payment_method || 'Stripe'}</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Total Value</p>
+                                                <p className="text-xl font-bold text-primary">KES {selectedOrder.total_amount?.toLocaleString()}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </DialogContent>
+                        </Dialog>
+                    </TabsContent>
+
+                    {/* --- PRODUCTS TAB --- */}
+                    <TabsContent value="products" className="space-y-6">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div>
+                                <h2 className="text-xl font-bold tracking-tight">Venture Inventory</h2>
+                                <p className="text-muted-foreground font-medium">Manage and deploy products to the digital storefront.</p>
                             </div>
-                            <div className="text-right">
-                                <Badge variant="outline" className="mb-2">{new Date(selectedContact.created_at).toLocaleDateString()}</Badge>
-                                <div className="flex justify-end">
-                                    <Badge className="bg-primary/10 text-primary border-none uppercase text-[10px] tracking-wider">
-                                        {selectedContact.inquiry_type || 'General'}
+                            <div className="flex gap-2">
+                                {products.length === 0 && (
+                                    <Button onClick={handleSeedContent} variant="outline" className="rounded-xl px-6 py-6 border-dashed border-primary/30 font-black uppercase tracking-widest text-xs h-auto hover:bg-primary/5">
+                                        <RefreshCw className="mr-2 h-4 w-4" /> Sync Default Content
+                                    </Button>
+                                )}
+                                <Button onClick={() => { setEditingProduct(null); setIsProductModalOpen(true); }} className="rounded-xl px-6 py-6 shadow-glow hover:scale-105 transition-all bg-primary font-black uppercase tracking-widest text-xs h-auto">
+                                    <Plus className="mr-2 h-5 w-5" /> Add New Asset
+                                </Button>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {products.map((product) => (
+                                <div key={product.id} className="group relative bg-card/50 backdrop-blur hover:bg-card border-border/50 border rounded-3xl p-5 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                                    <div className="aspect-square rounded-2xl overflow-hidden bg-muted mb-5 relative">
+                                        {product.images?.[0] ? (
+                                            <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                        ) : (
+                                            <div className="w-full h-full grid place-items-center text-muted-foreground/30"><ShoppingBag className="w-12 h-12" /></div>
+                                        )}
+                                        <div className="absolute top-3 right-3">
+                                            <Badge className="bg-background/80 backdrop-blur-md text-foreground border-none px-3 py-1 text-[10px] font-black uppercase tracking-widest">{product.category}</Badge>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between items-start gap-2">
+                                            <h3 className="font-black text-xl leading-none tracking-tight">{product.name}</h3>
+                                        </div>
+                                        <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed h-8">{product.description}</p>
+                                        <div className="flex justify-between items-end pt-2">
+                                            <div>
+                                                <p className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground mb-1">MSRP</p>
+                                                <span className="text-xl font-bold italic text-primary">KES {product.variants?.[0]?.price_kes?.toLocaleString() || 0}</span>
+                                            </div>
+                                            <div className="flex gap-1">
+                                                <Button size="icon" variant="outline" onClick={() => handleEditProduct(product)} className="rounded-xl w-9 h-9 border-border/50 hover:bg-primary/10 hover:text-primary"><Edit className="h-4 w-4" /></Button>
+                                                <Button size="icon" variant="outline" className="rounded-xl w-9 h-9 border-border/50 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDeleteProduct(product.id)}><Trash2 className="h-4 w-4" /></Button>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2 pt-2 text-[10px] font-bold text-muted-foreground border-t border-border/50 mt-2">
+                                            <Database className="w-3 h-3" />
+                                            <span>Stock: {product.variants?.[0]?.stock_quantity || 0} units</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Product Dialog */}
+                        <Dialog open={isProductModalOpen} onOpenChange={setIsProductModalOpen}>
+                            <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-md">
+                                <DialogHeader>
+                                    <DialogTitle className="text-3xl font-black tracking-tighter">{editingProduct ? 'Update Asset' : 'Create New Asset'}</DialogTitle>
+                                    <DialogDescription>Populate the matrix with product configurations.</DialogDescription>
+                                </DialogHeader>
+                                <div className="grid gap-5 py-4">
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Product Designation</Label>
+                                        <Input placeholder="e.g. Amber Infusion VII" value={productForm.name} onChange={e => setProductForm({ ...productForm, name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Asset Description</Label>
+                                        <Textarea placeholder="Describe the sensory profile..." value={productForm.description} onChange={e => setProductForm({ ...productForm, description: e.target.value })} className="rounded-xl min-h-[100px] bg-muted/50 border-border/50" />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Classification</Label>
+                                            <Input value={productForm.category} onChange={e => setProductForm({ ...productForm, category: e.target.value })} className="rounded-xl h-11 bg-muted/50 border-border/50" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">MSRP (KES)</Label>
+                                            <Input type="number" value={productForm.price_kes} onChange={e => setProductForm({ ...productForm, price_kes: parseFloat(e.target.value) })} className="rounded-xl h-11 bg-muted/50 border-border/50" />
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Initial Reserve</Label>
+                                            <Input type="number" value={productForm.stock_quantity} onChange={e => setProductForm({ ...productForm, stock_quantity: parseInt(e.target.value) })} className="rounded-xl h-11 bg-muted/50 border-border/50" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Visual Matrix (URL)</Label>
+                                            <Input value={productForm.images} onChange={e => setProductForm({ ...productForm, images: e.target.value })} placeholder="https://..." className="rounded-xl h-11 bg-muted/50 border-border/50 font-mono text-xs" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <DialogFooter className="gap-2 sm:gap-0">
+                                    <Button variant="ghost" onClick={() => setIsProductModalOpen(false)} className="rounded-xl font-bold">Cancel</Button>
+                                    <Button onClick={handleCreateProduct} className="rounded-xl font-black uppercase tracking-widest text-xs px-8 shadow-glow">{editingProduct ? 'Commit Changes' : 'Initialize Asset'}</Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+
+                        {/* Stock Movements Section */}
+                        <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden mt-8">
+                            <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30">
+                                <div className="flex justify-between items-center">
+                                    <div>
+                                        <CardTitle className="text-xl font-black flex items-center gap-2">
+                                            <History className="w-5 h-5" /> Stock Movements
+                                        </CardTitle>
+                                        <CardDescription>Track inventory additions, removals, and adjustments.</CardDescription>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <Badge className="bg-green-500/10 text-green-600 border-green-200 px-4 py-1.5 rounded-xl font-black text-[10px]">
+                                            {stockMovements.length} RECORDS
+                                        </Badge>
+                                        <Button onClick={() => setIsStockModalOpen(true)} size="sm" className="rounded-xl h-8 px-4 font-black uppercase tracking-widest text-[10px]">
+                                            <Plus className="w-3 h-3 mr-1" /> New Movement
+                                        </Button>
+                                    </div>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="p-0">
+                                <div className="overflow-x-auto">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow className="border-b border-[#1e1e1e] bg-[#1e1e1e]/20">
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Product</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Type</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Quantity</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Reason</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {stockMovements.length === 0 ? (
+                                                <TableRow><TableCell colSpan={5} className="text-center h-32 text-muted-foreground font-medium">No stock movements recorded yet.</TableCell></TableRow>
+                                            ) : (
+                                                stockMovements.map((mov) => (
+                                                    <TableRow key={mov.id} className="hover:bg-muted/20 transition-colors border-border/10">
+                                                        <TableCell className="px-6 font-semibold">{mov.products?.name || 'Unknown Product'}</TableCell>
+                                                        <TableCell className="px-6">
+                                                            <Badge variant="outline" className={mov.type === 'addition' ? 'bg-green-500/10 text-green-600 border-green-200' : 'bg-red-500/10 text-red-600 border-red-200'}>
+                                                                {mov.type === 'addition' ? <TrendingUp className="w-3 h-3 mr-1" /> : <AlertTriangle className="w-3 h-3 mr-1" />}
+                                                                {mov.type}
+                                                            </Badge>
+                                                        </TableCell>
+                                                        <TableCell className="px-6 text-right font-black">{mov.type === 'addition' ? '+' : '-'}{mov.quantity}</TableCell>
+                                                        <TableCell className="px-6 text-sm text-muted-foreground">{mov.reason || 'N/A'}</TableCell>
+                                                        <TableCell className="px-6 text-xs font-mono">{new Date(mov.created_at).toLocaleDateString()}</TableCell>
+                                                    </TableRow>
+                                                ))
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Stock Movement Dialog */}
+                        <Dialog open={isStockModalOpen} onOpenChange={setIsStockModalOpen}>
+                            <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-md">
+                                <DialogHeader>
+                                    <DialogTitle className="text-3xl font-black tracking-tighter text-foreground">Record Movement</DialogTitle>
+                                    <DialogDescription>Register an addition or removal from product inventory.</DialogDescription>
+                                </DialogHeader>
+                                <div className="grid gap-5 py-4">
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Asset Selection</Label>
+                                        <Select value={stockForm.product_id} onValueChange={(val) => setStockForm({ ...stockForm, product_id: val })}>
+                                            <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
+                                                <SelectValue placeholder="Select Product" />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-xl">
+                                                {products.map(p => (
+                                                    <SelectItem key={p.id} value={p.id} className="font-bold">{p.name}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Movement Type</Label>
+                                            <Select value={stockForm.type} onValueChange={(val) => setStockForm({ ...stockForm, type: val })}>
+                                                <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent className="rounded-xl">
+                                                    <SelectItem value="addition" className="font-bold">ADDITION (+)</SelectItem>
+                                                    <SelectItem value="removal" className="font-bold">REMOVAL (-)</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Quantity</Label>
+                                            <Input type="number" value={stockForm.quantity} onChange={e => setStockForm({ ...stockForm, quantity: parseInt(e.target.value) || 0 })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Protocol Reasoning</Label>
+                                        <Input placeholder="e.g. New harvest arrival" value={stockForm.reason} onChange={e => setStockForm({ ...stockForm, reason: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                    </div>
+                                </div>
+                                <DialogFooter>
+                                    <Button onClick={handleCreateStockMovement} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
+                                        Commit Inventory Update
+                                    </Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+                    </TabsContent>
+
+                    {/* --- BATCHES TAB --- */}
+                    <TabsContent value="batches" className="space-y-6">
+                        <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
+                            <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30 flex flex-row items-center justify-between">
+                                <div>
+                                    <CardTitle className="text-xl font-bold">Honey Chain Blocks</CardTitle>
+                                    <CardDescription>Immutable blockchain ledger of authenticated batches.</CardDescription>
+                                </div>
+                                <div className="flex gap-2">
+                                    <Button onClick={handleSeedTraceability} className="rounded-xl font-black uppercase tracking-widest text-xs py-5 bg-blue-500 hover:bg-blue-600 text-white border-none px-6 shadow-glow transition-all active:scale-95">
+                                        <Database className="mr-2 h-4 w-4" /> Seed Demo
+                                    </Button>
+                                    <Button onClick={() => setIsBatchModalOpen(true)} className="rounded-xl font-black uppercase tracking-widest text-xs py-5 bg-honey hover:bg-honey-dark text-black border-none px-6 shadow-glow transition-all active:scale-95">
+                                        <Plus className="mr-2 h-4 w-4" /> Mint Block
+                                    </Button>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="p-0">
+                                <div className="overflow-x-auto">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow className="border-b border-[#1e1e1e] bg-[#1e1e1e]/20">
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Batch Code</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Honey Type</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Origin</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Farmer / Beekeeper</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Harvest Date</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Quantity (KG)</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Block Hash</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Actions</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {batches.length === 0 ? (
+                                                <TableRow><TableCell colSpan={8} className="text-center h-48 text-muted-foreground font-medium italic">No honey batches in the blockchain yet.</TableCell></TableRow>
+                                            ) : (
+                                                batches.map((batch, i) => (
+                                                    <TableRow
+                                                        key={batch.id || i}
+                                                        className="hover:bg-muted/20 transition-colors border-border/10 cursor-pointer"
+                                                        onClick={() => handleViewBatch(batch)}
+                                                    >
+                                                        <TableCell className="px-6">
+                                                            <div className="font-black text-primary tracking-tighter flex items-center gap-2">
+                                                                <CheckCircle2 className="w-4 h-4" />
+                                                                {batch.batch_code || `BC-00${i}`}
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="px-6 font-semibold">{batch.honey_type}</TableCell>
+                                                        <TableCell className="px-6 text-sm">
+                                                            {(batch.location_county || batch.location_region) ? (
+                                                                <div className="flex flex-col gap-0.5">
+                                                                    <span className="font-bold text-xs">{batch.location_county}</span>
+                                                                    <span className="text-[10px] text-muted-foreground">{batch.location_region || batch.apiary_name}</span>
+                                                                    {batch.latitude && batch.longitude && (
+                                                                        <a
+                                                                            href={`https://www.google.com/maps?q=${batch.latitude},${batch.longitude}`}
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer"
+                                                                            className="flex items-center gap-1 text-[10px] text-blue-500 hover:text-blue-400 hover:underline mt-1 transition-colors"
+                                                                            onClick={(e) => e.stopPropagation()}
+                                                                        >
+                                                                            <MapPin className="w-3 h-3" /> View Map
+                                                                        </a>
+                                                                    )}
+                                                                </div>
+                                                            ) : <span className="text-muted-foreground">-</span>}
+                                                        </TableCell>
+                                                        <TableCell className="px-6 text-sm">
+                                                            <div className="flex flex-col gap-1">
+                                                                {batch.farmer_name && (
+                                                                    <div className="flex flex-col">
+                                                                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Farmer</span>
+                                                                        <span className="font-semibold text-xs">{batch.farmer_name}</span>
+                                                                    </div>
+                                                                )}
+                                                                {batch.beekeeper_name && (
+                                                                    <div className="flex flex-col">
+                                                                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Beekeeper</span>
+                                                                        <span className="font-semibold text-xs">{batch.beekeeper_name}</span>
+                                                                    </div>
+                                                                )}
+                                                                <span className="text-[10px] text-muted-foreground pt-1 border-t border-border/10">
+                                                                    {batch.farmer_phone || batch.beekeeper_id || '-'}
+                                                                </span>
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="px-6 text-sm tabular-nums">{batch.harvest_date}</TableCell>
+                                                        <TableCell className="px-6 text-right font-black italic">{batch.quantity_kg}</TableCell>
+                                                        <TableCell className="px-6">
+                                                            <div className="flex items-center gap-2 group cursor-help" title={batch.block_hash}>
+                                                                <div className="w-2 h-2 rounded-xl bg-green-500 animate-pulse" />
+                                                                <code className="text-[10px] bg-muted px-2 py-1 rounded-md opacity-70 group-hover:opacity-100 transition-opacity truncate max-w-[120px] font-mono">
+                                                                    {batch.block_hash || '0x00...00'}
+                                                                </code>
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="px-6">
+                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={(e) => { e.stopPropagation(); handleDeleteBatch(batch.id); }}>
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-blue-500 hover:bg-blue-500/10 ml-1" onClick={(e) => { e.stopPropagation(); handleViewBatch(batch); }}>
+                                                                <Eye className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-primary hover:bg-primary/10 ml-1" onClick={(e) => { e.stopPropagation(); handleEditBatch(batch); }}>
+                                                                <Edit className="h-4 w-4" />
+                                                            </Button>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Batch Creation Dialog */}
+                        <Dialog open={isBatchModalOpen} onOpenChange={setIsBatchModalOpen}>
+                            <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-2xl max-h-[90vh] overflow-y-auto">
+                                <DialogHeader>
+                                    <DialogTitle className="text-2xl font-black">Mint New Ledger Entry</DialogTitle>
+                                    <DialogDescription>This action will finalize the batch data on the irreversible HoneyChain network.</DialogDescription>
+                                </DialogHeader>
+                                <div className="grid gap-6 py-4">
+                                    {/* Basic Info */}
+                                    <div className="space-y-4">
+                                        <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-white/10 pb-2">Batch Details</h4>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Botanical Profile</Label>
+                                                <Input value={batchForm.honey_type} onChange={e => setBatchForm({ ...batchForm, honey_type: e.target.value })} placeholder="e.g. Acacia Noir" className="rounded-xl h-11 bg-muted/50" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Harvest Date</Label>
+                                                <Input type="date" value={batchForm.harvest_date} onChange={e => setBatchForm({ ...batchForm, harvest_date: e.target.value })} className="rounded-xl h-11 bg-muted/50" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Packaged Date</Label>
+                                                <Input type="date" value={(batchForm as any).packaged_date || ''} onChange={e => setBatchForm({ ...batchForm, packaged_date: e.target.value } as any)} className="rounded-xl h-11 bg-muted/50" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Yield (Total KG)</Label>
+                                                <Input type="number" value={batchForm.quantity_kg} onChange={e => setBatchForm({ ...batchForm, quantity_kg: parseFloat(e.target.value) })} className="rounded-xl h-11 bg-muted/50" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Processing Method</Label>
+                                                <Select onValueChange={(val) => setBatchForm({ ...batchForm, processing_method: val })} defaultValue={batchForm.processing_method}>
+                                                    <SelectTrigger className="rounded-xl h-11 bg-muted/50">
+                                                        <SelectValue placeholder="Select Method" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="Raw Filtered">Raw Filtered</SelectItem>
+                                                        <SelectItem value="Creamed">Creamed</SelectItem>
+                                                        <SelectItem value="Pasteurized">Pasteurized</SelectItem>
+                                                        <SelectItem value="Comb Honey">Comb Honey</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Source Info */}
+                                    <div className="space-y-4">
+                                        <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-white/10 pb-2">Source Origin</h4>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Farmer Name</Label>
+                                                <Input
+                                                    value={(batchForm as any).farmer_name || ''}
+                                                    onChange={e => setBatchForm({ ...batchForm, farmer_name: e.target.value } as any)}
+                                                    placeholder="e.g. John Doe"
+                                                    className="rounded-xl h-11 bg-muted/50"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Contact Phone</Label>
+                                                <Input
+                                                    value={(batchForm as any).farmer_phone || ''}
+                                                    onChange={e => setBatchForm({ ...batchForm, farmer_phone: e.target.value } as any)}
+                                                    placeholder="+254..."
+                                                    className="rounded-xl h-11 bg-muted/50"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Beekeeper Name</Label>
+                                                <Input
+                                                    value={(batchForm as any).beekeeper_name || ''}
+                                                    onChange={e => setBatchForm({ ...batchForm, beekeeper_name: e.target.value } as any)}
+                                                    placeholder="e.g. Jane Smith"
+                                                    className="rounded-xl h-11 bg-muted/50"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Beekeeper ID</Label>
+                                                <Input
+                                                    value={(batchForm as any).beekeeper_id || ''}
+                                                    onChange={e => setBatchForm({ ...batchForm, beekeeper_id: e.target.value } as any)}
+                                                    placeholder="ID-..."
+                                                    className="rounded-xl h-11 bg-muted/50"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">County</Label>
+                                                <Input
+                                                    value={(batchForm as any).location_county || ''}
+                                                    onChange={e => setBatchForm({ ...batchForm, location_county: e.target.value } as any)}
+                                                    placeholder="e.g. Kitui"
+                                                    className="rounded-xl h-11 bg-muted/50"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Region</Label>
+                                                <Input
+                                                    value={(batchForm as any).location_region || ''}
+                                                    onChange={e => setBatchForm({ ...batchForm, location_region: e.target.value } as any)}
+                                                    placeholder="e.g. Mwingi North"
+                                                    className="rounded-xl h-11 bg-muted/50"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Apiary Name</Label>
+                                                <Input
+                                                    value={(batchForm as any).apiary_name || ''}
+                                                    onChange={e => setBatchForm({ ...batchForm, apiary_name: e.target.value } as any)}
+                                                    placeholder="e.g. Acacia Grove"
+                                                    className="rounded-xl h-11 bg-muted/50"
+                                                />
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <div className="space-y-2">
+                                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Lat</Label>
+                                                    <Input
+                                                        type="number" step="any"
+                                                        value={(batchForm as any).latitude || ''}
+                                                        onChange={e => setBatchForm({ ...batchForm, latitude: parseFloat(e.target.value) } as any)}
+                                                        placeholder="-1.23"
+                                                        className="rounded-xl h-11 bg-muted/50"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Long</Label>
+                                                    <Input
+                                                        type="number" step="any"
+                                                        value={(batchForm as any).longitude || ''}
+                                                        onChange={e => setBatchForm({ ...batchForm, longitude: parseFloat(e.target.value) } as any)}
+                                                        placeholder="36.8"
+                                                        className="rounded-xl h-11 bg-muted/50"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Quality Metrics */}
+                                    <div className="space-y-4">
+                                        <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-white/10 pb-2">Quality Assurance</h4>
+                                        <div className="grid grid-cols-3 gap-4">
+                                            <div className="space-y-2">
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Grade</Label>
+                                                <Select onValueChange={(val) => setBatchForm({ ...batchForm, quality_grade: val } as any)} defaultValue="A">
+                                                    <SelectTrigger className="rounded-xl h-11 bg-muted/50">
+                                                        <SelectValue placeholder="Grade" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="A">Grade A (Premium)</SelectItem>
+                                                        <SelectItem value="B">Grade B (Standard)</SelectItem>
+                                                        <SelectItem value="C">Grade C (Industrial)</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Moisture (%)</Label>
+                                                <Input
+                                                    type="number"
+                                                    step="0.1"
+                                                    value={(batchForm as any).moisture_content || ''}
+                                                    onChange={e => setBatchForm({ ...batchForm, moisture_content: parseFloat(e.target.value) } as any)}
+                                                    placeholder="18.5"
+                                                    className="rounded-xl h-11 bg-muted/50"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Color Grade</Label>
+                                                <Select onValueChange={(val) => setBatchForm({ ...batchForm, color_grade: val } as any)}>
+                                                    <SelectTrigger className="rounded-xl h-11 bg-muted/50">
+                                                        <SelectValue placeholder="Select Color" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="Water White">Water White</SelectItem>
+                                                        <SelectItem value="Extra White">Extra White</SelectItem>
+                                                        <SelectItem value="White">White</SelectItem>
+                                                        <SelectItem value="Extra Light Amber">Extra Light Amber</SelectItem>
+                                                        <SelectItem value="Light Amber">Light Amber</SelectItem>
+                                                        <SelectItem value="Amber">Amber</SelectItem>
+                                                        <SelectItem value="Dark Amber">Dark Amber</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <DialogFooter>
+                                    <Button onClick={handleSaveBatch} className="w-full rounded-2xl py-6 font-black uppercase tracking-widest text-xs bg-honey hover:bg-honey-dark text-black border-none shadow-glow">Initialize Block Minting</Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+
+                        {/* Batch Details Dialog */}
+                        <Dialog open={isBatchDetailsOpen} onOpenChange={setIsBatchDetailsOpen}>
+                            <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-2xl max-h-[90vh] overflow-y-auto">
+                                <DialogHeader>
+                                    <DialogTitle className="text-2xl font-black flex items-center gap-2">
+                                        <Shield className="w-6 h-6 text-green-500" />
+                                        Batch Verification
+                                    </DialogTitle>
+                                    <DialogDescription className="font-mono text-xs">
+                                        BLOCKCHAIN ID: {selectedBatch?.block_hash}
+                                    </DialogDescription>
+                                </DialogHeader>
+
+                                {selectedBatch && (
+                                    <div className="space-y-8 py-4">
+                                        {/* Header Status Card */}
+                                        <div className="bg-muted/30 p-4 rounded-2xl flex justify-between items-center border border-border/50">
+                                            <div>
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Batch Code</p>
+                                                <p className="text-xl font-black font-mono text-primary">{selectedBatch.batch_code}</p>
+                                            </div>
+                                            <Badge className="bg-green-500/20 text-green-600 px-4 py-1 h-8 rounded-xl font-black uppercase tracking-widest border-none">
+                                                VERIFIED ON LEDGER
+                                            </Badge>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-8">
+                                            <div className="space-y-4">
+                                                <h4 className="font-black uppercase tracking-widest text-xs border-b border-border/50 pb-2 flex items-center gap-2">
+                                                    <Package className="w-4 h-4" /> Product Details
+                                                </h4>
+                                                <div className="space-y-3">
+                                                    <div>
+                                                        <p className="text-[10px] uppercase text-muted-foreground font-bold">Honey Type</p>
+                                                        <p className="font-semibold">{selectedBatch.honey_type}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[10px] uppercase text-muted-foreground font-bold">Quantity</p>
+                                                        <p className="font-semibold">{selectedBatch.quantity_kg} KG</p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[10px] uppercase text-muted-foreground font-bold">Processing</p>
+                                                        <p className="font-semibold">{selectedBatch.processing_method}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[10px] uppercase text-muted-foreground font-bold">Harvest Date</p>
+                                                        <p className="font-mono text-sm">{selectedBatch.harvest_date}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-4">
+                                                <h4 className="font-black uppercase tracking-widest text-xs border-b border-border/50 pb-2 flex items-center gap-2">
+                                                    <Users className="w-4 h-4" /> Origin Source
+                                                </h4>
+                                                <div className="space-y-3">
+                                                    <div>
+                                                        <p className="text-[10px] uppercase text-muted-foreground font-bold">Farmer</p>
+                                                        <p className="font-semibold">{selectedBatch.farmer_name || 'N/A'}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[10px] uppercase text-muted-foreground font-bold">Beekeeper</p>
+                                                        <p className="font-semibold">{selectedBatch.beekeeper_name || 'N/A'}</p>
+                                                        <p className="text-xs text-muted-foreground">{selectedBatch.beekeeper_id}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[10px] uppercase text-muted-foreground font-bold">Location</p>
+                                                        <p className="font-semibold">{selectedBatch.location_county || 'N/A'}, {selectedBatch.location_region || ''}</p>
+                                                        <p className="text-xs text-muted-foreground">{selectedBatch.apiary_name}</p>
+                                                        {selectedBatch.latitude && (
+                                                            <a
+                                                                href={`https://www.google.com/maps?q=${selectedBatch.latitude},${selectedBatch.longitude}`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="text-[10px] text-blue-500 hover:underline flex items-center gap-1 mt-1"
+                                                            >
+                                                                <MapPin className="w-3 h-3" /> View Map
+                                                            </a>
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[10px] uppercase text-muted-foreground font-bold">Contact</p>
+                                                        <p className="font-mono text-sm">{selectedBatch.farmer_phone || 'N/A'}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            <h4 className="font-black uppercase tracking-widest text-xs border-b border-border/50 pb-2 flex items-center gap-2">
+                                                <Shield className="w-4 h-4" /> Quality Assurance
+                                            </h4>
+                                            <div className="grid grid-cols-3 gap-4">
+                                                <div className="bg-muted/30 p-3 rounded-xl text-center">
+                                                    <p className="text-[10px] uppercase text-muted-foreground font-bold">Grade</p>
+                                                    <p className="text-lg font-black">{selectedBatch.quality_grade || 'A'}</p>
+                                                </div>
+                                                <div className="bg-muted/30 p-3 rounded-xl text-center">
+                                                    <p className="text-[10px] uppercase text-muted-foreground font-bold">Moisture</p>
+                                                    <p className="text-lg font-black">{selectedBatch.moisture_content || 0}%</p>
+                                                </div>
+                                                <div className="bg-muted/30 p-3 rounded-xl text-center">
+                                                    <p className="text-[10px] uppercase text-muted-foreground font-bold">Color</p>
+                                                    <p className="text-sm font-black mt-1">{selectedBatch.color_grade || 'N/A'}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                <DialogFooter>
+                                    <Button onClick={() => setIsBatchDetailsOpen(false)} className="rounded-xl w-full">Close Verification</Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+                    </TabsContent>
+
+                    {/* --- FARMERS TAB --- */}
+                    <TabsContent value="farmers" className="space-y-6">
+                        <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
+                            <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30 flex flex-row items-center justify-between">
+                                <div>
+                                    <CardTitle className="text-xl font-bold">Agricultural Partners</CardTitle>
+                                    <CardDescription>Authenticated network of honey harvesters and growers.</CardDescription>
+                                </div>
+                                <Button
+                                    onClick={() => setIsFarmerModalOpen(true)}
+                                    variant="outline"
+                                    className="rounded-xl font-black uppercase tracking-widest text-xs h-auto py-4 border-dashed border-primary/30"
+                                >
+                                    <Plus className="mr-2 h-4 w-4" /> Register Farmer
+                                </Button>
+                            </CardHeader>
+                            <CardContent className="p-0">
+                                <div className="overflow-x-auto">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow className="border-b border-[#1e1e1e] bg-[#1e1e1e]/20">
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Farmer</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Contact</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Location</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Experience</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {farmers.length === 0 ? (
+                                                <TableRow><TableCell colSpan={6} className="text-center h-48 text-muted-foreground font-medium italic">No registered farmers found.</TableCell></TableRow>
+                                            ) : (
+                                                farmers.map((farmer) => (
+                                                    <TableRow key={farmer.id} className="hover:bg-muted/20 transition-colors border-border/10">
+                                                        <TableCell className="px-6">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="w-10 h-10 rounded-xl bg-honey/20 flex items-center justify-center font-black text-honey">
+                                                                    {farmer.name?.[0]?.toUpperCase() || 'F'}
+                                                                </div>
+                                                                <div className="flex flex-col">
+                                                                    <span className="font-bold">{farmer.name}</span>
+                                                                    <span className="text-[10px] text-muted-foreground uppercase font-mono">{farmer.farmer_id || 'ID-PENDING'}</span>
+                                                                </div>
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="px-6">
+                                                            <div className="text-sm font-medium">{farmer.phone}</div>
+                                                            <div className="text-[10px] text-muted-foreground">{farmer.email || 'No email'}</div>
+                                                        </TableCell>
+                                                        <TableCell className="px-6">
+                                                            <div className="text-sm">{farmer.county || 'N/A'}</div>
+                                                            <div className="text-[10px] text-muted-foreground">{farmer.region || farmer.location_name || ''}</div>
+                                                        </TableCell>
+                                                        <TableCell className="px-6">
+                                                            <Badge variant="outline" className="bg-blue-500/5 text-blue-600 border-blue-200">
+                                                                {farmer.experience_years} Years
+                                                            </Badge>
+                                                        </TableCell>
+                                                        <TableCell className="px-6">
+                                                            <Badge className={farmer.certification_status === 'CERTIFIED' ? 'bg-green-500/10 text-green-600 border-none' : 'bg-amber-500/10 text-amber-600 border-none'}>
+                                                                {farmer.certification_status || 'PENDING'}
+                                                            </Badge>
+                                                        </TableCell>
+                                                        <TableCell className="px-6 text-right">
+                                                            <div className="flex justify-end gap-2">
+                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-primary hover:bg-primary/10 ml-1" onClick={() => handleEditFarmer(farmer)}>
+                                                                    <Edit className="h-4 w-4" />
+                                                                </Button>
+                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteFarmer(farmer.id)}>
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                </Button>
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Farmer Registration Dialog */}
+                        <Dialog open={isFarmerModalOpen} onOpenChange={(open) => { setIsFarmerModalOpen(open); if (!open) setEditingFarmer(null); }}>
+                            <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-2xl max-h-[90vh] overflow-y-auto">
+                                <DialogHeader>
+                                    <DialogTitle className="text-3xl font-black tracking-tighter">{editingFarmer ? 'Modify Partner' : 'Register Partner'}</DialogTitle>
+                                    <DialogDescription>{editingFarmer ? 'Update beekeeper credentials and parameters.' : 'Initialize a new beekeeper record on the BeeYield network.'}</DialogDescription>
+                                </DialogHeader>
+                                <div className="grid gap-6 py-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Full Name</Label>
+                                            <Input placeholder="Timothy Nduva" value={farmerForm.name} onChange={e => setFarmerForm({ ...farmerForm, name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Phone Number</Label>
+                                            <Input placeholder="+254 7XX XXX XXX" value={farmerForm.phone} onChange={e => setFarmerForm({ ...farmerForm, phone: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Email Address</Label>
+                                            <Input type="email" placeholder="timothy@beeyield.com" value={farmerForm.email} onChange={e => setFarmerForm({ ...farmerForm, email: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">ID Number</Label>
+                                            <Input placeholder="National ID or Passport" value={farmerForm.id_number} onChange={e => setFarmerForm({ ...farmerForm, id_number: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">County</Label>
+                                            <Input placeholder="Makueni" value={farmerForm.county} onChange={e => setFarmerForm({ ...farmerForm, county: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Region</Label>
+                                            <Input placeholder="Eastern" value={farmerForm.region} onChange={e => setFarmerForm({ ...farmerForm, region: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Years Experience</Label>
+                                            <Input type="number" value={farmerForm.experience_years} onChange={e => setFarmerForm({ ...farmerForm, experience_years: parseInt(e.target.value) || 0 })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Location Details / Ward</Label>
+                                        <Input placeholder="Kibwezi East, Mtito Andei" value={farmerForm.location_name} onChange={e => setFarmerForm({ ...farmerForm, location_name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">The Beekeeper's Story</Label>
+                                        <Textarea
+                                            placeholder="Brief background about the farmer..."
+                                            value={farmerForm.story}
+                                            onChange={e => setFarmerForm({ ...farmerForm, story: e.target.value })}
+                                            className="rounded-xl min-h-[100px] bg-muted/50 border-border/50"
+                                        />
+                                    </div>
+                                </div>
+                                <DialogFooter>
+                                    <Button onClick={handleSaveFarmer} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
+                                        {editingFarmer ? 'Update Partner Records' : 'Complete Network Registration'}
+                                    </Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+                    </TabsContent>
+
+                    {/* --- APIARIES TAB --- */}
+                    <TabsContent value="apiaries" className="space-y-6">
+                        <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
+                            <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30 flex flex-row items-center justify-between">
+                                <div>
+                                    <CardTitle className="text-xl font-bold">Apiary Locations</CardTitle>
+                                    <CardDescription>Geospatial management of hive clusters and honey production sites.</CardDescription>
+                                </div>
+                                <Button
+                                    onClick={() => setIsApiaryModalOpen(true)}
+                                    variant="outline"
+                                    className="rounded-xl font-black uppercase tracking-widest text-xs h-auto py-4 border-dashed border-primary/30"
+                                >
+                                    <Plus className="mr-2 h-4 w-4" /> Register Apiary
+                                </Button>
+                            </CardHeader>
+                            <CardContent className="p-0">
+                                <div className="overflow-x-auto">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow className="border-b border-[#1e1e1e] bg-[#1e1e1e]/20">
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Farmer</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Location</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Hives</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {apiaries.length === 0 ? (
+                                                <TableRow><TableCell colSpan={6} className="text-center h-48 text-muted-foreground font-medium">No apiaries registered on the BeeYield grid.</TableCell></TableRow>
+                                            ) : (
+                                                apiaries.map((apiary) => (
+                                                    <TableRow key={apiary.id} className="hover:bg-muted/20 transition-colors border-border/10">
+                                                        <TableCell className="px-6 font-bold">{apiary.name}</TableCell>
+                                                        <TableCell className="px-6">{apiary.farmers?.name || 'Assigned Partner'}</TableCell>
+                                                        <TableCell className="px-6">
+                                                            <div className="text-sm font-medium">{apiary.location_name || apiary.county}</div>
+                                                            <div className="text-[10px] text-muted-foreground">{apiary.region}</div>
+                                                        </TableCell>
+                                                        <TableCell className="px-6 text-right font-black">
+                                                            {hives.filter(h => h.apiary_id === apiary.id).length}
+                                                        </TableCell>
+                                                        <TableCell className="px-6">
+                                                            <Badge variant="outline" className={apiary.status === 'active' ? "bg-green-500/10 text-green-600 border-green-200" : "bg-muted text-muted-foreground"}>
+                                                                {apiary.status?.toUpperCase()}
+                                                            </Badge>
+                                                        </TableCell>
+                                                        <TableCell className="px-6 text-right">
+                                                            <div className="flex justify-end gap-2">
+                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleEditApiary(apiary)}>
+                                                                    <Edit className="h-4 w-4" />
+                                                                </Button>
+                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteApiary(apiary.id)}>
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                </Button>
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Apiary Modal */}
+                        <Dialog open={isApiaryModalOpen} onOpenChange={(open) => { setIsApiaryModalOpen(open); if (!open) setEditingApiary(null); }}>
+                            <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-xl">
+                                <DialogHeader>
+                                    <DialogTitle className="text-3xl font-black tracking-tighter">{editingApiary ? 'Calibrate Apiary' : 'Map New Apiary'}</DialogTitle>
+                                    <DialogDescription>Define production site parameters and associate with agricultural partners.</DialogDescription>
+                                </DialogHeader>
+                                <div className="grid gap-6 py-4">
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Apiary Name</Label>
+                                        <Input placeholder="Kibwezi East Cluster A" value={apiaryForm.name} onChange={e => setApiaryForm({ ...apiaryForm, name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">County</Label>
+                                            <Input placeholder="Makueni" value={apiaryForm.county} onChange={e => setApiaryForm({ ...apiaryForm, county: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Region</Label>
+                                            <Input placeholder="Eastern" value={apiaryForm.region} onChange={e => setApiaryForm({ ...apiaryForm, region: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Assigned Farmer</Label>
+                                        <Select value={apiaryForm.farmer_id} onValueChange={val => setApiaryForm({ ...apiaryForm, farmer_id: val })}>
+                                            <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
+                                                <SelectValue placeholder="Select Partner" />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-xl border-border/50">
+                                                {farmers.map(f => (
+                                                    <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Latitude</Label>
+                                            <Input type="number" step="any" value={apiaryForm.latitude} onChange={e => setApiaryForm({ ...apiaryForm, latitude: parseFloat(e.target.value) })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Longitude</Label>
+                                            <Input type="number" step="any" value={apiaryForm.longitude} onChange={e => setApiaryForm({ ...apiaryForm, longitude: parseFloat(e.target.value) })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <DialogFooter>
+                                    <Button onClick={handleSaveApiary} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
+                                        {editingApiary ? 'Update Production Site' : 'Authenticate Site Registration'}
+                                    </Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+                    </TabsContent>
+
+                    {/* --- HIVES TAB --- */}
+                    <TabsContent value="hives" className="space-y-6">
+                        <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
+                            <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30 flex flex-row items-center justify-between">
+                                <div>
+                                    <CardTitle className="text-xl font-bold">Smart Hive Ledger</CardTitle>
+                                    <CardDescription>Inventory and health status of individual colony units.</CardDescription>
+                                </div>
+                                <Button
+                                    onClick={() => setIsHiveModalOpen(true)}
+                                    variant="outline"
+                                    className="rounded-xl font-black uppercase tracking-widest text-xs h-auto py-4 border-dashed border-primary/30"
+                                >
+                                    <Plus className="mr-2 h-4 w-4" /> Deploy Hive
+                                </Button>
+                            </CardHeader>
+                            <CardContent className="p-0">
+                                <div className="overflow-x-auto">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow className="border-b border-[#1e1e1e] bg-[#1e1e1e]/20">
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Hive Code</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Apiary</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Type</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Installed</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {hives.length === 0 ? (
+                                                <TableRow><TableCell colSpan={6} className="text-center h-48 text-muted-foreground font-medium">No hives deployed in the honeycomb network.</TableCell></TableRow>
+                                            ) : (
+                                                hives.map((hive) => (
+                                                    <TableRow key={hive.id} className="hover:bg-muted/20 transition-colors border-border/10">
+                                                        <TableCell className="px-6 font-mono font-bold text-primary">{hive.hive_code}</TableCell>
+                                                        <TableCell className="px-6 font-semibold">{hive.apiaries?.name || 'Assigned Site'}</TableCell>
+                                                        <TableCell className="px-6">{hive.type}</TableCell>
+                                                        <TableCell className="px-6 text-sm text-muted-foreground">{new Date(hive.installation_date).toLocaleDateString()}</TableCell>
+                                                        <TableCell className="px-6">
+                                                            <Badge variant="outline" className={hive.status === 'active' ? "bg-green-500/10 text-green-600 border-green-200" : "bg-yellow-500/10 text-yellow-600 border-yellow-200"}>
+                                                                {hive.status?.toUpperCase()}
+                                                            </Badge>
+                                                        </TableCell>
+                                                        <TableCell className="px-6 text-right">
+                                                            <div className="flex justify-end gap-2">
+                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleEditHive(hive)}>
+                                                                    <Edit className="h-4 w-4" />
+                                                                </Button>
+                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteHive(hive.id)}>
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                </Button>
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* --- ORDERS TAB --- */}
+                        <TabsContent value="orders" className="space-y-6">
+                            <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
+                                <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30">
+                                    <CardTitle className="text-xl font-bold">Recent Orders ({orders.length})</CardTitle>
+                                    <CardDescription className="text-[#a1a1aa]">Manage and track all customer orders.</CardDescription>
+                                </CardHeader>
+                                <CardContent className="p-0">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow className="border-b border-[#1e1e1e] bg-[#1e1e1e]/20">
+                                                <TableHead className="text-[#a1a1aa] font-bold uppercase text-[10px] tracking-wider px-6 py-4">Status</TableHead>
+                                                <TableHead className="text-[#a1a1aa] font-bold uppercase text-[10px] tracking-wider px-6 py-4">Order ID</TableHead>
+                                                <TableHead className="text-[#a1a1aa] font-bold uppercase text-[10px] tracking-wider px-6 py-4">Customer</TableHead>
+                                                <TableHead className="text-[#a1a1aa] font-bold uppercase text-[10px] tracking-wider px-6 py-4">Amount</TableHead>
+                                                <TableHead className="text-[#a1a1aa] font-bold uppercase text-[10px] tracking-wider px-6 py-4">Date</TableHead>
+                                                <TableHead className="text-[#a1a1aa] font-bold uppercase text-[10px] tracking-wider text-right px-6 py-4">Actions</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {orders.length === 0 ? (
+                                                <TableRow><TableCell colSpan={6} className="text-center h-32 text-[#71717a]">No orders found protocol.</TableCell></TableRow>
+                                            ) : (
+                                                orders.map((order) => (
+                                                    <TableRow key={order.id} className="border-b border-[#1e1e1e] hover:bg-[#1e1e1e]/50 transition-colors">
+                                                        <TableCell className="px-6 py-4">{getStatusLabel(order.status)}</TableCell>
+                                                        <TableCell className="px-6 py-4 font-mono text-xs text-[#a1a1aa]">{order.id.slice(0, 8)}...</TableCell>
+                                                        <TableCell className="px-6 py-4 font-medium">{order.shipping_address?.first_name || 'Guest'} {order.shipping_address?.last_name || ''}</TableCell>
+                                                        <TableCell className="px-6 py-4">KES {order.total_amount?.toLocaleString()}</TableCell>
+                                                        <TableCell className="px-6 py-4 text-[#a1a1aa]">{new Date(order.created_at).toLocaleDateString()}</TableCell>
+                                                        <TableCell className="px-6 py-4 text-right">
+                                                            <div className="flex justify-end gap-2">
+                                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-[#a1a1aa] hover:text-white" onClick={() => handleViewOrder(order)}><Eye className="h-4 w-4" /></Button>
+                                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500/50 hover:text-red-500" onClick={() => handleDeleteOrder(order.id)}><Trash2 className="h-4 w-4" /></Button>
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                </CardContent>
+                            </Card>
+                        </TabsContent>
+
+                        {/* Hive Modal */}
+                        <Dialog open={isHiveModalOpen} onOpenChange={(open) => { setIsHiveModalOpen(open); if (!open) setEditingHive(null); }}>
+                            <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-xl">
+                                <DialogHeader>
+                                    <DialogTitle className="text-3xl font-black tracking-tighter">{editingHive ? 'Sync Hive Sensors' : 'Deploy New Unit'}</DialogTitle>
+                                    <DialogDescription>Register individual colony components and their mechanical signatures.</DialogDescription>
+                                </DialogHeader>
+                                <div className="grid gap-6 py-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Hive Code</Label>
+                                            <Input placeholder="HIVE-KIB-001" value={hiveForm.hive_code} onChange={e => setHiveForm({ ...hiveForm, hive_code: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Hive Type</Label>
+                                            <Select value={hiveForm.type} onValueChange={val => setHiveForm({ ...hiveForm, type: val })}>
+                                                <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent className="rounded-xl border-border/50">
+                                                    <SelectItem value="Langstroth">Langstroth</SelectItem>
+                                                    <SelectItem value="KTB">Kenya Top Bar (KTB)</SelectItem>
+                                                    <SelectItem value="Traditional">Traditional Log</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Target Apiary</Label>
+                                        <Select value={hiveForm.apiary_id} onValueChange={val => setHiveForm({ ...hiveForm, apiary_id: val })}>
+                                            <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
+                                                <SelectValue placeholder="Select Site" />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-xl border-border/50">
+                                                {apiaries.map(a => (
+                                                    <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Installation Date</Label>
+                                            <Input type="date" value={hiveForm.installation_date} onChange={e => setHiveForm({ ...hiveForm, installation_date: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Health Status</Label>
+                                            <Select value={hiveForm.status} onValueChange={val => setHiveForm({ ...hiveForm, status: val })}>
+                                                <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent className="rounded-xl border-border/50">
+                                                    <SelectItem value="active">Active & Healthy</SelectItem>
+                                                    <SelectItem value="weak">Weak Colony</SelectItem>
+                                                    <SelectItem value="abandoned">Abandoned</SelectItem>
+                                                    <SelectItem value="harvested">Recently Harvested</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Mechanical Notes</Label>
+                                        <Textarea placeholder="Condition of the box, queen status, etc." value={hiveForm.notes} onChange={e => setHiveForm({ ...hiveForm, notes: e.target.value })} className="rounded-xl bg-muted/50 border-border/50" />
+                                    </div>
+                                </div>
+                                <DialogFooter>
+                                    <Button onClick={handleSaveHive} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
+                                        {editingHive ? 'Sync Unit Parameters' : 'Authorize Deployment'}
+                                    </Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+                    </TabsContent>
+
+                    {/* --- TEAM MANAGEMENT (SUPER ADMIN ONLY) --- */}
+                    {
+                        isSuperAdmin && (
+                            <TabsContent value="team" className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
+                                <div className="flex justify-between items-center">
+                                    <div>
+                                        <h2 className="text-xl font-bold flex gap-2 items-center">
+                                            <Shield className="w-6 h-6 text-primary" /> Admin Command Circle
+                                        </h2>
+                                        <p className="text-muted-foreground font-medium">Elevate user privileges or terminate access protocols.</p>
+                                    </div>
+                                    <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-1.5 rounded-xl font-black text-[10px] tracking-tighter">
+                                        {systemUsers.length} MEMBERS
                                     </Badge>
                                 </div>
-                            </div>
-                        </div>
 
-                        {/* Location & Context */}
-                        <div className="grid grid-cols-2 gap-4">
-                            {(selectedContact.city || selectedContact.state || selectedContact.country) && (
-                                <div className="space-y-1">
-                                    <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Location</p>
-                                    <p className="text-sm font-medium">
-                                        {[selectedContact.city, selectedContact.state, selectedContact.country].filter(Boolean).join(', ')}
-                                    </p>
+                                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                                    {systemUsers.map((userObj) => (
+                                        <Card key={userObj.id} className="border-border/50 bg-card/60 backdrop-blur rounded-3xl overflow-hidden hover:shadow-xl transition-all border group">
+                                            <CardHeader className="pb-3 relative">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center font-black text-primary text-xl relative">
+                                                        {userObj.email?.[0].toUpperCase()}
+                                                        {userObj.role === 'super_admin' && (
+                                                            <div className="absolute -top-1 -right-1 bg-yellow-400 text-black rounded-xl p-0.5 shadow-lg border-2 border-background">
+                                                                <Crown className="w-3 h-3" />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <CardTitle className="text-lg font-black truncate">{userObj.first_name || 'Anonymous'} {userObj.last_name || ''}</CardTitle>
+                                                        <CardDescription className="font-mono text-[10px] truncate opacity-80">{userObj.email}</CardDescription>
+                                                    </div>
+                                                </div>
+                                            </CardHeader>
+                                            <CardContent className="space-y-4">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Clearance Level</span>
+                                                    <Select
+                                                        defaultValue={userObj.role}
+                                                        onValueChange={(value) => handleUpdateUserRole(userObj.id, value)}
+                                                        disabled={userObj.role === 'super_admin' && userObj.email === user?.email} // Can't de-rank self if last super admin (mock safety)
+                                                    >
+                                                        <SelectTrigger className="w-32 h-8 rounded-xl text-[10px] font-black uppercase tracking-widest border-none bg-muted/60">
+                                                            <SelectValue />
+                                                        </SelectTrigger>
+                                                        <SelectContent className="rounded-xl">
+                                                            <SelectItem value="user" className="text-xs font-bold">OPERATIVE (USER)</SelectItem>
+                                                            <SelectItem value="admin" className="text-xs font-bold">OVERSEER (ADMIN)</SelectItem>
+                                                            <SelectItem value="super_admin" className="text-xs font-bold">ENTITY (SUPER ADMIN)</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+
+                                                <div className="flex gap-2 pt-2">
+                                                    <Button
+                                                        variant="outline"
+                                                        className="flex-1 rounded-2xl h-10 border-border/50 text-[10px] font-black uppercase tracking-widest hover:bg-primary/10 hover:text-primary transition-colors"
+                                                        onClick={() => handleEditUser(userObj)}
+                                                    >
+                                                        <Edit className="h-4 w-4 mr-2" /> Modify
+                                                    </Button>
+                                                    <Button
+                                                        variant="outline"
+                                                        className="flex-1 rounded-2xl h-10 border-border/50 text-[10px] font-black uppercase tracking-widest hover:bg-destructive/10 hover:text-destructive group-hover:border-destructive/30 transition-colors"
+                                                        onClick={() => handleDeleteUser(userObj.id)}
+                                                        disabled={userObj.email === user?.email} // Can't delete self
+                                                    >
+                                                        <UserMinus className="h-4 w-4 mr-2" /> De-Authenticate
+                                                    </Button>
+                                                </div>
+
+                                            </CardContent>
+                                        </Card>
+                                    ))}
+
+                                    {/* Add User Simulation Card */}
+                                    <Card
+                                        onClick={() => { setEditingUser(null); setUserForm({ first_name: '', last_name: '', email: '', password: '', role: 'user' }); setIsUserModalOpen(true); }}
+                                        className="border-dashed border-2 border-border bg-transparent rounded-3xl flex flex-col items-center justify-center p-8 text-muted-foreground hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition-all group h-full min-h-[160px]"
+                                    >
+                                        <Users className="h-10 w-10 mb-4 group-hover:scale-110 transition-transform text-muted-foreground/40 group-hover:text-primary/40" />
+                                        <h3 className="font-black uppercase tracking-widest text-xs">Awaiting New Operator</h3>
+                                        <p className="text-[10px] font-medium text-center mt-2 opacity-60">Initialize authentication protocols</p>
+                                    </Card>
                                 </div>
-                            )}
-                            {selectedContact.company && (
-                                <div className="space-y-1">
-                                    <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Company</p>
-                                    <p className="text-sm font-medium">{selectedContact.company}</p>
+
+                                {/* User CRUD Dialog */}
+                                <Dialog open={isUserModalOpen} onOpenChange={setIsUserModalOpen}>
+                                    <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-md">
+                                        <DialogHeader>
+                                            <DialogTitle className="text-3xl font-black tracking-tighter">{editingUser ? 'Modify Operator' : 'Initialize Operator'}</DialogTitle>
+                                            <DialogDescription>Configure system access and identity parameters.</DialogDescription>
+                                        </DialogHeader>
+                                        <div className="grid gap-5 py-4">
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="space-y-2">
+                                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">First Name</Label>
+                                                    <Input placeholder="John" value={userForm.first_name} onChange={e => setUserForm({ ...userForm, first_name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Last Name</Label>
+                                                    <Input placeholder="Doe" value={userForm.last_name} onChange={e => setUserForm({ ...userForm, last_name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Email Address</Label>
+                                                <Input type="email" placeholder="operator@beeyield.com" value={userForm.email} onChange={e => setUserForm({ ...userForm, email: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                            </div>
+                                            {!editingUser && (
+                                                <div className="space-y-2">
+                                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Access Password</Label>
+                                                    <Input type="password" placeholder="••••••••" value={userForm.password} onChange={e => setUserForm({ ...userForm, password: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                                </div>
+                                            )}
+                                            <div className="space-y-2">
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Clearance Level</Label>
+                                                <Select value={userForm.role} onValueChange={(val) => setUserForm({ ...userForm, role: val })}>
+                                                    <SelectTrigger className="w-full h-12 rounded-xl bg-muted/50 border-border/50">
+                                                        <SelectValue placeholder="Select Role" />
+                                                    </SelectTrigger>
+                                                    <SelectContent className="rounded-xl">
+                                                        <SelectItem value="user" className="font-bold">OPERATIVE (USER)</SelectItem>
+                                                        <SelectItem value="admin" className="font-bold">OVERSEER (ADMIN)</SelectItem>
+                                                        <SelectItem value="super_admin" className="font-bold">ENTITY (SUPER ADMIN)</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                        </div>
+                                        <DialogFooter>
+                                            <Button onClick={handleSaveUser} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
+                                                {editingUser ? 'Update Operator' : 'Finalize Authentication'}
+                                            </Button>
+                                        </DialogFooter>
+                                    </DialogContent>
+                                </Dialog>
+
+                            </TabsContent>
+                        )
+                    }
+
+                    {/* --- POLLINATION REQUESTS TAB --- */}
+                    <TabsContent value="pollination" className="space-y-6">
+                        <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
+                            <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30">
+                                <div className="flex justify-between items-center">
+                                    <div>
+                                        <CardTitle className="text-2xl font-black">Pollination Requests</CardTitle>
+                                        <CardDescription>All incoming pollination service requests from farmers.</CardDescription>
+                                    </div>
+                                    <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-1.5 rounded-xl font-black text-[10px]">
+                                        {pollinationRequests.length} REQUESTS
+                                    </Badge>
                                 </div>
-                            )}
-                        </div>
-
-                        {/* Grower Specifics */}
-                        {(selectedContact.farm_name || selectedContact.crop_type) && (
-                            <div className="bg-muted/30 p-3 rounded-xl space-y-3">
-                                <p className="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2">
-                                    <Leaf className="w-3 h-3" /> Farm Details
-                                </p>
-                                <div className="grid grid-cols-2 gap-4 text-sm">
-                                    {selectedContact.farm_name && (
-                                        <div><span className="text-muted-foreground text-xs block">Farm Name</span>{selectedContact.farm_name}</div>
-                                    )}
-                                    {selectedContact.crop_type && (
-                                        <div><span className="text-muted-foreground text-xs block">Crop</span>{selectedContact.crop_type}</div>
-                                    )}
-                                    {selectedContact.acres && (
-                                        <div><span className="text-muted-foreground text-xs block">Size</span>{selectedContact.acres} Acres</div>
-                                    )}
+                            </CardHeader>
+                            <CardContent className="p-0">
+                                <div className="overflow-x-auto">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow className="border-b border-[#1e1e1e] bg-[#1e1e1e]/20">
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Email</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Phone</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Crop Type</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Farm Size</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Location</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {pollinationRequests.length === 0 ? (
+                                                <TableRow><TableCell colSpan={9} className="text-center h-48 text-muted-foreground font-medium">No pollination requests yet.</TableCell></TableRow>
+                                            ) : (
+                                                pollinationRequests.map((req) => (
+                                                    <TableRow key={req.id} className="hover:bg-muted/20 transition-colors border-border/10">
+                                                        <TableCell className="px-6 font-semibold">{req.name || req.first_name}</TableCell>
+                                                        <TableCell className="px-6 text-sm">{req.email}</TableCell>
+                                                        <TableCell className="px-6 text-sm font-mono">{req.phone}</TableCell>
+                                                        <TableCell className="px-6"><Badge variant="outline" className="rounded-xl">{req.crop_type || req.crop}</Badge></TableCell>
+                                                        <TableCell className="px-6 text-sm">{req.farm_size || req.acreage} acres</TableCell>
+                                                        <TableCell className="px-6 text-sm text-muted-foreground">{req.location || req.county}</TableCell>
+                                                        <TableCell className="px-6 text-xs font-mono">{new Date(req.created_at).toLocaleDateString()}</TableCell>
+                                                        <TableCell className="px-6">
+                                                            <Select defaultValue={req.status || 'pending'} onValueChange={(val) => adminService.updatePollinationRequestStatus(req.id, val).then(() => { toast.success('Status updated'); loadAllData(); })}>
+                                                                <SelectTrigger className="h-8 w-[120px] rounded-xl text-[10px] font-black uppercase"><SelectValue /></SelectTrigger>
+                                                                <SelectContent>
+                                                                    <SelectItem value="pending">Pending</SelectItem>
+                                                                    <SelectItem value="contacted">Contacted</SelectItem>
+                                                                    <SelectItem value="completed">Completed</SelectItem>
+                                                                    <SelectItem value="rejected">Rejected</SelectItem>
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </TableCell>
+                                                        <TableCell className="px-6 text-right">
+                                                            <div className="flex justify-end gap-2">
+                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleViewPollination(req)}>
+                                                                    <Search className="h-4 w-4" />
+                                                                </Button>
+                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeletePollination(req.id)}>
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                </Button>
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))
+                                            )}
+                                        </TableBody>
+                                    </Table>
                                 </div>
-                            </div>
-                        )}
+                            </CardContent>
+                        </Card>
 
-                        {/* Beekeeper Specifics */}
-                        {(selectedContact.apiary_name || selectedContact.hive_count) && (
-                            <div className="bg-muted/30 p-3 rounded-xl space-y-3">
-                                <p className="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2">
-                                    <Database className="w-3 h-3" /> Apiary Details
-                                </p>
-                                <div className="grid grid-cols-2 gap-4 text-sm">
-                                    {selectedContact.apiary_name && (
-                                        <div><span className="text-muted-foreground text-xs block">Apiary Name</span>{selectedContact.apiary_name}</div>
-                                    )}
-                                    {selectedContact.hive_count && (
-                                        <div><span className="text-muted-foreground text-xs block">Hive Count</span>{selectedContact.hive_count}</div>
-                                    )}
-                                    {selectedContact.experience_years && (
-                                        <div><span className="text-muted-foreground text-xs block">Experience</span>{selectedContact.experience_years} Years</div>
-                                    )}
+                        {/* Pollination Details Dialog */}
+                        <Dialog open={isPollinationDetailsOpen} onOpenChange={setIsPollinationDetailsOpen}>
+                            <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-md">
+                                <DialogHeader>
+                                    <DialogTitle className="text-2xl font-black flex gap-2 items-center">
+                                        <Bug className="w-6 h-6 text-primary" /> Service Request
+                                    </DialogTitle>
+                                </DialogHeader>
+                                {selectedPollination && (
+                                    <div className="space-y-4">
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-1">
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Farmer</p>
+                                                <p className="font-bold">{selectedPollination.name || selectedPollination.first_name}</p>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Contact</p>
+                                                <p className="text-xs">{selectedPollination.email}</p>
+                                                <p className="text-xs font-mono">{selectedPollination.phone}</p>
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-1">
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Crop</p>
+                                                <Badge variant="secondary">{selectedPollination.crop_type || selectedPollination.crop}</Badge>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Size</p>
+                                                <p className="font-bold">{selectedPollination.farm_size || selectedPollination.acreage} Acres</p>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Location</p>
+                                            <p className="font-medium">{selectedPollination.location || selectedPollination.county}</p>
+                                        </div>
+                                        <div className="space-y-1 pt-2 border-t border-border/10">
+                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Additional Notes</p>
+                                            <p className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-xl italic">
+                                                "{selectedPollination.notes || selectedPollination.message || 'No additional notes provided.'}"
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+                            </DialogContent>
+                        </Dialog>
+                    </TabsContent>
+
+                    {/* --- CONTACT REQUESTS TAB --- */}
+                    <TabsContent value="contact" className="space-y-6">
+                        <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
+                            <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30">
+                                <div className="flex justify-between items-center">
+                                    <div>
+                                        <CardTitle className="text-2xl font-black">Contact Submissions</CardTitle>
+                                        <CardDescription>Messages received through the contact form.</CardDescription>
+                                    </div>
+                                    <Badge className="bg-amber-500/10 text-amber-600 border-amber-200 px-4 py-1.5 rounded-xl font-black text-[10px]">
+                                        {contacts.length} MESSAGES
+                                    </Badge>
                                 </div>
-                            </div>
-                        )}
+                            </CardHeader>
+                            <CardContent className="p-0">
+                                <div className="overflow-x-auto">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow className="border-b border-[#1e1e1e] bg-[#1e1e1e]/20">
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Email</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Subject</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest max-w-md">Message</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {contacts.length === 0 ? (
+                                                <TableRow><TableCell colSpan={7} className="text-center h-48 text-muted-foreground font-medium">No contact messages yet.</TableCell></TableRow>
+                                            ) : (
+                                                contacts.map((contact) => (
+                                                    <TableRow key={contact.id} className="hover:bg-muted/20 transition-colors border-border/10">
+                                                        <TableCell className="px-6 font-semibold">{contact.name || `${contact.first_name} ${contact.last_name}`}</TableCell>
+                                                        <TableCell className="px-6 text-sm">{contact.email}</TableCell>
+                                                        <TableCell className="px-6"><Badge variant="outline" className="rounded-xl">{contact.subject || 'General'}</Badge></TableCell>
+                                                        <TableCell className="px-6 text-sm text-muted-foreground max-w-md truncate">{contact.message}</TableCell>
+                                                        <TableCell className="px-6 text-xs font-mono">{new Date(contact.created_at).toLocaleDateString()}</TableCell>
+                                                        <TableCell className="px-6">
+                                                            <Select defaultValue={contact.status || 'new'} onValueChange={(val) => adminService.updateContactRequestStatus(contact.id, val).then(() => { toast.success('Status updated'); loadAllData(); })}>
+                                                                <SelectTrigger className="h-8 w-[100px] rounded-xl text-[10px] font-black uppercase"><SelectValue /></SelectTrigger>
+                                                                <SelectContent>
+                                                                    <SelectItem value="new">New</SelectItem>
+                                                                    <SelectItem value="read">Read</SelectItem>
+                                                                    <SelectItem value="replied">Replied</SelectItem>
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </TableCell>
+                                                        <TableCell className="px-6 text-right">
+                                                            <div className="flex justify-end gap-2">
+                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleViewContact(contact)}>
+                                                                    <Search className="h-4 w-4" />
+                                                                </Button>
+                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteContact(contact.id)}>
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                </Button>
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            </CardContent>
+                        </Card>
 
-                        {/* Message Body */}
-                        <div className="space-y-2">
-                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">
-                                {selectedContact.topic || selectedContact.subject || 'Message'}
-                            </p>
-                            <div className="bg-muted/20 p-4 rounded-xl border border-border/50">
-                                <p className="text-sm leading-relaxed whitespace-pre-wrap">{selectedContact.message}</p>
-                            </div>
-                        </div>
+                        {/* Contact Details Dialog */}
+                        <Dialog open={isContactDetailsOpen} onOpenChange={setIsContactDetailsOpen}>
+                            <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-xl max-h-[85vh] overflow-y-auto">
+                                <DialogHeader>
+                                    <DialogTitle className="text-2xl font-black flex gap-2 items-center">
+                                        <MessageSquare className="w-6 h-6 text-primary" /> Message Details
+                                    </DialogTitle>
+                                </DialogHeader>
+                                {selectedContact && (
+                                    <div className="space-y-6">
+                                        {/* Header Section */}
+                                        <div className="flex justify-between items-start border-b border-border/10 pb-4">
+                                            <div>
+                                                <p className="font-bold text-lg">{selectedContact.name || `${selectedContact.first_name} ${selectedContact.last_name}`}</p>
+                                                <div className="flex flex-col gap-0.5 mt-1">
+                                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                        <Mail className="w-3 h-3" /> {selectedContact.email}
+                                                    </div>
+                                                    {selectedContact.phone && (
+                                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                            <Phone className="w-3 h-3" /> {selectedContact.phone}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <Badge variant="outline" className="mb-2">{new Date(selectedContact.created_at).toLocaleDateString()}</Badge>
+                                                <div className="flex justify-end">
+                                                    <Badge className="bg-primary/10 text-primary border-none uppercase text-[10px] tracking-wider">
+                                                        {selectedContact.inquiry_type || 'General'}
+                                                    </Badge>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                        <div className="pt-2 flex justify-end">
-                            <Button variant="outline" className="rounded-full text-xs font-bold" onClick={() => window.open(`mailto:${selectedContact.email}`)}>
-                                <Mail className="w-3 h-3 mr-2" /> Reply via Email
-                            </Button>
-                        </div>
-                    </div>
-                )}
-            </DialogContent>
-        </Dialog>
-    </TabsContent>
+                                        {/* Location & Context */}
+                                        <div className="grid grid-cols-2 gap-4">
+                                            {(selectedContact.city || selectedContact.state || selectedContact.country) && (
+                                                <div className="space-y-1">
+                                                    <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Location</p>
+                                                    <p className="text-sm font-medium">
+                                                        {[selectedContact.city, selectedContact.state, selectedContact.country].filter(Boolean).join(', ')}
+                                                    </p>
+                                                </div>
+                                            )}
+                                            {selectedContact.company && (
+                                                <div className="space-y-1">
+                                                    <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Company</p>
+                                                    <p className="text-sm font-medium">{selectedContact.company}</p>
+                                                </div>
+                                            )}
+                                        </div>
 
-    {/* --- NEWSLETTER TAB --- */ }
-    <TabsContent value="newsletter" className="space-y-6">
-        <Card className="border-none shadow-2xl glass bg-white/50 dark:bg-black/20 rounded-3xl overflow-hidden">
-            <CardHeader className="bg-muted/30 border-b border-border/10">
-                <CardTitle className="text-2xl font-black">Newsletter Subscribers</CardTitle>
-                <CardDescription>All email subscribers to the BeeYield newsletter.</CardDescription>
-            </CardHeader>
-            <CardContent className="p-0">
-                <Table>
-                    <TableHeader>
-                        <TableRow className="bg-muted/20 border-border/10">
-                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Email</TableHead>
-                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
-                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Subscribed On</TableHead>
-                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {subscribers.length === 0 ? (
-                            <TableRow><TableCell colSpan={4} className="text-center h-48 text-muted-foreground font-medium">No subscribers yet.</TableCell></TableRow>
-                        ) : (
-                            subscribers.map((sub) => (
-                                <TableRow key={sub.id} className="hover:bg-muted/20 transition-colors border-border/10">
-                                    <TableCell className="px-6 font-semibold">{sub.email}</TableCell>
-                                    <TableCell className="px-6 font-medium text-muted-foreground">{sub.first_name || 'Anonymous'}</TableCell>
-                                    <TableCell className="px-6 text-xs font-mono">{new Date(sub.created_at).toLocaleString()}</TableCell>
-                                    <TableCell className="px-6 text-right">
-                                        <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteSubscriber(sub.id)}>
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))
-                        )}
-                    </TableBody>
-                </Table>
-            </CardContent>
-        </Card>
-    </TabsContent>
-            </Tabs >
-        </div >
-    </DashboardLayout >
-);
+                                        {/* Grower Specifics */}
+                                        {(selectedContact.farm_name || selectedContact.crop_type) && (
+                                            <div className="bg-muted/30 p-3 rounded-xl space-y-3">
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2">
+                                                    <Leaf className="w-3 h-3" /> Farm Details
+                                                </p>
+                                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                                    {selectedContact.farm_name && (
+                                                        <div><span className="text-muted-foreground text-xs block">Farm Name</span>{selectedContact.farm_name}</div>
+                                                    )}
+                                                    {selectedContact.crop_type && (
+                                                        <div><span className="text-muted-foreground text-xs block">Crop</span>{selectedContact.crop_type}</div>
+                                                    )}
+                                                    {selectedContact.acres && (
+                                                        <div><span className="text-muted-foreground text-xs block">Size</span>{selectedContact.acres} Acres</div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Beekeeper Specifics */}
+                                        {(selectedContact.apiary_name || selectedContact.hive_count) && (
+                                            <div className="bg-muted/30 p-3 rounded-xl space-y-3">
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2">
+                                                    <Database className="w-3 h-3" /> Apiary Details
+                                                </p>
+                                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                                    {selectedContact.apiary_name && (
+                                                        <div><span className="text-muted-foreground text-xs block">Apiary Name</span>{selectedContact.apiary_name}</div>
+                                                    )}
+                                                    {selectedContact.hive_count && (
+                                                        <div><span className="text-muted-foreground text-xs block">Hive Count</span>{selectedContact.hive_count}</div>
+                                                    )}
+                                                    {selectedContact.experience_years && (
+                                                        <div><span className="text-muted-foreground text-xs block">Experience</span>{selectedContact.experience_years} Years</div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Message Body */}
+                                        <div className="space-y-2">
+                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">
+                                                {selectedContact.topic || selectedContact.subject || 'Message'}
+                                            </p>
+                                            <div className="bg-muted/20 p-4 rounded-xl border border-border/50">
+                                                <p className="text-sm leading-relaxed whitespace-pre-wrap">{selectedContact.message}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="pt-2 flex justify-end">
+                                            <Button variant="outline" className="rounded-full text-xs font-bold" onClick={() => window.open(`mailto:${selectedContact.email}`)}>
+                                                <Mail className="w-3 h-3 mr-2" /> Reply via Email
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
+                            </DialogContent>
+                        </Dialog>
+                    </TabsContent>
+
+                    {/* --- NEWSLETTER TAB --- */}
+                    <TabsContent value="newsletter" className="space-y-6">
+                        <Card className="border-none shadow-2xl glass bg-white/50 dark:bg-black/20 rounded-3xl overflow-hidden">
+                            <CardHeader className="bg-muted/30 border-b border-border/10">
+                                <CardTitle className="text-2xl font-black">Newsletter Subscribers</CardTitle>
+                                <CardDescription>All email subscribers to the BeeYield newsletter.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="p-0">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="bg-muted/20 border-border/10">
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Email</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Subscribed On</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {subscribers.length === 0 ? (
+                                            <TableRow><TableCell colSpan={4} className="text-center h-48 text-muted-foreground font-medium">No subscribers yet.</TableCell></TableRow>
+                                        ) : (
+                                            subscribers.map((sub) => (
+                                                <TableRow key={sub.id} className="hover:bg-muted/20 transition-colors border-border/10">
+                                                    <TableCell className="px-6 font-semibold">{sub.email}</TableCell>
+                                                    <TableCell className="px-6 font-medium text-muted-foreground">{sub.first_name || 'Anonymous'}</TableCell>
+                                                    <TableCell className="px-6 text-xs font-mono">{new Date(sub.created_at).toLocaleString()}</TableCell>
+                                                    <TableCell className="px-6 text-right">
+                                                        <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteSubscriber(sub.id)}>
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+                </Tabs >
+            </div >
+        </DashboardLayout >
+    );
 };
 
 const TooltipWrapper = ({ children, text }: { children: React.ReactNode, text: string }) => (
