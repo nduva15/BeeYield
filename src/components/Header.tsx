@@ -112,6 +112,14 @@ const Header = () => {
 
 
 
+          <Link
+            to="/beeyield-dashboard"
+            className="p-2 hover:bg-muted rounded-full transition-all active:scale-90 group mr-1"
+            aria-label="BeeYield IoT Dashboard"
+          >
+            <User className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
+          </Link>
+
           <button
             onClick={openCart}
             className="relative p-2 hover:bg-muted rounded-full transition-all active:scale-90 group"
