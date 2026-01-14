@@ -119,9 +119,10 @@
     "vitest": "^4.0.16"
   },
    "overrides": {
-    "@tanstack/start": "$@tanstack/start",
-    "@tanstack/router-generator": "$@tanstack/router-generator",
-    "@tanstack/start-config": "1.149.4"
+    "@tanstack/start": "1.120.20",
+    "@tanstack/react-router": "1.120.20",
+    "@tanstack/router-generator": "1.120.20",
+    "@tanstack/start-config": "1.120.20"
   }
 
 }
