@@ -1,0 +1,66 @@
+﻿node.exe : npm error code 
+ERESOLVE
+At C:\Program 
+Files\nodejs\npm.ps1:29 
+char:3
++   & $NODE_EXE 
+$NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (n  
+  pm error code ERESOLV   
+ E:String) [], RemoteE    
+xception
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+npm error ERESOLVE unable 
+to resolve dependency tree
+npm error
+npm error While 
+resolving: beeyield@0.0.0
+npm error Found: 
+vite@6.4.1
+npm error 
+node_modules/vite
+npm error   dev 
+vite@"^6.0.0" from the 
+root project
+npm error
+npm error Could not 
+resolve dependency:
+npm error peer 
+vite@">=7.0.0" from @tanst
+ack/react-start@1.149.3
+npm error node_modules/@ta
+nstack/react-start
+npm error   @tanstack/reac
+t-start@"1.149.3" from 
+the root project
+npm error
+npm error Fix the 
+upstream dependency 
+conflict, or retry
+npm error this command 
+with --force or 
+--legacy-peer-deps
+npm error to accept an 
+incorrect (and 
+potentially broken) 
+dependency resolution.
+npm error
+npm error
+npm error For a full 
+report see:
+npm error C:\Users\aggym\A
+ppData\Local\npm-cache\_lo
+gs\2026-01-14T18_03_03_645
+Z-eresolve-report.txt
+npm error A complete log 
+of this run can be found 
+in: C:\Users\aggym\AppData
+\Local\npm-cache\_logs\202
+6-01-14T18_03_03_645Z-debu
+g-0.log
