@@ -118,11 +118,13 @@
     "vite-tsconfig-paths": "^6.0.4",
     "vitest": "^4.0.16"
   },
-   "overrides": {
+  "overrides": {
     "@tanstack/start": "1.120.20",
     "@tanstack/react-router": "1.120.20",
     "@tanstack/router-generator": "1.120.20",
     "@tanstack/start-config": "1.120.20"
+  }
+
   }
 
 }
