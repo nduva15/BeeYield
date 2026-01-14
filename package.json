@@ -117,5 +117,11 @@
     "vite": "^7.3.0",
     "vite-tsconfig-paths": "^6.0.4",
     "vitest": "^4.0.16"
+  },
+   "overrides": {
+    "@tanstack/start": "$@tanstack/start",
+    "@tanstack/router-generator": "$@tanstack/router-generator",
+    "@tanstack/start-config": "1.149.4"
   }
+
 }
