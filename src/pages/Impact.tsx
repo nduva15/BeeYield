@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Sprout, Droplets, TreePine, Bug, Download, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@tanstack/react-router";
 import impactImage from "@/assets/impact-beekeeping.jpg";
 
 const Impact = () => {
@@ -145,8 +145,8 @@ const Impact = () => {
                   Expand to 200+ partner beekeepers
                 </li>
               </ul>
-              <Link 
-                to="/GlobalHiveNetwork" 
+              <Link
+                to="/GlobalHiveNetwork"
                 className="mt-6 inline-flex items-center gap-2 bg-primary-foreground text-primary px-4 py-2 rounded-lg font-semibold hover:opacity-90 transition-opacity"
               >
                 Join Our Global Hive Network <ArrowRight className="h-4 w-4" />

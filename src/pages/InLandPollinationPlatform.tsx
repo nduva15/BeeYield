@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "@tanstack/react-router";
 import {
   Mic, Map, LayoutDashboard, ArrowRight,
   Quote, Activity, Mail, ChevronRight,

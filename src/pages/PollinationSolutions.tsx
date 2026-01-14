@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@tanstack/react-router";
 import {
   ArrowRight, Activity, Sprout, BarChart3,
   Cpu, Wifi, Check, Shield

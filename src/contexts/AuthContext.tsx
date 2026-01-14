@@ -57,25 +57,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     useEffect(() => {
         // Get initial session
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setSession(session);
-            setUser(session?.user ?? null);
-            setLoading(false);
-        });
-
-        // Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-            (_event, session) => {
+        if (supabase) {
+            supabase.auth.getSession().then(({ data: { session } }) => {
                 setSession(session);
                 setUser(session?.user ?? null);
                 setLoading(false);
-            }
-        );
+            });
 
-        return () => subscription.unsubscribe();
+            // Listen for auth changes
+            const { data: { subscription } } = supabase.auth.onAuthStateChange(
+                (_event, session) => {
+                    setSession(session);
+                    setUser(session?.user ?? null);
+                    setLoading(false);
+                }
+            );
+
+            return () => subscription.unsubscribe();
+        } else {
+            setLoading(false);
+        }
     }, []);
 
     const signIn = async (email: string, password: string) => {
+        if (!supabase) return { error: new Error('Supabase client not initialized') as AuthError };
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
         // DEVELOPMENT BYPASS: Support for Super Admin even if DB triggers are failing
@@ -115,6 +120,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         password: string,
         metadata?: { first_name?: string; last_name?: string }
     ) => {
+        if (!supabase) return { error: new Error('Supabase client not initialized') as AuthError, data: { user: null } };
         const { data, error } = await supabase.auth.signUp({
             email,
             password,
@@ -126,6 +132,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     const signInWithGoogle = async () => {
+        if (!supabase) return { error: new Error('Supabase client not initialized') as AuthError };
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
@@ -142,11 +149,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const signOut = async () => {
         setMfaRequired(false);
         setMfaFactorId(null);
-        await supabase.auth.signOut();
+        if (supabase) await supabase.auth.signOut();
     };
 
     // Password Reset: Send reset email
     const resetPassword = async (email: string) => {
+        if (!supabase) return { error: new Error('Supabase client not initialized') as AuthError };
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
             redirectTo: `${window.location.origin}/update-password`,
         });
@@ -155,6 +163,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     // Password Reset: Update password after clicking reset link
     const updatePassword = async (newPassword: string) => {
+        if (!supabase) return { error: new Error('Supabase client not initialized') as AuthError };
         const { error } = await supabase.auth.updateUser({
             password: newPassword,
         });
@@ -163,6 +172,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     // MFA: Enroll a new TOTP factor
     const enrollMFA = async (): Promise<{ data: MFAEnrollResult | null; error: Error | null }> => {
+        if (!supabase) return { data: null, error: new Error('Supabase client not initialized') };
         try {
             const { data, error } = await supabase.auth.mfa.enroll({
                 factorType: 'totp',
@@ -182,6 +192,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     // MFA: Verify enrollment with TOTP code
     const verifyMFAEnrollment = async (factorId: string, code: string) => {
+        if (!supabase) return { error: new Error('Supabase client not initialized') };
         try {
             const { data: challengeData, error: challengeError } = await supabase.auth.mfa.challenge({
                 factorId,
@@ -205,6 +216,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     // MFA: Verify challenge during login
     const verifyMFAChallenge = async (code: string) => {
+        if (!supabase) return { error: new Error('Supabase client not initialized') };
         if (!mfaFactorId) {
             return { error: new Error('No MFA factor ID available') };
         }
@@ -235,6 +247,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     // MFA: Unenroll a factor
     const unenrollMFA = async (factorId: string) => {
+        if (!supabase) return { error: new Error('Supabase client not initialized') };
         try {
             const { error } = await supabase.auth.mfa.unenroll({ factorId });
             if (error) throw error;
@@ -246,6 +259,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     // MFA: Get all enrolled factors
     const getMFAFactors = async () => {
+        if (!supabase) return { factors: [], error: new Error('Supabase client not initialized') };
         try {
             const { data, error } = await supabase.auth.mfa.listFactors();
             if (error) throw error;
@@ -257,6 +271,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     // MFA: Check if user has MFA enabled
     const hasMFAEnabled = async () => {
+        if (!supabase) return false;
         try {
             const { data } = await supabase.auth.mfa.listFactors();
             return (data?.totp?.length ?? 0) > 0;
