@@ -28,7 +28,7 @@ import {
   PlayCircle,
   Truck,
 } from "lucide-react";
-import { Product, fallbackProducts } from '@/services/shopService';
+import { Product, fallbackProducts, getProducts } from '@/services/shopService';
 import { getLearningModules, LearningModule } from "@/services/servicesService";
 import { toast } from "sonner";
 
