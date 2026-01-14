@@ -1,0 +1,97 @@
+﻿
+> beeyield@0.0.0 dev
+> vinxi dev
+
+[2m[34mvinxi[39m[22m [2m[33mv0.5.10[39m[22m
+node.exe : Error [ERR_PACKAG
+E_PATH_NOT_EXPORTED]: 
+Package subpath './config' 
+is not defined by "exports" 
+in C:\Users\aggym\Downloads\
+Honey\node_modules\@tanstack
+\react-start\package.json 
+imported from C:\Users\aggym
+\Downloads\Honey\app.config.
+timestamp_1768370934702.js
+At C:\Program 
+Files\nodejs\npm.ps1:29 
+char:3
++   & $NODE_EXE $NPM_CLI_JS 
+$args
++   ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~
+    + CategoryInfo          
+    : NotSpecified: (Error  
+   [ERR_PACK...7683709347   
+ 02.js:String) [], Remot    
+eException
+    + FullyQualifiedErrorId 
+    : NativeCommandError
+ 
+    at exportsNotFound (node
+:internal/modules/esm/resolv
+e:314:10)
+    at 
+packageExportsResolve (node:
+internal/modules/esm/resolve
+:661:9)
+    at packageResolve (node:
+internal/modules/esm/resolve
+:774:12)
+    at moduleResolve (node:i
+nternal/modules/esm/resolve:
+854:18)
+    at defaultResolve (node:
+internal/modules/esm/resolve
+:984:11)
+    at 
+ModuleLoader.defaultResolve 
+(node:internal/modules/esm/l
+oader:780:12)
+    at 
+#cachedDefaultResolve (node:
+internal/modules/esm/loader:
+704:25)
+    at ModuleLoader.resolve 
+(node:internal/modules/esm/l
+oader:687:38)
+    at ModuleLoader.getModul
+eJobForImport (node:internal
+/modules/esm/loader:305:38)
+    at ModuleJob._link (node
+:internal/modules/esm/module
+_job:137:49) {
+  code: 'ERR_PACKAGE_PATH_NO
+T_EXPORTED'
+}
+
+[41m[30m ERROR [39m[49m 
+Cannot read properties of 
+undefined (reading 'config')
+
+    [90mat [39mObject.run 
+([36m/C:/Users/aggym/Downlo
+ads/Honey/node_modules/vinxi
+/bin/cli.mjs:79:9[39m)
+    [90mat [39masync 
+runCommand ([36m/C:/Users/a
+ggym/Downloads/Honey/node_mo
+dules/citty/dist/index.mjs:3
+16:16[39m)
+    [90mat [39masync 
+runCommand ([36m/C:/Users/a
+ggym/Downloads/Honey/node_mo
+dules/citty/dist/index.mjs:3
+07:11[39m)
+    [90mat [39masync 
+runMain ([36m/C:/Users/aggy
+m/Downloads/Honey/node_modul
+es/citty/dist/index.mjs:445:
+7[39m) 
+
+
+
+[41m[30m ERROR [39m[49m 
+Cannot read properties of 
+undefined (reading 'config')
+

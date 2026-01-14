@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Loader2, Lock, CheckCircle, Shield } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 
 const UpdatePasswordForm: React.FC = () => {
     const { updatePassword, session } = useAuth();

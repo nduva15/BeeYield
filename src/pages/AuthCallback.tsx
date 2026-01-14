@@ -16,6 +16,10 @@ const AuthCallback = () => {
             try {
                 // Supabase handles the token exchange automatically
                 // We just need to wait for it and redirect
+                if (!supabase) {
+                    navigate('/login?error=client_init_failed');
+                    return;
+                }
                 const { data: { session }, error } = await supabase.auth.getSession();
 
                 if (error) {
