@@ -1,5 +1,6 @@
 import { Outlet, createRootRoute, HeadContent, Scripts } from '@tanstack/react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { Analytics } from '@vercel/analytics/react'
 import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -73,6 +74,7 @@ function RootComponent() {
                                     <Layout>
                                         <Outlet />
                                     </Layout>
+                                    <Analytics />
                                 </CartProvider>
                             </AuthProvider>
                         </TooltipProvider>
