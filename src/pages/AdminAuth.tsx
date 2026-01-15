@@ -2,12 +2,11 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent } from '@/components/ui/card';
 import LoginForm from '@/components/auth/LoginForm';
-import RegisterForm from '@/components/auth/RegisterForm';
 import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
-import { Shield, Lock, UserPlus, LogIn, Loader2 } from 'lucide-react';
+import { Shield, Lock, LogIn, Loader2 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
-type AuthMode = 'login' | 'register' | 'forgot-password';
+type AuthMode = 'login' | 'forgot-password';
 
 const AdminAuth = () => {
     const { user, loading } = useAuth();
@@ -65,56 +64,18 @@ const AdminAuth = () => {
                 {/* Auth Mode Selector */}
                 <Card className="border-none glass sm:glass-dark shadow-2xl rounded-[2.5rem] overflow-hidden border border-white/5">
                     <CardContent className="pt-6 pb-8 px-8">
-                        {/* Tab Switcher */}
-                        {authMode !== 'forgot-password' && (
-                            <div className="grid grid-cols-2 gap-2 mb-8 p-1 bg-white/5 rounded-2xl backdrop-blur-xl">
-                                <button
-                                    type="button"
-                                    onClick={() => setAuthMode('login')}
-                                    className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition-all ${authMode === 'login'
-                                        ? 'bg-primary text-primary-foreground shadow-glow'
-                                        : 'text-muted-foreground hover:text-white'
-                                        }`}
-                                >
-                                    <LogIn className="h-4 w-4" />
-                                    Gateway
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setAuthMode('register')}
-                                    className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition-all ${authMode === 'register'
-                                        ? 'bg-primary text-primary-foreground shadow-glow'
-                                        : 'text-muted-foreground hover:text-white'
-                                        }`}
-                                >
-                                    <UserPlus className="h-4 w-4" />
-                                    Recruit
-                                </button>
-                            </div>
-                        )}
-
                         {/* Login Form */}
                         {authMode === 'login' && (
                             <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+                                <div className="mb-6 flex items-center justify-center gap-2 text-primary font-bold uppercase tracking-widest text-sm">
+                                    <LogIn className="w-4 h-4" /> Gateway Access
+                                </div>
                                 <LoginForm
                                     onSuccess={() => navigate(redirectPath)}
-                                    onSwitchToRegister={() => setAuthMode('register')}
+                                    // Remove registration switch to prevent public signups
+                                    onSwitchToRegister={() => { }}
                                     onForgotPassword={() => setAuthMode('forgot-password')}
                                 />
-                            </div>
-                        )}
-
-                        {/* Register Form */}
-                        {authMode === 'register' && (
-                            <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-                                <RegisterForm
-                                    defaultRole="admin"
-                                    onSuccess={() => setAuthMode('login')}
-                                    onSwitchToLogin={() => setAuthMode('login')}
-                                />
-                                <p className="mt-4 text-[10px] text-center text-muted-foreground italic">
-                                    Note: New admin accounts require Level 2 clearance approval.
-                                </p>
                             </div>
                         )}
 
@@ -137,6 +98,9 @@ const AdminAuth = () => {
                     >
                         <Lock className="h-3 w-3" /> Exit Terminal
                     </button>
+                    <p className="mt-4 text-[10px] text-muted-foreground/50">
+                        Authorized Personnel Only. All access attempts are logged.
+                    </p>
                 </div>
             </div>
         </div>

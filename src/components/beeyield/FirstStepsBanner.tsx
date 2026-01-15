@@ -75,10 +75,10 @@ const FirstStepsBanner: React.FC<FirstStepsBannerProps> = ({ onTabChange }) => {
                     </Button>
                     <Button
                         variant="outline"
-                        onClick={() => onTabChange('assistant')}
+                        onClick={() => onTabChange('agro-intelligence')}
                         className="rounded-full bg-white dark:bg-[#1e1e1e] border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200 shadow-sm text-xs font-semibold px-6"
                     >
-                        BeeYield Hub Intelligence
+                        BeeYield Agro Intelligence
                     </Button>
                     <Button
                         variant="outline"

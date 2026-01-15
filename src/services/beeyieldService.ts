@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { apiGet } from './api';
+import { toast } from 'sonner';
 
 const getAuthHeaders = async (): Promise<Record<string, string>> => {
     if (!supabase) return {};
@@ -171,6 +172,7 @@ export const beeyieldService = {
             return devices.length ? devices : mockDevices;
         } catch (error) {
             console.warn('Backend API failed, using mock devices:', error);
+            toast.warning("Backend unavailable: Viewing Demo Devices");
             return mockDevices;
         }
     },
@@ -195,6 +197,7 @@ export const beeyieldService = {
             return readings.length ? readings : (type ? generateMockReadings().filter(r => r.sensor_type === type) : generateMockReadings());
         } catch (error) {
             console.warn('Backend API failed, using mock readings:', error);
+            toast.warning("Backend unavailable: Viewing Demo Readings");
             const readings = generateMockReadings();
             return type ? readings.filter(r => r.sensor_type === type) : readings;
         }
@@ -223,6 +226,7 @@ export const beeyieldService = {
             return hives.length ? hives : mockClientHives.map(h => ({ ...h, user_id: userId || 'demo' }));
         } catch (error) {
             console.warn('Backend API failed, using mock client hives:', error);
+            toast.warning("Backend unavailable: Viewing Demo Hives");
             return mockClientHives.map(h => ({ ...h, user_id: userId || 'demo' }));
         }
     },
@@ -243,6 +247,7 @@ export const beeyieldService = {
             return await apiGet<any>('/iot/stats', {}, { headers });
         } catch (error) {
             console.warn('Backend API failed, using client-side calculation:', error);
+            toast.warning("Backend unavailable: Viewing Demo Stats");
             // Fallback to client-side calc if backend fails
             const devices = await this.getDevices();
             const readings = await this.getSensorReadings();
@@ -279,6 +284,15 @@ export const beeyieldService = {
                 healthScore: Math.round(healthScore)
             };
         }
+    },
+
+    // Update User Metadata
+    async updateUserMetadata(metadata: Record<string, any>): Promise<{ error: any }> {
+        if (!supabase) return { error: new Error('Supabase client not initialized') };
+        const { error } = await supabase.auth.updateUser({
+            data: metadata
+        });
+        return { error };
     }
 };
 

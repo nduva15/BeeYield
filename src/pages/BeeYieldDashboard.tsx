@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from '@tanstack/react-router';
 import { beeyieldService, IoTDevice, SensorReading } from '@/services/beeyieldService';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -11,26 +11,33 @@ import {
     LayoutGrid, MessageSquare, Box, LineChart, Signal, Bluetooth, Cpu, Usb, FileText, HelpCircle,
     Plus, Filter, SlidersHorizontal, MoreHorizontal, Battery, Wifi, Clock, AlertTriangle, CheckCircle2,
     X, ChevronDown, MapPin, Search, ClipboardList, Calculator, Receipt, LifeBuoy, Settings,
-    Hand, Map, TrendingUp, Volume2, Camera, BookOpen
+    Hand, Map, TrendingUp, Volume2, Camera, BookOpen, Droplet, Flame, Zap, Building2, Home, PieChart,
+    ArrowRightLeft, FileInput, Bot, Activity, Gauge, List, Layers, BarChart3, Upload, LayoutList, Hexagon, Puzzle,
+    LogIn, UserPlus, Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import DashboardLayout from '@/components/beeyield/DashboardLayout';
 import { NavItem } from '@/components/beeyield/DashboardSidebar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import LoginForm from '@/components/auth/LoginForm';
+import RegisterForm from '@/components/auth/RegisterForm';
+import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
 
 // View Imports
 import MyDevicesView from '@/components/beeyield/MyDevicesView';
 import AIAssistantView from '@/components/beeyield/AIAssistantView';
+import AgroIntelligenceView from '@/components/beeyield/AgroIntelligenceView';
 import MyPlacesView from '@/components/beeyield/MyPlacesView';
 import BeeYieldHivesView from '@/components/beeyield/BeeYieldHivesView';
 import MeasurementDataView from '@/components/beeyield/MeasurementDataView';
 import SettingsView from '@/components/beeyield/SettingsView';
 import {
-    BeeHUBOnlineView,
+    BeeYieldOnlineView,
     BluetoothView,
     USBView
 } from '@/components/beeyield/RemainingViews';
+
 import MyRequestsView from '@/components/beeyield/MyRequestsView';
 import MyNotesView from '@/components/beeyield/MyNotesView';
 import MyTaskView from '@/components/beeyield/MyTaskView';
@@ -38,10 +45,15 @@ import BuyBeeYieldHubView from '@/components/beeyield/BuyBeeYieldHubView';
 import MetersView from '@/components/beeyield/MetersView';
 import BillingView from '@/components/beeyield/BillingView';
 import SupportCenterView from '@/components/beeyield/SupportCenterView';
+import ServerStatusView from '@/components/beeyield/ServerStatusView';
 
+type AuthMode = 'login' | 'register' | 'forgot-password';
 
 const BeeYieldDashboard: React.FC = () => {
-    const { user, signOut } = useAuth();
+    const { user, loading: authLoading, signOut } = useAuth();
+
+    // Auth State
+    const [authMode, setAuthMode] = useState<AuthMode>('login');
 
     // Dashboard state
     const [loading, setLoading] = useState(true);
@@ -53,6 +65,9 @@ const BeeYieldDashboard: React.FC = () => {
     // Data fetching
     useEffect(() => {
         const loadData = async () => {
+            // Only load data if user is authenticated
+            if (!user) return;
+
             setLoading(true);
             try {
                 const [devicesData, readingsData] = await Promise.all([
@@ -68,8 +83,11 @@ const BeeYieldDashboard: React.FC = () => {
                 setLoading(false);
             }
         };
-        loadData();
-    }, []);
+
+        if (!authLoading && user) {
+            loadData();
+        }
+    }, [user, authLoading]);
 
     // Derived Stats
     const totalDevices = devices.length;
@@ -102,12 +120,12 @@ const BeeYieldDashboard: React.FC = () => {
 
     // Nav Items matching screenshot precisely
     const navItems: NavItem[] = [
-        { id: 'assistant', label: 'AI Assistant', icon: MessageSquare },
-        { id: 'places', label: 'My Places', icon: LayoutGrid },
+        { id: 'assistant', label: 'AI Assistant', icon: Bot },
+        { id: 'places', label: 'My Places', icon: MapPin },
         {
             id: 'beeyield',
             label: 'BeeYield Hives',
-            icon: Box,
+            icon: Hexagon,
             hasSubmenu: true,
             submenuItems: [
                 { id: 'inspections', label: 'Inspections', icon: Search },
@@ -119,9 +137,61 @@ const BeeYieldDashboard: React.FC = () => {
                 { id: 'health-guide', label: 'Bee Health Guide', icon: BookOpen },
             ]
         },
-        { id: 'data', label: 'Measurement data', icon: LineChart, hasSubmenu: true },
-        { id: 'meters', label: 'Meters', icon: Calculator, hasSubmenu: true },
-        { id: 'devices', label: 'My devices', icon: Cpu },
+        {
+            id: 'data',
+            label: 'Measurement data',
+            icon: Activity,
+            hasSubmenu: true,
+            submenuItems: [
+                { id: 'online', label: 'BeeYield Online', icon: Signal },
+                { id: 'bluetooth', label: 'Bluetooth', icon: Bluetooth },
+                { id: 'devices', label: 'My devices', icon: Cpu },
+                { id: 'usb', label: 'USB', icon: Usb },
+            ]
+        },
+        { id: 'notes', label: 'My Notes', icon: FileText },
+        { id: 'requests', label: 'My Requests', icon: HelpCircle },
+        { id: 'task', label: 'My Task', icon: ClipboardList },
+        { id: 'buy', label: 'Buy BeeYield', icon: Cpu },
+        {
+            id: 'meters',
+            label: 'Meters',
+            icon: LayoutList,
+            hasSubmenu: true,
+            submenuItems: [
+                { id: 'meters-dashboard', label: 'Dashboard', icon: Gauge },
+                {
+                    id: 'meters-list',
+                    label: 'Meter list',
+                    icon: List,
+                    subItems: [
+                        { id: 'meters-water', label: 'Water', icon: Droplet },
+                        { id: 'meters-heat', label: 'Heat', icon: Flame },
+                        { id: 'meters-energy', label: 'Energy', icon: Zap },
+                        { id: 'meters-other', label: 'Other', icon: Layers },
+                    ]
+                },
+                {
+                    id: 'meters-buildings',
+                    label: 'Buildings',
+                    icon: Building2,
+                    subItems: [
+                        { id: 'meters-apartments', label: 'Apartments', icon: Home },
+                    ]
+                },
+                {
+                    id: 'meters-measurements',
+                    label: 'Measurements',
+                    icon: Activity,
+                    subItems: [
+                        { id: 'meters-charts', label: 'Charts', icon: BarChart3 },
+                        { id: 'meters-consumption', label: 'Consumption', icon: PieChart },
+                        { id: 'meters-comparisons', label: 'Comparisons', icon: ArrowRightLeft },
+                        { id: 'meters-import', label: 'File import', icon: Upload },
+                    ]
+                },
+            ]
+        },
         { id: 'billing', label: 'Billing', icon: Receipt },
         { id: 'support', label: 'Support center', icon: LifeBuoy },
         { id: 'settings', label: 'Settings', icon: Settings },
@@ -132,6 +202,8 @@ const BeeYieldDashboard: React.FC = () => {
         switch (activeTab) {
             case 'assistant':
                 return <AIAssistantView onTabChange={setActiveTab} />;
+            case 'agro-intelligence':
+                return <AgroIntelligenceView onTabChange={setActiveTab} />;
             case 'places':
                 return <MyPlacesView onTabChange={setActiveTab} />;
             case 'beeyield':
@@ -139,7 +211,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'data':
                 return <MeasurementDataView onTabChange={setActiveTab} />;
             case 'online':
-                return <BeeHUBOnlineView onTabChange={setActiveTab} />;
+                return <BeeYieldOnlineView onTabChange={setActiveTab} />;
             case 'bluetooth':
                 return <BluetoothView onTabChange={setActiveTab} />;
             case 'devices':
@@ -155,11 +227,26 @@ const BeeYieldDashboard: React.FC = () => {
             case 'buy':
                 return <BuyBeeYieldHubView onTabChange={setActiveTab} />;
             case 'meters':
-                return <MetersView onTabChange={setActiveTab} />;
+            case 'meters-dashboard':
+            case 'meters-list':
+            case 'meters-water':
+            case 'meters-heat':
+            case 'meters-energy':
+            case 'meters-other':
+            case 'meters-buildings':
+            case 'meters-apartments':
+            case 'meters-measurements':
+            case 'meters-charts':
+            case 'meters-consumption':
+            case 'meters-comparisons':
+            case 'meters-import':
+                return <MetersView onTabChange={setActiveTab} activeSubTab={activeTab} />;
             case 'billing':
                 return <BillingView onTabChange={setActiveTab} />;
             case 'support':
                 return <SupportCenterView onTabChange={setActiveTab} />;
+            case 'server-status':
+                return <ServerStatusView onTabChange={setActiveTab} />;
             case 'settings': // Special case from top bar or banner
                 return <SettingsView onTabChange={setActiveTab} />;
             default:
@@ -178,6 +265,128 @@ const BeeYieldDashboard: React.FC = () => {
                 );
         }
     };
+
+    if (authLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            </div>
+        );
+    }
+
+    // Check if user has initialized BeeYield access
+    const isBeeYieldActive = user?.user_metadata?.beeyield_active === true;
+
+    if (authLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            </div>
+        );
+    }
+
+    // 1. User is not logged in OR does not have a Pollination account: Show Login/Register
+    if (!user || !isBeeYieldActive) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10 py-24">
+                <div className="container max-w-lg mx-auto px-4 space-y-8">
+                    {/* Header */}
+                    <div className="space-y-4 text-center">
+                        <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto border-2 border-primary/20">
+                            <Hexagon className="h-10 w-10 text-primary" />
+                        </div>
+                        <h1 className="text-4xl font-black text-foreground tracking-tightest leading-none">
+                            <span className="text-primary italic">Login</span>
+                        </h1>
+                        <p className="text-lg text-muted-foreground font-medium">
+                            {authMode === 'login'
+                                ? 'Sign in to access your Hive Intelligence'
+                                : 'Sign up to manage your hives and data'}
+                        </p>
+                    </div>
+
+                    {/* Auth Mode Selector */}
+                    <Card className="border-none glass shadow-premium rounded-[2rem] overflow-hidden">
+                        <CardContent className="pt-6 pb-8 px-8">
+                            {/* Tab Switcher */}
+                            {authMode !== 'forgot-password' && (
+                                <div className="grid grid-cols-2 gap-2 mb-8 p-1 bg-muted rounded-2xl">
+                                    <button
+                                        type="button"
+                                        onClick={() => setAuthMode('login')}
+                                        className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition-all ${authMode === 'login'
+                                            ? 'bg-primary text-primary-foreground shadow-lg'
+                                            : 'text-muted-foreground hover:text-foreground'
+                                            }`}
+                                    >
+                                        <LogIn className="h-4 w-4" />
+                                        Log In
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setAuthMode('register')}
+                                        className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition-all ${authMode === 'register'
+                                            ? 'bg-primary text-primary-foreground shadow-lg'
+                                            : 'text-muted-foreground hover:text-foreground'
+                                            }`}
+                                    >
+                                        <UserPlus className="h-4 w-4" />
+                                        Sign Up
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Login Form */}
+                            {authMode === 'login' && (
+                                <LoginForm
+                                    requireMetadata={{ beeyield_active: true }}
+                                    onSuccess={() => { window.location.reload(); }}
+                                    onSwitchToRegister={() => setAuthMode('register')}
+                                    onForgotPassword={() => setAuthMode('forgot-password')}
+                                />
+                            )}
+
+                            {/* Register Form - Sets beeyield_active to true */}
+                            {authMode === 'register' && (
+                                <RegisterForm
+                                    defaultRole="user"
+                                    additionalMetadata={{ beeyield_active: true }}
+                                    onSuccess={() => {
+                                        toast.success("Account Created!");
+                                        setAuthMode('login');
+                                    }}
+                                    onSwitchToLogin={() => setAuthMode('login')}
+                                />
+                            )}
+
+                            {/* Forgot Password Form */}
+                            {authMode === 'forgot-password' && (
+                                <ForgotPasswordForm
+                                    onBackToLogin={() => setAuthMode('login')}
+                                />
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    {/* Benefits */}
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                        <div className="p-4 rounded-2xl bg-card/50 border border-border/50">
+                            <span className="text-2xl">☁️</span>
+                            <p className="text-xs font-bold mt-2 text-muted-foreground">Hive Cloud</p>
+                        </div>
+                        <div className="p-4 rounded-2xl bg-card/50 border border-border/50">
+                            <span className="text-2xl">🤖</span>
+                            <p className="text-xs font-bold mt-2 text-muted-foreground">AI Insights</p>
+                        </div>
+                        <div className="p-4 rounded-2xl bg-card/50 border border-border/50">
+                            <span className="text-2xl">📊</span>
+                            <p className="text-xs font-bold mt-2 text-muted-foreground">Real-time IoT</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <DashboardLayout

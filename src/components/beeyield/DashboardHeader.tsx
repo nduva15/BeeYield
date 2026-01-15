@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Moon, Sun, Bell, Headphones, Wifi, Settings, LogOut } from 'lucide-react';
+import { Search, Moon, Sun, Bell, Headphones, Wifi, Settings, LogOut, Puzzle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -69,7 +69,10 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onLogout, onTabChange
                 </button>
 
                 {/* Notifications */}
-                <button className={headerIconClass}>
+                <button
+                    onClick={() => onTabChange('requests')}
+                    className={headerIconClass}
+                >
                     <Bell className="w-5 h-5" />
                 </button>
 
@@ -87,6 +90,14 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onLogout, onTabChange
                     className={headerIconClass}
                 >
                     <Wifi className="w-5 h-5" />
+                </button>
+
+                {/* Agro Intelligence (Puzzle) */}
+                <button
+                    onClick={() => onTabChange('agro-intelligence')}
+                    className={headerIconClass}
+                >
+                    <Puzzle className="w-5 h-5" />
                 </button>
 
                 {/* Settings */}

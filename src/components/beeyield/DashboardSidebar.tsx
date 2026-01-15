@@ -7,7 +7,12 @@ export interface NavItem {
     label: string;
     icon: LucideIcon;
     hasSubmenu?: boolean;
-    submenuItems?: { id: string; label: string; icon?: LucideIcon }[];
+    submenuItems?: {
+        id: string;
+        label: string;
+        icon?: LucideIcon;
+        subItems?: { id: string; label: string; icon?: LucideIcon }[];
+    }[];
 }
 
 interface SidebarProps {
@@ -27,7 +32,7 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
     navItems,
     isAdmin = false
 }) => {
-    const [expandedItems, setExpandedItems] = useState<string[]>(['beeyield', 'data', 'meters']);
+    const [expandedItems, setExpandedItems] = useState<string[]>(['beeyield', 'data', 'meters', 'meters-list', 'meters-buildings', 'meters-measurements']);
 
     const toggleExpand = (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
@@ -90,35 +95,84 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                             {/* Submenu Items */}
                             {item.hasSubmenu && isExpanded && item.submenuItems && (
                                 <div className="ml-4 pl-4 border-l border-gray-100 dark:border-white/5 space-y-1 py-1 animate-in slide-in-from-top-2 duration-200">
-                                    {item.submenuItems.map((subItem) => (
-                                        <button
-                                            key={subItem.id}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                onTabChange(subItem.id);
-                                            }}
-                                            className={cn(
-                                                "w-full text-left py-2 px-3 text-xs font-medium transition-all duration-200 flex items-center gap-3 rounded-xl",
-                                                activeTab === subItem.id
-                                                    ? "bg-[#F1D2A0]/20 text-[#B88A44] font-semibold"
-                                                    : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5"
-                                            )}
-                                        >
-                                            {subItem.icon && (
-                                                <subItem.icon className={cn(
-                                                    "w-4 h-4",
-                                                    activeTab === subItem.id ? "text-[#B88A44]" : "text-gray-400 group-hover:text-gray-600 dark:text-gray-500 dark:group-hover:text-gray-300"
-                                                )} />
-                                            )}
-                                            {!subItem.icon && (
-                                                <div className={cn(
-                                                    "w-1.5 h-1.5 rounded-full",
-                                                    activeTab === subItem.id ? "bg-[#B88A44]" : "bg-gray-300 dark:bg-gray-600"
-                                                )} />
-                                            )}
-                                            {subItem.label}
-                                        </button>
-                                    ))}
+                                    {item.submenuItems.map((subItem) => {
+                                        // Check if this subItem has active children or is active itself
+                                        const isSubActive = activeTab === subItem.id;
+                                        const hasSubItems = subItem.subItems && subItem.subItems.length > 0;
+                                        const isSubExpanded = expandedItems.includes(subItem.id);
+                                        const isChildActive = subItem.subItems?.some(child => child.id === activeTab);
+
+                                        return (
+                                            <div key={subItem.id}>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        if (hasSubItems) {
+                                                            toggleExpand(subItem.id, e);
+                                                        } else {
+                                                            onTabChange(subItem.id);
+                                                        }
+                                                    }}
+                                                    className={cn(
+                                                        "w-full text-left py-2 px-3 text-xs font-medium transition-all duration-200 flex items-center justify-between rounded-xl",
+                                                        isSubActive || isChildActive
+                                                            ? "bg-[#F1D2A0]/10 text-[#B88A44] font-semibold"
+                                                            : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5"
+                                                    )}
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        {subItem.icon && (
+                                                            <subItem.icon className={cn(
+                                                                "w-4 h-4",
+                                                                isSubActive || isChildActive ? "text-[#B88A44]" : "text-gray-400 group-hover:text-gray-600 dark:text-gray-500 dark:group-hover:text-gray-300"
+                                                            )} />
+                                                        )}
+                                                        {!subItem.icon && (
+                                                            <div className={cn(
+                                                                "w-1.5 h-1.5 rounded-full",
+                                                                isSubActive || isChildActive ? "bg-[#B88A44]" : "bg-gray-300 dark:bg-gray-600"
+                                                            )} />
+                                                        )}
+                                                        {subItem.label}
+                                                    </div>
+                                                    {hasSubItems && (
+                                                        <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", isSubExpanded ? "rotate-0" : "-rotate-90")} />
+                                                    )}
+                                                </button>
+
+                                                {/* nested Items */}
+                                                {hasSubItems && isSubExpanded && (
+                                                    <div className="ml-3 pl-3 border-l border-gray-100 dark:border-white/5 space-y-1 mt-1 mb-1">
+                                                        {subItem.subItems!.map((child) => (
+                                                            <button
+                                                                key={child.id}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    onTabChange(child.id);
+                                                                }}
+                                                                className={cn(
+                                                                    "w-full text-left py-1.5 px-3 text-[11px] font-medium transition-all duration-200 flex items-center gap-2 rounded-lg",
+                                                                    activeTab === child.id
+                                                                        ? "bg-[#F1D2A0]/20 text-[#B88A44] font-semibold"
+                                                                        : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5"
+                                                                )}
+                                                            >
+                                                                {child.icon ? (
+                                                                    <child.icon className={cn("w-3.5 h-3.5", activeTab === child.id ? "text-[#B88A44]" : "text-gray-400")} />
+                                                                ) : (
+                                                                    <div className={cn(
+                                                                        "w-1 h-1 rounded-full",
+                                                                        activeTab === child.id ? "bg-[#B88A44]" : "bg-gray-300 dark:bg-gray-600"
+                                                                    )} />
+                                                                )}
+                                                                {child.label}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>
@@ -129,7 +183,10 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
             {/* Footer Section based on Image */}
             <div className="p-4 space-y-4 border-t border-gray-50 dark:border-white/5 bg-gray-50/50 dark:bg-white/5">
                 {/* Server Status */}
-                <div className="bg-[#D9EBE9] dark:bg-[#132A27] px-4 py-3 rounded-2xl flex items-center justify-between border border-[#B8DCD8] dark:border-[#1B3E3A]">
+                <div
+                    onClick={() => onTabChange('server-status')}
+                    className="bg-[#D9EBE9] dark:bg-[#132A27] px-4 py-3 rounded-2xl flex items-center justify-between border border-[#B8DCD8] dark:border-[#1B3E3A] cursor-pointer hover:bg-[#CDE5E2] dark:hover:bg-[#1A3834] transition-colors"
+                >
                     <div className="flex items-center gap-4">
                         <div className="w-2.5 h-2.5 rounded-full bg-[#10B981] shadow-[0_0_8px_#10B981]" />
                         <span className="text-[10px] font-bold text-[#134E48] dark:text-[#4ADE80] uppercase tracking-wider">Server Status</span>
@@ -147,6 +204,10 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                     </div>
                     Log out
                 </button>
+
+                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider text-center pt-2">
+                    BEEYIELD APP © BUILD 2026-01-14
+                </p>
             </div>
         </div>
     );

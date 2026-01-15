@@ -13,6 +13,7 @@ interface RegisterFormProps {
     prefillFirstName?: string;
     prefillLastName?: string;
     defaultRole?: string;
+    additionalMetadata?: Record<string, any>;
 }
 
 const RegisterForm: React.FC<RegisterFormProps> = ({
@@ -22,6 +23,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
     prefillFirstName = '',
     prefillLastName = '',
     defaultRole = 'user',
+    additionalMetadata = {},
 }) => {
     const { signUp, signInWithGoogle } = useAuth();
     const [firstName, setFirstName] = useState(prefillFirstName);
@@ -51,6 +53,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             first_name: firstName,
             last_name: lastName,
             role: defaultRole,
+            ...additionalMetadata,
         });
 
         if (error) {
