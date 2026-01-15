@@ -30,15 +30,16 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegister, on
 
         // Handle post-login metadata check
         if (!error && !needsMFA && requireMetadata) {
+            const metadataToVerify = requireMetadata;
             // Re-fetch user to get latest metadata
             const supabaseModule = await import('@/lib/supabase');
-            const supabase = supabaseModule.supabase;
+            const supabaseInstance = supabaseModule.supabase;
 
-            if (supabase) {
-                const { data } = await supabase.auth.getUser();
+            if (supabaseInstance) {
+                const { data } = await supabaseInstance.auth.getUser();
                 const loggedInUser = data?.user;
 
-                const missingMetadata = Object.entries(requireMetadata).some(
+                const missingMetadata = Object.entries(metadataToVerify).some(
                     ([key, value]) => !loggedInUser || loggedInUser.user_metadata?.[key] !== value
                 );
 
