@@ -7,7 +7,7 @@ export interface NavItem {
     label: string;
     icon: LucideIcon;
     hasSubmenu?: boolean;
-    submenuItems?: { id: string; label: string }[];
+    submenuItems?: { id: string; label: string; icon?: LucideIcon }[];
 }
 
 interface SidebarProps {
@@ -45,7 +45,7 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                         <Hexagon className="w-6 h-6 text-white dark:text-black fill-current" />
                     </div>
                     <div>
-                        <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-widest leading-none">BEEHUB</h1>
+                        <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-widest leading-none">BEEYIELD HUB</h1>
                         <p className="text-[10px] font-bold text-gray-400 tracking-[0.2em] mt-1 uppercase">MAIN MENU</p>
                     </div>
                 </div>
@@ -88,14 +88,37 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                             </button>
 
                             {/* Submenu Items */}
-                            {item.hasSubmenu && isExpanded && (
-                                <div className="ml-12 space-y-1 py-1 animate-in slide-in-from-top-2 duration-200">
-                                    <button className="w-full text-left py-2 px-2 text-xs font-medium text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors flex items-center gap-2">
-                                        <div className="w-1 h-1 rounded-full bg-gray-300" /> Overview
-                                    </button>
-                                    <button className="w-full text-left py-2 px-2 text-xs font-medium text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors flex items-center gap-2">
-                                        <div className="w-1 h-1 rounded-full bg-gray-300" /> Recent Activity
-                                    </button>
+                            {item.hasSubmenu && isExpanded && item.submenuItems && (
+                                <div className="ml-4 pl-4 border-l border-gray-100 dark:border-white/5 space-y-1 py-1 animate-in slide-in-from-top-2 duration-200">
+                                    {item.submenuItems.map((subItem) => (
+                                        <button
+                                            key={subItem.id}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onTabChange(subItem.id);
+                                            }}
+                                            className={cn(
+                                                "w-full text-left py-2 px-3 text-xs font-medium transition-all duration-200 flex items-center gap-3 rounded-xl",
+                                                activeTab === subItem.id
+                                                    ? "bg-[#F1D2A0]/20 text-[#B88A44] font-semibold"
+                                                    : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5"
+                                            )}
+                                        >
+                                            {subItem.icon && (
+                                                <subItem.icon className={cn(
+                                                    "w-4 h-4",
+                                                    activeTab === subItem.id ? "text-[#B88A44]" : "text-gray-400 group-hover:text-gray-600 dark:text-gray-500 dark:group-hover:text-gray-300"
+                                                )} />
+                                            )}
+                                            {!subItem.icon && (
+                                                <div className={cn(
+                                                    "w-1.5 h-1.5 rounded-full",
+                                                    activeTab === subItem.id ? "bg-[#B88A44]" : "bg-gray-300 dark:bg-gray-600"
+                                                )} />
+                                            )}
+                                            {subItem.label}
+                                        </button>
+                                    ))}
                                 </div>
                             )}
                         </div>

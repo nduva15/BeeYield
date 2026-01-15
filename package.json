@@ -88,7 +88,7 @@
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^13.0.0",
     "vaul": "^0.9.9",
-    "vinxi": "0.5.3",
+    "vinxi": "0.5.10",
     "world-atlas": "^2.0.2",
     "zod": "^3.25.76"
   },
@@ -129,8 +129,7 @@
       "@tanstack/router-plugin": "1.120.17",
       "@tanstack/react-start-plugin": "1.120.17",
       "@tanstack/server-functions-plugin": "1.120.17",
-      "@tanstack/start-server-core": "1.120.17",
-      "h3": "1.13.0"
+      "@tanstack/start-server-core": "1.120.17"
     }
   }
 }

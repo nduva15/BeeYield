@@ -3,8 +3,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { Thermometer, Droplets, Weight, CloudRain, Filter, Download, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import FirstStepsBanner from './FirstStepsBanner';
 
-const MeasurementDataView: React.FC = () => {
+interface MeasurementDataViewProps {
+    onTabChange: (tab: string) => void;
+}
+
+const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }) => {
     // Mock chart data
     const data = [
         { time: '00:00', temp: 32, hum: 45, weight: 40 },
@@ -18,6 +23,7 @@ const MeasurementDataView: React.FC = () => {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-12">
+            <FirstStepsBanner onTabChange={onTabChange} />
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Measurement Data</h1>
