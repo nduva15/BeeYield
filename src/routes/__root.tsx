@@ -1,13 +1,13 @@
 import { Outlet, createRootRoute, HeadContent, Scripts } from '@tanstack/react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { Toaster } from '@/components/ui/toaster'
-import { Toaster as Sonner } from '@/components/ui/sonner'
-import { TooltipProvider } from '@/components/ui/tooltip'
-import { CartProvider } from '@/contexts/CartContext'
-import { AuthProvider } from '@/contexts/AuthContext'
-import Layout from '@/components/Layout'
-import CartDrawer from '@/components/CartDrawer'
-import appCss from '@/index.css?url'
+import { Toaster } from '../components/ui/toaster'
+import { Toaster as Sonner } from '../components/ui/sonner'
+import { TooltipProvider } from '../components/ui/tooltip'
+import { CartProvider } from '../contexts/CartContext'
+import { AuthProvider } from '../contexts/AuthContext'
+import Layout from '../components/Layout'
+import CartDrawer from '../components/CartDrawer'
+import appCss from '../index.css?url'
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -25,6 +25,13 @@ export const Route = createRootRoute({
             { title: 'BeeYield - Your Partner in Pollination' },
             { name: 'description', content: 'BeeYield - Precision pollination services, sustainable beekeeping, and traceable honey from Africa and the World.' },
             { name: 'keywords', content: 'pollination, beekeeping, honey, sustainable agriculture, precision pollination, Kenya, Africa' },
+            { property: 'og:title', content: 'BeeYield - Your Partner in Pollination' },
+            { property: 'og:description', content: 'Precision pollination services, sustainable beekeeping, and traceable honey. Your Partner in Pollination across Africa and the World.' },
+            { property: 'og:type', content: 'website' },
+            { property: 'og:image', content: 'https://beeyield.com/logo.png' },
+            { name: 'twitter:card', content: 'summary_large_image' },
+            { name: 'twitter:site', content: '@beeyield' },
+            { name: 'twitter:image', content: 'https://beeyield.com/logo.png' },
         ],
         links: [
             { rel: 'stylesheet', href: appCss },
