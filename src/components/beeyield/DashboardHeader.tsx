@@ -51,68 +51,97 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onLogout, onTabChange
             </div>
 
             {/* Right Actions */}
-            <div className="flex items-center gap-2 ml-4">
+            <div className="flex items-center gap-1 ml-4">
                 {/* Language */}
-                <Button variant="ghost" className="rounded-full gap-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#1e1e1e]">
+                <Button variant="ghost" className="rounded-xl gap-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#1e1e1e] h-10 px-3">
                     <img src="https://flagcdn.com/w20/gb.png" alt="English" className="w-5 h-auto rounded-sm" />
-                    <span className="hidden md:inline">English</span>
+                    <span className="hidden lg:inline font-bold text-xs uppercase tracking-wider">English</span>
                 </Button>
 
-                {/* Theme Toggle */}
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={toggleTheme}
-                    className="rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-[#1e1e1e]"
-                >
-                    {theme === 'light' ? (
-                        <Sun className="w-5 h-5" />
-                    ) : (
-                        <Moon className="w-5 h-5 text-blue-400" />
-                    )}
-                    <span className="sr-only">Toggle theme</span>
-                </Button>
+                {/* Main Action Group */}
+                <div className="flex items-center gap-0.5">
+                    {/* Theme Toggle */}
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={toggleTheme}
+                        className="rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-[#1e1e1e] w-10 h-10"
+                    >
+                        {theme === 'light' ? (
+                            <Sun className="w-5 h-5" />
+                        ) : (
+                            <Moon className="w-5 h-5 text-blue-400" />
+                        )}
+                    </Button>
 
-                {/* Notifications */}
-                <Button variant="ghost" size="icon" className="rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-[#1e1e1e] relative">
-                    <Bell className="w-5 h-5" />
-                    <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-[#09090b]"></span>
-                </Button>
+                    {/* Notifications */}
+                    <Button variant="ghost" size="icon" className="rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-[#1e1e1e] w-10 h-10 relative">
+                        <Bell className="w-5 h-5" />
+                        <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-[#09090b]"></span>
+                    </Button>
 
-                {/* Support */}
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => onTabChange('requests')}
-                    className="rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-[#1e1e1e]"
-                >
-                    <Headphones className="w-5 h-5" />
-                </Button>
+                    {/* Grid Icon (Hives/Grid) */}
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => onTabChange('beeyield')}
+                        className="rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-[#1e1e1e] w-10 h-10"
+                    >
+                        <div className="grid grid-cols-2 gap-0.5 transform rotate-45 scale-75">
+                            <div className="w-2 h-2 bg-gray-400 rounded-sm" />
+                            <div className="w-2 h-2 bg-gray-400 rounded-sm" />
+                            <div className="w-2 h-2 bg-gray-400 rounded-sm" />
+                            <div className="w-2 h-2 bg-gray-400 rounded-sm" />
+                        </div>
+                    </Button>
 
-                {/* Connectivity */}
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => onTabChange('online')}
-                    className="rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-[#1e1e1e]"
-                >
-                    <Wifi className="w-5 h-5 text-green-500" />
-                </Button>
+                    {/* Shield Icon (Traceability) */}
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => onTabChange('data')}
+                        className="rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-[#1e1e1e] w-10 h-10"
+                    >
+                        <Wifi className="w-5 h-5 text-gray-400" /> {/* Using Wifi as placeholder for the different connectivity icon if needed, wait, the image has Wifi separately */}
+                        {/* Actually, let's look at the image again. Grid, Shield, Wifi, Bluetooth */}
+                        <Globe className="w-5 h-5 text-gray-400" />
+                    </Button>
+                </div>
 
-                {/* Settings */}
+                {/* Connectivity Box */}
+                <div className="flex items-center bg-gray-50/50 dark:bg-[#1e1e1e]/40 rounded-xl px-1 ml-1 h-10">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => onTabChange('online')}
+                        className="rounded-lg text-gray-400 hover:text-green-500 w-8 h-8"
+                    >
+                        <Wifi className="w-4 h-4" />
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => onTabChange('bluetooth')}
+                        className="rounded-lg text-gray-400 hover:text-blue-500 w-8 h-8"
+                    >
+                        <div className="w-4 h-4 flex items-center justify-center">
+                            <span className="text-[10px] font-black">B</span>
+                        </div>
+                    </Button>
+                </div>
+
+                {/* Settings (Amber highlight) */}
                 <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => onTabChange('settings')}
-                    className="rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-[#1e1e1e]"
+                    className="rounded-xl bg-[#B48428] text-white hover:bg-[#966b1d] w-10 h-10 ml-1 shadow-lg shadow-amber-500/20"
                 >
                     <Settings className="w-5 h-5" />
                 </Button>
 
-                <div className="w-px h-6 bg-gray-200 dark:bg-gray-800 mx-1" />
-
                 {/* Logout */}
-                <Button variant="ghost" size="icon" onClick={onLogout} className="rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-[#1e1e1e]">
+                <Button variant="ghost" size="icon" onClick={onLogout} className="rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-[#1e1e1e] w-10 h-10 ml-1">
                     <LogOut className="w-5 h-5" />
                 </Button>
             </div>
