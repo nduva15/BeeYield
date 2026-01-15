@@ -21,7 +21,7 @@ const CartDrawer: React.FC = () => {
 
     const handleCheckout = () => {
         closeCart();
-        navigate('/checkout');
+        navigate({ to: '/checkout' });
     };
 
     const getCategoryEmoji = (category: string) => {
@@ -85,7 +85,7 @@ const CartDrawer: React.FC = () => {
                             <p className="text-muted-foreground mb-6">
                                 Discover our premium honey and sustainable products!
                             </p>
-                            <Button variant="default" onClick={() => { closeCart(); navigate('/shop'); }}>
+                            <Button variant="default" onClick={() => { closeCart(); navigate({ to: '/shop' }); }}>
                                 Continue Shopping
                             </Button>
                         </div>
@@ -199,7 +199,7 @@ const CartDrawer: React.FC = () => {
                                 <Button
                                     variant="ghost"
                                     className="w-full mt-2"
-                                    onClick={() => { closeCart(); navigate('/shop'); }}
+                                    onClick={() => { closeCart(); navigate({ to: '/shop' }); }}
                                 >
                                     Continue Shopping
                                 </Button>

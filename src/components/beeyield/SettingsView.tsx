@@ -78,28 +78,28 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                         </CardHeader>
                         <CardContent className="p-10 space-y-4">
                             <div className="relative group">
-                                <Label htmlFor="username" className="absolute left-4 top-3 text-[9px] font-black text-gray-400 uppercase tracking-widest z-10">Username</Label>
+                                <Label htmlFor="username" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10">Username</Label>
                                 <Input id="username" defaultValue="timothy" className="pt-8 pb-3 px-4 rounded-xl bg-gray-50/50 dark:bg-[#1e1e1e] border-gray-100 dark:border-gray-800 h-16 shadow-none font-bold text-gray-400 cursor-not-allowed group-hover:border-amber-200 transition-colors" readOnly />
                             </div>
                             <div className="relative group">
-                                <Label htmlFor="email" className="absolute left-4 top-3 text-[9px] font-black text-gray-400 uppercase tracking-widest z-10">Email</Label>
+                                <Label htmlFor="email" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10">Email</Label>
                                 <Input id="email" defaultValue="timothy.mathuva@strathmore.edu" className="pt-8 pb-3 px-4 rounded-xl bg-gray-50/50 dark:bg-[#1e1e1e] border-gray-100 dark:border-gray-800 h-16 shadow-none font-bold text-gray-400 cursor-not-allowed group-hover:border-amber-200 transition-colors" readOnly />
                             </div>
                             <div className="relative group">
-                                <Label htmlFor="firstname" className="absolute left-4 top-3 text-[9px] font-black text-gray-400 uppercase tracking-widest z-10">First name</Label>
-                                <Input id="firstname" defaultValue="Timothy" className="pt-8 pb-3 px-4 rounded-xl bg-white dark:bg-[#09090b] border-gray-200 dark:border-gray-800 h-16 shadow-none font-bold group-hover:border-amber-300 focus:border-amber-500 transition-all outline-none" />
+                                <Label htmlFor="firstname" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10">First name</Label>
+                                <Input id="firstname" defaultValue="Timothy" className="pt-8 pb-3 px-4 rounded-xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-16 shadow-none font-bold group-hover:border-amber-300 focus:border-amber-500 transition-all outline-none" />
                             </div>
                             <div className="relative group">
-                                <Label htmlFor="surname" className="absolute left-4 top-3 text-[9px] font-black text-gray-400 uppercase tracking-widest z-10">Surname</Label>
-                                <Input id="surname" defaultValue="Mathuva Nduva" className="pt-8 pb-3 px-4 rounded-xl bg-white dark:bg-[#09090b] border-gray-200 dark:border-gray-800 h-16 shadow-none font-bold group-hover:border-amber-300 focus:border-amber-500 transition-all outline-none" />
+                                <Label htmlFor="surname" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10">Surname</Label>
+                                <Input id="surname" defaultValue="Mathuva Nduva" className="pt-8 pb-3 px-4 rounded-xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-16 shadow-none font-bold group-hover:border-amber-300 focus:border-amber-500 transition-all outline-none" />
                             </div>
                             <div className="relative group">
-                                <Label htmlFor="phone" className="absolute left-4 top-3 text-[9px] font-black text-gray-400 uppercase tracking-widest z-10">Telephone number</Label>
-                                <Input id="phone" defaultValue="0742014187" className="pt-8 pb-3 px-4 rounded-xl bg-white dark:bg-[#09090b] border-gray-200 dark:border-gray-800 h-16 shadow-none font-bold group-hover:border-amber-300 focus:border-amber-500 transition-all outline-none" />
+                                <Label htmlFor="phone" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10">Telephone number</Label>
+                                <Input id="phone" defaultValue="0742014187" className="pt-8 pb-3 px-4 rounded-xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-16 shadow-none font-bold group-hover:border-amber-300 focus:border-amber-500 transition-all outline-none" />
                             </div>
                             <div className="relative group">
-                                <Label htmlFor="language" className="absolute left-4 top-3 text-[9px] font-black text-gray-400 uppercase tracking-widest z-10">Language</Label>
-                                <select id="language" className="w-full pt-8 pb-3 px-4 rounded-xl bg-white dark:bg-[#09090b] border-gray-200 dark:border-gray-800 h-16 shadow-none font-bold group-hover:border-amber-300 focus:border-amber-500 transition-all outline-none appearance-none">
+                                <Label htmlFor="language" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10">Language</Label>
+                                <select id="language" className="w-full pt-8 pb-3 px-4 rounded-xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-16 shadow-none font-bold group-hover:border-amber-300 focus:border-amber-500 transition-all outline-none appearance-none">
                                     <option>English</option>
                                     <option>Polish</option>
                                     <option>French</option>
@@ -116,7 +116,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                     <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm overflow-hidden">
                         <CardHeader className="p-10 pb-4">
                             <CardTitle className="text-2xl font-black leading-tight">Email notifications from BeeHUB devices</CardTitle>
-                            <p className="text-sm text-gray-400 font-medium pt-2">BeeHUB device sends out vandalism alerts. You can temporarily disable this option, for example during an inspection.</p>
+                            <p className="text-sm text-gray-400 font-medium pt-2">BeeHUB devices sends out vandalism alerts. You can temporarily disable this option, for example during an inspection.</p>
                         </CardHeader>
                         <CardContent className="p-10 pt-0 space-y-8">
                             <div className="flex items-center gap-3">
@@ -127,7 +127,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                 <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
                             </div>
                             <div className="flex justify-end">
-                                <Button className="border-2 border-[#FFE5B4] hover:bg-[#FFE5B4]/20 text-[#B48428] rounded-2xl px-10 font-black h-12 transition-all">Save</Button>
+                                <Button variant="outline" className="border-2 border-[#FFE5B4] hover:bg-[#FFE5B4]/20 text-[#B48428] rounded-2xl px-10 font-bold h-12 transition-all">Save</Button>
                             </div>
                         </CardContent>
                     </Card>
@@ -145,7 +145,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                 <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
                             </div>
                             <div className="flex justify-end">
-                                <Button className="border-2 border-[#FFE5B4] hover:bg-[#FFE5B4]/20 text-[#B48428] rounded-2xl px-10 font-black h-12 transition-all">Save</Button>
+                                <Button variant="outline" className="border-2 border-[#FFE5B4] hover:bg-[#FFE5B4]/20 text-[#B48428] rounded-2xl px-10 font-bold h-12 transition-all">Save</Button>
                             </div>
                         </CardContent>
                     </Card>
@@ -213,7 +213,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                 <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
                             </div>
                             <div className="flex justify-end">
-                                <Button className="border-2 border-[#FFE5B4] hover:bg-[#FFE5B4]/20 text-[#B48428] rounded-2xl px-10 font-black h-12 transition-all">Save</Button>
+                                <Button variant="outline" className="border-2 border-[#FFE5B4] hover:bg-[#FFE5B4]/20 text-[#B48428] rounded-2xl px-10 font-bold h-12 transition-all">Save</Button>
                             </div>
                         </CardContent>
                     </Card>
@@ -223,19 +223,22 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
             {/* Modules Section */}
             <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm overflow-hidden mt-8">
                 <CardHeader className="p-10 pb-6 border-b border-gray-50 dark:border-[#1e1e1e]">
-                    <CardTitle className="text-3xl font-black">Enable / disable modules</CardTitle>
-                    <p className="text-sm text-gray-400 font-medium mt-4 max-w-3xl leading-relaxed">Enable or disable the main application modules for your account. Changes affect the menu and access to features.</p>
-
-                    <div className="flex gap-2 mt-8">
-                        <Button variant="outline" size="sm" className="rounded-xl px-6 border-gray-200 text-xs font-black uppercase tracking-widest h-10 shadow-none">Enable all</Button>
-                        <Button variant="outline" size="sm" className="rounded-xl px-6 border-gray-200 text-xs font-black uppercase tracking-widest h-10 shadow-none">Disable all</Button>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <CardTitle className="text-3xl font-black">Enable / disable modules</CardTitle>
+                            <p className="text-sm text-gray-400 font-medium mt-4 max-w-2xl leading-relaxed">Enable or disable the main application modules for your account. Changes affect the menu and access to features.</p>
+                        </div>
+                        <div className="flex gap-2">
+                            <Button variant="outline" size="sm" className="rounded-xl px-4 border-gray-200 text-[10px] font-black uppercase tracking-widest h-9 shadow-none">Enable all</Button>
+                            <Button variant="outline" size="sm" className="rounded-xl px-4 border-gray-200 text-[10px] font-black uppercase tracking-widest h-9 shadow-none">Disable all</Button>
+                        </div>
                     </div>
                 </CardHeader>
                 <CardContent className="p-10 pt-8">
                     <div className="border border-gray-100 dark:border-[#1e1e1e] rounded-[2.5rem] overflow-hidden">
                         <div className="bg-gray-50/50 dark:bg-[#1e1e1e]/20 px-8 py-6 border-b border-gray-100 dark:border-[#1e1e1e]">
                             <p className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Core modules</p>
-                            <p className="text-[10px] font-bold text-amber-600">UI only for now (no persistence)</p>
+                            <p className="text-[10px] font-bold text-gray-400 opacity-60">UI only for now (no persistence).</p>
                         </div>
 
                         <div className="divide-y divide-gray-50 dark:divide-[#1e1e1e]">
@@ -254,7 +257,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                             <div className="flex items-center gap-2 mb-1">
                                                 <span className="text-lg font-black text-gray-900 dark:text-white">{mod.label}</span>
                                                 {mod.priority && (
-                                                    <Badge className="bg-amber-500 text-white text-[8px] font-black tracking-widest px-2 py-0.5 rounded-sm border-none">PRIORITY</Badge>
+                                                    <Badge className="bg-[#B48428] text-white text-[8px] font-black tracking-widest px-2 py-0.5 rounded-sm border-none">PRIORITY</Badge>
                                                 )}
                                             </div>
                                             <p className="text-sm text-gray-400 font-medium">{mod.desc}</p>
@@ -262,20 +265,27 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     </div>
                                     <div className="flex items-center gap-6">
                                         <button className="text-gray-300 hover:text-amber-500 transition-colors">
-                                            <Star className={cn("w-6 h-6", mod.id === 'beeyield' && "fill-amber-500 text-amber-500")} />
+                                            <Star className={cn("w-6 h-6", mod.id === 'beeyield' ? "fill-amber-500 text-amber-500" : "text-gray-300")} />
                                         </button>
-                                        <Switch defaultChecked={mod.enabled} className="data-[state=checked]:bg-amber-600" />
+                                        <div className="relative">
+                                            <Switch defaultChecked={mod.enabled} className="data-[state=checked]:bg-[#B48428]" />
+                                            {mod.enabled && (
+                                                <div className="absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none">
+                                                    <div className="w-3 h-3 text-white flex items-center justify-center">
+                                                        <span className="text-[8px]">✓</span>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             ))}
                         </div>
 
-                        <div className="px-10 py-8 bg-gray-50/30 dark:bg-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-gray-100 dark:border-[#1e1e1e]">
-                            <div className="flex gap-4">
-                                <Button variant="link" className="text-blue-500 font-black text-xs uppercase tracking-widest p-0 h-auto hover:text-blue-600">Disable all</Button>
-                                <Button variant="link" className="text-blue-500 font-black text-xs uppercase tracking-widest p-0 h-auto hover:text-blue-600">Enable all</Button>
-                            </div>
-                            <Button className="bg-amber-500 hover:bg-amber-600 text-white rounded-2xl px-12 h-14 font-black shadow-lg shadow-amber-500/20 border-none transition-all scale-105">Save</Button>
+                        <div className="px-10 py-6 bg-gray-50/30 dark:bg-white/5 flex flex-col sm:flex-row items-center justify-end gap-3 border-t border-gray-100 dark:border-[#1e1e1e]">
+                            <Button variant="ghost" className="text-blue-500 font-bold text-xs hover:bg-blue-50 py-1 h-8 rounded-lg px-3 uppercase tracking-tighter">Disable all</Button>
+                            <Button variant="ghost" className="text-blue-500 font-bold text-xs hover:bg-blue-50 py-1 h-8 rounded-lg px-3 uppercase tracking-tighter">Enable all</Button>
+                            <Button className="bg-[#B48428] hover:bg-[#966b1d] text-white rounded-xl px-10 h-11 font-black shadow-lg shadow-amber-500/20 border-none transition-all ml-4">Save</Button>
                         </div>
                     </div>
                 </CardContent>

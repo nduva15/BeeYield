@@ -123,7 +123,7 @@ const AdminDashboard: React.FC = () => {
 
     useEffect(() => {
         if (!authLoading && !user) {
-            navigate('/admin/login');
+            navigate({ to: '/admin/login' });
         } else if (!authLoading && user && isAdmin) {
             loadAllData();
         }
@@ -700,7 +700,7 @@ const AdminDashboard: React.FC = () => {
                 <Shield className="h-16 w-16 text-destructive animate-pulse" />
                 <h2 className="text-2xl font-black">Restricted Access</h2>
                 <p className="text-muted-foreground">This terminal is for authorized administrators only.</p>
-                <Button onClick={() => navigate('/')} className="rounded-xl px-8 shadow-lg">Return Home</Button>
+                <Button onClick={() => navigate({ to: '/' })} className="rounded-xl px-8 shadow-lg">Return Home</Button>
             </div>
         );
     }
