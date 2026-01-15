@@ -23,7 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import MyDevicesView from '@/components/beeyield/MyDevicesView';
 import AIAssistantView from '@/components/beeyield/AIAssistantView';
 import MyPlacesView from '@/components/beeyield/MyPlacesView';
-import BeeYieldView from '@/components/beeyield/BeeYieldView';
+import BeeYieldHivesView from '@/components/beeyield/BeeYieldHivesView';
 import MeasurementDataView from '@/components/beeyield/MeasurementDataView';
 import SettingsView from '@/components/beeyield/SettingsView';
 import {
@@ -102,9 +102,11 @@ const BeeYieldDashboard: React.FC = () => {
 
     // Nav Items matching screenshot precisely
     const navItems: NavItem[] = [
+        { id: 'assistant', label: 'AI Assistant', icon: MessageSquare },
+        { id: 'places', label: 'My Places', icon: LayoutGrid },
         {
             id: 'beeyield',
-            label: 'Intelligent Hives',
+            label: 'BeeYield Hives',
             icon: Box,
             hasSubmenu: true,
             submenuItems: [
@@ -118,9 +120,7 @@ const BeeYieldDashboard: React.FC = () => {
             ]
         },
         { id: 'data', label: 'Measurement data', icon: LineChart, hasSubmenu: true },
-        { id: 'assistant', label: 'AI Assistant', icon: MessageSquare },
         { id: 'meters', label: 'Meters', icon: Calculator, hasSubmenu: true },
-        { id: 'places', label: 'My Places', icon: LayoutGrid },
         { id: 'devices', label: 'My devices', icon: Cpu },
         { id: 'billing', label: 'Billing', icon: Receipt },
         { id: 'support', label: 'Support center', icon: LifeBuoy },
@@ -135,7 +135,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'places':
                 return <MyPlacesView onTabChange={setActiveTab} />;
             case 'beeyield':
-                return <BeeYieldView onTabChange={setActiveTab} />;
+                return <BeeYieldHivesView onTabChange={setActiveTab} />;
             case 'data':
                 return <MeasurementDataView onTabChange={setActiveTab} />;
             case 'online':
