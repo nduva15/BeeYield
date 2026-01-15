@@ -1,0 +1,106 @@
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { Toaster } from '@/components/ui/toaster'
+import { Toaster as Sonner } from '@/components/ui/sonner'
+import { TooltipProvider } from '@/components/ui/tooltip'
+import { CartProvider } from '@/contexts/CartContext'
+import { AuthProvider } from '@/contexts/AuthContext'
+import Layout from '@/components/Layout'
+import '@/index.css'
+
+// Page imports
+import PollinationServices from '@/pages/PollinationServices'
+import About from '@/pages/About'
+import Contact from '@/pages/Contact'
+import Honey from '@/pages/Honey'
+import Shop from '@/pages/Shop'
+import Checkout from '@/pages/Checkout'
+import Learn from '@/pages/Learn'
+import Blogs from '@/pages/Blogs'
+import BlogPost from '@/pages/BlogPost'
+import Team from '@/pages/Team'
+import Careers from '@/pages/Careers'
+import Impact from '@/pages/Impact'
+import ESG from '@/pages/ESG'
+import Commitment from '@/pages/Commitment'
+import OurStory from '@/pages/OurStory'
+import GlobalHiveNetwork from '@/pages/GlobalHiveNetwork'
+import Traceability from '@/pages/Traceability'
+import PrecisionPollination from '@/pages/PrecisionPollination'
+import PollinationSolutions from '@/pages/PollinationSolutions'
+import InLandPollination from '@/pages/InLandPollination'
+import CropsWePollinate from '@/pages/CropsWePollinate'
+import PollinationRequest from '@/pages/PollinationRequest'
+import Diseases from '@/pages/Diseases'
+import Notes from '@/pages/Notes'
+import Media from '@/pages/Media'
+import BeeYieldDashboard from '@/pages/BeeYieldDashboard'
+import AdminDashboard from '@/pages/AdminDashboard'
+import AdminLogin from '@/pages/AdminLogin'
+import MyAccount from '@/pages/MyAccount'
+import AccountSettings from '@/pages/AccountSettings'
+import UpdatePassword from '@/pages/UpdatePassword'
+import NotFound from '@/pages/NotFound'
+
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            staleTime: 1000 * 60 * 5,
+        },
+    },
+})
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+    <React.StrictMode>
+        <QueryClientProvider client={queryClient}>
+            <TooltipProvider>
+                <AuthProvider>
+                    <CartProvider>
+                        <Toaster />
+                        <Sonner />
+                        <BrowserRouter>
+                            <Layout>
+                                <Routes>
+                                    <Route path="/" element={<PollinationServices />} />
+                                    <Route path="/about" element={<About />} />
+                                    <Route path="/contact" element={<Contact />} />
+                                    <Route path="/honey" element={<Honey />} />
+                                    <Route path="/shop" element={<Shop />} />
+                                    <Route path="/checkout" element={<Checkout />} />
+                                    <Route path="/learn" element={<Learn />} />
+                                    <Route path="/blogs" element={<Blogs />} />
+                                    <Route path="/blogs/:slug" element={<BlogPost />} />
+                                    <Route path="/team" element={<Team />} />
+                                    <Route path="/careers" element={<Careers />} />
+                                    <Route path="/impact" element={<Impact />} />
+                                    <Route path="/esg" element={<ESG />} />
+                                    <Route path="/commitment" element={<Commitment />} />
+                                    <Route path="/ourstory" element={<OurStory />} />
+                                    <Route path="/global-hive-network" element={<GlobalHiveNetwork />} />
+                                    <Route path="/traceability" element={<Traceability />} />
+                                    <Route path="/precision-pollination" element={<PrecisionPollination />} />
+                                    <Route path="/pollination-solutions" element={<PollinationSolutions />} />
+                                    <Route path="/in-land-pollination" element={<InLandPollination />} />
+                                    <Route path="/crops-we-pollinate" element={<CropsWePollinate />} />
+                                    <Route path="/pollination-request" element={<PollinationRequest />} />
+                                    <Route path="/diseases" element={<Diseases />} />
+                                    <Route path="/notes" element={<Notes />} />
+                                    <Route path="/media" element={<Media />} />
+                                    <Route path="/beeyield-dashboard" element={<BeeYieldDashboard />} />
+                                    <Route path="/admin" element={<AdminDashboard />} />
+                                    <Route path="/admin/login" element={<AdminLogin />} />
+                                    <Route path="/my-account" element={<MyAccount />} />
+                                    <Route path="/account-settings" element={<AccountSettings />} />
+                                    <Route path="/update-password" element={<UpdatePassword />} />
+                                    <Route path="*" element={<NotFound />} />
+                                </Routes>
+                            </Layout>
+                        </BrowserRouter>
+                    </CartProvider>
+                </AuthProvider>
+            </TooltipProvider>
+        </QueryClientProvider>
+    </React.StrictMode>
+)
