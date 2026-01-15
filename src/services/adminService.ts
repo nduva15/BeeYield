@@ -473,7 +473,8 @@ export const adminService = {
 
     createHive: async (hiveData: HiveInput) => {
         try {
-            return await apiPost('/admin/hives', hiveData);
+            const headers = await getAuthHeaders();
+            return await apiPost('/admin/hives', hiveData, { headers });
         } catch {
             if (!supabase) return null;
             const { data, error } = await supabase
@@ -488,7 +489,8 @@ export const adminService = {
 
     updateHive: async (id: string, hiveData: HiveInput) => {
         try {
-            return await apiPut(`/admin/hives/${id}`, hiveData);
+            const headers = await getAuthHeaders();
+            return await apiPut(`/admin/hives/${id}`, hiveData, { headers });
         } catch {
             if (!supabase) return null;
             const { data, error } = await supabase
@@ -504,7 +506,8 @@ export const adminService = {
 
     deleteHive: async (id: string) => {
         try {
-            return await apiDelete(`/admin/hives/${id}`);
+            const headers = await getAuthHeaders();
+            return await apiDelete(`/admin/hives/${id}`, { headers });
         } catch {
             if (!supabase) return null;
             const { error } = await supabase
