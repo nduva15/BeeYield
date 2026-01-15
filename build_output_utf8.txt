@@ -1,0 +1,726 @@
+﻿
+> beeyield@0.0.0 build
+> vinxi build
+
+[2m[34mvinxi[39m[22m [2m[33mv0.5.10[39m[22m
+
+
+ΓÜÖ  [32mBuilding your app...[39m
+[2m[34mvinxi[39m[22m [2m[33mv0.5.10[39m[22m
+
+
+ΓÜÖ [32mBuilding your router client...[39m
+
+
+[32m≡ƒôª Compiling client router...[39m
+[2m[34mvinxi[39m[22m building router client in client mode
+
+ΓÖ╗∩╕Å  Generating routes...
+Γ£à Processed routes in 937ms
+[36mvite v6.4.1 [32mbuilding for production...[36m[39m
+transforming...
+node.exe : [33m[plugin 
+vite:resolve] Module 
+"node:fs" has been 
+externalized for browser 
+compatibility, imported by "
+C:/Users/aggym/Downloads/Hon
+ey/node_modules/.pnpm/@tanst
+ack+start-client-core@1.131.
+50/node_modules/@tanstack/st
+art-client-core/dist/esm/cre
+ateServerFn.js". See https:/
+/vite.dev/guide/troubleshoot
+ing.html#module-externalized
+-for-browser-compatibility 
+for more details.[39m
+At C:\Program 
+Files\nodejs\npm.ps1:29 
+char:3
++   & $NODE_EXE $NPM_CLI_JS 
+$args
++   ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~
+    + CategoryInfo          
+    : NotSpecified: ([33m  
+  [plugin vi...e details.   
+ [39m:String) [], Remot    
+eException
+    + FullyQualifiedErrorId 
+    : NativeCommandError
+ 
+[33m[plugin vite:resolve] 
+Module "node:path" has been 
+externalized for browser 
+compatibility, imported by "
+C:/Users/aggym/Downloads/Hon
+ey/node_modules/.pnpm/@tanst
+ack+start-client-core@1.131.
+50/node_modules/@tanstack/st
+art-client-core/dist/esm/cre
+ateServerFn.js". See https:/
+/vite.dev/guide/troubleshoot
+ing.html#module-externalized
+-for-browser-compatibility 
+for more details.[39m
+[33m[plugin vite:resolve] 
+Module "node:fs" has been 
+externalized for browser 
+compatibility, imported by "
+C:/Users/aggym/Downloads/Hon
+ey/node_modules/.pnpm/@tanst
+ack+start-client-core@1.131.
+50/node_modules/@tanstack/st
+art-client-core/dist/esm/cre
+ateServerFn.js". See https:/
+/vite.dev/guide/troubleshoot
+ing.html#module-externalized
+-for-browser-compatibility 
+for more details.[39m
+[33m[plugin vite:resolve] 
+Module "node:path" has been 
+externalized for browser 
+compatibility, imported by "
+C:/Users/aggym/Downloads/Hon
+ey/node_modules/.pnpm/@tanst
+ack+start-client-core@1.131.
+50/node_modules/@tanstack/st
+art-client-core/dist/esm/cre
+ateServerFn.js". See https:/
+/vite.dev/guide/troubleshoot
+ing.html#module-externalized
+-for-browser-compatibility 
+for more details.[39m
+[32mΓ£ô[39m 3240 modules transformed.
+[31mΓ£ù[39m Build failed 
+in 19.47s
+Error building router 
+client: 
+[31msrc/server/shop.ts 
+(1:9): "createServerFn" is 
+not exported by "node_module
+s/.pnpm/@tanstack+react-star
+t@1.120_b37e02275c0a44ca551d
+6707b9b02f55/node_modules/@t
+anstack/react-start/dist/esm
+/client.js", imported by 
+"src/server/shop.ts".[39m
+file: [36mC:/Users/aggym/Do
+wnloads/Honey/src/server/sho
+p.ts:1:9[39m
+[33m
+1: import { createServerFn 
+} from 
+'@tanstack/react-start'
+            ^
+2: import { createClient } 
+from '@supabase/supabase-js'
+3: import { Product } from 
+'@/services/shopService'
+[39m
+    at getRollupError (file:
+///C:/Users/aggym/Downloads/
+Honey/node_modules/.pnpm/rol
+lup@4.55.1/node_modules/roll
+up/dist/es/shared/parseAst.j
+s:401:41)
+    at error (file:///C:/Use
+rs/aggym/Downloads/Honey/nod
+e_modules/.pnpm/rollup@4.55.
+1/node_modules/rollup/dist/e
+s/shared/parseAst.js:397:42)
+    at Module.error (file://
+/C:/Users/aggym/Downloads/Ho
+ney/node_modules/.pnpm/rollu
+p@4.55.1/node_modules/rollup
+/dist/es/shared/node-entry.j
+s:17022:16)
+    at Module.traceVariable 
+(file:///C:/Users/aggym/Down
+loads/Honey/node_modules/.pn
+pm/rollup@4.55.1/node_module
+s/rollup/dist/es/shared/node
+-entry.js:17478:29)
+    at 
+ModuleScope.findVariable (fi
+le:///C:/Users/aggym/Downloa
+ds/Honey/node_modules/.pnpm/
+rollup@4.55.1/node_modules/r
+ollup/dist/es/shared/node-en
+try.js:15141:39)
+    at Identifier.bind (file
+:///C:/Users/aggym/Downloads
+/Honey/node_modules/.pnpm/ro
+llup@4.55.1/node_modules/rol
+lup/dist/es/shared/node-entr
+y.js:5462:40)
+    at CallExpression.bind (
+file:///C:/Users/aggym/Downl
+oads/Honey/node_modules/.pnp
+m/rollup@4.55.1/node_modules
+/rollup/dist/es/shared/node-
+entry.js:2829:23)
+    at CallExpression.bind (
+file:///C:/Users/aggym/Downl
+oads/Honey/node_modules/.pnp
+m/rollup@4.55.1/node_modules
+/rollup/dist/es/shared/node-
+entry.js:12172:15)
+    at 
+MemberExpression.bind (file:
+///C:/Users/aggym/Downloads/
+Honey/node_modules/.pnpm/rol
+lup@4.55.1/node_modules/roll
+up/dist/es/shared/node-entry
+.js:2829:23)
+    at 
+MemberExpression.bind (file:
+///C:/Users/aggym/Downloads/
+Honey/node_modules/.pnpm/rol
+lup@4.55.1/node_modules/roll
+up/dist/es/shared/node-entry
+.js:7421:19) {
+  binding: 'createServerFn',
+  code: 'MISSING_EXPORT',
+  exporter: 'C:/Users/aggym/
+Downloads/Honey/node_modules
+/.pnpm/@tanstack+react-start
+@1.120_b37e02275c0a44ca551d6
+707b9b02f55/node_modules/@ta
+nstack/react-start/dist/esm/
+client.js',
+  id: 'C:/Users/aggym/Downlo
+ads/Honey/src/server/shop.ts
+',
+  url: 'https://rollupjs.org
+/troubleshooting/#error-name
+-is-not-exported-by-module',
+  pos: 90,
+  loc: {
+    column: 9,
+    file: 'C:/Users/aggym/Do
+wnloads/Honey/src/server/sho
+p.ts',
+    line: 1
+  },
+  frame: "1: import { 
+createServerFn } from '@tans
+tack/react-start'\r\n" +
+    '            ^\n' +
+    "2: import { 
+createClient } from '@supaba
+se/supabase-js'\r\n" +
+    "3: import { Product } 
+from 
+'@/services/shopService'\r",
+  watchFiles: [
+    'C:/Users/aggym/Download
+s/Honey/src/client.tsx',
+    'C:\\Users\\aggym\\Downl
+oads\\Honey\\package.json',
+    'C:/Users/aggym/Download
+s/Honey/src/router.tsx',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/r
+eact@18.3.1/node_modules/rea
+ct/jsx-runtime.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/r
+eact-dom@18.3.1_react@18.3.1
+/node_modules/react-dom/clie
+nt.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-start@1.120_b
+37e02275c0a44ca551d6707b9b02
+f55/node_modules/@tanstack/r
+eact-start/dist/esm/client.j
+s',
+    'C:/Users/aggym/Download
+s/Honey/src/routeTree.gen.ts
+',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/r
+eact@18.3.1/node_modules/rea
+ct/cjs/react-jsx-runtime.pro
+duction.min.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-start-clien_a
+900cadd7c7b0278031ca1ff20639
+289/node_modules/@tanstack/r
+eact-start-client/dist/esm/i
+ndex.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/r
+eact-dom@18.3.1_react@18.3.1
+/node_modules/react-dom/inde
+x.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/index.j
+s',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/r
+eact@18.3.1/node_modules/rea
+ct/index.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-start-clien_a
+900cadd7c7b0278031ca1ff20639
+289/node_modules/@tanstack/r
+eact-start-client/dist/esm/S
+tartClient.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-start-clien_a
+900cadd7c7b0278031ca1ff20639
+289/node_modules/@tanstack/r
+eact-start-client/dist/esm/r
+enderRSC.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-start-clien_a
+900cadd7c7b0278031ca1ff20639
+289/node_modules/@tanstack/r
+eact-start-client/dist/esm/h
+ydrateStart.js',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/__root.ts
+x',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/update-pa
+ssword.tsx',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/traceabil
+ity.tsx',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/team.tsx'
+,
+    'C:/Users/aggym/Download
+s/Honey/src/routes/shop.tsx'
+,
+    'C:/Users/aggym/Download
+s/Honey/src/routes/precision
+-pollination.tsx',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/pollinati
+on-solutions.tsx',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/pollinati
+on-request.tsx',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/ourstory.
+tsx',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/notes.tsx
+',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/my-accoun
+t.tsx',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/learn.tsx
+',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/media.tsx
+',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/in-land-p
+ollination.tsx',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/impact.ts
+x',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/honey.tsx
+',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/esg.tsx',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/global-hi
+ve-network.tsx',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/crops-we-
+pollinate.tsx',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/contact.t
+sx',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/diseases.
+tsx',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/commitmen
+t.tsx',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/checkout.
+tsx',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/careers.t
+sx',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/blogs.tsx
+',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/account-s
+ettings.tsx',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/beeyield-
+dashboard.tsx',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/about.tsx
+',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/$.tsx',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/index.tsx
+',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/admin/log
+in.tsx',
+    'C:/Users/aggym/Download
+s/Honey/src/routes/admin/ind
+ex.tsx',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/r
+eact-dom@18.3.1_react@18.3.1
+/node_modules/react-dom/cjs/
+react-dom.production.min.js'
+,
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/CatchBo
+undary.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/awaited
+.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/ClientO
+nly.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/fileRou
+te.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/lazyRou
+teComponent.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/link.js
+',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/Matches
+.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/matchCo
+ntext.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/Match.j
+s',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/useMatc
+h.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/useLoad
+erDeps.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/useLoad
+erData.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/route.j
+s',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/router.
+js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/RouterP
+rovider.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/ScrollR
+estoration.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/useBloc
+ker.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/useNavi
+gate.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/usePara
+ms.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/routerC
+ontext.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/useSear
+ch.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/useRout
+eContext.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/useRout
+er.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/useRout
+erState.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/useLoca
+tion.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/useCanG
+oBack.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/utils.j
+s',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/not-fou
+nd.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/ScriptO
+nce.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/Asset.j
+s',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/HeadCon
+tent.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/Scripts
+.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/t
+iny-invariant@1.3.3/node_mod
+ules/tiny-invariant/dist/esm
+/tiny-invariant.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+router-core@1.120.1
+7/node_modules/@tanstack/rou
+ter-core/dist/esm/index.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/t
+iny-warning@1.0.3/node_modul
+es/tiny-warning/dist/tiny-wa
+rning.esm.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+history@1.120.17/no
+de_modules/@tanstack/history
+/dist/esm/index.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/r
+eact@18.3.1/node_modules/rea
+ct/cjs/react.production.min.
+js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/s
+cheduler@0.23.2/node_modules
+/scheduler/index.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+start-client-core@1
+.150.0/node_modules/@tanstac
+k/start-client-core/dist/esm
+/client/index.js',
+    'C:/Users/aggym/Download
+s/Honey/src/components/ui/to
+aster.tsx',
+    'C:/Users/aggym/Download
+s/Honey/src/components/ui/so
+nner.tsx',
+    'C:/Users/aggym/Download
+s/Honey/src/components/ui/to
+oltip.tsx',
+    'C:/Users/aggym/Download
+s/Honey/src/contexts/CartCon
+text.tsx',
+    'C:/Users/aggym/Download
+s/Honey/src/components/Layou
+t.tsx',
+    'C:/Users/aggym/Download
+s/Honey/src/contexts/AuthCon
+text.tsx',
+    'C:/Users/aggym/Download
+s/Honey/src/components/CartD
+rawer.tsx',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/Transit
+ioner.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/SafeFra
+gment.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/renderR
+outeNotFound.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-router@1.12_0
+adcea6a66f09c98375f0747d255c
+378/node_modules/@tanstack/r
+eact-router/dist/esm/scroll-
+restoration.js',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+react-store@0.7.7_6
+0a2b5cc29cb5dd9d72c14edd39fb
+f48/node_modules/@tanstack/r
+eact-store/dist/esm/index.js
+',
+    'C:/Users/aggym/Download
+s/Honey/node_modules/.pnpm/@
+tanstack+router-core@1.120.1
+7/node_modules/@tanstack/rou
+ter-core/dist/esm/link.js',
+    ... 2998 more items
+  ],
+  [Symbol(augmented)]: true
+}
+Error building router 
+client: Error: Exited with 
+code: 1
+    at CommandChild.pipedStd
+outBuffer (file:///C:/Users/
+aggym/Downloads/Honey/node_m
+odules/.pnpm/dax-sh@0.43.2/n
+ode_modules/dax-sh/esm/mod.j
+s:8476:19)
+    at process.processTicksA
+ndRejections (node:internal/
+process/task_queues:105:5)
