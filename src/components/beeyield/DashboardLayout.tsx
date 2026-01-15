@@ -10,6 +10,7 @@ interface DashboardLayoutProps {
     onLogout: () => void;
     navItems: NavItem[];
     isAdmin?: boolean;
+    hideHeader?: boolean;
 }
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({
@@ -18,7 +19,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     onTabChange,
     onLogout,
     navItems,
-    isAdmin = false
+    isAdmin = false,
+    hideHeader = false
 }) => {
     return (
         <div className="flex h-screen bg-white dark:bg-black overflow-hidden font-sans antialiased text-gray-900 dark:text-white">
@@ -30,7 +32,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 isAdmin={isAdmin}
             />
             <main className="flex-1 flex flex-col overflow-hidden bg-gray-50 dark:bg-[#09090b]">
-                <DashboardHeader onLogout={onLogout} onTabChange={onTabChange} />
+                {!hideHeader && <DashboardHeader onLogout={onLogout} onTabChange={onTabChange} />}
                 <div className="flex-1 overflow-y-auto p-8">
                     <div className="max-w-[1600px] mx-auto">
                         {children}

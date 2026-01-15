@@ -4,8 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Box, Plus, MoreVertical, Thermometer, Droplets, Weight, Activity, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import FirstStepsBanner from './FirstStepsBanner';
 
-const BeeYieldView: React.FC = () => {
+interface BeeYieldViewProps {
+    onTabChange: (tab: string) => void;
+}
+
+const BeeYieldView: React.FC<BeeYieldViewProps> = ({ onTabChange }) => {
     const hives = [
         { id: 1, name: 'Hive 01', type: 'Langstroth', status: 'Healthy', temp: '34.5°C', humidity: '55%', weight: '42.0kg', apiary: 'North Orchard' },
         { id: 2, name: 'Hive 02', type: 'Flow Hive', status: 'Warning', temp: '38.2°C', humidity: '62%', weight: '38.5kg', apiary: 'North Orchard' },
@@ -15,10 +20,12 @@ const BeeYieldView: React.FC = () => {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-12">
+            <FirstStepsBanner onTabChange={onTabChange} />
+
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">BeeYield</h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Real-time monitoring and management of your Intelligent Hives system.</p>
+                    <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">BeeYield Hives</h1>
+                    <p className="text-gray-500 dark:text-gray-400 mt-1">Real-time monitoring and management of your BeeYield IoT environment.</p>
                 </div>
                 <Button className="bg-[#4ADE80] hover:bg-[#22c55e] text-black rounded-xl px-6 h-12 font-bold shadow-lg shadow-green-500/20 border-none">
                     <Plus className="w-5 h-5 mr-2" /> Add Component

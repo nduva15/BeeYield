@@ -10,7 +10,8 @@ import { Separator } from '@/components/ui/separator';
 import {
     LayoutGrid, MessageSquare, Box, LineChart, Signal, Bluetooth, Cpu, Usb, FileText, HelpCircle,
     Plus, Filter, SlidersHorizontal, MoreHorizontal, Battery, Wifi, Clock, AlertTriangle, CheckCircle2,
-    X, ChevronDown, MapPin, Search, ClipboardList, Calculator, Receipt, LifeBuoy, Settings
+    X, ChevronDown, MapPin, Search, ClipboardList, Calculator, Receipt, LifeBuoy, Settings,
+    Hand, Map, TrendingUp, Volume2, Camera, BookOpen
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -101,19 +102,26 @@ const BeeYieldDashboard: React.FC = () => {
 
     // Nav Items matching screenshot precisely
     const navItems: NavItem[] = [
-        { id: 'assistant', label: 'AI Assistant', icon: MessageSquare },
-        { id: 'places', label: 'My Places', icon: LayoutGrid },
-        { id: 'beeyield', label: 'BeeYield', icon: Box, hasSubmenu: true },
+        {
+            id: 'beeyield',
+            label: 'Intelligent Hives',
+            icon: Box,
+            hasSubmenu: true,
+            submenuItems: [
+                { id: 'inspections', label: 'Inspections', icon: Search },
+                { id: 'harvests', label: 'Harvests', icon: Hand },
+                { id: 'flight-map', label: 'Flight Map', icon: Map },
+                { id: 'varroa', label: 'Varroa Modeling', icon: TrendingUp },
+                { id: 'sound', label: 'Beehive Sound Analysis', icon: Volume2 },
+                { id: 'image-analysis', label: 'Image analysis', icon: Camera },
+                { id: 'health-guide', label: 'Bee Health Guide', icon: BookOpen },
+            ]
+        },
         { id: 'data', label: 'Measurement data', icon: LineChart, hasSubmenu: true },
-        { id: 'online', label: 'BeeHUB Online', icon: Signal },
-        { id: 'bluetooth', label: 'Bluetooth', icon: Bluetooth },
-        { id: 'devices', label: 'My devices', icon: Cpu },
-        { id: 'usb', label: 'USB', icon: Usb },
-        { id: 'notes', label: 'My Notes', icon: FileText },
-        { id: 'requests', label: 'My Requests', icon: HelpCircle },
-        { id: 'task', label: 'My Task', icon: ClipboardList },
-        { id: 'buy', label: 'Buy BeeYield HUB', icon: Cpu },
+        { id: 'assistant', label: 'AI Assistant', icon: MessageSquare },
         { id: 'meters', label: 'Meters', icon: Calculator, hasSubmenu: true },
+        { id: 'places', label: 'My Places', icon: LayoutGrid },
+        { id: 'devices', label: 'My devices', icon: Cpu },
         { id: 'billing', label: 'Billing', icon: Receipt },
         { id: 'support', label: 'Support center', icon: LifeBuoy },
         { id: 'settings', label: 'Settings', icon: Settings },
@@ -123,35 +131,35 @@ const BeeYieldDashboard: React.FC = () => {
     const renderContent = () => {
         switch (activeTab) {
             case 'assistant':
-                return <AIAssistantView />;
+                return <AIAssistantView onTabChange={setActiveTab} />;
             case 'places':
-                return <MyPlacesView />;
+                return <MyPlacesView onTabChange={setActiveTab} />;
             case 'beeyield':
-                return <BeeYieldView />;
+                return <BeeYieldView onTabChange={setActiveTab} />;
             case 'data':
-                return <MeasurementDataView />;
+                return <MeasurementDataView onTabChange={setActiveTab} />;
             case 'online':
-                return <BeeHUBOnlineView />;
+                return <BeeHUBOnlineView onTabChange={setActiveTab} />;
             case 'bluetooth':
-                return <BluetoothView />;
+                return <BluetoothView onTabChange={setActiveTab} />;
             case 'devices':
                 return <MyDevicesView devices={devices} readings={readings} onTabChange={setActiveTab} />;
             case 'usb':
-                return <USBView />;
+                return <USBView onTabChange={setActiveTab} />;
             case 'notes':
-                return <MyNotesView />;
+                return <MyNotesView onTabChange={setActiveTab} />;
             case 'requests':
-                return <MyRequestsView />;
+                return <MyRequestsView onTabChange={setActiveTab} />;
             case 'task':
-                return <MyTaskView />;
+                return <MyTaskView onTabChange={setActiveTab} />;
             case 'buy':
-                return <BuyBeeYieldHubView />;
+                return <BuyBeeYieldHubView onTabChange={setActiveTab} />;
             case 'meters':
-                return <MetersView />;
+                return <MetersView onTabChange={setActiveTab} />;
             case 'billing':
-                return <BillingView />;
+                return <BillingView onTabChange={setActiveTab} />;
             case 'support':
-                return <SupportCenterView />;
+                return <SupportCenterView onTabChange={setActiveTab} />;
             case 'settings': // Special case from top bar or banner
                 return <SettingsView onTabChange={setActiveTab} />;
             default:
@@ -177,6 +185,7 @@ const BeeYieldDashboard: React.FC = () => {
             onTabChange={setActiveTab}
             onLogout={signOut}
             navItems={navItems}
+            hideHeader={activeTab === 'billing'}
         >
             <div className="mt-6 px-4">
                 {renderContent()}

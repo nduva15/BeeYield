@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Calculator, Gauge, Activity, Database, Plus, RefreshCw, Settings2, MoreVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import FirstStepsBanner from './FirstStepsBanner';
 
 const data = [
     { name: '00:00', value: 400 },
@@ -15,13 +16,18 @@ const data = [
     { name: '20:00', value: 239 },
     { name: '23:59', value: 349 },
 ];
+interface MetersViewProps {
+    onTabChange: (tab: string) => void;
+}
 
-const MetersView: React.FC = () => {
+const MetersView: React.FC<MetersViewProps> = ({ onTabChange }) => {
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-12">
+            <FirstStepsBanner onTabChange={onTabChange} />
+
             <div className="flex justify-between items-end">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Meters</h1>
+                    <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">Meters</h1>
                     <p className="text-gray-500 dark:text-gray-400 mt-1">High-precision digital meters and multi-sensor management.</p>
                 </div>
                 <div className="flex gap-3">

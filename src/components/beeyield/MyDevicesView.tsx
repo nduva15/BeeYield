@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import AddDeviceModal from './AddDeviceModal';
 import { toast } from 'sonner';
+import FirstStepsBanner from './FirstStepsBanner';
 
 // helper components
 const StatCard = ({ label, value, color }: { label: string, value: number | string, color: string }) => (
@@ -32,26 +33,12 @@ interface MyDevicesViewProps {
 
 const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, readings, onTabChange }) => {
     const [localDevices, setLocalDevices] = useState<IoTDevice[]>(initialDevices);
-    const [showBanner, setShowBanner] = useState(true);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
     // Sync local devices when initialDevices changes (e.g. after fetch)
     useEffect(() => {
         setLocalDevices(initialDevices);
     }, [initialDevices]);
-
-    // Banner persistence
-    useEffect(() => {
-        const bannerHidden = localStorage.getItem('hideBeeYieldBanner');
-        if (bannerHidden) {
-            setShowBanner(false);
-        }
-    }, []);
-
-    const hideBanner = () => {
-        setShowBanner(false);
-        localStorage.setItem('hideBeeYieldBanner', 'true');
-    };
 
     const handleAddDevice = (newDevice: IoTDevice) => {
         setLocalDevices([newDevice, ...localDevices]);
@@ -89,67 +76,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
         <div className="space-y-8 animate-in fade-in duration-500 pb-12">
 
             {/* First Steps Banner */}
-            {showBanner && (
-                <div className="relative bg-gradient-to-r from-orange-50 to-white dark:from-orange-900/10 dark:to-[#09090b] p-6 rounded-3xl border border-orange-100 dark:border-orange-900/20 shadow-sm">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={hideBanner}
-                        className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-full"
-                    >
-                        <X className="w-4 h-4" />
-                    </Button>
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">First steps</h2>
-                    <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-2xl">
-                        Start here to set up your apiaries, devices, and measurements.
-                    </p>
-
-                    <div className="flex flex-wrap gap-3">
-                        <Button
-                            variant="outline"
-                            onClick={() => onTabChange('places')}
-                            className="rounded-full bg-white dark:bg-[#1e1e1e] border-orange-100 dark:border-gray-700 hover:bg-orange-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200 shadow-sm"
-                        >
-                            Add apiaries and hives
-                        </Button>
-                        <Button
-                            variant="outline"
-                            onClick={() => onTabChange('devices')}
-                            className="rounded-full bg-white dark:bg-[#1e1e1e] border-orange-100 dark:border-gray-700 hover:bg-orange-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200 shadow-sm"
-                        >
-                            My devices
-                        </Button>
-                        <Button
-                            variant="outline"
-                            onClick={() => onTabChange('data')}
-                            className="rounded-full bg-white dark:bg-[#1e1e1e] border-orange-100 dark:border-gray-700 hover:bg-orange-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200 shadow-sm"
-                        >
-                            Measurement data
-                        </Button>
-                        <Button
-                            variant="outline"
-                            onClick={() => onTabChange('requests')}
-                            className="rounded-full bg-white dark:bg-[#1e1e1e] border-orange-100 dark:border-gray-700 hover:bg-orange-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200 shadow-sm"
-                        >
-                            Support Center
-                        </Button>
-                        <Button
-                            variant="outline"
-                            onClick={() => onTabChange('beeyield')}
-                            className="rounded-full bg-white dark:bg-[#1e1e1e] border-orange-100 dark:border-gray-700 hover:bg-orange-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200 shadow-sm"
-                        >
-                            BeeYield Agro Intelligence
-                        </Button>
-                        <Button
-                            variant="outline"
-                            onClick={() => onTabChange('settings')}
-                            className="rounded-full bg-white dark:bg-[#1e1e1e] border-orange-100 dark:border-gray-700 hover:bg-orange-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200 shadow-sm"
-                        >
-                            Settings
-                        </Button>
-                    </div>
-                </div>
-            )}
+            <FirstStepsBanner onTabChange={onTabChange} />
 
             {/* Page Title */}
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My devices</h1>

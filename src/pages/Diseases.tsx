@@ -348,7 +348,7 @@ const Diseases = () => {
                         </p>
                         {/* Partner Logo Placeholders */}
                         <div className="flex flex-wrap justify-center gap-8 opacity-50 grayscale transition-all hover:grayscale-0">
-                            <div className="h-12 w-40 bg-foreground/10 rounded flex items-center justify-center font-bold">Intelligent Hives</div>
+                            <div className="h-12 w-40 bg-foreground/10 rounded flex items-center justify-center font-bold">BeeYield Hives</div>
                             <div className="h-12 w-32 bg-foreground/10 rounded flex items-center justify-center font-bold">ApiSense</div>
                         </div>
                     </div>

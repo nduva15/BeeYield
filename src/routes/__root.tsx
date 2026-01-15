@@ -28,6 +28,7 @@ export const Route = createRootRoute({
         ],
         links: [
             { rel: 'stylesheet', href: appCss },
+            { rel: 'stylesheet', href: '/css/pico.min.css' },
             { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
             { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' },
             { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Outfit:wght@100..900&display=swap' },

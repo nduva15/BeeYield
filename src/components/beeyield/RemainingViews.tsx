@@ -2,16 +2,18 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Wifi, Shield, Zap, Bluetooth as BluetoothIcon, Usb } from 'lucide-react';
+import FirstStepsBanner from './FirstStepsBanner';
 
 // Common View Wrapper
-const ViewLayout = ({ title, subtitle, icon: Icon, children }: { title: string, subtitle: string, icon: any, children: React.ReactNode }) => (
+const ViewLayout = ({ title, subtitle, icon: Icon, onTabChange, children }: { title: string, subtitle: string, icon: any, onTabChange?: (tab: string) => void, children: React.ReactNode }) => (
     <div className="space-y-8 animate-in fade-in duration-500 pb-12">
+        {onTabChange && <FirstStepsBanner onTabChange={onTabChange} />}
         <div className="flex items-center gap-4">
             <div className="w-14 h-14 bg-[#B48428] rounded-[1.25rem] flex items-center justify-center text-white shadow-lg shadow-amber-500/20">
                 <Icon className="w-8 h-8" />
             </div>
             <div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{title}</h1>
+                <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">{title}</h1>
                 <p className="text-gray-500 dark:text-gray-400 mt-1">{subtitle}</p>
             </div>
         </div>
@@ -19,9 +21,13 @@ const ViewLayout = ({ title, subtitle, icon: Icon, children }: { title: string, 
     </div>
 );
 
-// BeeHUB Online View
-export const BeeHUBOnlineView: React.FC = () => (
-    <ViewLayout title="BeeHUB Online" subtitle="Manage your cloud connectivity and synchronization." icon={Wifi}>
+interface RemainingViewProps {
+    onTabChange: (tab: string) => void;
+}
+
+// BeeYield Hub Online View
+export const BeeHUBOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }) => (
+    <ViewLayout title="BeeYield Hub Online" subtitle="Manage your cloud connectivity and synchronization." icon={Wifi} onTabChange={onTabChange}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <Card className="rounded-[2.5rem] p-8 border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm">
                 <h3 className="text-xl font-bold mb-6">Cloud Status</h3>
@@ -62,14 +68,14 @@ export const BeeHUBOnlineView: React.FC = () => (
 );
 
 // Bluetooth View
-export const BluetoothView: React.FC = () => (
-    <ViewLayout title="Bluetooth" subtitle="Direct device connection and local configuration." icon={BluetoothIcon}>
+export const BluetoothView: React.FC<RemainingViewProps> = ({ onTabChange }) => (
+    <ViewLayout title="Bluetooth" subtitle="Direct device connection and local configuration." icon={BluetoothIcon} onTabChange={onTabChange}>
         <div className="bg-white dark:bg-[#09090b] rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] p-12 text-center shadow-sm">
             <div className="w-20 h-20 bg-blue-50 dark:bg-blue-900/20 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
                 <BluetoothIcon className="w-10 h-10 text-blue-500 animate-pulse" />
             </div>
             <h2 className="text-2xl font-bold mb-2">Scanning for devices...</h2>
-            <p className="text-gray-500 max-w-sm mx-auto mb-8">Make sure your BeeHUB or sensor Bluetooth is active and in range.</p>
+            <p className="text-gray-500 max-w-sm mx-auto mb-8">Make sure your BeeYield Hub or sensor Bluetooth is active and in range.</p>
             <Button className="rounded-xl px-12 h-12 bg-blue-500 hover:bg-blue-600 text-white font-bold border-none shadow-lg shadow-blue-500/20">
                 Cancel Scan
             </Button>
@@ -78,8 +84,8 @@ export const BluetoothView: React.FC = () => (
 );
 
 // USB View
-export const USBView: React.FC = () => (
-    <ViewLayout title="USB" subtitle="Firmware updates and data export via wired connection." icon={Usb}>
+export const USBView: React.FC<RemainingViewProps> = ({ onTabChange }) => (
+    <ViewLayout title="USB" subtitle="Firmware updates and data export via wired connection." icon={Usb} onTabChange={onTabChange}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="rounded-[2rem] border border-dashed border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-[#1e1e1e]/10 p-12 text-center col-span-2">
                 <Usb className="w-12 h-12 text-gray-300 mx-auto mb-4" />

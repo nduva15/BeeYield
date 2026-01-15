@@ -1,144 +1,231 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Receipt, CreditCard, Download, ExternalLink, ShieldCheck, History, Plus } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import {
+    Search, Moon, Sun, Bell, Headphones, Wifi, Settings, LogOut,
+    ChevronDown, Plus, MoreHorizontal, FileText, Globe
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
+import FirstStepsBanner from './FirstStepsBanner';
 
-const BillingView: React.FC = () => {
+interface BillingViewProps {
+    onTabChange: (tab: string) => void;
+}
+
+const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
+    const [activeSubTab, setActiveSubTab] = useState('Dashboard');
+    const [theme, setTheme] = useState<'light' | 'dark'>('light');
+
+    const toggleTheme = () => {
+        const newTheme = theme === 'light' ? 'dark' : 'light';
+        setTheme(newTheme);
+        if (newTheme === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    };
+
+    const tabs = ['Dashboard', 'Revenue', 'Costs', 'Documents', 'Analytics', 'Settings'];
+
+    const summaryCards = [
+        { title: 'Total revenue (month)', value: '0 PLN', subtitle: 'Invoices and receipts' },
+        { title: 'Total costs (month)', value: '0 PLN', subtitle: 'Expenses and recurring fees' },
+        { title: 'Net result', value: '0 PLN', subtitle: 'Revenue minus costs' },
+        { title: 'Outstanding documents', value: '0', subtitle: 'Draft, issued, overdue' },
+    ];
+
+    const revenueVsCosts = [
+        { month: '2025-08', revenue: '0 PLN', costs: '0 PLN' },
+        { month: '2025-09', revenue: '0 PLN', costs: '0 PLN' },
+        { month: '2025-10', revenue: '0 PLN', costs: '0 PLN' },
+        { month: '2025-11', revenue: '0 PLN', costs: '0 PLN' },
+        { month: '2025-12', revenue: '0 PLN', costs: '0 PLN' },
+        { month: '2026-01', revenue: '0 PLN', costs: '0 PLN' },
+    ];
+
+    const profitByEntityType = [
+        { type: 'Apiary', value: '0 PLN' },
+        { type: 'Hive', value: '0 PLN' },
+        { type: 'Meter', value: '0 PLN' },
+        { type: 'Medical facility', value: '0 PLN' },
+        { type: 'Patient', value: '0 PLN' },
+        { type: 'Project', value: '0 PLN' },
+        { type: 'Other', value: '0 PLN' },
+    ];
+
     return (
-        <div className="space-y-8 animate-in fade-in duration-500 pb-12">
-            <div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Billing</h1>
-                <p className="text-gray-500 dark:text-gray-400 mt-1">Manage your plan, payment methods, and invoice history.</p>
+        <div className="space-y-6 animate-in fade-in duration-500 pb-12">
+            <FirstStepsBanner onTabChange={onTabChange} />
+
+            {/* Platform Module Header */}
+            <div className="flex justify-between items-start">
+                <div>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">PLATFORM MODULE</p>
+                    <div className="flex items-center gap-3">
+                        <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">Billing & Accounting</h1>
+                        <Badge className="bg-[#1E293B] text-white rounded-md text-[10px] px-2 py-0.5 border-none font-bold uppercase">BETA</Badge>
+                    </div>
+                </div>
+                <Button className="bg-[#1E293B] hover:bg-[#0F172A] text-white rounded-full px-6 h-10 font-bold flex items-center gap-2">
+                    New document
+                </Button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Left: Plan & Payment */}
-                <div className="lg:col-span-2 space-y-8">
-                    {/* Active Plan */}
-                    <Card className="rounded-[2.5rem] bg-gradient-to-br from-[#1e1e1e] to-black text-white border-none shadow-xl overflow-hidden relative">
-                        <div className="absolute -top-20 -right-20 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl opacity-50" />
-                        <CardHeader className="p-10 pb-4">
-                            <div className="flex justify-between items-start">
-                                <div>
-                                    <Badge className="bg-amber-500 text-white rounded-md mb-4 border-none font-bold text-[10px] tracking-widest uppercase">Active Plan</Badge>
-                                    <h2 className="text-4xl font-black mb-2">BeeHUB Pro Monthly</h2>
-                                    <p className="text-gray-400 font-medium italic">Unlimited devices, AI analytics, & Priority support.</p>
-                                </div>
-                                <div className="text-right">
-                                    <p className="text-5xl font-black text-amber-500">$49<span className="text-lg text-gray-400 font-medium">/mo</span></p>
-                                </div>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="p-10 pt-6">
-                            <div className="flex flex-wrap gap-4 mt-4">
-                                <Button className="bg-white text-black hover:bg-gray-100 rounded-2xl px-10 h-14 font-black text-lg shadow-lg">Change Plan</Button>
-                                <Button variant="ghost" className="text-white hover:bg-white/10 rounded-2xl px-8 h-14 font-bold border border-white/20">Cancel Subscription</Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Payment Methods */}
-                    <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm p-10">
-                        <div className="flex justify-between items-center mb-8">
-                            <h3 className="text-2xl font-bold flex items-center gap-3">
-                                <CreditCard className="w-6 h-6 text-blue-500" />
-                                Payment Methods
-                            </h3>
-                            <Button variant="outline" className="rounded-xl gap-2 border-gray-100 dark:border-gray-800 font-bold">
-                                <Plus className="w-4 h-4" /> Add Method
-                            </Button>
-                        </div>
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between p-6 rounded-3xl bg-gray-50 dark:bg-[#1e1e1e] border border-gray-100 dark:border-gray-800 group hover:border-blue-200 transition-colors">
-                                <div className="flex items-center gap-6">
-                                    <div className="w-16 h-10 bg-white dark:bg-[#09090b] rounded-lg border border-gray-100 dark:border-gray-800 flex items-center justify-center font-bold text-blue-800 italic">VISA</div>
-                                    <div>
-                                        <p className="font-bold text-gray-900 dark:text-white">Visa ending in 4421</p>
-                                        <p className="text-sm text-gray-400 font-medium">Expiry 12/26 • <Badge variant="secondary" className="bg-blue-50 text-blue-700 text-[8px] uppercase font-black tracking-widest leading-none border-none">Default</Badge></p>
-                                    </div>
-                                </div>
-                                <Button variant="ghost" className="text-gray-400 hover:text-gray-600 font-bold text-xs uppercase">Edit</Button>
-                            </div>
-                        </div>
-                    </Card>
-
-                    {/* Billing History */}
-                    <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm overflow-hidden">
-                        <div className="p-10 pb-0">
-                            <h3 className="text-2xl font-bold flex items-center gap-3">
-                                <History className="w-6 h-6 text-amber-500" />
-                                Billing History
-                            </h3>
-                        </div>
-                        <div className="p-10 pt-8 divide-y divide-gray-50 dark:divide-[#1e1e1e]">
-                            {[
-                                { id: 'INV-2026-001', date: 'Jan 14, 2026', amount: '$49.00', status: 'Paid' },
-                                { id: 'INV-2025-012', date: 'Dec 14, 2025', amount: '$49.00', status: 'Paid' },
-                                { id: 'INV-2025-011', date: 'Nov 14, 2025', amount: '$49.00', status: 'Paid' },
-                            ].map((inv, i) => (
-                                <div key={i} className="py-6 flex items-center justify-between group">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 bg-gray-50 dark:bg-[#1e1e1e] rounded-2xl flex items-center justify-center group-hover:bg-amber-50 transition-colors">
-                                            <Receipt className="w-5 h-5 text-gray-400 group-hover:text-amber-500 transition-colors" />
-                                        </div>
-                                        <div>
-                                            <p className="font-bold text-gray-900 dark:text-white">{inv.id}</p>
-                                            <p className="text-xs text-gray-400 font-medium">{inv.date}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-8">
-                                        <div className="text-right">
-                                            <p className="font-bold text-gray-900 dark:text-white">{inv.amount}</p>
-                                            <span className="text-[10px] font-black uppercase text-green-500">{inv.status}</span>
-                                        </div>
-                                        <Button variant="ghost" size="icon" className="rounded-full">
-                                            <Download className="w-5 h-5 text-gray-400 hover:text-[#B48428]" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </Card>
+            {/* Toolbar (Search & Icons) */}
+            <div className="flex items-center justify-between py-2 px-1 bg-white/50 dark:bg-black/20 backdrop-blur-sm rounded-2xl">
+                <div className="relative w-full max-w-md">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Input
+                        placeholder="Search apiaries, beehives"
+                        className="pl-12 bg-white dark:bg-[#141414] border-gray-100 dark:border-[#1e1e1e] rounded-full h-11 w-full focus-visible:ring-1 focus-visible:ring-[#2D506C]/30 shadow-sm text-sm"
+                    />
                 </div>
 
-                {/* Right: Summary & Support */}
-                <div className="space-y-8">
-                    <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm p-10">
-                        <h3 className="text-xl font-bold mb-6">Summary</h3>
-                        <div className="space-y-4">
-                            <div className="flex justify-between text-sm">
-                                <span className="text-gray-500 font-medium">Monthly Price</span>
-                                <span className="text-gray-900 dark:text-white font-bold">$49.00</span>
-                            </div>
-                            <div className="flex justify-between text-sm">
-                                <span className="text-gray-500 font-medium">VAT (0%)</span>
-                                <span className="text-gray-900 dark:text-white font-bold">$0.00</span>
-                            </div>
-                            <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-between">
-                                <span className="text-lg font-bold">Total</span>
-                                <span className="text-lg font-black text-amber-500">$49.00</span>
-                            </div>
-                        </div>
-                        <p className="text-xs text-gray-400 font-medium mt-8 leading-relaxed">
-                            Your next bill is due on February 14, 2026. Payments are processed automatically through your default method.
-                        </p>
-                    </Card>
+                <div className="flex items-center gap-2">
+                    <Button variant="outline" className="rounded-full gap-2 bg-white dark:bg-[#141414] border-gray-100 dark:border-[#1e1e1e] h-11 px-4 shadow-sm">
+                        <img src="https://flagcdn.com/w20/gb.png" alt="English" className="w-5 h-auto rounded-sm" />
+                        <span className="font-bold text-xs">English</span>
+                        <ChevronDown className="w-3 h-3 text-gray-400" />
+                    </Button>
 
-                    <Card className="rounded-[2.5rem] bg-amber-50 dark:bg-amber-950/10 border-none p-10">
-                        <ShieldCheck className="w-10 h-10 text-amber-500 mb-4" />
-                        <h3 className="text-xl font-bold mb-2">Secure Payments</h3>
-                        <p className="text-sm text-amber-800 dark:text-amber-200 opacity-80 font-medium leading-relaxed">
-                            All your payment data is encrypted and processed via Stripe. We do not store your full card details.
-                        </p>
-                        <Button variant="link" className="text-amber-600 font-bold p-0 h-auto mt-4 gap-2">
-                            View Privacy Policy
-                            <ExternalLink className="w-3 h-3" />
-                        </Button>
-                    </Card>
+                    <div className="flex items-center gap-1 bg-white dark:bg-[#141414] p-1 rounded-full border border-gray-100 dark:border-[#1e1e1e] shadow-sm">
+                        <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-gray-50 dark:hover:bg-white/10 text-gray-500 transition-colors">
+                            {theme === 'light' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                        </button>
+                    </div>
+
+                    <button className="p-2.5 rounded-full bg-white dark:bg-[#141414] border border-gray-100 dark:border-[#1e1e1e] text-gray-500 shadow-sm hover:bg-gray-50 transition-colors">
+                        <Bell className="w-4 h-4" />
+                    </button>
+                    <button className="p-2.5 rounded-full bg-white dark:bg-[#141414] border border-gray-100 dark:border-[#1e1e1e] text-gray-500 shadow-sm hover:bg-gray-50 transition-colors">
+                        <Headphones className="w-4 h-4" />
+                    </button>
+                    <button className="p-2.5 rounded-full bg-white dark:bg-[#141414] border border-gray-100 dark:border-[#1e1e1e] text-gray-500 shadow-sm hover:bg-gray-50 transition-colors">
+                        <Wifi className="w-4 h-4" />
+                    </button>
+                    <button
+                        onClick={() => onTabChange('settings')}
+                        className="p-2.5 rounded-full bg-white dark:bg-[#141414] border border-gray-100 dark:border-[#1e1e1e] text-gray-500 shadow-sm hover:bg-gray-50 transition-colors"
+                    >
+                        <Settings className="w-4 h-4" />
+                    </button>
+                    <button className="p-2.5 rounded-full bg-white dark:bg-[#141414] border border-gray-100 dark:border-[#1e1e1e] text-gray-500 shadow-sm hover:bg-gray-50 transition-colors">
+                        <LogOut className="w-4 h-4" />
+                    </button>
                 </div>
             </div>
+
+            {/* Tabs */}
+            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                {tabs.map((tab) => (
+                    <button
+                        key={tab}
+                        onClick={() => setActiveSubTab(tab)}
+                        className={cn(
+                            "px-6 py-2.5 rounded-full text-sm font-bold transition-all border shrink-0",
+                            activeSubTab === tab
+                                ? "bg-[#1E293B] text-white border-[#1E293B]"
+                                : "bg-white text-gray-500 border-gray-100 hover:border-gray-300 dark:bg-[#141414] dark:border-[#1e1e1e]"
+                        )}
+                    >
+                        {tab}
+                    </button>
+                ))}
+            </div>
+
+            {/* Dashboard Content */}
+            {activeSubTab === 'Dashboard' && (
+                <div className="space-y-6">
+                    {/* Summary Row */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {summaryCards.map((card, i) => (
+                            <Card key={i} className="rounded-3xl border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm hover:shadow-md transition-shadow">
+                                <CardContent className="p-6">
+                                    <p className="text-sm font-bold text-gray-900 dark:text-white mb-2">{card.title}</p>
+                                    <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-2">{card.value}</h2>
+                                    <p className="text-xs text-gray-400 font-medium">{card.subtitle}</p>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+
+                    {/* Charts/Details Row */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        {/* Revenue vs costs */}
+                        <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm">
+                            <CardContent className="p-8">
+                                <div className="flex justify-between items-start mb-1">
+                                    <h3 className="text-lg font-bold">Revenue vs costs</h3>
+                                    <Badge variant="secondary" className="rounded-full bg-gray-100 text-gray-500 text-[10px] font-bold px-3 border-none">Series</Badge>
+                                </div>
+                                <p className="text-xs text-gray-400 font-medium mb-6">Last 6 months</p>
+                                <div className="space-y-4">
+                                    {revenueVsCosts.map((item, i) => (
+                                        <div key={i} className="flex justify-between items-center text-sm">
+                                            <span className="text-gray-600 dark:text-gray-400 font-medium">{item.month}</span>
+                                            <span className="text-gray-900 dark:text-white font-bold">{item.revenue} / {item.costs}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Profit per entity type */}
+                        <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm">
+                            <CardContent className="p-8">
+                                <div className="flex justify-between items-start mb-1">
+                                    <h3 className="text-lg font-bold">Profit per entity type</h3>
+                                    <Badge variant="secondary" className="rounded-full bg-gray-100 text-gray-500 text-[10px] font-bold px-3 border-none">Series</Badge>
+                                </div>
+                                <p className="text-xs text-gray-400 font-medium mb-6">Revenue minus costs</p>
+                                <div className="space-y-4">
+                                    {profitByEntityType.map((item, i) => (
+                                        <div key={i} className="flex justify-between items-center text-sm">
+                                            <span className="text-gray-600 dark:text-gray-400 font-medium">{item.type}</span>
+                                            <span className="text-gray-900 dark:text-white font-bold">{item.value}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* KSeF readiness */}
+                        <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm">
+                            <CardContent className="p-8">
+                                <div className="flex justify-between items-start mb-1">
+                                    <h3 className="text-lg font-bold">KSeF readiness</h3>
+                                    <Badge className="rounded-full bg-orange-100 text-orange-600 text-[10px] font-bold px-3 border-none">UI only</Badge>
+                                </div>
+                                <p className="text-xs text-gray-400 font-medium mb-6">Structured invoicing status</p>
+
+                                <div className="flex items-center gap-2 mb-6">
+                                    <span className="text-[10px] text-gray-400 uppercase font-black">Status:</span>
+                                    <Badge className="bg-orange-50 text-orange-500 border border-orange-100 rounded-md text-[10px] px-2 py-0.5 font-bold uppercase">Not connected</Badge>
+                                </div>
+
+                                <div className="space-y-4 mb-8">
+                                    <p className="text-sm font-bold text-gray-900 dark:text-white">Required fields coverage: 72%.</p>
+                                    <p className="text-xs text-gray-400 font-medium leading-relaxed">
+                                        Company profile complete, buyer registry pending.
+                                    </p>
+                                </div>
+
+                                <div className="flex gap-2">
+                                    <Button variant="outline" className="rounded-full bg-gray-50 border-gray-200 text-gray-600 text-xs font-bold px-4 h-9">
+                                        View checklist
+                                    </Button>
+                                    <Button className="rounded-full bg-[#60A5FA] hover:bg-[#3B82F6] text-white text-xs font-bold px-4 h-9 border-none shadow-sm">
+                                        Configure KSeF
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
