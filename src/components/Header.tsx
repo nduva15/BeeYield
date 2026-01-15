@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { Menu, X, ChevronDown, ShoppingBag, User, Shield, LogIn } from "lucide-react";
 import { Button } from "./ui/button";
-import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/hooks/useAuth";
 import {
   DropdownMenu,
@@ -15,7 +14,6 @@ import Logo from "@/assets/Logo.png";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
-  const { getTotalItems, openCart } = useCart();
   const { user } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
@@ -99,6 +97,18 @@ const Header = () => {
 
         {/* Right side - Traceability Button & Menu (all devices) */}
         <div className="flex items-center space-x-2 sm:space-x-4">
+          <Link
+            to="/beeyield-dashboard"
+            className="p-2 hover:bg-muted rounded-full transition-all active:scale-90 group mr-1"
+            aria-label={user?.user_metadata?.beeyield_active ? "BeeYield IoT Dashboard" : "Sign In / Sign Up to Pollination Dashboard"}
+          >
+            {user?.user_metadata?.beeyield_active ? (
+              <User className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
+            ) : (
+              <LogIn className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
+            )}
+          </Link>
+
           <Button
             variant="default"
             size="sm"
@@ -109,34 +119,6 @@ const Header = () => {
               Traceability
             </Link>
           </Button>
-
-
-
-          <Link
-            to="/beeyield-dashboard"
-            className="p-2 hover:bg-muted rounded-full transition-all active:scale-90 group mr-1"
-            aria-label={user ? "BeeYield IoT Dashboard" : "Sign In / Sign Up"}
-          >
-            {user ? (
-              <User className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
-            ) : (
-              <LogIn className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
-            )}
-          </Link>
-
-          <button
-            onClick={openCart}
-            className="relative p-2 hover:bg-muted rounded-full transition-all active:scale-90 group"
-            aria-label={`Open cart with ${getTotalItems()} items`}
-          >
-            <ShoppingBag className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
-            {getTotalItems() > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground text-[10px] font-bold h-4 w-4 sm:h-5 sm:w-5 rounded-full flex items-center justify-center border-2 border-background animate-in zoom-in duration-300">
-                {getTotalItems()}
-              </span>
-            )}
-          </button>
-
 
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -235,8 +217,8 @@ const Header = () => {
                 onClick={() => setIsMenuOpen(false)}
                 className={`text-sm sm:text-base font-black hover:bg-white/20 rounded-lg px-3 py-2.5 sm:py-3 transition-colors bg-white/10 text-yellow-300 border border-yellow-300/30 flex items-center justify-between mb-2 ${isActive("/beeyield-dashboard") ? "ring-2 ring-yellow-300" : ""}`}
               >
-                BeeYield Dashboard
-                {user ? <User className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}
+                {user?.user_metadata?.beeyield_active ? "BeeYield Dashboard" : "Login"}
+                {user?.user_metadata?.beeyield_active ? <User className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}
               </Link>
               {user?.user_metadata?.role === 'admin' && (
                 <Link

@@ -10,10 +10,11 @@ interface LoginFormProps {
     onSuccess?: () => void;
     onSwitchToRegister?: () => void;
     onForgotPassword?: () => void;
+    requireMetadata?: Record<string, any>;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegister, onForgotPassword }) => {
-    const { signIn, signInWithGoogle, verifyMFAChallenge, mfaRequired } = useAuth();
+const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegister, onForgotPassword, requireMetadata }) => {
+    const { signIn, signInWithGoogle, verifyMFAChallenge, mfaRequired, signOut } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [mfaCode, setMfaCode] = useState('');
@@ -26,6 +27,31 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegister, on
         setLoading(true);
 
         const { error, mfaRequired: needsMFA } = await signIn(email, password);
+
+        // Handle post-login metadata check
+        if (!error && !needsMFA && requireMetadata) {
+            // Re-fetch user to get latest metadata
+            const supabaseModule = await import('@/lib/supabase');
+            const supabase = supabaseModule.supabase;
+
+            if (supabase) {
+                const { data } = await supabase.auth.getUser();
+                const loggedInUser = data?.user;
+
+                const missingMetadata = Object.entries(requireMetadata).some(
+                    ([key, value]) => !loggedInUser || loggedInUser.user_metadata?.[key] !== value
+                );
+
+                if (missingMetadata) {
+                    await signOut();
+                    toast.error('Account Required', {
+                        description: 'No account found for this email. Please Sign Up to continue.'
+                    });
+                    setLoading(false);
+                    return;
+                }
+            }
+        }
 
         if (error) {
             toast.error('Login failed', { description: error.message });

@@ -7,12 +7,20 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+.pnpm-store
 
+# Environment
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+backend/.env
 
-*.local
-
-# Editor directories and files
+# Editor / OS
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -22,6 +30,8 @@ node_modules
 *.njsproj
 *.sln
 *.sw?
+*.patch
+*.diff
 
 # Python
 __pycache__/
@@ -31,7 +41,19 @@ __pycache__/
 venv/
 ENV/
 env/
+requirements.txt
+!.github/workflows/requirements.txt
 
-# Build
-/
-/
+# Build / Output
+dist
+.output
+.vinxi
+.vercel
+.cache
+build
+out
+
+# Database / Locally generated
+*.db
+*.sqlite
+supabase/.temp

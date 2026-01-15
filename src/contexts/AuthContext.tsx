@@ -99,7 +99,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setSession({ user: mockUser, access_token: 'dev-token', refresh_token: 'dev-refresh', expires_in: 3600, token_type: 'bearer' } as any);
             return { error: null };
         }
-
         // Check if MFA is required
         if (data?.session === null && !error) {
             // MFA challenge required - get factors

@@ -14,13 +14,11 @@ import {
     Puzzle,
     LogOut,
     Moon,
-    Bot,
-    ChevronRight,
-    SearchIcon,
-    Globe
+    Bot
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import FirstStepsBanner from './FirstStepsBanner';
+import Logo from '@/assets/Logo.png';
 
 interface AIAssistantViewProps {
     onTabChange: (tab: string) => void;
@@ -140,6 +138,48 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange }) => {
                 </div>
             </div>
 
+            {/* Search and Controls Bar - Moved outside the grid */}
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+                <div className="relative flex-1 w-full md:max-w-md">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Input
+                        placeholder="Search apiaries, beehives"
+                        className="pl-12 h-12 bg-white dark:bg-[#09090b] border-gray-100 dark:border-gray-800 rounded-full text-sm shadow-sm"
+                    />
+                </div>
+
+                <div className="flex items-center gap-4 w-full md:w-auto justify-end">
+                    <Button variant="outline" className="h-12 px-6 rounded-full border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] flex items-center gap-2 shadow-sm">
+                        <img src="https://flagcdn.com/w20/gb.png" alt="English" className="w-5 h-auto rounded-sm" />
+                        <span className="font-bold text-xs uppercase tracking-tight">English</span>
+                    </Button>
+
+                    <div className="flex items-center gap-2">
+                        <button className="w-10 h-10 rounded-xl bg-white dark:bg-[#09090b] border border-gray-50 dark:border-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
+                            <Settings className="w-5 h-5" />
+                        </button>
+                        <button className="w-10 h-10 rounded-xl bg-white dark:bg-[#09090b] border border-gray-50 dark:border-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
+                            <Moon className="w-5 h-5" />
+                        </button>
+                        <button className="w-10 h-10 rounded-xl bg-white dark:bg-[#09090b] border border-gray-50 dark:border-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
+                            <Bell className="w-5 h-5" />
+                        </button>
+                        <button className="w-10 h-10 rounded-xl bg-white dark:bg-[#09090b] border border-gray-50 dark:border-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
+                            <Headphones className="w-5 h-5" />
+                        </button>
+                        <button className="w-10 h-10 rounded-xl bg-white dark:bg-[#09090b] border border-gray-50 dark:border-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
+                            <Wifi className="w-5 h-5" />
+                        </button>
+                        <button className="w-10 h-10 rounded-xl bg-white dark:bg-[#09090b] border border-gray-50 dark:border-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
+                            <Puzzle className="w-5 h-5" />
+                        </button>
+                        <button className="w-10 h-10 rounded-xl bg-white dark:bg-[#09090b] border border-gray-50 dark:border-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
+                            <LogOut className="w-5 h-5" />
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             {/* Main Chat Interface Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[600px]">
                 {/* Left Sidebar - Chats List */}
@@ -164,14 +204,19 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange }) => {
                                         className={cn(
                                             "w-full text-left p-4 rounded-3xl transition-all duration-200",
                                             selectedChat === chat.id
-                                                ? "bg-[#FFF8F0] dark:bg-amber-900/10 shadow-sm"
-                                                : "hover:bg-gray-50 dark:hover:bg-gray-800"
+                                                ? "bg-[#FFF8F0] border border-amber-100 dark:bg-amber-900/10 dark:border-amber-900/20 shadow-sm"
+                                                : "hover:bg-gray-50 dark:hover:bg-gray-800 border border-transparent"
                                         )}
                                     >
-                                        <p className="font-bold text-sm text-gray-900 dark:text-white truncate">
-                                            {chat.title}
-                                        </p>
-                                        <p className="text-xs text-gray-400 mt-1 font-medium">
+                                        <div className="flex gap-3 items-center mb-1">
+                                            <div className="w-8 h-8 rounded-full bg-white p-1.5 border border-gray-100 flex items-center justify-center shrink-0">
+                                                <img src={Logo} alt="Icon" className="w-full h-full object-contain" />
+                                            </div>
+                                            <p className="font-bold text-sm text-gray-900 dark:text-white truncate flex-1">
+                                                {chat.title}
+                                            </p>
+                                        </div>
+                                        <p className="text-xs text-gray-400 ml-11 font-medium">
                                             {chat.date}
                                         </p>
                                     </button>
@@ -183,54 +228,26 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange }) => {
 
                 {/* Main Chat Area */}
                 <div className="lg:col-span-9 bg-white dark:bg-[#141414] rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] overflow-hidden flex flex-col shadow-sm">
-                    {/* Top Control Bar */}
-                    <div className="p-4 border-b border-gray-50 dark:border-[#1e1e1e] flex flex-col gap-4">
-                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 px-2">
-                            Ask a question, request advice or inquire about BeeYield Hub features.
-                        </p>
-                        <div className="flex items-center gap-4 flex-wrap px-2">
-                            <div className="relative flex-1 max-w-md">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                <Input
-                                    placeholder="Search apiaries, beehives"
-                                    className="pl-12 h-12 bg-white dark:bg-[#09090b] border-gray-100 dark:border-gray-800 rounded-full text-sm shadow-sm"
-                                />
+                    {/* Chat Header */}
+                    {!showWelcome && (
+                        <div className="p-6 border-b border-gray-50 dark:border-[#1e1e1e] flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-2xl bg-[#FFF8F0] dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900/30 flex items-center justify-center p-2.5">
+                                <img src={Logo} alt="BeeYield" className="w-full h-full object-contain" />
                             </div>
-
-                            <Button variant="outline" className="h-12 px-6 rounded-full border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] flex items-center gap-2 shadow-sm">
-                                <img src="https://flagcdn.com/w20/gb.png" alt="English" className="w-5 h-auto rounded-sm" />
-                                <span className="font-bold text-xs uppercase tracking-tight">English</span>
-                            </Button>
-
-                            <div className="flex items-center gap-2">
-                                <button className="w-10 h-10 rounded-xl bg-white dark:bg-[#09090b] border border-gray-50 dark:border-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
-                                    <Settings className="w-5 h-5" />
-                                </button>
-                                <button className="w-10 h-10 rounded-xl bg-white dark:bg-[#09090b] border border-gray-50 dark:border-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
-                                    <Moon className="w-5 h-5" />
-                                </button>
-                                <button className="w-10 h-10 rounded-xl bg-white dark:bg-[#09090b] border border-gray-50 dark:border-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
-                                    <Bell className="w-5 h-5" />
-                                </button>
-                                <button className="w-10 h-10 rounded-xl bg-white dark:bg-[#09090b] border border-gray-50 dark:border-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
-                                    <Headphones className="w-5 h-5" />
-                                </button>
-                                <button className="w-10 h-10 rounded-xl bg-white dark:bg-[#09090b] border border-gray-50 dark:border-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
-                                    <Wifi className="w-5 h-5" />
-                                </button>
-                                <button className="w-10 h-10 rounded-xl bg-white dark:bg-[#09090b] border border-gray-50 dark:border-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
-                                    <Puzzle className="w-5 h-5" />
-                                </button>
-                                <button className="w-10 h-10 rounded-xl bg-white dark:bg-[#09090b] border border-gray-50 dark:border-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
-                                    <LogOut className="w-5 h-5" />
-                                </button>
+                            <div>
+                                <h3 className="font-bold text-lg text-gray-900 dark:text-white">
+                                    {chats.find(c => c.id === selectedChat)?.title || 'New Chat'}
+                                </h3>
+                                <p className="text-xs text-gray-400 font-medium">
+                                    {chats.find(c => c.id === selectedChat)?.date || 'a few seconds ago'}
+                                </p>
                             </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* Messages Window */}
                     <div className="flex-1 overflow-y-auto p-10 bg-gray-50/30 dark:bg-black/20">
-                        {showWelcome || messages.length === 0 ? (
+                        {showWelcome ? (
                             <div className="flex items-center justify-center h-full">
                                 <Card className="w-full max-w-lg bg-white dark:bg-[#09090b] border-none rounded-[2.5rem] shadow-xl overflow-hidden animate-in zoom-in-95 duration-300">
                                     <CardContent className="p-10 text-center space-y-8">
@@ -279,38 +296,46 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange }) => {
                                 </Card>
                             </div>
                         ) : (
-                            <div className="space-y-6 max-w-4xl mx-auto">
-                                {messages.map((message) => (
-                                    <div
-                                        key={message.id}
-                                        className={cn(
-                                            "flex gap-4",
-                                            message.role === 'user' ? "justify-end" : "justify-start"
-                                        )}
-                                    >
-                                        {message.role === 'assistant' && (
-                                            <div className="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center shrink-0 shadow-sm">
-                                                <Bot className="w-6 h-6 text-amber-600" />
-                                            </div>
-                                        )}
-                                        <div
-                                            className={cn(
-                                                "max-w-[80%] p-6 rounded-[2rem] shadow-sm",
-                                                message.role === 'user'
-                                                    ? "bg-[#FFB300] text-gray-900 font-medium rounded-br-none"
-                                                    : "bg-white dark:bg-[#1e1e1e] text-gray-800 dark:text-gray-200 font-medium rounded-bl-none border border-gray-50 dark:border-gray-800"
-                                            )}
-                                        >
-                                            <p className="text-sm leading-relaxed">{message.content}</p>
-                                            <p className={cn(
-                                                "text-[10px] mt-3 uppercase tracking-widest font-bold opacity-60",
-                                                message.role === 'user' ? "text-gray-800" : "text-gray-400"
-                                            )}>
-                                                {message.timestamp}
-                                            </p>
+                            <div className="space-y-6 max-w-4xl mx-auto h-full flex flex-col">
+                                {messages.length === 0 ? (
+                                    <div className="flex-1 flex items-center justify-center">
+                                        <div className="px-6 py-3 bg-gray-200/50 dark:bg-gray-800 rounded-full text-gray-500 font-bold text-sm">
+                                            New Chat
                                         </div>
                                     </div>
-                                ))}
+                                ) : (
+                                    messages.map((message) => (
+                                        <div
+                                            key={message.id}
+                                            className={cn(
+                                                "flex gap-4",
+                                                message.role === 'user' ? "justify-end" : "justify-start"
+                                            )}
+                                        >
+                                            {message.role === 'assistant' && (
+                                                <div className="w-12 h-12 rounded-2xl bg-white dark:bg-amber-900/30 flex items-center justify-center shrink-0 shadow-sm p-2">
+                                                    <img src={Logo} alt="BeeYield Assistant" className="w-full h-full object-contain" />
+                                                </div>
+                                            )}
+                                            <div
+                                                className={cn(
+                                                    "max-w-[80%] p-6 rounded-[2rem] shadow-sm",
+                                                    message.role === 'user'
+                                                        ? "bg-[#FFB300] text-gray-900 font-medium rounded-br-none"
+                                                        : "bg-white dark:bg-[#1e1e1e] text-gray-800 dark:text-gray-200 font-medium rounded-bl-none border border-gray-50 dark:border-gray-800"
+                                                )}
+                                            >
+                                                <p className="text-sm leading-relaxed">{message.content}</p>
+                                                <p className={cn(
+                                                    "text-[10px] mt-3 uppercase tracking-widest font-bold opacity-60",
+                                                    message.role === 'user' ? "text-gray-800" : "text-gray-400"
+                                                )}>
+                                                    {message.timestamp}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
                             </div>
                         )}
                     </div>
@@ -322,15 +347,15 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange }) => {
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                                placeholder="Type your message here..."
-                                className="w-full h-16 pl-6 pr-16 rounded-3xl bg-gray-50 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 focus-visible:ring-amber-200 shadow-inner group-hover:border-amber-200 transition-all text-sm font-medium"
+                                placeholder="Your Message"
+                                className="w-full h-20 pl-6 pr-20 rounded-3xl bg-white dark:bg-[#09090b] border-gray-200 dark:border-gray-800 focus-visible:ring-amber-200 shadow-sm group-hover:border-amber-200 transition-all text-base font-medium pt-4 pb-4 items-start resize-none"
                             />
                             <Button
                                 onClick={handleSendMessage}
                                 size="icon"
-                                className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-2xl bg-[#FFB300] hover:bg-[#FFA000] text-gray-900 shadow-md transition-all active:scale-95"
+                                className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-xl bg-[#FDE68A] hover:bg-[#FCD34D] text-amber-900/80 shadow-sm transition-all active:scale-95"
                             >
-                                <Send className="w-5 h-5" />
+                                <Send className="w-5 h-5 ml-0.5" />
                             </Button>
                         </div>
                     </div>
