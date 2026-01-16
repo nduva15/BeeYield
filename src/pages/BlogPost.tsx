@@ -1,5 +1,5 @@
 
-import { useParams, Link, useNavigate } from "@tanstack/react-router";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getBlogPost, BlogPost as BlogPostType } from "@/services/cmsService";
 import ReactMarkdown from "react-markdown";

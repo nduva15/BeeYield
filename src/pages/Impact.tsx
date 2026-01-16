@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Sprout, Droplets, TreePine, Bug, Download, ArrowRight } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import impactImage from "@/assets/impact-beekeeping.jpg";
 
 const Impact = () => {

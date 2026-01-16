@@ -14,7 +14,7 @@ const AdminAuth = () => {
     const [searchParams] = useSearchParams();
     const [authMode, setAuthMode] = useState<AuthMode>('login');
 
-    const redirectPath = searchParams.get('redirect') || '/admin';
+    const redirectPath = searchParams.get('redirect') || '/ceba';
 
     useEffect(() => {
         if (!loading && user) {

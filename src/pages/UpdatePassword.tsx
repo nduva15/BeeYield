@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Loader2, Lock, CheckCircle, Shield } from 'lucide-react';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate } from 'react-router-dom';
 
 const UpdatePasswordForm: React.FC = () => {
     const { updatePassword, session } = useAuth();
@@ -72,7 +72,7 @@ const UpdatePasswordForm: React.FC = () => {
                         </div>
 
                         <Button
-                            onClick={() => navigate('/admin/login')}
+                            onClick={() => navigate('/ceba/login')}
                             className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
                         >
                             Go to Login

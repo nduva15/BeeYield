@@ -128,7 +128,7 @@ const AdminDashboard: React.FC = () => {
 
     useEffect(() => {
         if (!authLoading && !user) {
-            navigate('/admin/login');
+            navigate('/ceba/login');
         } else if (!authLoading && user && isAdmin) {
             initDashboard();
         }
