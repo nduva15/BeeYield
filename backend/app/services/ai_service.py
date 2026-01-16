@@ -159,15 +159,17 @@ class AIService:
                 
                 async with httpx.AsyncClient() as client:
                     response = await client.post(
-                        f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={google_key}",
+                        f"https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key={google_key}",
                         json=gemini_payload,
                         timeout=15.0
                     )
                     data = response.json()
                     if "candidates" in data:
                         return data["candidates"][0]["content"]["parts"][0]["text"]
-            except Exception:
-                pass
+                    else:
+                        print(f"GEMINI ERROR: {data}")
+            except Exception as e:
+                print(f"GEMINI EXCEPTION: {e}")
 
         # --- SECONDARY: OPENAI API ---
         api_key = settings.OPENAI_API_KEY
