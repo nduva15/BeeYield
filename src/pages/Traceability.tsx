@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import HoneyTracePDF from "@/components/HoneyTracePDF";
-import { traceBatchFn } from "@/server/traceability";
+import { traceBatch } from "@/services/traceabilityService";
 
 const Traceability = () => {
   const [qrCode, setQrCode] = useState("");
@@ -27,11 +27,11 @@ const Traceability = () => {
     setTraceData(null);
 
     try {
-      // Isomorphic function call - this looks like a normal function but runs on server!
-      const data = await traceBatchFn({ data: code });
+      // Use client-side traceBatch which has demo data fallback
+      const data = await traceBatch(code);
 
       if (!data) {
-        throw new Error("Batch not found using centralized ledger");
+        throw new Error("Batch not found");
       }
 
       setTraceData(data);
