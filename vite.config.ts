@@ -12,6 +12,7 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './src'),
+            '@tanstack/react-router': path.resolve(__dirname, './src/tanstack-router-shim.ts'),
         },
     },
     build: {

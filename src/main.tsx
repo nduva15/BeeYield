@@ -14,10 +14,10 @@ import '@/index.css'
 import PollinationServices from '@/pages/PollinationServices'
 import About from '@/pages/About'
 import Contact from '@/pages/Contact'
-import Honey from '@/pages/Honey'
+import Honey from '@/pages/HoneyLanding'
 import Shop from '@/pages/Shop'
 import Checkout from '@/pages/Checkout'
-import Learn from '@/pages/Learn'
+import Learn from '@/pages/BeeLearn'
 import Blogs from '@/pages/Blogs'
 import BlogPost from '@/pages/BlogPost'
 import Team from '@/pages/Team'
@@ -30,7 +30,7 @@ import GlobalHiveNetwork from '@/pages/GlobalHiveNetwork'
 import Traceability from '@/pages/Traceability'
 import PrecisionPollination from '@/pages/PrecisionPollination'
 import PollinationSolutions from '@/pages/PollinationSolutions'
-import InLandPollination from '@/pages/InLandPollination'
+import InLandPollination from '@/pages/InLandPollinationPlatform'
 import CropsWePollinate from '@/pages/CropsWePollinate'
 import PollinationRequest from '@/pages/PollinationRequest'
 import Diseases from '@/pages/Diseases'
@@ -38,8 +38,8 @@ import Notes from '@/pages/Notes'
 import Media from '@/pages/Media'
 import BeeYieldDashboard from '@/pages/BeeYieldDashboard'
 import AdminDashboard from '@/pages/AdminDashboard'
-import AdminLogin from '@/pages/AdminLogin'
-import MyAccount from '@/pages/MyAccount'
+import AdminLogin from '@/pages/AdminAuth'
+import BuyerDashboard from '@/pages/BuyerDashboard'
 import AccountSettings from '@/pages/AccountSettings'
 import UpdatePassword from '@/pages/UpdatePassword'
 import NotFound from '@/pages/NotFound'
@@ -71,6 +71,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                                     <Route path="/checkout" element={<Checkout />} />
                                     <Route path="/learn" element={<Learn />} />
                                     <Route path="/blogs" element={<Blogs />} />
+                                    {/* Note: React Router v6 uses :slug for parameters */}
                                     <Route path="/blogs/:slug" element={<BlogPost />} />
                                     <Route path="/team" element={<Team />} />
                                     <Route path="/careers" element={<Careers />} />
@@ -91,7 +92,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                                     <Route path="/beeyield-dashboard" element={<BeeYieldDashboard />} />
                                     <Route path="/admin" element={<AdminDashboard />} />
                                     <Route path="/admin/login" element={<AdminLogin />} />
-                                    <Route path="/my-account" element={<MyAccount />} />
+                                    {/* Mapped my-account to BuyerDashboard based on routes/my-account.tsx */}
+                                    <Route path="/my-account" element={<BuyerDashboard />} />
+                                    <Route path="/buyer-dashboard" element={<BuyerDashboard />} />
                                     <Route path="/account-settings" element={<AccountSettings />} />
                                     <Route path="/update-password" element={<UpdatePassword />} />
                                     <Route path="*" element={<NotFound />} />
