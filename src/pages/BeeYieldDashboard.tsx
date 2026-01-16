@@ -275,7 +275,8 @@ const BeeYieldDashboard: React.FC = () => {
     }
 
     // Check if user has initialized BeeYield access
-    const isBeeYieldActive = user?.user_metadata?.beeyield_active === true;
+    // TEMPORARILY DISABLED: Allow access without login for development
+    const isBeeYieldActive = true; // user?.user_metadata?.beeyield_active === true;
 
     if (authLoading) {
         return (
@@ -286,7 +287,8 @@ const BeeYieldDashboard: React.FC = () => {
     }
 
     // 1. User is not logged in OR does not have a Pollination account: Show Login/Register
-    if (!user || !isBeeYieldActive) {
+    // TEMPORARILY DISABLED: Skipping login check for development
+    if (false && (!user || !isBeeYieldActive)) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10 py-24">
                 <div className="container max-w-lg mx-auto px-4 space-y-8">

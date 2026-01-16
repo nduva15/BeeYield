@@ -8,7 +8,7 @@ const getApiBaseUrl = () => {
 }
 
 export const traceBatchFn = createServerFn({ method: "GET" })
-    .validator((code: string) => code)
+    .inputValidator((code: string) => code)
     .handler(async ({ data: code }): Promise<TraceResponse | null> => {
         const API_V1_URL = getApiBaseUrl()
 
