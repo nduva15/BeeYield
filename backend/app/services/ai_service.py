@@ -4,6 +4,9 @@ import httpx
 import os
 import asyncio
 from app.db.supabase_db import db_select
+from app.services.content_service import ContentService
+from app.services.bee_health_ai import BeeHealthAI
+from app.blockchain.honey_chain import honey_blockchain
 
 class AIService:
     @staticmethod
@@ -46,13 +49,33 @@ class AIService:
         current_date: str = None
     ) -> str:
         """
-        Sends a message to the AI with high-depth BeeYield context.
-        Differentiates between complex technical inquiries and simple factual questions.
-        Maintains strict clean-text formatting, no asterisks, and clickable links.
+        Sends a message to the AI with high-depth BeeYield context and Modern AI reasoning.
+        Integrated with BeeHealthAI and ContentService.
         """
         msg_lower = message.lower().strip()
         target_lang = AIService.get_language_name(language)
         is_sw = (language.upper() == 'SW')
+        
+        # --- TECHNICAL DATA AGGREGATION ---
+        # Fetch website data dynamically
+        website_summary = await ContentService.get_website_knowledge_summary()
+        
+        # Intent Detection for Health Analysis
+        health_context = ""
+        health_keywords = ["health", "status", "anomaly", "disease", "sick", "prediction", "check hive", "analyze"]
+        if any(kw in msg_lower for kw in health_keywords):
+            # Try to extract a hive ID if present, otherwise use default demo ID
+            hive_id = "H-KIB-01-01" 
+            if "h-kib" in msg_lower:
+                for word in msg_lower.split():
+                    if word.startswith("h-kib"):
+                        hive_id = word.upper()
+                        break
+            
+            sensor_data = honey_blockchain.get_latest_sensor_data(hive_id)
+            if sensor_data:
+                health_report = await BeeHealthAI.analyze_hive_health(hive_id, sensor_data)
+                health_context = f"\nLIVE HIVE HEALTH DATA ({hive_id}):\n{json.dumps(health_report, indent=2)}\n"
         
         # Comprehensive internal link pool
         all_links = [
@@ -72,65 +95,51 @@ class AIService:
 
         # --- GREETINGS LOGIC ---
         greetings_keywords = ["hi", "hello", "hey", "habari", "jambo", "good morning", "good afternoon", "good evening", "morning", "afternoon", "evening"]
-        if any(msg_lower == kw or msg_lower.startswith(kw + " ") for kw in greetings_keywords) or (len(msg_lower.split()) <= 2 and "?" not in msg_lower):
+        if any(msg_lower == kw or msg_lower.startswith(kw + " ") for kw in greetings_keywords) and (len(msg_lower.split()) <= 2 and "?" not in msg_lower):
             hour = int(current_time.split(':')[0]) if current_time else 12
             greet_msg = "Habari za mchana" if hour < 17 and hour >= 12 else ("Habari za asubuhi" if hour < 12 else "Habari za jioni")
             if not is_sw:
                 greet_msg = "Good afternoon" if hour < 17 and hour >= 12 else ("Good morning" if hour < 12 else "Good evening")
             
-            inner_greet = f"Jambo! {greet_msg}. Mimi ni BeeYield AI. Tunaweza kukusaidia nini leo?" if is_sw else f"Hi! {greet_msg}. I am BeeYield AI. How can we assist you with our professional services today?"
+            inner_greet = f"Jambo! {greet_msg}. Mimi ni BeeYield AI. Tunaweza kukusaidia nini leo?" if is_sw else f"Hi! {greet_msg}. I am BeeYield AI Assistant with expert-level BeeHealth and Traceability reasoning. How can we assist you today?"
             return (
                 f"{'KARIBU KWENYE BEE AI HUB' if is_sw else 'WELCOME TO THE BEE AI HUB'}\n\n"
                 f"{inner_greet}\n\n"
-                f"1. TIME AND DATE: Current Local Time is {current_time or 'available'} on {current_date or 'today'}.\n\n"
-                f"2. POLLINATION SERVICES: Discover how our 184 Smart Hives optimize crop yields for Watermelons, Avocados, and more.\n\n"
-                f"3. HONEY TRACEABILITY: Explore our blockchain-backed HoneyChain to verify the purity of our 883 Kgs+ of harvested honey.\n\n"
-                f"4. SENSORY ANALYSIS: I can analyze uploaded photos, documents, and technical links to provide precision diagnostic support.\n\n"
+                f"1. ANALYTICAL REASONING: I use proprietary ML algorithms to detect anomalies and predict disease risks in your apiaries.\n\n"
+                f"2. WEBSITE KNOWLEDGE: I am synced with our latest blog posts and product catalog to provide up-to-date guidance.\n\n"
+                f"3. PRECISION DATA: Ask me about specific hives (e.g., 'Analyze H-KIB-01-01') for a deep health diagnostic.\n\n"
                 "RESOURCE DIRECTORY:\n"
                 "1. BEEYIELD SHOP: [Insert Link: beeyield.com/shop]\n"
                 "2. TRACEABILITY HUB: [Insert Link: beeyield.com/traceability]\n"
                 "3. CORPORATE CONTACT: [Insert Link: beeyield.com/contact]\n\n"
-                "How can I help you today?"
+                "How can I assist with your beekeeping intelligence today?"
             )
 
-        # --- Simple Factual Detection (Fast Response for simple stuff) ---
-        simple_facts = {
-            "email": "Our official corporate email is info@beeyield.co.ke.",
-            "phone": "You can reach our executive team at +254 712 345 678.",
-            "founder": "BeeYield was founded by Timothy Mathuva (CEO), Carole Mathuva (CGO), and Agatha Mathuva (IT Head).",
-            "founders": "BeeYield was founded by Timothy Mathuva (CEO), Carole Mathuva (CGO), and Agatha Mathuva (IT Head).",
-            "headquarters": "We are headquartered in Kibwezi, Makueni County, Kenya.",
-            "location": "Our physical operations are centered in Kibwezi, Makueni County, Kenya.",
-            "timothy": "Timothy Mathuva is the CEO and founder of BeeYield Hub.",
-            "carole": "Carole Mathuva is the Chief Growth Officer (CGO) at BeeYield Hub.",
-            "agatha": "Agatha Mathuva is the Head of IT and Traceability at BeeYield Hub."
-        }
-        
         # --- LLM Logic (Dynamic Complexity) ---
         api_key = os.getenv("OPENAI_API_KEY")
         if api_key:
             try:
                 beeyield_context = AIService.get_beeyield_context(language)
                 system_prompt = (
-                    f"Manage every response as BeeYield AI, the technical principal of the platform. "
+                    f"Manage every response as BeeYield AI, the technical principal and lead beekeeping engineer. "
                     f"You must respond ENTIRELY in {target_lang}.\n"
                     f"CONTEXTUAL TIME DATA: Current Time is {current_time}, Current Date is {current_date}.\n"
-                    "Use precise and accurate data from the BeeYield website.\n"
+                    "CORE CAPABILITIES:\n"
+                    "1. ANALYZE DATA LIKE AN ENGINEER: When health data is provided, interpret the sensor anomalies and disease risks with precision.\n"
+                    "2. MODERN REASONING: Use Chain-of-Thought reasoning. If asked a complex question, analyze the inputs step-by-step before concluding.\n"
+                    "3. WEBSITE AWARENESS: You have access to the latest blogs and products. Use this to recommend content.\n"
                     "INSTRUCTIONAL LOGIC:\n"
-                    "1. If the user asks a SIMPLE FACTUAL QUESTION (e.g., email, phone, location, founders, greetings), answer DIRECTLY and CONCISELY in 1 paragraph.\n"
-                    "2. If the user asks a COMPLEX TECHNICAL or STRATEGIC QUESTION (e.g., how pollination works, impact data, technology details), use the 4-POINT NUMBERED LIST structure.\n"
-                    "3. ALWAYS include a 'RESOURCE DIRECTORY' at the end with EXACTLY 3 relevant internal links from the pool.\n"
+                    "1. If the user asks a SIMPLE FACTUAL QUESTION, answer DIRECTLY and CONCISELY.\n"
+                    "2. If the user asks for ANALYSIS or a COMPLEX QUESTION, use a 4-POINT NUMBERED LIST structure.\n"
+                    "3. ALWAYS include a 'RESOURCE DIRECTORY' with 3 relevant links.\n"
                     "STRICT FORMATTING RULES:\n"
-                    "1. NO ASTERISKS (** or *) anywhere. No bolding/italics.\n"
-                    "2. Start with an UPPERCASE MAIN TITLE at the top.\n"
-                    "3. Ensure EXACTLY ONE BLANK LINE between every paragraph and list item.\n"
-                    "4. For numbered points, use: 'Number. UPPERCASE KEY PHRASE: Detailed description...'\n"
+                    "1. NO ASTERISKS (** or *) anywhere.\n"
+                    "2. Start with an UPPERCASE MAIN TITLE.\n"
+                    "3. Ensure ONE BLANK LINE between every paragraph.\n"
                     f"Link Pool:\n{chr(10).join(all_links)}\n"
-                    "ACCURACY DATA:\n"
-                    "- Email: info@beeyield.co.ke\n"
-                    "- Phone: +254 712 345 678\n"
-                    "- Founders: Timothy, Carole, and Agatha Mathuva\n"
-                    f"Context Data:\n{beeyield_context}"
+                    f"Context Data:\n{beeyield_context}\n"
+                    f"{website_summary}\n"
+                    f"{health_context}"
                 )
                 
                 async with httpx.AsyncClient() as client:
@@ -153,9 +162,9 @@ class AIService:
         # General Fallback
         return (
             "BEEYIELD AI CORPORATE DIRECTIVE\n\n"
-            "I can assist you with technical hive data, pollination services, and contact information.\n\n"
-            "1. CONTACT: Reach us at info@beeyield.co.ke or +254 712 345 678.\n\n"
-            "2. MISSION: We empower 25+ partner farmers with 184 Smart Hives and blockchain traceability.\n\n"
+            "I can assist you with technical hive data, disease prediction, and website updates.\n\n"
+            "1. AI/ML ANALYSIS: I use acoustic and thermal sensors to monitor colony health.\n\n"
+            "2. MISSION: We protect African bees through precision technology and blockchain.\n\n"
             "RESOURCE DIRECTORY:\n"
             "1. BEEYIELD SHOP: [Insert Link: beeyield.com/shop]\n"
             "2. TRACEABILITY HUB: [Insert Link: beeyield.com/traceability]\n"

@@ -36,27 +36,19 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
     isAdmin = false
 }) => {
     const [pinnedItems, setPinnedItems] = useState<string[]>(['beeyield', 'data', 'meters']);
-    const [hoveredItems, setHoveredItems] = useState<string[]>([]);
+
     const { t } = useLanguage();
 
     const toggleExpand = (id: string, e?: React.MouseEvent) => {
         if (e) e.stopPropagation();
         setPinnedItems(prev =>
-            prev.includes(id) ? [] : [id]
+            prev.includes(id)
+                ? prev.filter(i => i !== id)
+                : [...prev, id]
         );
     };
 
-    const handleMouseEnter = (id: string, hasSubmenu?: boolean) => {
-        if (hasSubmenu && !hoveredItems.includes(id)) {
-            setHoveredItems(prev => [...prev, id]);
-        }
-    };
 
-    const handleMouseLeave = (id: string, hasSubmenu?: boolean) => {
-        if (hasSubmenu) {
-            setHoveredItems(prev => prev.filter(i => i !== id));
-        }
-    };
 
     return (
         <motion.div
@@ -89,7 +81,7 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
             <div className="flex-1 px-4 space-y-2 overflow-y-auto custom-scrollbar pb-4">
                 {navItems.filter(item => !item.hidden).map((item) => {
                     const isActive = activeTab === item.id;
-                    const isExpanded = pinnedItems.includes(item.id) || hoveredItems.includes(item.id);
+                    const isExpanded = pinnedItems.includes(item.id);
 
                     return (
                         <div key={item.id} className="space-y-1">
@@ -100,8 +92,7 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                                     onTabChange(item.id);
                                     if (item.hasSubmenu) toggleExpand(item.id);
                                 }}
-                                onMouseEnter={() => handleMouseEnter(item.id, item.hasSubmenu)}
-                                onMouseLeave={() => handleMouseLeave(item.id, item.hasSubmenu)}
+
                                 className={cn(
                                     "w-full flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all duration-300 text-sm font-medium group relative overflow-hidden",
                                     isActive
@@ -144,7 +135,7 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                                             {item.submenuItems.map((subItem) => {
                                                 const isActiveSub = activeTab === subItem.id;
                                                 const hasSubItems = subItem.subItems && subItem.subItems.length > 0;
-                                                const isSubExpanded = pinnedItems.includes(subItem.id) || hoveredItems.includes(subItem.id);
+                                                const isSubExpanded = pinnedItems.includes(subItem.id);
                                                 const isChildActive = subItem.subItems?.some(child => child.id === activeTab);
                                                 const activeState = isActiveSub || isChildActive;
 
@@ -157,8 +148,7 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                                                                 if (hasSubItems) toggleExpand(subItem.id, e);
                                                                 else onTabChange(subItem.id);
                                                             }}
-                                                            onMouseEnter={() => handleMouseEnter(subItem.id, hasSubItems)}
-                                                            onMouseLeave={() => handleMouseLeave(subItem.id, hasSubItems)}
+
                                                             className={cn(
                                                                 "w-full text-left py-2.5 px-3 text-xs font-medium transition-all duration-200 flex items-center justify-between rounded-xl",
                                                                 activeState

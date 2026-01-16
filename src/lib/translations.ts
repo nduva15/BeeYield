@@ -55,6 +55,9 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "nav_comparisons": "Comparisons",
         "nav_import": "File import",
         "nav_support": "Support center",
+        "nav_alarms_events": "Alarms & events",
+        "nav_payments_settlements": "Payments & settlements",
+        "nav_reports": "Reports",
 
         // My Devices View
         "device_command": "Device Command",
@@ -125,6 +128,9 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "nav_comparisons": "Comparaisons",
         "nav_import": "Import fichier",
         "nav_support": "Centre de support",
+        "nav_alarms_events": "Alarmes & événements",
+        "nav_payments_settlements": "Paiements & règlements",
+        "nav_reports": "Rapports",
 
         "device_command": "Commande Appareil",
         "device_subtitle": "Surveillez les capteurs, vérifiez la latence et gérez le déploiement.",
@@ -194,6 +200,9 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "nav_comparisons": "Comparaciones",
         "nav_import": "Importar archivo",
         "nav_support": "Centro de soporte",
+        "nav_alarms_events": "Alarmas y eventos",
+        "nav_payments_settlements": "Pagos y liquidaciones",
+        "nav_reports": "Informes",
 
         "device_command": "Comando Disp.",
         "device_subtitle": "Monitorear sensores activos, señal y gestión de hardware.",
@@ -263,6 +272,9 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "nav_comparisons": "Vergleiche",
         "nav_import": "Dateiimport",
         "nav_support": "Support-Center",
+        "nav_alarms_events": "Alarme & Ereignisse",
+        "nav_payments_settlements": "Zahlungen & Abrechnungen",
+        "nav_reports": "Berichte",
 
         "device_command": "Gerätesteu",
         "device_subtitle": "Überwachen Sie aktive Sensoren und verwalten Sie Hardware.",
@@ -332,6 +344,9 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "nav_comparisons": "Ulinganifu",
         "nav_import": "Ingiza Faili",
         "nav_support": "Kituo cha Msaada",
+        "nav_alarms_events": "Alam na matukio",
+        "nav_payments_settlements": "Malipo na makazi",
+        "nav_reports": "Ripoti",
 
         "device_command": "Udhibiti wa Kifaa",
         "device_subtitle": "Fuatilia sensorer zinazofanya kazi na udhibiti vifaa.",
@@ -401,6 +416,9 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "nav_comparisons": "比较",
         "nav_import": "文件导入",
         "nav_support": "支持中心",
+        "nav_alarms_events": "警报与事件",
+        "nav_payments_settlements": "支付与结算",
+        "nav_reports": "报告",
 
         "device_command": "设备指令",
         "device_subtitle": "监控活动传感器阵列，检查信号延迟并管理硬件部署。",
@@ -470,6 +488,9 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "nav_comparisons": "Porównania",
         "nav_import": "Import Pliku",
         "nav_support": "Centrum Pomocy",
+        "nav_alarms_events": "Alarmy i zdarzenia",
+        "nav_payments_settlements": "Płatności i rozliczenia",
+        "nav_reports": "Raporty",
 
         "device_command": "Zarządzanie",
         "device_subtitle": "Monitoruj czujniki, sprawdzaj opóźnienia i zarządzaj sprzętem.",

@@ -347,7 +347,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange }) => {
                                             </h3>
                                         </div>
                                         <p className="text-gray-500 dark:text-gray-400 font-bold text-xs uppercase tracking-[0.15em] opacity-70">
-                                            Advanced Neural Network Assistant
+                                            Expert AI/ML Engineering Assistant
                                         </p>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             {topicCategories.map((category, index) => (
@@ -367,7 +367,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange }) => {
                                         </div>
                                         <div className="space-y-4 pt-4">
                                             <p className="text-gray-400 font-bold text-[10px] uppercase tracking-widest leading-relaxed px-10">
-                                                I can analyze your hive photos, scientific documents, and measurement data to provide high-depth insights.
+                                                I use proprietary ML algorithms to analyze sensor data, detect anomalies, and predict disease risks with engineering precision.
                                             </p>
                                         </div>
                                         <Button
