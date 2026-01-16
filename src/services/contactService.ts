@@ -41,31 +41,85 @@ export interface NewsletterSubscription {
     source?: string;
 }
 
-import { apiPost } from "./api";
-
 export const submitContactForm = async (data: ContactSubmission) => {
     try {
-        return await apiPost<any>('/contact/submit', data);
+        // Construct a rich message with all the details
+        const detailedMessage = `
+Type: ${data.inquiry_type.toUpperCase()}
+Phone: ${data.phone}
+Location: ${data.city}, ${data.state}, ${data.country}
+${data.company ? `Company: ${data.company}\n` : ''}
+${data.farm_name ? `Farm Name: ${data.farm_name}\n` : ''}
+${data.apiary_name ? `Apiary Name: ${data.apiary_name}\n` : ''}
+${data.crop_type ? `Crop: ${data.crop_type}\n` : ''}
+${data.acres ? `Acres: ${data.acres}\n` : ''}
+${data.hive_count ? `Hive Count: ${data.hive_count}\n` : ''}
+${data.experience_years ? `Experience: ${data.experience_years}\n` : ''}
+
+Message:
+${data.message || 'No additional message provided.'}
+        `.trim();
+
+        const { error } = await supabase.from('contact_submissions').insert({
+            name: `${data.first_name} ${data.last_name}`,
+            email: data.email,
+            subject: `${data.inquiry_type.toUpperCase()}: ${data.topic}`,
+            message: detailedMessage,
+            status: 'new'
+        });
+
+        if (error) throw error;
+        return { success: true };
     } catch (error) {
-        console.error("Error submitting contact form via API:", error);
+        console.error("Error submitting contact form:", error);
         throw error;
     }
 };
 
 export const submitPollinationRequest = async (data: PollinationRequest) => {
     try {
-        return await apiPost<any>('/contact/pollination', data);
+        const { error } = await supabase.from('pollination_requests').insert({
+            full_name: data.full_name,
+            email: data.email,
+            phone: data.phone,
+            location: data.farm_location,
+            crop_type: data.crop_type,
+            acres: data.acres,
+            preferred_date: data.preferred_start_date,
+            message: `Farm Name: ${data.farm_name}\n\n${data.additional_info || ''}`,
+            status: 'pending'
+        });
+
+        if (error) throw error;
+        return { success: true };
     } catch (error) {
-        console.error("Error submitting pollination request via API:", error);
+        console.error("Error submitting pollination request:", error);
         throw error;
     }
 };
 
 export const submitNewsletterSubscription = async (data: NewsletterSubscription) => {
     try {
-        return await apiPost<any>('/contact/newsletter', data);
+        // First check if already subscribed to avoid unique constraint error
+        const { data: existing } = await supabase
+            .from('newsletter_subscribers')
+            .select('id')
+            .eq('email', data.email)
+            .single();
+
+        if (existing) {
+            return { success: true, message: "Already subscribed" };
+        }
+
+        const { error } = await supabase.from('newsletter_subscribers').insert({
+            email: data.email,
+            status: 'subscribed'
+        });
+
+        if (error) throw error;
+        return { success: true };
     } catch (error) {
-        console.error("Error subscribing to newsletter via API:", error);
+        console.error("Error subscribing to newsletter:", error);
         throw error;
     }
 };
