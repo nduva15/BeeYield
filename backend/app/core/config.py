@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     SUPABASE_URL: str = Field(default="")
     SUPABASE_KEY: str = Field(default="")
     SUPABASE_ANON_KEY: Optional[str] = Field(default=None)
+    SUPABASE_SERVICE_ROLE_KEY: Optional[str] = Field(default=None)
     SUPABASE_JWT_SECRET: Optional[str] = None
     
     # Postgres direct connection (for migrations/legacy sqlalchemy)

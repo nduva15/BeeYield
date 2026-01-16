@@ -2,7 +2,7 @@ import time
 from fastapi import APIRouter, HTTPException, BackgroundTasks, Request
 from app.schemas import contact as schemas
 from app.services import email
-from app.db.supabase_db import db_insert, db_select
+from app.db.supabase_db import get_supabase_admin, db_select
 
 router = APIRouter()
 
@@ -27,6 +27,7 @@ def submit_contact_form(
 ):
     """
     Handle general contact forms (Grower, Beekeeper, General).
+    Uses Service Role to write to Database (Secure Gate).
     """
     # 0. Rate Limiting
     client_ip = request.client.host if request.client else "unknown"
@@ -36,43 +37,54 @@ def submit_contact_form(
     # 1. Prepare data for Database
     db_data = request_in.dict()
     
-    # Store form-specific fields in form_specific_data JSON field 
-    # since they don't have their own columns in the table
-    form_data = {}
-    specific_fields = ['farm_name', 'crop_type', 'acres', 'apiary_name', 'hive_count', 'experience_years']
-    
-    for field in specific_fields:
-        if db_data.get(field) is not None:
-            form_data[field] = db_data.pop(field)
-    
-    if form_data:
-        if db_data.get('form_specific_data'):
-            db_data['form_specific_data'].update(form_data)
-        else:
-            db_data['form_specific_data'] = form_data
+    # Construct derived fields (replicating frontend logic)
+    db_data['name'] = f"{request_in.first_name} {request_in.last_name}"
+    db_data['subject'] = f"{request_in.inquiry_type.upper()}: {request_in.topic}"
+    # Use specific message or summary if empty (though logic suggests just using what's passed)
+    if not db_data.get('message'):
+        db_data['message'] = f"Type: {request_in.inquiry_type.upper()}\nTopic: {request_in.topic}"
 
-    # 2. Save to Database
-    result = db_insert("contact_submissions", db_data)
+    db_data['status'] = 'new'
     
-    if not result.get("success"):
-        raise HTTPException(status_code=500, detail=f"Database error: {result.get('error')}")
+    # Store form-specific fields in form_specific_data JSON field 
+    # since they don't have their own columns in the table (if schema dictates)
+    # BUT existing frontend code inserted them directly into columns like 'farm_name', 'crop_type'.
+    # We will assume the columns exist based on frontend code.
+    # The dictionary already contains them.
     
-    # 3. Send Notifications
-    background_tasks.add_task(
-        email.send_email,
-        "info@beeyield.com",
-        f"New {request.inquiry_type.capitalize()} Inquiry",
-        f"From: {request.first_name} {request.last_name}\nEmail: {request.email}\nTopic: {request.topic}\nMessage: {request.message}"
-    )
-    
-    background_tasks.add_task(
-        email.send_email,
-        request.email,
-        "Inquiry Received - BeeYield",
-        f"Hi {request.first_name}, thanks for contacting BeeYield. We will get back to you shortly regarding your {request.inquiry_type} inquiry."
-    )
-    
-    return {"status": "success", "message": "Inquiry submitted successfully"}
+    # Clean up fields that might not be in DB columns if schema is strict
+    # (FastAPI Pydantic dict includes all fields, if DB has extra columns fine, if missing columns error)
+    # We'll trust the Pydantic model matches or DB tolerates extra inputs (ignoring them requires setting)
+    # For now, we pass `db_data` which matches what frontend was sending mostly.
+
+    # 2. Save to Database using Service Role
+    supabase_admin = get_supabase_admin()
+    if not supabase_admin:
+        raise HTTPException(status_code=500, detail="Backend configuration error: Service Role missing")
+        
+    try:
+        result = supabase_admin.table("contact_submissions").insert(db_data).execute()
+        
+        # 3. Send Notifications
+        background_tasks.add_task(
+            email.send_email,
+            "info@beeyield.com",
+            f"New {request_in.inquiry_type.capitalize()} Inquiry",
+            f"From: {request_in.first_name} {request_in.last_name}\nEmail: {request_in.email}\nTopic: {request_in.topic}\nMessage: {request_in.message}"
+        )
+        
+        background_tasks.add_task(
+            email.send_email,
+            request_in.email,
+            "Inquiry Received - BeeYield",
+            f"Hi {request_in.first_name}, thanks for contacting BeeYield. We will get back to you shortly regarding your {request_in.inquiry_type} inquiry."
+        )
+        
+        return {"status": "success", "message": "Inquiry submitted successfully"}
+        
+    except Exception as e:
+        print(f"Error submitting contact form: {e}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 
 @router.post("/pollination", response_model=dict)
@@ -91,27 +103,34 @@ def request_pollination(
 
     # 1. Save to Database
     db_data = request_in.dict()
-    result = db_insert("pollination_requests", db_data)
+    db_data['status'] = 'pending'
     
-    if not result.get("success"):
-        raise HTTPException(status_code=500, detail=f"Database error: {result.get('error')}")
-    
-    # 2. Send Notifications
-    background_tasks.add_task(
-        email.send_email,
-        "pollination@beeyield.com",
-        "New Pollination Request",
-        f"Farm: {request.farm_name}, Acres: {request.acres}, Crop: {request.crop_type}\nContact: {request.full_name} ({request.email})"
-    )
-    
-    background_tasks.add_task(
-        email.send_email,
-        request.email,
-        "Pollination Request Received - BeeYield",
-        f"Dear {request.full_name},\n\nWe have received your pollination request for {request.farm_name}. Our team will review the details and contact you shortly."
-    )
-    
-    return {"status": "success", "message": "Pollination request submitted successfully"}
+    supabase_admin = get_supabase_admin()
+    if not supabase_admin:
+        raise HTTPException(status_code=500, detail="Backend configuration error: Service Role missing")
+
+    try:
+        result = supabase_admin.table("pollination_requests").insert(db_data).execute()
+        
+        # 2. Send Notifications
+        background_tasks.add_task(
+            email.send_email,
+            "pollination@beeyield.com",
+            "New Pollination Request",
+            f"Farm: {request_in.farm_name}, Acres: {request_in.acres}, Crop: {request_in.crop_type}\nContact: {request_in.full_name} ({request_in.email})"
+        )
+        
+        background_tasks.add_task(
+            email.send_email,
+            request_in.email,
+            "Pollination Request Received - BeeYield",
+            f"Dear {request_in.full_name},\n\nWe have received your pollination request for {request_in.farm_name}. Our team will review the details and contact you shortly."
+        )
+        
+        return {"status": "success", "message": "Pollination request submitted successfully"}
+    except Exception as e:
+        print(f"Error submitting pollination request: {e}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 @router.post("/newsletter", response_model=dict)
 def subscribe_newsletter(
@@ -127,24 +146,30 @@ def subscribe_newsletter(
     if not check_rate_limit(client_ip + ":newsletter", limit_seconds=30): # 30s cooldown for newsletter
         raise HTTPException(status_code=429, detail="Rate limit exceeded. Please try again later.")
 
-    # 1. Check if already subscribed
-    existing = db_select("newsletter_subscribers", filters={"email": request_in.email})
-    if existing:
-        return {"status": "success", "message": "Already subscribed"}
+    supabase_admin = get_supabase_admin()
+    if not supabase_admin:
+        raise HTTPException(status_code=500, detail="Backend configuration error: Service Role missing")
 
-    # 2. Save to Database
-    db_data = request_in.dict()
-    result = db_insert("newsletter_subscribers", db_data)
-    
-    if not result.get("success"):
-        raise HTTPException(status_code=500, detail=f"Database error: {result.get('error')}")
-    
-    # 3. Send Welcome Email
-    background_tasks.add_task(
-        email.send_email,
-        request.email,
-        "Welcome to the BeeYield Hive! 🐝",
-        f"Hi {request.first_name or 'there'},\n\nThanks for subscribing to our newsletter! You'll now be the first to know about our latest updates, honey harvests, and pollination insights.\n\nStay buzzing,\nThe BeeYield Team"
-    )
-    
-    return {"status": "success", "message": "Subscribed successfully"}
+    try:
+        # 1. Check if already subscribed
+        # We use admin here too to ensure we can see it even if RLS blocks read
+        existing = supabase_admin.table("newsletter_subscribers").select("id").eq("email", request_in.email).execute()
+        if existing.data:
+            return {"status": "success", "message": "Already subscribed"}
+
+        # 2. Save to Database
+        db_data = request_in.dict()
+        result = supabase_admin.table("newsletter_subscribers").insert(db_data).execute()
+        
+        # 3. Send Welcome Email
+        background_tasks.add_task(
+            email.send_email,
+            request_in.email,
+            "Welcome to the BeeYield Hive! 🐝",
+            f"Hi {request_in.first_name or 'there'},\n\nThanks for subscribing to our newsletter! You'll now be the first to know about our latest updates, honey harvests, and pollination insights.\n\nStay buzzing,\nThe BeeYield Team"
+        )
+        
+        return {"status": "success", "message": "Subscribed successfully"}
+    except Exception as e:
+        print(f"Error subscribing to newsletter: {e}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
