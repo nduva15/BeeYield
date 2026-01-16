@@ -1,0 +1,2 @@
+Status: 200
+Response: {"response":"BEEYIELD AI CORPORATE DIRECTIVE\n\nI can assist you with technical hive data, disease prediction, and website updates.\n\n1. AI/ML ANALYSIS: I use acoustic and thermal sensors to monitor colony health.\n\n2. MISSION: We protect African bees through precision technology and blockchain.\n\nRESOURCE DIRECTORY:\n1. BEEYIELD SHOP: [Insert Link: beeyield.com/shop]\n2. TRACEABILITY HUB: [Insert Link: beeyield.com/traceability]\n3. CORPORATE CONTACT: [Insert Link: beeyield.com/contact]\n"}
