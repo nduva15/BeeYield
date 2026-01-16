@@ -89,11 +89,11 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
                     <div className="w-8 h-8 rounded-xl bg-muted flex items-center justify-center group-hover:bg-destructive/10 transition-colors">
                         <LogOut className="w-4 h-4" />
                     </div>
-                    Terminal Logout
+                    Log Out
                 </button>
 
                 <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider text-center pt-2">
-                    BEEYIELD ADMIN TERMINAL © 2026
+                    BEEYIELD ADMIN © 2026
                 </p>
             </div>
         </div>
