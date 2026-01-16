@@ -7,7 +7,6 @@ import {
     Plus, MoreHorizontal, FileText, Globe, ChevronDown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import FirstStepsBanner from './FirstStepsBanner';
 
 interface BillingViewProps {
     onTabChange: (tab: string) => void;
@@ -46,7 +45,6 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500 pb-12">
-            <FirstStepsBanner onTabChange={onTabChange} />
 
             {/* Platform Module Header */}
             <div className="flex justify-between items-start">

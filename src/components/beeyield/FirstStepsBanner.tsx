@@ -10,7 +10,7 @@ const FirstStepsBanner: React.FC<FirstStepsBannerProps> = ({ onTabChange }) => {
     const [showBanner, setShowBanner] = useState(true);
 
     useEffect(() => {
-        const bannerHidden = localStorage.getItem('hideBeeYieldBanner');
+        const bannerHidden = localStorage.getItem('hideBeeYieldBanner_v9');
         if (bannerHidden) {
             setShowBanner(false);
         }
@@ -18,75 +18,68 @@ const FirstStepsBanner: React.FC<FirstStepsBannerProps> = ({ onTabChange }) => {
 
     const hideBanner = () => {
         setShowBanner(false);
-        localStorage.setItem('hideBeeYieldBanner', 'true');
+        localStorage.setItem('hideBeeYieldBanner_v9', 'true');
     };
 
     if (!showBanner) return null;
 
     return (
-        <div className="relative bg-[#FFF9F2] dark:bg-[#1C160C] p-8 rounded-[2rem] border border-[#FDE6D2] dark:border-orange-900/20 shadow-sm mb-8">
-            <div className="flex justify-between items-start mb-2">
-                <div>
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">First steps</h2>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm">
+        <div className="relative bg-[#fdf2e9] dark:bg-[#1a1614] p-10 rounded-[2.5rem] border border-[#fdecdb] dark:border-orange-950/10 mb-10 animate-in fade-in slide-in-from-top-4 duration-700 mx-2">
+            <div className="flex justify-between items-start">
+                <div className="space-y-1">
+                    <h2 className="text-[28px] font-[900] text-[#1e293b] dark:text-white tracking-tight">First steps</h2>
+                    <p className="text-slate-500/80 dark:text-slate-400 text-[16px] font-medium">
                         Start here to set up your apiaries, devices, and measurements.
                     </p>
                 </div>
                 <Button
                     variant="ghost"
-                    size="sm"
                     onClick={hideBanner}
-                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 font-medium"
+                    className="bg-white hover:bg-slate-50 text-slate-900 font-bold rounded-full px-6 h-10 shadow-sm border-none transition-all active:scale-95"
                 >
                     Hide
                 </Button>
             </div>
 
-            <div className="mt-6">
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">QUICK LINKS</p>
+            <div className="mt-10">
+                <p className="text-[11px] font-[900] text-slate-400 dark:text-slate-500 uppercase tracking-[0.25em] mb-5">QUICK LINKS</p>
                 <div className="flex flex-wrap gap-3">
-                    <Button
-                        variant="outline"
+                    <button
                         onClick={() => onTabChange('places')}
-                        className="rounded-full bg-white dark:bg-[#1e1e1e] border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200 shadow-sm text-xs font-semibold px-6"
+                        className="rounded-full bg-white dark:bg-zinc-900 border-none hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-900 dark:text-white shadow-sm text-[13px] font-bold px-7 h-12 transition-all active:scale-95"
                     >
                         Add apiaries and hives
-                    </Button>
-                    <Button
-                        variant="outline"
+                    </button>
+                    <button
                         onClick={() => onTabChange('devices')}
-                        className="rounded-full bg-white dark:bg-[#1e1e1e] border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200 shadow-sm text-xs font-semibold px-6"
+                        className="rounded-full bg-white dark:bg-zinc-900 border-none hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-900 dark:text-white shadow-sm text-[13px] font-bold px-7 h-12 transition-all active:scale-95"
                     >
                         My devices
-                    </Button>
-                    <Button
-                        variant="outline"
+                    </button>
+                    <button
                         onClick={() => onTabChange('data')}
-                        className="rounded-full bg-white dark:bg-[#1e1e1e] border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200 shadow-sm text-xs font-semibold px-6"
+                        className="rounded-full bg-white dark:bg-zinc-900 border-none hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-900 dark:text-white shadow-sm text-[13px] font-bold px-7 h-12 transition-all active:scale-95"
                     >
                         Measurement data
-                    </Button>
-                    <Button
-                        variant="outline"
+                    </button>
+                    <button
                         onClick={() => onTabChange('support')}
-                        className="rounded-full bg-white dark:bg-[#1e1e1e] border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200 shadow-sm text-xs font-semibold px-6"
+                        className="rounded-full bg-white dark:bg-zinc-900 border-none hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-900 dark:text-white shadow-sm text-[13px] font-bold px-7 h-12 transition-all active:scale-95"
                     >
                         Support Center
-                    </Button>
-                    <Button
-                        variant="outline"
+                    </button>
+                    <button
                         onClick={() => onTabChange('agro-intelligence')}
-                        className="rounded-full bg-white dark:bg-[#1e1e1e] border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200 shadow-sm text-xs font-semibold px-6"
+                        className="rounded-full bg-white dark:bg-zinc-900 border-none hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-900 dark:text-white shadow-sm text-[13px] font-bold px-7 h-12 transition-all active:scale-95"
                     >
-                        BeeYield Agro Intelligence
-                    </Button>
-                    <Button
-                        variant="outline"
+                        BeeYield Intelligence
+                    </button>
+                    <button
                         onClick={() => onTabChange('settings')}
-                        className="rounded-full bg-white dark:bg-[#1e1e1e] border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200 shadow-sm text-xs font-semibold px-6"
+                        className="rounded-full bg-white dark:bg-zinc-900 border-none hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-900 dark:text-white shadow-sm text-[13px] font-bold px-7 h-12 transition-all active:scale-95"
                     >
                         Settings
-                    </Button>
+                    </button>
                 </div>
             </div>
         </div>

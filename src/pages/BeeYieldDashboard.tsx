@@ -351,9 +351,7 @@ const BeeYieldDashboard: React.FC = () => {
             onLogout={handleLogout}
             navItems={navItems}
         >
-            <div className="mt-6 px-4">
-                {renderContent()}
-            </div>
+            {renderContent()}
         </DashboardLayout>
     );
 };

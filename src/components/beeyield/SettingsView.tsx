@@ -9,7 +9,6 @@ import { Info, Mail, MessageSquare, BookOpen, Settings2, CloudRain, Briefcase, U
 import { cn } from '@/lib/utils';
 
 import { useAuth } from '@/hooks/useAuth';
-import FirstStepsBanner from './FirstStepsBanner';
 
 interface SettingsViewProps {
     onTabChange: (tab: string) => void;
@@ -24,7 +23,6 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-24">
-            <FirstStepsBanner onTabChange={onTabChange} />
 
             <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">Settings</h1>
 

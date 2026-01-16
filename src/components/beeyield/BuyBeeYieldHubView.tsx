@@ -11,7 +11,6 @@ import {
     Droplets, Scale, Volume2, Sun, CloudRain
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import FirstStepsBanner from './FirstStepsBanner';
 import heroImage from '@/assets/beeyield_hub_hero.png';
 
 interface BuyBeeYieldHubViewProps {

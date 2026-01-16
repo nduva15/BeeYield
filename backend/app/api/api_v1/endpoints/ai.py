@@ -2,12 +2,15 @@ from fastapi import APIRouter, HTTPException, Body
 from typing import List, Dict, Optional, Any
 from app.services.ai_service import AIService
 from pydantic import BaseModel
+from datetime import datetime
+import pytz
 
 router = APIRouter()
 
 class ChatRequest(BaseModel):
     message: str
     history: Optional[List[Dict[str, str]]] = None
+    language: Optional[str] = 'EN'
 
 class SearchRequest(BaseModel):
     query: str
@@ -18,7 +21,19 @@ async def chat_with_assistant(request: ChatRequest):
     Chat with the BeeYield AI Assistant.
     """
     try:
-        response = await AIService.chat(request.message, request.history)
+        # Get current time in East Africa Time (EAT) for BeeYield HQ context
+        eat_tz = pytz.timezone('Africa/Nairobi')
+        now = datetime.now(eat_tz)
+        current_time = now.strftime("%H:%M:%S")
+        current_date = now.strftime("%A, %B %d, %Y")
+        
+        response = await AIService.chat(
+            request.message, 
+            request.history, 
+            request.language,
+            current_time=current_time,
+            current_date=current_date
+        )
         return {"response": response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
