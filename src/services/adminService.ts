@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { apiGet, apiPost, apiPut, apiDelete } from './api';
 
 // Diagnostic check
 if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
@@ -65,30 +66,104 @@ export interface HiveInput {
     notes?: string;
 }
 
+export interface FarmerInput {
+    name: string;
+    phone?: string;
+    email?: string;
+    id_number?: string;
+    experience_years?: number;
+    story?: string;
+    latitude?: number;
+    longitude?: number;
+    location_name?: string;
+    region?: string;
+    county?: string;
+    ward?: string;
+    certification_status?: string;
+    status?: string;
+}
+
 export const adminService = {
     // ============== SEEDING ==============
     // Seeding via Supabase directly (Frontend logic)
     seedShopContent: async () => {
         if (!supabase) throw new Error("Supabase not initialized");
+
         const products = [
-            { name: "Acacia Honey", description: "Pure honey from Acacia trees", category: "honey", is_active: true, images: ["https://images.unsplash.com/photo-1587049352846-4a222e784d38"] },
-            { name: "Wildflower Honey", description: "Honey from varied wildflowers", category: "honey", is_active: true, images: ["https://images.unsplash.com/photo-1558611848-73f7eb4001a1"] },
-            { name: "Manuka Honey", description: "Premium Manuka honey", category: "premium", is_active: true, images: ["https://images.unsplash.com/photo-1471943311424-646960669fac"] },
-            { name: "HiveGuard Sensor", description: "Real-time temperature and humidity monitoring.", category: "sensors", is_active: true, images: ["https://images.unsplash.com/photo-1517420704952-d9f39e95b43e"] }
+            // HONEY
+            {
+                name: "Highland Blossom Honey",
+                description: "Rare, multi-floral honey harvested from the pristine Aberdare highlands. Delicate floral notes with a smooth, lingering finish.",
+                category: "honey",
+                is_active: true,
+                badge: "Bestseller",
+                images: ["https://images.unsplash.com/photo-1587049352846-4a222e784d38"],
+                variants: [
+                    { size: "250g", price_kes: 850, stock_quantity: 100 },
+                    { size: "500g", price_kes: 1500, stock_quantity: 75 },
+                    { size: "1kg", price_kes: 2800, stock_quantity: 50 }
+                ]
+            },
+            {
+                name: "Savannah Gold Honey",
+                description: "Rich, amber honey with distinctive citrus and acacia undertones from the Kibwezi savannah. Bold and energizing.",
+                category: "honey",
+                is_active: true,
+                badge: "Premium",
+                images: ["https://images.unsplash.com/photo-1558611848-73f7eb4001a1"],
+                variants: [
+                    { size: "250g", price_kes: 950, stock_quantity: 80 },
+                    { size: "500g", price_kes: 1700, stock_quantity: 60 },
+                    { size: "1kg", price_kes: 3200, stock_quantity: 40 }
+                ]
+            },
+            {
+                name: "Mara Wildflower Honey",
+                description: "Exquisite wildflower honey from the Maasai Mara region. Complex, aromatic profile with hints of wild herbs and grassland blooms.",
+                category: "honey",
+                is_active: true,
+                badge: "Limited Edition",
+                images: ["https://images.unsplash.com/photo-1471943311424-646960669fac"],
+                variants: [
+                    { size: "250g", price_kes: 1100, stock_quantity: 40 },
+                    { size: "500g", price_kes: 2000, stock_quantity: 30 }
+                ]
+            },
+            // HARDWARE
+            {
+                name: "ApiSense Sentinel Node",
+                description: "Advanced IoT hive monitor with acoustic disease detection, temperature, and humidity sensors.",
+                category: "hardware",
+                is_active: true,
+                badge: "New Technology",
+                images: ["https://images.unsplash.com/photo-1517420704952-d9f39e95b43e"],
+                variants: [
+                    { size: "Standard Unit", price_kes: 15000, stock_quantity: 25 }
+                ]
+            }
         ];
 
+        let count = 0;
         for (const p of products) {
-            const { data: inserted } = await supabase.from('products').insert(p).select().single();
-            if (inserted) {
-                await supabase.from('product_variants').insert({
-                    product_id: inserted.id,
-                    size: "Standard",
-                    price_kes: 1200,
-                    stock_quantity: 50
-                });
+            // Check if product exists
+            const { data: existingProduct } = await supabase.from('products').select('id').eq('name', p.name).maybeSingle();
+
+            if (!existingProduct) {
+                const { variants, ...productData } = p;
+                const { data: inserted } = await supabase.from('products').insert(productData).select().single();
+
+                if (inserted && variants) {
+                    const variantsToInsert = variants.map(v => ({
+                        ...v,
+                        product_id: inserted.id,
+                        is_available: true
+                    }));
+                    await supabase.from('product_variants').insert(variantsToInsert);
+                    count++;
+                }
             }
         }
-        return { success: true };
+        return { success: true, productCount: count };
     },
 
     seedTraceabilityData: async (): Promise<{ success: boolean; batchCount?: number; error?: string }> => {
@@ -97,54 +172,74 @@ export const adminService = {
             // 1. Ensure Farmer Exists
             const farmer = {
                 name: "Timothy Nduva",
-                phone: "+254700000000",
+                phone: "+254 700 000 000",
                 email: "timothy@beeyield.com",
                 county: "Makueni",
-                region: "Kibwezi"
+                region: "Kibwezi",
+                farmer_id: "F-MAT-001",
+                experience_years: 15,
+                story: "Timothy Nduva is a master beekeeper and conservationist in Kibwezi, leading the way in sustainable honey production. With 15 years of experience, he manages multiple apiaries across Makueni County, mentoring young beekeepers and championing the 50/50 harvest promise."
             };
-            const { data: insertedFarmer } = await supabase.from('farmers').insert(farmer).select().single();
 
-            // 2. Create 3 Batches
+            // Check if farmer exists
+            const { data: existingFarmer } = await supabase.from('farmers').select('id').eq('name', farmer.name).maybeSingle();
+
+            if (!existingFarmer) {
+                await supabase.from('farmers').insert(farmer);
+            }
+
+            // 2. Create 3 Batches (Official Demo Batches)
             const batches = [
                 {
-                    batch_code: "BATCH-2024-001",
-                    honey_type: "Acacia",
-                    harvest_date: "2024-01-10",
-                    quantity_kg: 280,
-                    processing_method: "Raw Filtered",
-                    farmer_name: "Timothy Nduva",
-                    location_county: "Makueni",
-                    location_region: "Kibwezi",
-                    status: "verified"
-                },
-                {
-                    batch_code: "BATCH-2024-002",
-                    honey_type: "Wildflower",
+                    batch_code: "DEMO-001",
+                    honey_type: "Savannah Wildflower",
                     harvest_date: "2024-01-15",
-                    quantity_kg: 250,
+                    quantity_kg: 15.5,
+                    processing_method: "Raw Centrifuged",
+                    farmer_name: "Timothy Nduva",
+                    location_county: "Makueni",
+                    location_region: "Kibwezi",
+                    status: "verified",
+                    block_hash: "0xDEADBEEF0001883"
+                },
+                {
+                    batch_code: "KIB-ACACIA-24",
+                    honey_type: "Organic Acacia",
+                    harvest_date: "2024-02-12",
+                    quantity_kg: 22.0,
                     processing_method: "Raw Filtered",
                     farmer_name: "Timothy Nduva",
                     location_county: "Makueni",
                     location_region: "Kibwezi",
-                    status: "verified"
+                    status: "verified",
+                    block_hash: "0xACAC1A2024B4"
                 },
                 {
-                    batch_code: "BATCH-2024-003",
-                    honey_type: "Blossom",
-                    harvest_date: "2024-02-01",
-                    quantity_kg: 353,
-                    processing_method: "Raw Filtered",
+                    batch_code: "KIB-GOLD-24",
+                    honey_type: "Savannah Gold",
+                    harvest_date: "2024-03-15",
+                    quantity_kg: 28.0,
+                    processing_method: "Traditional Extraction",
                     farmer_name: "Timothy Nduva",
-                    location_county: "Kitui",
-                    location_region: "Mwingi",
-                    status: "verified"
+                    location_county: "Makueni",
+                    location_region: "Kibwezi",
+                    status: "verified",
+                    block_hash: "0xG0LD24000004"
                 }
             ];
 
-            const { error } = await supabase.from('honey_batches').insert(batches);
-            if (error) throw error;
-            return { success: true, batchCount: batches.length };
+            let count = 0;
+            for (const batch of batches) {
+                const { data: existingBatch } = await supabase.from('honey_batches').select('id').eq('batch_code', batch.batch_code).maybeSingle();
+                if (!existingBatch) {
+                    await supabase.from('honey_batches').insert(batch);
+                    count++;
+                }
+            }
+
+            return { success: true, batchCount: count };
         } catch (err: any) {
+            console.error("Seeding error:", err);
             return { success: false, error: err.message };
         }
     },
@@ -152,21 +247,62 @@ export const adminService = {
     seedApiaryHiveData: async (): Promise<{ success: boolean; apiaryCount?: number; hiveCount?: number; error?: string }> => {
         if (!supabase) throw new Error("Supabase not initialized");
         try {
-            // Simplified seed - Ensure 1 Apiary
-            const apiary = { name: "Kibwezi East Cluster A", location_name: "Kibwezi", county: "Makueni", status: "active" };
-            const { data: insertedApiary, error: aError } = await supabase.from('apiaries').insert(apiary).select().single();
-            if (aError) throw aError;
+            // 1. Ensure Farmer Timothy Nduva exists for linking
+            const { data: farmer } = await supabase.from('farmers').select('id').eq('name', 'Timothy Nduva').maybeSingle();
+            const farmerId = farmer?.id;
 
-            if (insertedApiary) {
-                const hives = [
-                    { hive_code: "H-KIB-001", apiary_id: insertedApiary.id, type: "Langstroth", status: "active" },
-                    { hive_code: "H-KIB-002", apiary_id: insertedApiary.id, type: "Langstroth", status: "active" }
-                ];
-                const { error: hError } = await supabase.from('hives').insert(hives);
-                if (hError) throw hError;
+            // 2. Official Apiaries
+            const apiaries = [
+                { name: "Kibwezi Savannah Apiary", location_name: "Kibwezi", county: "Makueni", region: "Eastern", status: "active", farmer_id: farmerId },
+                { name: "Mutomo Acacia Reserve", location_name: "Mutomo", county: "Makueni", region: "Eastern", status: "active", farmer_id: farmerId },
+                { name: "Mwingi Heritage Apiary", location_name: "Mwingi Central", county: "Makueni", region: "Eastern", status: "active", farmer_id: farmerId }
+            ];
+
+            let aCount = 0;
+            let hCount = 0;
+
+            for (const a of apiaries) {
+                let apiaryId;
+                const { data: existingApiary } = await supabase.from('apiaries').select('id').eq('name', a.name).maybeSingle();
+
+                if (!existingApiary) {
+                    const { data: insertedApiary } = await supabase.from('apiaries').insert(a).select().single();
+                    apiaryId = insertedApiary?.id;
+                    aCount++;
+                } else {
+                    apiaryId = existingApiary.id;
+                }
+
+                if (apiaryId) {
+                    // Seed some hives for each apiary if empty
+                    const { count } = await supabase.from('hives').select('id', { count: 'exact', head: true }).eq('apiary_id', apiaryId);
+
+                    if (count === 0) {
+                        const hives = [
+                            {
+                                hive_code: `${a.name.split(' ')[0].toUpperCase()}-01`,
+                                apiary_id: apiaryId,
+                                type: "Langstroth",
+                                status: "active",
+                                installation_date: "2022-01-15"
+                            },
+                            {
+                                hive_code: `${a.name.split(' ')[0].toUpperCase()}-02`,
+                                apiary_id: apiaryId,
+                                type: "Kenya Top Bar",
+                                status: "active",
+                                installation_date: "2023-03-20"
+                            }
+                        ];
+                        await supabase.from('hives').insert(hives);
+                        hCount += 2;
+                    }
+                }
             }
-            return { success: true, apiaryCount: 1, hiveCount: 2 };
+
+            return { success: true, apiaryCount: aCount, hiveCount: hCount };
         } catch (err: any) {
+            console.error("Seeding error:", err);
             return { success: false, error: err.message };
         }
     },
@@ -487,34 +623,39 @@ export const adminService = {
 
     // ============== USER MANAGEMENT (Super Admin) ==============
     getUsers: async () => {
-        if (!supabase) throw new Error("Supabase not initialized");
-        const { data, error } = await supabase
-            .from('profiles')
-            .select('*');
-        if (error) throw error;
-        return data || [];
+        try {
+            return await apiGet<any[]>('/admin/users');
+        } catch (error) {
+            console.error("Failed to fetch users via API, falling back to profiles table", error);
+            if (!supabase) throw new Error("Supabase not initialized");
+            const { data, error: sbError } = await supabase.from('profiles').select('*');
+            if (sbError) throw sbError;
+            return data || [];
+        }
     },
 
     updateUserRole: async (userId: string, role: string) => {
-        if (!supabase) throw new Error("Supabase not initialized");
-        const { error } = await supabase
-            .from('profiles')
-            .update({ role })
-            .eq('id', userId);
-        if (error) throw error;
-        return { success: true };
+        try {
+            return await apiPut<any>(`/admin/users/${userId}/role`, { role });
+        } catch (error) {
+            console.error("Failed to update user role via API", error);
+            if (!supabase) throw new Error("Supabase not initialized");
+            const { error: sbError } = await supabase.from('profiles').update({ role }).eq('id', userId);
+            if (sbError) throw sbError;
+            return { success: true };
+        }
     },
 
     deleteUser: async (userId: string) => {
-        // Technically needs service role to delete from auth.users
-        // Here we just remove the profile
-        if (!supabase) throw new Error("Supabase not initialized");
-        const { error } = await supabase
-            .from('profiles')
-            .delete()
-            .eq('id', userId);
-        if (error) throw error;
-        return { success: true };
+        try {
+            return await apiDelete<any>(`/admin/users/${userId}`);
+        } catch (error) {
+            console.error("Failed to delete user via API", error);
+            if (!supabase) throw new Error("Supabase not initialized");
+            const { error: sbError } = await supabase.from('profiles').delete().eq('id', userId);
+            if (sbError) throw sbError;
+            return { success: true };
+        }
     },
 
     // ============== DASHBOARD STATS ==============
@@ -687,23 +828,24 @@ export const adminService = {
         return { success: true };
     },
 
-    // Placeholder for createUser since it usually requires admin privileges not available in anon key
     createUser: async (userData: any) => {
-        console.warn("User creation usually requires Service Role. Attempting profile insert.");
-        if (!supabase) throw new Error("Supabase not initialized");
-        // This is a profile creation, actual user must be created via auth
-        return { error: "User creation must be handled via Auth/Service Role. Profile created manually if ID exists." };
+        try {
+            return await apiPost<any>('/admin/users', userData);
+        } catch (error: any) {
+            console.error("Failed to create user via API", error);
+            throw error;
+        }
     },
 
     updateUser: async (userId: string, userData: any) => {
-        if (!supabase) throw new Error("Supabase not initialized");
-        const { data, error } = await supabase
-            .from('profiles')
-            .update(userData)
-            .eq('id', userId)
-            .select()
-            .single();
-        if (error) throw error;
-        return data;
+        try {
+            return await apiPut<any>(`/admin/users/${userId}`, userData);
+        } catch (error) {
+            console.error("Failed to update user via API", error);
+            if (!supabase) throw new Error("Supabase not initialized");
+            const { data, error: sbError } = await supabase.from('profiles').update(userData).eq('id', userId).select().single();
+            if (sbError) throw sbError;
+            return data;
+        }
     }
 };

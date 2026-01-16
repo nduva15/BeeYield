@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/contexts/CartContext';
+import { useWishlist, WishlistItem } from '@/contexts/WishlistContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,17 +21,20 @@ import { initializeCheckout, CheckoutOrder } from '@/services/shopService';
 import {
     ShoppingCart, Truck, MapPin, Tag, Minus, Plus, X, ArrowRight,
     CheckCircle2, CreditCard, Smartphone, Shield, Loader2, ChevronRight,
-    Gift, Store, Package
+    Gift, Store, Package, Heart
 } from 'lucide-react';
 
 type CheckoutStep = 'cart' | 'shipping' | 'payment';
 type DeliveryMethod = 'delivery' | 'pickup';
+
+
 
 const Checkout = () => {
     const navigate = useNavigate();
     const { user, loading: authLoading, session } = useAuth();
     const {
         items,
+        addToCart,
         removeFromCart,
         updateQuantity,
         getTotalItems,
@@ -61,6 +65,14 @@ const Checkout = () => {
     // Use store credits
     const [useCredits, setUseCredits] = useState(false);
     const storeCredits = 0; // Would come from user profile
+
+    // Wishlist state (Real)
+    const { items: wishlistItems, removeFromWishlist } = useWishlist();
+
+    // Debug logging
+    useEffect(() => {
+        console.log('Checkout Render:', { currentStep, cartItems: items.length, wishlistItems: wishlistItems.length });
+    }, [currentStep, items, wishlistItems]);
 
     // Shipping details
     const [shippingDetails, setShippingDetails] = useState({
@@ -140,13 +152,13 @@ const Checkout = () => {
             setShowAuthModal(true);
             return;
         }
-        setCurrentStep('shipping');
+        navigate('/buyer-dashboard?tab=checkout');
     };
 
     const handleAuthSuccess = () => {
         setShowAuthModal(false);
-        toast.success('Welcome! Continue with your checkout');
-        setCurrentStep('shipping');
+        toast.success('Welcome! Redirecting to checkout...');
+        navigate('/buyer-dashboard?tab=checkout');
     };
 
     const handlePlaceOrder = async () => {
@@ -188,6 +200,29 @@ const Checkout = () => {
         }
     };
 
+    const moveFromWishlistToCart = (item: WishlistItem) => {
+        if (!item.inStock) {
+            toast.error('Item is currently out of stock');
+            return;
+        }
+        addToCart({
+            productId: item.id,
+            variantId: 'default',
+            name: item.name,
+            description: 'Moved from wishlist',
+            size: 'Standard',
+            price: item.price,
+            quantity: 1,
+            image: item.image,
+            badge: null,
+            category: item.category as any
+        });
+        removeFromWishlist(item.id);
+        // toast handles in addToCart
+    };
+
+
+
     const getCategoryEmoji = (category: string) => {
         switch (category) {
             case 'honey': return '🍯';
@@ -207,8 +242,8 @@ const Checkout = () => {
         );
     }
 
-    // Empty cart
-    if (items.length === 0 && currentStep !== 'payment') {
+    // Empty cart and wishlist check
+    if (items.length === 0 && wishlistItems.length === 0 && currentStep !== 'payment') {
         return (
             <div className="min-h-screen bg-background">
                 <div className="container max-w-6xl mx-auto px-4 py-12">
@@ -315,82 +350,171 @@ const Checkout = () => {
                     {/* Left Column - Cart Items or Shipping Form */}
                     <div className="lg:col-span-2 space-y-6">
                         {currentStep === 'cart' && (
-                            <Card className="border border-border rounded-2xl overflow-hidden">
-                                <CardHeader className="bg-muted/30 border-b border-border">
-                                    <CardTitle className="text-xl font-bold flex items-center gap-2">
-                                        <ShoppingCart className="w-5 h-5 text-primary" />
-                                        My Cart ({getTotalItems()})
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="p-0 divide-y divide-border">
-                                    {items.map((item) => (
-                                        <div key={item.id} className="p-4 md:p-6 flex gap-4 hover:bg-muted/20 transition-colors">
-                                            {/* Product Image */}
-                                            <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden border border-border">
-                                                {item.image ? (
-                                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                                                ) : (
-                                                    <span className="text-4xl">{getCategoryEmoji(item.category)}</span>
+                            <>
+                                <Card className="border border-border rounded-2xl overflow-hidden">
+                                    <CardHeader className="bg-muted/30 border-b border-border">
+                                        <CardTitle className="text-xl font-bold flex items-center gap-2">
+                                            <ShoppingCart className="w-5 h-5 text-primary" />
+                                            My Cart ({getTotalItems()})
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="p-0 divide-y divide-border">
+                                        {items.length === 0 ? (
+                                            <div className="p-8 text-center text-muted-foreground">
+                                                Your cart is currently empty.
+                                                {wishlistItems.length > 0 && (
+                                                    <span className="block mt-2 font-medium text-primary">
+                                                        Check your Wishlist below! 👇
+                                                    </span>
                                                 )}
                                             </div>
-
-                                            {/* Product Details */}
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-start justify-between gap-2">
-                                                    <div>
-                                                        <h3 className="font-bold text-foreground">{item.name}</h3>
-                                                        <p className="text-sm text-muted-foreground line-clamp-1">{item.description}</p>
-                                                        <div className="flex items-center gap-2 mt-1">
-                                                            {item.badge && (
-                                                                <Badge variant="secondary" className="text-xs">{item.badge}</Badge>
-                                                            )}
-                                                            <span className="text-xs text-muted-foreground">Size: {item.size}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* Price and Quantity */}
-                                                <div className="flex items-center justify-between mt-4">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="font-bold text-primary text-lg">{formatPrice(item.price)}</span>
-                                                        {item.badge === 'Sale' && (
-                                                            <Badge variant="destructive" className="text-xs">20% OFF</Badge>
+                                        ) : (
+                                            items.map((item) => (
+                                                <div key={item.id} className="p-4 md:p-6 flex gap-4 hover:bg-muted/20 transition-colors">
+                                                    {/* Product Image */}
+                                                    <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden border border-border">
+                                                        {item.image ? (
+                                                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                                        ) : (
+                                                            <span className="text-4xl">{getCategoryEmoji(item.category)}</span>
                                                         )}
                                                     </div>
 
-                                                    <div className="flex items-center gap-4">
-                                                        {/* Quantity Controls */}
-                                                        <div className="flex items-center gap-1 bg-muted rounded-lg border border-border">
-                                                            <button
-                                                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                                                className="p-2 hover:bg-primary/10 rounded-l-lg transition-colors"
-                                                            >
-                                                                <Minus className="w-4 h-4" />
-                                                            </button>
-                                                            <span className="w-10 text-center font-semibold">{item.quantity}</span>
-                                                            <button
-                                                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                                                className="p-2 hover:bg-primary/10 rounded-r-lg transition-colors"
-                                                            >
-                                                                <Plus className="w-4 h-4" />
-                                                            </button>
+                                                    {/* Product Details */}
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-start justify-between gap-2">
+                                                            <div>
+                                                                <h3 className="font-bold text-foreground">{item.name}</h3>
+                                                                <p className="text-sm text-muted-foreground line-clamp-1">{item.description}</p>
+                                                                <div className="flex items-center gap-2 mt-1">
+                                                                    {item.badge && (
+                                                                        <Badge variant="secondary" className="text-xs">{item.badge}</Badge>
+                                                                    )}
+                                                                    <span className="text-xs text-muted-foreground">Size: {item.size}</span>
+                                                                </div>
+                                                            </div>
                                                         </div>
 
-                                                        {/* Remove Button */}
-                                                        <button
-                                                            onClick={() => removeFromCart(item.id)}
-                                                            className="text-muted-foreground hover:text-destructive transition-colors"
-                                                        >
-                                                            <X className="w-5 h-5" />
-                                                            <span className="text-xs">Remove</span>
-                                                        </button>
+                                                        {/* Price and Quantity */}
+                                                        <div className="flex items-center justify-between mt-4">
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="font-bold text-primary text-lg">{formatPrice(item.price)}</span>
+                                                                {item.badge === 'Sale' && (
+                                                                    <Badge variant="destructive" className="text-xs">20% OFF</Badge>
+                                                                )}
+                                                            </div>
+
+                                                            <div className="flex items-center gap-4">
+                                                                {/* Quantity Controls */}
+                                                                <div className="flex items-center gap-1 bg-muted rounded-lg border border-border">
+                                                                    <button
+                                                                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                                                        className="p-2 hover:bg-primary/10 rounded-l-lg transition-colors"
+                                                                    >
+                                                                        <Minus className="w-4 h-4" />
+                                                                    </button>
+                                                                    <span className="w-10 text-center font-semibold">{item.quantity}</span>
+                                                                    <button
+                                                                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                                        className="p-2 hover:bg-primary/10 rounded-r-lg transition-colors"
+                                                                    >
+                                                                        <Plus className="w-4 h-4" />
+                                                                    </button>
+                                                                </div>
+
+                                                                {/* Remove Button */}
+                                                                <button
+                                                                    onClick={() => removeFromCart(item.id)}
+                                                                    className="text-muted-foreground hover:text-destructive transition-colors"
+                                                                >
+                                                                    <X className="w-5 h-5" />
+                                                                    <span className="text-xs">Remove</span>
+                                                                </button>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
+                                            )))}
+                                    </CardContent>
+                                </Card>
+
+                                {/* Wishlist Section */}
+                                {wishlistItems.length > 0 && (
+                                    <Card className="border border-border rounded-2xl mt-8 shadow-sm">
+                                        <CardHeader className="bg-muted/30 border-b border-border">
+                                            <CardTitle className="text-xl font-bold flex items-center gap-2">
+                                                <Heart className="w-5 h-5 text-primary fill-primary/20" />
+                                                Your Wishlist ({wishlistItems.length})
+                                            </CardTitle>
+                                        </CardHeader>
+                                        <CardContent className="p-0">
+                                            {/* Table Header for larger screens */}
+                                            <div className="hidden md:grid grid-cols-12 gap-4 p-4 border-b border-border text-xs font-black uppercase tracking-wider text-muted-foreground bg-muted/10">
+                                                <div className="col-span-6 pl-2">Product</div>
+                                                <div className="col-span-2">Price</div>
+                                                <div className="col-span-2">Stock Status</div>
+                                                <div className="col-span-2 text-center">Action</div>
                                             </div>
-                                        </div>
-                                    ))}
-                                </CardContent>
-                            </Card>
+
+                                            {/* Wishlist Items */}
+                                            <div className="divide-y divide-border">
+                                                {wishlistItems.map((item) => (
+                                                    <div key={item.id} className="p-4 flex flex-col md:grid md:grid-cols-12 gap-4 items-center group hover:bg-muted/10 transition-colors">
+                                                        {/* Product */}
+                                                        <div className="col-span-6 flex items-center gap-4 w-full">
+                                                            <button
+                                                                onClick={() => removeFromWishlist(item.id)}
+                                                                className="p-1 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                                                            >
+                                                                <X className="w-4 h-4" />
+                                                            </button>
+                                                            <div className="w-16 h-16 rounded-lg bg-muted flex items-center justify-center overflow-hidden border border-border">
+                                                                {item.image ? (
+                                                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                                                ) : (
+                                                                    <span className="text-2xl">{getCategoryEmoji(item.category)}</span>
+                                                                )}
+                                                            </div>
+                                                            <div className="flex flex-col">
+                                                                <span className="font-bold text-foreground line-clamp-2">{item.name}</span>
+                                                                <span className="text-xs text-muted-foreground md:hidden mt-1">
+                                                                    {item.inStock ? 'In Stock' : 'Out of Stock'} - {formatPrice(item.price)}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Price */}
+                                                        <div className="col-span-2 w-full md:w-auto hidden md:block">
+                                                            <span className="font-bold">{formatPrice(item.price)}</span>
+                                                        </div>
+
+                                                        {/* Stock Status */}
+                                                        <div className="col-span-2 w-full md:w-auto hidden md:block">
+                                                            {item.inStock ? (
+                                                                <Badge variant="outline" className="border-green-200 text-green-700 bg-green-50">In Stock</Badge>
+                                                            ) : (
+                                                                <Badge variant="outline" className="border-red-200 text-red-700 bg-red-50">Out of Stock</Badge>
+                                                            )}
+                                                        </div>
+
+                                                        {/* Action */}
+                                                        <div className="col-span-2 w-full md:w-auto mt-2 md:mt-0">
+                                                            <Button
+                                                                size="sm"
+                                                                disabled={!item.inStock}
+                                                                onClick={() => moveFromWishlistToCart(item)}
+                                                                className="w-full rounded-full bg-primary hover:bg-primary/90 text-white font-bold"
+                                                            >
+                                                                Add To Cart
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                )}
+                            </>
                         )}
 
                         {currentStep === 'shipping' && (

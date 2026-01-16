@@ -1,27 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useSettings } from '@/contexts/SettingsContext';
 
 interface FirstStepsBannerProps {
     onTabChange: (tab: string) => void;
 }
 
 const FirstStepsBanner: React.FC<FirstStepsBannerProps> = ({ onTabChange }) => {
-    const [showBanner, setShowBanner] = useState(true);
+    const { showGuides, setShowGuides } = useSettings();
 
-    useEffect(() => {
-        const bannerHidden = localStorage.getItem('hideBeeYieldBanner_v9');
-        if (bannerHidden) {
-            setShowBanner(false);
-        }
-    }, []);
+    if (!showGuides) return null;
 
     const hideBanner = () => {
-        setShowBanner(false);
-        localStorage.setItem('hideBeeYieldBanner_v9', 'true');
+        setShowGuides(false);
     };
-
-    if (!showBanner) return null;
 
     return (
         <div className="relative bg-[#fdf2e9] dark:bg-[#1a1614] p-10 rounded-[2.5rem] border border-[#fdecdb] dark:border-orange-950/10 mb-10 animate-in fade-in slide-in-from-top-4 duration-700 mx-2">

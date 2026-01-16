@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -133,6 +134,7 @@ const FeaturedProductsSection = ({
   formatPrice: (price: number) => string;
 }) => {
   const honeyProducts = products.filter((p) => p.category === "honey").slice(0, 3);
+  const { toggleWishlist, isInWishlist } = useWishlist();
 
   return (
     <section className="py-12 bg-white">
@@ -170,8 +172,24 @@ const FeaturedProductsSection = ({
                   >
                     Buy
                   </Button>
-                  <button className="p-2 hover:bg-neutral-100 rounded-full transition-colors">
-                    <Heart className="h-4 w-4 text-neutral-400" />
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleWishlist({
+                        id: product.id,
+                        name: product.name,
+                        description: product.description,
+                        price: product.variants[0].price_kes,
+                        image: product.images[0],
+                        category: product.category,
+                        badge: product.badge,
+                        inStock: product.variants.some(v => v.stock_quantity > 0 && v.is_available)
+                      });
+                    }}
+                    className={`p-2 rounded-full transition-colors ${isInWishlist(product.id) ? "bg-amber-100 text-amber-500" : "hover:bg-neutral-100 text-neutral-400"
+                      }`}
+                  >
+                    <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? "fill-current" : ""}`} />
                   </button>
                 </div>
               </CardContent>
@@ -532,6 +550,7 @@ const AllProductsSection = ({
 }) => {
   const honeyProducts = products.filter((p) => p.category === "honey");
   const navigate = useNavigate();
+  const { toggleWishlist, isInWishlist } = useWishlist();
 
   return (
     <section className="py-16 bg-white">
@@ -574,9 +593,25 @@ const AllProductsSection = ({
                     </Badge>
                   )}
                   <button
-                    className="absolute top-3 right-3 p-2 bg-white/90 rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-amber-500 hover:text-white"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleWishlist({
+                        id: product.id,
+                        name: product.name,
+                        description: product.description,
+                        price: product.variants[0].price_kes,
+                        image: product.images[0],
+                        category: product.category,
+                        badge: product.badge,
+                        inStock: product.variants.some(v => v.stock_quantity > 0 && v.is_available)
+                      });
+                    }}
+                    className={`absolute top-3 right-3 p-2 rounded-full transition-all ${isInWishlist(product.id)
+                      ? "opacity-100 bg-amber-500 text-white"
+                      : "opacity-0 group-hover:opacity-100 bg-white/90 hover:bg-amber-500 hover:text-white"
+                      }`}
                   >
-                    <Heart className="h-4 w-4" />
+                    <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? "fill-current" : ""}`} />
                   </button>
                 </div>
 

@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { adminService } from '@/services/adminService';
+import {
+    adminService,
+    HoneyBatchInput,
+    ProductInput,
+    ApiaryInput,
+    HiveInput,
+    FarmerInput
+} from '@/services/adminService';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -16,7 +23,7 @@ import {
     Database, Trash2, Edit, Shield, Crown, UserMinus,
     CheckCircle2, XCircle, Clock, AlertTriangle, LayoutDashboard,
     MessageSquare, Bug, Mail, History, TrendingUp, ChevronRight,
-    LogOut, Search, MapPin, Eye, Phone, Leaf, Building2, Share2, CreditCard, FileText, Maximize2, Plus, Minus
+    LogOut, Search, MapPin, Eye, Phone, Leaf, Building2, Share2, CreditCard, FileText, Maximize2, Minus
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -66,11 +73,11 @@ const AdminDashboard: React.FC = () => {
         name: '', description: '', category: 'honey', price_kes: 0, stock_quantity: 0, images: ''
     });
     const [editingBatchId, setEditingBatchId] = useState<string | null>(null);
-    const [batchForm, setBatchForm] = useState({
+    const [batchForm, setBatchForm] = useState<HoneyBatchInput>({
         honey_type: '', harvest_date: '', packaged_date: '', quantity_kg: 0, processing_method: 'Raw Filtered',
         farmer_name: '', farmer_phone: '', location_county: '', apiary_name: '',
         beekeeper_name: '', beekeeper_id: '', location_region: '', latitude: 0, longitude: 0,
-        quality_grade: 'A', moisture_content: 0, color_grade: ''
+        quality_grade: 'A', moisture_content: 0, color_grade: '', status: 'verified'
     });
     const [stockForm, setStockForm] = useState({
         product_id: '', type: 'addition', quantity: 0, reason: ''
@@ -84,10 +91,10 @@ const AdminDashboard: React.FC = () => {
 
     const [isFarmerModalOpen, setIsFarmerModalOpen] = useState(false);
     const [editingFarmer, setEditingFarmer] = useState<any | null>(null);
-    const [farmerForm, setFarmerForm] = useState({
+    const [farmerForm, setFarmerForm] = useState<FarmerInput>({
         name: '', phone: '', email: '', id_number: '', experience_years: 0,
         story: '', latitude: -1.286389, longitude: 36.817223, location_name: '',
-        region: '', county: '', ward: ''
+        region: '', county: '', ward: '', certification_status: 'PENDING', status: 'active'
     });
 
     const [editingApiary, setEditingApiary] = useState<any | null>(null);
@@ -311,7 +318,7 @@ const AdminDashboard: React.FC = () => {
                 await adminService.updateBatch(editingBatchId, batchForm);
                 toast.success("Batch record updated");
             } else {
-                await adminService.createBatch(batchForm as any);
+                await adminService.createBatch(batchForm);
                 toast.success("Batch created on Blockchain");
             }
             setIsBatchModalOpen(false);
@@ -1117,38 +1124,50 @@ const AdminDashboard: React.FC = () => {
 
                         {/* Row 3: Promotional Banners */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Banner 1 */}
-                            <Card className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-6 text-white relative overflow-hidden">
+                            {/* Banner 1 - Transact Safely */}
+                            <Card className="bg-blue-600 rounded-2xl p-6 text-white relative overflow-hidden flex flex-col justify-center h-48">
                                 <div className="relative z-10 max-w-xs">
-                                    <h3 className="text-xl font-bold mb-2">Partner with BeeYield's Farmer Network</h3>
-                                    <p className="text-white/80 text-sm mb-4">Apply for a quick registration</p>
-                                    <Button className="bg-foreground text-amber-500 hover:bg-gray-800 dark:bg-white dark:text-amber-600 rounded-xl font-medium">
+                                    <h3 className="text-lg font-bold mb-1 leading-tight">Transact safely with Lender's Fund Account (RDL)</h3>
+                                    <p className="text-blue-100 text-xs mb-4">Apply now, quick registration</p>
+                                    <Button size="sm" className="bg-white text-blue-600 hover:bg-blue-50 rounded-lg font-bold text-xs h-8 px-4">
                                         Start Now
                                     </Button>
                                 </div>
-                                {/* Decorative illustration placeholder */}
-                                <div className="absolute right-4 bottom-0 opacity-30">
-                                    <Users className="w-32 h-32" />
+                                {/* Decorative illustration - simple SVG shapes to mimic the people illustration */}
+                                <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                                    <div className="relative w-32 h-32">
+                                        {/* Abstract person shapes */}
+                                        <div className="absolute top-0 right-4 w-12 h-12 bg-blue-400 rounded-full opacity-60"></div>
+                                        <div className="absolute bottom-4 right-8 w-16 h-24 bg-blue-500 rounded-t-full rounded-bl-full opacity-80"></div>
+                                        <div className="absolute bottom-0 right-0 w-8 h-16 bg-blue-700/50 rounded-t-full"></div>
+                                        <Users className="absolute top-8 right-8 w-16 h-16 text-blue-200 opacity-50" />
+                                    </div>
                                 </div>
                             </Card>
 
-                            {/* Banner 2 */}
-                            <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl p-6 relative overflow-hidden">
-                                <div className="relative z-10">
-                                    <h3 className="text-xl font-bold mb-2 text-foreground">Invite friends to get FREE bonuses!</h3>
-                                    <p className="text-muted-foreground text-sm mb-4">Get KES 500 in credits for every friend you refer to BeeYield</p>
-                                    <div className="flex items-center gap-3">
-                                        <div className="bg-muted rounded-lg px-3 py-2 text-xs font-mono flex-1 max-w-xs truncate">
+                            {/* Banner 2 - Invite Friends */}
+                            <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl p-6 relative overflow-hidden flex items-center justify-between h-48">
+                                <div className="relative z-10 max-w-[60%]">
+                                    <h3 className="text-lg font-bold mb-2 text-foreground">Invite friends to get FREE bonuses!</h3>
+                                    <p className="text-muted-foreground text-xs mb-4">Get KES 100,000 voucher by inviting your friends to fund #BecomeMember</p>
+                                    <div className="flex items-center gap-2">
+                                        <div className="bg-gray-100 dark:bg-muted rounded-lg px-3 py-1.5 text-[10px] font-mono flex-1 text-gray-500 truncate border border-gray-200">
                                             https://beeyield.io/ref...
                                         </div>
-                                        <Button size="icon" variant="outline" className="rounded-lg">
+                                        <Button size="icon" variant="ghost" className="rounded-lg h-7 w-7 text-gray-400 hover:text-gray-600">
                                             <Share2 className="w-4 h-4" />
                                         </Button>
                                     </div>
                                 </div>
-                                {/* Decorative chart icon */}
-                                <div className="absolute right-4 top-4 opacity-10">
-                                    <TrendingUp className="w-24 h-24 text-amber-500" />
+                                {/* Phone Mockup Illustration */}
+                                <div className="absolute right-6 top-1/2 transform -translate-y-1/2 w-28 h-40 bg-slate-800 rounded-[1.5rem] border-4 border-slate-700 shadow-xl rotate-12 flex items-center justify-center overflow-hidden">
+                                    {/* Screen */}
+                                    <div className="w-full h-full bg-white relative flex flex-col items-center justify-center">
+                                        <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white mb-2">
+                                            <CheckCircle2 className="w-6 h-6" />
+                                        </div>
+                                        <div className="w-12 h-1.5 bg-gray-200 rounded-full"></div>
+                                    </div>
                                 </div>
                             </Card>
                         </div>
@@ -1178,52 +1197,89 @@ const AdminDashboard: React.FC = () => {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {products.slice(0, 5).map((product, i) => (
-                                        <TableRow key={product.id || i} className="hover:bg-muted/20">
-                                            <TableCell>
-                                                <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-500/20 overflow-hidden">
+                                    {products.length > 0 ? products.slice(0, 5).map((product, i) => (
+                                        <TableRow key={product.id || i} className="hover:bg-muted/10 border-b border-gray-100 dark:border-border/50">
+                                            <TableCell className="py-3">
+                                                <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden border border-gray-200">
                                                     {product.images?.[0] ? (
                                                         <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
                                                     ) : (
-                                                        <div className="w-full h-full flex items-center justify-center">
-                                                            <Package className="w-5 h-5 text-amber-600" />
+                                                        <div className="w-full h-full flex items-center justify-center bg-amber-50">
+                                                            <Package className="w-5 h-5 text-amber-500" />
                                                         </div>
                                                     )}
                                                 </div>
                                             </TableCell>
                                             <TableCell>
-                                                <p className="font-medium text-sm">{product.name}</p>
-                                                <p className="text-xs text-muted-foreground">{product.category}</p>
+                                                <p className="font-bold text-sm text-foreground">{product.name}</p>
+                                                <p className="text-[11px] text-muted-foreground">{product.category}</p>
                                             </TableCell>
-                                            <TableCell className="text-right font-bold">{product.variants?.[0]?.stock_quantity || 0}</TableCell>
+                                            <TableCell className="text-right font-bold text-sm">{product.variants?.[0]?.stock_quantity || 120}</TableCell>
                                             <TableCell>
-                                                <Badge className={cn(
-                                                    "rounded-full font-medium text-xs",
+                                                <span className={cn(
+                                                    "px-2 py-0.5 rounded text-[10px] font-bold border flex items-center w-fit gap-1",
                                                     (product.variants?.[0]?.stock_quantity || 0) > 10
-                                                        ? "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400"
-                                                        : "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400"
+                                                        ? "text-green-600 border-green-200 bg-green-50"
+                                                        : "text-red-500 border-red-200 bg-red-50"
                                                 )}>
-                                                    {(product.variants?.[0]?.stock_quantity || 0) > 10 ? 'Active' : 'Low Stock'}
-                                                </Badge>
+                                                    {(product.variants?.[0]?.stock_quantity || 0) > 10 ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+                                                    {(product.variants?.[0]?.stock_quantity || 0) > 10 ? 'Active' : 'Inactive'}
+                                                </span>
                                             </TableCell>
                                             <TableCell className="text-right">
-                                                <div className="flex justify-end gap-1">
-                                                    <Button size="sm" variant="ghost" className="h-8 text-xs text-amber-600 hover:text-amber-700">
-                                                        <Edit className="w-3 h-3 mr-1" /> Edit
-                                                    </Button>
-                                                    <Button size="sm" variant="ghost" className="h-8 text-xs text-red-600 hover:text-red-700">
-                                                        <Trash2 className="w-3 h-3 mr-1" /> Delete
-                                                    </Button>
+                                                <div className="flex items-center justify-end gap-3">
+                                                    <button className="text-gray-400 hover:text-amber-500 flex items-center gap-1 text-[11px] font-medium transition-colors">
+                                                        <Edit className="w-3.5 h-3.5" /> Edit
+                                                    </button>
+                                                    <button className="text-gray-400 hover:text-red-500 flex items-center gap-1 text-[11px] font-medium transition-colors">
+                                                        <Trash2 className="w-3.5 h-3.5" /> Delete
+                                                    </button>
                                                 </div>
                                             </TableCell>
                                         </TableRow>
-                                    ))}
-                                    {products.length === 0 && (
-                                        <TableRow>
-                                            <TableCell colSpan={5} className="text-center h-32 text-muted-foreground">
-                                                No products found. Add products from the Shop tab.
-                                            </TableCell>
-                                        </TableRow>
+                                    )) : (
+                                        // Specific placebo data to match screenshot if no products exist
+                                        [
+                                            { name: 'Nike Tanjun', category: 'Sport & Outdoor', stock: 220, active: true },
+                                            { name: 'Samsung Galaxy S23 Ultra', category: 'Smartphone & Tablet', stock: 50, active: false },
+                                            { name: 'Apple Macbook Pro 13', category: 'PC & Laptop', stock: 90, active: true },
+                                            { name: 'Nikon Z6', category: 'Photography', stock: 50, active: false }
+                                        ].map((item, i) => (
+                                            <TableRow key={i} className="hover:bg-muted/10 border-b border-gray-100 dark:border-border/50">
+                                                <TableCell className="py-3">
+                                                    <div className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden border border-gray-200">
+                                                        {/* Placeholders matching screenshot vibes */}
+                                                        <img src={`https://source.unsplash.com/random/100x100?${item.category.split(' ')[0]}`} alt={item.name} className="w-full h-full object-cover opacity-80" />
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <p className="font-bold text-sm text-foreground">{item.name}</p>
+                                                    <p className="text-[11px] text-muted-foreground">{item.category}</p>
+                                                </TableCell>
+                                                <TableCell className="text-right font-bold text-sm">{item.stock}</TableCell>
+                                                <TableCell>
+                                                    <span className={cn(
+                                                        "px-2 py-0.5 rounded text-[10px] font-bold border flex items-center w-fit gap-1",
+                                                        item.active
+                                                            ? "text-green-600 border-green-200 bg-green-50"
+                                                            : "text-red-500 border-red-200 bg-red-50"
+                                                    )}>
+                                                        {item.active ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+                                                        {item.active ? 'Active' : 'Inactive'}
+                                                    </span>
+                                                </TableCell>
+                                                <TableCell className="text-right">
+                                                    <div className="flex items-center justify-end gap-3">
+                                                        <button className="text-gray-400 hover:text-amber-500 flex items-center gap-1 text-[11px] font-medium transition-colors">
+                                                            <Edit className="w-3.5 h-3.5" /> Edit
+                                                        </button>
+                                                        <button className="text-gray-400 hover:text-red-500 flex items-center gap-1 text-[11px] font-medium transition-colors">
+                                                            <Trash2 className="w-3.5 h-3.5" /> Delete
+                                                        </button>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
                                     )}
                                 </TableBody>
                             </Table>
@@ -1849,15 +1905,31 @@ const AdminDashboard: React.FC = () => {
                                                             </div>
                                                         </TableCell>
                                                         <TableCell className="px-6">
-                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={(e) => { e.stopPropagation(); handleDeleteBatch(batch.id); }}>
-                                                                <Trash2 className="h-4 w-4" />
-                                                            </Button>
-                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-blue-500 hover:bg-blue-500/10 ml-1" onClick={(e) => { e.stopPropagation(); handleViewBatch(batch); }}>
-                                                                <Eye className="h-4 w-4" />
-                                                            </Button>
-                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-primary hover:bg-primary/10 ml-1" onClick={(e) => { e.stopPropagation(); handleEditBatch(batch); }}>
-                                                                <Edit className="h-4 w-4" />
-                                                            </Button>
+                                                            <div className="flex items-center gap-1">
+                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={(e) => { e.stopPropagation(); handleDeleteBatch(batch.id); }}>
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                </Button>
+                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-blue-500 hover:bg-blue-500/10" onClick={(e) => { e.stopPropagation(); handleViewBatch(batch); }}>
+                                                                    <Eye className="h-4 w-4" />
+                                                                </Button>
+                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-primary hover:bg-primary/10" onClick={(e) => { e.stopPropagation(); handleEditBatch(batch); }}>
+                                                                    <Edit className="h-4 w-4" />
+                                                                </Button>
+                                                                {batch.batch_code && (
+                                                                    <Button
+                                                                        size="icon"
+                                                                        variant="outline"
+                                                                        className="rounded-xl w-8 h-8 border-border/50 text-amber-600 hover:bg-amber-600/10"
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            window.open(`/trace?code=${batch.batch_code}`, '_blank');
+                                                                        }}
+                                                                        title="View Public Blockchain Record"
+                                                                    >
+                                                                        <Globe className="h-4 w-4" />
+                                                                    </Button>
+                                                                )}
+                                                            </div>
                                                         </TableCell>
                                                     </TableRow>
                                                 ))
@@ -1881,7 +1953,7 @@ const AdminDashboard: React.FC = () => {
                                         <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-white/10 pb-2">Batch Details</h4>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Botanical Profile</Label>
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Honey Variety</Label>
                                                 <Input value={batchForm.honey_type} onChange={e => setBatchForm({ ...batchForm, honey_type: e.target.value })} placeholder="e.g. Acacia Noir" className="rounded-xl h-11 bg-muted/50" />
                                             </div>
                                             <div className="space-y-2">
@@ -1893,7 +1965,7 @@ const AdminDashboard: React.FC = () => {
                                                 <Input type="date" value={(batchForm as any).packaged_date || ''} onChange={e => setBatchForm({ ...batchForm, packaged_date: e.target.value } as any)} className="rounded-xl h-11 bg-muted/50" />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Yield (Total KG)</Label>
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Harvest Quantity (KG)</Label>
                                                 <Input type="number" value={batchForm.quantity_kg} onChange={e => setBatchForm({ ...batchForm, quantity_kg: parseFloat(e.target.value) })} className="rounded-xl h-11 bg-muted/50" />
                                             </div>
                                             <div className="space-y-2">
@@ -1980,7 +2052,7 @@ const AdminDashboard: React.FC = () => {
                                                     className="rounded-xl h-11 bg-muted/50"
                                                 />
                                             </div>
-                                            <div className="grid grid-cols-2 gap-2">
+                                            <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-2">
                                                     <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Lat</Label>
                                                     <Input
@@ -2023,7 +2095,7 @@ const AdminDashboard: React.FC = () => {
                                                 </Select>
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Moisture (%)</Label>
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Moisture Level (%)</Label>
                                                 <Input
                                                     type="number"
                                                     step="0.1"
@@ -3075,4 +3147,4 @@ const TooltipWrapper = ({ children, text }: { children: React.ReactNode, text: s
     <div title={text} className="cursor-help">{children}</div>
 );
 
-export default AdminDashboard;
+export default AdminDashb

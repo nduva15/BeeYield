@@ -23,11 +23,7 @@ const CartDrawer: React.FC = () => {
 
     const handleCheckout = () => {
         closeCart();
-        if (user) {
-            navigate('/buyer-dashboard?tab=checkout');
-        } else {
-            navigate('/login?redirect=checkout');
-        }
+        navigate('/checkout');
     };
 
     const getCategoryEmoji = (category: string) => {
