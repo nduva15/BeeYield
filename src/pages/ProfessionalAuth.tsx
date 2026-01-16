@@ -36,39 +36,39 @@ const ProfessionalAuth: React.FC = () => {
 
     if (authLoading) {
         return (
-            <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+            <div className="min-h-screen bg-zinc-50 flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
                     <Activity className="h-8 w-8 text-primary animate-pulse" />
-                    <span className="text-primary/50 font-mono text-xs tracking-widest uppercase">Initializing Protocol...</span>
+                    <span className="text-zinc-400 font-mono text-xs tracking-widest uppercase">Initializing Protocol...</span>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white selection:bg-primary/30 font-mono overflow-hidden relative">
-            {/* Cyber Background Elements */}
+        <div className="min-h-screen bg-[#f8f9fc] text-zinc-900 selection:bg-primary/30 font-mono overflow-hidden relative">
+            {/* Soft Light Background Elements */}
             <div className="absolute inset-0 z-0">
-                <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(241,210,160,0.05)_0%,transparent_50%)]" />
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20" />
+                <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(241,210,160,0.15)_0%,transparent_70%)]" />
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03]" />
             </div>
 
             <div className="container mx-auto px-4 h-screen flex flex-col relative z-10">
                 {/* Minimal Professional Header */}
                 <div className="py-8 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center border border-primary/20">
+                        <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-zinc-200 shadow-sm">
                             <Hexagon className="h-6 w-6 text-primary" />
                         </div>
                         <div>
-                            <h1 className="text-lg font-bold tracking-tighter leading-none">BEEYIELD <span className="text-primary">PRO</span></h1>
-                            <p className="text-[10px] text-primary/40 leading-none mt-1">INDUSTRIAL IOT ECOSYSTEM</p>
+                            <h1 className="text-lg font-bold tracking-tighter leading-none text-zinc-900">BEEYIELD <span className="text-primary">PRO</span></h1>
+                            <p className="text-[10px] text-zinc-400 leading-none mt-1 font-bold tracking-wider">INDUSTRIAL IOT ECOSYSTEM</p>
                         </div>
                     </div>
 
                     <button
                         onClick={() => navigate('/')}
-                        className="flex items-center gap-2 text-xs text-primary/60 hover:text-primary transition-colors font-bold uppercase tracking-widest"
+                        className="flex items-center gap-2 text-xs text-zinc-400 hover:text-zinc-900 transition-colors font-bold uppercase tracking-widest"
                     >
                         <ArrowLeft className="h-4 w-4" /> Exit to Public Site
                     </button>
@@ -77,14 +77,14 @@ const ProfessionalAuth: React.FC = () => {
                 <div className="flex-1 flex items-center justify-center py-12">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-7xl w-full items-center">
 
-                        {/* Technical Side */}
+                        {/* Technical Side (Light Version) */}
                         <div className="hidden lg:block space-y-12">
                             <div className="space-y-6">
                                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
                                     <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                                     <span className="text-[10px] font-bold text-primary tracking-widest uppercase">System Operational</span>
                                 </div>
-                                <h2 className="text-6xl font-black tracking-tighter leading-tight">
+                                <h2 className="text-6xl font-black tracking-tighter leading-tight text-zinc-900">
                                     Secure <br />
                                     <span className="text-primary italic">Intelligence</span> <br />
                                     Interface
@@ -98,54 +98,54 @@ const ProfessionalAuth: React.FC = () => {
                                     { icon: Shield, label: 'Vault Security', desc: 'AES-256 data protection' },
                                     { icon: Database, label: 'Fleet Logic', desc: 'Scaleable apiary management' }
                                 ].map((item, i) => (
-                                    <div key={i} className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-primary/30 transition-all group">
-                                        <item.icon className="h-6 w-6 text-primary/60 group-hover:text-primary mb-4 transition-colors" />
-                                        <h4 className="font-bold text-sm mb-1">{item.label}</h4>
-                                        <p className="text-[10px] text-white/40 leading-relaxed font-sans">{item.desc}</p>
+                                    <div key={i} className="p-6 rounded-2xl bg-white border border-zinc-200 hover:border-primary/50 transition-all group shadow-sm hover:shadow-md">
+                                        <item.icon className="h-6 w-6 text-zinc-400 group-hover:text-primary mb-4 transition-colors" />
+                                        <h4 className="font-bold text-sm mb-1 text-zinc-900">{item.label}</h4>
+                                        <p className="text-[10px] text-zinc-500 leading-relaxed font-sans">{item.desc}</p>
                                     </div>
                                 ))}
                             </div>
 
-                            <div className="p-6 rounded-2xl bg-primary/5 border border-primary/10 flex items-center gap-4">
-                                <Terminal className="h-5 w-5 text-primary" />
-                                <div className="font-mono text-[10px] text-primary/60 overflow-hidden whitespace-nowrap">
+                            <div className="p-6 rounded-2xl bg-white border border-zinc-200 flex items-center gap-4 shadow-sm">
+                                <Terminal className="h-5 w-5 text-zinc-400" />
+                                <div className="font-mono text-[10px] text-zinc-400 overflow-hidden whitespace-nowrap">
                                     <p className="animate-typing">root@beeyield-hub: auth --mode professional_v2.0.4</p>
                                     <p className="opacity-50 tracking-tighter">Initializing secure kernel session...</p>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Auth Card */}
+                        {/* Auth Card (Bright Version) */}
                         <div className="max-w-md w-full mx-auto">
-                            <Card className="bg-white/5 border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] rounded-[2rem] overflow-hidden backdrop-blur-xl">
-                                <div className="p-8 border-b border-white/5 bg-white/5">
+                            <Card className="bg-white border border-zinc-200 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08)] rounded-[2.5rem] overflow-hidden">
+                                <div className="p-8 border-b border-zinc-100 bg-zinc-50/50">
                                     <div className="flex items-center justify-between mb-8">
-                                        <div className="inline-flex rounded-lg bg-black/40 p-1 border border-white/10">
+                                        <div className="inline-flex rounded-xl bg-zinc-200/50 p-1 border border-zinc-200 shadow-inner">
                                             <button
                                                 onClick={() => setAuthMode('login')}
-                                                className={`px-6 py-2 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all ${authMode === 'login' ? 'bg-primary text-black' : 'text-white/40 hover:text-white'}`}
+                                                className={`px-6 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${authMode === 'login' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-900'}`}
                                             >
                                                 Authorize
                                             </button>
                                             <button
                                                 onClick={() => setAuthMode('register')}
-                                                className={`px-6 py-2 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all ${authMode === 'register' ? 'bg-primary text-black' : 'text-white/40 hover:text-white'}`}
+                                                className={`px-6 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${authMode === 'register' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-900'}`}
                                             >
                                                 Deploy
                                             </button>
                                         </div>
-                                        <Lock className="h-4 w-4 text-primary/40" />
+                                        <Lock className="h-4 w-4 text-zinc-300" />
                                     </div>
 
-                                    <h3 className="text-2xl font-black tracking-tightest">
+                                    <h3 className="text-2xl font-black tracking-tightest text-zinc-900">
                                         {authMode === 'login' ? 'PORTAL ACCESS' : authMode === 'register' ? 'NETWORK JOIN' : 'KEY RECOVERY'}
                                     </h3>
-                                    <p className="text-[10px] text-white/40 font-bold uppercase tracking-[0.2em] mt-2">
-                                        {authMode === 'login' ? 'Enter credentials for biometric validation' : 'Register your professional IoT account'}
+                                    <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-[0.2em] mt-2">
+                                        {authMode === 'login' ? 'Enter credentials for identity validation' : 'Register your professional IoT account'}
                                     </p>
                                 </div>
 
-                                <CardContent className="p-8">
+                                <CardContent className="p-8 pb-12">
                                     <div className="space-y-6">
                                         {authMode === 'login' && (
                                             <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -186,18 +186,15 @@ const ProfessionalAuth: React.FC = () => {
                                         )}
                                     </div>
 
-                                    <div className="mt-12 pt-6 border-t border-white/5 flex flex-col items-center gap-4 text-center">
+                                    <div className="mt-12 pt-8 border-t border-zinc-100 flex flex-col items-center gap-4 text-center">
                                         <div className="flex gap-4">
-                                            <div className="flex items-center gap-2 text-[8px] font-bold text-white/20 uppercase tracking-[0.3em]">
+                                            <div className="flex items-center gap-2 text-[8px] font-bold text-zinc-300 uppercase tracking-[0.3em]">
                                                 <Shield className="h-3 w-3" /> FIPS 140-2
                                             </div>
-                                            <div className="flex items-center gap-2 text-[8px] font-bold text-white/20 uppercase tracking-[0.3em]">
+                                            <div className="flex items-center gap-2 text-[8px] font-bold text-zinc-300 uppercase tracking-[0.3em]">
                                                 <Lock className="h-3 w-3" /> ISO 27001
                                             </div>
                                         </div>
-                                        <p className="text-[9px] text-white/30 leading-relaxed font-sans max-w-[200px]">
-                                            Unauthorized access is monitored and strictly prohibited by cyber-security protocols.
-                                        </p>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -205,43 +202,56 @@ const ProfessionalAuth: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Cyber Footer */}
-                <div className="py-8 border-t border-white/5 flex items-center justify-between text-[8px] font-bold text-white/20 uppercase tracking-[0.3em]">
+                {/* Cyber Footer (Light Version) */}
+                <div className="py-8 border-t border-zinc-200 flex items-center justify-between text-[8px] font-bold text-zinc-400 uppercase tracking-[0.3em]">
                     <p>© 2026 BEEYIELD GLOBAL HUB // CORE v4.0.2</p>
                     <div className="flex gap-8">
                         <span>LAT: 1.2921 N</span>
                         <span>LONG: 36.8219 E</span>
-                        <span className="text-primary/40 animate-pulse">Session Encrypted</span>
+                        <span className="text-primary/60 font-black">Secure Endpoint Connection</span>
                     </div>
                 </div>
             </div>
 
             <style>{`
                 .pro-auth-forms input {
-                    background: rgba(255, 255, 255, 0.05) !important;
-                    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-                    color: white !important;
-                    height: 50px !important;
-                    border-radius: 12px !important;
-                    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+                    background: #ffffff !important;
+                    border: 1px solid #e4e4e7 !important;
+                    color: #18181b !important;
+                    height: 52px !important;
+                    border-radius: 14px !important;
+                    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
                     font-size: 13px !important;
+                    transition: all 0.2s ease !important;
+                }
+                .pro-auth-forms input:focus {
+                    border-color: #f1d2a0 !important;
+                    box-shadow: 0 0 0 4px rgba(241, 210, 160, 0.15) !important;
                 }
                 .pro-auth-forms label {
-                    color: rgba(255, 255, 255, 0.4) !important;
+                    color: #71717a !important;
                     font-size: 10px !important;
                     text-transform: uppercase !important;
                     letter-spacing: 0.1em !important;
                     font-weight: 700 !important;
+                    margin-bottom: 6px !important;
                 }
                 .pro-auth-forms button[type="submit"] {
                     background: #f1d2a0 !important;
                     color: black !important;
                     font-weight: 900 !important;
-                    height: 50px !important;
-                    border-radius: 12px !important;
+                    height: 52px !important;
+                    border-radius: 14px !important;
                     text-transform: uppercase !important;
                     letter-spacing: 0.1em !important;
                     font-size: 12px !important;
+                    border: none !important;
+                    box-shadow: 0 4px 20px -4px rgba(241, 210, 160, 0.4) !important;
+                    transition: all 0.2s ease !important;
+                }
+                .pro-auth-forms button[type="submit"]:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 30px -4px rgba(241, 210, 160, 0.6) !important;
                 }
                 .animate-typing {
                     border-right: 2px solid #f1d2a0;

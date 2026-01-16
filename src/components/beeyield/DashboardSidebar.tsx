@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { LucideIcon, Hexagon, ChevronDown, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export interface NavItem {
     id: string;
@@ -34,13 +35,27 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
     navItems,
     isAdmin = false
 }) => {
-    const [expandedItems, setExpandedItems] = useState<string[]>(['beeyield', 'data', 'meters']);
+    const [pinnedItems, setPinnedItems] = useState<string[]>(['beeyield', 'data', 'meters']);
+    const [hoveredItems, setHoveredItems] = useState<string[]>([]);
+    const { t } = useLanguage();
 
-    const toggleExpand = (id: string, e: React.MouseEvent) => {
-        e.stopPropagation();
-        setExpandedItems(prev =>
-            prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    const toggleExpand = (id: string, e?: React.MouseEvent) => {
+        if (e) e.stopPropagation();
+        setPinnedItems(prev =>
+            prev.includes(id) ? [] : [id]
         );
+    };
+
+    const handleMouseEnter = (id: string, hasSubmenu?: boolean) => {
+        if (hasSubmenu && !hoveredItems.includes(id)) {
+            setHoveredItems(prev => [...prev, id]);
+        }
+    };
+
+    const handleMouseLeave = (id: string, hasSubmenu?: boolean) => {
+        if (hasSubmenu) {
+            setHoveredItems(prev => prev.filter(i => i !== id));
+        }
     };
 
     return (
@@ -64,8 +79,8 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                         <Hexagon className="w-7 h-7 text-white fill-current" />
                     </motion.div>
                     <div>
-                        <h1 className="text-xl font-bold text-foreground tracking-wide leading-none font-display">BEEYIELD</h1>
-                        <p className="text-[10px] font-bold text-primary tracking-[0.3em] mt-1.5 uppercase">Professional</p>
+                        <h1 className="text-xl font-bold text-foreground tracking-wide leading-none font-display">{t('dashboard_title')}</h1>
+                        <p className="text-[10px] font-bold text-primary tracking-[0.3em] mt-1.5 uppercase">{t('dashboard_subtitle')}</p>
                     </div>
                 </div>
             </div>
@@ -74,14 +89,19 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
             <div className="flex-1 px-4 space-y-2 overflow-y-auto custom-scrollbar pb-4">
                 {navItems.filter(item => !item.hidden).map((item) => {
                     const isActive = activeTab === item.id;
-                    const isExpanded = expandedItems.includes(item.id);
+                    const isExpanded = pinnedItems.includes(item.id) || hoveredItems.includes(item.id);
 
                     return (
                         <div key={item.id} className="space-y-1">
                             <motion.button
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
-                                onClick={() => onTabChange(item.id)}
+                                onClick={() => {
+                                    onTabChange(item.id);
+                                    if (item.hasSubmenu) toggleExpand(item.id);
+                                }}
+                                onMouseEnter={() => handleMouseEnter(item.id, item.hasSubmenu)}
+                                onMouseLeave={() => handleMouseLeave(item.id, item.hasSubmenu)}
                                 className={cn(
                                     "w-full flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all duration-300 text-sm font-medium group relative overflow-hidden",
                                     isActive
@@ -124,7 +144,7 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                                             {item.submenuItems.map((subItem) => {
                                                 const isActiveSub = activeTab === subItem.id;
                                                 const hasSubItems = subItem.subItems && subItem.subItems.length > 0;
-                                                const isSubExpanded = expandedItems.includes(subItem.id);
+                                                const isSubExpanded = pinnedItems.includes(subItem.id) || hoveredItems.includes(subItem.id);
                                                 const isChildActive = subItem.subItems?.some(child => child.id === activeTab);
                                                 const activeState = isActiveSub || isChildActive;
 
@@ -137,6 +157,8 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                                                                 if (hasSubItems) toggleExpand(subItem.id, e);
                                                                 else onTabChange(subItem.id);
                                                             }}
+                                                            onMouseEnter={() => handleMouseEnter(subItem.id, hasSubItems)}
+                                                            onMouseLeave={() => handleMouseLeave(subItem.id, hasSubItems)}
                                                             className={cn(
                                                                 "w-full text-left py-2.5 px-3 text-xs font-medium transition-all duration-200 flex items-center justify-between rounded-xl",
                                                                 activeState
@@ -214,7 +236,7 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                             <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgb(16_185_129)]" />
                             <div className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-75" />
                         </div>
-                        <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider group-hover:text-emerald-700 dark:group-hover:text-emerald-300">System Normal</span>
+                        <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider group-hover:text-emerald-700 dark:group-hover:text-emerald-300">{t('system_normal')}</span>
                     </div>
                 </motion.button>
 
@@ -227,7 +249,7 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                     <div className="w-8 h-8 rounded-xl bg-white dark:bg-black/20 flex items-center justify-center group-hover:bg-destructive/20 transition-colors shadow-sm">
                         <LogOut className="w-4 h-4" />
                     </div>
-                    Log out
+                    {t('logout')}
                 </motion.button>
             </div>
         </motion.div>

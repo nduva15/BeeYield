@@ -384,7 +384,7 @@ const PollinationServices = () => {
                                 <div className="h-12 w-12 bg-primary/20 rounded-full flex items-center justify-center">
                                     <Globe className="h-6 w-6 text-primary" />
                                 </div>
-                                <span className="font-bold text-xl">Intelligent Hives</span>
+                                <span className="font-bold text-xl">BeeYield Hives</span>
                             </div>
                             <div className="flex items-center gap-3 px-8 py-6 bg-background rounded-2xl shadow-sm border border-border">
                                 <div className="h-12 w-12 bg-primary/20 rounded-full flex items-center justify-center">

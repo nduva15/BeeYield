@@ -13,7 +13,7 @@ import {
     X, ChevronDown, MapPin, Search, ClipboardList, Calculator, Receipt, LifeBuoy, Settings,
     Hand, Map, TrendingUp, Volume2, Camera, BookOpen, Droplet, Flame, Zap, Building2, Home, PieChart,
     ArrowRightLeft, FileInput, Bot, Activity, Gauge, List, Layers, BarChart3, Upload, LayoutList, Hexagon, Puzzle,
-    LogIn, UserPlus, Loader2
+    LogIn, UserPlus, Loader2, ArrowLeft, Shield, Lock
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -23,6 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
 import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // View Imports
 import MyDevicesView from '@/components/beeyield/MyDevicesView';
@@ -62,6 +63,12 @@ const BeeYieldDashboard: React.FC = () => {
     const [readings, setReadings] = useState<SensorReading[]>([]);
     const [activeTab, setActiveTab] = useState('devices');
     const [showBanner, setShowBanner] = useState(true);
+
+    const handleLogout = async () => {
+        await signOut();
+        navigate('/shop');
+        toast.success("Disconnected from Secure Ecosystem");
+    };
 
     // Data fetching
     useEffect(() => {
@@ -119,83 +126,85 @@ const BeeYieldDashboard: React.FC = () => {
 
     const lowBattery = devices.filter(d => d.battery_level < 20).length;
 
+    const { language, t } = useLanguage();
+
     // Nav Items matching screenshot precisely
     const navItems: NavItem[] = [
-        { id: 'assistant', label: 'AI Assistant', icon: Bot },
-        { id: 'places', label: 'My Places', icon: MapPin },
+        { id: 'assistant', label: t('nav_ai_assistant'), icon: Bot },
+        { id: 'places', label: t('nav_my_places'), icon: MapPin },
         {
             id: 'beeyield',
-            label: 'BeeYield Hives',
+            label: t('nav_beeyield_hives'),
             icon: Hexagon,
             hasSubmenu: true,
             submenuItems: [
-                { id: 'inspections', label: 'Inspections', icon: Search },
-                { id: 'harvests', label: 'Harvests', icon: Hand },
-                { id: 'flight-map', label: 'Flight Map', icon: Map },
-                { id: 'varroa', label: 'Varroa Modeling', icon: TrendingUp },
-                { id: 'sound', label: 'Beehive Sound Analysis', icon: Volume2 },
-                { id: 'image-analysis', label: 'Image analysis', icon: Camera },
-                { id: 'health-guide', label: 'Bee Health Guide', icon: BookOpen },
+                { id: 'inspections', label: t('nav_inspections'), icon: Search },
+                { id: 'harvests', label: t('nav_harvests'), icon: Hand },
+                { id: 'flight-map', label: t('nav_flight_map'), icon: Map },
+                { id: 'varroa', label: t('nav_varroa'), icon: TrendingUp },
+                { id: 'sound', label: t('nav_sound'), icon: Volume2 },
+                { id: 'image-analysis', label: t('nav_image_analysis'), icon: Camera },
+                { id: 'health-guide', label: t('nav_health_guide'), icon: BookOpen },
             ]
         },
         {
             id: 'data',
-            label: 'Measurement data',
+            label: t('nav_measurement_data'),
             icon: Activity,
             hasSubmenu: true,
             submenuItems: [
-                { id: 'online', label: 'BeeYield Online', icon: Signal },
-                { id: 'bluetooth', label: 'Bluetooth', icon: Bluetooth },
-                { id: 'devices', label: 'My devices', icon: Cpu },
-                { id: 'usb', label: 'USB', icon: Usb },
+                { id: 'online', label: t('nav_online'), icon: Signal },
+                { id: 'bluetooth', label: t('nav_bluetooth'), icon: Bluetooth },
+                { id: 'devices', label: t('nav_my_devices'), icon: Cpu },
+                { id: 'usb', label: t('nav_usb'), icon: Usb },
             ]
         },
-        { id: 'notes', label: 'My Notes', icon: FileText },
-        { id: 'requests', label: 'My Requests', icon: HelpCircle },
-        { id: 'task', label: 'My Task', icon: ClipboardList },
-        { id: 'buy', label: 'Buy BeeYield', icon: Cpu },
+        { id: 'notes', label: t('nav_my_notes'), icon: FileText },
+        { id: 'requests', label: t('nav_my_requests'), icon: HelpCircle },
+        { id: 'task', label: t('nav_my_task'), icon: ClipboardList },
+        { id: 'buy', label: t('nav_buy'), icon: Cpu },
         {
             id: 'meters',
-            label: 'Meters',
+            label: t('nav_meters'),
             icon: LayoutList,
             hasSubmenu: true,
             submenuItems: [
-                { id: 'meters-dashboard', label: 'Dashboard', icon: Gauge },
+                { id: 'meters-dashboard', label: t('nav_dashboard'), icon: Gauge },
                 {
                     id: 'meters-list',
-                    label: 'Meter list',
+                    label: t('nav_meter_list'),
                     icon: List,
                     subItems: [
-                        { id: 'meters-water', label: 'Water', icon: Droplet },
-                        { id: 'meters-heat', label: 'Heat', icon: Flame },
-                        { id: 'meters-energy', label: 'Energy', icon: Zap },
-                        { id: 'meters-other', label: 'Other', icon: Layers },
+                        { id: 'meters-water', label: t('nav_water'), icon: Droplet },
+                        { id: 'meters-heat', label: t('nav_heat'), icon: Flame },
+                        { id: 'meters-energy', label: t('nav_energy'), icon: Zap },
+                        { id: 'meters-other', label: t('nav_other'), icon: Layers },
                     ]
                 },
                 {
                     id: 'meters-buildings',
-                    label: 'Buildings',
+                    label: t('nav_buildings'),
                     icon: Building2,
                     subItems: [
-                        { id: 'meters-apartments', label: 'Apartments', icon: Home },
+                        { id: 'meters-apartments', label: t('nav_apartments'), icon: Home },
                     ]
                 },
                 {
                     id: 'meters-measurements',
-                    label: 'Measurements',
+                    label: t('nav_measurements'),
                     icon: Activity,
                     subItems: [
-                        { id: 'meters-charts', label: 'Charts', icon: BarChart3 },
-                        { id: 'meters-consumption', label: 'Consumption', icon: PieChart },
-                        { id: 'meters-comparisons', label: 'Comparisons', icon: ArrowRightLeft },
-                        { id: 'meters-import', label: 'File import', icon: Upload },
+                        { id: 'meters-charts', label: t('nav_charts'), icon: BarChart3 },
+                        { id: 'meters-consumption', label: t('nav_consumption'), icon: PieChart },
+                        { id: 'meters-comparisons', label: t('nav_comparisons'), icon: ArrowRightLeft },
+                        { id: 'meters-import', label: t('nav_import'), icon: Upload },
                     ]
                 },
             ]
         },
-        { id: 'billing', label: 'Billing', icon: Receipt },
-        { id: 'support', label: 'Support center', icon: LifeBuoy },
-        { id: 'settings', label: 'Settings', icon: Settings },
+        { id: 'billing', label: t('billing'), icon: Receipt },
+        { id: 'support', label: t('nav_support'), icon: LifeBuoy },
+        { id: 'settings', label: t('settings'), icon: Settings },
     ];
 
     // Function to render content based on active tab
@@ -275,9 +284,8 @@ const BeeYieldDashboard: React.FC = () => {
         );
     }
 
-    // Check if user has initialized BeeYield access
-    // TEMPORARILY DISABLED: Allow access without login for development
-    const isBeeYieldActive = true; // user?.user_metadata?.beeyield_active === true;
+    // Check if user has initialized BeeYield access - BYPASSED FOR DEVELOPMENT
+    const isBeeYieldActive = true;
 
     if (authLoading) {
         return (
@@ -288,24 +296,49 @@ const BeeYieldDashboard: React.FC = () => {
     }
 
     // 1. User is not logged in OR does not have a Pollination account: Show Login/Register
-    // TEMPORARILY DISABLED: Skipping login check for development
+    // BYPASSED: skipping check for development
     if (false && (!user || !isBeeYieldActive)) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-background">
-                <div className="max-w-md w-full text-center space-y-6">
-                    <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto border-2 border-primary/20">
-                        <Hexagon className="h-10 w-10 text-primary" />
+            <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#050505] text-white font-mono">
+                <div className="max-w-md w-full text-center space-y-8">
+                    <div className="w-24 h-24 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto border border-primary/20 relative">
+                        <Hexagon className="h-12 w-12 text-primary" />
+                        <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full opacity-50" />
                     </div>
-                    <div className="space-y-2">
-                        <h1 className="text-3xl font-black">Membership Required</h1>
-                        <p className="text-muted-foreground font-medium">To access the BeeYield analytics portal, please sign in to your professional account.</p>
+                    <div className="space-y-4">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 mb-2">
+                            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                            <span className="text-[10px] font-bold text-red-500 tracking-widest uppercase">Access Denied</span>
+                        </div>
+                        <h1 className="text-4xl font-black tracking-tighter">RESTRICTED <br /><span className="text-primary italic">AIRSPACE</span></h1>
+                        <p className="text-white/40 text-xs font-bold uppercase tracking-widest leading-relaxed">
+                            To interface with the BeeYield professional IoT ecosystem, authorization is mandatory.
+                        </p>
                     </div>
-                    <Button onClick={() => navigate('/beeyield-login')} className="w-full h-12 text-lg font-bold rounded-xl shadow-glow">
-                        <LogIn className="w-5 h-5 mr-2" /> Go to Professional Dashboard
-                    </Button>
-                    <Button variant="ghost" onClick={() => navigate('/')} className="w-full text-muted-foreground">
-                        Back to Home
-                    </Button>
+
+                    <div className="grid gap-3">
+                        <Button
+                            onClick={() => navigate('/beeyield-login')}
+                            className="w-full h-14 text-sm font-black rounded-xl bg-primary text-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all"
+                        >
+                            <LogIn className="w-4 h-4 mr-2" /> Authenticate Session
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            onClick={() => navigate('/shop')}
+                            className="w-full h-14 text-white/40 hover:text-white transition-colors uppercase tracking-widest text-[10px] font-bold"
+                        >
+                            <ArrowLeft className="w-4 h-4 mr-2" /> Return to Public Shop
+                        </Button>
+                    </div>
+
+                    <div className="pt-8 border-t border-white/5 flex flex-col items-center gap-2">
+                        <div className="flex gap-4">
+                            <Shield className="h-3 w-3 text-white/10" />
+                            <Lock className="h-3 w-3 text-white/10" />
+                        </div>
+                        <p className="text-[8px] text-white/10 tracking-[0.3em]">ENCRYPTED KERNEL ACCESS ONLY</p>
+                    </div>
                 </div>
             </div>
         );
@@ -315,9 +348,8 @@ const BeeYieldDashboard: React.FC = () => {
         <DashboardLayout
             activeTab={activeTab}
             onTabChange={setActiveTab}
-            onLogout={signOut}
+            onLogout={handleLogout}
             navItems={navItems}
-            hideHeader={activeTab === 'billing'}
         >
             <div className="mt-6 px-4">
                 {renderContent()}

@@ -273,7 +273,7 @@ const InLandPollination = () => {
                 <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
                   <Globe className="h-6 w-6 text-primary" />
                 </div>
-                <span className="font-bold text-lg">Intelligent Hives</span>
+                <span className="font-bold text-lg">BeeYield Hives</span>
               </div>
               <div className="flex items-center gap-2 px-6 py-4 bg-background rounded-lg shadow-sm border border-border">
                 <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">

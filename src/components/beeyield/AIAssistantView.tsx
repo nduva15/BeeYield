@@ -6,19 +6,12 @@ import {
     MessageSquare,
     Send,
     Plus,
-    Search,
-    Settings,
-    Bell,
-    Headphones,
-    Wifi,
-    Puzzle,
-    LogOut,
-    Moon,
     Bot
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import FirstStepsBanner from './FirstStepsBanner';
 import Logo from '@/assets/Logo.png';
+import { aiService, ChatMessage } from '@/services/aiService';
 
 interface AIAssistantViewProps {
     onTabChange: (tab: string) => void;
@@ -46,10 +39,10 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange }) => {
     const [showWelcome, setShowWelcome] = useState(true);
 
     const topicCategories = [
-        { icon: '🐝', label: 'Beekeeping and honeybee farming', color: 'bg-gray-50 dark:bg-gray-800/10' },
-        { icon: '🌾', label: 'Agriculture and modern technologies', color: 'bg-gray-50 dark:bg-gray-800/10' },
-        { icon: '🌍', label: 'Sustainable farming practices and environmental protection', color: 'bg-gray-50 dark:bg-gray-800/10' },
-        { icon: '💡', label: 'Innovations and solutions for apiaries', color: 'bg-gray-50 dark:bg-gray-800/10' },
+        { icon: '🌸', label: 'Crop Pollination & Yield Benefits', color: 'bg-gray-50 dark:bg-gray-800/10' },
+        { icon: '🐝', label: 'BeeYield Intelligent Hive Technology', color: 'bg-gray-50 dark:bg-gray-800/10' },
+        { icon: '🩺', label: 'Hive Health & Disease Management', color: 'bg-gray-50 dark:bg-gray-800/10' },
+        { icon: '📋', label: 'Honey Traceability & Quality Standards', color: 'bg-gray-50 dark:bg-gray-800/10' },
     ];
 
     const handleNewChat = () => {
@@ -65,7 +58,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange }) => {
         setShowWelcome(false);
     };
 
-    const handleSendMessage = () => {
+    const handleSendMessage = async () => {
         if (!inputValue.trim()) return;
 
         const userMessage: Message = {
@@ -75,19 +68,36 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange }) => {
             timestamp: new Date().toLocaleTimeString()
         };
 
-        setMessages([...messages, userMessage]);
+        const newMessages = [...messages, userMessage];
+        setMessages(newMessages);
         setInputValue('');
         setShowWelcome(false);
 
-        setTimeout(() => {
+        // Convert messages for API
+        const history: ChatMessage[] = messages.map(m => ({
+            role: m.role,
+            content: m.content
+        }));
+
+        try {
+            const aiResponse = await aiService.chat(inputValue, history);
+
             const aiMessage: Message = {
                 id: (Date.now() + 1).toString(),
                 role: 'assistant',
-                content: 'Thank you for your question! I\'m here to help you with beekeeping and apiary management. How can I assist you today?',
+                content: aiResponse,
                 timestamp: new Date().toLocaleTimeString()
             };
             setMessages(prev => [...prev, aiMessage]);
-        }, 1000);
+        } catch (error) {
+            const errorMessage: Message = {
+                id: (Date.now() + 1).toString(),
+                role: 'assistant',
+                content: "I'm sorry, I'm having trouble thinking right now. Please try again.",
+                timestamp: new Date().toLocaleTimeString()
+            };
+            setMessages(prev => [...prev, errorMessage]);
+        }
     };
 
     const handleTopicClick = (topic: string) => {
@@ -110,7 +120,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange }) => {
                 <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
                     <div className="space-y-4 max-w-2xl">
                         <h2 className="text-3xl md:text-4xl font-bold text-white">
-                            Your AI assistant for smarter apiaries
+                            Your BeeYield AI assistant for smarter apiaries
                         </h2>
                         <p className="text-white font-medium">
                             Start a conversation with our AI Assistant to get help on topics like:
@@ -138,47 +148,6 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange }) => {
                 </div>
             </div>
 
-            {/* Search and Controls Bar - Moved outside the grid */}
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
-                <div className="relative flex-1 w-full md:max-w-md">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <Input
-                        placeholder="Search apiaries, beehives"
-                        className="pl-12 h-12 bg-white dark:bg-[#09090b] border-gray-100 dark:border-gray-800 rounded-full text-sm shadow-sm"
-                    />
-                </div>
-
-                <div className="flex items-center gap-4 w-full md:w-auto justify-end">
-                    <Button variant="outline" className="h-12 px-6 rounded-full border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] flex items-center gap-2 shadow-sm">
-                        <img src="https://flagcdn.com/w20/gb.png" alt="English" className="w-5 h-auto rounded-sm" />
-                        <span className="font-bold text-xs uppercase tracking-tight">English</span>
-                    </Button>
-
-                    <div className="flex items-center gap-2">
-                        <button className="w-10 h-10 rounded-xl bg-white dark:bg-[#09090b] border border-gray-50 dark:border-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
-                            <Settings className="w-5 h-5" />
-                        </button>
-                        <button className="w-10 h-10 rounded-xl bg-white dark:bg-[#09090b] border border-gray-50 dark:border-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
-                            <Moon className="w-5 h-5" />
-                        </button>
-                        <button className="w-10 h-10 rounded-xl bg-white dark:bg-[#09090b] border border-gray-50 dark:border-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
-                            <Bell className="w-5 h-5" />
-                        </button>
-                        <button className="w-10 h-10 rounded-xl bg-white dark:bg-[#09090b] border border-gray-50 dark:border-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
-                            <Headphones className="w-5 h-5" />
-                        </button>
-                        <button className="w-10 h-10 rounded-xl bg-white dark:bg-[#09090b] border border-gray-50 dark:border-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
-                            <Wifi className="w-5 h-5" />
-                        </button>
-                        <button className="w-10 h-10 rounded-xl bg-white dark:bg-[#09090b] border border-gray-50 dark:border-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
-                            <Puzzle className="w-5 h-5" />
-                        </button>
-                        <button className="w-10 h-10 rounded-xl bg-white dark:bg-[#09090b] border border-gray-50 dark:border-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors shadow-sm">
-                            <LogOut className="w-5 h-5" />
-                        </button>
-                    </div>
-                </div>
-            </div>
 
             {/* Main Chat Interface Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[600px]">
