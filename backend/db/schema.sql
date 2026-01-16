@@ -124,14 +124,15 @@ CREATE TABLE IF NOT EXISTS hives (
 -- 10. Pollination Requests
 CREATE TABLE IF NOT EXISTS pollination_requests (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    full_name TEXT,
-    email TEXT,
+    full_name TEXT NOT NULL,
+    email TEXT NOT NULL,
     phone TEXT,
-    location TEXT,
+    farm_name TEXT,
+    farm_location TEXT,
     crop_type TEXT,
     acres NUMERIC,
-    preferred_date DATE,
-    message TEXT,
+    preferred_start_date DATE,
+    additional_info TEXT,
     status TEXT DEFAULT 'pending',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now())
 );
@@ -139,10 +140,26 @@ CREATE TABLE IF NOT EXISTS pollination_requests (
 -- 11. Contact Submissions
 CREATE TABLE IF NOT EXISTS contact_submissions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    first_name TEXT,
+    last_name TEXT,
     name TEXT,
-    email TEXT,
+    email TEXT NOT NULL,
+    phone TEXT,
+    city TEXT,
+    state TEXT,
+    country TEXT,
+    inquiry_type TEXT, -- 'grower', 'beekeeper', 'general'
+    topic TEXT,
     subject TEXT,
     message TEXT,
+    company TEXT,
+    farm_name TEXT,
+    crop_type TEXT,
+    acres NUMERIC,
+    apiary_name TEXT,
+    hive_count INTEGER,
+    experience_years TEXT,
+    form_specific_data JSONB,
     status TEXT DEFAULT 'new',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now())
 );
@@ -151,6 +168,7 @@ CREATE TABLE IF NOT EXISTS contact_submissions (
 CREATE TABLE IF NOT EXISTS newsletter_subscribers (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email TEXT UNIQUE NOT NULL,
+    first_name TEXT,
     status TEXT DEFAULT 'subscribed',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now())
 );
