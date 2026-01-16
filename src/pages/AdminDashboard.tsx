@@ -16,7 +16,7 @@ import {
     Database, Trash2, Edit, Shield, Crown, UserMinus,
     CheckCircle2, XCircle, Clock, AlertTriangle, LayoutDashboard,
     MessageSquare, Bug, Mail, History, TrendingUp, ChevronRight,
-    LogOut, Search, MapPin, Eye, Phone, Leaf, Building2, Share2, CreditCard
+    LogOut, Search, MapPin, Eye, Phone, Leaf, Building2, Share2, CreditCard, FileText, Maximize2, Plus, Minus
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -819,161 +819,584 @@ const AdminDashboard: React.FC = () => {
                         </TabsList>
                     </div>
 
+                    {/* Announcement Banner */}
+                    <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl px-4 py-2.5 flex items-center justify-between text-white text-sm mb-2">
+                        <div className="flex items-center gap-2">
+                            <span>🐝</span>
+                            <span>Introducing new dashboard! Download now at <a href="#" className="underline font-semibold">BeeYield.io</a></span>
+                        </div>
+                        <button className="text-white/80 hover:text-white">✕</button>
+                    </div>
+
                     <TabsContent value="overview" className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <AdminMetricCard
-                                value={`KES ${dashboardStats.totalRevenue.toLocaleString()}`}
-                                description="TOTAL SALES"
-                                icon={CreditCard}
-                            />
-                            <AdminMetricCard
-                                value={dashboardStats.totalAcres.toLocaleString()}
-                                description="ACRES POLLINATED"
-                                icon={Bug}
-                            />
-                            <AdminMetricCard
-                                value={dashboardStats.totalHives.toLocaleString()}
-                                description="PROTECTED HIVES"
-                                icon={Leaf}
-                            />
-                            <AdminMetricCard
-                                value={dashboardStats.totalApiaries.toLocaleString()}
-                                description="TOTAL APIARIES"
-                                icon={MapPin}
-                            />
+                        {/* Row 1: General Report + Visitors + Users By Age */}
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                            {/* General Report Section */}
+                            <div className="lg:col-span-4 space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-lg font-bold text-foreground">General Report</h3>
+                                    <select className="text-xs bg-transparent border border-border rounded-lg px-3 py-1.5 text-muted-foreground">
+                                        <option>Daily</option>
+                                        <option>Weekly</option>
+                                        <option>Monthly</option>
+                                    </select>
+                                </div>
+
+                                {/* Stats Card */}
+                                <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl p-5 shadow-sm">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="w-12 h-12 bg-amber-100 dark:bg-amber-500/20 rounded-xl flex items-center justify-center">
+                                            <CreditCard className="w-6 h-6 text-amber-600" />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-muted-foreground uppercase tracking-wide">TOTAL TRANSACTIONS</p>
+                                            <p className="text-sm font-medium text-amber-600">4,501 <span className="text-green-500 text-xs">↑5%</span></p>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <p className="text-[10px] text-muted-foreground uppercase tracking-wide">CANCELLED ORDERS</p>
+                                        <p className="text-xs text-muted-foreground">256 <span className="text-red-500">-0.15%</span></p>
+                                    </div>
+                                </Card>
+
+                                <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl p-5 shadow-sm">
+                                    <p className="text-3xl font-bold text-foreground">KES {dashboardStats.totalRevenue.toLocaleString()}</p>
+                                    <div className="flex gap-4 mt-3 text-xs">
+                                        <div className="flex items-center gap-1">
+                                            <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
+                                            <span className="text-muted-foreground">40%</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                            <span className="text-muted-foreground">Sales growth this month</span>
+                                        </div>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground mt-2">Active locations: 6</p>
+                                </Card>
+
+                                <div className="flex gap-3">
+                                    <div className="flex-1 bg-white dark:bg-card border border-gray-100 dark:border-border rounded-xl p-3">
+                                        <p className="text-[10px] text-muted-foreground uppercase">GROSS RENTAL VALUE</p>
+                                        <p className="text-sm font-bold">KES 72,000 <span className="text-green-500 text-xs">↑4%</span></p>
+                                    </div>
+                                    <div className="flex-1 bg-white dark:bg-card border border-gray-100 dark:border-border rounded-xl p-3">
+                                        <p className="text-[10px] text-muted-foreground uppercase">BEEKEEPER PROFITS</p>
+                                        <p className="text-sm font-bold">KES 54,000 <span className="text-green-500 text-xs">↑6%</span></p>
+                                    </div>
+                                </div>
+
+                                <Button onClick={loadAllData} className="w-full rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-medium">
+                                    <RefreshCw className="w-4 h-4 mr-2" /> Download Reports
+                                </Button>
+                            </div>
+
+                            {/* Visitors Section */}
+                            <div className="lg:col-span-4 space-y-4">
+                                <h3 className="text-lg font-bold text-foreground">Visitors</h3>
+
+                                <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl p-5 shadow-sm">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div>
+                                            <p className="text-xs text-muted-foreground">Realtime active users</p>
+                                            <p className="text-4xl font-bold text-foreground">{dashboardStats.totalUsers || 214}</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-xs text-muted-foreground">Page per second</p>
+                                            <p className="text-lg font-bold text-foreground">2.5</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Mini Chart */}
+                                    <div className="h-16 w-full mb-4">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <AreaChart data={[
+                                                { t: '1', v: 50 }, { t: '2', v: 80 }, { t: '3', v: 60 },
+                                                { t: '4', v: 90 }, { t: '5', v: 70 }, { t: '6', v: 100 },
+                                                { t: '7', v: 85 }
+                                            ]}>
+                                                <defs>
+                                                    <linearGradient id="visitorsGrad" x1="0" y1="0" x2="0" y2="1">
+                                                        <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.4} />
+                                                        <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+                                                    </linearGradient>
+                                                </defs>
+                                                <Area type="monotone" dataKey="v" stroke="#f59e0b" fill="url(#visitorsGrad)" strokeWidth={2} />
+                                            </AreaChart>
+                                        </ResponsiveContainer>
+                                    </div>
+
+                                    {/* Top Active Pages */}
+                                    <div className="space-y-2">
+                                        <p className="text-xs font-medium text-muted-foreground">Top Active Pages</p>
+                                        {[
+                                            { page: '/shop/honey', views: 472 },
+                                            { page: '/traceability', views: 284 },
+                                            { page: '/profile_review/879', views: 63 },
+                                            { page: '/profile_review/24557', views: 35 },
+                                        ].map((p, i) => (
+                                            <div key={i} className="flex justify-between text-xs">
+                                                <span className="text-muted-foreground truncate">{p.page}</span>
+                                                <span className="font-medium">{p.views}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <Button variant="link" className="text-amber-600 text-xs p-0 h-auto mt-2">
+                                        Real-Time Report →
+                                    </Button>
+                                </Card>
+                            </div>
+
+                            {/* Users By Age Section */}
+                            <div className="lg:col-span-4 space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-lg font-bold text-foreground">Users By Age</h3>
+                                    <span className="text-xs text-muted-foreground">Show More</span>
+                                </div>
+
+                                <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl p-5 shadow-sm">
+                                    <div className="flex gap-2 mb-4">
+                                        <Button size="sm" className="rounded-full bg-amber-500 text-white text-xs px-4 h-7">Active</Button>
+                                        <Button size="sm" variant="outline" className="rounded-full text-xs px-4 h-7">Inactive</Button>
+                                    </div>
+
+                                    {/* Donut Chart */}
+                                    <div className="relative w-36 h-36 mx-auto mb-4">
+                                        <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+                                            {/* Background circle */}
+                                            <circle cx="50" cy="50" r="40" fill="none" stroke="#e5e7eb" strokeWidth="12" className="dark:stroke-gray-700" />
+                                            {/* Amber segment - 60% */}
+                                            <circle cx="50" cy="50" r="40" fill="none" stroke="#f59e0b" strokeWidth="12"
+                                                strokeDasharray="150.8 251.2" strokeLinecap="round" />
+                                            {/* Green segment - 25% */}
+                                            <circle cx="50" cy="50" r="40" fill="none" stroke="#22c55e" strokeWidth="12"
+                                                strokeDasharray="62.8 251.2" strokeDashoffset="-150.8" strokeLinecap="round" />
+                                            {/* Gray segment - 15% */}
+                                            <circle cx="50" cy="50" r="40" fill="none" stroke="#94a3b8" strokeWidth="12"
+                                                strokeDasharray="37.7 251.2" strokeDashoffset="-213.6" strokeLinecap="round" />
+                                        </svg>
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                            <span className="text-2xl font-bold">{dashboardStats.totalUsers || 2501}</span>
+                                            <span className="text-[10px] text-muted-foreground">Active Users</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Legend */}
+                                    <div className="space-y-2">
+                                        {[
+                                            { label: '17 - 30 Years', color: 'bg-amber-500', mode: 'Light Mode' },
+                                            { label: '31 - 50 %', color: 'bg-green-500', mode: 'Dark Mode' },
+                                            { label: '> 55 Years old', color: 'bg-gray-400', mode: '' },
+                                        ].map((item, i) => (
+                                            <div key={i} className="flex items-center justify-between text-xs">
+                                                <div className="flex items-center gap-2">
+                                                    <div className={`w-2 h-2 rounded-full ${item.color}`}></div>
+                                                    <span className="text-muted-foreground">{item.label}</span>
+                                                </div>
+                                                {item.mode && <span className="text-muted-foreground">{item.mode}</span>}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </Card>
+                            </div>
                         </div>
 
+                        {/* Row 2: Map + Weekly Best Sellers */}
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            <Card className="lg:col-span-1 bg-card border-border rounded-2xl p-6 shadow-sm">
-                                <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                                    <ShoppingBag className="w-5 h-5 text-primary" />
-                                    Shopping Inventory
-                                </h3>
+                            {/* Map Section */}
+                            <div className="lg:col-span-2">
+                                <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl overflow-hidden shadow-sm h-full flex flex-col">
+                                    <div className="p-4 border-b border-gray-100 dark:border-border bg-white dark:bg-card z-10">
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="text-lg font-bold">Official Store</h3>
+                                            <div className="flex gap-2">
+                                                <Button size="sm" variant="outline" className="rounded-lg text-xs h-8 gap-2 bg-white">
+                                                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div> Filter by city
+                                                </Button>
+                                            </div>
+                                        </div>
+                                        <p className="text-xs text-muted-foreground mt-1">250 Official stores in 21 countries, click the marker to see location details.</p>
+                                    </div>
+
+                                    {/* Interactive Map Styles */}
+                                    <div className="flex-1 relative bg-slate-100 dark:bg-slate-900 min-h-[350px]">
+                                        {/* Map Controls */}
+                                        <div className="absolute top-4 left-4 z-10 flex bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                                            <button className="px-3 py-1.5 text-xs font-medium hover:bg-gray-50 border-r border-gray-200">Map</button>
+                                            <button className="px-3 py-1.5 text-xs font-medium hover:bg-gray-50 text-muted-foreground">Satellite</button>
+                                        </div>
+
+                                        <div className="absolute top-4 right-4 z-10 bg-white rounded-lg p-1.5 shadow-sm border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                            <Maximize2 className="w-4 h-4 text-gray-500" />
+                                        </div>
+
+                                        <div className="absolute bottom-8 left-4 z-10 flex flex-col bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                                            <button className="p-1.5 hover:bg-gray-50 border-b border-gray-200"><Plus className="w-4 h-4 text-gray-600" /></button>
+                                            <button className="p-1.5 hover:bg-gray-50"><Minus className="w-4 h-4 text-gray-600" /></button>
+                                        </div>
+
+                                        {/* Map Background Pattern */}
+                                        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:16px_16px]"></div>
+
+                                        {/* Map Markers */}
+                                        <div className="absolute top-1/3 left-1/4 transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer">
+                                            <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center animate-ping absolute"></div>
+                                            <div className="relative w-8 h-8">
+                                                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-2 h-1 bg-black/20 rounded-full blur-[2px]"></div>
+                                                <div className="w-8 h-8 bg-blue-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white font-bold text-xs transform transition-transform group-hover:-translate-y-1">
+                                                    3
+                                                </div>
+                                            </div>
+                                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white px-2 py-1 rounded shadow-lg text-[10px] font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                                Tangerang
+                                            </div>
+                                        </div>
+
+                                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer">
+                                            <div className="relative w-8 h-8">
+                                                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-2 h-1 bg-black/20 rounded-full blur-[2px]"></div>
+                                                <div className="w-8 h-8 bg-blue-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white font-bold text-xs transform transition-transform group-hover:-translate-y-1">
+                                                    8
+                                                </div>
+                                            </div>
+                                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white px-2 py-1 rounded shadow-lg text-[10px] font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                                Jakarta
+                                            </div>
+                                        </div>
+
+                                        <div className="absolute top-2/3 right-1/4 transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer">
+                                            <div className="relative w-8 h-8">
+                                                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-2 h-1 bg-black/20 rounded-full blur-[2px]"></div>
+                                                <div className="w-8 h-8 bg-blue-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white font-bold text-xs transform transition-transform group-hover:-translate-y-1">
+                                                    2
+                                                </div>
+                                            </div>
+                                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white px-2 py-1 rounded shadow-lg text-[10px] font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                                Bekasi
+                                            </div>
+                                        </div>
+
+                                        {/* Watermark */}
+                                        <div className="absolute bottom-1 left-2 text-[10px] text-gray-400 font-sans">Google</div>
+                                    </div>
+                                </Card>
+                            </div>
+
+                            {/* Weekly Best Sellers */}
+                            <div className="lg:col-span-1">
+                                <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl p-5 shadow-sm h-full flex flex-col">
+                                    <h3 className="text-lg font-bold mb-6">Weekly Best Sellers</h3>
+
+                                    <div className="space-y-6 flex-1">
+                                        {[
+                                            { name: 'Angelina Jolie', date: '25 October 2024', sales: '120 Sales', img: 'https://i.pravatar.cc/150?u=a042581f4e29026024d' },
+                                            { name: 'John Travolta', date: '17 April 2024', sales: '137 Sales', img: 'https://i.pravatar.cc/150?u=a042581f4e29026704d' },
+                                            { name: 'Brad Pitt', date: '11 June 2024', sales: '132 Sales', img: 'https://i.pravatar.cc/150?u=a04258114e29026302d' },
+                                            { name: 'Angelina Jolie', date: '5 October 2024', sales: '137 Sales', img: 'https://i.pravatar.cc/150?u=a042581f4e29026024d' },
+                                        ].map((seller, i) => (
+                                            <div key={i} className="flex items-center gap-4">
+                                                <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-100 shadow-sm flex-shrink-0">
+                                                    <img src={seller.img} alt={seller.name} className="w-full h-full object-cover" />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-bold truncate">{seller.name}</p>
+                                                    <p className="text-[11px] text-muted-foreground">{seller.date}</p>
+                                                </div>
+                                                <div className="bg-lime-400 text-lime-950 text-[10px] font-bold px-2 py-1 rounded-md shadow-sm">
+                                                    {seller.sales}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <Button variant="secondary" className="w-full mt-4 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium h-9 rounded-xl">
+                                        View More
+                                    </Button>
+                                </Card>
+                            </div>
+                        </div>
+
+                        {/* Row 3: Promotional Banners */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Banner 1 */}
+                            <Card className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-6 text-white relative overflow-hidden">
+                                <div className="relative z-10 max-w-xs">
+                                    <h3 className="text-xl font-bold mb-2">Partner with BeeYield's Farmer Network</h3>
+                                    <p className="text-white/80 text-sm mb-4">Apply for a quick registration</p>
+                                    <Button className="bg-foreground text-amber-500 hover:bg-gray-800 dark:bg-white dark:text-amber-600 rounded-xl font-medium">
+                                        Start Now
+                                    </Button>
+                                </div>
+                                {/* Decorative illustration placeholder */}
+                                <div className="absolute right-4 bottom-0 opacity-30">
+                                    <Users className="w-32 h-32" />
+                                </div>
+                            </Card>
+
+                            {/* Banner 2 */}
+                            <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl p-6 relative overflow-hidden">
+                                <div className="relative z-10">
+                                    <h3 className="text-xl font-bold mb-2 text-foreground">Invite friends to get FREE bonuses!</h3>
+                                    <p className="text-muted-foreground text-sm mb-4">Get KES 500 in credits for every friend you refer to BeeYield</p>
+                                    <div className="flex items-center gap-3">
+                                        <div className="bg-muted rounded-lg px-3 py-2 text-xs font-mono flex-1 max-w-xs truncate">
+                                            https://beeyield.io/ref...
+                                        </div>
+                                        <Button size="icon" variant="outline" className="rounded-lg">
+                                            <Share2 className="w-4 h-4" />
+                                        </Button>
+                                    </div>
+                                </div>
+                                {/* Decorative chart icon */}
+                                <div className="absolute right-4 top-4 opacity-10">
+                                    <TrendingUp className="w-24 h-24 text-amber-500" />
+                                </div>
+                            </Card>
+                        </div>
+
+                        {/* Row 4: Weekly Top Products Table */}
+                        <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl shadow-sm overflow-hidden">
+                            <div className="p-4 border-b border-gray-100 dark:border-border flex items-center justify-between">
+                                <h3 className="text-lg font-bold">Weekly Top Products</h3>
+                                <div className="flex gap-2">
+                                    <Button size="sm" variant="outline" className="rounded-lg text-xs h-8 gap-2">
+                                        <Package className="w-3 h-3" /> Export to Excel
+                                    </Button>
+                                    <Button size="sm" variant="outline" className="rounded-lg text-xs h-8 gap-2">
+                                        <FileText className="w-3 h-3" /> Export to PDF
+                                    </Button>
+                                </div>
+                            </div>
+
+                            <Table>
+                                <TableHeader>
+                                    <TableRow className="bg-muted/30">
+                                        <TableHead className="font-bold text-xs uppercase">Images</TableHead>
+                                        <TableHead className="font-bold text-xs uppercase">Product Name</TableHead>
+                                        <TableHead className="font-bold text-xs uppercase text-right">Stock</TableHead>
+                                        <TableHead className="font-bold text-xs uppercase">Status</TableHead>
+                                        <TableHead className="font-bold text-xs uppercase text-right">Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {products.slice(0, 5).map((product, i) => (
+                                        <TableRow key={product.id || i} className="hover:bg-muted/20">
+                                            <TableCell>
+                                                <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-500/20 overflow-hidden">
+                                                    {product.images?.[0] ? (
+                                                        <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center">
+                                                            <Package className="w-5 h-5 text-amber-600" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <p className="font-medium text-sm">{product.name}</p>
+                                                <p className="text-xs text-muted-foreground">{product.category}</p>
+                                            </TableCell>
+                                            <TableCell className="text-right font-bold">{product.variants?.[0]?.stock_quantity || 0}</TableCell>
+                                            <TableCell>
+                                                <Badge className={cn(
+                                                    "rounded-full font-medium text-xs",
+                                                    (product.variants?.[0]?.stock_quantity || 0) > 10
+                                                        ? "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400"
+                                                        : "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400"
+                                                )}>
+                                                    {(product.variants?.[0]?.stock_quantity || 0) > 10 ? 'Active' : 'Low Stock'}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <div className="flex justify-end gap-1">
+                                                    <Button size="sm" variant="ghost" className="h-8 text-xs text-amber-600 hover:text-amber-700">
+                                                        <Edit className="w-3 h-3 mr-1" /> Edit
+                                                    </Button>
+                                                    <Button size="sm" variant="ghost" className="h-8 text-xs text-red-600 hover:text-red-700">
+                                                        <Trash2 className="w-3 h-3 mr-1" /> Delete
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                    {products.length === 0 && (
+                                        <TableRow>
+                                            <TableCell colSpan={5} className="text-center h-32 text-muted-foreground">
+                                                No products found. Add products from the Shop tab.
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+
+                            {/* Pagination */}
+                            <div className="p-4 border-t border-gray-100 dark:border-border flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <Button size="sm" variant="outline" className="w-8 h-8 rounded-lg">&lt;</Button>
+                                    <Button size="sm" className="w-8 h-8 rounded-lg bg-amber-500 text-white">1</Button>
+                                    <Button size="sm" variant="outline" className="w-8 h-8 rounded-lg">2</Button>
+                                    <Button size="sm" variant="outline" className="w-8 h-8 rounded-lg">3</Button>
+                                    <Button size="sm" variant="outline" className="w-8 h-8 rounded-lg">&gt;</Button>
+                                </div>
+                                <select className="text-xs bg-transparent border border-border rounded-lg px-3 py-1.5">
+                                    <option>10 per page</option>
+                                    <option>25 per page</option>
+                                    <option>50 per page</option>
+                                </select>
+                            </div>
+                        </Card>
+
+                        {/* Row 5: Important Notes */}
+                        <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl p-5 shadow-sm">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-lg font-bold">Important Notes</h3>
+                                <div className="flex gap-2">
+                                    <Button size="icon" variant="outline" className="w-8 h-8 rounded-lg">
+                                        <ChevronRight className="w-4 h-4 rotate-180" />
+                                    </Button>
+                                    <Button size="icon" variant="outline" className="w-8 h-8 rounded-lg">
+                                        <ChevronRight className="w-4 h-4" />
+                                    </Button>
+                                </div>
+                            </div>
+
+                            <div className="bg-muted/30 rounded-xl p-4">
+                                <h4 className="font-bold text-sm mb-1">Welcome to BeeYield Admin Dashboard</h4>
+                                <p className="text-[10px] text-muted-foreground mb-2">24 hours ago</p>
+                                <p className="text-sm text-muted-foreground">
+                                    This dashboard gives you a complete overview of your beekeeping network metrics.
+                                    Monitor honey production, track farmer performance, and manage your product inventory all in one place.
+                                </p>
+                                <Button variant="link" className="text-amber-600 text-xs p-0 h-auto mt-2">
+                                    View Notes →
+                                </Button>
+                            </div>
+                        </Card>
+
+                        {/* Row 6: Bottom Widgets - Schedules, Recent Activities, Transactions */}
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            {/* Schedules / Calendar */}
+                            <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl p-5 shadow-sm">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="font-bold">Schedules</h3>
+                                    <Button size="sm" variant="outline" className="rounded-lg text-xs h-7 gap-1">
+                                        <Plus className="w-3 h-3" /> Add New Schedules
+                                    </Button>
+                                </div>
+
+                                {/* Simple Calendar */}
+                                <div className="grid grid-cols-7 gap-1 text-center text-xs mb-4">
+                                    {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(d => (
+                                        <div key={d} className="font-medium text-muted-foreground py-1">{d}</div>
+                                    ))}
+                                    {Array.from({ length: 35 }, (_, i) => {
+                                        const day = i - 3;
+                                        const isCurrentMonth = day >= 1 && day <= 30;
+                                        const isToday = day === 16;
+                                        const hasEvent = [7, 8, 9, 10, 23, 24].includes(day);
+                                        return (
+                                            <div
+                                                key={i}
+                                                className={cn(
+                                                    "py-1.5 rounded-lg",
+                                                    !isCurrentMonth && "text-muted-foreground/30",
+                                                    isToday && "bg-amber-500 text-white font-bold",
+                                                    hasEvent && !isToday && "bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 font-medium"
+                                                )}
+                                            >
+                                                {isCurrentMonth ? day : day <= 0 ? 30 + day : day - 30}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Schedule Items */}
+                                <div className="space-y-2 border-t border-gray-100 dark:border-border pt-3">
+                                    <div className="flex items-center gap-3 text-xs">
+                                        <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
+                                        <span className="text-muted-foreground">UX/UX Workshop</span>
+                                        <span className="ml-auto text-muted-foreground">28%</span>
+                                    </div>
+                                    <div className="flex items-center gap-3 text-xs">
+                                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                        <span className="text-muted-foreground">Hive Development Sprint</span>
+                                        <span className="ml-auto text-muted-foreground">18%</span>
+                                    </div>
+                                </div>
+                            </Card>
+
+                            {/* Recent Activities */}
+                            <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl p-5 shadow-sm">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="font-bold">Recent Activities</h3>
+                                    <Button variant="link" className="text-amber-600 text-xs p-0 h-auto">Show More</Button>
+                                </div>
+
                                 <div className="space-y-4">
                                     {[
-                                        { label: 'Honey Products', count: dashboardStats.categoryCounts.honey, color: 'bg-honey/20 text-honey' },
-                                        { label: 'Learning Resources', count: dashboardStats.categoryCounts.learn, color: 'bg-blue-500/20 text-blue-500' },
-                                        { label: 'Bee Sensors', count: dashboardStats.categoryCounts.sensors, color: 'bg-green-500/20 text-green-500' },
-                                        { label: 'Merchandise', count: dashboardStats.categoryCounts.merch, color: 'bg-purple-500/20 text-purple-500' },
-                                    ].map((cat) => (
-                                        <div key={cat.label} className="flex items-center justify-between p-3 rounded-xl bg-muted/30">
-                                            <span className="text-sm font-medium">{cat.label}</span>
-                                            <Badge className={cn("rounded-lg border-none", cat.color)}>{cat.count}</Badge>
+                                        { name: 'New Farmer Added', time: '09:04 PM', action: 'Has joined the team', color: 'bg-green-500' },
+                                        { name: 'Honey Batch Minted', time: '12:30 PM', action: 'Added 3 new batches', color: 'bg-amber-500' },
+                                        { name: 'Order Completed', time: 'Yesterday', action: 'KES 12,500 delivered', color: 'bg-blue-500' },
+                                        { name: 'Kevin from Kitui', time: '07:15 PM', action: 'Has changed Apiary location', color: 'bg-purple-500' },
+                                    ].map((activity, i) => (
+                                        <div key={i} className="flex items-start gap-3">
+                                            <div className={`w-8 h-8 rounded-full ${activity.color} flex items-center justify-center text-white text-xs font-bold`}>
+                                                {activity.name.charAt(0)}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-medium truncate">{activity.name}</p>
+                                                <p className="text-[10px] text-muted-foreground">{activity.action}</p>
+                                            </div>
+                                            <span className="text-[10px] text-muted-foreground whitespace-nowrap">{activity.time}</span>
                                         </div>
                                     ))}
                                 </div>
                             </Card>
 
-                            <Card className="lg:col-span-2 bg-card border-border rounded-2xl p-6 shadow-sm">
-                                <div className="flex justify-between items-center mb-6">
-                                    <div>
-                                        <h3 className="text-xl font-bold flex items-center gap-2">
-                                            <TrendingUp className="w-5 h-5 text-primary" />
-                                            Performance Analytics
-                                        </h3>
-                                        <p className="text-muted-foreground text-sm">Real-time system growth trajectory</p>
-                                    </div>
+                            {/* Transactions */}
+                            <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl p-5 shadow-sm">
+                                <h3 className="font-bold mb-4">Transactions</h3>
+
+                                <div className="space-y-4">
+                                    {orders.slice(0, 4).map((order, i) => (
+                                        <div key={order.id || i} className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-xs font-bold">
+                                                {order.shipping_address?.first_name?.charAt(0) || 'U'}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-medium truncate">
+                                                    {order.shipping_address?.first_name || 'Customer'} {order.shipping_address?.last_name || ''}
+                                                </p>
+                                                <p className="text-[10px] text-muted-foreground">
+                                                    {new Date(order.created_at).toLocaleDateString()}
+                                                </p>
+                                            </div>
+                                            <span className={cn(
+                                                "text-xs font-bold",
+                                                order.status === 'completed' ? "text-green-600" : "text-amber-600"
+                                            )}>
+                                                +KES {order.total_amount?.toLocaleString() || '0'}
+                                            </span>
+                                        </div>
+                                    ))}
+                                    {orders.length === 0 && (
+                                        <p className="text-sm text-muted-foreground text-center py-4">No transactions yet</p>
+                                    )}
                                 </div>
-                                <div className="h-[250px] w-full">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <AreaChart data={[
-                                            { time: 'Jan', val: 120 }, { time: 'Feb', val: 150 }, { time: 'Mar', val: 240 },
-                                            { time: 'Apr', val: 190 }, { time: 'May', val: 320 }, { time: 'Jun', val: 280 },
-                                            { time: 'Jul', val: 400 }
-                                        ]}>
-                                            <defs>
-                                                <linearGradient id="colorVal" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
-                                                    <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
-                                                </linearGradient>
-                                            </defs>
-                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                                            <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
-                                            <YAxis axisLine={false} tickLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
-                                            <Tooltip
-                                                contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', color: 'hsl(var(--foreground))' }}
-                                                itemStyle={{ color: 'hsl(var(--primary))' }}
-                                            />
-                                            <Area type="monotone" dataKey="val" stroke="#f59e0b" fillOpacity={1} fill="url(#colorVal)" strokeWidth={2} />
-                                        </AreaChart>
-                                    </ResponsiveContainer>
-                                </div>
+
+                                <Button variant="link" className="text-amber-600 text-xs p-0 h-auto mt-4">
+                                    View More →
+                                </Button>
                             </Card>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <Card className="border-none shadow-xl glass bg-primary/5 dark:bg-primary/10 rounded-3xl relative overflow-hidden group hover:scale-105 transition-all duration-500">
-                                <CardHeader className="pb-2">
-                                    <CardTitle className="text-sm font-black uppercase tracking-widest text-muted-foreground z-10">Honey Harvested</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="text-3xl font-black z-10 relative">{dashboardStats.totalHoneyKg.toLocaleString()} KG</div>
-                                    <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:opacity-20 transition-opacity z-0">
-                                        <Database className="w-24 h-24" />
-                                    </div>
-                                </CardContent>
-                            </Card>
-                            <Card className="border-none shadow-xl glass bg-blue-500/5 dark:bg-blue-500/10 rounded-3xl relative overflow-hidden group hover:scale-105 transition-all duration-500">
-                                <CardHeader className="pb-2">
-                                    <CardTitle className="text-sm font-black uppercase tracking-widest text-muted-foreground z-10">Network Farmers</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="text-3xl font-black z-10 relative">{dashboardStats.totalFarmers.toLocaleString()} REGISTERED</div>
-                                    <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:opacity-20 transition-opacity z-0">
-                                        <Users className="w-24 h-24" />
-                                    </div>
-                                </CardContent>
-                            </Card>
-                            <Card className="border-none shadow-xl glass bg-destructive/5 dark:bg-destructive/10 rounded-3xl relative overflow-hidden group hover:scale-105 transition-all duration-500">
-                                <CardHeader className="pb-2">
-                                    <CardTitle className="text-sm font-black uppercase tracking-widest text-muted-foreground z-10">Active Platform Users</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="text-3xl font-black z-10 relative">{dashboardStats.totalUsers.toLocaleString()} PROFILES</div>
-                                    <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:opacity-20 transition-opacity z-0">
-                                        <Shield className="w-24 h-24" />
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </div>
-
+                        {/* Quick Actions */}
                         <div className="flex gap-4">
-                            <Button onClick={handleSeedTraceability} variant="outline" className="rounded-2xl border-dashed border-primary/40 text-primary hover:bg-primary/5">
+                            <Button onClick={handleSeedTraceability} variant="outline" className="rounded-2xl border-dashed border-amber-400 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-500/10">
                                 <Database className="w-4 h-4 mr-2" /> Seed Demo Batches
                             </Button>
-                            <Button onClick={handleSeedApiaries} variant="outline" className="rounded-2xl border-dashed border-primary/40 text-primary hover:bg-primary/5">
+                            <Button onClick={handleSeedApiaries} variant="outline" className="rounded-2xl border-dashed border-green-400 text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10">
                                 <MapPin className="w-4 h-4 mr-2" /> Seed Apiaries & Hives
                             </Button>
-                        </div>
-
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <Card className="bg-card border-border rounded-2xl overflow-hidden shadow-sm">
-                                <CardHeader>
-                                    <CardTitle className="font-black">Recent Activity Log</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-4">
-                                        {orders.slice(0, 3).map(o => (
-                                            <div key={o.id} className="flex justify-between items-center border-b border-border/10 pb-2">
-                                                <div>
-                                                    <p className="font-bold text-sm">New Order received</p>
-                                                    <p className="text-xs text-muted-foreground">{new Date(o.created_at).toLocaleString()}</p>
-                                                </div>
-                                                <Badge variant="outline">{o.status}</Badge>
-                                            </div>
-                                        ))}
-                                        {batches.slice(0, 3).map(b => (
-                                            <div key={b.id} className="flex justify-between items-center border-b border-border/10 pb-2">
-                                                <div>
-                                                    <p className="font-bold text-sm">Batch Minted: {b.batch_code}</p>
-                                                    <p className="text-xs text-muted-foreground">{new Date(b.created_at).toLocaleString()}</p>
-                                                </div>
-                                                <Badge className="bg-green-500/20 text-green-600 border-none">Verified</Badge>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </CardContent>
-                            </Card>
                         </div>
                     </TabsContent>
 
