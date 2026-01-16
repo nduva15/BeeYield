@@ -3147,4 +3147,4 @@ const TooltipWrapper = ({ children, text }: { children: React.ReactNode, text: s
     <div title={text} className="cursor-help">{children}</div>
 );
 
-export default AdminDashb
+export default AdminDashboard;

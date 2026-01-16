@@ -308,14 +308,20 @@ export const adminService = {
     },
 
     // ============== ORDERS ==============
+    // ============== ORDERS ==============
     getOrders: async () => {
-        if (!supabase) throw new Error("Supabase not initialized");
-        const { data, error } = await supabase
-            .from('orders')
-            .select('*')
-            .order('created_at', { ascending: false });
-        if (error) throw error;
-        return data || [];
+        try {
+            return await apiGet<any[]>('/admin/orders');
+        } catch (error) {
+            console.error("Failed to fetch orders via API, falling back to direct Supabase", error);
+            if (!supabase) throw new Error("Supabase not initialized");
+            const { data, error: sbError } = await supabase
+                .from('orders')
+                .select('*')
+                .order('created_at', { ascending: false });
+            if (sbError) throw sbError;
+            return data || [];
+        }
     },
 
     updateOrderStatus: async (orderId: string, status: string) => {
@@ -342,13 +348,18 @@ export const adminService = {
 
     // ============== NEWSLETTER ==============
     getNewsletterSubscribers: async () => {
-        if (!supabase) throw new Error("Supabase not initialized");
-        const { data, error } = await supabase
-            .from('newsletter_subscribers')
-            .select('*')
-            .order('created_at', { ascending: false });
-        if (error) throw error;
-        return data || [];
+        try {
+            return await apiGet<any[]>('/admin/newsletter');
+        } catch (error) {
+            console.error("Failed to fetch newsletter via API, falling back to direct Supabase", error);
+            if (!supabase) throw new Error("Supabase not initialized");
+            const { data, error: sbError } = await supabase
+                .from('newsletter_subscribers')
+                .select('*')
+                .order('created_at', { ascending: false });
+            if (sbError) throw sbError;
+            return data || [];
+        }
     },
 
     deleteNewsletterSubscriber: async (id: string) => {
@@ -362,17 +373,22 @@ export const adminService = {
     },
 
     // ============== PRODUCTS ==============
+    // ============== PRODUCTS ==============
     getProducts: async () => {
-        if (!supabase) throw new Error("Supabase not initialized");
-        const { data, error } = await supabase
-            .from('products')
-            .select('*, product_variants(*)');
-        if (error) throw error;
-        // Map variants to match frontend expectation if needed, although the dashboard seems to handle product.variants
-        return data.map(p => ({
-            ...p,
-            variants: p.product_variants || [] // Map the joined table
-        })) || [];
+        try {
+            return await apiGet<any[]>('/admin/products');
+        } catch (error) {
+            console.error("Failed to fetch products via API, falling back to direct Supabase", error);
+            if (!supabase) throw new Error("Supabase not initialized");
+            const { data, error: sbError } = await supabase
+                .from('products')
+                .select('*, product_variants(*)');
+            if (sbError) throw sbError;
+            return data.map(p => ({
+                ...p,
+                variants: p.product_variants || []
+            })) || [];
+        }
     },
 
     createProduct: async (productData: ProductInput) => {
@@ -433,18 +449,19 @@ export const adminService = {
 
     // ============== HONEY BATCHES (TRACEABILITY) ==============
     getBatches: async () => {
-        if (!supabase) throw new Error("Supabase not initialized");
-        console.log("Fetching batches...");
-        const { data, error } = await supabase
-            .from('honey_batches')
-            .select('*')
-            .order('created_at', { ascending: false });
-        if (error) {
-            console.error("Error fetching batches:", error);
-            throw error;
+        try {
+            const data = await apiGet<any[]>('/admin/batches');
+            return data || [];
+        } catch (error) {
+            console.error("Failed to fetch batches via API, falling back to direct Supabase", error);
+            if (!supabase) throw new Error("Supabase not initialized");
+            const { data, error: sbError } = await supabase
+                .from('honey_batches')
+                .select('*')
+                .order('created_at', { ascending: false });
+            if (sbError) throw sbError;
+            return data || [];
         }
-        console.log(`Fetched ${data?.length || 0} batches`);
-        return data || [];
     },
 
     createBatch: async (batchData: HoneyBatchInput) => {
@@ -486,13 +503,18 @@ export const adminService = {
 
     // ============== POLLINATION REQUESTS ==============
     getPollinationRequests: async () => {
-        if (!supabase) throw new Error("Supabase not initialized");
-        const { data, error } = await supabase
-            .from('pollination_requests')
-            .select('*')
-            .order('created_at', { ascending: false });
-        if (error) throw error;
-        return data || [];
+        try {
+            return await apiGet<any[]>('/admin/pollination');
+        } catch (error) {
+            console.error("Failed to fetch pollination via API, falling back to direct Supabase", error);
+            if (!supabase) throw new Error("Supabase not initialized");
+            const { data, error: sbError } = await supabase
+                .from('pollination_requests')
+                .select('*')
+                .order('created_at', { ascending: false });
+            if (sbError) throw sbError;
+            return data || [];
+        }
     },
 
     updatePollinationRequestStatus: async (id: string, status: string) => {
@@ -519,13 +541,18 @@ export const adminService = {
 
     // ============== CONTACT REQUESTS ==============
     getContactRequests: async () => {
-        if (!supabase) throw new Error("Supabase not initialized");
-        const { data, error } = await supabase
-            .from('contact_submissions')
-            .select('*')
-            .order('created_at', { ascending: false });
-        if (error) throw error;
-        return data || [];
+        try {
+            return await apiGet<any[]>('/admin/contact');
+        } catch (error) {
+            console.error("Failed to fetch contact via API, falling back to direct Supabase", error);
+            if (!supabase) throw new Error("Supabase not initialized");
+            const { data, error: sbError } = await supabase
+                .from('contact_submissions')
+                .select('*')
+                .order('created_at', { ascending: false });
+            if (sbError) throw sbError;
+            return data || [];
+        }
     },
 
     updateContactRequestStatus: async (id: string, status: string) => {
@@ -552,13 +579,18 @@ export const adminService = {
 
     // ============== STOCK MOVEMENTS ==============
     getStockMovements: async () => {
-        if (!supabase) throw new Error("Supabase not initialized");
-        const { data, error } = await supabase
-            .from('stock_movements')
-            .select('*, products(name)')
-            .order('created_at', { ascending: false });
-        if (error) throw error;
-        return data || [];
+        try {
+            return await apiGet<any[]>('/admin/stock');
+        } catch (error) {
+            console.error("Failed to fetch stock via API, falling back to direct Supabase", error);
+            if (!supabase) throw new Error("Supabase not initialized");
+            const { data, error: sbError } = await supabase
+                .from('stock_movements')
+                .select('*, products(name)')
+                .order('created_at', { ascending: false });
+            if (sbError) throw sbError;
+            return data || [];
+        }
     },
 
     createStockMovement: async (movementData: any) => {
@@ -574,18 +606,18 @@ export const adminService = {
 
     // ============== FARMERS ==============
     getFarmers: async () => {
-        if (!supabase) throw new Error("Supabase not initialized");
-        console.log("Fetching farmers...");
-        const { data, error } = await supabase
-            .from('farmers')
-            .select('*')
-            .order('created_at', { ascending: false });
-        if (error) {
-            console.error("Error fetching farmers:", error);
-            throw error;
+        try {
+            return await apiGet<any[]>('/admin/farmers');
+        } catch (error) {
+            console.error("Failed to fetch farmers via API, falling back to direct Supabase", error);
+            if (!supabase) throw new Error("Supabase not initialized");
+            const { data, error: sbError } = await supabase
+                .from('farmers')
+                .select('*')
+                .order('created_at', { ascending: false });
+            if (sbError) throw sbError;
+            return data || [];
         }
-        console.log(`Fetched ${data?.length || 0} farmers`);
-        return data || [];
     },
 
     createFarmer: async (farmerData: any) => {
