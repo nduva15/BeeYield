@@ -7,6 +7,7 @@ if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KE
 
 // Interfaces for admin data
 export interface HoneyBatchInput {
+    batch_code?: string;
     honey_type: string;
     harvest_date: string;
     packaged_date?: string;
@@ -72,15 +73,16 @@ export const adminService = {
         const products = [
             { name: "Acacia Honey", description: "Pure honey from Acacia trees", category: "honey", is_active: true, images: ["https://images.unsplash.com/photo-1587049352846-4a222e784d38"] },
             { name: "Wildflower Honey", description: "Honey from varied wildflowers", category: "honey", is_active: true, images: ["https://images.unsplash.com/photo-1558611848-73f7eb4001a1"] },
-            { name: "Manuka Honey", description: "Premium Manuka honey", category: "premium", is_active: true, images: ["https://images.unsplash.com/photo-1471943311424-646960669fac"] }
+            { name: "Manuka Honey", description: "Premium Manuka honey", category: "premium", is_active: true, images: ["https://images.unsplash.com/photo-1471943311424-646960669fac"] },
+            { name: "HiveGuard Sensor", description: "Real-time temperature and humidity monitoring.", category: "sensors", is_active: true, images: ["https://images.unsplash.com/photo-1517420704952-d9f39e95b43e"] }
         ];
 
         for (const p of products) {
-            const { data: inserted, error: pError } = await supabase.from('products').insert(p).select().single();
+            const { data: inserted } = await supabase.from('products').insert(p).select().single();
             if (inserted) {
                 await supabase.from('product_variants').insert({
                     product_id: inserted.id,
-                    size: "500g",
+                    size: "Standard",
                     price_kes: 1200,
                     stock_quantity: 50
                 });
@@ -92,10 +94,53 @@ export const adminService = {
     seedTraceabilityData: async (): Promise<{ success: boolean; batchCount?: number; error?: string }> => {
         if (!supabase) throw new Error("Supabase not initialized");
         try {
+            // 1. Ensure Farmer Exists
+            const farmer = {
+                name: "Timothy Nduva",
+                phone: "+254700000000",
+                email: "timothy@beeyield.com",
+                county: "Makueni",
+                region: "Kibwezi"
+            };
+            const { data: insertedFarmer } = await supabase.from('farmers').insert(farmer).select().single();
+
+            // 2. Create 3 Batches
             const batches = [
-                { batch_code: "BATCH-001", honey_type: "Acacia", harvest_date: "2024-01-10", quantity_kg: 250, farmer_name: "Timothy Timothy", location_county: "Kitui", status: "verified" },
-                { batch_code: "BATCH-002", honey_type: "Wildflower", harvest_date: "2024-01-15", quantity_kg: 180, farmer_name: "Timothy Timothy", location_county: "Nairobi", status: "verified" }
+                {
+                    batch_code: "BATCH-2024-001",
+                    honey_type: "Acacia",
+                    harvest_date: "2024-01-10",
+                    quantity_kg: 280,
+                    processing_method: "Raw Filtered",
+                    farmer_name: "Timothy Nduva",
+                    location_county: "Makueni",
+                    location_region: "Kibwezi",
+                    status: "verified"
+                },
+                {
+                    batch_code: "BATCH-2024-002",
+                    honey_type: "Wildflower",
+                    harvest_date: "2024-01-15",
+                    quantity_kg: 250,
+                    processing_method: "Raw Filtered",
+                    farmer_name: "Timothy Nduva",
+                    location_county: "Makueni",
+                    location_region: "Kibwezi",
+                    status: "verified"
+                },
+                {
+                    batch_code: "BATCH-2024-003",
+                    honey_type: "Blossom",
+                    harvest_date: "2024-02-01",
+                    quantity_kg: 353,
+                    processing_method: "Raw Filtered",
+                    farmer_name: "Timothy Nduva",
+                    location_county: "Kitui",
+                    location_region: "Mwingi",
+                    status: "verified"
+                }
             ];
+
             const { error } = await supabase.from('honey_batches').insert(batches);
             if (error) throw error;
             return { success: true, batchCount: batches.length };
@@ -107,16 +152,17 @@ export const adminService = {
     seedApiaryHiveData: async (): Promise<{ success: boolean; apiaryCount?: number; hiveCount?: number; error?: string }> => {
         if (!supabase) throw new Error("Supabase not initialized");
         try {
-            // Simplified seed
-            const apiary = { name: "Main Apiary", location_name: "Kibwezi", county: "Makueni", status: "active" };
-            const { data: insertedApiary, error: aError } = await (supabase.from('apiaries' as any) as any).insert(apiary).select().single();
+            // Simplified seed - Ensure 1 Apiary
+            const apiary = { name: "Kibwezi East Cluster A", location_name: "Kibwezi", county: "Makueni", status: "active" };
+            const { data: insertedApiary, error: aError } = await supabase.from('apiaries').insert(apiary).select().single();
             if (aError) throw aError;
+
             if (insertedApiary) {
                 const hives = [
-                    { hive_code: "H-001", apiary_id: (insertedApiary as any).id, type: "Langstroth", status: "active" },
-                    { hive_code: "H-002", apiary_id: (insertedApiary as any).id, type: "Langstroth", status: "active" }
+                    { hive_code: "H-KIB-001", apiary_id: insertedApiary.id, type: "Langstroth", status: "active" },
+                    { hive_code: "H-KIB-002", apiary_id: insertedApiary.id, type: "Langstroth", status: "active" }
                 ];
-                const { error: hError } = await (supabase.from('hives' as any) as any).insert(hives);
+                const { error: hError } = await supabase.from('hives').insert(hives);
                 if (hError) throw hError;
             }
             return { success: true, apiaryCount: 1, hiveCount: 2 };
@@ -141,7 +187,7 @@ export const adminService = {
         const { data, error } = await supabase
             .from('orders')
             .update({ status })
-            .eq('id', orderId)
+            .eq('id', parseInt(orderId))
             .select()
             .single();
         if (error) throw error;
@@ -153,7 +199,7 @@ export const adminService = {
         const { error } = await supabase
             .from('orders')
             .delete()
-            .eq('id', orderId);
+            .eq('id', parseInt(orderId));
         if (error) throw error;
         return { success: true };
     },
@@ -174,7 +220,7 @@ export const adminService = {
         const { error } = await supabase
             .from('newsletter_subscribers')
             .delete()
-            .eq('id', id);
+            .eq('id', parseInt(id));
         if (error) throw error;
         return { success: true };
     },
@@ -268,12 +314,12 @@ export const adminService = {
     createBatch: async (batchData: HoneyBatchInput) => {
         if (!supabase) throw new Error("Supabase not initialized");
         // Generate a code if missing
-        if (!(batchData as any).batch_code) {
-            (batchData as any).batch_code = `BC-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+        if (!batchData.batch_code) {
+            batchData.batch_code = `BC-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
         }
         const { data, error } = await supabase
             .from('honey_batches')
-            .insert(batchData)
+            .insert(batchData as any)
             .select()
             .single();
         if (error) throw error;
@@ -285,7 +331,7 @@ export const adminService = {
         const { data, error } = await supabase
             .from('honey_batches')
             .update(batchData)
-            .eq('id', id)
+            .eq('id', parseInt(id))
             .select()
             .single();
         if (error) throw error;
@@ -297,7 +343,7 @@ export const adminService = {
         const { error } = await supabase
             .from('honey_batches')
             .delete()
-            .eq('id', id);
+            .eq('id', parseInt(id));
         if (error) throw error;
         return { success: true };
     },
@@ -317,8 +363,8 @@ export const adminService = {
         if (!supabase) throw new Error("Supabase not initialized");
         const { data, error } = await supabase
             .from('pollination_requests')
-            .update({ status })
-            .eq('id', id)
+            .update({ status } as any)
+            .eq('id', parseInt(id))
             .select()
             .single();
         if (error) throw error;
@@ -330,7 +376,7 @@ export const adminService = {
         const { error } = await supabase
             .from('pollination_requests')
             .delete()
-            .eq('id', id);
+            .eq('id', parseInt(id));
         if (error) throw error;
         return { success: true };
     },
@@ -499,13 +545,13 @@ export const adminService = {
 
             const totalRevenue = (ordersData || [])
                 .filter(o => o.status !== 'cancelled')
-                .reduce((sum, o) => sum + (parseFloat(o.total_amount) || 0), 0);
+                .reduce((sum, o) => sum + (o.total_amount || 0), 0);
 
             const totalHoneyKg = (batchesData || [])
-                .reduce((sum, b) => sum + (parseFloat(b.quantity_kg) || 0), 0);
+                .reduce((sum, b) => sum + (b.quantity_kg || 0), 0);
 
             const totalAcres = (pollinationData || [])
-                .reduce((sum, p) => sum + (parseFloat(p.acres) || 0), 0);
+                .reduce((sum, p) => sum + (p.acres || 0), 0);
 
             const pendingOrders = (ordersData || [])
                 .filter(o => o.status === 'pending').length;
@@ -513,7 +559,7 @@ export const adminService = {
             // Product counts per category
             const honeyProducts = (productsData || []).filter(p => p.category?.toLowerCase() === 'honey').length;
             const learnProducts = (productsData || []).filter(p => p.category?.toLowerCase() === 'learn').length;
-            const sensorProducts = (productsData || []).filter(p => p.category?.toLowerCase() === 'sensors').length;
+            const sensorProducts = (productsData || []).filter(p => p.category?.toLowerCase().includes('sensor')).length;
             const merchProducts = (productsData || []).filter(p => p.category?.toLowerCase() === 'merch').length;
 
             return {
@@ -547,7 +593,7 @@ export const adminService = {
     getApiaries: async () => {
         if (!supabase) throw new Error("Supabase not initialized");
         console.log("Fetching apiaries...");
-        const { data, error } = await (supabase.from('apiaries' as any) as any)
+        const { data, error } = await supabase.from('apiaries')
             .select('*, farmers(name)')
             .order('created_at', { ascending: false });
         if (error) {
@@ -595,7 +641,7 @@ export const adminService = {
     getHives: async (apiaryId?: string) => {
         if (!supabase) throw new Error("Supabase not initialized");
         console.log(`Fetching hives (apiaryId: ${apiaryId || 'all'})...`);
-        let query = (supabase.from('hives' as any) as any).select('*, apiaries(name)');
+        let query = supabase.from('hives').select('*, apiaries(name)');
         if (apiaryId) {
             query = query.eq('apiary_id', apiaryId);
         }
