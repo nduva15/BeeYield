@@ -132,8 +132,8 @@ const PollinationServices = () => {
                                 <div className="absolute inset-0 flex items-center justify-center">
                                     <div className="w-full h-full max-w-[260px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[30rem] aspect-square bg-gradient-to-br from-yellow-400/30 to-amber-500/30 backdrop-blur-md rounded-3xl sm:rounded-[3rem] lg:rounded-[5rem] rotate-6 sm:rotate-12 border border-white/20 shadow-premium overflow-hidden">
                                         <img
-                                            src="https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?auto=format&fit=crop&q=80&w=800"
-                                            alt="Bee pollinating"
+                                            src="/images/pollination-hives-hero.png"
+                                            alt="Bees pollinating sunflowers with beehives in the background"
                                             className="w-full h-full object-cover -rotate-6 sm:-rotate-12 scale-110"
                                         />
                                     </div>
