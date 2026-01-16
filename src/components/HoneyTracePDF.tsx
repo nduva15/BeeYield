@@ -9,6 +9,11 @@ Font.register({
     ],
 });
 
+// BeeYield Logo URL (using origin for PDF compatibility)
+const getOrigin = () => typeof window !== 'undefined' ? window.location.origin : '';
+const BEEYIELD_LOGO = getOrigin() + '/logo.png';
+const TIMOTHY_PHOTO = getOrigin() + '/timothy-nduva.png';
+
 // Create styles
 const styles = StyleSheet.create({
     page: {
@@ -26,8 +31,20 @@ const styles = StyleSheet.create({
         borderBottomWidth: 3,
         borderBottomColor: '#F59E0B',
     },
+    headerLeft: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    logoImage: {
+        width: 50,
+        height: 50,
+        marginRight: 12,
+    },
+    logoTextContainer: {
+        flexDirection: 'column',
+    },
     logo: {
-        fontSize: 28,
+        fontSize: 24,
         fontWeight: 'bold',
         color: '#F59E0B',
     },
@@ -96,11 +113,38 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         color: '#FFFFFF',
     },
+    beekeeperHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    beekeeperPhoto: {
+        width: 70,
+        height: 70,
+        borderRadius: 35,
+        marginRight: 16,
+        borderWidth: 3,
+        borderColor: '#F59E0B',
+    },
+    beekeeperInfo: {
+        flex: 1,
+    },
     beekeeperName: {
         fontSize: 18,
         fontWeight: 'bold',
         color: '#FFFFFF',
         marginBottom: 4,
+    },
+    beekeeperTitle: {
+        fontSize: 10,
+        color: '#FCD34D',
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+    },
+    beekeeperLocation: {
+        fontSize: 10,
+        color: '#C7D2FE',
+        marginTop: 4,
     },
     beekeeperStory: {
         fontSize: 10,
@@ -214,12 +258,44 @@ const styles = StyleSheet.create({
         fontSize: 10,
         color: '#F59E0B',
         fontWeight: 'bold',
+        marginBottom: 4,
+    },
+    footerContact: {
+        fontSize: 8,
+        color: '#6B7280',
+        marginBottom: 2,
     },
     qrNote: {
         fontSize: 8,
         color: '#6B7280',
         textAlign: 'center',
         marginTop: 10,
+    },
+    impactSection: {
+        marginBottom: 24,
+        padding: 16,
+        backgroundColor: '#FEF9C3',
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#EAB308',
+    },
+    impactGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+    },
+    impactItem: {
+        width: '50%',
+        marginBottom: 8,
+    },
+    impactLabel: {
+        fontSize: 8,
+        color: '#78350F',
+        textTransform: 'uppercase',
+    },
+    impactValue: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#92400E',
     },
 });
 
@@ -239,11 +315,14 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
     return (
         <Document>
             <Page size="A4" style={styles.page}>
-                {/* Header */}
+                {/* Header with BeeYield Logo */}
                 <View style={styles.header}>
-                    <View>
-                        <Text style={styles.logo}>🐝 BeeYield</Text>
-                        <Text style={styles.logoSubtext}>HoneyChain™ Traceability Certificate</Text>
+                    <View style={styles.headerLeft}>
+                        <Image src={BEEYIELD_LOGO} style={styles.logoImage} />
+                        <View style={styles.logoTextContainer}>
+                            <Text style={styles.logo}>BeeYield</Text>
+                            <Text style={styles.logoSubtext}>HoneyChain™ Traceability Certificate</Text>
+                        </View>
                     </View>
                     <Text style={styles.badge}>✓ VERIFIED</Text>
                 </View>
@@ -264,14 +343,19 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
                     </View>
 
                     <View style={styles.row}>
+                        <Text style={styles.label}>Product Name:</Text>
+                        <Text style={styles.value}>{traceData.product_name}</Text>
+                    </View>
+
+                    <View style={styles.row}>
                         <Text style={styles.label}>Apiary Name:</Text>
-                        <Text style={styles.value}>{traceData.apiary?.name || 'Kibwezi Savannah'}</Text>
+                        <Text style={styles.value}>{traceData.apiary?.name || 'Kibwezi Savannah Apiary'}</Text>
                     </View>
 
                     <View style={styles.row}>
                         <Text style={styles.label}>Location:</Text>
                         <Text style={styles.value}>
-                            {traceData.apiary?.location_name}, {traceData.apiary?.county}
+                            Kibwezi, Makueni County, Kenya
                         </Text>
                     </View>
 
@@ -296,14 +380,47 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
                     </View>
                 </View>
 
-                {/* Beekeeper Section */}
+                {/* Beekeeper Section with Photo */}
                 <View style={styles.beekeeperSection}>
-                    <Text style={styles.sectionTitle}>👨‍🌾 Master Beekeeper</Text>
-                    <Text style={styles.beekeeperName}>{traceData.farmer?.name || 'Certified Guardian'}</Text>
+                    <Text style={{ ...styles.sectionTitle, color: '#FCD34D' }}>👨‍🌾 Master Beekeeper</Text>
+                    <View style={styles.beekeeperHeader}>
+                        <Image src={TIMOTHY_PHOTO} style={styles.beekeeperPhoto} />
+                        <View style={styles.beekeeperInfo}>
+                            <Text style={styles.beekeeperName}>Timothy Nduva</Text>
+                            <Text style={styles.beekeeperTitle}>Certified Master Beekeeper</Text>
+                            <Text style={styles.beekeeperLocation}>📍 Kibwezi, Makueni County</Text>
+                            <Text style={styles.beekeeperLocation}>🏆 15+ Years Experience</Text>
+                        </View>
+                    </View>
                     <Text style={styles.beekeeperStory}>
-                        "{traceData.farmer?.story || 'Dedicated beekeeper committed to sustainable practices.'}"
+                        "{traceData.farmer?.story || 'Timothy Nduva is a master beekeeper and conservationist in Kibwezi, leading the way in sustainable honey production. With 15 years of experience, he manages multiple apiaries across Makueni County, mentoring young beekeepers and championing the 50/50 harvest promise.'}"
                     </Text>
                 </View>
+
+                {/* Impact Stats */}
+                {traceData.impact_stats && (
+                    <View style={styles.impactSection}>
+                        <Text style={styles.sectionTitle}>🌍 Environmental Impact</Text>
+                        <View style={styles.impactGrid}>
+                            <View style={styles.impactItem}>
+                                <Text style={styles.impactLabel}>Acres Pollinated</Text>
+                                <Text style={styles.impactValue}>{traceData.impact_stats.acres_pollinated || '25+'}</Text>
+                            </View>
+                            <View style={styles.impactItem}>
+                                <Text style={styles.impactLabel}>Total Honey (kg)</Text>
+                                <Text style={styles.impactValue}>{traceData.impact_stats.total_honey_kg || '883'}</Text>
+                            </View>
+                            <View style={styles.impactItem}>
+                                <Text style={styles.impactLabel}>Hive Count</Text>
+                                <Text style={styles.impactValue}>{traceData.impact_stats.hive_count || '24'}</Text>
+                            </View>
+                            <View style={styles.impactItem}>
+                                <Text style={styles.impactLabel}>Farmers Served</Text>
+                                <Text style={styles.impactValue}>{traceData.impact_stats.farmers_served || '12'}</Text>
+                            </View>
+                        </View>
+                    </View>
+                )}
 
                 {/* Sensor Data */}
                 {traceData.sensor_snapshot && (
@@ -359,7 +476,7 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
                     </View>
                 )}
 
-                {/* Footer */}
+                {/* Footer with BeeYield Contact Info */}
                 <View style={styles.footer}>
                     <Text style={styles.footerText}>
                         This certificate verifies the authenticity and traceability of your honey on HoneyChain™
@@ -367,8 +484,14 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
                     <Text style={styles.footerHighlight}>
                         BeeYield - Champions for Saving Bees | 50% Ethical Harvest Promise
                     </Text>
+                    <Text style={styles.footerContact}>
+                        📧 info@beeyield.co.ke | 📞 +254 712 345 678 | 🌐 www.beeyield.co.ke
+                    </Text>
+                    <Text style={styles.footerContact}>
+                        📍 Kibwezi, Makueni County, Kenya
+                    </Text>
                     <Text style={styles.qrNote}>
-                        Scan the QR code on your jar or visit beeyield.com/trace to verify anytime
+                        Scan the QR code on your jar or visit beeyield.co.ke/trace to verify anytime
                     </Text>
                 </View>
             </Page>

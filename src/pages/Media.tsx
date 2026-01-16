@@ -234,7 +234,7 @@ const Media = () => {
         location: "Marigat"
       },
       images: [
-        "https://images.unsplash.com/photo-1618512496248-a07fe83aa829?auto=format&fit=crop&q=80&w=1200",
+        "/images/onion-plantation.png",
         "https://images.unsplash.com/photo-1620574387735-3624d75b2dbc?auto=format&fit=crop&q=80&w=1200",
         "https://images.unsplash.com/photo-1603048588665-791ca8aea617?auto=format&fit=crop&q=80&w=1200"
       ]

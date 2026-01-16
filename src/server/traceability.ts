@@ -1,5 +1,4 @@
 import { createServerFn } from '@tanstack/react-start'
-import { TraceResponse } from '@/services/traceabilityService'
 
 // Define runtime environment variable access for the server
 // This works because this code only runs on the server
@@ -9,7 +8,7 @@ const getApiBaseUrl = () => {
 
 export const traceBatchFn = createServerFn({ method: "GET" })
     .inputValidator((code: string) => code)
-    .handler(async ({ data: code }): Promise<TraceResponse | null> => {
+    .handler(async ({ data: code }) => {
         const API_V1_URL = getApiBaseUrl()
 
         try {

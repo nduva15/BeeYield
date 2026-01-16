@@ -53,7 +53,7 @@ const CropsWePollinate = () => {
     },
     {
       name: "Onions",
-      image: "https://images.unsplash.com/photo-1618512496248-a07fe83aa829?auto=format&fit=crop&q=80&w=600",
+      image: "/images/onion-plantation.png",
       desc: "Onion seed production requires cross-pollination between male and female plants. BeeYield helps producers optimize hive placement and monitor pollination activity for maximum seed yield."
     }
   ];
