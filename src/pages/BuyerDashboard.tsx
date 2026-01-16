@@ -21,10 +21,15 @@ import {
     Package, ShoppingBag, MapPin, Phone, Clock, CheckCircle2,
     XCircle, Truck, CreditCard, RefreshCw, ChevronRight,
     FileText, Search, Plus, Trash2, Edit2, Star, Gift,
-    ArrowRight, LayoutGrid, Settings, HelpCircle, Bell, Wallet, Heart
+    ArrowRight, LayoutGrid, Settings, HelpCircle, Bell, Wallet, Heart,
+    Smartphone, CreditCard as CardIcon, Loader2 as Loader
 } from 'lucide-react';
-import DashboardLayout from '@/components/beeyield/DashboardLayout';
-import { NavItem } from '@/components/beeyield/DashboardSidebar';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Textarea } from '@/components/ui/textarea';
+import { initializeCheckout, CheckoutOrder } from '@/services/shopService';
+import { useCart } from '@/contexts/CartContext';
+import ShopDashboardLayout from '@/components/shop/ShopDashboardLayout';
+import { ShopNavItem as NavItem } from '@/components/shop/ShopDashboardSidebar';
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 
@@ -66,12 +71,40 @@ interface PaymentMethod {
 }
 
 const BuyerDashboard = () => {
-    const { user, loading: authLoading, signOut } = useAuth();
+    const { user, loading: authLoading, signOut, session } = useAuth();
     const navigate = useNavigate();
     const [authMode, setAuthMode] = useState<AuthMode>('login');
     const [orders, setOrders] = useState<Order[]>([]);
     const [ordersLoading, setOrdersLoading] = useState(false);
     const [activeTab, setActiveTab] = useState('overview');
+    const { items, getTotalItems, getTotalPrice, clearCart } = useCart();
+
+    const handleLogout = async () => {
+        await signOut();
+        navigate('/shop');
+    };
+
+    // Checkout State
+    const [checkoutStep, setCheckoutStep] = useState<'shipping' | 'payment' | 'confirmation'>('shipping');
+    const [paymentMethod, setPaymentMethod] = useState<'mpesa' | 'card'>('mpesa');
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [orderNumber, setOrderNumber] = useState('');
+    const [shippingDetails, setShippingDetails] = useState({
+        fullName: '',
+        email: '',
+        phone: '',
+        address: '',
+        city: '',
+        county: '',
+        postalCode: '',
+        notes: '',
+    });
+
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const tab = params.get('tab');
+        if (tab) setActiveTab(tab);
+    }, []);
 
     // Local state
     const [addresses, setAddresses] = useState<Address[]>([]);
@@ -91,6 +124,21 @@ const BuyerDashboard = () => {
             loadOrders();
             loadUserData();
             loadSuggestions();
+
+            // Prefill checkout from user profile
+            const meta = user.user_metadata || {};
+            const addresses = (meta.addresses as any[]) || [];
+            const defAddr = addresses.find(a => a.isDefault) || addresses[0];
+
+            setShippingDetails(prev => ({
+                ...prev,
+                fullName: `${meta.first_name || ''} ${meta.last_name || ''}`.trim() || prev.fullName,
+                email: user.email || prev.email,
+                phone: defAddr?.phone || meta.phone || prev.phone,
+                address: defAddr?.street || meta.address || prev.address,
+                city: defAddr?.city || meta.city || prev.city,
+                county: defAddr?.county || meta.county || prev.county,
+            }));
         }
     }, [user]);
 
@@ -205,6 +253,7 @@ const BuyerDashboard = () => {
         { id: 'payments', label: 'Payment Methods', icon: CreditCard },
         { id: 'suggestions', label: 'Buy Suggestions', icon: Gift },
         { id: 'profile', label: 'Account Settings', icon: User },
+        { id: 'checkout', label: 'Checkout', icon: ShoppingBag, hidden: items.length === 0 },
         { id: 'help', label: 'Help Center', icon: HelpCircle },
     ];
 
@@ -629,6 +678,196 @@ const BuyerDashboard = () => {
                         </div>
                     </div>
                 );
+            case 'checkout':
+                const shippingCost = getTotalPrice() >= 5000 ? 0 : 350;
+                const totalWithShipping = getTotalPrice() + shippingCost;
+
+                const processDashboardPayment = async () => {
+                    setIsProcessing(true);
+                    try {
+                        const orderData: CheckoutOrder = {
+                            shipping_address: {
+                                first_name: shippingDetails.fullName.split(' ')[0] || '',
+                                last_name: shippingDetails.fullName.split(' ').slice(1).join(' ') || '',
+                                email: shippingDetails.email,
+                                phone: shippingDetails.phone,
+                                address: shippingDetails.address,
+                                city: shippingDetails.city,
+                                county: shippingDetails.county,
+                                postal_code: shippingDetails.postalCode,
+                            },
+                            payment_method: paymentMethod,
+                            items: items.map(item => ({
+                                product_id: item.productId.toString(),
+                                variant_id: item.variantId,
+                                quantity: item.quantity
+                            })),
+                            total_kes: totalWithShipping,
+                            notes: shippingDetails.notes
+                        };
+
+                        const response = await initializeCheckout(orderData, session?.access_token);
+                        await new Promise(r => setTimeout(r, 2000));
+                        setOrderNumber(response.order_id || `BY-${Date.now().toString(36).toUpperCase()}`);
+                        clearCart();
+                        setCheckoutStep('confirmation');
+                        toast.success('Order placed successfully!');
+                    } catch (error) {
+                        toast.error('Payment failed. Please try again.');
+                    } finally {
+                        setIsProcessing(false);
+                    }
+                };
+
+                if (items.length === 0 && checkoutStep !== 'confirmation') {
+                    return (
+                        <div className="text-center py-20">
+                            <ShoppingBag className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
+                            <h2 className="text-2xl font-black">Your cart is empty</h2>
+                            <Button onClick={() => navigate('/shop')} className="mt-4 rounded-full">Browse Products</Button>
+                        </div>
+                    );
+                }
+
+                return (
+                    <div className="space-y-8 animate-in fade-in duration-500">
+                        <div>
+                            <h2 className="text-4xl font-black tracking-tightest">Secure <span className="text-primary italic">Checkout</span></h2>
+                            <p className="text-muted-foreground font-medium">Complete your premium order</p>
+                        </div>
+
+                        {checkoutStep === 'confirmation' ? (
+                            <Card className="border-none shadow-premium rounded-[2.5rem] p-12 text-center">
+                                <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6 animate-bounce">
+                                    <CheckCircle2 className="w-10 h-10 text-green-500" />
+                                </div>
+                                <h1 className="text-3xl font-black mb-4">Order Confirmed! 🎉</h1>
+                                <p className="text-muted-foreground mb-8 text-lg">Thank you for your purchase. We're preparing your honey.</p>
+                                <div className="bg-muted/50 rounded-3xl p-6 inline-block mb-10 border border-border/50">
+                                    <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-1">Order Identifier</p>
+                                    <p className="text-3xl font-black text-primary">{orderNumber}</p>
+                                </div>
+                                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                    <Button onClick={() => navigate('/shop')} className="rounded-full px-8">Continue Shopping</Button>
+                                    <Button variant="outline" onClick={() => setActiveTab('orders')} className="rounded-full px-8">View My Orders</Button>
+                                </div>
+                            </Card>
+                        ) : (
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                <div className="lg:col-span-2 space-y-6">
+                                    {/* Steps Header */}
+                                    <div className="flex items-center gap-4 bg-muted/30 p-2 rounded-2xl w-fit">
+                                        <button
+                                            onClick={() => setCheckoutStep('shipping')}
+                                            className={`px-6 py-2 rounded-xl text-xs font-black uppercase transition-all ${checkoutStep === 'shipping' ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground'}`}
+                                        >
+                                            1. Shipping
+                                        </button>
+                                        <button
+                                            onClick={() => setCheckoutStep('payment')}
+                                            className={`px-6 py-2 rounded-xl text-xs font-black uppercase transition-all ${checkoutStep === 'payment' ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground'}`}
+                                        >
+                                            2. Payment
+                                        </button>
+                                    </div>
+
+                                    {checkoutStep === 'shipping' && (
+                                        <Card className="border-none shadow-premium rounded-[2rem] p-8 space-y-6">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div className="md:col-span-2 space-y-2">
+                                                    <Label>Full Name</Label>
+                                                    <Input
+                                                        value={shippingDetails.fullName}
+                                                        onChange={e => setShippingDetails({ ...shippingDetails, fullName: e.target.value })}
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label>Phone Number</Label>
+                                                    <Input
+                                                        value={shippingDetails.phone}
+                                                        onChange={e => setShippingDetails({ ...shippingDetails, phone: e.target.value })}
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label>City</Label>
+                                                    <Input
+                                                        value={shippingDetails.city}
+                                                        onChange={e => setShippingDetails({ ...shippingDetails, city: e.target.value })}
+                                                    />
+                                                </div>
+                                                <div className="md:col-span-2 space-y-2">
+                                                    <Label>Address</Label>
+                                                    <Input
+                                                        value={shippingDetails.address}
+                                                        onChange={e => setShippingDetails({ ...shippingDetails, address: e.target.value })}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <Button onClick={() => setCheckoutStep('payment')} className="w-full rounded-full h-12 text-lg font-bold">
+                                                Continue to Payment <ArrowRight className="ml-2 w-5 h-5" />
+                                            </Button>
+                                        </Card>
+                                    )}
+
+                                    {checkoutStep === 'payment' && (
+                                        <Card className="border-none shadow-premium rounded-[2rem] p-8 space-y-8">
+                                            <RadioGroup value={paymentMethod} onValueChange={v => setPaymentMethod(v as any)} className="grid gap-4">
+                                                <div className={`p-6 rounded-3xl border-2 transition-all cursor-pointer flex items-center justify-between ${paymentMethod === 'mpesa' ? 'border-primary bg-primary/5' : 'border-border'}`} onClick={() => setPaymentMethod('mpesa')}>
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center">
+                                                            <Smartphone className="text-green-600" />
+                                                        </div>
+                                                        <span className="font-bold text-lg">M-Pesa</span>
+                                                    </div>
+                                                    <RadioGroupItem value="mpesa" />
+                                                </div>
+                                                <div className={`p-6 rounded-3xl border-2 transition-all cursor-pointer flex items-center justify-between ${paymentMethod === 'card' ? 'border-primary bg-primary/5' : 'border-border'}`} onClick={() => setPaymentMethod('card')}>
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center">
+                                                            <CardIcon className="text-blue-600" />
+                                                        </div>
+                                                        <span className="font-bold text-lg">Bank Card</span>
+                                                    </div>
+                                                    <RadioGroupItem value="card" />
+                                                </div>
+                                            </RadioGroup>
+                                            <Button onClick={processDashboardPayment} disabled={isProcessing} className="w-full rounded-full h-14 text-xl font-black">
+                                                {isProcessing ? <Loader className="animate-spin mr-2" /> : `Pay KES ${totalWithShipping.toLocaleString()}`}
+                                            </Button>
+                                        </Card>
+                                    )}
+                                </div>
+
+                                <div className="space-y-6">
+                                    <Card className="border-none shadow-premium rounded-[2rem] p-8 bg-muted/20">
+                                        <h3 className="font-black text-xl mb-6">Order Summary</h3>
+                                        <div className="space-y-4">
+                                            {items.map(item => (
+                                                <div key={item.id} className="flex justify-between items-center text-sm">
+                                                    <span className="font-medium text-muted-foreground">{item.name} x{item.quantity}</span>
+                                                    <span className="font-bold">KES {(item.price * item.quantity).toLocaleString()}</span>
+                                                </div>
+                                            ))}
+                                            <Separator className="bg-border/50" />
+                                            <div className="flex justify-between">
+                                                <span className="text-muted-foreground">Shipping</span>
+                                                <span className="font-bold">{shippingCost === 0 ? 'FREE' : `KES ${shippingCost}`}</span>
+                                            </div>
+                                            <div className="flex justify-between text-xl font-black pt-4 border-t border-border">
+                                                <span>Total</span>
+                                                <span className="text-primary">KES {totalWithShipping.toLocaleString()}</span>
+                                            </div>
+                                        </div>
+                                    </Card>
+                                    <div className="flex items-center gap-3 p-4 bg-primary/5 rounded-2xl border border-primary/10">
+                                        <Shield className="w-5 h-5 text-primary" />
+                                        <p className="text-xs font-medium text-muted-foreground leading-tight">Your data is secured with banking-grade encryption protocol.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                );
             default:
                 return (
                     <div className="text-center py-32 bg-white dark:bg-black/20 rounded-[3rem] border-2 border-dashed border-muted">
@@ -651,31 +890,31 @@ const BuyerDashboard = () => {
 
     if (!user) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10 py-24 flex items-center justify-center">
-                <div className="container max-w-lg px-4 space-y-8">
-                    <div className="space-y-4 text-center">
-                        <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto border-2 border-primary/20">
-                            <ShoppingBag className="h-10 w-10 text-primary" />
-                        </div>
-                        <h1 className="text-4xl font-black text-foreground tracking-tightest leading-none">
-                            {authMode === 'login' ? 'Welcome Back' : 'Create Account'}
-                        </h1>
+            <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-background">
+                <div className="max-w-md w-full text-center space-y-6">
+                    <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto border-2 border-primary/20">
+                        <ShoppingBag className="h-10 w-10 text-primary" />
                     </div>
-                    <Card className="border-none glass shadow-premium rounded-[2rem] overflow-hidden p-8">
-                        {authMode === 'login' && <LoginForm onSuccess={() => { }} onSwitchToRegister={() => setAuthMode('register')} onForgotPassword={() => setAuthMode('forgot-password')} />}
-                        {authMode === 'register' && <RegisterForm defaultRole="user" onSuccess={() => setAuthMode('login')} onSwitchToLogin={() => setAuthMode('login')} />}
-                        {authMode === 'forgot-password' && <ForgotPasswordForm onBackToLogin={() => setAuthMode('login')} />}
-                    </Card>
+                    <div className="space-y-2">
+                        <h1 className="text-3xl font-black">Account Required</h1>
+                        <p className="text-muted-foreground font-medium">To view your orders, wallet, and saved addresses, please sign in to your shop account.</p>
+                    </div>
+                    <Button onClick={() => navigate('/login')} className="w-full h-12 text-lg font-bold rounded-xl shadow-glow">
+                        <LogIn className="w-5 h-5 mr-2" /> Go to Login Dashboard
+                    </Button>
+                    <Button variant="ghost" onClick={() => navigate('/shop')} className="w-full text-muted-foreground">
+                        Continue as Guest
+                    </Button>
                 </div>
             </div>
         );
     }
 
     return (
-        <DashboardLayout
+        <ShopDashboardLayout
             activeTab={activeTab}
             onTabChange={setActiveTab}
-            onLogout={signOut}
+            onLogout={handleLogout}
             navItems={navItems}
         >
             <div className="pb-12">
@@ -720,7 +959,7 @@ const BuyerDashboard = () => {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </DashboardLayout>
+        </ShopDashboardLayout>
     );
 };
 

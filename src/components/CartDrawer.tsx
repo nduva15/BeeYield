@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/hooks/useAuth';
 import { X, Minus, Plus, ShoppingBag, Trash2, ArrowRight } from 'lucide-react';
 
 const CartDrawer: React.FC = () => {
@@ -17,11 +18,16 @@ const CartDrawer: React.FC = () => {
         clearCart,
     } = useCart();
 
+    const { user } = useAuth();
     const formatPrice = (price: number) => `KES ${price.toLocaleString()}`;
 
     const handleCheckout = () => {
         closeCart();
-        navigate('/checkout');
+        if (user) {
+            navigate('/buyer-dashboard?tab=checkout');
+        } else {
+            navigate('/login?redirect=checkout');
+        }
     };
 
     const getCategoryEmoji = (category: string) => {

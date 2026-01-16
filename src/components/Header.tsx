@@ -100,57 +100,13 @@ const Header = () => {
 
         {/* Right side - Traceability Button & Menu (all devices) */}
         <div className="flex items-center space-x-2 sm:space-x-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                className="p-2 hover:bg-muted rounded-full transition-all active:scale-90 group mr-1"
-                aria-label="User Account"
-              >
-                {user ? (
-                  <User className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
-                ) : (
-                  <LogIn className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
-                )}
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 p-2 bg-background border border-border rounded-xl shadow-xl z-[100]">
-              {user ? (
-                <>
-                  <DropdownMenuItem asChild>
-                    <Link to="/beeyield-dashboard" className="w-full cursor-pointer px-4 py-2.5 text-sm font-medium hover:bg-muted rounded-lg flex items-center gap-2">
-                      <Shield className="h-4 w-4" /> BeeYield Portal
-                    </Link>
-                  </DropdownMenuItem>
-                  <Separator className="my-2" />
-                  <DropdownMenuItem
-                    className="w-full cursor-pointer px-4 py-2.5 text-sm font-medium text-destructive hover:bg-destructive/10 rounded-lg flex items-center gap-2"
-                    onClick={() => signOut()}
-                  >
-                    Logout
-                  </DropdownMenuItem>
-                </>
-              ) : (
-                <>
-                  <DropdownMenuItem asChild>
-                    <Link to="/login" className="w-full cursor-pointer px-4 py-2.5 text-sm font-medium hover:bg-muted rounded-lg flex items-center gap-2">
-                      <LogIn className="h-4 w-4" /> Log In
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/signup" className="w-full cursor-pointer px-4 py-2.5 text-sm font-medium hover:bg-muted rounded-lg flex items-center gap-2">
-                      <UserPlus className="h-4 w-4" /> Create Account
-                    </Link>
-                  </DropdownMenuItem>
-                  <Separator className="my-2" />
-                  <DropdownMenuItem asChild>
-                    <Link to="/beeyield-dashboard" className="w-full cursor-pointer px-4 py-2.5 text-sm font-medium hover:bg-muted rounded-lg flex items-center gap-2">
-                      <Shield className="h-4 w-4" /> BeeYield Portal
-                    </Link>
-                  </DropdownMenuItem>
-                </>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Link
+            to="/beeyield-dashboard"
+            className="p-2 hover:bg-muted rounded-full transition-all active:scale-90 group mr-1 flex items-center justify-center"
+            title="BeeYield Dashboard"
+          >
+            <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
+          </Link>
 
           <button
             onClick={toggleCart}
@@ -267,15 +223,17 @@ const Header = () => {
 
             {/* Secondary Links Section */}
             <div className="flex flex-col space-y-1 pt-4">
-              <span className="text-xs uppercase tracking-wider text-primary-foreground/60 px-3 py-1 font-medium mt-2">More</span>
+              <span className="text-xs uppercase tracking-wider text-primary-foreground/60 px-3 py-1 font-medium mt-2">Professional Portal</span>
               <Link
-                to={user?.user_metadata?.beeyield_active ? "/beeyield-dashboard" : "/login"}
+                to="/beeyield-dashboard"
                 onClick={() => setIsMenuOpen(false)}
-                className={`text-sm sm:text-base font-black hover:bg-white/20 rounded-lg px-3 py-2.5 sm:py-3 transition-colors bg-white/10 text-yellow-300 border border-yellow-300/30 flex items-center justify-between mb-2 ${isActive("/beeyield-dashboard") || isActive("/login") ? "ring-2 ring-yellow-300" : ""}`}
+                className={`text-sm sm:text-base font-black hover:bg-white/20 rounded-lg px-3 py-2.5 sm:py-3 transition-colors bg-white/10 text-yellow-300 border border-yellow-300/30 flex items-center justify-between mb-2 ${isActive("/beeyield-dashboard") ? "ring-2 ring-yellow-300" : ""}`}
               >
-                {user?.user_metadata?.beeyield_active ? "BeeYield Dashboard" : "Login"}
-                {user?.user_metadata?.beeyield_active ? <User className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}
+                BeeYield Dashboard
+                <Shield className="h-4 w-4" />
               </Link>
+
+              <span className="text-xs uppercase tracking-wider text-primary-foreground/60 px-3 py-1 font-medium mt-2">More</span>
 
               {menuLinks.map((link) => (
                 <Link

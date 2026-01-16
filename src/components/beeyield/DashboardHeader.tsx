@@ -37,17 +37,17 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onLogout, onTabChange
         }
     };
 
-    const headerIconClass = "w-10 h-10 rounded-xl bg-white dark:bg-[#141414] border border-gray-100 dark:border-[#1e1e1e] text-slate-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#1c1c1c] shadow-sm flex items-center justify-center transition-all";
+    const headerIconClass = "w-10 h-10 rounded-xl bg-muted border border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground shadow-sm flex items-center justify-center transition-all";
 
     return (
-        <header className="flex items-center justify-between py-3 px-8 bg-[#f8f6f3]/50 dark:bg-[#09090b] backdrop-blur-md sticky top-0 z-50">
+        <header className="flex items-center justify-between py-3 px-8 bg-background/80 backdrop-blur-md sticky top-0 z-50 border-b border-border/50">
             {/* Search - Centered and Slim */}
             <div className="flex-1 flex justify-center max-w-2xl px-4">
                 <div className="relative w-full max-w-md">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                         placeholder="Search apiaries, beehives"
-                        className="pl-12 bg-white dark:bg-[#141414] border border-gray-100 dark:border-[#1e1e1e] rounded-full h-11 w-full focus-visible:ring-1 focus-visible:ring-amber-200 shadow-sm text-sm"
+                        className="pl-12 bg-muted border-border rounded-full h-11 w-full focus-visible:ring-1 focus-visible:ring-primary shadow-sm text-sm"
                     />
                 </div>
             </div>
@@ -57,15 +57,15 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onLogout, onTabChange
                 {/* Language */}
                 <Button
                     variant="ghost"
-                    className="rounded-full gap-2 bg-white dark:bg-[#141414] border border-gray-100 dark:border-[#1e1e1e] text-slate-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-[#1c1c1c] h-11 px-4 shadow-sm"
+                    className="rounded-full gap-2 bg-muted border border-border text-foreground hover:bg-accent h-11 px-4 shadow-sm"
                 >
                     <img src="https://flagcdn.com/w20/gb.png" alt="English" className="w-5 h-auto rounded-sm" />
-                    <span className="font-bold text-xs">English</span>
+                    <span className="font-bold text-xs uppercase tracking-tight">EN</span>
                 </Button>
 
                 {/* Theme Toggle */}
                 <button onClick={toggleTheme} className={headerIconClass}>
-                    {theme === 'light' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5 text-blue-400" />}
+                    {theme === 'light' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5 text-primary" />}
                 </button>
 
                 {/* Notifications */}
@@ -82,14 +82,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onLogout, onTabChange
                     className={headerIconClass}
                 >
                     <Headphones className="w-5 h-5" />
-                </button>
-
-                {/* Connectivity */}
-                <button
-                    onClick={() => onTabChange('online')}
-                    className={headerIconClass}
-                >
-                    <Wifi className="w-5 h-5" />
                 </button>
 
                 {/* Agro Intelligence (Puzzle) */}

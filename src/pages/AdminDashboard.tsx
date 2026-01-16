@@ -22,7 +22,7 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import DashboardLayout from '@/components/beeyield/DashboardLayout';
+import AdminLayout from '@/components/admin/AdminLayout';
 import MetricCard from '@/components/beeyield/MetricCard';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -111,7 +111,14 @@ const AdminDashboard: React.FC = () => {
         totalAcres: 0,
         totalUsers: 0,
         totalApiaries: 0,
-        totalHives: 0
+        totalHives: 0,
+        totalFarmers: 0,
+        categoryCounts: {
+            honey: 0,
+            learn: 0,
+            sensors: 0,
+            merch: 0
+        }
     });
 
     const [loadedTabs, setLoadedTabs] = useState<Set<string>>(new Set());
@@ -152,7 +159,11 @@ const AdminDashboard: React.FC = () => {
                     totalAcres: stats.total_acres || 0,
                     totalUsers: stats.total_users || 0,
                     totalApiaries: stats.total_apiaries || 0,
-                    totalHives: stats.total_hives || 0
+                    totalHives: stats.total_hives || 0,
+                    totalFarmers: (stats as any).total_farmers || 0,
+                    categoryCounts: (stats as any).category_counts || {
+                        honey: 0, learn: 0, sensors: 0, merch: 0
+                    }
                 });
             }
             setLoadedTabs(prev => new Set(prev).add('overview'));
@@ -166,6 +177,7 @@ const AdminDashboard: React.FC = () => {
     const loadTabData = async (tab: string) => {
         // Individual tab loading logic
         try {
+            console.log(`[Admin] Loading data for tab: ${tab}`);
             switch (tab) {
                 case 'orders':
                     const ordersData = await adminService.getOrders();
@@ -184,12 +196,26 @@ const AdminDashboard: React.FC = () => {
                     setFarmers(farmersData);
                     break;
                 case 'apiaries':
-                    const apiariesData = await adminService.getApiaries();
-                    setApiaries(apiariesData);
-                    break;
                 case 'hives':
-                    const hivesData = await adminService.getHives();
+                    // These are interdependent, load both
+                    const [apiariesData, hivesData] = await Promise.all([
+                        adminService.getApiaries(),
+                        adminService.getHives()
+                    ]);
+                    setApiaries(apiariesData);
                     setHives(hivesData);
+                    // Also load farmers if they're needed for joins in UI
+                    if (farmers.length === 0) {
+                        const farmersData = await adminService.getFarmers();
+                        setFarmers(farmersData);
+                        setLoadedTabs(prev => new Set(prev).add('farmers'));
+                    }
+                    setLoadedTabs(prev => {
+                        const next = new Set(prev);
+                        next.add('apiaries');
+                        next.add('hives');
+                        return next;
+                    });
                     break;
                 case 'pollination':
                     const pollinationData = await adminService.getPollinationRequests();
@@ -213,7 +239,7 @@ const AdminDashboard: React.FC = () => {
             setLoadedTabs(prev => new Set(prev).add(tab));
         } catch (error) {
             console.error(`Failed to load data for tab ${tab}:`, error);
-            toast.error(`Failed to load ${tab} data`);
+            toast.error(`Terminal Error: Failed to load ${tab} data`);
         }
     };
 
@@ -751,22 +777,21 @@ const AdminDashboard: React.FC = () => {
     ];
 
     return (
-        <DashboardLayout
+        <AdminLayout
             activeTab={activeTab}
             onTabChange={setActiveTab}
             onLogout={signOut}
             navItems={navItems}
-            isAdmin={true}
         >
             <div className="space-y-8 animate-in fade-in duration-700">
                 {/* Header Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-white tracking-tight">Admin Dashboard</h1>
-                        <p className="text-[#a1a1aa] text-sm mt-1">Global system metrics and analytics</p>
+                        <h1 className="text-3xl font-bold text-foreground tracking-tight">BeeYield Admin</h1>
+                        <p className="text-muted-foreground text-sm mt-1">Global system metrics and analytics</p>
                     </div>
                     <div className="flex gap-2">
-                        <Button onClick={loadAllData} variant="outline" size="sm" className="rounded-xl bg-[#1e1e1e] border-[#1e1e1e] text-white hover:bg-[#27272a]">
+                        <Button onClick={loadAllData} variant="outline" size="sm" className="rounded-xl bg-background border-border text-foreground hover:bg-accent">
                             <RefreshCw className="h-4 w-4 mr-2" /> Refresh
                         </Button>
                     </div>
@@ -793,54 +818,64 @@ const AdminDashboard: React.FC = () => {
                     <TabsContent value="overview" className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             <MetricCard
-                                value={dashboardStats.totalUsers || 555}
-                                trend="+74.2%"
-                                description="TOTAL USERS • 109 today"
-                                icon={Users}
-                            />
-                            <MetricCard
-                                value={dashboardStats.totalApiaries || 518}
-                                trend="+78.9%"
-                                description="ORGANIZATIONS"
-                                icon={Building2}
-                            />
-                            <MetricCard
-                                value={dashboardStats.totalHives || 18}
-                                description="ACTIVE TUNNELS • 600 total"
-                                icon={Share2}
-                            />
-                            <MetricCard
                                 value={`KES ${dashboardStats.totalRevenue.toLocaleString()}`}
-                                description="MONTHLY REVENUE"
+                                description="TOTAL SALES"
                                 icon={CreditCard}
+                            />
+                            <MetricCard
+                                value={dashboardStats.totalAcres.toLocaleString()}
+                                description="ACRES POLLINATED"
+                                icon={Bug}
+                            />
+                            <MetricCard
+                                value={dashboardStats.totalHives.toLocaleString()}
+                                description="PROTECTED HIVES"
+                                icon={Leaf}
+                            />
+                            <MetricCard
+                                value={dashboardStats.totalApiaries.toLocaleString()}
+                                description="TOTAL APIARIES"
+                                icon={MapPin}
                             />
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            <Card className="lg:col-span-2 bg-[#09090b] border-[#1e1e1e] rounded-2xl p-6">
+                            <Card className="lg:col-span-1 bg-card border-border rounded-2xl p-6 shadow-sm">
+                                <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                                    <ShoppingBag className="w-5 h-5 text-primary" />
+                                    Shopping Inventory
+                                </h3>
+                                <div className="space-y-4">
+                                    {[
+                                        { label: 'Honey Products', count: dashboardStats.categoryCounts.honey, color: 'bg-honey/20 text-honey' },
+                                        { label: 'Learning Resources', count: dashboardStats.categoryCounts.learn, color: 'bg-blue-500/20 text-blue-500' },
+                                        { label: 'Bee Sensors', count: dashboardStats.categoryCounts.sensors, color: 'bg-green-500/20 text-green-500' },
+                                        { label: 'Merchandise', count: dashboardStats.categoryCounts.merch, color: 'bg-purple-500/20 text-purple-500' },
+                                    ].map((cat) => (
+                                        <div key={cat.label} className="flex items-center justify-between p-3 rounded-xl bg-muted/30">
+                                            <span className="text-sm font-medium">{cat.label}</span>
+                                            <Badge className={cn("rounded-lg border-none", cat.color)}>{cat.count}</Badge>
+                                        </div>
+                                    ))}
+                                </div>
+                            </Card>
+
+                            <Card className="lg:col-span-2 bg-card border-border rounded-2xl p-6 shadow-sm">
                                 <div className="flex justify-between items-center mb-6">
                                     <div>
                                         <h3 className="text-xl font-bold flex items-center gap-2">
-                                            <Share2 className="w-5 h-5 text-[#f59e0b]" />
-                                            Active Tunnels
+                                            <TrendingUp className="w-5 h-5 text-primary" />
+                                            Performance Analytics
                                         </h3>
-                                        <p className="text-[#a1a1aa] text-sm">Tunnel activity over time</p>
-                                    </div>
-                                    <div className="flex bg-[#1e1e1e] rounded-lg p-1 gap-1">
-                                        {['1h', '24h', '7d', '30d'].map((p) => (
-                                            <button key={p} className={cn("px-3 py-1 text-xs rounded-md transition-all", p === '24h' ? "bg-black text-white shadow-sm" : "text-[#71717a] hover:text-white")}>
-                                                {p}
-                                            </button>
-                                        ))}
+                                        <p className="text-muted-foreground text-sm">Real-time system growth trajectory</p>
                                     </div>
                                 </div>
-                                <div className="h-[300px] w-full mt-4">
+                                <div className="h-[250px] w-full">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <AreaChart data={[
-                                            { time: '2 pm', val: 18 }, { time: '5 pm', val: 14 }, { time: '7 pm', val: 24 },
-                                            { time: '9 pm', val: 26 }, { time: '11 pm', val: 32 }, { time: '2 am', val: 12 },
-                                            { time: '4 am', val: 8 }, { time: '6 am', val: 10 }, { time: '8 am', val: 12 },
-                                            { time: '11 am', val: 18 }, { time: '1 pm', val: 20 }
+                                            { time: 'Jan', val: 120 }, { time: 'Feb', val: 150 }, { time: 'Mar', val: 240 },
+                                            { time: 'Apr', val: 190 }, { time: 'May', val: 320 }, { time: 'Jun', val: 280 },
+                                            { time: 'Jul', val: 400 }
                                         ]}>
                                             <defs>
                                                 <linearGradient id="colorVal" x1="0" y1="0" x2="0" y2="1">
@@ -848,53 +883,24 @@ const AdminDashboard: React.FC = () => {
                                                     <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
                                                 </linearGradient>
                                             </defs>
-                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e1e1e" />
-                                            <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fill: '#71717a', fontSize: 12 }} />
-                                            <YAxis axisLine={false} tickLine={false} tick={{ fill: '#71717a', fontSize: 12 }} />
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                                            <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
+                                            <YAxis axisLine={false} tickLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
                                             <Tooltip
-                                                contentStyle={{ backgroundColor: '#1e1e1e', border: 'none', borderRadius: '8px', color: '#fff' }}
-                                                itemStyle={{ color: '#f59e0b' }}
+                                                contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', color: 'hsl(var(--foreground))' }}
+                                                itemStyle={{ color: 'hsl(var(--primary))' }}
                                             />
                                             <Area type="monotone" dataKey="val" stroke="#f59e0b" fillOpacity={1} fill="url(#colorVal)" strokeWidth={2} />
                                         </AreaChart>
                                     </ResponsiveContainer>
                                 </div>
                             </Card>
-
-                            <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl p-6">
-                                <h3 className="text-xl font-bold mb-1">Plan Distribution</h3>
-                                <p className="text-[#a1a1aa] text-sm mb-6">518 organizations by plan</p>
-
-                                <div className="flex flex-col items-center justify-center space-y-8">
-                                    <div className="relative w-48 h-48">
-                                        <div className="absolute inset-0 flex items-center justify-center">
-                                            <div className="w-32 h-32 rounded-xl border-[12px] border-[#334155] border-t-[#f59e0b]"></div>
-                                        </div>
-                                    </div>
-
-                                    <div className="w-full space-y-3">
-                                        {[
-                                            { label: 'Free', color: '#71717a', val: 516 },
-                                            { label: 'Ray', color: '#3b82f6', val: 0 },
-                                            { label: 'Beam', color: '#a855f7', val: 1 },
-                                            { label: 'Pulse', color: '#f59e0b', val: 0 },
-                                        ].map((p) => (
-                                            <div key={p.label} className="flex items-center justify-between text-sm">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-2 h-2 rounded-xl" style={{ backgroundColor: p.color }} />
-                                                    <span className="text-[#a1a1aa]">{p.label}</span>
-                                                </div>
-                                                <span className="font-bold">{p.val}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </Card>
                         </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <Card className="border-none shadow-xl glass bg-primary/5 dark:bg-primary/10 rounded-3xl relative overflow-hidden group hover:scale-105 transition-all duration-500">
                                 <CardHeader className="pb-2">
-                                    <CardTitle className="text-sm font-black uppercase tracking-widest text-muted-foreground z-10">Honey Harvest</CardTitle>
+                                    <CardTitle className="text-sm font-black uppercase tracking-widest text-muted-foreground z-10">Honey Harvested</CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="text-3xl font-black z-10 relative">{dashboardStats.totalHoneyKg.toLocaleString()} KG</div>
@@ -905,23 +911,23 @@ const AdminDashboard: React.FC = () => {
                             </Card>
                             <Card className="border-none shadow-xl glass bg-blue-500/5 dark:bg-blue-500/10 rounded-3xl relative overflow-hidden group hover:scale-105 transition-all duration-500">
                                 <CardHeader className="pb-2">
-                                    <CardTitle className="text-sm font-black uppercase tracking-widest text-muted-foreground z-10">Pollination Area</CardTitle>
+                                    <CardTitle className="text-sm font-black uppercase tracking-widest text-muted-foreground z-10">Network Farmers</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-3xl font-black z-10 relative">{dashboardStats.totalAcres.toLocaleString()} ACRES</div>
+                                    <div className="text-3xl font-black z-10 relative">{dashboardStats.totalFarmers.toLocaleString()} REGISTERED</div>
                                     <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:opacity-20 transition-opacity z-0">
-                                        <Bug className="w-24 h-24" />
+                                        <Users className="w-24 h-24" />
                                     </div>
                                 </CardContent>
                             </Card>
                             <Card className="border-none shadow-xl glass bg-destructive/5 dark:bg-destructive/10 rounded-3xl relative overflow-hidden group hover:scale-105 transition-all duration-500">
                                 <CardHeader className="pb-2">
-                                    <CardTitle className="text-sm font-black uppercase tracking-widest text-muted-foreground z-10">Pending Actions</CardTitle>
+                                    <CardTitle className="text-sm font-black uppercase tracking-widest text-muted-foreground z-10">Active Platform Users</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-3xl font-black z-10 relative">{dashboardStats.pendingOrders} ORDERS</div>
+                                    <div className="text-3xl font-black z-10 relative">{dashboardStats.totalUsers.toLocaleString()} PROFILES</div>
                                     <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:opacity-20 transition-opacity z-0">
-                                        <AlertTriangle className="w-24 h-24" />
+                                        <Shield className="w-24 h-24" />
                                     </div>
                                 </CardContent>
                             </Card>
@@ -937,7 +943,7 @@ const AdminDashboard: React.FC = () => {
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
+                            <Card className="bg-card border-border rounded-2xl overflow-hidden shadow-sm">
                                 <CardHeader>
                                     <CardTitle className="font-black">Recent Activity Log</CardTitle>
                                 </CardHeader>
@@ -969,8 +975,8 @@ const AdminDashboard: React.FC = () => {
 
                     {/* --- ORDERS TAB --- */}
                     <TabsContent value="orders" className="space-y-6">
-                        <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
-                            <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30">
+                        <Card className="bg-card border-border rounded-2xl overflow-hidden shadow-sm">
+                            <CardHeader className="border-b border-border bg-muted/30">
                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                     <div>
                                         <CardTitle className="text-xl font-bold">Recent Orders</CardTitle>
@@ -982,7 +988,7 @@ const AdminDashboard: React.FC = () => {
                                 <div className="overflow-x-auto">
                                     <Table>
                                         <TableHeader>
-                                            <TableRow className="border-b border-[#1e1e1e] bg-[#1e1e1e]/20">
+                                            <TableRow className="border-b border-border bg-muted/20">
                                                 <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Order #</TableHead>
                                                 <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Customer</TableHead>
                                                 <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Items</TableHead>
@@ -1129,7 +1135,7 @@ const AdminDashboard: React.FC = () => {
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             {products.map((product) => (
-                                <div key={product.id} className="group relative bg-card/50 backdrop-blur hover:bg-card border-border/50 border rounded-3xl p-5 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                                <div key={product.id} className="group relative bg-card hover:shadow-xl border-border border rounded-3xl p-5 transition-all duration-300 hover:-translate-y-1">
                                     <div className="aspect-square rounded-2xl overflow-hidden bg-muted mb-5 relative">
                                         {product.images?.[0] ? (
                                             <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
@@ -1209,8 +1215,8 @@ const AdminDashboard: React.FC = () => {
                         </Dialog>
 
                         {/* Stock Movements Section */}
-                        <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden mt-8">
-                            <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30">
+                        <Card className="bg-card border-border rounded-2xl overflow-hidden mt-8 shadow-sm">
+                            <CardHeader className="border-b border-border bg-muted/30">
                                 <div className="flex justify-between items-center">
                                     <div>
                                         <CardTitle className="text-xl font-black flex items-center gap-2">
@@ -1320,8 +1326,8 @@ const AdminDashboard: React.FC = () => {
 
                     {/* --- BATCHES TAB --- */}
                     <TabsContent value="batches" className="space-y-6">
-                        <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
-                            <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30 flex flex-row items-center justify-between">
+                        <Card className="bg-card border-border rounded-2xl overflow-hidden shadow-sm">
+                            <CardHeader className="border-b border-border bg-muted/30 flex flex-row items-center justify-between">
                                 <div>
                                     <CardTitle className="text-xl font-bold">Honey Chain Blocks</CardTitle>
                                     <CardDescription>Immutable blockchain ledger of authenticated batches.</CardDescription>
@@ -1744,8 +1750,8 @@ const AdminDashboard: React.FC = () => {
 
                     {/* --- FARMERS TAB --- */}
                     <TabsContent value="farmers" className="space-y-6">
-                        <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
-                            <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30 flex flex-row items-center justify-between">
+                        <Card className="bg-card border-border rounded-2xl overflow-hidden shadow-sm">
+                            <CardHeader className="border-b border-border bg-muted/30 flex flex-row items-center justify-between">
                                 <div>
                                     <CardTitle className="text-xl font-bold">Agricultural Partners</CardTitle>
                                     <CardDescription>Authenticated network of honey harvesters and growers.</CardDescription>
@@ -1892,8 +1898,8 @@ const AdminDashboard: React.FC = () => {
 
                     {/* --- APIARIES TAB --- */}
                     <TabsContent value="apiaries" className="space-y-6">
-                        <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
-                            <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30 flex flex-row items-center justify-between">
+                        <Card className="bg-card border-border rounded-2xl overflow-hidden shadow-sm">
+                            <CardHeader className="border-b border-border bg-muted/30 flex flex-row items-center justify-between">
                                 <div>
                                     <CardTitle className="text-xl font-bold">Apiary Locations</CardTitle>
                                     <CardDescription>Geospatial management of hive clusters and honey production sites.</CardDescription>
@@ -2015,8 +2021,8 @@ const AdminDashboard: React.FC = () => {
 
                     {/* --- HIVES TAB --- */}
                     <TabsContent value="hives" className="space-y-6">
-                        <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
-                            <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30 flex flex-row items-center justify-between">
+                        <Card className="bg-card border-border rounded-2xl overflow-hidden shadow-sm">
+                            <CardHeader className="border-b border-border bg-muted/30 flex flex-row items-center justify-between">
                                 <div>
                                     <CardTitle className="text-xl font-bold">Smart Hive Ledger</CardTitle>
                                     <CardDescription>Inventory and health status of individual colony units.</CardDescription>
@@ -2076,610 +2082,567 @@ const AdminDashboard: React.FC = () => {
                             </CardContent>
                         </Card>
 
-                        {/* --- ORDERS TAB --- */}
-                        <TabsContent value="orders" className="space-y-6">
-                            <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
-                                <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30">
-                                    <CardTitle className="text-xl font-bold">Recent Orders ({orders.length})</CardTitle>
-                                    <CardDescription className="text-[#a1a1aa]">Manage and track all customer orders.</CardDescription>
-                                </CardHeader>
-                                <CardContent className="p-0">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow className="border-b border-[#1e1e1e] bg-[#1e1e1e]/20">
-                                                <TableHead className="text-[#a1a1aa] font-bold uppercase text-[10px] tracking-wider px-6 py-4">Status</TableHead>
-                                                <TableHead className="text-[#a1a1aa] font-bold uppercase text-[10px] tracking-wider px-6 py-4">Order ID</TableHead>
-                                                <TableHead className="text-[#a1a1aa] font-bold uppercase text-[10px] tracking-wider px-6 py-4">Customer</TableHead>
-                                                <TableHead className="text-[#a1a1aa] font-bold uppercase text-[10px] tracking-wider px-6 py-4">Amount</TableHead>
-                                                <TableHead className="text-[#a1a1aa] font-bold uppercase text-[10px] tracking-wider px-6 py-4">Date</TableHead>
-                                                <TableHead className="text-[#a1a1aa] font-bold uppercase text-[10px] tracking-wider text-right px-6 py-4">Actions</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {orders.length === 0 ? (
-                                                <TableRow><TableCell colSpan={6} className="text-center h-32 text-[#71717a]">No orders found protocol.</TableCell></TableRow>
-                                            ) : (
-                                                orders.map((order) => (
-                                                    <TableRow key={order.id} className="border-b border-[#1e1e1e] hover:bg-[#1e1e1e]/50 transition-colors">
-                                                        <TableCell className="px-6 py-4">{getStatusLabel(order.status)}</TableCell>
-                                                        <TableCell className="px-6 py-4 font-mono text-xs text-[#a1a1aa]">{order.id.slice(0, 8)}...</TableCell>
-                                                        <TableCell className="px-6 py-4 font-medium">{order.shipping_address?.first_name || 'Guest'} {order.shipping_address?.last_name || ''}</TableCell>
-                                                        <TableCell className="px-6 py-4">KES {order.total_amount?.toLocaleString()}</TableCell>
-                                                        <TableCell className="px-6 py-4 text-[#a1a1aa]">{new Date(order.created_at).toLocaleDateString()}</TableCell>
-                                                        <TableCell className="px-6 py-4 text-right">
-                                                            <div className="flex justify-end gap-2">
-                                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-[#a1a1aa] hover:text-white" onClick={() => handleViewOrder(order)}><Eye className="h-4 w-4" /></Button>
-                                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500/50 hover:text-red-500" onClick={() => handleDeleteOrder(order.id)}><Trash2 className="h-4 w-4" /></Button>
-                                                            </div>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))
-                                            )}
-                                        </TableBody>
-                                    </Table>
-                                </CardContent>
-                            </Card>
-                        </TabsContent>
+                    </TabsContent>
 
-                        {/* Hive Modal */}
-                        <Dialog open={isHiveModalOpen} onOpenChange={(open) => { setIsHiveModalOpen(open); if (!open) setEditingHive(null); }}>
-                            <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-xl">
-                                <DialogHeader>
-                                    <DialogTitle className="text-3xl font-black tracking-tighter">{editingHive ? 'Sync Hive Sensors' : 'Deploy New Unit'}</DialogTitle>
-                                    <DialogDescription>Register individual colony components and their mechanical signatures.</DialogDescription>
-                                </DialogHeader>
-                                <div className="grid gap-6 py-4">
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Hive Code</Label>
-                                            <Input placeholder="HIVE-KIB-001" value={hiveForm.hive_code} onChange={e => setHiveForm({ ...hiveForm, hive_code: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Hive Type</Label>
-                                            <Select value={hiveForm.type} onValueChange={val => setHiveForm({ ...hiveForm, type: val })}>
-                                                <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
-                                                    <SelectValue />
-                                                </SelectTrigger>
-                                                <SelectContent className="rounded-xl border-border/50">
-                                                    <SelectItem value="Langstroth">Langstroth</SelectItem>
-                                                    <SelectItem value="KTB">Kenya Top Bar (KTB)</SelectItem>
-                                                    <SelectItem value="Traditional">Traditional Log</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
+                    {/* Hive Modal */}
+                    <Dialog open={isHiveModalOpen} onOpenChange={(open) => { setIsHiveModalOpen(open); if (!open) setEditingHive(null); }}>
+                        <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-xl">
+                            <DialogHeader>
+                                <DialogTitle className="text-3xl font-black tracking-tighter">{editingHive ? 'Sync Hive Sensors' : 'Deploy New Unit'}</DialogTitle>
+                                <DialogDescription>Register individual colony components and their mechanical signatures.</DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-6 py-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Hive Code</Label>
+                                        <Input placeholder="HIVE-KIB-001" value={hiveForm.hive_code} onChange={e => setHiveForm({ ...hiveForm, hive_code: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Target Apiary</Label>
-                                        <Select value={hiveForm.apiary_id} onValueChange={val => setHiveForm({ ...hiveForm, apiary_id: val })}>
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Hive Type</Label>
+                                        <Select value={hiveForm.type} onValueChange={val => setHiveForm({ ...hiveForm, type: val })}>
                                             <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
-                                                <SelectValue placeholder="Select Site" />
+                                                <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent className="rounded-xl border-border/50">
-                                                {apiaries.map(a => (
-                                                    <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
-                                                ))}
+                                                <SelectItem value="Langstroth">Langstroth</SelectItem>
+                                                <SelectItem value="KTB">Kenya Top Bar (KTB)</SelectItem>
+                                                <SelectItem value="Traditional">Traditional Log</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Installation Date</Label>
-                                            <Input type="date" value={hiveForm.installation_date} onChange={e => setHiveForm({ ...hiveForm, installation_date: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Target Apiary</Label>
+                                    <Select value={hiveForm.apiary_id} onValueChange={val => setHiveForm({ ...hiveForm, apiary_id: val })}>
+                                        <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
+                                            <SelectValue placeholder="Select Site" />
+                                        </SelectTrigger>
+                                        <SelectContent className="rounded-xl border-border/50">
+                                            {apiaries.map(a => (
+                                                <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Installation Date</Label>
+                                        <Input type="date" value={hiveForm.installation_date} onChange={e => setHiveForm({ ...hiveForm, installation_date: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Health Status</Label>
+                                        <Select value={hiveForm.status} onValueChange={val => setHiveForm({ ...hiveForm, status: val })}>
+                                            <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-xl border-border/50">
+                                                <SelectItem value="active">Active & Healthy</SelectItem>
+                                                <SelectItem value="weak">Weak Colony</SelectItem>
+                                                <SelectItem value="abandoned">Abandoned</SelectItem>
+                                                <SelectItem value="harvested">Recently Harvested</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Mechanical Notes</Label>
+                                    <Textarea placeholder="Condition of the box, queen status, etc." value={hiveForm.notes} onChange={e => setHiveForm({ ...hiveForm, notes: e.target.value })} className="rounded-xl bg-muted/50 border-border/50" />
+                                </div>
+                            </div>
+                            <DialogFooter>
+                                <Button onClick={handleSaveHive} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
+                                    {editingHive ? 'Sync Unit Parameters' : 'Authorize Deployment'}
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                </TabsContent>
+
+                {/* --- TEAM MANAGEMENT (SUPER ADMIN ONLY) --- */}
+                {
+                    isSuperAdmin && (
+                        <TabsContent value="team" className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
+                            <div className="flex justify-between items-center">
+                                <div>
+                                    <h2 className="text-xl font-bold flex gap-2 items-center">
+                                        <Shield className="w-6 h-6 text-primary" /> Admin Command Circle
+                                    </h2>
+                                    <p className="text-muted-foreground font-medium">Elevate user privileges or terminate access protocols.</p>
+                                </div>
+                                <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-1.5 rounded-xl font-black text-[10px] tracking-tighter">
+                                    {systemUsers.length} MEMBERS
+                                </Badge>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                                {systemUsers.map((userObj) => (
+                                    <Card key={userObj.id} className="border-border/50 bg-card/60 backdrop-blur rounded-3xl overflow-hidden hover:shadow-xl transition-all border group">
+                                        <CardHeader className="pb-3 relative">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center font-black text-primary text-xl relative">
+                                                    {userObj.email?.[0].toUpperCase()}
+                                                    {userObj.role === 'super_admin' && (
+                                                        <div className="absolute -top-1 -right-1 bg-yellow-400 text-black rounded-xl p-0.5 shadow-lg border-2 border-background">
+                                                            <Crown className="w-3 h-3" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <CardTitle className="text-lg font-black truncate">{userObj.first_name || 'Anonymous'} {userObj.last_name || ''}</CardTitle>
+                                                    <CardDescription className="font-mono text-[10px] truncate opacity-80">{userObj.email}</CardDescription>
+                                                </div>
+                                            </div>
+                                        </CardHeader>
+                                        <CardContent className="space-y-4">
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Clearance Level</span>
+                                                <Select
+                                                    defaultValue={userObj.role}
+                                                    onValueChange={(value) => handleUpdateUserRole(userObj.id, value)}
+                                                    disabled={userObj.role === 'super_admin' && userObj.email === user?.email} // Can't de-rank self if last super admin (mock safety)
+                                                >
+                                                    <SelectTrigger className="w-32 h-8 rounded-xl text-[10px] font-black uppercase tracking-widest border-none bg-muted/60">
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent className="rounded-xl">
+                                                        <SelectItem value="user" className="text-xs font-bold">OPERATIVE (USER)</SelectItem>
+                                                        <SelectItem value="admin" className="text-xs font-bold">OVERSEER (ADMIN)</SelectItem>
+                                                        <SelectItem value="super_admin" className="text-xs font-bold">ENTITY (SUPER ADMIN)</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+
+                                            <div className="flex gap-2 pt-2">
+                                                <Button
+                                                    variant="outline"
+                                                    className="flex-1 rounded-2xl h-10 border-border/50 text-[10px] font-black uppercase tracking-widest hover:bg-primary/10 hover:text-primary transition-colors"
+                                                    onClick={() => handleEditUser(userObj)}
+                                                >
+                                                    <Edit className="h-4 w-4 mr-2" /> Modify
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    className="flex-1 rounded-2xl h-10 border-border/50 text-[10px] font-black uppercase tracking-widest hover:bg-destructive/10 hover:text-destructive group-hover:border-destructive/30 transition-colors"
+                                                    onClick={() => handleDeleteUser(userObj.id)}
+                                                    disabled={userObj.email === user?.email} // Can't delete self
+                                                >
+                                                    <UserMinus className="h-4 w-4 mr-2" /> De-Authenticate
+                                                </Button>
+                                            </div>
+
+                                        </CardContent>
+                                    </Card>
+                                ))}
+
+                                {/* Add User Simulation Card */}
+                                <Card
+                                    onClick={() => { setEditingUser(null); setUserForm({ first_name: '', last_name: '', email: '', password: '', role: 'user' }); setIsUserModalOpen(true); }}
+                                    className="border-dashed border-2 border-border bg-transparent rounded-3xl flex flex-col items-center justify-center p-8 text-muted-foreground hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition-all group h-full min-h-[160px]"
+                                >
+                                    <Users className="h-10 w-10 mb-4 group-hover:scale-110 transition-transform text-muted-foreground/40 group-hover:text-primary/40" />
+                                    <h3 className="font-black uppercase tracking-widest text-xs">Awaiting New Operator</h3>
+                                    <p className="text-[10px] font-medium text-center mt-2 opacity-60">Initialize authentication protocols</p>
+                                </Card>
+                            </div>
+
+                            {/* User CRUD Dialog */}
+                            <Dialog open={isUserModalOpen} onOpenChange={setIsUserModalOpen}>
+                                <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-md">
+                                    <DialogHeader>
+                                        <DialogTitle className="text-3xl font-black tracking-tighter">{editingUser ? 'Modify Operator' : 'Initialize Operator'}</DialogTitle>
+                                        <DialogDescription>Configure system access and identity parameters.</DialogDescription>
+                                    </DialogHeader>
+                                    <div className="grid gap-5 py-4">
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">First Name</Label>
+                                                <Input placeholder="John" value={userForm.first_name} onChange={e => setUserForm({ ...userForm, first_name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Last Name</Label>
+                                                <Input placeholder="Doe" value={userForm.last_name} onChange={e => setUserForm({ ...userForm, last_name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                            </div>
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Health Status</Label>
-                                            <Select value={hiveForm.status} onValueChange={val => setHiveForm({ ...hiveForm, status: val })}>
-                                                <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
-                                                    <SelectValue />
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Email Address</Label>
+                                            <Input type="email" placeholder="operator@beeyield.com" value={userForm.email} onChange={e => setUserForm({ ...userForm, email: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                        </div>
+                                        {!editingUser && (
+                                            <div className="space-y-2">
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Access Password</Label>
+                                                <Input type="password" placeholder="••••••••" value={userForm.password} onChange={e => setUserForm({ ...userForm, password: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                            </div>
+                                        )}
+                                        <div className="space-y-2">
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Clearance Level</Label>
+                                            <Select value={userForm.role} onValueChange={(val) => setUserForm({ ...userForm, role: val })}>
+                                                <SelectTrigger className="w-full h-12 rounded-xl bg-muted/50 border-border/50">
+                                                    <SelectValue placeholder="Select Role" />
                                                 </SelectTrigger>
-                                                <SelectContent className="rounded-xl border-border/50">
-                                                    <SelectItem value="active">Active & Healthy</SelectItem>
-                                                    <SelectItem value="weak">Weak Colony</SelectItem>
-                                                    <SelectItem value="abandoned">Abandoned</SelectItem>
-                                                    <SelectItem value="harvested">Recently Harvested</SelectItem>
+                                                <SelectContent className="rounded-xl">
+                                                    <SelectItem value="user" className="font-bold">OPERATIVE (USER)</SelectItem>
+                                                    <SelectItem value="admin" className="font-bold">OVERSEER (ADMIN)</SelectItem>
+                                                    <SelectItem value="super_admin" className="font-bold">ENTITY (SUPER ADMIN)</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                         </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Mechanical Notes</Label>
-                                        <Textarea placeholder="Condition of the box, queen status, etc." value={hiveForm.notes} onChange={e => setHiveForm({ ...hiveForm, notes: e.target.value })} className="rounded-xl bg-muted/50 border-border/50" />
-                                    </div>
+                                    <DialogFooter>
+                                        <Button onClick={handleSaveUser} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
+                                            {editingUser ? 'Update Operator' : 'Finalize Authentication'}
+                                        </Button>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
+
+                        </TabsContent>
+                    )
+                }
+
+                {/* --- POLLINATION REQUESTS TAB --- */}
+                <TabsContent value="pollination" className="space-y-6">
+                    <Card className="bg-card border-border rounded-2xl overflow-hidden shadow-sm">
+                        <CardHeader className="border-b border-border bg-muted/30">
+                            <div className="flex justify-between items-center">
+                                <div>
+                                    <CardTitle className="text-2xl font-black">Pollination Requests</CardTitle>
+                                    <CardDescription>All incoming pollination service requests from farmers.</CardDescription>
                                 </div>
-                                <DialogFooter>
-                                    <Button onClick={handleSaveHive} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
-                                        {editingHive ? 'Sync Unit Parameters' : 'Authorize Deployment'}
-                                    </Button>
-                                </DialogFooter>
-                            </DialogContent>
-                        </Dialog>
-                    </TabsContent>
-
-                    {/* --- TEAM MANAGEMENT (SUPER ADMIN ONLY) --- */}
-                    {
-                        isSuperAdmin && (
-                            <TabsContent value="team" className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
-                                <div className="flex justify-between items-center">
-                                    <div>
-                                        <h2 className="text-xl font-bold flex gap-2 items-center">
-                                            <Shield className="w-6 h-6 text-primary" /> Admin Command Circle
-                                        </h2>
-                                        <p className="text-muted-foreground font-medium">Elevate user privileges or terminate access protocols.</p>
-                                    </div>
-                                    <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-1.5 rounded-xl font-black text-[10px] tracking-tighter">
-                                        {systemUsers.length} MEMBERS
-                                    </Badge>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                                    {systemUsers.map((userObj) => (
-                                        <Card key={userObj.id} className="border-border/50 bg-card/60 backdrop-blur rounded-3xl overflow-hidden hover:shadow-xl transition-all border group">
-                                            <CardHeader className="pb-3 relative">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center font-black text-primary text-xl relative">
-                                                        {userObj.email?.[0].toUpperCase()}
-                                                        {userObj.role === 'super_admin' && (
-                                                            <div className="absolute -top-1 -right-1 bg-yellow-400 text-black rounded-xl p-0.5 shadow-lg border-2 border-background">
-                                                                <Crown className="w-3 h-3" />
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <CardTitle className="text-lg font-black truncate">{userObj.first_name || 'Anonymous'} {userObj.last_name || ''}</CardTitle>
-                                                        <CardDescription className="font-mono text-[10px] truncate opacity-80">{userObj.email}</CardDescription>
-                                                    </div>
-                                                </div>
-                                            </CardHeader>
-                                            <CardContent className="space-y-4">
-                                                <div className="flex justify-between items-center">
-                                                    <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Clearance Level</span>
-                                                    <Select
-                                                        defaultValue={userObj.role}
-                                                        onValueChange={(value) => handleUpdateUserRole(userObj.id, value)}
-                                                        disabled={userObj.role === 'super_admin' && userObj.email === user?.email} // Can't de-rank self if last super admin (mock safety)
-                                                    >
-                                                        <SelectTrigger className="w-32 h-8 rounded-xl text-[10px] font-black uppercase tracking-widest border-none bg-muted/60">
-                                                            <SelectValue />
-                                                        </SelectTrigger>
-                                                        <SelectContent className="rounded-xl">
-                                                            <SelectItem value="user" className="text-xs font-bold">OPERATIVE (USER)</SelectItem>
-                                                            <SelectItem value="admin" className="text-xs font-bold">OVERSEER (ADMIN)</SelectItem>
-                                                            <SelectItem value="super_admin" className="text-xs font-bold">ENTITY (SUPER ADMIN)</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-
-                                                <div className="flex gap-2 pt-2">
-                                                    <Button
-                                                        variant="outline"
-                                                        className="flex-1 rounded-2xl h-10 border-border/50 text-[10px] font-black uppercase tracking-widest hover:bg-primary/10 hover:text-primary transition-colors"
-                                                        onClick={() => handleEditUser(userObj)}
-                                                    >
-                                                        <Edit className="h-4 w-4 mr-2" /> Modify
-                                                    </Button>
-                                                    <Button
-                                                        variant="outline"
-                                                        className="flex-1 rounded-2xl h-10 border-border/50 text-[10px] font-black uppercase tracking-widest hover:bg-destructive/10 hover:text-destructive group-hover:border-destructive/30 transition-colors"
-                                                        onClick={() => handleDeleteUser(userObj.id)}
-                                                        disabled={userObj.email === user?.email} // Can't delete self
-                                                    >
-                                                        <UserMinus className="h-4 w-4 mr-2" /> De-Authenticate
-                                                    </Button>
-                                                </div>
-
-                                            </CardContent>
-                                        </Card>
-                                    ))}
-
-                                    {/* Add User Simulation Card */}
-                                    <Card
-                                        onClick={() => { setEditingUser(null); setUserForm({ first_name: '', last_name: '', email: '', password: '', role: 'user' }); setIsUserModalOpen(true); }}
-                                        className="border-dashed border-2 border-border bg-transparent rounded-3xl flex flex-col items-center justify-center p-8 text-muted-foreground hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition-all group h-full min-h-[160px]"
-                                    >
-                                        <Users className="h-10 w-10 mb-4 group-hover:scale-110 transition-transform text-muted-foreground/40 group-hover:text-primary/40" />
-                                        <h3 className="font-black uppercase tracking-widest text-xs">Awaiting New Operator</h3>
-                                        <p className="text-[10px] font-medium text-center mt-2 opacity-60">Initialize authentication protocols</p>
-                                    </Card>
-                                </div>
-
-                                {/* User CRUD Dialog */}
-                                <Dialog open={isUserModalOpen} onOpenChange={setIsUserModalOpen}>
-                                    <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-md">
-                                        <DialogHeader>
-                                            <DialogTitle className="text-3xl font-black tracking-tighter">{editingUser ? 'Modify Operator' : 'Initialize Operator'}</DialogTitle>
-                                            <DialogDescription>Configure system access and identity parameters.</DialogDescription>
-                                        </DialogHeader>
-                                        <div className="grid gap-5 py-4">
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div className="space-y-2">
-                                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">First Name</Label>
-                                                    <Input placeholder="John" value={userForm.first_name} onChange={e => setUserForm({ ...userForm, first_name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Last Name</Label>
-                                                    <Input placeholder="Doe" value={userForm.last_name} onChange={e => setUserForm({ ...userForm, last_name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                                                </div>
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Email Address</Label>
-                                                <Input type="email" placeholder="operator@beeyield.com" value={userForm.email} onChange={e => setUserForm({ ...userForm, email: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                                            </div>
-                                            {!editingUser && (
-                                                <div className="space-y-2">
-                                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Access Password</Label>
-                                                    <Input type="password" placeholder="••••••••" value={userForm.password} onChange={e => setUserForm({ ...userForm, password: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
-                                                </div>
-                                            )}
-                                            <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Clearance Level</Label>
-                                                <Select value={userForm.role} onValueChange={(val) => setUserForm({ ...userForm, role: val })}>
-                                                    <SelectTrigger className="w-full h-12 rounded-xl bg-muted/50 border-border/50">
-                                                        <SelectValue placeholder="Select Role" />
-                                                    </SelectTrigger>
-                                                    <SelectContent className="rounded-xl">
-                                                        <SelectItem value="user" className="font-bold">OPERATIVE (USER)</SelectItem>
-                                                        <SelectItem value="admin" className="font-bold">OVERSEER (ADMIN)</SelectItem>
-                                                        <SelectItem value="super_admin" className="font-bold">ENTITY (SUPER ADMIN)</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                        </div>
-                                        <DialogFooter>
-                                            <Button onClick={handleSaveUser} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
-                                                {editingUser ? 'Update Operator' : 'Finalize Authentication'}
-                                            </Button>
-                                        </DialogFooter>
-                                    </DialogContent>
-                                </Dialog>
-
-                            </TabsContent>
-                        )
-                    }
-
-                    {/* --- POLLINATION REQUESTS TAB --- */}
-                    <TabsContent value="pollination" className="space-y-6">
-                        <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
-                            <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30">
-                                <div className="flex justify-between items-center">
-                                    <div>
-                                        <CardTitle className="text-2xl font-black">Pollination Requests</CardTitle>
-                                        <CardDescription>All incoming pollination service requests from farmers.</CardDescription>
-                                    </div>
-                                    <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-1.5 rounded-xl font-black text-[10px]">
-                                        {pollinationRequests.length} REQUESTS
-                                    </Badge>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="p-0">
-                                <div className="overflow-x-auto">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow className="border-b border-[#1e1e1e] bg-[#1e1e1e]/20">
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Email</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Phone</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Crop Type</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Farm Size</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Location</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {pollinationRequests.length === 0 ? (
-                                                <TableRow><TableCell colSpan={9} className="text-center h-48 text-muted-foreground font-medium">No pollination requests yet.</TableCell></TableRow>
-                                            ) : (
-                                                pollinationRequests.map((req) => (
-                                                    <TableRow key={req.id} className="hover:bg-muted/20 transition-colors border-border/10">
-                                                        <TableCell className="px-6 font-semibold">{req.name || req.first_name}</TableCell>
-                                                        <TableCell className="px-6 text-sm">{req.email}</TableCell>
-                                                        <TableCell className="px-6 text-sm font-mono">{req.phone}</TableCell>
-                                                        <TableCell className="px-6"><Badge variant="outline" className="rounded-xl">{req.crop_type || req.crop}</Badge></TableCell>
-                                                        <TableCell className="px-6 text-sm">{req.farm_size || req.acreage} acres</TableCell>
-                                                        <TableCell className="px-6 text-sm text-muted-foreground">{req.location || req.county}</TableCell>
-                                                        <TableCell className="px-6 text-xs font-mono">{new Date(req.created_at).toLocaleDateString()}</TableCell>
-                                                        <TableCell className="px-6">
-                                                            <Select defaultValue={req.status || 'pending'} onValueChange={(val) => adminService.updatePollinationRequestStatus(req.id, val).then(() => { toast.success('Status updated'); loadAllData(); })}>
-                                                                <SelectTrigger className="h-8 w-[120px] rounded-xl text-[10px] font-black uppercase"><SelectValue /></SelectTrigger>
-                                                                <SelectContent>
-                                                                    <SelectItem value="pending">Pending</SelectItem>
-                                                                    <SelectItem value="contacted">Contacted</SelectItem>
-                                                                    <SelectItem value="completed">Completed</SelectItem>
-                                                                    <SelectItem value="rejected">Rejected</SelectItem>
-                                                                </SelectContent>
-                                                            </Select>
-                                                        </TableCell>
-                                                        <TableCell className="px-6 text-right">
-                                                            <div className="flex justify-end gap-2">
-                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleViewPollination(req)}>
-                                                                    <Search className="h-4 w-4" />
-                                                                </Button>
-                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeletePollination(req.id)}>
-                                                                    <Trash2 className="h-4 w-4" />
-                                                                </Button>
-                                                            </div>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))
-                                            )}
-                                        </TableBody>
-                                    </Table>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        {/* Pollination Details Dialog */}
-                        <Dialog open={isPollinationDetailsOpen} onOpenChange={setIsPollinationDetailsOpen}>
-                            <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-md">
-                                <DialogHeader>
-                                    <DialogTitle className="text-2xl font-black flex gap-2 items-center">
-                                        <Bug className="w-6 h-6 text-primary" /> Service Request
-                                    </DialogTitle>
-                                </DialogHeader>
-                                {selectedPollination && (
-                                    <div className="space-y-4">
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="space-y-1">
-                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Farmer</p>
-                                                <p className="font-bold">{selectedPollination.name || selectedPollination.first_name}</p>
-                                            </div>
-                                            <div className="space-y-1">
-                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Contact</p>
-                                                <p className="text-xs">{selectedPollination.email}</p>
-                                                <p className="text-xs font-mono">{selectedPollination.phone}</p>
-                                            </div>
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="space-y-1">
-                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Crop</p>
-                                                <Badge variant="secondary">{selectedPollination.crop_type || selectedPollination.crop}</Badge>
-                                            </div>
-                                            <div className="space-y-1">
-                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Size</p>
-                                                <p className="font-bold">{selectedPollination.farm_size || selectedPollination.acreage} Acres</p>
-                                            </div>
-                                        </div>
-                                        <div className="space-y-1">
-                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Location</p>
-                                            <p className="font-medium">{selectedPollination.location || selectedPollination.county}</p>
-                                        </div>
-                                        <div className="space-y-1 pt-2 border-t border-border/10">
-                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Additional Notes</p>
-                                            <p className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-xl italic">
-                                                "{selectedPollination.notes || selectedPollination.message || 'No additional notes provided.'}"
-                                            </p>
-                                        </div>
-                                    </div>
-                                )}
-                            </DialogContent>
-                        </Dialog>
-                    </TabsContent>
-
-                    {/* --- CONTACT REQUESTS TAB --- */}
-                    <TabsContent value="contact" className="space-y-6">
-                        <Card className="bg-[#09090b] border-[#1e1e1e] rounded-2xl overflow-hidden">
-                            <CardHeader className="border-b border-[#1e1e1e] bg-[#1e1e1e]/30">
-                                <div className="flex justify-between items-center">
-                                    <div>
-                                        <CardTitle className="text-2xl font-black">Contact Submissions</CardTitle>
-                                        <CardDescription>Messages received through the contact form.</CardDescription>
-                                    </div>
-                                    <Badge className="bg-amber-500/10 text-amber-600 border-amber-200 px-4 py-1.5 rounded-xl font-black text-[10px]">
-                                        {contacts.length} MESSAGES
-                                    </Badge>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="p-0">
-                                <div className="overflow-x-auto">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow className="border-b border-[#1e1e1e] bg-[#1e1e1e]/20">
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Email</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Subject</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest max-w-md">Message</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
-                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {contacts.length === 0 ? (
-                                                <TableRow><TableCell colSpan={7} className="text-center h-48 text-muted-foreground font-medium">No contact messages yet.</TableCell></TableRow>
-                                            ) : (
-                                                contacts.map((contact) => (
-                                                    <TableRow key={contact.id} className="hover:bg-muted/20 transition-colors border-border/10">
-                                                        <TableCell className="px-6 font-semibold">{contact.name || `${contact.first_name} ${contact.last_name}`}</TableCell>
-                                                        <TableCell className="px-6 text-sm">{contact.email}</TableCell>
-                                                        <TableCell className="px-6"><Badge variant="outline" className="rounded-xl">{contact.subject || 'General'}</Badge></TableCell>
-                                                        <TableCell className="px-6 text-sm text-muted-foreground max-w-md truncate">{contact.message}</TableCell>
-                                                        <TableCell className="px-6 text-xs font-mono">{new Date(contact.created_at).toLocaleDateString()}</TableCell>
-                                                        <TableCell className="px-6">
-                                                            <Select defaultValue={contact.status || 'new'} onValueChange={(val) => adminService.updateContactRequestStatus(contact.id, val).then(() => { toast.success('Status updated'); loadAllData(); })}>
-                                                                <SelectTrigger className="h-8 w-[100px] rounded-xl text-[10px] font-black uppercase"><SelectValue /></SelectTrigger>
-                                                                <SelectContent>
-                                                                    <SelectItem value="new">New</SelectItem>
-                                                                    <SelectItem value="read">Read</SelectItem>
-                                                                    <SelectItem value="replied">Replied</SelectItem>
-                                                                </SelectContent>
-                                                            </Select>
-                                                        </TableCell>
-                                                        <TableCell className="px-6 text-right">
-                                                            <div className="flex justify-end gap-2">
-                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleViewContact(contact)}>
-                                                                    <Search className="h-4 w-4" />
-                                                                </Button>
-                                                                <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteContact(contact.id)}>
-                                                                    <Trash2 className="h-4 w-4" />
-                                                                </Button>
-                                                            </div>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))
-                                            )}
-                                        </TableBody>
-                                    </Table>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        {/* Contact Details Dialog */}
-                        <Dialog open={isContactDetailsOpen} onOpenChange={setIsContactDetailsOpen}>
-                            <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-xl max-h-[85vh] overflow-y-auto">
-                                <DialogHeader>
-                                    <DialogTitle className="text-2xl font-black flex gap-2 items-center">
-                                        <MessageSquare className="w-6 h-6 text-primary" /> Message Details
-                                    </DialogTitle>
-                                </DialogHeader>
-                                {selectedContact && (
-                                    <div className="space-y-6">
-                                        {/* Header Section */}
-                                        <div className="flex justify-between items-start border-b border-border/10 pb-4">
-                                            <div>
-                                                <p className="font-bold text-lg">{selectedContact.name || `${selectedContact.first_name} ${selectedContact.last_name}`}</p>
-                                                <div className="flex flex-col gap-0.5 mt-1">
-                                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                        <Mail className="w-3 h-3" /> {selectedContact.email}
-                                                    </div>
-                                                    {selectedContact.phone && (
-                                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                            <Phone className="w-3 h-3" /> {selectedContact.phone}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                            <div className="text-right">
-                                                <Badge variant="outline" className="mb-2">{new Date(selectedContact.created_at).toLocaleDateString()}</Badge>
-                                                <div className="flex justify-end">
-                                                    <Badge className="bg-primary/10 text-primary border-none uppercase text-[10px] tracking-wider">
-                                                        {selectedContact.inquiry_type || 'General'}
-                                                    </Badge>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Location & Context */}
-                                        <div className="grid grid-cols-2 gap-4">
-                                            {(selectedContact.city || selectedContact.state || selectedContact.country) && (
-                                                <div className="space-y-1">
-                                                    <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Location</p>
-                                                    <p className="text-sm font-medium">
-                                                        {[selectedContact.city, selectedContact.state, selectedContact.country].filter(Boolean).join(', ')}
-                                                    </p>
-                                                </div>
-                                            )}
-                                            {selectedContact.company && (
-                                                <div className="space-y-1">
-                                                    <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Company</p>
-                                                    <p className="text-sm font-medium">{selectedContact.company}</p>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* Grower Specifics */}
-                                        {(selectedContact.farm_name || selectedContact.crop_type) && (
-                                            <div className="bg-muted/30 p-3 rounded-xl space-y-3">
-                                                <p className="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2">
-                                                    <Leaf className="w-3 h-3" /> Farm Details
-                                                </p>
-                                                <div className="grid grid-cols-2 gap-4 text-sm">
-                                                    {selectedContact.farm_name && (
-                                                        <div><span className="text-muted-foreground text-xs block">Farm Name</span>{selectedContact.farm_name}</div>
-                                                    )}
-                                                    {selectedContact.crop_type && (
-                                                        <div><span className="text-muted-foreground text-xs block">Crop</span>{selectedContact.crop_type}</div>
-                                                    )}
-                                                    {selectedContact.acres && (
-                                                        <div><span className="text-muted-foreground text-xs block">Size</span>{selectedContact.acres} Acres</div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        {/* Beekeeper Specifics */}
-                                        {(selectedContact.apiary_name || selectedContact.hive_count) && (
-                                            <div className="bg-muted/30 p-3 rounded-xl space-y-3">
-                                                <p className="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2">
-                                                    <Database className="w-3 h-3" /> Apiary Details
-                                                </p>
-                                                <div className="grid grid-cols-2 gap-4 text-sm">
-                                                    {selectedContact.apiary_name && (
-                                                        <div><span className="text-muted-foreground text-xs block">Apiary Name</span>{selectedContact.apiary_name}</div>
-                                                    )}
-                                                    {selectedContact.hive_count && (
-                                                        <div><span className="text-muted-foreground text-xs block">Hive Count</span>{selectedContact.hive_count}</div>
-                                                    )}
-                                                    {selectedContact.experience_years && (
-                                                        <div><span className="text-muted-foreground text-xs block">Experience</span>{selectedContact.experience_years} Years</div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        {/* Message Body */}
-                                        <div className="space-y-2">
-                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">
-                                                {selectedContact.topic || selectedContact.subject || 'Message'}
-                                            </p>
-                                            <div className="bg-muted/20 p-4 rounded-xl border border-border/50">
-                                                <p className="text-sm leading-relaxed whitespace-pre-wrap">{selectedContact.message}</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="pt-2 flex justify-end">
-                                            <Button variant="outline" className="rounded-full text-xs font-bold" onClick={() => window.open(`mailto:${selectedContact.email}`)}>
-                                                <Mail className="w-3 h-3 mr-2" /> Reply via Email
-                                            </Button>
-                                        </div>
-                                    </div>
-                                )}
-                            </DialogContent>
-                        </Dialog>
-                    </TabsContent>
-
-                    {/* --- NEWSLETTER TAB --- */}
-                    <TabsContent value="newsletter" className="space-y-6">
-                        <Card className="border-none shadow-2xl glass bg-white/50 dark:bg-black/20 rounded-3xl overflow-hidden">
-                            <CardHeader className="bg-muted/30 border-b border-border/10">
-                                <CardTitle className="text-2xl font-black">Newsletter Subscribers</CardTitle>
-                                <CardDescription>All email subscribers to the BeeYield newsletter.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="p-0">
+                                <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-1.5 rounded-xl font-black text-[10px]">
+                                    {pollinationRequests.length} REQUESTS
+                                </Badge>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="p-0">
+                            <div className="overflow-x-auto">
                                 <Table>
                                     <TableHeader>
-                                        <TableRow className="bg-muted/20 border-border/10">
-                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Email</TableHead>
+                                        <TableRow className="border-b border-[#1e1e1e] bg-[#1e1e1e]/20">
                                             <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
-                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Subscribed On</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Email</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Phone</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Crop Type</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Farm Size</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Location</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
                                             <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {subscribers.length === 0 ? (
-                                            <TableRow><TableCell colSpan={4} className="text-center h-48 text-muted-foreground font-medium">No subscribers yet.</TableCell></TableRow>
+                                        {pollinationRequests.length === 0 ? (
+                                            <TableRow><TableCell colSpan={9} className="text-center h-48 text-muted-foreground font-medium">No pollination requests yet.</TableCell></TableRow>
                                         ) : (
-                                            subscribers.map((sub) => (
-                                                <TableRow key={sub.id} className="hover:bg-muted/20 transition-colors border-border/10">
-                                                    <TableCell className="px-6 font-semibold">{sub.email}</TableCell>
-                                                    <TableCell className="px-6 font-medium text-muted-foreground">{sub.first_name || 'Anonymous'}</TableCell>
-                                                    <TableCell className="px-6 text-xs font-mono">{new Date(sub.created_at).toLocaleString()}</TableCell>
+                                            pollinationRequests.map((req) => (
+                                                <TableRow key={req.id} className="hover:bg-muted/20 transition-colors border-border/10">
+                                                    <TableCell className="px-6 font-semibold">{req.name || req.first_name}</TableCell>
+                                                    <TableCell className="px-6 text-sm">{req.email}</TableCell>
+                                                    <TableCell className="px-6 text-sm font-mono">{req.phone}</TableCell>
+                                                    <TableCell className="px-6"><Badge variant="outline" className="rounded-xl">{req.crop_type || req.crop}</Badge></TableCell>
+                                                    <TableCell className="px-6 text-sm">{req.farm_size || req.acreage} acres</TableCell>
+                                                    <TableCell className="px-6 text-sm text-muted-foreground">{req.location || req.county}</TableCell>
+                                                    <TableCell className="px-6 text-xs font-mono">{new Date(req.created_at).toLocaleDateString()}</TableCell>
+                                                    <TableCell className="px-6">
+                                                        <Select defaultValue={req.status || 'pending'} onValueChange={(val) => adminService.updatePollinationRequestStatus(req.id, val).then(() => { toast.success('Status updated'); loadAllData(); })}>
+                                                            <SelectTrigger className="h-8 w-[120px] rounded-xl text-[10px] font-black uppercase"><SelectValue /></SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="pending">Pending</SelectItem>
+                                                                <SelectItem value="contacted">Contacted</SelectItem>
+                                                                <SelectItem value="completed">Completed</SelectItem>
+                                                                <SelectItem value="rejected">Rejected</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </TableCell>
                                                     <TableCell className="px-6 text-right">
-                                                        <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteSubscriber(sub.id)}>
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
+                                                        <div className="flex justify-end gap-2">
+                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleViewPollination(req)}>
+                                                                <Search className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeletePollination(req.id)}>
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
                                                     </TableCell>
                                                 </TableRow>
                                             ))
                                         )}
                                     </TableBody>
                                 </Table>
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
-                </Tabs >
-            </div >
-        </DashboardLayout >
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Pollination Details Dialog */}
+                    <Dialog open={isPollinationDetailsOpen} onOpenChange={setIsPollinationDetailsOpen}>
+                        <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-md">
+                            <DialogHeader>
+                                <DialogTitle className="text-2xl font-black flex gap-2 items-center">
+                                    <Bug className="w-6 h-6 text-primary" /> Service Request
+                                </DialogTitle>
+                            </DialogHeader>
+                            {selectedPollination && (
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Farmer</p>
+                                            <p className="font-bold">{selectedPollination.name || selectedPollination.first_name}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Contact</p>
+                                            <p className="text-xs">{selectedPollination.email}</p>
+                                            <p className="text-xs font-mono">{selectedPollination.phone}</p>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Crop</p>
+                                            <Badge variant="secondary">{selectedPollination.crop_type || selectedPollination.crop}</Badge>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Size</p>
+                                            <p className="font-bold">{selectedPollination.farm_size || selectedPollination.acreage} Acres</p>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Location</p>
+                                        <p className="font-medium">{selectedPollination.location || selectedPollination.county}</p>
+                                    </div>
+                                    <div className="space-y-1 pt-2 border-t border-border/10">
+                                        <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Additional Notes</p>
+                                        <p className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-xl italic">
+                                            "{selectedPollination.notes || selectedPollination.message || 'No additional notes provided.'}"
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                        </DialogContent>
+                    </Dialog>
+                </TabsContent>
+
+                {/* --- CONTACT REQUESTS TAB --- */}
+                <TabsContent value="contact" className="space-y-6">
+                    <Card className="bg-card border-border rounded-2xl overflow-hidden shadow-sm">
+                        <CardHeader className="border-b border-border bg-muted/30">
+                            <div className="flex justify-between items-center">
+                                <div>
+                                    <CardTitle className="text-2xl font-black">Contact Submissions</CardTitle>
+                                    <CardDescription>Messages received through the contact form.</CardDescription>
+                                </div>
+                                <Badge className="bg-amber-500/10 text-amber-600 border-amber-200 px-4 py-1.5 rounded-xl font-black text-[10px]">
+                                    {contacts.length} MESSAGES
+                                </Badge>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="p-0">
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="border-b border-[#1e1e1e] bg-[#1e1e1e]/20">
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Email</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Subject</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest max-w-md">Message</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {contacts.length === 0 ? (
+                                            <TableRow><TableCell colSpan={7} className="text-center h-48 text-muted-foreground font-medium">No contact messages yet.</TableCell></TableRow>
+                                        ) : (
+                                            contacts.map((contact) => (
+                                                <TableRow key={contact.id} className="hover:bg-muted/20 transition-colors border-border/10">
+                                                    <TableCell className="px-6 font-semibold">{contact.name || `${contact.first_name} ${contact.last_name}`}</TableCell>
+                                                    <TableCell className="px-6 text-sm">{contact.email}</TableCell>
+                                                    <TableCell className="px-6"><Badge variant="outline" className="rounded-xl">{contact.subject || 'General'}</Badge></TableCell>
+                                                    <TableCell className="px-6 text-sm text-muted-foreground max-w-md truncate">{contact.message}</TableCell>
+                                                    <TableCell className="px-6 text-xs font-mono">{new Date(contact.created_at).toLocaleDateString()}</TableCell>
+                                                    <TableCell className="px-6">
+                                                        <Select defaultValue={contact.status || 'new'} onValueChange={(val) => adminService.updateContactRequestStatus(contact.id, val).then(() => { toast.success('Status updated'); loadAllData(); })}>
+                                                            <SelectTrigger className="h-8 w-[100px] rounded-xl text-[10px] font-black uppercase"><SelectValue /></SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="new">New</SelectItem>
+                                                                <SelectItem value="read">Read</SelectItem>
+                                                                <SelectItem value="replied">Replied</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </TableCell>
+                                                    <TableCell className="px-6 text-right">
+                                                        <div className="flex justify-end gap-2">
+                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 hover:bg-primary/10 hover:text-primary" onClick={() => handleViewContact(contact)}>
+                                                                <Search className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button size="icon" variant="outline" className="rounded-xl w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteContact(contact.id)}>
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Contact Details Dialog */}
+                    <Dialog open={isContactDetailsOpen} onOpenChange={setIsContactDetailsOpen}>
+                        <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-xl max-h-[85vh] overflow-y-auto">
+                            <DialogHeader>
+                                <DialogTitle className="text-2xl font-black flex gap-2 items-center">
+                                    <MessageSquare className="w-6 h-6 text-primary" /> Message Details
+                                </DialogTitle>
+                            </DialogHeader>
+                            {selectedContact && (
+                                <div className="space-y-6">
+                                    {/* Header Section */}
+                                    <div className="flex justify-between items-start border-b border-border/10 pb-4">
+                                        <div>
+                                            <p className="font-bold text-lg">{selectedContact.name || `${selectedContact.first_name} ${selectedContact.last_name}`}</p>
+                                            <div className="flex flex-col gap-0.5 mt-1">
+                                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                    <Mail className="w-3 h-3" /> {selectedContact.email}
+                                                </div>
+                                                {selectedContact.phone && (
+                                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                        <Phone className="w-3 h-3" /> {selectedContact.phone}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <Badge variant="outline" className="mb-2">{new Date(selectedContact.created_at).toLocaleDateString()}</Badge>
+                                            <div className="flex justify-end">
+                                                <Badge className="bg-primary/10 text-primary border-none uppercase text-[10px] tracking-wider">
+                                                    {selectedContact.inquiry_type || 'General'}
+                                                </Badge>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Location & Context */}
+                                    <div className="grid grid-cols-2 gap-4">
+                                        {(selectedContact.city || selectedContact.state || selectedContact.country) && (
+                                            <div className="space-y-1">
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Location</p>
+                                                <p className="text-sm font-medium">
+                                                    {[selectedContact.city, selectedContact.state, selectedContact.country].filter(Boolean).join(', ')}
+                                                </p>
+                                            </div>
+                                        )}
+                                        {selectedContact.company && (
+                                            <div className="space-y-1">
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Company</p>
+                                                <p className="text-sm font-medium">{selectedContact.company}</p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Grower Specifics */}
+                                    {(selectedContact.farm_name || selectedContact.crop_type) && (
+                                        <div className="bg-muted/30 p-3 rounded-xl space-y-3">
+                                            <p className="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2">
+                                                <Leaf className="w-3 h-3" /> Farm Details
+                                            </p>
+                                            <div className="grid grid-cols-2 gap-4 text-sm">
+                                                {selectedContact.farm_name && (
+                                                    <div><span className="text-muted-foreground text-xs block">Farm Name</span>{selectedContact.farm_name}</div>
+                                                )}
+                                                {selectedContact.crop_type && (
+                                                    <div><span className="text-muted-foreground text-xs block">Crop</span>{selectedContact.crop_type}</div>
+                                                )}
+                                                {selectedContact.acres && (
+                                                    <div><span className="text-muted-foreground text-xs block">Size</span>{selectedContact.acres} Acres</div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Beekeeper Specifics */}
+                                    {(selectedContact.apiary_name || selectedContact.hive_count) && (
+                                        <div className="bg-muted/30 p-3 rounded-xl space-y-3">
+                                            <p className="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2">
+                                                <Database className="w-3 h-3" /> Apiary Details
+                                            </p>
+                                            <div className="grid grid-cols-2 gap-4 text-sm">
+                                                {selectedContact.apiary_name && (
+                                                    <div><span className="text-muted-foreground text-xs block">Apiary Name</span>{selectedContact.apiary_name}</div>
+                                                )}
+                                                {selectedContact.hive_count && (
+                                                    <div><span className="text-muted-foreground text-xs block">Hive Count</span>{selectedContact.hive_count}</div>
+                                                )}
+                                                {selectedContact.experience_years && (
+                                                    <div><span className="text-muted-foreground text-xs block">Experience</span>{selectedContact.experience_years} Years</div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Message Body */}
+                                    <div className="space-y-2">
+                                        <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">
+                                            {selectedContact.topic || selectedContact.subject || 'Message'}
+                                        </p>
+                                        <div className="bg-muted/20 p-4 rounded-xl border border-border/50">
+                                            <p className="text-sm leading-relaxed whitespace-pre-wrap">{selectedContact.message}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-2 flex justify-end">
+                                        <Button variant="outline" className="rounded-full text-xs font-bold" onClick={() => window.open(`mailto:${selectedContact.email}`)}>
+                                            <Mail className="w-3 h-3 mr-2" /> Reply via Email
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
+                        </DialogContent>
+                    </Dialog>
+                </TabsContent>
+
+                {/* --- NEWSLETTER TAB --- */}
+                <TabsContent value="newsletter" className="space-y-6">
+                    <Card className="border-none shadow-2xl glass bg-white/50 dark:bg-black/20 rounded-3xl overflow-hidden">
+                        <CardHeader className="bg-muted/30 border-b border-border/10">
+                            <CardTitle className="text-2xl font-black">Newsletter Subscribers</CardTitle>
+                            <CardDescription>All email subscribers to the BeeYield newsletter.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-0">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow className="bg-muted/20 border-border/10">
+                                        <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Email</TableHead>
+                                        <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
+                                        <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Subscribed On</TableHead>
+                                        <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {subscribers.length === 0 ? (
+                                        <TableRow><TableCell colSpan={4} className="text-center h-48 text-muted-foreground font-medium">No subscribers yet.</TableCell></TableRow>
+                                    ) : (
+                                        subscribers.map((sub) => (
+                                            <TableRow key={sub.id} className="hover:bg-muted/20 transition-colors border-border/10">
+                                                <TableCell className="px-6 font-semibold">{sub.email}</TableCell>
+                                                <TableCell className="px-6 font-medium text-muted-foreground">{sub.first_name || 'Anonymous'}</TableCell>
+                                                <TableCell className="px-6 text-xs font-mono">{new Date(sub.created_at).toLocaleString()}</TableCell>
+                                                <TableCell className="px-6 text-right">
+                                                    <Button size="icon" variant="outline" className="rounded-full w-8 h-8 border-border/50 text-destructive hover:bg-destructive/10" onClick={() => handleDeleteSubscriber(sub.id)}>
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+            </Tabs>
+        </div>
+        </AdminLayout >
     );
 };
 

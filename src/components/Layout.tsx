@@ -10,7 +10,7 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
-  const standalonePaths = ['/beeyield-dashboard', '/buyer-dashboard', '/my-account', '/ceba', '/login', '/signup'];
+  const standalonePaths = ['/beeyield-dashboard', '/buyer-dashboard', '/my-account', '/ceba', '/login', '/signup', '/beeyield-login'];
   const isStandalone = standalonePaths.includes(location.pathname);
 
   if (isStandalone) {

@@ -20,6 +20,7 @@ import {
 import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
 import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
+import Logo from '@/assets/Logo.png';
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 
@@ -42,14 +43,19 @@ const Authentication: React.FC = () => {
     // Redirect if already logged in
     useEffect(() => {
         if (user && !authLoading) {
-            // If they came from checkout or have items, go back to shop or checkout
-            if (items.length > 0) {
-                navigate('/checkout');
+            const params = new URLSearchParams(location.search);
+            const redirect = params.get('redirect');
+
+            if (redirect === 'checkout') {
+                navigate('/buyer-dashboard?tab=checkout');
+            } else if (items.length > 0) {
+                // Default fallback if they have items but no explicit redirect
+                navigate('/buyer-dashboard?tab=checkout');
             } else {
                 navigate('/buyer-dashboard');
             }
         }
-    }, [user, authLoading, items, navigate]);
+    }, [user, authLoading, items, navigate, location.search]);
 
     const steps = [
         { id: 'identification', label: 'Identification', icon: User, active: true },
@@ -80,7 +86,7 @@ const Authentication: React.FC = () => {
                         </button>
 
                         <div className="flex items-center gap-2">
-                            <img src="/Logo.png" alt="Logo" className="h-8 w-8" onError={(e) => (e.currentTarget.src = '/placeholder.svg')} />
+                            <img src={Logo} alt="Logo" className="h-8 w-8" />
                             <h1 className="text-2xl font-black font-heading tracking-tight">BeeYield <span className="text-primary italic">Secure</span></h1>
                         </div>
 
@@ -99,8 +105,8 @@ const Authentication: React.FC = () => {
                                     <div className="flex flex-col items-center relative z-10">
                                         <div
                                             className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${step.active
-                                                    ? 'bg-primary text-white ring-4 ring-primary/20 shadow-glow'
-                                                    : 'bg-muted text-muted-foreground'
+                                                ? 'bg-primary text-white ring-4 ring-primary/20 shadow-glow'
+                                                : 'bg-muted text-muted-foreground'
                                                 }`}
                                         >
                                             <StepIcon className="h-5 w-5" />
@@ -230,7 +236,7 @@ const Authentication: React.FC = () => {
                                         </p>
 
                                         {items.length > 0 && (
-                                            <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 flex items-center justify-between group cursor-pointer" onClick={() => navigate('/checkout')}>
+                                            <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 flex items-center justify-between group cursor-pointer" onClick={() => navigate('/buyer-dashboard?tab=checkout')}>
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
                                                         <ShoppingBag className="h-4 w-4 text-primary" />
