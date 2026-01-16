@@ -200,10 +200,10 @@ const Diseases = () => {
                             BeeYield is an innovative system that intelligently helps protect beehives from diseases and environmental threats. By combining modern technologies, we provide real-time monitoring of bee health – without disturbing their natural rhythm.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Button size="lg" className="gap-2">
+                            <Button size="lg" className="gap-2" onClick={() => document.getElementById('beeyield-system')?.scrollIntoView({ behavior: 'smooth' })}>
                                 Get Started <ArrowRight className="h-4 w-4" />
                             </Button>
-                            <Button size="lg" variant="outline">
+                            <Button size="lg" variant="outline" onClick={() => document.getElementById('beeyield-system')?.scrollIntoView({ behavior: 'smooth' })}>
                                 Learn More
                             </Button>
                         </div>
@@ -262,7 +262,7 @@ const Diseases = () => {
             </section>
 
             {/* System Overview */}
-            <section className="py-24 bg-primary text-primary-foreground relative overflow-hidden">
+            <section id="beeyield-system" className="py-24 bg-primary text-primary-foreground relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-10"></div>
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="text-center mb-16 max-w-3xl mx-auto">
@@ -338,7 +338,7 @@ const Diseases = () => {
                         <p className="text-muted-foreground mb-6">
                             BeeYield is constantly evolving. We invite you to take part in the international testing of our system – together, we can advance technology that protects bees worldwide.
                         </p>
-                        <Button size="lg" className="w-full sm:w-auto">Join the Program</Button>
+                        <Button size="lg" className="w-full sm:w-auto" onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}>Join the Program</Button>
                     </div>
 
                     <div className="text-center">
@@ -347,9 +347,19 @@ const Diseases = () => {
                             BeeYield collaborates with leading partners worldwide, joining forces with beekeeping equipment manufacturers, industry organizations, and renowned universities.
                         </p>
                         {/* Partner Logo Placeholders */}
-                        <div className="flex flex-wrap justify-center gap-8 opacity-50 grayscale transition-all hover:grayscale-0">
-                            <div className="h-12 w-40 bg-foreground/10 rounded flex items-center justify-center font-bold">BeeYield Hives</div>
-                            <div className="h-12 w-32 bg-foreground/10 rounded flex items-center justify-center font-bold">ApiSense</div>
+                        <div className="flex flex-wrap justify-center gap-8 items-center opacity-70 hover:opacity-100 transition-opacity">
+                            <div className="flex items-center gap-2 px-6 py-4 bg-background rounded-lg shadow-sm border border-border">
+                                <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
+                                    <Globe className="h-6 w-6 text-primary" />
+                                </div>
+                                <span className="font-bold text-lg">Intelligent Hives</span>
+                            </div>
+                            <div className="flex items-center gap-2 px-6 py-4 bg-background rounded-lg shadow-sm border border-border">
+                                <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
+                                    <Activity className="h-6 w-6 text-primary" />
+                                </div>
+                                <span className="font-bold text-lg">ApiSense</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -378,7 +388,7 @@ const Diseases = () => {
                         </div>
 
                         {/* Contact Form */}
-                        <div>
+                        <div id="contact">
                             <div className="bg-muted/30 p-8 rounded-2xl border border-border">
                                 <h3 className="text-2xl font-bold mb-6">Contact us</h3>
                                 <form onSubmit={handleSubmit} className="space-y-4">
