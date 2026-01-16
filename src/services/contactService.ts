@@ -46,28 +46,39 @@ export const submitContactForm = async (data: ContactSubmission) => {
         throw new Error("Supabase client not initialized. Check environment variables.");
     }
     try {
-        // Construct a rich message with all the details
-        const detailedMessage = `
+        // Construct a summary message for the 'message' column as a fallback/summary
+        const summaryMessage = `
 Type: ${data.inquiry_type.toUpperCase()}
-Phone: ${data.phone}
-Location: ${data.city}, ${data.state}, ${data.country}
-${data.company ? `Company: ${data.company}\n` : ''}
-${data.farm_name ? `Farm Name: ${data.farm_name}\n` : ''}
-${data.apiary_name ? `Apiary Name: ${data.apiary_name}\n` : ''}
-${data.crop_type ? `Crop: ${data.crop_type}\n` : ''}
-${data.acres ? `Acres: ${data.acres}\n` : ''}
-${data.hive_count ? `Hive Count: ${data.hive_count}\n` : ''}
-${data.experience_years ? `Experience: ${data.experience_years}\n` : ''}
-
-Message:
-${data.message || 'No additional message provided.'}
+Topic: ${data.topic}
+${data.message ? `Message: ${data.message}` : ''}
         `.trim();
 
         const { error } = await supabase.from('contact_submissions').insert({
+            // Standard contact fields
+            first_name: data.first_name,
+            last_name: data.last_name,
             name: `${data.first_name} ${data.last_name}`,
             email: data.email,
+            phone: data.phone,
+            city: data.city,
+            state: data.state,
+            country: data.country,
+
+            // Inquiry metadata
+            inquiry_type: data.inquiry_type,
+            topic: data.topic,
             subject: `${data.inquiry_type.toUpperCase()}: ${data.topic}`,
-            message: detailedMessage,
+            message: data.message || summaryMessage, // Use specific message or summary
+
+            // Specific fields
+            company: data.company || null,
+            farm_name: data.farm_name || null,
+            crop_type: data.crop_type || null,
+            acres: data.acres || null,
+            apiary_name: data.apiary_name || null,
+            hive_count: data.hive_count || null,
+            experience_years: data.experience_years || null,
+
             status: 'new'
         });
 
@@ -84,7 +95,6 @@ export const submitPollinationRequest = async (data: PollinationRequest) => {
         throw new Error("Supabase client not initialized. Check environment variables.");
     }
     try {
-        // Match exact TypeScript types from database.types.ts
         const { error } = await supabase.from('pollination_requests').insert({
             full_name: data.full_name,
             email: data.email,
@@ -94,7 +104,8 @@ export const submitPollinationRequest = async (data: PollinationRequest) => {
             crop_type: data.crop_type,
             acres: data.acres,
             preferred_start_date: data.preferred_start_date,
-            additional_info: data.additional_info || null
+            additional_info: data.additional_info || null,
+            status: 'pending'
         });
 
         if (error) throw error;
