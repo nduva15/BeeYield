@@ -12,6 +12,7 @@ import AddDeviceModal from './AddDeviceModal';
 import { toast } from 'sonner';
 import FirstStepsBanner from './FirstStepsBanner'; // We can keep or remove this, let's keep for utility
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // Modern Stat Card
 const StatCard = ({ label, value, color, icon: Icon }: { label: string, value: number | string, color: string, icon?: any }) => (
@@ -39,6 +40,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+    const { t } = useLanguage();
 
     // Sync local devices when initialDevices changes
     useEffect(() => {
@@ -88,9 +90,9 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                     animate={{ opacity: 1, x: 0 }}
                     className="space-y-2"
                 >
-                    <h1 className="text-4xl font-black text-foreground tracking-tight">Device Command</h1>
+                    <h1 className="text-4xl font-black text-foreground tracking-tight">{t('device_command')}</h1>
                     <p className="text-lg text-muted-foreground max-w-lg">
-                        Monitor active sensor arrays, check signal latency, and manage hardware deployment.
+                        {t('device_subtitle')}
                     </p>
                 </motion.div>
 
@@ -103,17 +105,17 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                         onClick={() => setIsAddModalOpen(true)}
                         className="rounded-2xl h-12 px-6 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 font-bold"
                     >
-                        <Plus className="w-5 h-5 mr-2" /> Deploy Sensor
+                        <Plus className="w-5 h-5 mr-2" /> {t('deploy_sensor')}
                     </Button>
                 </motion.div>
             </div>
 
             {/* Stats Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <StatCard label="Active Units" value={totalDevices} color="text-blue-500" icon={Cpu} />
-                <StatCard label="Online" value={withMeasurement} color="text-emerald-500" icon={Wifi} />
-                <StatCard label="Low Battery" value={lowBattery} color="text-red-500" icon={Battery} />
-                <StatCard label="Network Load" value="98%" color="text-purple-500" icon={Signal} />
+                <StatCard label={t('active_units')} value={totalDevices} color="text-blue-500" icon={Cpu} />
+                <StatCard label={t('online')} value={withMeasurement} color="text-emerald-500" icon={Wifi} />
+                <StatCard label={t('low_battery')} value={lowBattery} color="text-red-500" icon={Battery} />
+                <StatCard label={t('network_load')} value="98%" color="text-purple-500" icon={Signal} />
             </div>
 
             {/* Filter Bar */}
@@ -121,7 +123,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                 <div className="relative w-full md:w-96">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
-                        placeholder="Search device ID, name or location..."
+                        placeholder={t('search_devices')}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="pl-11 h-12 rounded-2xl bg-white dark:bg-black/40 border-transparent focus:bg-white dark:focus:bg-black focus:border-primary/20 transition-all font-medium"
@@ -134,10 +136,10 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                             <SelectValue placeholder="Status" />
                         </SelectTrigger>
                         <SelectContent className="rounded-2xl">
-                            <SelectItem value="all">All Status</SelectItem>
-                            <SelectItem value="active">Active</SelectItem>
-                            <SelectItem value="offline">Offline</SelectItem>
-                            <SelectItem value="warning">Warning</SelectItem>
+                            <SelectItem value="all">{t('all_status')}</SelectItem>
+                            <SelectItem value="active">{t('active')}</SelectItem>
+                            <SelectItem value="offline">{t('offline')}</SelectItem>
+                            <SelectItem value="warning">{t('warning')}</SelectItem>
                         </SelectContent>
                     </Select>
                     <Button variant="ghost" className="h-12 w-12 rounded-2xl hover:bg-white/50">
@@ -156,12 +158,12 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                     <div className="w-24 h-24 bg-gray-50 dark:bg-white/5 rounded-3xl flex items-center justify-center mb-6 shadow-inner">
                         <Search className="w-10 h-10 text-gray-300 dark:text-gray-600" />
                     </div>
-                    <h3 className="text-xl font-bold text-foreground mb-2">No devices found</h3>
+                    <h3 className="text-xl font-bold text-foreground mb-2">{t('no_devices')}</h3>
                     <p className="text-muted-foreground max-w-sm mb-8">
-                        We couldn't find any devices matching your search. Try adjusting the filters or add a new device.
+                        {t('click_add')}
                     </p>
                     <Button onClick={() => setIsAddModalOpen(true)} variant="outline" className="rounded-xl h-12 px-8 border-primary text-primary hover:bg-primary/5">
-                        Add New Device
+                        {t('add_first_device')}
                     </Button>
                 </motion.div>
             ) : (
@@ -195,7 +197,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                                             "w-1.5 h-1.5 rounded-full",
                                             device.status === 'active' ? "bg-emerald-500 animate-pulse" : "bg-gray-400"
                                         )} />
-                                        {device.status === 'active' ? 'Online' : 'Offline'}
+                                        {device.status === 'active' ? t('online') : t('offline')}
                                     </div>
                                 </div>
 
@@ -215,14 +217,14 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                                     <div className="bg-gray-50/80 dark:bg-white/5 rounded-2xl p-4 flex flex-col justify-between h-24 border border-gray-100 dark:border-white/5">
                                         <Thermometer className="w-5 h-5 text-orange-400 mb-2" />
                                         <div>
-                                            <p className="text-[10px] font-bold text-muted-foreground uppercase">Temp</p>
+                                            <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('temp')}</p>
                                             <p className="text-xl font-bold text-foreground">24.5°C</p>
                                         </div>
                                     </div>
                                     <div className="bg-gray-50/80 dark:bg-white/5 rounded-2xl p-4 flex flex-col justify-between h-24 border border-gray-100 dark:border-white/5">
                                         <Droplets className="w-5 h-5 text-blue-400 mb-2" />
                                         <div>
-                                            <p className="text-[10px] font-bold text-muted-foreground uppercase">Humidity</p>
+                                            <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('humidity')}</p>
                                             <p className="text-xl font-bold text-foreground">62%</p>
                                         </div>
                                     </div>

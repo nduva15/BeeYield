@@ -4,16 +4,7 @@ import { Button } from '@/components/ui/button';
 import {
     ChevronLeft,
     ChevronRight,
-    Search,
-    Sun,
-    Moon,
-    Bell,
-    Headphones,
-    Wifi,
-    Settings,
-    LogOut,
-    Plus,
-    ChevronDown
+    Plus
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import FirstStepsBanner from './FirstStepsBanner';
@@ -24,7 +15,6 @@ interface MyTaskViewProps {
 
 const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
     const [view, setView] = useState<'list' | 'month'>('month');
-    const [isDarkMode, setIsDarkMode] = useState(false);
 
     // Hardcoded for January 2026 as per screenshot
     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -86,68 +76,6 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
                             </div>
                         </div>
 
-                        {/* Toolbar Row */}
-                        <div className="flex flex-wrap items-center justify-between gap-4 py-4 px-6 bg-[#F8FAFC] dark:bg-[#111111] border-b border-slate-100 dark:border-gray-800">
-                            <div className="relative flex-1 min-w-[250px]">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                <input
-                                    type="text"
-                                    placeholder="Search apiaries, beehives"
-                                    className="w-full pl-10 pr-4 h-12 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-gray-800 rounded-full text-sm focus:ring-2 focus:ring-amber-400 outline-none shadow-sm"
-                                />
-                            </div>
-
-                            <div className="flex items-center gap-3">
-                                {/* Language Selector */}
-                                <div className="flex items-center gap-2 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-gray-800 rounded-full px-4 h-12 shadow-sm cursor-pointer hover:bg-slate-50">
-                                    <img src="https://flagcdn.com/w20/gb.png" alt="UK" className="w-5 h-auto rounded-sm" />
-                                    <span className="text-sm font-medium text-slate-700 dark:text-slate-200">English</span>
-                                    <ChevronDown className="w-4 h-4 text-slate-400" />
-                                </div>
-
-                                {/* Theme Toggle */}
-                                <div className="flex bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-gray-800 rounded-full p-1 h-12 shadow-sm">
-                                    <Button
-                                        size="icon"
-                                        variant="ghost"
-                                        className={cn("w-10 h-10 rounded-full", !isDarkMode ? "bg-amber-50 text-amber-600 shadow-sm" : "text-gray-400")}
-                                        onClick={() => setIsDarkMode(false)}
-                                    >
-                                        <Sun className="w-4 h-4" />
-                                    </Button>
-                                    <Button
-                                        size="icon"
-                                        variant="ghost"
-                                        className={cn("w-10 h-10 rounded-full", isDarkMode ? "bg-slate-800 text-white shadow-sm" : "text-gray-400")}
-                                        onClick={() => setIsDarkMode(true)}
-                                    >
-                                        <Moon className="w-4 h-4" />
-                                    </Button>
-                                </div>
-
-                                {/* Utility Icons */}
-                                <div className="flex gap-2">
-                                    <Button size="icon" className="w-12 h-12 rounded-2xl bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-gray-800 text-slate-600 dark:text-slate-400 shadow-sm relative group">
-                                        <Bell className="w-5 h-5 mx-1" />
-                                        <ChevronDown className="w-3 h-3 text-slate-400" />
-                                        <span className="absolute top-3 right-3 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-[#1e1e1e]"></span>
-                                    </Button>
-                                    <Button size="icon" className="w-12 h-12 rounded-2xl bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-gray-800 text-slate-600 dark:text-slate-400 shadow-sm">
-                                        <Headphones className="w-5 h-5" />
-                                    </Button>
-                                    <Button size="icon" className="w-12 h-12 rounded-2xl bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-gray-800 text-slate-600 dark:text-slate-400 shadow-sm">
-                                        <Wifi className="w-5 h-5 mx-1" />
-                                        <ChevronDown className="w-3 h-3 text-slate-400" />
-                                    </Button>
-                                    <Button size="icon" className="w-12 h-12 rounded-2xl bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-gray-800 text-slate-600 dark:text-slate-400 shadow-sm">
-                                        <Settings className="w-5 h-5" />
-                                    </Button>
-                                    <Button size="icon" className="w-12 h-12 rounded-2xl bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-gray-800 text-slate-600 dark:text-slate-400 shadow-sm">
-                                        <LogOut className="w-5 h-5" />
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
 
                         {/* Calendar Grid */}
                         <div className="bg-[#FEF9E7] dark:bg-[#0c0c0c]">

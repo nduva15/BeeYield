@@ -4,8 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import {
-    Search, Moon, Sun, Bell, Headphones, Wifi, Settings, LogOut,
-    ChevronDown, Plus, MoreHorizontal, FileText, Globe
+    Plus, MoreHorizontal, FileText, Globe, ChevronDown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import FirstStepsBanner from './FirstStepsBanner';
@@ -16,17 +15,6 @@ interface BillingViewProps {
 
 const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
     const [activeSubTab, setActiveSubTab] = useState('Dashboard');
-    const [theme, setTheme] = useState<'light' | 'dark'>('light');
-
-    const toggleTheme = () => {
-        const newTheme = theme === 'light' ? 'dark' : 'light';
-        setTheme(newTheme);
-        if (newTheme === 'dark') {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    };
 
     const tabs = ['Dashboard', 'Revenue', 'Costs', 'Documents', 'Analytics', 'Settings'];
 
@@ -74,49 +62,6 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                 </Button>
             </div>
 
-            {/* Toolbar (Search & Icons) */}
-            <div className="flex items-center justify-between py-2 px-1 bg-white/50 dark:bg-black/20 backdrop-blur-sm rounded-2xl">
-                <div className="relative w-full max-w-md">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <Input
-                        placeholder="Search apiaries, beehives"
-                        className="pl-12 bg-white dark:bg-[#141414] border-gray-100 dark:border-[#1e1e1e] rounded-full h-11 w-full focus-visible:ring-1 focus-visible:ring-[#2D506C]/30 shadow-sm text-sm"
-                    />
-                </div>
-
-                <div className="flex items-center gap-2">
-                    <Button variant="outline" className="rounded-full gap-2 bg-white dark:bg-[#141414] border-gray-100 dark:border-[#1e1e1e] h-11 px-4 shadow-sm">
-                        <img src="https://flagcdn.com/w20/gb.png" alt="English" className="w-5 h-auto rounded-sm" />
-                        <span className="font-bold text-xs">English</span>
-                        <ChevronDown className="w-3 h-3 text-gray-400" />
-                    </Button>
-
-                    <div className="flex items-center gap-1 bg-white dark:bg-[#141414] p-1 rounded-full border border-gray-100 dark:border-[#1e1e1e] shadow-sm">
-                        <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-gray-50 dark:hover:bg-white/10 text-gray-500 transition-colors">
-                            {theme === 'light' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-                        </button>
-                    </div>
-
-                    <button className="p-2.5 rounded-full bg-white dark:bg-[#141414] border border-gray-100 dark:border-[#1e1e1e] text-gray-500 shadow-sm hover:bg-gray-50 transition-colors">
-                        <Bell className="w-4 h-4" />
-                    </button>
-                    <button className="p-2.5 rounded-full bg-white dark:bg-[#141414] border border-gray-100 dark:border-[#1e1e1e] text-gray-500 shadow-sm hover:bg-gray-50 transition-colors">
-                        <Headphones className="w-4 h-4" />
-                    </button>
-                    <button className="p-2.5 rounded-full bg-white dark:bg-[#141414] border border-gray-100 dark:border-[#1e1e1e] text-gray-500 shadow-sm hover:bg-gray-50 transition-colors">
-                        <Wifi className="w-4 h-4" />
-                    </button>
-                    <button
-                        onClick={() => onTabChange('settings')}
-                        className="p-2.5 rounded-full bg-white dark:bg-[#141414] border border-gray-100 dark:border-[#1e1e1e] text-gray-500 shadow-sm hover:bg-gray-50 transition-colors"
-                    >
-                        <Settings className="w-4 h-4" />
-                    </button>
-                    <button className="p-2.5 rounded-full bg-white dark:bg-[#141414] border border-gray-100 dark:border-[#1e1e1e] text-gray-500 shadow-sm hover:bg-gray-50 transition-colors">
-                        <LogOut className="w-4 h-4" />
-                    </button>
-                </div>
-            </div>
 
             {/* Tabs */}
             <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">

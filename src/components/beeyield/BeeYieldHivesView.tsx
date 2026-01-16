@@ -20,7 +20,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
 
             {/* Page Title */}
             <div className="flex justify-between items-center">
-                <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">Intelligent Hives</h1>
+                <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">BeeYield</h1>
                 {/* Loading spinner */}
                 <Loader2 className="w-5 h-5 text-[#C4A77D] animate-spin" />
             </div>

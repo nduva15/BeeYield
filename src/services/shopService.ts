@@ -169,7 +169,7 @@ export const fallbackProducts: Product[] = [
     },
     {
         id: "hw-2",
-        name: "Intelligent Hive Scale",
+        name: "BeeYield Hive Scale",
         description: "Precision weight monitoring with 4G connectivity. Track honey flow and colony growth in real-time from your dashboard.",
         category: "hardware",
         badge: "Best Value",

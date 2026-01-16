@@ -190,7 +190,7 @@ const Shop = ({ initialProducts = [] }: ShopProps) => {
     },
     {
       id: "hw-2",
-      name: "Intelligent Hive Scale",
+      name: "BeeYield Hive Scale",
       description: "Precision weight monitoring with 4G connectivity. Track honey flow and colony growth in real-time from your dashboard.",
       category: "hardware",
       badge: "Best Value",
@@ -832,7 +832,7 @@ const Shop = ({ initialProducts = [] }: ShopProps) => {
               <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
                 <Globe className="h-5 w-5 text-primary" />
               </div>
-              <span className="font-bold text-lg">Intelligent Hives</span>
+              <span className="font-bold text-lg">BeeYield Hives</span>
             </div>
             <div className="flex items-center gap-3 px-6 py-4 bg-muted/30 rounded-2xl border border-border/50">
               <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">

@@ -194,7 +194,7 @@ const Diseases = () => {
                             New: BeeYield Technology
                         </Badge>
                         <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight">
-                            Intelligent Protection for Your <span className="text-primary">Beehives</span>
+                            BeeYield Protection for Your <span className="text-primary">Beehives</span>
                         </h1>
                         <p className="text-xl text-muted-foreground leading-relaxed mb-8 max-w-2xl mx-auto">
                             BeeYield is an innovative system that intelligently helps protect beehives from diseases and environmental threats. By combining modern technologies, we provide real-time monitoring of bee health – without disturbing their natural rhythm.
@@ -352,7 +352,7 @@ const Diseases = () => {
                                 <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
                                     <Globe className="h-6 w-6 text-primary" />
                                 </div>
-                                <span className="font-bold text-lg">Intelligent Hives</span>
+                                <span className="font-bold text-lg">BeeYield Hives</span>
                             </div>
                             <div className="flex items-center gap-2 px-6 py-4 bg-background rounded-lg shadow-sm border border-border">
                                 <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
