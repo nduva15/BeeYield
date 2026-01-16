@@ -1,5 +1,4 @@
-import React from 'react';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/contexts/CartContext';
@@ -21,7 +20,7 @@ const CartDrawer: React.FC = () => {
 
     const handleCheckout = () => {
         closeCart();
-        navigate({ to: '/checkout' });
+        navigate('/checkout');
     };
 
     const getCategoryEmoji = (category: string) => {
@@ -85,7 +84,7 @@ const CartDrawer: React.FC = () => {
                             <p className="text-muted-foreground mb-6">
                                 Discover our premium honey and sustainable products!
                             </p>
-                            <Button variant="default" onClick={() => { closeCart(); navigate({ to: '/shop' }); }}>
+                            <Button variant="default" onClick={() => { closeCart(); navigate('/shop'); }}>
                                 Continue Shopping
                             </Button>
                         </div>
@@ -199,7 +198,7 @@ const CartDrawer: React.FC = () => {
                                 <Button
                                     variant="ghost"
                                     className="w-full mt-2"
-                                    onClick={() => { closeCart(); navigate({ to: '/shop' }); }}
+                                    onClick={() => { closeCart(); navigate('/shop'); }}
                                 >
                                     Continue Shopping
                                 </Button>
