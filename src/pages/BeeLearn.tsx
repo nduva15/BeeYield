@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -203,6 +204,7 @@ const BeeLearn = () => {
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
 
   const handleAddToCart = (product: Product) => {
     const selectedSize = selectedSizes[product.id] || product.variants[0].size;
@@ -640,9 +642,23 @@ const BeeLearn = () => {
 
                     <button
                       aria-label="Add to wishlist"
-                      className="absolute top-3 right-3 p-2 bg-white/80 backdrop-blur-md rounded-full opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 hover:bg-amber-500 hover:text-white"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleWishlist({
+                          id: product.id,
+                          name: product.name,
+                          description: product.description,
+                          price: product.variants[0].price_kes,
+                          image: product.images[0],
+                          category: product.category,
+                          badge: product.badge,
+                          inStock: product.variants.some(v => v.stock_quantity > 0 && v.is_available)
+                        });
+                      }}
+                      className={`absolute top-3 right-3 p-2 backdrop-blur-md rounded-full translate-y-2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ${isInWishlist(product.id) ? "bg-amber-500 text-white opacity-100 translate-y-0" : "bg-white/80 hover:bg-amber-500 hover:text-white"
+                        }`}
                     >
-                      <Heart className="h-4 w-4" />
+                      <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? "fill-current" : ""}`} />
                     </button>
                   </div>
 

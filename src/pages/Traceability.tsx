@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import HoneyTracePDF from "@/components/HoneyTracePDF";
+import { useNavigate, useLocation } from "react-router-dom";
 import { traceBatch } from "@/services/traceabilityService";
 
 const Traceability = () => {
@@ -19,6 +20,18 @@ const Traceability = () => {
   const [traceData, setTraceData] = useState<any>(null);
   const [showScanner, setShowScanner] = useState(false);
   const { toast } = useToast();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Handle direct trace from URL params
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const code = params.get("code");
+    if (code) {
+      setQrCode(code);
+      handleTrace(code);
+    }
+  }, [location.search]);
 
   const handleTrace = async (code: string) => {
     if (!code.trim()) return;

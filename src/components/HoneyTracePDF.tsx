@@ -2,7 +2,7 @@ import { Document, Page, Text, View, StyleSheet, Image, Font } from '@react-pdf/
 
 // Register fonts (optional - using system fonts)
 Font.register({
-    family: 'Helvetica',
+    family: 'Roboto',
     fonts: [
         { src: 'https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxP.ttf', fontWeight: 'normal' },
         { src: 'https://fonts.gstatic.com/s/roboto/v30/KFOlCnqEu92Fr1MmWUlfBBc9.ttf', fontWeight: 'bold' },
@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         backgroundColor: '#FFFFFF',
         padding: 40,
-        fontFamily: 'Helvetica',
+        fontFamily: 'Roboto',
     },
     header: {
         flexDirection: 'row',
@@ -328,7 +328,7 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
                 </View>
 
                 {/* Title */}
-                <Text style={styles.title}>Honey Traceability Report</Text>
+                <Text style={styles.title}>Honey Traceability Certificate</Text>
                 <Text style={styles.subtitle}>
                     Batch Code: {traceData.batch_code} | Generated: {generatedDate}
                 </Text>
@@ -349,7 +349,7 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
 
                     <View style={styles.row}>
                         <Text style={styles.label}>Apiary Name:</Text>
-                        <Text style={styles.value}>{traceData.apiary?.name || 'Kibwezi Savannah Apiary'}</Text>
+                        <Text style={styles.value}>{traceData.apiary?.name || 'Kibwezi Savanna Apiary'}</Text>
                     </View>
 
                     <View style={styles.row}>
@@ -382,7 +382,7 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
 
                 {/* Beekeeper Section with Photo */}
                 <View style={styles.beekeeperSection}>
-                    <Text style={{ ...styles.sectionTitle, color: '#FCD34D' }}>👨‍🌾 Master Beekeeper</Text>
+                    <Text style={{ ...styles.sectionTitle, color: '#FCD34D' }}>Master Beekeeper</Text>
                     <View style={styles.beekeeperHeader}>
                         <Image src={TIMOTHY_PHOTO} style={styles.beekeeperPhoto} />
                         <View style={styles.beekeeperInfo}>
@@ -485,7 +485,7 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
                         BeeYield - Champions for Saving Bees | 50% Ethical Harvest Promise
                     </Text>
                     <Text style={styles.footerContact}>
-                        📧 info@beeyield.co.ke | 📞 +254 712 345 678 | 🌐 www.beeyield.co.ke
+                        📧 info@beeyield.com | 📞 +1 (800) 123-4567 | 🌐 www.beeyield.com
                     </Text>
                     <Text style={styles.footerContact}>
                         📍 Kibwezi, Makueni County, Kenya
