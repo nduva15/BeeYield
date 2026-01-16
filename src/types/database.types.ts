@@ -176,7 +176,7 @@ export type Database = {
           customer_phone: string
           shipping_address: Json
           payment_method: string
-          total_amount: number
+          total_kes: number
           status: string
           notes: string | null
         }
@@ -187,7 +187,7 @@ export type Database = {
           customer_phone: string
           shipping_address: Json
           payment_method: string
-          total_amount: number
+          total_kes: number
           status?: string
           notes?: string | null
         }
@@ -198,7 +198,7 @@ export type Database = {
           customer_phone?: string
           shipping_address?: Json
           payment_method?: string
-          total_amount?: number
+          total_kes?: number
           status?: string
           notes?: string | null
         }

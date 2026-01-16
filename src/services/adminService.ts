@@ -545,7 +545,7 @@ export const adminService = {
 
             const totalRevenue = (ordersData || [])
                 .filter(o => o.status !== 'cancelled')
-                .reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0);
+                .reduce((sum, o) => sum + (Number(o.total_kes) || 0), 0);
 
             const totalHoneyKg = (batchesData || [])
                 .reduce((sum, b) => sum + (Number(b.quantity_kg) || 0), 0);
