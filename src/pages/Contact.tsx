@@ -22,7 +22,7 @@ const Contact = () => {
     country: "",
     // Unique fields
     farmName: "",
-    cropType: "Almonds",
+    cropType: "Maize",
     acres: "",
     apiaryName: "",
     hiveCount: "",
@@ -94,7 +94,7 @@ const Contact = () => {
         state: "",
         country: "",
         farmName: "",
-        cropType: "Almonds",
+        cropType: "Maize",
         acres: "",
         apiaryName: "",
         hiveCount: "",
@@ -264,11 +264,15 @@ const Contact = () => {
                         onChange={(e) => handleChange("cropType", e.target.value)}
                         className="w-full appearance-none rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                       >
-                        <option>Almonds</option>
-                        <option>Apples</option>
-                        <option>Avocados</option>
-                        <option>Blueberries</option>
-                        <option>Cherries</option>
+                        <option>Maize</option>
+                        <option>Sisal</option>
+                        <option>Mangoes</option>
+                        <option>Beans</option>
+                        <option>Sunflower</option>
+                        <option>Oranges</option>
+                        <option>Vegetables</option>
+                        <option>Tomatoes</option>
+                        <option>Onions</option>
                         <option>Other</option>
                       </select>
                     </div>

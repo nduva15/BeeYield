@@ -1,5 +1,5 @@
 /**
- * Contact Service - Connects to Supabase
+ * Contact Service - Connects directly to Supabase
  */
 import { supabase } from "@/lib/supabase";
 
@@ -42,6 +42,9 @@ export interface NewsletterSubscription {
 }
 
 export const submitContactForm = async (data: ContactSubmission) => {
+    if (!supabase) {
+        throw new Error("Supabase client not initialized. Check environment variables.");
+    }
     try {
         // Construct a rich message with all the details
         const detailedMessage = `
@@ -77,17 +80,21 @@ ${data.message || 'No additional message provided.'}
 };
 
 export const submitPollinationRequest = async (data: PollinationRequest) => {
+    if (!supabase) {
+        throw new Error("Supabase client not initialized. Check environment variables.");
+    }
     try {
+        // Match exact TypeScript types from database.types.ts
         const { error } = await supabase.from('pollination_requests').insert({
             full_name: data.full_name,
             email: data.email,
             phone: data.phone,
-            location: data.farm_location,
+            farm_name: data.farm_name,
+            farm_location: data.farm_location,
             crop_type: data.crop_type,
             acres: data.acres,
-            preferred_date: data.preferred_start_date,
-            message: `Farm Name: ${data.farm_name}\n\n${data.additional_info || ''}`,
-            status: 'pending'
+            preferred_start_date: data.preferred_start_date,
+            additional_info: data.additional_info || null
         });
 
         if (error) throw error;
@@ -99,6 +106,9 @@ export const submitPollinationRequest = async (data: PollinationRequest) => {
 };
 
 export const submitNewsletterSubscription = async (data: NewsletterSubscription) => {
+    if (!supabase) {
+        throw new Error("Supabase client not initialized. Check environment variables.");
+    }
     try {
         // First check if already subscribed to avoid unique constraint error
         const { data: existing } = await supabase
@@ -113,7 +123,7 @@ export const submitNewsletterSubscription = async (data: NewsletterSubscription)
 
         const { error } = await supabase.from('newsletter_subscribers').insert({
             email: data.email,
-            status: 'subscribed'
+            first_name: data.first_name || null
         });
 
         if (error) throw error;
@@ -123,4 +133,3 @@ export const submitNewsletterSubscription = async (data: NewsletterSubscription)
         throw error;
     }
 };
-
