@@ -35,6 +35,29 @@ def get_supabase() -> Optional[Client]:
     return _supabase_client
 
 
+# Global Supabase Admin client (Service Role)
+_supabase_admin_client: Optional[Client] = None
+
+def get_supabase_admin() -> Optional[Client]:
+    """Get or create Supabase Admin client connection (Service Role)"""
+    global _supabase_admin_client
+    
+    if _supabase_admin_client is None:
+        try:
+            url = settings.SUPABASE_URL
+            key = settings.SUPABASE_SERVICE_ROLE_KEY
+            if url and key:
+                _supabase_admin_client = create_client(url, key)
+                print(f"OK: Connected to Supabase Admin: {url}")
+            else:
+                print("WARNING: Supabase Service Role credentials not configured")
+        except Exception as e:
+            print(f"ERROR: Supabase Admin connection failed: {e}")
+            _supabase_admin_client = None
+            
+    return _supabase_admin_client
+
+
 # ============ HELPER FUNCTIONS ============
 
 def db_insert(table: str, data: Dict[str, Any]) -> Dict[str, Any]:
