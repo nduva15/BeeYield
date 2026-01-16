@@ -49,13 +49,13 @@
     "@supabase/auth-helpers-react": "^0.15.0",
     "@supabase/supabase-js": "^2.89.0",
     "@tanstack/react-query": "^5.62.7",
-    "@tanstack/react-router": "1.150.0",
-    "@tanstack/react-start": "1.150.0",
-    "@tanstack/start": "1.150.0",
-    "@tanstack/router-generator": "1.150.0",
-    "@tanstack/router-plugin": "1.150.0",
-    "@tanstack/react-start-plugin": "1.150.0",
-    "@tanstack/server-functions-plugin": "1.150.0",
+    "@tanstack/react-router": "latest",
+    "@tanstack/react-start": "latest",
+    "@tanstack/start": "latest",
+    "@tanstack/router-generator": "latest",
+    "@tanstack/router-plugin": "latest",
+    "@tanstack/react-start-plugin": "latest",
+    "@tanstack/server-functions-plugin": "latest",
     "@vercel/analytics": "^1.6.1",
     "@vercel/speed-insights": "^1.3.1",
     "axios": "^1.13.2",
@@ -118,18 +118,5 @@
     "vite": "^6.0.0",
     "vite-tsconfig-paths": "^6.0.4",
     "vitest": "^4.0.16"
-  },
-  "pnpm": {
-    "overrides": {
-      "@tanstack/react-router": "1.150.0",
-      "@tanstack/react-start": "1.150.0",
-      "@tanstack/start": "1.150.0",
-      "@tanstack/start-config": "1.150.0",
-      "@tanstack/router-generator": "1.150.0",
-      "@tanstack/router-plugin": "1.150.0",
-      "@tanstack/react-start-plugin": "1.150.0",
-      "@tanstack/server-functions-plugin": "1.150.0",
-      "@tanstack/start-server-core": "1.150.0"
-    }
   }
 }
