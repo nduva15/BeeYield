@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import {
     Check, TrendingUp, Shield, BarChart3, ArrowRight,
     Cpu, Eye, Zap, Target, Leaf, Award, Clock, Users,
-    Activity, Database, Radio, Smartphone, ChevronRight
+    Activity, Database, Radio, Smartphone, ChevronRight, Globe
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -360,6 +360,43 @@ const PollinationServices = () => {
                 </div>
             </section>
 
+            {/* Partners Section */}
+            <section className="py-32 bg-muted/20">
+                <div className="container mx-auto px-4">
+                    <div className="max-w-4xl mx-auto text-center mb-20 bg-background p-10 rounded-[2.5rem] shadow-xl border border-border/50">
+                        <h2 className="text-4xl font-black mb-6 tracking-tight">Try BeeYield in your apiary</h2>
+                        <p className="text-xl text-muted-foreground mb-8 font-medium">
+                            BeeYield is constantly evolving. We invite you to take part in the international testing of our system – together, we can advance technology that protects bees worldwide.
+                        </p>
+                        <Button size="lg" className="w-full sm:w-auto h-14 px-8 text-lg font-bold rounded-xl" asChild>
+                            <Link to="/contact">Join the Program</Link>
+                        </Button>
+                    </div>
+
+                    <div className="text-center">
+                        <h2 className="text-3xl font-black mb-8 text-foreground tracking-tight">We are building a global network of partners</h2>
+                        <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-16 font-medium">
+                            BeeYield collaborates with leading partners worldwide, joining forces with beekeeping equipment manufacturers, industry organizations, and renowned universities.
+                        </p>
+                        {/* Partners */}
+                        <div className="flex flex-wrap justify-center gap-8 items-center opacity-70 hover:opacity-100 transition-opacity">
+                            <div className="flex items-center gap-3 px-8 py-6 bg-background rounded-2xl shadow-sm border border-border">
+                                <div className="h-12 w-12 bg-primary/20 rounded-full flex items-center justify-center">
+                                    <Globe className="h-6 w-6 text-primary" />
+                                </div>
+                                <span className="font-bold text-xl">Intelligent Hives</span>
+                            </div>
+                            <div className="flex items-center gap-3 px-8 py-6 bg-background rounded-2xl shadow-sm border border-border">
+                                <div className="h-12 w-12 bg-primary/20 rounded-full flex items-center justify-center">
+                                    <Activity className="h-6 w-6 text-primary" />
+                                </div>
+                                <span className="font-bold text-xl">ApiSense</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* Final CTA Section */}
             <section className="py-32 relative overflow-hidden bg-amber-900 text-white rounded-[5rem] mx-4 mb-8">
                 <div className="absolute inset-0 bg-gradient-to-br from-amber-600 via-amber-800 to-orange-900 opacity-90" />
@@ -385,7 +422,7 @@ const PollinationServices = () => {
                     <p className="text-white/40 text-xs font-black uppercase tracking-widest">Global Support • Real-time Data • Guaranteed Impact</p>
                 </div>
             </section>
-        </div>
+        </div >
     );
 };
 
