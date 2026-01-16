@@ -22,7 +22,6 @@ const Header = () => {
   const isActive = (path: string) => location.pathname === path;
 
   const menuLinks = [
-    { to: "/global-hive-network", label: "Global Hive Network" },
     { to: "/ourstory", label: "Our Story" },
     { to: "/media", label: "Media" },
     { to: "/notes", label: "Notes" },
@@ -83,8 +82,8 @@ const Header = () => {
           </DropdownMenu>
 
           <Link
-            to="/pollination-solutions"
-            className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/pollination-solutions") ? "text-primary" : "text-foreground"
+            to="/global-hive-network"
+            className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/global-hive-network") ? "text-primary" : "text-foreground"
               }`}
           >
             Beekeeping Network
@@ -204,9 +203,9 @@ const Header = () => {
               </div>
 
               <Link
-                to="/pollination-solutions"
+                to="/global-hive-network"
                 onClick={() => setIsMenuOpen(false)}
-                className={`text-sm sm:text-base font-semibold hover:bg-primary-foreground/10 rounded-lg px-3 py-2.5 sm:py-3 transition-colors ${isActive("/pollination-solutions") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground"
+                className={`text-sm sm:text-base font-semibold hover:bg-primary-foreground/10 rounded-lg px-3 py-2.5 sm:py-3 transition-colors ${isActive("/global-hive-network") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground"
                   }`}
               >
                 Beekeeping Network
