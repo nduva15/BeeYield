@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import FirstStepsBanner from './FirstStepsBanner';
 
 interface SupportRequest {
     id: string;
@@ -44,7 +43,6 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500 pb-12">
-            <FirstStepsBanner onTabChange={onTabChange} />
 
             {/* Page Title */}
             <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">Support Center</h1>

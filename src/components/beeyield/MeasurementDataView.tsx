@@ -3,7 +3,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { Thermometer, Droplets, Weight, CloudRain, Filter, Download, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import FirstStepsBanner from './FirstStepsBanner';
 
 interface MeasurementDataViewProps {
     onTabChange: (tab: string) => void;
@@ -23,7 +22,6 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-12">
-            <FirstStepsBanner onTabChange={onTabChange} />
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Measurement Data</h1>

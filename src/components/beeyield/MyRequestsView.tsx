@@ -3,7 +3,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { LayoutGrid, Box, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import FirstStepsBanner from './FirstStepsBanner';
 
 interface MyRequestsViewProps {
     onTabChange: (tab: string) => void;
@@ -12,7 +11,6 @@ interface MyRequestsViewProps {
 const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
     return (
         <div className="space-y-12 animate-in fade-in duration-500 pb-12 px-2">
-            <FirstStepsBanner onTabChange={onTabChange} />
 
             <div className="space-y-10">
                 <div className="flex justify-between items-center">

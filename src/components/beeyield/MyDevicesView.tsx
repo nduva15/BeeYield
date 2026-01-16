@@ -10,7 +10,6 @@ import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import AddDeviceModal from './AddDeviceModal';
 import { toast } from 'sonner';
-import FirstStepsBanner from './FirstStepsBanner'; // We can keep or remove this, let's keep for utility
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 

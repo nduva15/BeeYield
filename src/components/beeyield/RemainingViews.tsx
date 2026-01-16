@@ -2,13 +2,11 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Wifi, Shield, Zap, Bluetooth as BluetoothIcon, Usb, Grid3X3, Box, Bell, Settings, ChevronDown } from 'lucide-react';
-import FirstStepsBanner from './FirstStepsBanner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // Common View Wrapper
 const ViewLayout = ({ title, subtitle, icon: Icon, onTabChange, showIcon = true, children }: { title: string, subtitle?: string, icon?: any, onTabChange?: (tab: string) => void, showIcon?: boolean, children: React.ReactNode }) => (
     <div className="space-y-8 animate-in fade-in duration-500 pb-12">
-        {onTabChange && <FirstStepsBanner onTabChange={onTabChange} />}
         <div className="flex items-center gap-4">
             {showIcon && Icon && (
                 <div className="w-14 h-14 bg-[#B48428] rounded-[1.25rem] flex items-center justify-center text-white shadow-lg shadow-amber-500/20">
@@ -35,7 +33,6 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-12">
-            {onTabChange && <FirstStepsBanner onTabChange={onTabChange} />}
 
             {/* Title */}
             <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">

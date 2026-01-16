@@ -2,7 +2,6 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import FirstStepsBanner from './FirstStepsBanner';
 
 const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTabChange }) => {
     // Mock Data to match screenshot
@@ -27,7 +26,6 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-10">
-            <FirstStepsBanner onTabChange={onTabChange} />
 
             <div className="flex items-center justify-between">
                 <div>

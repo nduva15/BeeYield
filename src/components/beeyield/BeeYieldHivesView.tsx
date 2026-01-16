@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Grid3X3, StickyNote, CheckSquare, Box, MapPin, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import FirstStepsBanner from './FirstStepsBanner';
 
 interface BeeYieldHivesViewProps {
     onTabChange: (tab: string) => void;
@@ -16,8 +15,6 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-12 relative">
-            <FirstStepsBanner onTabChange={onTabChange} />
-
             {/* Page Title */}
             <div className="flex justify-between items-center">
                 <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">BeeYield</h1>

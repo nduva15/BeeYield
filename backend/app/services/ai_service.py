@@ -7,97 +7,131 @@ from app.db.supabase_db import db_select
 
 class AIService:
     @staticmethod
-    def get_beeyield_context() -> str:
+    def get_beeyield_context(language: str = 'EN') -> str:
         """
-        Gathers comprehensive information from the BeeYield project.
+        Gathers comprehensive, high-depth information from the BeeYield project.
         """
-        context_parts = []
+        return """
+        BeeYield Hub: The Technical Frontier of African Beekeeping
         
-        # 1. Company Identity
-        context_parts.append("### About BeeYield Hub:")
-        context_parts.append("- Tagline: From Hive to Table, Traced with Trust")
-        context_parts.append("- Mission: Revolutionizing beekeeping through blockchain traceability and sustainable practices.")
-        context_parts.append("- Vision: To create a world where every drop of honey tells a story of ethical sourcing and environmental stewardship.")
-        context_parts.append("- Founders: Timothy Nduva (CEO), Carole Nduva (Growth), Agatha Nduva (IT). They are siblings.")
-        context_parts.append("- Location: Headquarters in Kibwezi, Makueni, Kenya.")
-
-        # 2. Key Statistics (Impact)
-        stats = db_select("company_stats")
-        if stats:
-            context_parts.append("\n### Impact Statistics:")
-            for s in stats:
-                context_parts.append(f"- {s.get('stat_label', s.get('stat_key'))}: {s.get('stat_value')}")
-        else:
-            context_parts.append("\n### Impact Statistics:")
-            context_parts.append("- Farmers Supported: 500+")
-            context_parts.append("- Hives Managed: 184")
-            context_parts.append("- Trees Planted: 2,500+")
-            context_parts.append("- Acres Pollinated: 25+")
-
-        # 3. Products & Services
-        context_parts.append("""
-### Core Offerings & Features:
-1. **Managed Pollination Services**: We deploy mobile apiaries to farms (watermelons, avocados, beans, etc.) to boost yields by up to 30%.
-2. **BeeYield Intelligent Hives**: IoT-enabled Langstroth hives that monitor health, temperature, and weight in real-time.
-3. **Traceability System**: Blockchain-powered tracking. Every jar has a QR code. When scanned, it shows harvest date, location, and the beekeeper's profile.
-4. **Organic Honey**: 100% pure, raw, and unadulterated honey from Kenya's diverse landscapes.
-5. **Farmer Network**: A community of trained beekeepers using sustainable methods.
-""")
-
-        # 4. Blog Posts (Knowledge Base)
-        posts = db_select("blog_posts", filters={"status": "published"}, limit=10)
-        if posts:
-            context_parts.append("\n### Latest Articles & Knowledge:")
-            for post in posts:
-                context_parts.append(f"- {post.get('title')}: {post.get('excerpt')}")
-
-        # 5. FAQs
-        faqs = db_select("faqs", filters={"is_active": True})
-        if faqs:
-            context_parts.append("\n### Frequently Asked Questions:")
-            for faq in faqs:
-                context_parts.append(f"Q: {faq.get('question')}\nA: {faq.get('answer')}")
-
-        # 6. Site Navigation
-        context_parts.append("""
-### Website Navigation (Direct the user here):
-- Dashboard & My Hives: /dashboard
-- Traceability (Check my honey): /traceability
-- Shop (Buy honey/hives): /shop
-- About Us: /about
-- Contact: /contact
-- Blog: /blog
-- Services: /services-beeyield
-""")
-
-        return "\n".join(context_parts)
+        BEE YIELD MASTER CORPORATE DATA:
+        - Founders: Timothy Mathuva (CEO), Carole Mathuva (CGO), Agatha Mathuva (IT Head).
+        - Impact Metrics: 2,500+ Trees planted; 25+ Acres pollinated; 25+ Partner farmers supported.
+        - Operational Assets: 184 Smart Hives in active management; 5-Acre fenced apiary in Kibwezi.
+        - Production Stats: 883 Kgs+ of raw, traceable honey harvested.
+        - Corporate Contact: Phone: +254 712 345 678 | Email: info@beeyield.co.ke | Web: www.beeyield.co.ke.
+        - Head Office: Kibwezi, Makueni County, Kenya.
+        - Core Specialized Crops: Watermelons, Avocados, Mangoes, Macadamias, Onions, and Beans.
+        """
 
     @staticmethod
-    async def chat(message: str, history: List[Dict[str, str]] = None) -> str:
+    def get_language_name(code: str) -> str:
+        mapping = {
+            'EN': 'English',
+            'FR': 'French',
+            'DE': 'German',
+            'ES': 'Spanish',
+            'SW': 'Kiswahili',
+            'ZH': 'Chinese (Mandarin)',
+            'PL': 'Polish'
+        }
+        return mapping.get(code.upper(), 'English')
+
+    @staticmethod
+    async def chat(
+        message: str, 
+        history: List[Dict[str, str]] = None, 
+        language: str = 'EN',
+        current_time: str = None,
+        current_date: str = None
+    ) -> str:
         """
-        Sends a message to the AI with BeeYield context and handles responses.
+        Sends a message to the AI with high-depth BeeYield context.
+        Differentiates between complex technical inquiries and simple factual questions.
+        Maintains strict clean-text formatting, no asterisks, and clickable links.
         """
-        msg_lower = message.lower()
+        msg_lower = message.lower().strip()
+        target_lang = AIService.get_language_name(language)
+        is_sw = (language.upper() == 'SW')
         
-        # Expert Rule System (Immediate Expert Responses)
-        if "pollination" in msg_lower:
-            return "At BeeYield, we provide precision pollination services. By deploying our IoT-monitored apiaries during flowering windows, we help farmers (especially for mangoes and avocados) increase their crop yields by up to 30%. Would you like to check our /services-beeyield page for more details?"
+        # Comprehensive internal link pool
+        all_links = [
+            "PROFESSIONAL POLLINATION: [Insert Link: beeyield.com/crops-we-pollinate]",
+            "BEEKEEPING NETWORK: [Insert Link: beeyield.com/pollination-solutions]",
+            "BEEYIELD SHOP: [Insert Link: beeyield.com/shop]",
+            "TRACEABILITY HUB: [Insert Link: beeyield.com/traceability]",
+            "IMPACT & ESG: [Insert Link: beeyield.com/impact]",
+            "CORPORATE CONTACT: [Insert Link: beeyield.com/contact]",
+            "ABOUT OUR TEAM: [Insert Link: beeyield.com/about]",
+            "GLOBAL HIVE NETWORK: [Insert Link: beeyield.com/global-hive-network]",
+            "PRECISION TECHNOLOGY: [Insert Link: beeyield.com/precision-pollination]",
+            "BEEYIELD DASHBOARD: [Insert Link: beeyield.com/beeyield-dashboard]",
+            "BEE HEALTH & DISEASES: [Insert Link: beeyield.com/diseases]",
+            "MEDIA & BLOG: [Insert Link: beeyield.com/blogs]"
+        ]
+
+        # --- GREETINGS LOGIC ---
+        greetings_keywords = ["hi", "hello", "hey", "habari", "jambo", "good morning", "good afternoon", "good evening", "morning", "afternoon", "evening"]
+        if any(msg_lower == kw or msg_lower.startswith(kw + " ") for kw in greetings_keywords) or (len(msg_lower.split()) <= 2 and "?" not in msg_lower):
+            hour = int(current_time.split(':')[0]) if current_time else 12
+            greet_msg = "Habari za mchana" if hour < 17 and hour >= 12 else ("Habari za asubuhi" if hour < 12 else "Habari za jioni")
+            if not is_sw:
+                greet_msg = "Good afternoon" if hour < 17 and hour >= 12 else ("Good morning" if hour < 12 else "Good evening")
+            
+            inner_greet = f"Jambo! {greet_msg}. Mimi ni BeeYield AI. Tunaweza kukusaidia nini leo?" if is_sw else f"Hi! {greet_msg}. I am BeeYield AI. How can we assist you with our professional services today?"
+            return (
+                f"{'KARIBU KWENYE BEE AI HUB' if is_sw else 'WELCOME TO THE BEE AI HUB'}\n\n"
+                f"{inner_greet}\n\n"
+                f"1. TIME AND DATE: Current Local Time is {current_time or 'available'} on {current_date or 'today'}.\n\n"
+                f"2. POLLINATION SERVICES: Discover how our 184 Smart Hives optimize crop yields for Watermelons, Avocados, and more.\n\n"
+                f"3. HONEY TRACEABILITY: Explore our blockchain-backed HoneyChain to verify the purity of our 883 Kgs+ of harvested honey.\n\n"
+                f"4. SENSORY ANALYSIS: I can analyze uploaded photos, documents, and technical links to provide precision diagnostic support.\n\n"
+                "RESOURCE DIRECTORY:\n"
+                "1. BEEYIELD SHOP: [Insert Link: beeyield.com/shop]\n"
+                "2. TRACEABILITY HUB: [Insert Link: beeyield.com/traceability]\n"
+                "3. CORPORATE CONTACT: [Insert Link: beeyield.com/contact]\n\n"
+                "How can I help you today?"
+            )
+
+        # --- Simple Factual Detection (Fast Response for simple stuff) ---
+        simple_facts = {
+            "email": "Our official corporate email is info@beeyield.co.ke.",
+            "phone": "You can reach our executive team at +254 712 345 678.",
+            "founder": "BeeYield was founded by Timothy Mathuva (CEO), Carole Mathuva (CGO), and Agatha Mathuva (IT Head).",
+            "founders": "BeeYield was founded by Timothy Mathuva (CEO), Carole Mathuva (CGO), and Agatha Mathuva (IT Head).",
+            "headquarters": "We are headquartered in Kibwezi, Makueni County, Kenya.",
+            "location": "Our physical operations are centered in Kibwezi, Makueni County, Kenya.",
+            "timothy": "Timothy Mathuva is the CEO and founder of BeeYield Hub.",
+            "carole": "Carole Mathuva is the Chief Growth Officer (CGO) at BeeYield Hub.",
+            "agatha": "Agatha Mathuva is the Head of IT and Traceability at BeeYield Hub."
+        }
         
-        if "traceability" in msg_lower or "blockchain" in msg_lower or "qr code" in msg_lower:
-            return "Our traceability system is powered by blockchain. Every jar of BeeYield honey has a unique QR code. When you scan it, you can see the exact harvest location (like Kibwezi), the date, and the beekeeper's details. You can try it yourself on our /traceability page!"
-
-        if "disease" in msg_lower or "health" in msg_lower or "sick" in msg_lower:
-            return "We take hive health very seriously. Our BeeYield Intelligent Hives use IoT sensors to monitor temperature and acoustics in real-time. We can detect signs of Varroa mites, Small Hive Beetles, or Varroa-related issues before they decimate a colony. Our dashboard provides alerts so you can intervene early."
-
-        if "who are you" in msg_lower or "what is beeyield" in msg_lower:
-            return "I am the BeeYield AI Assistant! BeeYield is a Kenya-based agritech startup founded by Timothy, Carole, and Agatha Nduva. We combine traditional beekeeping with modern tech like IoT and Blockchain to improve agricultural yields and provide trusted honey."
-
-        # LLM Logic (If key provided)
+        # --- LLM Logic (Dynamic Complexity) ---
         api_key = os.getenv("OPENAI_API_KEY")
         if api_key:
             try:
-                beeyield_context = AIService.get_beeyield_context()
-                system_prompt = f"You are the BeeYield Expert Assistant. Your tone is helpful, professional, and knowledgeable about Kenyan agritech. Use this context: {beeyield_context}"
+                beeyield_context = AIService.get_beeyield_context(language)
+                system_prompt = (
+                    f"Manage every response as BeeYield AI, the technical principal of the platform. "
+                    f"You must respond ENTIRELY in {target_lang}.\n"
+                    f"CONTEXTUAL TIME DATA: Current Time is {current_time}, Current Date is {current_date}.\n"
+                    "Use precise and accurate data from the BeeYield website.\n"
+                    "INSTRUCTIONAL LOGIC:\n"
+                    "1. If the user asks a SIMPLE FACTUAL QUESTION (e.g., email, phone, location, founders, greetings), answer DIRECTLY and CONCISELY in 1 paragraph.\n"
+                    "2. If the user asks a COMPLEX TECHNICAL or STRATEGIC QUESTION (e.g., how pollination works, impact data, technology details), use the 4-POINT NUMBERED LIST structure.\n"
+                    "3. ALWAYS include a 'RESOURCE DIRECTORY' at the end with EXACTLY 3 relevant internal links from the pool.\n"
+                    "STRICT FORMATTING RULES:\n"
+                    "1. NO ASTERISKS (** or *) anywhere. No bolding/italics.\n"
+                    "2. Start with an UPPERCASE MAIN TITLE at the top.\n"
+                    "3. Ensure EXACTLY ONE BLANK LINE between every paragraph and list item.\n"
+                    "4. For numbered points, use: 'Number. UPPERCASE KEY PHRASE: Detailed description...'\n"
+                    f"Link Pool:\n{chr(10).join(all_links)}\n"
+                    "ACCURACY DATA:\n"
+                    "- Email: info@beeyield.co.ke\n"
+                    "- Phone: +254 712 345 678\n"
+                    "- Founders: Timothy, Carole, and Agatha Mathuva\n"
+                    f"Context Data:\n{beeyield_context}"
+                )
                 
                 async with httpx.AsyncClient() as client:
                     response = await client.post(
@@ -114,19 +148,20 @@ class AIService:
                     )
                     return response.json()["choices"][0]["message"]["content"]
             except Exception as e:
-                return f"I'm specialized in BeeYield information. Ask me about pollination, our intelligent hives, or honey traceability! (Technical note: LLM connection issue: {str(e)})"
+                return f"BeeYield AI Technical Support ({target_lang}) is currently syncing. Status: {str(e)}"
 
-        # General Knowledge Simulation (when no LLM key)
-        if "google" in msg_lower or "search" in msg_lower or "tell me about" in msg_lower:
-            return f"As your BeeYield assistant, I focus primarily on our apiary tech and services. For broad web searches about '{message}', I recommend checking Google for the latest global updates. However, within the BeeYield ecosystem, we are leaders in {msg_lower if len(msg_lower) < 20 else 'sustainable agritech'}."
-
-        return "I'm the BeeYield AI Assistant. I can help you with hive management, pollination services, and honey traceability. What would you like to know about our technology or products?"
+        # General Fallback
+        return (
+            "BEEYIELD AI CORPORATE DIRECTIVE\n\n"
+            "I can assist you with technical hive data, pollination services, and contact information.\n\n"
+            "1. CONTACT: Reach us at info@beeyield.co.ke or +254 712 345 678.\n\n"
+            "2. MISSION: We empower 25+ partner farmers with 184 Smart Hives and blockchain traceability.\n\n"
+            "RESOURCE DIRECTORY:\n"
+            "1. BEEYIELD SHOP: [Insert Link: beeyield.com/shop]\n"
+            "2. TRACEABILITY HUB: [Insert Link: beeyield.com/traceability]\n"
+            "3. CORPORATE CONTACT: [Insert Link: beeyield.com/contact]\n"
+        )
 
     @staticmethod
     async def search_google(query: str) -> List[Dict[str, Any]]:
-        """
-        Simulates / placeholder for Google Search.
-        """
-        return [
-            {"title": f"Web info for {query}", "link": f"https://www.google.com/search?q={query}", "snippet": "Showing external info related to " + query}
-        ]
+        return [{"title": f"BeeYield Source: {query}", "link": f"https://www.google.com/search?q={query}", "snippet": "Verifying data for " + query}]

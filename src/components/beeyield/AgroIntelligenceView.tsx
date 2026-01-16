@@ -27,7 +27,6 @@ import {
     Maximize2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import FirstStepsBanner from './FirstStepsBanner';
 
 interface AIAssistantViewProps {
     onTabChange: (tab: string) => void;
@@ -37,13 +36,11 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
     // New Dashboard Implementation for BeeYield Agro Intelligence
     return (
         <div className="flex flex-col animate-in fade-in duration-500 pb-12 space-y-8">
-            {/* First Steps Banner */}
-            <FirstStepsBanner onTabChange={onTabChange} />
 
             {/* Header Section */}
             <div className="space-y-1">
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
-                    BeeYield Agro Intelligence
+                    BeeYield Intelligence
                 </h1>
                 <p className="text-gray-500 dark:text-gray-400 font-medium">
                     Moving agriculture forward - Earth Observation + AI + Agronomy
@@ -82,8 +79,8 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
                     {[
-                        "BeeYield Agro Intelligence",
-                        "BeeYield Agro Intelligence",
+                        "BeeYield Intelligence",
+                        "BeeYield Intelligence",
                         "Field Management",
                         "Field status",
                         "Saved reports",
@@ -112,7 +109,7 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
             {/* Agro Intelligence Layer Flow */}
             <div className="space-y-4">
                 <div className="space-y-1">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">Agro Intelligence Layer</h3>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">BeeYield Intelligence Layer</h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400">From satellites to decisions</p>
                 </div>
                 <div className="p-6 bg-white dark:bg-[#141414] rounded-[2rem] border border-gray-100 dark:border-[#1e1e1e] shadow-sm flex flex-col items-center">
@@ -121,7 +118,7 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
                             Copernicus Data <span className="text-gray-400 group-hover:translate-x-1 transition-transform">→</span>
                         </div>
                         <div className="flex-1 min-w-[180px] bg-gray-50 dark:bg-[#09090b] px-6 py-4 rounded-2xl border border-gray-100 dark:border-[#1e1e1e] font-bold text-sm text-gray-700 dark:text-gray-200 shadow-sm flex justify-between items-center group cursor-pointer hover:border-gray-200 transition-colors">
-                            Agro Intelligence Layer <span className="text-gray-400 group-hover:translate-x-1 transition-transform">→</span>
+                            BeeYield Intelligence Layer <span className="text-gray-400 group-hover:translate-x-1 transition-transform">→</span>
                         </div>
                         <div className="flex-1 min-w-[180px] bg-gray-50 dark:bg-[#09090b] px-6 py-4 rounded-2xl border border-gray-100 dark:border-[#1e1e1e] font-bold text-sm text-gray-700 dark:text-gray-200 shadow-sm flex justify-between items-center group cursor-pointer hover:border-gray-200 transition-colors">
                             AI Models <span className="text-gray-400 group-hover:translate-x-1 transition-transform">→</span>

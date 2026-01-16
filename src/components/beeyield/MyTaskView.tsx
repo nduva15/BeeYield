@@ -7,7 +7,6 @@ import {
     Plus
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import FirstStepsBanner from './FirstStepsBanner';
 
 interface MyTaskViewProps {
     onTabChange: (tab: string) => void;
@@ -32,7 +31,6 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-20 relative">
-            <FirstStepsBanner onTabChange={onTabChange} />
 
             <div className="flex justify-between items-end px-2">
                 <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">My Task</h1>
