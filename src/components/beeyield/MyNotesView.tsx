@@ -27,20 +27,38 @@ interface Place {
 interface Hive {
     id: string;
     hive_code: string;
+    apiary_id: string;
     hive_name?: string;
+}
+
+interface Note {
+    id: string;
+    title?: string;
+    description: string;
+    note_date: string;
+    note_time: string;
+    priority: "low" | "medium" | "high";
+    category: string;
+    apiary_id?: string;
+    hive_id?: string;
+    created_at: string;
+    place_name?: string; // For display, joined manually or via view
+    hive_code?: string; // For display
 }
 
 const MyNotesView: React.FC<MyNotesViewProps> = ({ onTabChange = () => { } }) => {
     const [places, setPlaces] = useState<Place[]>([]);
     const [hives, setHives] = useState<Hive[]>([]);
+    const [notes, setNotes] = useState<Note[]>([]);
     const [loading, setLoading] = useState(true);
     const [isPlacesOpen, setIsPlacesOpen] = useState(false);
     const [isHivesOpen, setIsHivesOpen] = useState(false);
     const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
     const [selectedHive, setSelectedHive] = useState<Hive | null>(null);
     const [isAddingNote, setIsAddingNote] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
     const [noteDate, setNoteDate] = useState<Date>(new Date());
-    const [noteTime, setNoteTime] = useState("15:44");
+    const [noteTime, setNoteTime] = useState("12:00");
     const [isClockMinutes, setIsClockMinutes] = useState(false);
     const [description, setDescription] = useState("");
     const [priority, setPriority] = useState<"low" | "medium" | "high">("medium");
@@ -51,13 +69,27 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({ onTabChange = () => { } }) =>
             if (!supabase) return;
             setLoading(true);
             try {
-                const [placesRes, hivesRes] = await Promise.all([
+                const [placesRes, hivesRes, notesRes] = await Promise.all([
                     supabase.from('apiaries').select('id, name'),
-                    supabase.from('hives').select('id, hive_code')
+                    supabase.from('hives').select('id, hive_code, apiary_id'),
+                    supabase.from('notes').select('*').order('created_at', { ascending: false })
                 ]);
 
                 if (placesRes.data) setPlaces(placesRes.data);
-                if (hivesRes.data) setHives(hivesRes.data);
+                if (hivesRes.data) setHives(hivesRes.data as Hive[]);
+
+                // Process notes to add place/hive names (simple client-side join for now)
+                if (notesRes.data) {
+                    const placesMap = new Map((placesRes.data || []).map(p => [p.id, p.name]));
+                    const hivesMap = new Map((hivesRes.data || []).map(h => [h.id, h.hive_code]));
+
+                    const enrichedNotes = notesRes.data.map((note: any) => ({
+                        ...note,
+                        place_name: note.apiary_id ? placesMap.get(note.apiary_id) : undefined,
+                        hive_code: note.hive_id ? hivesMap.get(note.hive_id) : undefined
+                    }));
+                    setNotes(enrichedNotes);
+                }
             } catch (error) {
                 console.error('Error fetching data:', error);
             } finally {
@@ -259,13 +291,57 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({ onTabChange = () => { } }) =>
                         <div className="flex items-center gap-4 pt-4">
                             <Button
                                 type="button"
-                                onClick={() => {
-                                    toast.success("Note saved successfully");
-                                    setIsAddingNote(false);
+                                disabled={isSaving}
+                                onClick={async () => {
+                                    if (!description.trim()) {
+                                        toast.error("Please enter a description");
+                                        return;
+                                    }
+
+                                    if (!supabase) return;
+                                    setIsSaving(true);
+                                    try {
+                                        const { error } = await supabase.from('notes' as any).insert({
+                                            description,
+                                            note_date: format(noteDate, 'yyyy-MM-dd'),
+                                            note_time: noteTime + ":00", // Ensure HH:MM:SS format
+                                            priority,
+                                            category,
+                                            apiary_id: selectedPlace?.id,
+                                            hive_id: selectedHive?.id
+                                        });
+
+                                        if (error) throw error;
+
+                                        toast.success("Note saved successfully");
+                                        setIsAddingNote(false);
+                                        // Reset form
+                                        setDescription("");
+                                        setPriority("medium");
+                                        setCategory("General");
+                                        // Refresh data
+                                        const { data } = await supabase.from('notes' as any).select('*').order('created_at', { ascending: false });
+                                        if (data) {
+                                            const placesMap = new Map(places.map(p => [p.id, p.name]));
+                                            const hivesMap = new Map(hives.map(h => [h.id, h.hive_code]));
+
+                                            setNotes(data.map((note: any) => ({
+                                                ...note,
+                                                place_name: note.apiary_id ? placesMap.get(note.apiary_id) : undefined,
+                                                hive_code: note.hive_id ? hivesMap.get(note.hive_id) : undefined
+                                            })));
+                                        }
+
+                                    } catch (err: any) {
+                                        console.error("Error saving note:", err);
+                                        toast.error("Failed to save note: " + err.message);
+                                    } finally {
+                                        setIsSaving(false);
+                                    }
                                 }}
-                                className="flex-1 h-16 rounded-2xl bg-[#1E293B] hover:bg-[#0F172A] text-white font-bold text-lg shadow-xl shadow-slate-200"
+                                className="flex-1 h-16 rounded-2xl bg-[#1E293B] hover:bg-[#0F172A] text-white font-bold text-lg shadow-xl shadow-slate-200 disabled:opacity-70 disabled:cursor-not-allowed"
                             >
-                                SAVE NOTE
+                                {isSaving ? <Loader2 className="animate-spin" /> : "SAVE NOTE"}
                             </Button>
                             <Button
                                 type="button"
@@ -514,20 +590,72 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({ onTabChange = () => { } }) =>
                 </div>
             </div>
 
-            {/* Empty State / Notes List */}
-            <div className="mt-12">
-                <div className="bg-[#FEF2F2] dark:bg-red-950/20 border border-[#FEE2E2] dark:border-red-900/40 rounded-[2rem] py-20 flex items-center justify-center shadow-sm">
-                    <div className="flex flex-col items-center gap-4">
-                        <span className="text-[#F87171] dark:text-red-400 font-extrabold text-center text-lg tracking-[0.15em] px-8 uppercase">
-                            You don't have any notes yet.
-                        </span>
-                        <p className="text-slate-400 text-sm font-medium">Click the + button to create your first note</p>
+            {/* Notes List */}
+            <div className="mt-12 space-y-4">
+                {notes.length === 0 ? (
+                    <div className="bg-[#FEF2F2] dark:bg-red-950/20 border border-[#FEE2E2] dark:border-red-900/40 rounded-[2rem] py-20 flex items-center justify-center shadow-sm">
+                        <div className="flex flex-col items-center gap-4">
+                            <span className="text-[#F87171] dark:text-red-400 font-extrabold text-center text-lg tracking-[0.15em] px-8 uppercase">
+                                You don't have any notes yet.
+                            </span>
+                            <p className="text-slate-400 text-sm font-medium">Click the + button to create your first note</p>
+                        </div>
                     </div>
-                </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {notes.map((note) => (
+                            <div key={note.id} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-shadow space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex gap-2">
+                                        <span className={cn(
+                                            "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest",
+                                            note.priority === 'low' && "bg-emerald-50 text-emerald-600",
+                                            note.priority === 'medium' && "bg-amber-50 text-amber-600",
+                                            note.priority === 'high' && "bg-rose-50 text-rose-600"
+                                        )}>
+                                            {note.priority}
+                                        </span>
+                                        <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-500 text-[10px] font-black uppercase tracking-widest">
+                                            {note.category}
+                                        </span>
+                                    </div>
+                                    <span className="text-xs font-bold text-slate-400">
+                                        {format(new Date(note.note_date), 'dd MMM')}
+                                    </span>
+                                </div>
+                                <p className="text-slate-700 font-medium line-clamp-3 leading-relaxed">
+                                    {note.description}
+                                </p>
+                                <div className="pt-4 border-t border-slate-50 flex items-center gap-4 text-slate-400">
+                                    {note.place_name && (
+                                        <div className="flex items-center gap-1.5">
+                                            <MapPin className="w-3.5 h-3.5" />
+                                            <span className="text-[10px] font-bold uppercase tracking-wide">{note.place_name}</span>
+                                        </div>
+                                    )}
+                                    {note.hive_code && (
+                                        <div className="flex items-center gap-1.5">
+                                            <Box className="w-3.5 h-3.5" />
+                                            <span className="text-[10px] font-bold uppercase tracking-wide">{note.hive_code}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
             {/* Floating Action Button */}
-            <div className="fixed bottom-12 right-12 z-50">
+            <motion.div
+                className="fixed bottom-12 right-12 z-50"
+                animate={{ y: [0, -10, 0] }}
+                transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                }}
+            >
                 <Button
                     type="button"
                     onClick={() => setIsAddingNote(true)}
@@ -535,7 +663,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({ onTabChange = () => { } }) =>
                 >
                     <Plus className="w-8 h-8 stroke-[2.5]" />
                 </Button>
-            </div>
+            </motion.div>
 
             {/* Backdrop for click-away */}
             {(isPlacesOpen || isHivesOpen) && (

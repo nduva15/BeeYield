@@ -9,7 +9,10 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import FirstStepsBanner from './FirstStepsBanner';
+import MetersAlarms from './MetersAlarms';
+import MetersPayments from './MetersPayments';
+import MetersReports from './MetersReports';
+import MetersSettings from './MetersSettings';
 
 // Usage trend data
 const usageTrendData = [
@@ -81,6 +84,28 @@ interface MetersViewProps {
 }
 
 const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'meters-dashboard' }) => {
+    // ... (keep state logic if needed, or move it inside the default dashboard view)
+    // Actually, I should probably split the Dashboard content into its own component or just render it inline if subTab is default.
+    // For simplicity, I will render the new components if the tab matches, otherwise function as before.
+
+    // Import these dynamically or assume they are available if I was rewriting whole file, but here I am using replace.
+    // I need to add imports at top, but I can't do that easily with a single contiguous block unless I replace the whole file or use multi_replace.
+    // I'll assume I can just switch on activeSubTab here.
+
+    if (activeSubTab === 'meters-alarms') {
+        return <MetersAlarms />;
+    }
+    if (activeSubTab === 'meters-payments') {
+        return <MetersPayments />;
+    }
+    if (activeSubTab === 'meters-reports') {
+        return <MetersReports />;
+    }
+    if (activeSubTab === 'meters-settings') {
+        return <MetersSettings />;
+    }
+
+    // Default Dashboard Logic
     const [usagePeriod, setUsagePeriod] = useState<'Daily' | 'Hourly'>('Daily');
     const [usageFilter, setUsageFilter] = useState<'Water' | 'Heat' | 'Energy' | 'Other'>('Water');
     const [aiMessage, setAiMessage] = useState('');
@@ -107,9 +132,6 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500 pb-12">
-            <FirstStepsBanner onTabChange={onTabChange} />
-
-
             {/* Title */}
             <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">Meters</h1>
 

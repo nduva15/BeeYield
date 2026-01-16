@@ -13,7 +13,7 @@ import {
     X, ChevronDown, MapPin, Search, ClipboardList, Calculator, Receipt, LifeBuoy, Settings,
     Hand, Map, TrendingUp, Volume2, Camera, BookOpen, Droplet, Flame, Zap, Building2, Home, PieChart,
     ArrowRightLeft, FileInput, Bot, Activity, Gauge, List, Layers, BarChart3, Upload, LayoutList, Hexagon, Puzzle,
-    LogIn, UserPlus, Loader2, ArrowLeft, Shield, Lock
+    LogIn, UserPlus, Loader2, ArrowLeft, Shield, Lock, Bell, Banknote
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -200,6 +200,10 @@ const BeeYieldDashboard: React.FC = () => {
                         { id: 'meters-import', label: t('nav_import'), icon: Upload },
                     ]
                 },
+                { id: 'meters-alarms', label: t('nav_alarms_events'), icon: Bell },
+                { id: 'meters-payments', label: t('nav_payments_settlements'), icon: Banknote },
+                { id: 'meters-reports', label: t('nav_reports'), icon: FileText },
+                { id: 'meters-settings', label: t('settings'), icon: Settings },
             ]
         },
         { id: 'billing', label: t('billing'), icon: Receipt },
@@ -250,6 +254,10 @@ const BeeYieldDashboard: React.FC = () => {
             case 'meters-consumption':
             case 'meters-comparisons':
             case 'meters-import':
+            case 'meters-alarms':
+            case 'meters-payments':
+            case 'meters-reports':
+            case 'meters-settings':
                 return <MetersView onTabChange={setActiveTab} activeSubTab={activeTab} />;
             case 'billing':
                 return <BillingView onTabChange={setActiveTab} />;

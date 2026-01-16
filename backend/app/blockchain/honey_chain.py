@@ -631,6 +631,22 @@ class HoneyBlockchain:
             if block.data.get("hive_id") == hive_id
         ]
     
+    def get_latest_sensor_data(self, hive_id: str) -> Optional[Dict[str, Any]]:
+        """Get the most recent sensor reading for a specific hive."""
+        # Search backwards through the chain
+        for block in reversed(self.chain):
+            if block.block_type == BlockType.HIVE_SENSOR_DATA:
+                data = block.data
+                # Handle both single reading and batch
+                if data.get("record_type") == "SENSOR_READING" and data.get("hive_id") == hive_id:
+                    return data
+                elif data.get("record_type") == "SENSOR_BATCH":
+                    # Search batch for this hive
+                    for reading in reversed(data.get("readings", [])):
+                        if reading.get("hive_id") == hive_id:
+                            return reading
+        return None
+    
     def trace_batch(self, batch_code: str) -> Dict[str, Any]:
         """
         Get complete traceability info for a batch code.
