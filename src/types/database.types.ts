@@ -89,7 +89,7 @@ export type Database = {
       }
       pollination_requests: {
         Row: {
-          id: number
+          id: string
           created_at: string
           full_name: string
           email: string
@@ -102,7 +102,7 @@ export type Database = {
           additional_info: string | null
         }
         Insert: {
-          id?: number
+          id?: string
           created_at?: string
           full_name: string
           email: string
@@ -115,7 +115,7 @@ export type Database = {
           additional_info?: string | null
         }
         Update: {
-          id?: number
+          id?: string
           created_at?: string
           full_name?: string
           email?: string
@@ -131,19 +131,19 @@ export type Database = {
       }
       newsletter_subscribers: {
         Row: {
-          id: number
+          id: string
           created_at: string
           email: string
           first_name: string | null
         }
         Insert: {
-          id?: number
+          id?: string
           created_at?: string
           email: string
           first_name?: string | null
         }
         Update: {
-          id?: number
+          id?: string
           created_at?: string
           email?: string
           first_name?: string | null
@@ -170,7 +170,7 @@ export type Database = {
       }
       orders: {
         Row: {
-          id: number
+          id: string
           created_at: string
           customer_email: string
           customer_phone: string
@@ -181,7 +181,7 @@ export type Database = {
           notes: string | null
         }
         Insert: {
-          id?: number
+          id?: string
           created_at?: string
           customer_email: string
           customer_phone: string
@@ -192,7 +192,7 @@ export type Database = {
           notes?: string | null
         }
         Update: {
-          id?: number
+          id?: string
           created_at?: string
           customer_email?: string
           customer_phone?: string
@@ -270,7 +270,7 @@ export type Database = {
       }
       honey_batches: {
         Row: {
-          id: number
+          id: string
           created_at: string
           batch_code: string
           honey_type: string
@@ -299,7 +299,7 @@ export type Database = {
           status: string
         }
         Insert: {
-          id?: number
+          id?: string
           created_at?: string
           batch_code: string
           honey_type: string
@@ -324,7 +324,7 @@ export type Database = {
           status?: string
         }
         Update: {
-          id?: number
+          id?: string
           created_at?: string
           batch_code?: string
           honey_type?: string

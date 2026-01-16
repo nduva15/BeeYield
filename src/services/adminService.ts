@@ -187,7 +187,7 @@ export const adminService = {
         const { data, error } = await supabase
             .from('orders')
             .update({ status })
-            .eq('id', parseInt(orderId))
+            .eq('id', orderId)
             .select()
             .single();
         if (error) throw error;
@@ -199,7 +199,7 @@ export const adminService = {
         const { error } = await supabase
             .from('orders')
             .delete()
-            .eq('id', parseInt(orderId));
+            .eq('id', orderId);
         if (error) throw error;
         return { success: true };
     },
@@ -220,7 +220,7 @@ export const adminService = {
         const { error } = await supabase
             .from('newsletter_subscribers')
             .delete()
-            .eq('id', parseInt(id));
+            .eq('id', id);
         if (error) throw error;
         return { success: true };
     },
@@ -331,7 +331,7 @@ export const adminService = {
         const { data, error } = await supabase
             .from('honey_batches')
             .update(batchData)
-            .eq('id', parseInt(id))
+            .eq('id', id)
             .select()
             .single();
         if (error) throw error;
@@ -343,7 +343,7 @@ export const adminService = {
         const { error } = await supabase
             .from('honey_batches')
             .delete()
-            .eq('id', parseInt(id));
+            .eq('id', id);
         if (error) throw error;
         return { success: true };
     },
@@ -364,7 +364,7 @@ export const adminService = {
         const { data, error } = await supabase
             .from('pollination_requests')
             .update({ status } as any)
-            .eq('id', parseInt(id))
+            .eq('id', id)
             .select()
             .single();
         if (error) throw error;
@@ -376,7 +376,7 @@ export const adminService = {
         const { error } = await supabase
             .from('pollination_requests')
             .delete()
-            .eq('id', parseInt(id));
+            .eq('id', id);
         if (error) throw error;
         return { success: true };
     },
@@ -545,13 +545,13 @@ export const adminService = {
 
             const totalRevenue = (ordersData || [])
                 .filter(o => o.status !== 'cancelled')
-                .reduce((sum, o) => sum + (o.total_amount || 0), 0);
+                .reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0);
 
             const totalHoneyKg = (batchesData || [])
-                .reduce((sum, b) => sum + (b.quantity_kg || 0), 0);
+                .reduce((sum, b) => sum + (Number(b.quantity_kg) || 0), 0);
 
             const totalAcres = (pollinationData || [])
-                .reduce((sum, p) => sum + (p.acres || 0), 0);
+                .reduce((sum, p) => sum + (Number(p.acres) || 0), 0);
 
             const pendingOrders = (ordersData || [])
                 .filter(o => o.status === 'pending').length;
