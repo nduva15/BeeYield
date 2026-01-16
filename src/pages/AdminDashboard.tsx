@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate } from 'react-router-dom';
 import { adminService } from '@/services/adminService';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,7 +32,7 @@ const AdminDashboard: React.FC = () => {
 
     // Role check
     const userRole = user?.user_metadata?.role || 'user';
-    const isSuperAdminEmail = user?.email?.toLowerCase() === 'timothy.mathuva@strathmore.edu';
+    const isSuperAdminEmail = ['timothy.mathuva@strathmore.edu', 'timothynduva349@gmail.com'].includes(user?.email?.toLowerCase() || '');
     const isAdmin = userRole === 'admin' || userRole === 'super_admin' || isSuperAdminEmail;
     const isSuperAdmin = userRole === 'super_admin' || isSuperAdminEmail;
 
@@ -108,8 +108,13 @@ const AdminDashboard: React.FC = () => {
         totalRevenue: 0,
         pendingOrders: 0,
         totalHoneyKg: 0,
-        totalAcres: 0
+        totalAcres: 0,
+        totalUsers: 0,
+        totalApiaries: 0,
+        totalHives: 0
     });
+
+    const [loadedTabs, setLoadedTabs] = useState<Set<string>>(new Set());
 
     // Details Modals State
     const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
@@ -125,89 +130,102 @@ const AdminDashboard: React.FC = () => {
         if (!authLoading && !user) {
             navigate({ to: '/admin/login' });
         } else if (!authLoading && user && isAdmin) {
-            loadAllData();
+            initDashboard();
         }
     }, [user, authLoading, navigate, isAdmin]);
 
-    const loadAllData = async () => {
+    useEffect(() => {
+        if (isAdmin && activeTab !== 'overview' && !loadedTabs.has(activeTab)) {
+            loadTabData(activeTab);
+        }
+    }, [activeTab, isAdmin, loadedTabs]);
+
+    const initDashboard = async () => {
         setIsLoading(true);
         try {
-            const promises: Promise<any>[] = [
-                adminService.getOrders(),
-                adminService.getNewsletterSubscribers(),
-                adminService.getProducts(),
-                adminService.getBatches(),
-                adminService.getPollinationRequests(),
-                adminService.getContactRequests(),
-                adminService.getStockMovements(),
-                adminService.getFarmers(),
-                adminService.getApiaries(),
-                adminService.getHives()
-            ];
-
-            let userPromiseIndex = -1;
-            // Only fetch users if super admin
-            if (isSuperAdmin) {
-                promises.push(adminService.getUsers());
-                userPromiseIndex = promises.length - 1;
+            const stats = await adminService.getDashboardStats();
+            if (stats) {
+                setDashboardStats({
+                    totalRevenue: stats.total_revenue_kes || 0,
+                    pendingOrders: stats.pending_orders || 0,
+                    totalHoneyKg: stats.total_honey_kg || 0,
+                    totalAcres: stats.total_acres || 0,
+                    totalUsers: stats.total_users || 0,
+                    totalApiaries: stats.total_apiaries || 0,
+                    totalHives: stats.total_hives || 0
+                });
             }
-
-            const results = await Promise.allSettled(promises);
-
-            const getResult = (index: number, name: string) => {
-                const result = results[index];
-                if (result.status === 'fulfilled') {
-                    return result.value || [];
-                } else {
-                    console.error(`Failed to load ${name}:`, result.reason);
-                    return [];
-                }
-            };
-
-            const fetchedOrders = getResult(0, 'orders');
-            const fetchedSubscribers = getResult(1, 'subscribers');
-            const fetchedProducts = getResult(2, 'products');
-            const fetchedBatches = getResult(3, 'batches').reverse();
-            const fetchedPollination = getResult(4, 'pollination');
-            const fetchedContacts = getResult(5, 'contacts');
-            const fetchedStock = getResult(6, 'stock');
-            const fetchedFarmers = getResult(7, 'farmers');
-            const fetchedApiaries = getResult(8, 'apiaries');
-            const fetchedHives = getResult(9, 'hives');
-
-            setOrders(fetchedOrders);
-            setSubscribers(fetchedSubscribers);
-            setProducts(fetchedProducts);
-            setBatches(fetchedBatches);
-            setPollinationRequests(fetchedPollination);
-            setContacts(fetchedContacts);
-            setStockMovements(fetchedStock);
-            setFarmers(fetchedFarmers);
-            setApiaries(fetchedApiaries);
-            setHives(fetchedHives);
-
-            // Calculate Stats
-            const revenue = fetchedOrders.reduce((sum: number, o: any) => sum + (o.total_amount || 0), 0);
-            const pending = fetchedOrders.filter((o: any) => o.status === 'pending').length;
-            const honeyKg = fetchedBatches.reduce((sum: number, b: any) => sum + (b.quantity_kg || 0), 0);
-            const acres = fetchedPollination.reduce((sum: number, p: any) => sum + (p.acres || 0), 0);
-
-            setDashboardStats({
-                totalRevenue: revenue,
-                pendingOrders: pending,
-                totalHoneyKg: honeyKg,
-                totalAcres: acres
-            });
-
-            if (isSuperAdmin && userPromiseIndex !== -1) {
-                setSystemUsers(getResult(userPromiseIndex, 'users'));
-            }
+            setLoadedTabs(prev => new Set(prev).add('overview'));
         } catch (error) {
-            console.error("Critical error in dashboard loader:", error);
-            toast.error("Dashboard loaded with some errors");
+            console.error("Failed to load initial stats:", error);
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const loadTabData = async (tab: string) => {
+        // Individual tab loading logic
+        try {
+            switch (tab) {
+                case 'orders':
+                    const ordersData = await adminService.getOrders();
+                    setOrders(ordersData);
+                    break;
+                case 'products':
+                    const productsData = await adminService.getProducts();
+                    setProducts(productsData);
+                    break;
+                case 'batches':
+                    const batchesData = await adminService.getBatches();
+                    setBatches(batchesData.reverse());
+                    break;
+                case 'farmers':
+                    const farmersData = await adminService.getFarmers();
+                    setFarmers(farmersData);
+                    break;
+                case 'apiaries':
+                    const apiariesData = await adminService.getApiaries();
+                    setApiaries(apiariesData);
+                    break;
+                case 'hives':
+                    const hivesData = await adminService.getHives();
+                    setHives(hivesData);
+                    break;
+                case 'pollination':
+                    const pollinationData = await adminService.getPollinationRequests();
+                    setPollinationRequests(pollinationData);
+                    break;
+                case 'contact':
+                    const contactData = await adminService.getContactRequests();
+                    setContacts(contactData);
+                    break;
+                case 'newsletter':
+                    const subscribersData = await adminService.getNewsletterSubscribers();
+                    setSubscribers(subscribersData);
+                    break;
+                case 'team':
+                    if (isSuperAdmin) {
+                        const usersData = await adminService.getUsers();
+                        setSystemUsers(usersData);
+                    }
+                    break;
+            }
+            setLoadedTabs(prev => new Set(prev).add(tab));
+        } catch (error) {
+            console.error(`Failed to load data for tab ${tab}:`, error);
+            toast.error(`Failed to load ${tab} data`);
+        }
+    };
+
+    const loadAllData = async () => {
+        setIsLoading(true);
+        await initDashboard();
+        // If we force a full refresh, clear loaded tabs and reload current
+        setLoadedTabs(new Set(['overview']));
+        if (activeTab !== 'overview') {
+            await loadTabData(activeTab);
+        }
+        setIsLoading(false);
     };
 
     const handleCreateProduct = async () => {
@@ -775,19 +793,19 @@ const AdminDashboard: React.FC = () => {
                     <TabsContent value="overview" className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             <MetricCard
-                                value={systemUsers.length || 555}
+                                value={dashboardStats.totalUsers || 555}
                                 trend="+74.2%"
                                 description="TOTAL USERS • 109 today"
                                 icon={Users}
                             />
                             <MetricCard
-                                value={apiaries.length || 518}
+                                value={dashboardStats.totalApiaries || 518}
                                 trend="+78.9%"
                                 description="ORGANIZATIONS"
                                 icon={Building2}
                             />
                             <MetricCard
-                                value={hives.length || 18}
+                                value={dashboardStats.totalHives || 18}
                                 description="ACTIVE TUNNELS • 600 total"
                                 icon={Share2}
                             />

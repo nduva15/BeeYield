@@ -84,13 +84,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
         // DEVELOPMENT BYPASS: Support for Super Admin even if DB triggers are failing
-        if (error && email.toLowerCase() === 'timothy.mathuva@strathmore.edu' && password === '123456') {
+        if (error && (email.toLowerCase() === 'timothy.mathuva@strathmore.edu' || email.toLowerCase() === 'timothynduva349@gmail.com') && password === '123456') {
             console.warn("Dev Bypass: Logging in super admin via override");
             // We create a mock user object that looks like a Supabase User
             const mockUser: any = {
                 id: 'super-admin-dev-id',
                 email: email,
-                user_metadata: { role: 'super_admin', first_name: 'Timothy', last_name: 'Mathuva' },
+                user_metadata: { role: 'super_admin', first_name: 'Timothy', last_name: 'Mathuva', beeyield_active: true },
                 app_metadata: { provider: 'email' },
                 aud: 'authenticated',
                 created_at: new Date().toISOString()

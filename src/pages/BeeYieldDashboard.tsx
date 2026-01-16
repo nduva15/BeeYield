@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate } from 'react-router-dom';
 import { beeyieldService, IoTDevice, SensorReading } from '@/services/beeyieldService';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';

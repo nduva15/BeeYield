@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Link, useLocation } from "@tanstack/react-router";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown, ShoppingBag, User, Shield, LogIn } from "lucide-react";
 import { Button } from "./ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { useCart } from "@/contexts/CartContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +16,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const { user } = useAuth();
+  const { toggleCart, getTotalItems } = useCart();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -108,6 +110,19 @@ const Header = () => {
               <LogIn className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
             )}
           </Link>
+
+          <button
+            onClick={toggleCart}
+            className="p-2 hover:bg-muted rounded-full transition-all active:scale-90 group relative"
+            aria-label="View shopping cart"
+          >
+            <ShoppingBag className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
+            {getTotalItems() > 0 && (
+              <span className="absolute top-1 right-1 bg-primary text-primary-foreground text-[10px] font-bold h-4 w-4 flex items-center justify-center rounded-full border-2 border-background">
+                {getTotalItems()}
+              </span>
+            )}
+          </button>
 
           <Button
             variant="default"
@@ -220,7 +235,7 @@ const Header = () => {
                 {user?.user_metadata?.beeyield_active ? "BeeYield Dashboard" : "Login"}
                 {user?.user_metadata?.beeyield_active ? <User className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}
               </Link>
-              {user?.user_metadata?.role === 'admin' && (
+              {['admin', 'super_admin'].includes(user?.user_metadata?.role) && (
                 <Link
                   to="/admin"
                   onClick={() => setIsMenuOpen(false)}

@@ -438,16 +438,26 @@ def get_admin_stats(current_admin: Dict = Depends(check_admin_role)):
         products = db_select("products")
         users = db_select("profiles")
         batches = db_select("honey_batches")
+        apiaries = db_select("apiaries")
+        hives = db_select("hives")
+        pollination = db_select("pollination_requests")
         
         # Calculate some basic totals for the dashboard
         total_revenue = sum(float(o.get("total_amount", 0)) for o in orders if o.get("status") != "cancelled")
+        total_honey_kg = sum(float(b.get("quantity_kg", 0)) for b in batches)
+        total_acres = sum(float(p.get("acres", 0)) for p in pollination)
         
         return {
             "total_orders": len(orders),
             "total_products": len(products),
             "total_users": len(users),
             "total_batches": len(batches),
+            "total_apiaries": len(apiaries),
+            "total_hives": len(hives),
+            "total_pollination": len(pollination),
             "total_revenue_kes": total_revenue,
+            "total_honey_kg": total_honey_kg,
+            "total_acres": total_acres,
             "pending_orders": len([o for o in orders if o.get("status") == "pending"]),
             "active_products": len([p for p in products if p.get("is_active")])
         }

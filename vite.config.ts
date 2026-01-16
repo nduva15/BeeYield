@@ -13,6 +13,9 @@ export default defineConfig({
         alias: {
             '@': path.resolve(__dirname, './src'),
             '@tanstack/react-router': path.resolve(__dirname, './src/tanstack-router-shim.ts'),
+            '@tanstack/react-start': path.resolve(__dirname, './src/tanstack-router-shim.ts'),
+            '@tanstack/start': path.resolve(__dirname, './src/tanstack-router-shim.ts'),
+            '@tanstack/router-plugin': path.resolve(__dirname, './src/tanstack-router-shim.ts'),
             'node:async_hooks': path.resolve(__dirname, './src/node-shim.ts'),
         },
     },

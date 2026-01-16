@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Info, Mail, MessageSquare, BookOpen, Settings2, CloudRain, Briefcase, UserRound, X, Star, HelpCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+import { useAuth } from '@/hooks/useAuth';
 import FirstStepsBanner from './FirstStepsBanner';
 
 interface SettingsViewProps {
@@ -15,6 +16,12 @@ interface SettingsViewProps {
 }
 
 const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
+    const { user } = useAuth();
+    const userMetadata = user?.user_metadata || {};
+    const firstName = userMetadata.first_name || '';
+    const lastName = userMetadata.last_name || '';
+    const email = user?.email || '';
+
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-24">
             <FirstStepsBanner onTabChange={onTabChange} />
@@ -32,19 +39,19 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                         <CardContent className="p-10 space-y-4">
                             <div className="relative group">
                                 <Label htmlFor="username" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10">Username</Label>
-                                <Input id="username" defaultValue="timothy" className="pt-8 pb-3 px-4 rounded-xl bg-gray-50/50 dark:bg-[#1e1e1e] border-gray-100 dark:border-gray-800 h-16 shadow-none font-bold text-gray-400 cursor-not-allowed group-hover:border-amber-200 transition-colors" readOnly />
+                                <Input id="username" defaultValue={email.split('@')[0]} className="pt-8 pb-3 px-4 rounded-xl bg-gray-50/50 dark:bg-[#1e1e1e] border-gray-100 dark:border-gray-800 h-16 shadow-none font-bold text-gray-400 cursor-not-allowed group-hover:border-amber-200 transition-colors" readOnly />
                             </div>
                             <div className="relative group">
                                 <Label htmlFor="email" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10">Email</Label>
-                                <Input id="email" defaultValue="timothy.mathuva@strathmore.edu" className="pt-8 pb-3 px-4 rounded-xl bg-gray-50/50 dark:bg-[#1e1e1e] border-gray-100 dark:border-gray-800 h-16 shadow-none font-bold text-gray-400 cursor-not-allowed group-hover:border-amber-200 transition-colors" readOnly />
+                                <Input id="email" defaultValue={email} className="pt-8 pb-3 px-4 rounded-xl bg-gray-50/50 dark:bg-[#1e1e1e] border-gray-100 dark:border-gray-800 h-16 shadow-none font-bold text-gray-400 cursor-not-allowed group-hover:border-amber-200 transition-colors" readOnly />
                             </div>
                             <div className="relative group">
                                 <Label htmlFor="firstname" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10">First name</Label>
-                                <Input id="firstname" defaultValue="Timothy" className="pt-8 pb-3 px-4 rounded-xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-16 shadow-none font-bold group-hover:border-amber-300 focus:border-amber-500 transition-all outline-none" />
+                                <Input id="firstname" defaultValue={firstName} className="pt-8 pb-3 px-4 rounded-xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-16 shadow-none font-bold group-hover:border-amber-300 focus:border-amber-500 transition-all outline-none" />
                             </div>
                             <div className="relative group">
                                 <Label htmlFor="surname" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10">Surname</Label>
-                                <Input id="surname" defaultValue="Mathuva Nduva" className="pt-8 pb-3 px-4 rounded-xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-16 shadow-none font-bold group-hover:border-amber-300 focus:border-amber-500 transition-all outline-none" />
+                                <Input id="surname" defaultValue={lastName} className="pt-8 pb-3 px-4 rounded-xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-16 shadow-none font-bold group-hover:border-amber-300 focus:border-amber-500 transition-all outline-none" />
                             </div>
                             <div className="relative group">
                                 <Label htmlFor="phone" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10">Telephone number</Label>
