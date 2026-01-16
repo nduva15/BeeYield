@@ -4,6 +4,7 @@ import httpx
 import os
 import asyncio
 from app.db.supabase_db import db_select
+from app.core.config import settings
 from app.services.content_service import ContentService
 from app.services.bee_health_ai import BeeHealthAI
 from app.blockchain.honey_chain import honey_blockchain
@@ -50,7 +51,7 @@ class AIService:
     ) -> str:
         """
         Sends a message to the AI with high-depth BeeYield context and Modern AI reasoning.
-        Integrated with BeeHealthAI and ContentService.
+        Primary: Gemini | Secondary: OpenAI | Fallback: Expert Logic.
         """
         msg_lower = message.lower().strip()
         target_lang = AIService.get_language_name(language)
@@ -95,19 +96,19 @@ class AIService:
 
         # --- GREETINGS LOGIC ---
         greetings_keywords = ["hi", "hello", "hey", "habari", "jambo", "good morning", "good afternoon", "good evening", "morning", "afternoon", "evening"]
-        if any(msg_lower == kw or msg_lower.startswith(kw + " ") for kw in greetings_keywords) and (len(msg_lower.split()) <= 2 and "?" not in msg_lower):
+        if any(msg_lower == kw or msg_lower.startswith(kw + " ") for kw in greetings_keywords) and len(msg_lower.split()) <= 4:
             hour = int(current_time.split(':')[0]) if current_time else 12
             greet_msg = "Habari za mchana" if hour < 17 and hour >= 12 else ("Habari za asubuhi" if hour < 12 else "Habari za jioni")
             if not is_sw:
                 greet_msg = "Good afternoon" if hour < 17 and hour >= 12 else ("Good morning" if hour < 12 else "Good evening")
             
-            inner_greet = f"Jambo! {greet_msg}. Mimi ni BeeYield AI. Tunaweza kukusaidia nini leo?" if is_sw else f"Hi! {greet_msg}. I am BeeYield AI Assistant with expert-level BeeHealth and Traceability reasoning. How can we assist you today?"
+            inner_greet = f"Jambo! {greet_msg}. Mimi ni BeeYield AI. Tunaweza kukusaidieje leo?" if is_sw else f"Hi! {greet_msg}. I am BeeYield AI Assistant with expert-level BeeHealth and Traceability reasoning. How can we assist you today?"
             return (
                 f"{'KARIBU KWENYE BEE AI HUB' if is_sw else 'WELCOME TO THE BEE AI HUB'}\n\n"
                 f"{inner_greet}\n\n"
-                f"1. ANALYTICAL REASONING: I use proprietary ML algorithms to detect anomalies and predict disease risks in your apiaries.\n\n"
-                f"2. WEBSITE KNOWLEDGE: I am synced with our latest blog posts and product catalog to provide up-to-date guidance.\n\n"
-                f"3. PRECISION DATA: Ask me about specific hives (e.g., 'Analyze H-KIB-01-01') for a deep health diagnostic.\n\n"
+                f"1. ANALYTICAL REASONING: I use proprietary ML algorithms to detect anomalies and predict disease risks.\n\n"
+                f"2. WEBSITE KNOWLEDGE: I am synced with our latest beekeeping guides and shop products.\n\n"
+                f"3. PRECISION DATA: Ask me to 'Analyze H-KIB-01-01' for a live health diagnostic.\n\n"
                 "RESOURCE DIRECTORY:\n"
                 "1. BEEYIELD SHOP: [Insert Link: beeyield.com/shop]\n"
                 "2. TRACEABILITY HUB: [Insert Link: beeyield.com/traceability]\n"
@@ -115,33 +116,63 @@ class AIService:
                 "How can I assist with your beekeeping intelligence today?"
             )
 
-        # --- LLM Logic (Dynamic Complexity) ---
-        api_key = os.getenv("OPENAI_API_KEY")
+        # --- AI PROMPT PREPARATION ---
+        beeyield_context = AIService.get_beeyield_context(language)
+        system_prompt = (
+            f"Manage every response as BeeYield AI, the technical principal and lead beekeeping engineer. "
+            f"You must respond ENTIRELY in {target_lang}.\n"
+            f"CONTEXTUAL TIME DATA: Current Time is {current_time}, Current Date is {current_date}.\n"
+            "CORE CAPABILITIES & INSTRUCTIONS:\n"
+            "1. DATA ANALYSIS: If health data or sensor data is provided, analyze the anomalies and risks with engineering precision.\n"
+            "2. MODERN REASONING: Use Chain-of-Thought reasoning. For technical questions, analyze the inputs step-by-step.\n"
+            "3. WEBSITE AWARENESS: Use the 'WEBSITE CONTENT KNOWLEDGE' section below to answer questions about latest blogs or products. If the user asks for 'newest products', list them from this context.\n"
+            "INSTRUCTIONAL LOGIC:\n"
+            "1. For simple questions, answer DIRECTLY.\n"
+            "2. For analysis, use a 4-POINT NUMBERED LIST.\n"
+            "3. ALWAYS include a 'RESOURCE DIRECTORY' with 3 relevant links.\n"
+            "STRICT FORMATTING: NO ASTERISKS, UPPERCASE TITLE, BLANK LINES BETWEEN PARAGRAPHS.\n"
+            f"Link Pool:\n{chr(10).join(all_links)}\n"
+            f"Core Context:\n{beeyield_context}\n\n"
+            f"{website_summary}\n\n"
+            f"Sensor/Health Data (if relevant):\n{health_context}"
+        )
+
+        # --- PRIMARY: GEMINI API ---
+        google_key = settings.GOOGLE_API_KEY
+        if google_key:
+            try:
+                # Convert history to Gemini format (user/model)
+                gemini_history = []
+                for h in (history or []):
+                    role = "user" if h["role"] == "user" else "model"
+                    gemini_history.append({"role": role, "parts": [{"text": h["content"]}]})
+                
+                gemini_payload = {
+                    "contents": gemini_history + [{"role": "user", "parts": [{"text": f"SYSTEM INSTRUCTIONS: {system_prompt}\n\nUSER MESSAGE: {message}"}]}],
+                    "generationConfig": {
+                        "temperature": 0.7,
+                        "topP": 0.95,
+                        "topK": 40,
+                        "maxOutputTokens": 1024,
+                    }
+                }
+                
+                async with httpx.AsyncClient() as client:
+                    response = await client.post(
+                        f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={google_key}",
+                        json=gemini_payload,
+                        timeout=15.0
+                    )
+                    data = response.json()
+                    if "candidates" in data:
+                        return data["candidates"][0]["content"]["parts"][0]["text"]
+            except Exception:
+                pass
+
+        # --- SECONDARY: OPENAI API ---
+        api_key = settings.OPENAI_API_KEY
         if api_key:
             try:
-                beeyield_context = AIService.get_beeyield_context(language)
-                system_prompt = (
-                    f"Manage every response as BeeYield AI, the technical principal and lead beekeeping engineer. "
-                    f"You must respond ENTIRELY in {target_lang}.\n"
-                    f"CONTEXTUAL TIME DATA: Current Time is {current_time}, Current Date is {current_date}.\n"
-                    "CORE CAPABILITIES:\n"
-                    "1. ANALYZE DATA LIKE AN ENGINEER: When health data is provided, interpret the sensor anomalies and disease risks with precision.\n"
-                    "2. MODERN REASONING: Use Chain-of-Thought reasoning. If asked a complex question, analyze the inputs step-by-step before concluding.\n"
-                    "3. WEBSITE AWARENESS: You have access to the latest blogs and products. Use this to recommend content.\n"
-                    "INSTRUCTIONAL LOGIC:\n"
-                    "1. If the user asks a SIMPLE FACTUAL QUESTION, answer DIRECTLY and CONCISELY.\n"
-                    "2. If the user asks for ANALYSIS or a COMPLEX QUESTION, use a 4-POINT NUMBERED LIST structure.\n"
-                    "3. ALWAYS include a 'RESOURCE DIRECTORY' with 3 relevant links.\n"
-                    "STRICT FORMATTING RULES:\n"
-                    "1. NO ASTERISKS (** or *) anywhere.\n"
-                    "2. Start with an UPPERCASE MAIN TITLE.\n"
-                    "3. Ensure ONE BLANK LINE between every paragraph.\n"
-                    f"Link Pool:\n{chr(10).join(all_links)}\n"
-                    f"Context Data:\n{beeyield_context}\n"
-                    f"{website_summary}\n"
-                    f"{health_context}"
-                )
-                
                 async with httpx.AsyncClient() as client:
                     response = await client.post(
                         "https://api.openai.com/v1/chat/completions",
@@ -156,10 +187,36 @@ class AIService:
                         }
                     )
                     return response.json()["choices"][0]["message"]["content"]
-            except Exception as e:
-                return f"BeeYield AI Technical Support ({target_lang}) is currently syncing. Status: {str(e)}"
+            except Exception:
+                pass
 
-        # General Fallback
+        # --- SMART FALLBACK (When AI is Offline) ---
+        
+        # Check if asking for products
+        if "product" in msg_lower or "shop" in msg_lower or "buy" in msg_lower or "new" in msg_lower:
+            return (
+                f"BEEYIELD SHOP SOLUTIONS\n\n"
+                f"I am currently operating in precision catalog mode. Here are our latest offerings from the database:\n\n"
+                f"{website_summary}\n\n"
+                f"RESOURCE DIRECTORY:\n"
+                f"1. BEEYIELD SHOP: [Insert Link: beeyield.com/shop]\n"
+                f"2. BEEKEEPING NETWORK: [Insert Link: beeyield.com/global-hive-network]\n"
+                f"3. CONTACT US: [Insert Link: beeyield.com/contact]"
+            )
+
+        # Check if asking for health
+        if health_context:
+            return (
+                f"HIVE DIAGNOSTIC ANALYSIS\n\n"
+                f"I have successfully accessed the blockchain telemetry. Here is the engineering diagnostic:\n\n"
+                f"{health_context}\n\n"
+                f"1. RECOMMENDATION: Review the thermal and acoustic signatures above. Contact our support team if severity is HIGH.\n\n"
+                f"RESOURCE DIRECTORY:\n"
+                f"1. BEE HEALTH HUB: [Insert Link: beeyield.com/diseases]\n"
+                f"2. SMART TECHNOLOGY: [Insert Link: beeyield.com/precision-pollination]\n"
+                f"3. TECHNICAL SUPPORT: [Insert Link: beeyield.com/contact]"
+            )
+
         return (
             "BEEYIELD AI CORPORATE DIRECTIVE\n\n"
             "I can assist you with technical hive data, disease prediction, and website updates.\n\n"

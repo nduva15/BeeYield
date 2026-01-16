@@ -179,6 +179,11 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange }) => {
     const handleTopicClick = (topic: string) => {
         setInputValue(topic);
         setShowWelcome(false);
+        // Use a timeout to ensure state is updated before sending
+        setTimeout(() => {
+            const sendButton = document.getElementById('send-ai-message');
+            if (sendButton) sendButton.click();
+        }, 100);
     };
 
     const FormattedMessage: React.FC<{ content: string, isUser: boolean }> = ({ content, isUser }) => {
@@ -462,6 +467,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange }) => {
                                     className="w-full h-16 pl-6 pr-16 rounded-3xl bg-gray-50 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 focus-visible:ring-amber-200 shadow-inner group-hover:border-amber-200 transition-all text-base font-medium"
                                 />
                                 <Button
+                                    id="send-ai-message"
                                     onClick={handleSendMessage}
                                     size="icon"
                                     className="absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 rounded-2xl bg-primary hover:bg-primary/90 text-black shadow-lg transition-all active:scale-95 flex items-center justify-center"

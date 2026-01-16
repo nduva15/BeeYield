@@ -35,6 +35,9 @@ class Settings(BaseSettings):
     SUPABASE_SERVICE_ROLE_KEY: Optional[str] = Field(default=None)
     SUPABASE_JWT_SECRET: Optional[str] = None
     
+    OPENAI_API_KEY: Optional[str] = Field(default=None)
+    GOOGLE_API_KEY: Optional[str] = Field(default=None)
+    
     # Postgres direct connection (for migrations/legacy sqlalchemy)
     POSTGRES_URL: Optional[str] = Field(default=None)
 
