@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "@tanstack/react-router";
+import { useLocation, Link } from "react-router-dom";
 import {
   ArrowRight, Sprout, MapPin, Calendar,
   TrendingUp, Users, Quote, ChevronLeft, ChevronRight
@@ -385,8 +385,10 @@ const Media = () => {
                     </blockquote>
                   </div>
 
-                  <Button className="w-full md:w-auto rounded-full group">
-                    Schedule a Consultation <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <Button asChild className="w-full md:w-auto rounded-full group">
+                    <Link to="/pollination-request">
+                      Schedule a Consultation <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
                   </Button>
                 </div>
 
@@ -404,8 +406,10 @@ const Media = () => {
           <p className="text-xl opacity-90 mb-8 leading-relaxed">
             Join the hundreds of farmers seeing real results with BeeYield's precision pollination services.
           </p>
-          <Button size="lg" variant="secondary" className="rounded-full text-lg px-8 py-6 shadow-xl hover:scale-105 transition-transform">
-            Start Your Transformation
+          <Button asChild size="lg" variant="secondary" className="rounded-full text-lg px-8 py-6 shadow-xl hover:scale-105 transition-transform">
+            <Link to="/pollination-request">
+              Start Your Transformation
+            </Link>
           </Button>
         </div>
       </section>

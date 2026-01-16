@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import {
   Cpu, Wifi, LayoutDashboard, ArrowRight,
   Quote, Check, BookOpen, Mail, ChevronRight,

@@ -4,22 +4,59 @@ import React from 'react';
 export const Link = RRDLink;
 export const useLocation = RRDUseLocation;
 export const useNavigate = RRDUseNavigate;
-export const useParams = RRDUseParams;
-export const useSearch = () => {
+
+export const useParams = (opts?: any): any => {
+    return RRDUseParams();
+};
+
+export const useSearch = (opts?: any): any => {
     const [searchParams] = RRDUseSearchParams();
     return Object.fromEntries(searchParams.entries());
 };
-export const isRedirect = (obj: any) => false;
-export const useMatch = () => ({ params: {} });
-export const useLoaderData = () => ({});
-export const useActionData = () => ({});
-export const Outlet = () => null;
-export const createFileRoute = () => () => () => null;
-export const createRootRoute = () => null;
-export const createRouter = () => null;
-export const RouterProvider = () => null;
+
+export const isRedirect = (obj?: any) => false;
+export const useMatch = (opts?: any): any => ({ params: {} });
+export const useLoaderData = (opts?: any): any => ({});
+export const useActionData = (opts?: any): any => ({});
+export const Outlet = (props?: any) => null;
+export const HeadContent = (props?: any) => null;
+export const Scripts = (props?: any) => null;
+export const Meta = (props?: any) => null;
+
+const genericRoute = {
+    useParams: (opts?: any): any => RRDUseParams(),
+    useSearch: (opts?: any): any => {
+        const [searchParams] = RRDUseSearchParams();
+        return Object.fromEntries(searchParams.entries());
+    },
+    useLoaderData: (opts?: any): any => ({}),
+    useActionData: (opts?: any): any => ({}),
+    useMatch: (opts?: any): any => ({ params: {} }),
+    useNavigate: (opts?: any) => {
+        const navigate = RRDUseNavigate();
+        return navigate;
+    },
+};
+
+export const createFileRoute = (path?: any) => (opts?: any) => ({
+    ...genericRoute,
+    ...opts,
+});
+
+export const createRootRoute = (opts?: any) => ({
+    ...genericRoute,
+    ...opts,
+});
+
+export const createRouter = (opts?: any) => ({
+    ...genericRoute,
+});
+
+export const RouterProvider = (props?: any) => null;
+
 export const useRouter = () => ({
-    navigate: () => { },
+    navigate: (opts?: any) => { },
+    state: {},
 });
 
 // TanStack Start Shims
@@ -44,6 +81,10 @@ export const createServerFn = (options?: any) => {
     };
     result.validator = (v: any) => {
         console.log("[Shim] .validator() called");
+        return result;
+    };
+    result.inputValidator = (v: any) => {
+        console.log("[Shim] .inputValidator() called");
         return result;
     };
     result._handler = null;
