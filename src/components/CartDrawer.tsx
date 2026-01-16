@@ -14,6 +14,7 @@ const CartDrawer: React.FC = () => {
         updateQuantity,
         getTotalItems,
         getTotalPrice,
+        clearCart,
     } = useCart();
 
     const formatPrice = (price: number) => `KES ${price.toLocaleString()}`;
@@ -63,13 +64,30 @@ const CartDrawer: React.FC = () => {
                             </p>
                         </div>
                     </div>
-                    <button
-                        onClick={closeCart}
-                        className="p-2 rounded-full hover:bg-muted transition-colors"
-                        aria-label="Close cart"
-                    >
-                        <X className="h-5 w-5" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                        {items.length > 0 && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-muted-foreground hover:text-destructive gap-1 h-8 px-2 font-bold"
+                                onClick={() => {
+                                    if (window.confirm('Clear all items from your cart?')) {
+                                        clearCart();
+                                    }
+                                }}
+                            >
+                                <Trash2 className="h-3.5 w-3.5" />
+                                <span className="text-xs">Clear</span>
+                            </Button>
+                        )}
+                        <button
+                            onClick={closeCart}
+                            className="p-2 rounded-full hover:bg-muted transition-colors"
+                            aria-label="Close cart"
+                        >
+                            <X className="h-5 w-5" />
+                        </button>
+                    </div>
                 </div>
 
                 {/* Cart Content */}

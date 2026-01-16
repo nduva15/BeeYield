@@ -26,6 +26,7 @@ import {
     User,
     UserPlus,
     LogIn,
+    Trash2,
 } from 'lucide-react';
 import { initializeCheckout, CheckoutOrder } from '@/services/shopService';
 import LoginForm from '@/components/auth/LoginForm';
@@ -331,11 +332,24 @@ const Checkout: React.FC = () => {
                         {/* Cart Review Step */}
                         {currentStep === 'cart' && (
                             <Card className="glass border-none shadow-soft overflow-hidden">
-                                <CardHeader className="border-b border-border/10 bg-muted/20">
+                                <CardHeader className="border-b border-border/10 bg-muted/20 flex flex-row items-center justify-between space-y-0">
                                     <CardTitle className="flex items-center gap-2 text-2xl font-black font-heading">
                                         <ShoppingBag className="h-6 w-6 text-primary" />
                                         Review Your Selection
                                     </CardTitle>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="text-muted-foreground hover:text-destructive gap-2 font-bold"
+                                        onClick={() => {
+                                            if (window.confirm('Are you sure you want to clear your cart?')) {
+                                                clearCart();
+                                            }
+                                        }}
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                        Clear Cart
+                                    </Button>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     {items.map((item) => (
@@ -718,6 +732,9 @@ const Checkout: React.FC = () => {
                                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                     <Button onClick={() => navigate('/shop')} className="gap-2">
                                         Continue Shopping
+                                    </Button>
+                                    <Button variant="secondary" onClick={() => navigate('/buyer-dashboard')} className="gap-2">
+                                        Go to My Account
                                     </Button>
                                     <Button variant="outline" onClick={() => navigate('/traceability')}>
                                         Track Your Honey

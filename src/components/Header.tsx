@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ChevronDown, ShoppingBag, User, Shield, LogIn } from "lucide-react";
+import { Menu, X, ChevronDown, ShoppingBag, User, Shield, LogIn, UserPlus } from "lucide-react";
 import { Button } from "./ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/contexts/CartContext";
@@ -10,12 +10,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { Separator } from "./ui/separator";
 import Logo from "@/assets/Logo.png";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { toggleCart, getTotalItems } = useCart();
 
   const isActive = (path: string) => location.pathname === path;
@@ -99,17 +100,56 @@ const Header = () => {
 
         {/* Right side - Traceability Button & Menu (all devices) */}
         <div className="flex items-center space-x-2 sm:space-x-4">
-          <Link
-            to="/beeyield-dashboard"
-            className="p-2 hover:bg-muted rounded-full transition-all active:scale-90 group mr-1"
-            aria-label={user?.user_metadata?.beeyield_active ? "BeeYield IoT Dashboard" : "Sign In / Sign Up to Pollination Dashboard"}
-          >
-            {user?.user_metadata?.beeyield_active ? (
-              <User className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
-            ) : (
-              <LogIn className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
-            )}
-          </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="p-2 hover:bg-muted rounded-full transition-all active:scale-90 group mr-1"
+                aria-label="User Account"
+              >
+                {user ? (
+                  <User className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
+                ) : (
+                  <LogIn className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
+                )}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 p-2 bg-background border border-border rounded-xl shadow-xl z-[100]">
+              {user ? (
+                <>
+                  <DropdownMenuItem asChild>
+                    <Link to="/buyer-dashboard" className="w-full cursor-pointer px-4 py-2.5 text-sm font-medium hover:bg-muted rounded-lg flex items-center gap-2">
+                      <ShoppingBag className="h-4 w-4" /> My Orders & Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/beeyield-dashboard" className="w-full cursor-pointer px-4 py-2.5 text-sm font-medium hover:bg-muted rounded-lg flex items-center gap-2">
+                      <Shield className="h-4 w-4" /> BeeYield IoT Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <Separator className="my-2" />
+                  <DropdownMenuItem
+                    className="w-full cursor-pointer px-4 py-2.5 text-sm font-medium text-destructive hover:bg-destructive/10 rounded-lg flex items-center gap-2"
+                    onClick={() => signOut()}
+                  >
+                    Logout
+                  </DropdownMenuItem>
+                </>
+              ) : (
+                <>
+                  <DropdownMenuItem asChild>
+                    <Link to="/buyer-dashboard" className="w-full cursor-pointer px-4 py-2.5 text-sm font-medium hover:bg-muted rounded-lg flex items-center gap-2">
+                      <LogIn className="h-4 w-4" /> Sign In
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/buyer-dashboard" className="w-full cursor-pointer px-4 py-2.5 text-sm font-medium hover:bg-muted rounded-lg flex items-center gap-2">
+                      <UserPlus className="h-4 w-4" /> Create Account
+                    </Link>
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <button
             onClick={toggleCart}

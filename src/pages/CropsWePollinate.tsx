@@ -6,7 +6,7 @@ import {
   Users, Cpu, Sprout, ArrowRight, Check,
   Globe, Flower2, Wheat, MapPin, Mail
 } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 
 const CropsWePollinate = () => {
