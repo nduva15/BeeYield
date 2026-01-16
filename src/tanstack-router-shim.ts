@@ -8,6 +8,16 @@ export const useSearch = () => {
     const [searchParams] = RRDUseSearchParams();
     return Object.fromEntries(searchParams.entries());
 };
+export const isRedirect = (obj: any) => false;
+export const useMatch = () => ({ params: {} });
+export const useLoaderData = () => ({});
+export const useActionData = () => ({});
+export const createServerFn = (options: any) => {
+    const fn: any = () => { };
+    fn.validator = () => fn;
+    fn.handler = () => fn;
+    return fn;
+};
 export const Outlet = () => null;
 export const createFileRoute = () => () => () => null;
 export const createRootRoute = () => null;
