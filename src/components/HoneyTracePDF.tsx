@@ -2,7 +2,7 @@ import { Document, Page, Text, View, StyleSheet, Image, Font } from '@react-pdf/
 
 // Register fonts (optional - using system fonts)
 Font.register({
-    family: 'Roboto',
+    family: 'Helvetica',
     fonts: [
         { src: 'https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxP.ttf', fontWeight: 'normal' },
         { src: 'https://fonts.gstatic.com/s/roboto/v30/KFOlCnqEu92Fr1MmWUlfBBc9.ttf', fontWeight: 'bold' },
@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         backgroundColor: '#FFFFFF',
         padding: 40,
-        fontFamily: 'Roboto',
+        fontFamily: 'Helvetica',
     },
     header: {
         flexDirection: 'row',
@@ -335,7 +335,7 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
 
                 {/* Origin Details */}
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>📍 Origin Details</Text>
+                    <Text style={styles.sectionTitle}>Origin Details</Text>
 
                     <View style={styles.row}>
                         <Text style={styles.label}>Batch Identifier:</Text>
@@ -382,14 +382,14 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
 
                 {/* Beekeeper Section with Photo */}
                 <View style={styles.beekeeperSection}>
-                    <Text style={{ ...styles.sectionTitle, color: '#FCD34D' }}>Master Beekeeper</Text>
+                    <Text style={[styles.sectionTitle, { color: '#FCD34D' }]}>Master Beekeeper</Text>
                     <View style={styles.beekeeperHeader}>
                         <Image src={TIMOTHY_PHOTO} style={styles.beekeeperPhoto} />
                         <View style={styles.beekeeperInfo}>
                             <Text style={styles.beekeeperName}>Timothy Nduva</Text>
                             <Text style={styles.beekeeperTitle}>Certified Master Beekeeper</Text>
-                            <Text style={styles.beekeeperLocation}>📍 Kibwezi, Makueni County</Text>
-                            <Text style={styles.beekeeperLocation}>🏆 15+ Years Experience</Text>
+                            <Text style={styles.beekeeperLocation}>Location: Kibwezi, Makueni County</Text>
+                            <Text style={styles.beekeeperLocation}>15+ Years Experience</Text>
                         </View>
                     </View>
                     <Text style={styles.beekeeperStory}>
@@ -400,7 +400,7 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
                 {/* Impact Stats */}
                 {traceData.impact_stats && (
                     <View style={styles.impactSection}>
-                        <Text style={styles.sectionTitle}>🌍 Environmental Impact</Text>
+                        <Text style={styles.sectionTitle}>Environmental Impact</Text>
                         <View style={styles.impactGrid}>
                             <View style={styles.impactItem}>
                                 <Text style={styles.impactLabel}>Acres Pollinated</Text>
@@ -425,8 +425,8 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
                 {/* Sensor Data */}
                 {traceData.sensor_snapshot && (
                     <View style={styles.sensorGrid}>
-                        <Text style={{ ...styles.sectionTitle, color: '#FFFFFF', width: '100%' }}>
-                            📊 Hive Intelligence (at Harvest)
+                        <Text style={[styles.sectionTitle, { color: '#FFFFFF', width: '100%' }]}>
+                            Hive Intelligence (at Harvest)
                         </Text>
 
                         <View style={styles.sensorItem}>
@@ -458,7 +458,7 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
                 {/* Journey Timeline */}
                 {traceData.timeline && traceData.timeline.length > 0 && (
                     <View style={styles.timelineSection}>
-                        <Text style={styles.sectionTitle}>🍯 The Honey Journey</Text>
+                        <Text style={styles.sectionTitle}>The Honey Journey</Text>
 
                         {traceData.timeline.map((step: any, idx: number) => (
                             <View key={idx} style={styles.timelineItem}>
@@ -466,7 +466,7 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
                                     <Text style={styles.timelineTitle}>{step.title}</Text>
                                     <Text style={styles.timelineDate}>{step.date}</Text>
                                     <Text style={styles.timelineDesc}>{step.description}</Text>
-                                    <Text style={styles.timelineLocation}>📍 {step.location}</Text>
+                                    <Text style={styles.timelineLocation}>Location: {step.location}</Text>
                                     {step.hash && (
                                         <Text style={styles.timelineHash}>Hash: {step.hash.substring(0, 24)}...</Text>
                                     )}
@@ -485,13 +485,13 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
                         BeeYield - Champions for Saving Bees | 50% Ethical Harvest Promise
                     </Text>
                     <Text style={styles.footerContact}>
-                        📧 info@beeyield.com | 📞 +1 (800) 123-4567 | 🌐 www.beeyield.com
+                        Email: info@beeyield.com | Phone: +1 (800) 123-4567 | Web: www.beeyield.com
                     </Text>
                     <Text style={styles.footerContact}>
-                        📍 Kibwezi, Makueni County, Kenya
+                        Kibwezi, Makueni County, Kenya
                     </Text>
                     <Text style={styles.qrNote}>
-                        Scan the QR code on your jar or visit beeyield.co.ke/trace to verify anytime
+                        Scan the QR code on your jar or visit beeyield.com/trace to verify anytime
                     </Text>
                 </View>
             </Page>

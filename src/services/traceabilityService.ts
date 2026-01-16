@@ -122,8 +122,8 @@ const getDemoTraceData = (code: string): TraceResponse | null => {
     const kibweziApiary: Apiary = {
         apiary_id: "A-KIB-01",
         apiary_code: "KIB-01",
-        name: "Kibwezi Savannah Apiary",
-        environment_type: "Savannah Woodland",
+        name: "Kibwezi Savanna Apiary",
+        environment_type: "Savanna Woodland",
         flora_types: ["Acacia Tortilis", "Citrus", "Wildflowers", "Baobab"],
         location_name: "Kibwezi",
         latitude: -2.41,
@@ -140,7 +140,7 @@ const getDemoTraceData = (code: string): TraceResponse | null => {
             product_name: "Kibwezi Wildflower Honey",
             verified: true,
             blockchain_verified: true,
-            verification_url: "https://beeyield.co.ke/honeychain/verify/demo-001",
+            verification_url: "https://beeyield.com/honeychain/verify/demo-001",
             farmer: timothyNduva,
             apiary: kibweziApiary,
             hive: {
@@ -165,7 +165,7 @@ const getDemoTraceData = (code: string): TraceResponse | null => {
                 acoustic_health: "OPTIMAL - Healthy Queen Pattern"
             },
             timeline: [
-                { title: "Origin Verified", date: "2024-01-10", location: "Kibwezi Savannah Apiary", description: "Colony health confirmed via IoT sensors. Bee population: 45,000+", icon: "Hexagon", data: {}, hash: "0xA1B2C3D4E5F6..." },
+                { title: "Origin Verified", date: "2024-01-10", location: "Kibwezi Savanna Apiary", description: "Colony health confirmed via IoT sensors. Bee population: 45,000+", icon: "Hexagon", data: {}, hash: "0xA1B2C3D4E5F6..." },
                 { title: "Harvested", date: "2024-01-15", location: "Kibwezi, Makueni County", description: "Ethically harvested by Timothy Nduva. 15.5kg collected, 15.5kg left for bees (50/50 promise).", icon: "Basket", data: {}, hash: "0xF6E5D4C3B2A1..." },
                 { title: "Quality Tested", date: "2024-01-17", location: "BeeYield Quality Lab", description: "Moisture: 17.2%, Purity: 100% Raw, No additives detected.", icon: "TestTube", data: {}, hash: "0x1234567890AB..." },
                 { title: "Sealed on HoneyChain™", date: "2024-01-20", location: "BeeYield Blockchain Node", description: "Immutably recorded on HoneyChain™. Authenticity guaranteed forever.", icon: "Shield", data: {}, hash: "0xDEADBEEF0001..." }
@@ -180,7 +180,7 @@ const getDemoTraceData = (code: string): TraceResponse | null => {
             product_name: "Pure Acacia Honey",
             verified: true,
             blockchain_verified: true,
-            verification_url: "https://beeyield.co.ke/honeychain/verify/kib-acacia-24",
+            verification_url: "https://beeyield.com/honeychain/verify/kib-acacia-24",
             farmer: timothyNduva,
             apiary: kibweziApiary,
             hive: {
@@ -190,7 +190,7 @@ const getDemoTraceData = (code: string): TraceResponse | null => {
                 frame_count: 24, material: "Local Hardwood", status: "ACTIVE"
             },
             story_title: "Meet Timothy Nduva",
-            story_content: "This pure acacia honey comes from Timothy's Kibwezi Savannah Apiary in Makueni. The acacia trees thrive here, producing honey with a distinctive light color and mild taste. Each jar supports Timothy's sustainable beekeeping practices.",
+            story_content: "This pure acacia honey comes from Timothy's Kibwezi Savanna Apiary in Makueni. The acacia trees thrive here, producing honey with a distinctive light color and mild taste. Each jar supports Timothy's sustainable beekeeping practices.",
             impact_stats: {
                 total_honey_kg: "445",
                 hive_count: "24",
@@ -205,7 +205,7 @@ const getDemoTraceData = (code: string): TraceResponse | null => {
                 acoustic_health: "OPTIMAL - Strong Foraging Activity"
             },
             timeline: [
-                { title: "Origin Verified", date: "2024-02-01", location: "Kibwezi Savannah Apiary", description: "Colony strength verified by Timothy. Acacia bloom peak season confirmed.", icon: "Hexagon", data: {}, hash: "0xACAC1A2024B1..." },
+                { title: "Origin Verified", date: "2024-02-01", location: "Kibwezi Savanna Apiary", description: "Colony strength verified by Timothy. Acacia bloom peak season confirmed.", icon: "Hexagon", data: {}, hash: "0xACAC1A2024B1..." },
                 { title: "Harvested", date: "2024-02-12", location: "Kibwezi, Makueni County", description: "Harvested by Timothy Nduva. 22kg collected, 22kg left for bees.", icon: "Basket", data: {}, hash: "0xACAC1A2024B2..." },
                 { title: "Quality Tested", date: "2024-02-14", location: "BeeYield Quality Lab", description: "Moisture: 16.8%, Color: Light Amber, Crystallization Rate: Low.", icon: "TestTube", data: {}, hash: "0xACAC1A2024B3..." },
                 { title: "Sealed on HoneyChain™", date: "2024-02-18", location: "BeeYield Blockchain Node", description: "Permanently recorded on HoneyChain™ blockchain. Verified authentic.", icon: "Shield", data: {}, hash: "0xACAC1A2024B4..." }
@@ -229,7 +229,7 @@ const getDemoTraceData = (code: string): TraceResponse | null => {
             frame_count: 0, material: "Hollow Mango Log (Traditional)", status: "ACTIVE"
         },
         story_title: "Meet Timothy Nduva",
-        story_content: "This premium golden honey comes from Timothy's heritage hives at Kibwezi Savannah Apiary. Timothy combines ancestral beekeeping knowledge with modern IoT monitoring. This golden honey represents the best of tradition and technology.",
+        story_content: "This premium golden honey comes from Timothy's heritage hives at Kibwezi Savanna Apiary. Timothy combines ancestral beekeeping knowledge with modern IoT monitoring. This golden honey represents the best of tradition and technology.",
         impact_stats: {
             total_honey_kg: "520",
             hive_count: "24",
@@ -244,7 +244,7 @@ const getDemoTraceData = (code: string): TraceResponse | null => {
             acoustic_health: "EXCELLENT - Peak Production"
         },
         timeline: [
-            { title: "Heritage Site Verified", date: "2024-03-01", location: "Kibwezi Savannah Apiary", description: "Traditional apiary confirmed active. Timothy's bee genetics preserved.", icon: "Hexagon", data: {}, hash: "0xG0LD24000001..." },
+            { title: "Heritage Site Verified", date: "2024-03-01", location: "Kibwezi Savanna Apiary", description: "Traditional apiary confirmed active. Timothy's bee genetics preserved.", icon: "Hexagon", data: {}, hash: "0xG0LD24000001..." },
             { title: "Harvested", date: "2024-03-15", location: "Kibwezi, Makueni County", description: "Traditional harvest by Timothy Nduva. 28kg collected, 28kg left for bees.", icon: "Basket", data: {}, hash: "0xG0LD24000002..." },
             { title: "Quality Tested", date: "2024-03-17", location: "BeeYield Quality Lab", description: "Moisture: 17.5%, Color: Rich Golden Amber, Enzyme Activity: Very High.", icon: "TestTube", data: {}, hash: "0xG0LD24000003..." },
             { title: "Sealed on HoneyChain™", date: "2024-03-20", location: "BeeYield Blockchain Node", description: "Immutably sealed on HoneyChain™. Heritage batch certified authentic.", icon: "Shield", data: {}, hash: "0xG0LD24000004..." }
