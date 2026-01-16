@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Globe, Activity, BookOpen, Heart, AlertTriangle, MapPin, Check, Mail, Leaf, TrendingUp, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -222,6 +223,45 @@ const GlobalHiveNetwork = () => {
         </div>
       </section>
 
+
+
+      {/* Partners Section */}
+      <section className="py-24 bg-muted/20">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center mb-20 bg-background p-8 rounded-2xl shadow-xl">
+            <h2 className="text-3xl font-bold mb-4">Try BeeYield in your apiary</h2>
+            <p className="text-muted-foreground mb-6">
+              BeeYield is constantly evolving. We invite you to take part in the international testing of our system – together, we can advance technology that protects bees worldwide.
+            </p>
+            <Button size="lg" className="w-full sm:w-auto" asChild>
+              <Link to="/contact">Join the Program</Link>
+            </Button>
+          </div>
+
+          <div className="text-center">
+            <h2 className="text-3xl font-bold mb-6">We are building a global network of partners</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto mb-12">
+              BeeYield collaborates with leading partners worldwide, joining forces with beekeeping equipment manufacturers, industry organizations, and renowned universities.
+            </p>
+            {/* Partners */}
+            <div className="flex flex-wrap justify-center gap-8 items-center opacity-70 hover:opacity-100 transition-opacity">
+              <div className="flex items-center gap-2 px-6 py-4 bg-background rounded-lg shadow-sm border border-border">
+                <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
+                  <Globe className="h-6 w-6 text-primary" />
+                </div>
+                <span className="font-bold text-lg">Intelligent Hives</span>
+              </div>
+              <div className="flex items-center gap-2 px-6 py-4 bg-background rounded-lg shadow-sm border border-border">
+                <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
+                  <Activity className="h-6 w-6 text-primary" />
+                </div>
+                <span className="font-bold text-lg">ApiSense</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Support / Donation Section */}
       <section id="support-african-farmers" className="py-24 bg-primary relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-10"></div>
@@ -335,7 +375,7 @@ const GlobalHiveNetwork = () => {
           </Card>
         </div>
       </section>
-    </div>
+    </div >
   );
 };
 

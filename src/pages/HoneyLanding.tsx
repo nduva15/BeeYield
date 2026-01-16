@@ -25,7 +25,9 @@ import {
   ShieldCheck,
   Truck,
   Zap,
-  Loader2
+  Loader2,
+  Globe,
+  Activity
 } from "lucide-react";
 import { getProducts, Product, fallbackProducts } from "@/services/shopService";
 import { toast } from "sonner";
@@ -327,6 +329,38 @@ const HoneyLanding = () => {
                   Trace Your Honey
                 </Link>
               </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Partners Section */}
+      <section className="container mx-auto px-4 py-12">
+        <div className="max-w-4xl mx-auto text-center mb-12 bg-muted/30 p-8 rounded-[2rem] border border-border/50">
+          <h2 className="text-3xl font-black mb-4">Try BeeYield in your apiary</h2>
+          <p className="text-muted-foreground mb-6 font-medium">
+            BeeYield is constantly evolving. We invite you to take part in the international testing of our system – together, we can advance technology that protects bees worldwide.
+          </p>
+          <Button size="lg" className="w-full sm:w-auto rounded-xl font-bold gap-2" asChild>
+            <Link to="/contact">Join the Program <ArrowRight className="h-4 w-4" /></Link>
+          </Button>
+        </div>
+
+        <div className="text-center">
+          <h2 className="text-2xl font-black mb-8 text-muted-foreground uppercase tracking-widest">Global Partners</h2>
+          {/* Partners */}
+          <div className="flex flex-wrap justify-center gap-6 sm:gap-8 items-center opacity-70 hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-3 px-6 py-4 bg-muted/30 rounded-2xl border border-border/50">
+              <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
+                <Globe className="h-5 w-5 text-primary" />
+              </div>
+              <span className="font-bold text-lg">Intelligent Hives</span>
+            </div>
+            <div className="flex items-center gap-3 px-6 py-4 bg-muted/30 rounded-2xl border border-border/50">
+              <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
+                <Activity className="h-5 w-5 text-primary" />
+              </div>
+              <span className="font-bold text-lg">ApiSense</span>
             </div>
           </div>
         </div>
