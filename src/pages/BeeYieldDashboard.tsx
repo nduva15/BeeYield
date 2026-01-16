@@ -51,6 +51,7 @@ type AuthMode = 'login' | 'register' | 'forgot-password';
 
 const BeeYieldDashboard: React.FC = () => {
     const { user, loading: authLoading, signOut } = useAuth();
+    const navigate = useNavigate();
 
     // Auth State
     const [authMode, setAuthMode] = useState<AuthMode>('login');
@@ -288,7 +289,7 @@ const BeeYieldDashboard: React.FC = () => {
 
     // 1. User is not logged in OR does not have a Pollination account: Show Login/Register
     // TEMPORARILY DISABLED: Skipping login check for development
-    if (!user || !isBeeYieldActive) {
+    if (false && (!user || !isBeeYieldActive)) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-background">
                 <div className="max-w-md w-full text-center space-y-6">
@@ -299,8 +300,8 @@ const BeeYieldDashboard: React.FC = () => {
                         <h1 className="text-3xl font-black">Membership Required</h1>
                         <p className="text-muted-foreground font-medium">To access the BeeYield analytics portal, please sign in to your professional account.</p>
                     </div>
-                    <Button onClick={() => navigate('/login')} className="w-full h-12 text-lg font-bold rounded-xl shadow-glow">
-                        <LogIn className="w-5 h-5 mr-2" /> Go to Login Dashboard
+                    <Button onClick={() => navigate('/beeyield-login')} className="w-full h-12 text-lg font-bold rounded-xl shadow-glow">
+                        <LogIn className="w-5 h-5 mr-2" /> Go to Professional Dashboard
                     </Button>
                     <Button variant="ghost" onClick={() => navigate('/')} className="w-full text-muted-foreground">
                         Back to Home

@@ -54,10 +54,10 @@ const AdminAuth = () => {
                         <Shield className="h-10 w-10 text-primary" />
                     </div>
                     <h1 className="text-4xl font-black text-white tracking-tightest leading-none uppercase">
-                        Admin <span className="text-primary italic">Terminal</span>
+                        BeeYield <span className="text-primary italic">Admin</span>
                     </h1>
                     <p className="text-lg text-muted-foreground font-medium">
-                        Secure gateway for HiveMind administrators.
+                        Secure gateway for BeeYield administrators.
                     </p>
                 </div>
 

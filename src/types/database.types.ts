@@ -490,6 +490,235 @@ export type Database = {
           status?: "active" | "inactive" | "pending"
         }
         Relationships: []
+      },
+      stock_movements: {
+        Row: {
+          id: string
+          created_at: string
+          product_id: string | null
+          type: "addition" | "removal" | "adjustment"
+          quantity: number
+          reason: string | null
+          performed_by: string | null
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          product_id?: string | null
+          type: "addition" | "removal" | "adjustment"
+          quantity: number
+          reason?: string | null
+          performed_by?: string | null
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          product_id?: string | null
+          type?: "addition" | "removal" | "adjustment"
+          quantity?: number
+          reason?: string | null
+          performed_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_movements_product_id_fkey"
+            columns: ["product_id"]
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          }
+        ]
+      },
+      farmers: {
+        Row: {
+          id: string
+          created_at: string
+          name: string
+          phone: string | null
+          email: string | null
+          id_number: string | null
+          experience_years: number | null
+          story: string | null
+          latitude: number | null
+          longitude: number | null
+          location_name: string | null
+          region: string | null
+          county: string | null
+          ward: string | null
+          certification_status: string | null
+          farmer_id: string | null
+          status: string | null
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          name: string
+          phone?: string | null
+          email?: string | null
+          id_number?: string | null
+          experience_years?: number | null
+          story?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          location_name?: string | null
+          region?: string | null
+          county?: string | null
+          ward?: string | null
+          certification_status?: string | null
+          farmer_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          name?: string
+          phone?: string | null
+          email?: string | null
+          id_number?: string | null
+          experience_years?: number | null
+          story?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          location_name?: string | null
+          region?: string | null
+          county?: string | null
+          ward?: string | null
+          certification_status?: string | null
+          farmer_id?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      },
+      apiaries: {
+        Row: {
+          id: string
+          created_at: string
+          name: string
+          location_name: string | null
+          county: string | null
+          region: string | null
+          latitude: number | null
+          longitude: number | null
+          farmer_id: string | null
+          status: string | null
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          name: string
+          location_name?: string | null
+          county?: string | null
+          region?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          farmer_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          name?: string
+          location_name?: string | null
+          county?: string | null
+          region?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          farmer_id?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "apiaries_farmer_id_fkey"
+            columns: ["farmer_id"]
+            referencedRelation: "farmers"
+            referencedColumns: ["id"]
+          }
+        ]
+      },
+      hives: {
+        Row: {
+          id: string
+          created_at: string
+          hive_code: string
+          apiary_id: string | null
+          type: string | null
+          installation_date: string | null
+          last_inspection_date: string | null
+          status: string | null
+          notes: string | null
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          hive_code: string
+          apiary_id?: string | null
+          type?: string | null
+          installation_date?: string | null
+          last_inspection_date?: string | null
+          status?: string | null
+          notes?: string | null
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          hive_code?: string
+          apiary_id?: string | null
+          type?: string | null
+          installation_date?: string | null
+          last_inspection_date?: string | null
+          status?: string | null
+          notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hives_apiary_id_fkey"
+            columns: ["apiary_id"]
+            referencedRelation: "apiaries"
+            referencedColumns: ["id"]
+          }
+        ]
+      },
+      profiles: {
+        Row: {
+          id: string
+          updated_at: string | null
+          username: string | null
+          first_name: string | null
+          last_name: string | null
+          avatar_url: string | null
+          website: string | null
+          email: string | null
+          role: string | null
+        }
+        Insert: {
+          id: string
+          updated_at?: string | null
+          username?: string | null
+          first_name?: string | null
+          last_name?: string | null
+          avatar_url?: string | null
+          website?: string | null
+          email?: string | null
+          role?: string | null
+        }
+        Update: {
+          id?: string
+          updated_at?: string | null
+          username?: string | null
+          first_name?: string | null
+          last_name?: string | null
+          avatar_url?: string | null
+          website?: string | null
+          email?: string | null
+          role?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_id_fkey"
+            columns: ["id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Views: {

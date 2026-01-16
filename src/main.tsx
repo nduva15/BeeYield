@@ -43,6 +43,7 @@ import BuyerDashboard from '@/pages/BuyerDashboard'
 import AccountSettings from '@/pages/AccountSettings'
 import UpdatePassword from '@/pages/UpdatePassword'
 import Authentication from '@/pages/Authentication'
+import ProfessionalAuth from '@/pages/ProfessionalAuth'
 import NotFound from '@/pages/NotFound'
 
 const queryClient = new QueryClient({
@@ -100,6 +101,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                                     <Route path="/update-password" element={<UpdatePassword />} />
                                     <Route path="/login" element={<Authentication />} />
                                     <Route path="/signup" element={<Authentication />} />
+                                    <Route path="/beeyield-login" element={<ProfessionalAuth />} />
                                     <Route path="*" element={<NotFound />} />
                                 </Routes>
                             </Layout>

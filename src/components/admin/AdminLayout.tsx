@@ -1,38 +1,33 @@
 import React from 'react';
-import DashboardSidebar, { NavItem } from './DashboardSidebar';
-import DashboardHeader from './DashboardHeader';
+import AdminSidebar, { AdminNavItem } from './AdminSidebar';
+import AdminHeader from './AdminHeader';
 import { cn } from '@/lib/utils';
 
-interface DashboardLayoutProps {
+interface AdminLayoutProps {
     children: React.ReactNode;
     activeTab: string;
     onTabChange: (tab: string) => void;
     onLogout: () => void;
-    navItems: NavItem[];
-    isAdmin?: boolean;
-    hideHeader?: boolean;
+    navItems: AdminNavItem[];
 }
 
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({
+const AdminLayout: React.FC<AdminLayoutProps> = ({
     children,
     activeTab,
     onTabChange,
     onLogout,
-    navItems,
-    isAdmin = false,
-    hideHeader = false
+    navItems
 }) => {
     return (
         <div className="flex h-screen bg-background overflow-hidden font-sans antialiased text-foreground">
-            <DashboardSidebar
+            <AdminSidebar
                 activeTab={activeTab}
                 onTabChange={onTabChange}
                 onLogout={onLogout}
                 navItems={navItems}
-                isAdmin={isAdmin}
             />
             <main className="flex-1 flex flex-col overflow-hidden bg-muted/20">
-                {!hideHeader && <DashboardHeader onLogout={onLogout} onTabChange={onTabChange} />}
+                <AdminHeader onLogout={onLogout} />
                 <div className="flex-1 overflow-y-auto p-4 md:p-8">
                     <div className="max-w-[1600px] mx-auto">
                         {children}
@@ -43,4 +38,4 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     );
 };
 
-export default DashboardLayout;
+export default AdminLayout;

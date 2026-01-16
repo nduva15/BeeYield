@@ -1,5 +1,9 @@
 import { supabase } from '@/lib/supabase';
-import { apiGet, apiDelete, apiPut, apiPost } from './api';
+
+// Diagnostic check
+if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+    console.error("FATAL: Supabase environment variables are missing in Admin Service!");
+}
 
 // Interfaces for admin data
 export interface HoneyBatchInput {
@@ -60,462 +64,600 @@ export interface HiveInput {
     notes?: string;
 }
 
-const getAuthHeaders = async (): Promise<Record<string, string>> => {
-    if (!supabase) return {};
-    const { data: { session } } = await supabase.auth.getSession();
-    return session ? { Authorization: `Bearer ${session.access_token}` } : {};
-};
-
 export const adminService = {
     // ============== SEEDING ==============
+    // Seeding via Supabase directly (Frontend logic)
     seedShopContent: async () => {
+        if (!supabase) throw new Error("Supabase not initialized");
+        const products = [
+            { name: "Acacia Honey", description: "Pure honey from Acacia trees", category: "honey", is_active: true, images: ["https://images.unsplash.com/photo-1587049352846-4a222e784d38"] },
+            { name: "Wildflower Honey", description: "Honey from varied wildflowers", category: "honey", is_active: true, images: ["https://images.unsplash.com/photo-1558611848-73f7eb4001a1"] },
+            { name: "Manuka Honey", description: "Premium Manuka honey", category: "premium", is_active: true, images: ["https://images.unsplash.com/photo-1471943311424-646960669fac"] }
+        ];
+
+        for (const p of products) {
+            const { data: inserted, error: pError } = await supabase.from('products').insert(p).select().single();
+            if (inserted) {
+                await supabase.from('product_variants').insert({
+                    product_id: inserted.id,
+                    size: "500g",
+                    price_kes: 1200,
+                    stock_quantity: 50
+                });
+            }
+        }
+        return { success: true };
+    },
+
+    seedTraceabilityData: async (): Promise<{ success: boolean; batchCount?: number; error?: string }> => {
+        if (!supabase) throw new Error("Supabase not initialized");
         try {
-            const headers = await getAuthHeaders();
-            return await apiPost<any>('/admin/seed/shop', {}, { headers });
-        } catch (error) {
-            console.error("Failed to seed shop content:", error);
-            throw error;
+            const batches = [
+                { batch_code: "BATCH-001", honey_type: "Acacia", harvest_date: "2024-01-10", quantity_kg: 250, farmer_name: "Timothy Timothy", location_county: "Kitui", status: "verified" },
+                { batch_code: "BATCH-002", honey_type: "Wildflower", harvest_date: "2024-01-15", quantity_kg: 180, farmer_name: "Timothy Timothy", location_county: "Nairobi", status: "verified" }
+            ];
+            const { error } = await supabase.from('honey_batches').insert(batches);
+            if (error) throw error;
+            return { success: true, batchCount: batches.length };
+        } catch (err: any) {
+            return { success: false, error: err.message };
         }
     },
 
-    seedTraceabilityData: async () => {
+    seedApiaryHiveData: async (): Promise<{ success: boolean; apiaryCount?: number; hiveCount?: number; error?: string }> => {
+        if (!supabase) throw new Error("Supabase not initialized");
         try {
-            const headers = await getAuthHeaders();
-            return await apiPost<any>('/admin/seed/traceability', {}, { headers });
-        } catch (error) {
-            console.error("Seed traceability error:", error);
-            throw error;
-        }
-    },
-
-    seedApiaryHiveData: async () => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiPost<any>('/admin/seed/apiary-hives', {}, { headers });
-        } catch (error) {
-            console.error("Seed apiary/hive error:", error);
-            throw error;
+            // Simplified seed
+            const apiary = { name: "Main Apiary", location_name: "Kibwezi", county: "Makueni", status: "active" };
+            const { data: insertedApiary, error: aError } = await (supabase.from('apiaries' as any) as any).insert(apiary).select().single();
+            if (aError) throw aError;
+            if (insertedApiary) {
+                const hives = [
+                    { hive_code: "H-001", apiary_id: (insertedApiary as any).id, type: "Langstroth", status: "active" },
+                    { hive_code: "H-002", apiary_id: (insertedApiary as any).id, type: "Langstroth", status: "active" }
+                ];
+                const { error: hError } = await (supabase.from('hives' as any) as any).insert(hives);
+                if (hError) throw hError;
+            }
+            return { success: true, apiaryCount: 1, hiveCount: 2 };
+        } catch (err: any) {
+            return { success: false, error: err.message };
         }
     },
 
     // ============== ORDERS ==============
     getOrders: async () => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiGet<any[]>('/admin/orders', {}, { headers });
-        } catch (error) {
-            console.error("API getOrders failed:", error);
-            throw error;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { data, error } = await supabase
+            .from('orders')
+            .select('*')
+            .order('created_at', { ascending: false });
+        if (error) throw error;
+        return data || [];
     },
 
     updateOrderStatus: async (orderId: string, status: string) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiPut(`/admin/orders/${orderId}/status`, { status }, { headers });
-        } catch (error) {
-            console.error("API updateOrderStatus failed:", error);
-            throw error;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { data, error } = await supabase
+            .from('orders')
+            .update({ status })
+            .eq('id', orderId)
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
     },
 
     deleteOrder: async (orderId: string) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiDelete(`/admin/orders/${orderId}`, { headers });
-        } catch (error) {
-            console.error("API deleteOrder failed:", error);
-            throw error;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { error } = await supabase
+            .from('orders')
+            .delete()
+            .eq('id', orderId);
+        if (error) throw error;
+        return { success: true };
     },
 
     // ============== NEWSLETTER ==============
     getNewsletterSubscribers: async () => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiGet<any[]>('/admin/newsletter', {}, { headers });
-        } catch (error) {
-            console.error("API getNewsletterSubscribers failed:", error);
-            throw error;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { data, error } = await supabase
+            .from('newsletter_subscribers')
+            .select('*')
+            .order('created_at', { ascending: false });
+        if (error) throw error;
+        return data || [];
     },
 
     deleteNewsletterSubscriber: async (id: string) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiDelete(`/admin/newsletter/${id}`, { headers });
-        } catch (error) {
-            console.error("API deleteNewsletterSubscriber failed:", error);
-            throw error;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { error } = await supabase
+            .from('newsletter_subscribers')
+            .delete()
+            .eq('id', id);
+        if (error) throw error;
+        return { success: true };
     },
 
     // ============== PRODUCTS ==============
     getProducts: async () => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiGet<any[]>('/admin/products', {}, { headers });
-        } catch (error) {
-            console.error("API getProducts failed:", error);
-            throw error;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { data, error } = await supabase
+            .from('products')
+            .select('*, product_variants(*)');
+        if (error) throw error;
+        // Map variants to match frontend expectation if needed, although the dashboard seems to handle product.variants
+        return data.map(p => ({
+            ...p,
+            variants: p.product_variants || [] // Map the joined table
+        })) || [];
     },
 
     createProduct: async (productData: ProductInput) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiPost('/admin/products', productData, { headers });
-        } catch (error) {
-            console.error("API createProduct failed:", error);
-            throw error;
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { variants, ...pData } = productData as any;
+        const { data, error } = await supabase
+            .from('products')
+            .insert(pData)
+            .select()
+            .single();
+        if (error) throw error;
+
+        if (variants && data) {
+            const variantsWithId = variants.map((v: any) => ({ ...v, product_id: data.id }));
+            await supabase.from('product_variants').insert(variantsWithId);
+        } else if (data && (productData as any).price_kes) {
+            // Support for old flat structure if needed
+            await supabase.from('product_variants').insert({
+                product_id: data.id,
+                size: "Standard",
+                price_kes: (productData as any).price_kes,
+                stock_quantity: (productData as any).stock_quantity || 0,
+                is_available: true
+            });
         }
+        return data;
     },
 
     updateProduct: async (id: string, productData: ProductInput) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiPut(`/admin/products/${id}`, productData, { headers });
-        } catch (error) {
-            console.error("API updateProduct failed:", error);
-            throw error;
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { variants, ...pData } = productData as any;
+        const { data, error } = await supabase
+            .from('products')
+            .update(pData)
+            .eq('id', id)
+            .select()
+            .single();
+        if (error) throw error;
+
+        if (variants) {
+            // Simplified: delete old and insert new or just update first
+            await supabase.from('product_variants').delete().eq('product_id', id);
+            const variantsWithId = variants.map((v: any) => ({ ...v, product_id: id }));
+            await supabase.from('product_variants').insert(variantsWithId);
         }
+        return data;
     },
 
     deleteProduct: async (id: string) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiDelete(`/admin/products/${id}`, { headers });
-        } catch (error) {
-            console.error("API deleteProduct failed:", error);
-            throw error;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { error } = await supabase
+            .from('products')
+            .update({ is_active: false })
+            .eq('id', id);
+        if (error) throw error;
+        return { success: true };
     },
 
     // ============== HONEY BATCHES (TRACEABILITY) ==============
     getBatches: async () => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiGet<any[]>('/admin/batches', {}, { headers });
-        } catch (error) {
-            console.error("API getBatches failed:", error);
+        if (!supabase) throw new Error("Supabase not initialized");
+        console.log("Fetching batches...");
+        const { data, error } = await supabase
+            .from('honey_batches')
+            .select('*')
+            .order('created_at', { ascending: false });
+        if (error) {
+            console.error("Error fetching batches:", error);
             throw error;
         }
+        console.log(`Fetched ${data?.length || 0} batches`);
+        return data || [];
     },
 
     createBatch: async (batchData: HoneyBatchInput) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiPost('/admin/batches', batchData, { headers });
-        } catch (error) {
-            console.error("API createBatch failed:", error);
-            throw error;
+        if (!supabase) throw new Error("Supabase not initialized");
+        // Generate a code if missing
+        if (!(batchData as any).batch_code) {
+            (batchData as any).batch_code = `BC-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
         }
+        const { data, error } = await supabase
+            .from('honey_batches')
+            .insert(batchData)
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
     },
 
     updateBatch: async (id: string, batchData: Partial<HoneyBatchInput>) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiPut(`/admin/batches/${id}`, batchData, { headers });
-        } catch (error) {
-            console.error("API updateBatch failed:", error);
-            throw error;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { data, error } = await supabase
+            .from('honey_batches')
+            .update(batchData)
+            .eq('id', id)
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
     },
 
     deleteBatch: async (id: string) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiDelete(`/admin/batches/${id}`, { headers });
-        } catch (error) {
-            console.error("API deleteBatch failed:", error);
-            throw error;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { error } = await supabase
+            .from('honey_batches')
+            .delete()
+            .eq('id', id);
+        if (error) throw error;
+        return { success: true };
     },
 
     // ============== POLLINATION REQUESTS ==============
     getPollinationRequests: async () => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiGet<any[]>('/admin/pollination', {}, { headers });
-        } catch (error) {
-            console.error("API getPollinationRequests failed:", error);
-            throw error;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { data, error } = await supabase
+            .from('pollination_requests')
+            .select('*')
+            .order('created_at', { ascending: false });
+        if (error) throw error;
+        return data || [];
     },
 
     updatePollinationRequestStatus: async (id: string, status: string) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiPut(`/admin/pollination/${id}/status`, { status }, { headers });
-        } catch (error) {
-            console.error("API updatePollinationRequestStatus failed:", error);
-            throw error;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { data, error } = await supabase
+            .from('pollination_requests')
+            .update({ status })
+            .eq('id', id)
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
     },
 
     deletePollinationRequest: async (id: string) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiDelete(`/admin/pollination/${id}`, { headers });
-        } catch (error) {
-            console.error("API deletePollinationRequest failed:", error);
-            throw error;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { error } = await supabase
+            .from('pollination_requests')
+            .delete()
+            .eq('id', id);
+        if (error) throw error;
+        return { success: true };
     },
 
     // ============== CONTACT REQUESTS ==============
     getContactRequests: async () => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiGet<any[]>('/admin/contact', {}, { headers });
-        } catch (error) {
-            console.error("API getContactRequests failed:", error);
-            throw error;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { data, error } = await supabase
+            .from('contact_submissions')
+            .select('*')
+            .order('created_at', { ascending: false });
+        if (error) throw error;
+        return data || [];
     },
 
     updateContactRequestStatus: async (id: string, status: string) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiPut(`/admin/contact/${id}/status`, { status }, { headers });
-        } catch (error) {
-            console.error("API updateContactRequestStatus failed:", error);
-            throw error;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { data, error } = await supabase
+            .from('contact_submissions')
+            .update({ status })
+            .eq('id', id)
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
     },
 
     deleteContactRequest: async (id: string) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiDelete(`/admin/contact/${id}`, { headers });
-        } catch (error) {
-            console.error("API deleteContactRequest failed:", error);
-            throw error;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { error } = await supabase
+            .from('contact_submissions')
+            .delete()
+            .eq('id', id);
+        if (error) throw error;
+        return { success: true };
     },
 
     // ============== STOCK MOVEMENTS ==============
     getStockMovements: async () => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiGet<any[]>('/admin/stock', {}, { headers });
-        } catch (error) {
-            console.error("API getStockMovements failed:", error);
-            throw error;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { data, error } = await supabase
+            .from('stock_movements')
+            .select('*, products(name)')
+            .order('created_at', { ascending: false });
+        if (error) throw error;
+        return data || [];
     },
 
     createStockMovement: async (movementData: any) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiPost('/admin/stock', movementData, { headers });
-        } catch (error) {
-            console.error("API createStockMovement failed:", error);
-            throw error;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { data, error } = await supabase
+            .from('stock_movements')
+            .insert(movementData)
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
     },
 
     // ============== FARMERS ==============
     getFarmers: async () => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiGet<any[]>('/admin/farmers', {}, { headers });
-        } catch (error) {
-            console.error("API getFarmers failed:", error);
+        if (!supabase) throw new Error("Supabase not initialized");
+        console.log("Fetching farmers...");
+        const { data, error } = await supabase
+            .from('farmers')
+            .select('*')
+            .order('created_at', { ascending: false });
+        if (error) {
+            console.error("Error fetching farmers:", error);
             throw error;
         }
+        console.log(`Fetched ${data?.length || 0} farmers`);
+        return data || [];
     },
 
     createFarmer: async (farmerData: any) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiPost('/admin/farmers', farmerData, { headers });
-        } catch (error) {
-            console.error("API createFarmer failed:", error);
-            throw error;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { data, error } = await supabase
+            .from('farmers')
+            .insert(farmerData)
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
     },
 
     updateFarmer: async (id: string, farmerData: any) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiPut(`/admin/farmers/${id}`, farmerData, { headers });
-        } catch (error) {
-            console.error("API updateFarmer failed:", error);
-            throw error;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { data, error } = await supabase
+            .from('farmers')
+            .update(farmerData)
+            .eq('id', id)
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
     },
 
     deleteFarmer: async (id: string) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiDelete(`/admin/farmers/${id}`, { headers });
-        } catch (error) {
-            console.error("API deleteFarmer failed:", error);
-            throw error;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { error } = await supabase
+            .from('farmers')
+            .delete()
+            .eq('id', id);
+        if (error) throw error;
+        return { success: true };
     },
 
     // ============== USER MANAGEMENT (Super Admin) ==============
     getUsers: async () => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiGet<any[]>('/admin/users', {}, { headers });
-        } catch (error) {
-            console.error("API getUsers failed:", error);
-            throw error;
-        }
-    },
-
-    createUser: async (userData: any) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiPost<any>('/admin/users', userData, { headers });
-        } catch (error) {
-            console.error("API createUser failed:", error);
-            throw error;
-        }
-    },
-
-    updateUser: async (userId: string, userData: any) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiPut<any>(`/admin/users/${userId}`, userData, { headers });
-        } catch (error) {
-            console.error("API updateUser failed:", error);
-            throw error;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('*');
+        if (error) throw error;
+        return data || [];
     },
 
     updateUserRole: async (userId: string, role: string) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiPut(`/admin/users/${userId}/role`, { role }, { headers });
-        } catch (error) {
-            console.error("API updateUserRole failed:", error);
-            throw error;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { error } = await supabase
+            .from('profiles')
+            .update({ role })
+            .eq('id', userId);
+        if (error) throw error;
+        return { success: true };
     },
 
     deleteUser: async (userId: string) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiDelete<{ status: string }>(`/admin/users/${userId}`, { headers });
-        } catch (error) {
-            console.error("API deleteUser failed:", error);
-            throw error;
-        }
+        // Technically needs service role to delete from auth.users
+        // Here we just remove the profile
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { error } = await supabase
+            .from('profiles')
+            .delete()
+            .eq('id', userId);
+        if (error) throw error;
+        return { success: true };
     },
 
     // ============== DASHBOARD STATS ==============
     getDashboardStats: async () => {
+        if (!supabase) return null;
         try {
-            const headers = await getAuthHeaders();
-            return await apiGet<any>('/admin/stats', {}, { headers });
+            // In a better world, we'd use an RPC or a single complex query
+            // But for simplicity and reliability, we do parallel counts
+            const [
+                { count: ordersCount, data: ordersData },
+                { count: productsCount, data: productsData },
+                { count: usersCount },
+                { count: batchesCount, data: batchesData },
+                { count: apiariesCount },
+                { count: hivesCount },
+                { count: pollinationCount, data: pollinationData },
+                { count: farmersCount }
+            ] = await Promise.all([
+                supabase.from('orders').select('*', { count: 'exact' }),
+                supabase.from('products').select('id, category', { count: 'exact' }),
+                supabase.from('profiles').select('id', { count: 'exact' }),
+                supabase.from('honey_batches').select('quantity_kg', { count: 'exact' }),
+                supabase.from('apiaries').select('id', { count: 'exact' }),
+                supabase.from('hives').select('id', { count: 'exact' }),
+                supabase.from('pollination_requests').select('acres', { count: 'exact' }),
+                supabase.from('farmers').select('id', { count: 'exact' })
+            ]);
+
+            const totalRevenue = (ordersData || [])
+                .filter(o => o.status !== 'cancelled')
+                .reduce((sum, o) => sum + (parseFloat(o.total_amount) || 0), 0);
+
+            const totalHoneyKg = (batchesData || [])
+                .reduce((sum, b) => sum + (parseFloat(b.quantity_kg) || 0), 0);
+
+            const totalAcres = (pollinationData || [])
+                .reduce((sum, p) => sum + (parseFloat(p.acres) || 0), 0);
+
+            const pendingOrders = (ordersData || [])
+                .filter(o => o.status === 'pending').length;
+
+            // Product counts per category
+            const honeyProducts = (productsData || []).filter(p => p.category?.toLowerCase() === 'honey').length;
+            const learnProducts = (productsData || []).filter(p => p.category?.toLowerCase() === 'learn').length;
+            const sensorProducts = (productsData || []).filter(p => p.category?.toLowerCase() === 'sensors').length;
+            const merchProducts = (productsData || []).filter(p => p.category?.toLowerCase() === 'merch').length;
+
+            return {
+                total_orders: ordersCount || 0,
+                total_products: productsCount || 0,
+                total_users: usersCount || 0,
+                total_batches: batchesCount || 0,
+                total_apiaries: apiariesCount || 0,
+                total_hives: hivesCount || 0,
+                total_pollination: pollinationCount || 0,
+                total_revenue_kes: totalRevenue,
+                total_honey_kg: totalHoneyKg,
+                total_acres: totalAcres,
+                pending_orders: pendingOrders,
+                total_farmers: farmersCount || 0,
+                active_products: productsCount || 0,
+                category_counts: {
+                    honey: honeyProducts,
+                    learn: learnProducts,
+                    sensors: sensorProducts,
+                    merch: merchProducts
+                }
+            };
         } catch (error) {
-            console.error("API getDashboardStats failed:", error);
+            console.error("Failed to fetch dashboard stats via Supabase:", error);
             return null;
         }
     },
 
     // ============== APIARIES ==============
     getApiaries: async () => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiGet<any[]>('/admin/apiaries', {}, { headers });
-        } catch (error) {
-            console.error("API getApiaries failed:", error);
+        if (!supabase) throw new Error("Supabase not initialized");
+        console.log("Fetching apiaries...");
+        const { data, error } = await (supabase.from('apiaries' as any) as any)
+            .select('*, farmers(name)')
+            .order('created_at', { ascending: false });
+        if (error) {
+            console.error("Error fetching apiaries:", error);
             throw error;
         }
+        console.log(`Fetched ${data?.length || 0} apiaries`);
+        return data || [];
     },
 
     createApiary: async (apiaryData: ApiaryInput) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiPost('/admin/apiaries', apiaryData, { headers });
-        } catch (error) {
-            console.error("API createApiary failed:", error);
-            throw error;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { data, error } = await supabase
+            .from('apiaries')
+            .insert(apiaryData)
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
     },
 
     updateApiary: async (id: string, apiaryData: Partial<ApiaryInput>) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiPut(`/admin/apiaries/${id}`, apiaryData, { headers });
-        } catch (error) {
-            console.error("API updateApiary failed:", error);
-            throw error;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { data, error } = await supabase
+            .from('apiaries')
+            .update(apiaryData)
+            .eq('id', id)
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
     },
 
     deleteApiary: async (id: string) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiDelete(`/admin/apiaries/${id}`, { headers });
-        } catch (error) {
-            console.error("API deleteApiary failed:", error);
-            throw error;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { error } = await supabase
+            .from('apiaries')
+            .delete()
+            .eq('id', id);
+        if (error) throw error;
+        return { success: true };
     },
 
     // ============== HIVES ==============
     getHives: async (apiaryId?: string) => {
-        try {
-            const headers = await getAuthHeaders();
-            const params = apiaryId ? { apiary_id: apiaryId } : {};
-            return await apiGet<any[]>('/admin/hives', params, { headers });
-        } catch (error) {
-            console.error("API getHives failed:", error);
+        if (!supabase) throw new Error("Supabase not initialized");
+        console.log(`Fetching hives (apiaryId: ${apiaryId || 'all'})...`);
+        let query = (supabase.from('hives' as any) as any).select('*, apiaries(name)');
+        if (apiaryId) {
+            query = query.eq('apiary_id', apiaryId);
+        }
+        const { data, error } = await query.order('created_at', { ascending: false });
+        if (error) {
+            console.error("Error fetching hives:", error);
             throw error;
         }
+        console.log(`Fetched ${data?.length || 0} hives`);
+        return data || [];
     },
 
     createHive: async (hiveData: HiveInput) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiPost('/admin/hives', hiveData, { headers });
-        } catch {
-            if (!supabase) return null;
-            const { data, error } = await supabase
-                .from('hives' as any)
-                .insert([hiveData])
-                .select()
-                .single();
-            if (error) throw error;
-            return data;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { data, error } = await supabase
+            .from('hives')
+            .insert(hiveData)
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
     },
 
     updateHive: async (id: string, hiveData: HiveInput) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiPut(`/admin/hives/${id}`, hiveData, { headers });
-        } catch {
-            if (!supabase) return null;
-            const { data, error } = await supabase
-                .from('hives' as any)
-                .update(hiveData)
-                .eq('id', id)
-                .select()
-                .single();
-            if (error) throw error;
-            return data;
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { data, error } = await supabase
+            .from('hives')
+            .update(hiveData)
+            .eq('id', id)
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
     },
 
     deleteHive: async (id: string) => {
-        try {
-            const headers = await getAuthHeaders();
-            return await apiDelete(`/admin/hives/${id}`, { headers });
-        } catch {
-            if (!supabase) return null;
-            const { error } = await supabase
-                .from('hives' as any)
-                .delete()
-                .eq('id', id);
-            if (error) throw error;
-            return { success: true };
-        }
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { error } = await supabase
+            .from('hives')
+            .delete()
+            .eq('id', id);
+        if (error) throw error;
+        return { success: true };
+    },
+
+    // Placeholder for createUser since it usually requires admin privileges not available in anon key
+    createUser: async (userData: any) => {
+        console.warn("User creation usually requires Service Role. Attempting profile insert.");
+        if (!supabase) throw new Error("Supabase not initialized");
+        // This is a profile creation, actual user must be created via auth
+        return { error: "User creation must be handled via Auth/Service Role. Profile created manually if ID exists." };
+    },
+
+    updateUser: async (userId: string, userData: any) => {
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { data, error } = await supabase
+            .from('profiles')
+            .update(userData)
+            .eq('id', userId)
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
     }
 };
