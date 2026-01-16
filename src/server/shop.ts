@@ -1,6 +1,5 @@
 import { createServerFn } from '@tanstack/react-start'
 import { createClient } from '@supabase/supabase-js'
-import { Product } from '@/services/shopService'
 
 // Server-side Supabase client creator
 const createServerSupabase = () => {
@@ -11,7 +10,7 @@ const createServerSupabase = () => {
 }
 
 export const getProductsFn = createServerFn({ method: "GET" })
-    .handler(async (): Promise<Product[]> => {
+    .handler(async () => {
         try {
             const supabase = createServerSupabase()
 

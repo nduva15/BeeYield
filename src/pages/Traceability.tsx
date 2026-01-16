@@ -316,32 +316,72 @@ const Traceability = () => {
                     </CardContent>
                   </Card>
 
+
                   <Card className="border-none shadow-xl rounded-[3rem] overflow-hidden">
                     <div className="bg-gradient-to-br from-indigo-900 to-indigo-950 p-10 text-white">
                       <h3 className="font-black text-xs uppercase tracking-widest mb-6 opacity-60">Master Beekeeper</h3>
                       <div className="flex items-center gap-6">
-                        <div className="h-24 w-24 rounded-[2rem] bg-white/10 backdrop-blur-md flex items-center justify-center text-4xl font-black border border-white/20">
-                          {traceData.farmer?.name?.charAt(0)}
-                        </div>
+                        {traceData.farmer?.photo_url ? (
+                          <img
+                            src={traceData.farmer.photo_url}
+                            alt={traceData.farmer.name}
+                            className="h-28 w-28 rounded-[2rem] object-cover border-4 border-amber-500 shadow-xl"
+                          />
+                        ) : (
+                          <div className="h-28 w-28 rounded-[2rem] bg-white/10 backdrop-blur-md flex items-center justify-center text-4xl font-black border border-white/20">
+                            {traceData.farmer?.name?.charAt(0)}
+                          </div>
+                        )}
                         <div>
                           <p className="text-3xl font-black tracking-tighter mb-1">{traceData.farmer?.name}</p>
-                          <Badge className="bg-white/20 text-white border-none py-1">Certified Guardian</Badge>
+                          <Badge className="bg-amber-500/20 text-amber-400 border-none py-1 mb-2">Certified Master Beekeeper</Badge>
+                          <p className="text-sm text-white/70 flex items-center gap-2">
+                            <MapPin className="h-4 w-4" /> {traceData.farmer?.location_name || "Kibwezi, Kenya"}
+                          </p>
+                          <p className="text-sm text-white/70 flex items-center gap-2 mt-1">
+                            <Award className="h-4 w-4 text-amber-400" /> {traceData.farmer?.experience_years}+ Years Experience
+                          </p>
                         </div>
                       </div>
                     </div>
                     <CardContent className="p-10 bg-white dark:bg-slate-950">
-                      <p className="text-lg text-muted-foreground leading-relaxed italic font-medium">
-                        "{traceData.farmer?.story}"
-                      </p>
-                      <div className="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800 flex items-center gap-4">
-                        <div className="flex -space-x-3">
-                          {[1, 2, 3].map(i => (
-                            <div key={i} className="w-10 h-10 rounded-full border-2 border-white dark:border-slate-950 bg-slate-200 dark:bg-slate-800 flex items-center justify-center">
-                              <Award className="h-4 w-4 text-amber-600" />
+                      <div className="grid md:grid-cols-2 gap-10">
+                        <div>
+                          <h4 className="text-xs font-black uppercase tracking-widest text-indigo-600 mb-4 opacity-70">Our Story</h4>
+                          <p className="text-lg text-muted-foreground leading-relaxed italic font-medium">
+                            "{traceData.farmer?.story}"
+                          </p>
+                          <div className="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800 flex items-center gap-4">
+                            <div className="flex -space-x-3">
+                              {[1, 2, 3].map(i => (
+                                <div key={i} className="w-10 h-10 rounded-full border-2 border-white dark:border-slate-950 bg-slate-200 dark:bg-slate-800 flex items-center justify-center">
+                                  <Award className="h-4 w-4 text-amber-600" />
+                                </div>
+                              ))}
                             </div>
-                          ))}
+                            <p className="text-xs font-black uppercase tracking-widest text-slate-400">Multi-Award Winner • 50/50 Promise Champion</p>
+                          </div>
                         </div>
-                        <p className="text-xs font-black uppercase tracking-widest text-slate-400">Multi-Award Winner</p>
+
+                        {/* Photo Section */}
+                        <div className="space-y-6">
+                          <h4 className="text-xs font-black uppercase tracking-widest text-indigo-600 mb-4 opacity-70">Photo Gallery</h4>
+                          <div className="relative group">
+                            <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-indigo-600 rounded-[2rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                            <div className="relative bg-white dark:bg-slate-900 rounded-[2rem] overflow-hidden border border-slate-100 dark:border-slate-800 shadow-xl">
+                              <img
+                                src={traceData.farmer?.photo_url || "/placeholder.svg"}
+                                alt="Farmer Photo"
+                                className="w-full h-64 object-cover"
+                              />
+                              <div className="p-4 bg-slate-50 dark:bg-slate-800/50">
+                                <p className="text-xs font-bold text-center text-muted-foreground uppercase tracking-widest">
+                                  Timothy Nduva at Kibwezi HQ
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>

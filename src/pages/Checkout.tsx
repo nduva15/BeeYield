@@ -70,10 +70,20 @@ const Checkout: React.FC = () => {
     useEffect(() => {
         if (user) {
             const metadata = user.user_metadata || {};
+
+            // Try to find a default address from the new array structure
+            const addresses = (metadata.addresses as any[]) || [];
+            const defaultAddress = addresses.find(a => a.isDefault) || addresses[0];
+
             setShippingDetails(prev => ({
                 ...prev,
                 fullName: `${metadata.first_name || ''} ${metadata.last_name || ''}`.trim() || prev.fullName,
                 email: user.email || prev.email,
+                // Prefill phone/address from default saved address or fallback to legacy metadata
+                phone: defaultAddress?.phone || metadata.phone || prev.phone,
+                address: defaultAddress?.street || metadata.address || prev.address,
+                city: defaultAddress?.city || metadata.city || prev.city,
+                county: defaultAddress?.county || metadata.county || prev.county,
             }));
             setAuthMode('guest'); // Reset to guest since user is now logged in
         }

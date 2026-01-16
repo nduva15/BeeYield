@@ -27,6 +27,18 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@tanstack/react-router": [
+        "./src/tanstack-router-shim.ts"
+      ],
+      "@tanstack/react-start": [
+        "./src/tanstack-router-shim.ts"
+      ],
+      "@tanstack/start": [
+        "./src/tanstack-router-shim.ts"
+      ],
+      "@tanstack/router-plugin": [
+        "./src/tanstack-router-shim.ts"
       ]
     }
   },

@@ -19,7 +19,7 @@ const PollinationServices = () => {
         { name: "Oranges", image: "https://images.unsplash.com/photo-1547514701-42782101795e?auto=format&fit=crop&q=80&w=400" },
         { name: "Vegetables", image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&q=80&w=400" },
         { name: "Tomatoes", image: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&q=80&w=400" },
-        { name: "Onions", image: "https://images.unsplash.com/photo-1618512496248-a07fe83aa829?auto=format&fit=crop&q=80&w=400" },
+        { name: "Onions", image: "/images/onion-plantation.png" },
     ];
 
     const differences = [
@@ -352,7 +352,7 @@ const PollinationServices = () => {
                                     <h3 className="text-white font-black text-2xl group-hover:text-yellow-300 transition-colors tracking-tighter">
                                         {crop.name}
                                     </h3>
-                                    <p className="text-white/60 text-xs font-black uppercase tracking-widest mt-2 opacity-0 group-hover:opacity-100 transition-all underline decoration-yellow-300">View Data</p>
+                                    <Link to="/media" className="text-white/60 text-xs font-black uppercase tracking-widest mt-2 opacity-0 group-hover:opacity-100 transition-all underline decoration-yellow-300 block">View Data</Link>
                                 </div>
                             </div>
                         ))}
