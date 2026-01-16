@@ -24,10 +24,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     hideHeader = false
 }) => {
     return (
-        <div className="flex h-screen w-full bg-[#f8f9fc] dark:bg-[#000000] overflow-hidden font-sans text-foreground selection:bg-primary/20 bg-[url('https://images.unsplash.com/photo-1473625247510-8ceb1760943f?q=80&w=2611&auto=format&fit=crop')] bg-cover bg-center">
-            {/* Backdrop Overlay for readability */}
-            <div className="absolute inset-0 bg-white/90 dark:bg-black/90 backdrop-blur-xl z-0" />
-
+        <div className="flex h-screen w-full bg-[#f8f9fc] dark:bg-[#000000] overflow-hidden font-sans text-foreground selection:bg-primary/20">
             <div className="relative z-10 flex w-full h-full">
                 <DashboardSidebar
                     activeTab={activeTab}

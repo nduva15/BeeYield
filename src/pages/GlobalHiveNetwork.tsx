@@ -33,6 +33,26 @@ const GlobalHiveNetwork = () => {
               Read the Whitepaper
             </Button>
           </div>
+
+          {/* Hero Partners */}
+          <div className="mt-12 pt-8 border-t border-primary/10 flex flex-col items-center">
+            <p className="text-sm font-medium text-muted-foreground mb-4 uppercase tracking-widest">Trusted By Global Leaders</p>
+            <div className="flex flex-wrap justify-center gap-6 sm:gap-8 items-center opacity-70 hover:opacity-100 transition-opacity">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center">
+                  <Globe className="h-4 w-4 text-primary" />
+                </div>
+                <span className="font-bold text-base text-foreground/80">Intelligent Hives</span>
+              </div>
+              <div className="w-px h-8 bg-primary/20 hidden sm:block"></div>
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center">
+                  <Activity className="h-4 w-4 text-primary" />
+                </div>
+                <span className="font-bold text-base text-foreground/80">ApiSense</span>
+              </div>
+            </div>
+          </div>
         </div>
         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-5"></div>
       </section>
