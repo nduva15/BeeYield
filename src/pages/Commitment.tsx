@@ -2,7 +2,7 @@ import { ArrowRight, Target, Wheat, TreePine, Heart, Users, Droplets, Zap, Build
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 
 const CommitmentPage = () => {
   const sdgs = [

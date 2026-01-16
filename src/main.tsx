@@ -42,6 +42,7 @@ import AdminLogin from '@/pages/AdminAuth'
 import BuyerDashboard from '@/pages/BuyerDashboard'
 import AccountSettings from '@/pages/AccountSettings'
 import UpdatePassword from '@/pages/UpdatePassword'
+import Authentication from '@/pages/Authentication'
 import NotFound from '@/pages/NotFound'
 
 const queryClient = new QueryClient({
@@ -90,13 +91,15 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                                     <Route path="/notes" element={<Notes />} />
                                     <Route path="/media" element={<Media />} />
                                     <Route path="/beeyield-dashboard" element={<BeeYieldDashboard />} />
-                                    <Route path="/admin" element={<AdminDashboard />} />
-                                    <Route path="/admin/login" element={<AdminLogin />} />
+                                    <Route path="/ceba" element={<AdminDashboard />} />
+                                    <Route path="/ceba/login" element={<AdminLogin />} />
                                     {/* Mapped my-account to BuyerDashboard based on routes/my-account.tsx */}
                                     <Route path="/my-account" element={<BuyerDashboard />} />
                                     <Route path="/buyer-dashboard" element={<BuyerDashboard />} />
                                     <Route path="/account-settings" element={<AccountSettings />} />
                                     <Route path="/update-password" element={<UpdatePassword />} />
+                                    <Route path="/login" element={<Authentication />} />
+                                    <Route path="/signup" element={<Authentication />} />
                                     <Route path="*" element={<NotFound />} />
                                 </Routes>
                             </Layout>

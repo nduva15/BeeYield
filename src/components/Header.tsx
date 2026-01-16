@@ -117,13 +117,8 @@ const Header = () => {
               {user ? (
                 <>
                   <DropdownMenuItem asChild>
-                    <Link to="/buyer-dashboard" className="w-full cursor-pointer px-4 py-2.5 text-sm font-medium hover:bg-muted rounded-lg flex items-center gap-2">
-                      <ShoppingBag className="h-4 w-4" /> My Orders & Profile
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
                     <Link to="/beeyield-dashboard" className="w-full cursor-pointer px-4 py-2.5 text-sm font-medium hover:bg-muted rounded-lg flex items-center gap-2">
-                      <Shield className="h-4 w-4" /> BeeYield IoT Dashboard
+                      <Shield className="h-4 w-4" /> BeeYield Portal
                     </Link>
                   </DropdownMenuItem>
                   <Separator className="my-2" />
@@ -137,13 +132,19 @@ const Header = () => {
               ) : (
                 <>
                   <DropdownMenuItem asChild>
-                    <Link to="/buyer-dashboard" className="w-full cursor-pointer px-4 py-2.5 text-sm font-medium hover:bg-muted rounded-lg flex items-center gap-2">
-                      <LogIn className="h-4 w-4" /> Sign In
+                    <Link to="/login" className="w-full cursor-pointer px-4 py-2.5 text-sm font-medium hover:bg-muted rounded-lg flex items-center gap-2">
+                      <LogIn className="h-4 w-4" /> Log In
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/buyer-dashboard" className="w-full cursor-pointer px-4 py-2.5 text-sm font-medium hover:bg-muted rounded-lg flex items-center gap-2">
+                    <Link to="/signup" className="w-full cursor-pointer px-4 py-2.5 text-sm font-medium hover:bg-muted rounded-lg flex items-center gap-2">
                       <UserPlus className="h-4 w-4" /> Create Account
+                    </Link>
+                  </DropdownMenuItem>
+                  <Separator className="my-2" />
+                  <DropdownMenuItem asChild>
+                    <Link to="/beeyield-dashboard" className="w-full cursor-pointer px-4 py-2.5 text-sm font-medium hover:bg-muted rounded-lg flex items-center gap-2">
+                      <Shield className="h-4 w-4" /> BeeYield Portal
                     </Link>
                   </DropdownMenuItem>
                 </>
@@ -268,23 +269,14 @@ const Header = () => {
             <div className="flex flex-col space-y-1 pt-4">
               <span className="text-xs uppercase tracking-wider text-primary-foreground/60 px-3 py-1 font-medium mt-2">More</span>
               <Link
-                to="/beeyield-dashboard"
+                to={user?.user_metadata?.beeyield_active ? "/beeyield-dashboard" : "/login"}
                 onClick={() => setIsMenuOpen(false)}
-                className={`text-sm sm:text-base font-black hover:bg-white/20 rounded-lg px-3 py-2.5 sm:py-3 transition-colors bg-white/10 text-yellow-300 border border-yellow-300/30 flex items-center justify-between mb-2 ${isActive("/beeyield-dashboard") ? "ring-2 ring-yellow-300" : ""}`}
+                className={`text-sm sm:text-base font-black hover:bg-white/20 rounded-lg px-3 py-2.5 sm:py-3 transition-colors bg-white/10 text-yellow-300 border border-yellow-300/30 flex items-center justify-between mb-2 ${isActive("/beeyield-dashboard") || isActive("/login") ? "ring-2 ring-yellow-300" : ""}`}
               >
                 {user?.user_metadata?.beeyield_active ? "BeeYield Dashboard" : "Login"}
                 {user?.user_metadata?.beeyield_active ? <User className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}
               </Link>
-              {['admin', 'super_admin'].includes(user?.user_metadata?.role) && (
-                <Link
-                  to="/admin"
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`text-sm sm:text-base font-black hover:bg-white/20 rounded-lg px-3 py-2.5 sm:py-3 transition-colors bg-white/10 text-yellow-300 border border-yellow-300/30 flex items-center justify-between mb-2 ${isActive("/admin") ? "ring-2 ring-yellow-300" : ""}`}
-                >
-                  Admin Dashboard
-                  <Shield className="h-4 w-4" />
-                </Link>
-              )}
+
               {menuLinks.map((link) => (
                 <Link
                   key={link.to}

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   Users, Cpu, Sprout, Play, ArrowRight, Heart, TreePine, Home
 } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 
 const OurStory = () => {
   return (

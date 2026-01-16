@@ -288,103 +288,23 @@ const BeeYieldDashboard: React.FC = () => {
 
     // 1. User is not logged in OR does not have a Pollination account: Show Login/Register
     // TEMPORARILY DISABLED: Skipping login check for development
-    if (false && (!user || !isBeeYieldActive)) {
+    if (!user || !isBeeYieldActive) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10 py-24">
-                <div className="container max-w-lg mx-auto px-4 space-y-8">
-                    {/* Header */}
-                    <div className="space-y-4 text-center">
-                        <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto border-2 border-primary/20">
-                            <Hexagon className="h-10 w-10 text-primary" />
-                        </div>
-                        <h1 className="text-4xl font-black text-foreground tracking-tightest leading-none">
-                            <span className="text-primary italic">Login</span>
-                        </h1>
-                        <p className="text-lg text-muted-foreground font-medium">
-                            {authMode === 'login'
-                                ? 'Sign in to access your Hive Intelligence'
-                                : 'Sign up to manage your hives and data'}
-                        </p>
+            <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-background">
+                <div className="max-w-md w-full text-center space-y-6">
+                    <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto border-2 border-primary/20">
+                        <Hexagon className="h-10 w-10 text-primary" />
                     </div>
-
-                    {/* Auth Mode Selector */}
-                    <Card className="border-none glass shadow-premium rounded-[2rem] overflow-hidden">
-                        <CardContent className="pt-6 pb-8 px-8">
-                            {/* Tab Switcher */}
-                            {authMode !== 'forgot-password' && (
-                                <div className="grid grid-cols-2 gap-2 mb-8 p-1 bg-muted rounded-2xl">
-                                    <button
-                                        type="button"
-                                        onClick={() => setAuthMode('login')}
-                                        className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition-all ${authMode === 'login'
-                                            ? 'bg-primary text-primary-foreground shadow-lg'
-                                            : 'text-muted-foreground hover:text-foreground'
-                                            }`}
-                                    >
-                                        <LogIn className="h-4 w-4" />
-                                        Log In
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setAuthMode('register')}
-                                        className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition-all ${authMode === 'register'
-                                            ? 'bg-primary text-primary-foreground shadow-lg'
-                                            : 'text-muted-foreground hover:text-foreground'
-                                            }`}
-                                    >
-                                        <UserPlus className="h-4 w-4" />
-                                        Sign Up
-                                    </button>
-                                </div>
-                            )}
-
-                            {/* Login Form */}
-                            {authMode === 'login' && (
-                                <LoginForm
-                                    requireMetadata={{ beeyield_active: true }}
-                                    onSuccess={() => { window.location.reload(); }}
-                                    onSwitchToRegister={() => setAuthMode('register')}
-                                    onForgotPassword={() => setAuthMode('forgot-password')}
-                                />
-                            )}
-
-                            {/* Register Form - Sets beeyield_active to true */}
-                            {authMode === 'register' && (
-                                <RegisterForm
-                                    defaultRole="user"
-                                    additionalMetadata={{ beeyield_active: true }}
-                                    onSuccess={() => {
-                                        toast.success("Account Created!");
-                                        setAuthMode('login');
-                                    }}
-                                    onSwitchToLogin={() => setAuthMode('login')}
-                                />
-                            )}
-
-                            {/* Forgot Password Form */}
-                            {authMode === 'forgot-password' && (
-                                <ForgotPasswordForm
-                                    onBackToLogin={() => setAuthMode('login')}
-                                />
-                            )}
-                        </CardContent>
-                    </Card>
-
-                    {/* Benefits */}
-                    <div className="grid grid-cols-3 gap-4 text-center">
-                        <div className="p-4 rounded-2xl bg-card/50 border border-border/50">
-                            <span className="text-2xl">☁️</span>
-                            <p className="text-xs font-bold mt-2 text-muted-foreground">Hive Cloud</p>
-                        </div>
-                        <div className="p-4 rounded-2xl bg-card/50 border border-border/50">
-                            <span className="text-2xl">🤖</span>
-                            <p className="text-xs font-bold mt-2 text-muted-foreground">AI Insights</p>
-                        </div>
-                        <div className="p-4 rounded-2xl bg-card/50 border border-border/50">
-                            <span className="text-2xl">📊</span>
-                            <p className="text-xs font-bold mt-2 text-muted-foreground">Real-time IoT</p>
-                        </div>
+                    <div className="space-y-2">
+                        <h1 className="text-3xl font-black">Membership Required</h1>
+                        <p className="text-muted-foreground font-medium">To access the BeeYield analytics portal, please sign in to your professional account.</p>
                     </div>
+                    <Button onClick={() => navigate('/login')} className="w-full h-12 text-lg font-bold rounded-xl shadow-glow">
+                        <LogIn className="w-5 h-5 mr-2" /> Go to Login Dashboard
+                    </Button>
+                    <Button variant="ghost" onClick={() => navigate('/')} className="w-full text-muted-foreground">
+                        Back to Home
+                    </Button>
                 </div>
             </div>
         );

@@ -64,30 +64,13 @@ const CartDrawer: React.FC = () => {
                             </p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                        {items.length > 0 && (
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-muted-foreground hover:text-destructive gap-1 h-8 px-2 font-bold"
-                                onClick={() => {
-                                    if (window.confirm('Clear all items from your cart?')) {
-                                        clearCart();
-                                    }
-                                }}
-                            >
-                                <Trash2 className="h-3.5 w-3.5" />
-                                <span className="text-xs">Clear</span>
-                            </Button>
-                        )}
-                        <button
-                            onClick={closeCart}
-                            className="p-2 rounded-full hover:bg-muted transition-colors"
-                            aria-label="Close cart"
-                        >
-                            <X className="h-5 w-5" />
-                        </button>
-                    </div>
+                    <button
+                        onClick={closeCart}
+                        className="p-2 rounded-full hover:bg-muted transition-colors"
+                        aria-label="Close cart"
+                    >
+                        <X className="h-5 w-5" />
+                    </button>
                 </div>
 
                 {/* Cart Content */}
@@ -212,14 +195,28 @@ const CartDrawer: React.FC = () => {
                                     <ArrowRight className="h-5 w-5" />
                                 </Button>
 
-                                {/* Continue Shopping */}
-                                <Button
-                                    variant="ghost"
-                                    className="w-full mt-2"
-                                    onClick={() => { closeCart(); navigate('/shop'); }}
-                                >
-                                    Continue Shopping
-                                </Button>
+                                {/* Continue Shopping & Clear Cart */}
+                                <div className="grid grid-cols-2 gap-2 mt-2">
+                                    <Button
+                                        variant="ghost"
+                                        className="w-full"
+                                        onClick={() => { closeCart(); navigate('/shop'); }}
+                                    >
+                                        Continue Shopping
+                                    </Button>
+                                    <Button
+                                        variant="ghost"
+                                        className="w-full text-muted-foreground hover:text-destructive hover:bg-destructive/5 font-medium flex gap-2 items-center"
+                                        onClick={() => {
+                                            if (window.confirm('Clear all items from your cart?')) {
+                                                clearCart();
+                                            }
+                                        }}
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                        Clear Cart
+                                    </Button>
+                                </div>
                             </div>
                         </>
                     )}

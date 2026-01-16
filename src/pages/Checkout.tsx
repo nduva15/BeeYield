@@ -401,7 +401,7 @@ const Checkout: React.FC = () => {
                                         </CardHeader>
                                         <CardContent className="pt-6">
                                             {/* Auth Mode Selector */}
-                                            <div className="grid grid-cols-3 gap-3 mb-6">
+                                            <div className="grid grid-cols-3 gap-3 mb-4">
                                                 <button
                                                     type="button"
                                                     onClick={() => setAuthMode('guest')}
@@ -434,6 +434,24 @@ const Checkout: React.FC = () => {
                                                 >
                                                     <UserPlus className={`h-6 w-6 ${authMode === 'register' ? 'text-amber-600' : 'text-muted-foreground'}`} />
                                                     <span className="text-sm font-medium">Create Account</span>
+                                                </button>
+                                            </div>
+
+                                            <div className="mb-6 px-1">
+                                                <button
+                                                    onClick={() => navigate('/buyer-dashboard')}
+                                                    className="w-full py-3 px-4 rounded-xl border border-dashed border-primary/30 bg-primary/5 hover:bg-primary/10 transition-colors flex items-center justify-between group"
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
+                                                            <ShoppingBag className="h-4 w-4 text-primary" />
+                                                        </div>
+                                                        <div className="text-left">
+                                                            <p className="text-sm font-bold text-foreground">Access Shopping Dashboard</p>
+                                                            <p className="text-xs text-muted-foreground transition-colors group-hover:text-primary/70">View orders, wallet & profile</p>
+                                                        </div>
+                                                    </div>
+                                                    <ArrowRight className="h-4 w-4 text-primary/40 group-hover:translate-x-1 transition-transform" />
                                                 </button>
                                             </div>
 

@@ -5,32 +5,32 @@ export const Link = RRDLink;
 export const useLocation = RRDUseLocation;
 export const useNavigate = RRDUseNavigate;
 
-export const useParams = (opts?: any): any => {
-    return RRDUseParams();
+export const useParams = <T extends Record<string, any> = {}>(opts?: any): T => {
+    return RRDUseParams() as T;
 };
 
-export const useSearch = (opts?: any): any => {
+export const useSearch = <T extends Record<string, any> = {}>(opts?: any): T => {
     const [searchParams] = RRDUseSearchParams();
-    return Object.fromEntries(searchParams.entries());
+    return Object.fromEntries(searchParams.entries()) as any;
 };
 
 export const isRedirect = (obj?: any) => false;
 export const useMatch = (opts?: any): any => ({ params: {} });
-export const useLoaderData = (opts?: any): any => ({});
-export const useActionData = (opts?: any): any => ({});
+export const useLoaderData = <T = any>(opts?: any): T => ({} as T);
+export const useActionData = <T = any>(opts?: any): T => ({} as T);
 export const Outlet = (props?: any) => null;
 export const HeadContent = (props?: any) => null;
 export const Scripts = (props?: any) => null;
 export const Meta = (props?: any) => null;
 
 const genericRoute = {
-    useParams: (opts?: any): any => RRDUseParams(),
-    useSearch: (opts?: any): any => {
+    useParams: <T extends Record<string, any> = {}>(opts?: any): T => RRDUseParams() as T,
+    useSearch: <T extends Record<string, any> = {}>(opts?: any): T => {
         const [searchParams] = RRDUseSearchParams();
-        return Object.fromEntries(searchParams.entries());
+        return Object.fromEntries(searchParams.entries()) as any;
     },
-    useLoaderData: (opts?: any): any => ({}),
-    useActionData: (opts?: any): any => ({}),
+    useLoaderData: <T = any>(opts?: any): T => ({} as T),
+    useActionData: <T = any>(opts?: any): T => ({} as T),
     useMatch: (opts?: any): any => ({ params: {} }),
     useNavigate: (opts?: any) => {
         const navigate = RRDUseNavigate();
