@@ -5,12 +5,12 @@ import { useToast } from "@/hooks/use-toast";
 import { submitContactForm, ContactSubmission } from "@/services/contactService";
 import {
   Mail, Phone, MapPin, ChevronDown,
-  Sprout, Bug, MessageSquare
+  Sprout, Bug, MessageSquare, Stethoscope
 } from "lucide-react";
 
 const Contact = () => {
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<"grower" | "beekeeper" | "general">("grower");
+  const [activeTab, setActiveTab] = useState<"grower" | "beekeeper" | "general" | "diseases">("grower");
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -35,14 +35,16 @@ const Contact = () => {
   const tabs = [
     { id: "grower" as const, label: "Grower Inquiries", icon: Sprout },
     { id: "beekeeper" as const, label: "Beekeeper Inquiries", icon: Bug },
+    { id: "diseases" as const, label: "Diseases Inquiry", icon: Stethoscope },
     { id: "general" as const, label: "General Inquiries", icon: MessageSquare },
   ];
 
-  const handleTabChange = (tabId: "grower" | "beekeeper" | "general") => {
+  const handleTabChange = (tabId: "grower" | "beekeeper" | "general" | "diseases") => {
     setActiveTab(tabId);
     // Reset topic based on tab
     let defaultTopic = "Pollination Services";
     if (tabId === "beekeeper") defaultTopic = "Technology Integration";
+    if (tabId === "diseases") defaultTopic = "Varroa Mite";
     if (tabId === "general") defaultTopic = "General Question";
     setFormData(prev => ({ ...prev, topic: defaultTopic }));
   };
@@ -66,7 +68,7 @@ const Contact = () => {
         country: formData.country,
         inquiry_type: activeTab,
         topic: formData.topic,
-        message: activeTab === "general" ? formData.message : undefined,
+        message: (activeTab === "general" || activeTab === "diseases") ? formData.message : undefined,
         // Optional fields based on tab
         company: activeTab === "general" ? formData.company : undefined,
         farm_name: activeTab === "grower" ? formData.farmName : undefined,
@@ -129,7 +131,7 @@ const Contact = () => {
         </div>
 
         {/* Tabs */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-12 max-w-5xl mx-auto">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -358,6 +360,31 @@ const Contact = () => {
                   </>
                 )}
 
+                {activeTab === "diseases" && (
+                  <>
+                    <div className="md:col-span-2 space-y-2">
+                      <label className="text-sm font-medium">Which disease are you inquiring about? *</label>
+                      <select
+                        aria-label="Disease selection"
+                        value={formData.topic}
+                        onChange={(e) => handleChange("topic", e.target.value)}
+                        className="w-full appearance-none rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                      >
+                        <option>Varroa Mite</option>
+                        <option>American Foulbrood</option>
+                        <option>European Foulbrood</option>
+                        <option>Nosema</option>
+                        <option>Chalkbrood</option>
+                        <option>Sacbrood</option>
+                        <option>Small Hive Beetle</option>
+                        <option>Wax Moths</option>
+                        <option>Tracheal Mites</option>
+                        <option>Other</option>
+                      </select>
+                    </div>
+                  </>
+                )}
+
                 {activeTab === "general" && (
                   <>
                     <div className="md:col-span-2 space-y-2">
@@ -388,8 +415,8 @@ const Contact = () => {
                 )}
               </div>
 
-              {/* Message Area for general */}
-              {activeTab === 'general' && (
+              {/* Message Area for general and diseases */}
+              {(activeTab === 'general' || activeTab === 'diseases') && (
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Message</label>
                   <textarea
