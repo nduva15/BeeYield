@@ -455,12 +455,26 @@ export const adminService = {
         } catch (error) {
             console.error("Failed to fetch batches via API, falling back to direct Supabase", error);
             if (!supabase) throw new Error("Supabase not initialized");
+
+            // Try honey_batches first
             const { data, error: sbError } = await supabase
-                .from('honey_batches')
+                .from('honey_batches' as any)
                 .select('*')
                 .order('created_at', { ascending: false });
-            if (sbError) throw sbError;
-            return data || [];
+
+            if (!sbError) return data || [];
+
+            // Try batches second (fallback for different schema versions)
+            const { data: bData, error: bError } = await supabase
+                .from('batches' as any)
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (bError) {
+                console.error("All batch fetch attempts failed:", bError);
+                throw bError;
+            }
+            return bData || [];
         }
     },
 
@@ -692,73 +706,83 @@ export const adminService = {
 
     // ============== DASHBOARD STATS ==============
     getDashboardStats: async () => {
-        if (!supabase) return null;
         try {
-            // In a better world, we'd use an RPC or a single complex query
-            // But for simplicity and reliability, we do parallel counts
-            const [
-                { count: ordersCount, data: ordersData },
-                { count: productsCount, data: productsData },
-                { count: usersCount },
-                { count: batchesCount, data: batchesData },
-                { count: apiariesCount },
-                { count: hivesCount },
-                { count: pollinationCount, data: pollinationData },
-                { count: farmersCount }
-            ] = await Promise.all([
-                supabase.from('orders').select('*', { count: 'exact' }),
-                supabase.from('products').select('id, category', { count: 'exact' }),
-                supabase.from('profiles').select('id', { count: 'exact' }),
-                supabase.from('honey_batches').select('quantity_kg', { count: 'exact' }),
-                supabase.from('apiaries').select('id', { count: 'exact' }),
-                supabase.from('hives').select('id', { count: 'exact' }),
-                supabase.from('pollination_requests').select('acres', { count: 'exact' }),
-                supabase.from('farmers').select('id', { count: 'exact' })
-            ]);
-
-            const totalRevenue = (ordersData || [])
-                .filter(o => o.status !== 'cancelled')
-                .reduce((sum, o) => sum + (Number(o.total_kes) || 0), 0);
-
-            const totalHoneyKg = (batchesData || [])
-                .reduce((sum, b) => sum + (Number(b.quantity_kg) || 0), 0);
-
-            const totalAcres = (pollinationData || [])
-                .reduce((sum, p) => sum + (Number(p.acres) || 0), 0);
-
-            const pendingOrders = (ordersData || [])
-                .filter(o => o.status === 'pending').length;
-
-            // Product counts per category
-            const honeyProducts = (productsData || []).filter(p => p.category?.toLowerCase() === 'honey').length;
-            const learnProducts = (productsData || []).filter(p => p.category?.toLowerCase() === 'learn').length;
-            const sensorProducts = (productsData || []).filter(p => p.category?.toLowerCase().includes('sensor')).length;
-            const merchProducts = (productsData || []).filter(p => p.category?.toLowerCase() === 'merch').length;
-
-            return {
-                total_orders: ordersCount || 0,
-                total_products: productsCount || 0,
-                total_users: usersCount || 0,
-                total_batches: batchesCount || 0,
-                total_apiaries: apiariesCount || 0,
-                total_hives: hivesCount || 0,
-                total_pollination: pollinationCount || 0,
-                total_revenue_kes: totalRevenue,
-                total_honey_kg: totalHoneyKg,
-                total_acres: totalAcres,
-                pending_orders: pendingOrders,
-                total_farmers: farmersCount || 0,
-                active_products: productsCount || 0,
-                category_counts: {
-                    honey: honeyProducts,
-                    learn: learnProducts,
-                    sensors: sensorProducts,
-                    merch: merchProducts
-                }
-            };
+            // Priority 1: Use backend API for stats (it handles smart fallbacks and blockchain sync)
+            return await apiGet<any>('/admin/stats');
         } catch (error) {
-            console.error("Failed to fetch dashboard stats via Supabase:", error);
-            return null;
+            console.error("Failed to fetch dashboard stats via API, falling back to multi-query Supabase:", error);
+            if (!supabase) return null;
+
+            try {
+                // Priority 2: Direct Supabase multi-query with resilience
+                const batchTable = 'honey_batches';
+                const { error: probeError } = await supabase.from(batchTable).select('id').limit(1);
+                const actualBatchTable = probeError ? 'batches' : batchTable;
+
+                const [
+                    { count: ordersCount, data: ordersData },
+                    { count: productsCount, data: productsData },
+                    { count: usersCount },
+                    { count: batchesCount, data: batchesData },
+                    { count: apiariesCount },
+                    { count: hivesCount },
+                    { count: pollinationCount, data: pollinationData },
+                    { count: farmersCount }
+                ] = await Promise.all([
+                    supabase.from('orders').select('*', { count: 'exact' }),
+                    supabase.from('products').select('id, category', { count: 'exact' }),
+                    supabase.from('profiles').select('id', { count: 'exact' }),
+                    supabase.from(actualBatchTable as any).select('quantity_kg', { count: 'exact' }),
+                    supabase.from('apiaries').select('id', { count: 'exact' }),
+                    supabase.from('hives').select('id', { count: 'exact' }),
+                    supabase.from('pollination_requests').select('acres', { count: 'exact' }),
+                    supabase.from('farmers').select('id', { count: 'exact' })
+                ]);
+
+                const totalRevenue = (ordersData || [])
+                    .filter(o => o.status !== 'cancelled')
+                    .reduce((sum, o) => sum + (Number(o.total_kes) || 0), 0);
+
+                const totalHoneyKg = ((batchesData as any[]) || [])
+                    .reduce((sum, b) => sum + (Number(b.quantity_kg) || 0), 0);
+
+                const totalAcres = (pollinationData || [])
+                    .reduce((sum, p) => sum + (Number(p.acres) || 0), 0);
+
+                const pendingOrders = (ordersData || [])
+                    .filter(o => o.status === 'pending').length;
+
+                // Product counts per category
+                const honeyProducts = (productsData || []).filter(p => p.category?.toLowerCase() === 'honey').length;
+                const learnProducts = (productsData || []).filter(p => p.category?.toLowerCase() === 'learn').length;
+                const sensorProducts = (productsData || []).filter(p => p.category?.toLowerCase().includes('sensor')).length;
+                const merchProducts = (productsData || []).filter(p => p.category?.toLowerCase() === 'merch').length;
+
+                return {
+                    total_orders: ordersCount || 0,
+                    total_products: productsCount || 0,
+                    total_users: usersCount || 0,
+                    total_batches: batchesCount || 0,
+                    total_apiaries: apiariesCount || 0,
+                    total_hives: hivesCount || 0,
+                    total_pollination: pollinationCount || 0,
+                    total_revenue_kes: totalRevenue,
+                    total_honey_kg: totalHoneyKg,
+                    total_acres: totalAcres,
+                    pending_orders: pendingOrders,
+                    total_farmers: farmersCount || 0,
+                    active_products: productsCount || 0,
+                    category_counts: {
+                        honey: honeyProducts,
+                        learn: learnProducts,
+                        sensors: sensorProducts,
+                        merch: merchProducts
+                    }
+                };
+            } catch (sbErr) {
+                console.error("Supabase fallback stats failed:", sbErr);
+                return null;
+            }
         }
     },
 

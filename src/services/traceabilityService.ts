@@ -219,7 +219,7 @@ const getDemoTraceData = (code: string): TraceResponse | null => {
         product_name: "Premium Golden Honey",
         verified: true,
         blockchain_verified: true,
-        verification_url: "https://beeyield.co.ke/honeychain/verify/kib-gold-24",
+        verification_url: "https://beeyield.com/honeychain/verify/kib-gold-24",
         farmer: timothyNduva,
         apiary: kibweziApiary,
         hive: {
