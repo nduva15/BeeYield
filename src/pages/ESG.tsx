@@ -1,4 +1,4 @@
-import { Database, TrendingUp, Check, Heart, Sprout, Globe, Wind, Sun, ArrowRight, Quote, Users, Droplets, TreePine, Bug, Package, MapPin } from "lucide-react";
+import { Database, TrendingUp, Check, Heart, Sprout, Globe, Wind, Sun, ArrowRight, Quote, Users, Droplets, TreePine, Bug, Package, MapPin, Shield, Leaf, Cpu, Code } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,7 +8,7 @@ const ESG = () => {
   const impactStats = [
     { value: "20+", label: "Partner Beekeepers", icon: Users, description: "Local farmers trained & earning" },
     { value: "25", label: "Acres Pollinated", icon: MapPin, description: "Precision pollination coverage" },
-    { value: "1,500+", label: "Trees Planted", icon: TreePine, description: "Ecosystem restoration" },
+    { value: "2,500+", label: "Trees Planted", icon: TreePine, description: "Ecosystem restoration" },
     { value: "184", label: "Active Colonies", icon: Bug, description: "Managed bee colonies" },
     { value: "883kg", label: "Honey Produced", icon: Package, description: "Pure traceable honey" },
     { value: "2M+", label: "Bees Protected", icon: Heart, description: "Pollinators saved & thriving" },
@@ -16,43 +16,82 @@ const ESG = () => {
 
   const esgPillars = [
     {
-      title: "Environmental",
-      icon: Sprout,
+      title: "Bee Disease Prevention",
+      icon: Shield,
       color: "from-emerald-500 to-green-600",
       initiatives: [
-        "1,500+ indigenous trees planted across Kibwezi, Makueni County",
-        "Only 50% honey harvest policy—bees keep what they need",
-        "Zero chemical pesticides in our apiaries",
-        "Water source protection for bee colonies",
-        "Carbon footprint reduction through local operations"
+        "Regular hive health inspections using IoT-enabled monitoring systems",
+        "Proactive Varroa mite detection and natural treatment protocols",
+        "Hygienic queen breeding programs to strengthen colony immunity",
+        "Quarantine protocols for new colonies to prevent disease spread",
+        "Training beekeepers on early warning signs of common bee diseases"
       ],
-      impact: "3,000+ tons CO₂ avoided annually through our tree planting and sustainable practices"
+      impact: "Less than 15% colony loss rate vs. 60% global average through preventive care"
     },
     {
-      title: "Social",
-      icon: Users,
+      title: "The 50/50 Harvest Promise",
+      icon: Heart,
       color: "from-amber-500 to-orange-600",
       initiatives: [
-        "20+ local beekeepers trained and earning sustainable income",
-        "Women-led beekeeping cooperatives supported",
-        "Youth apprenticeship programs in apiculture",
-        "Food security through pollination of local crops",
-        "Community awareness on pollinator importance"
+        "We harvest only 50% of honey—bees keep what they need to thrive",
+        "Ethical beekeeping that prioritizes colony health over profit",
+        "No artificial feeding—bees sustain themselves naturally",
+        "Seasonal harvest schedules aligned with bee lifecycles",
+        "Stronger, more resilient colonies that survive harsh conditions"
       ],
-      impact: "KES 2.4M+ in income generated for local farming communities since 2020"
+      impact: "Sustainable beekeeping that ensures long-term colony health and productivity"
     },
     {
-      title: "Governance",
+      title: "HoneyChain™ Traceability",
       icon: Database,
       color: "from-blue-500 to-indigo-600",
       initiatives: [
-        "Full traceability from hive to jar",
-        "Transparent pricing for partner beekeepers",
-        "Fair trade practices with all suppliers",
-        "Regular impact reporting and audits",
-        "Stakeholder engagement and feedback systems"
+        "Blockchain-verified journey from hive to jar for every batch",
+        "QR codes on every product linking to harvest origin data",
+        "GPS-tagged hive locations with environmental monitoring",
+        "Beekeeper profiles and fair payment records on-chain",
+        "Consumer transparency dashboard for complete product visibility"
       ],
       impact: "100% of honey batches traceable to specific hive, beekeeper, and harvest date"
+    },
+    {
+      title: "Sustainable AgriTech",
+      icon: Cpu,
+      color: "from-violet-500 to-purple-600",
+      initiatives: [
+        "Solar-powered IoT hive monitoring systems for off-grid apiaries",
+        "AI-driven predictive analytics for optimal harvest timing",
+        "Real-time temperature and humidity sensors protecting colony health",
+        "Mobile app for beekeepers with instant hive health alerts",
+        "Carbon-neutral technology operations through renewable energy"
+      ],
+      impact: "Tech-enabled beekeeping reducing environmental impact while maximizing efficiency"
+    },
+    {
+      title: "Sustainable Farming Practices",
+      icon: Leaf,
+      color: "from-lime-500 to-green-600",
+      initiatives: [
+        "2,500+ indigenous trees planted for habitat restoration",
+        "Zero chemical pesticides in all partner apiaries",
+        "Water source protection and conservation programs",
+        "Native pollinator corridor creation across Makueni County",
+        "Regenerative agriculture partnerships with local farms"
+      ],
+      impact: "3,000+ tons CO₂ avoided annually through ecosystem restoration"
+    },
+    {
+      title: "Women-Led Tech Leadership",
+      icon: Code,
+      color: "from-pink-500 to-rose-600",
+      initiatives: [
+        "Co-founded by Carole Nduva (Chief Growth Officer) & Agatha Nduva (Chief IT Head)",
+        "Women holding key decision-making roles in technology and strategy",
+        "Mentorship programs for young women in STEM and agriculture",
+        "Championing gender equality in the African tech ecosystem",
+        "Driving digital innovation to empower rural women farmers"
+      ],
+      impact: "Visionary women leaders driving 66% of our founding team's impact"
     }
   ];
 
@@ -86,7 +125,7 @@ const ESG = () => {
                 <ArrowRight className="w-4 h-4" />
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <Link to="/sdgs">View SDG Alignment</Link>
+                <Link to="/commitment">View SDG Alignment</Link>
               </Button>
             </div>
           </div>
@@ -120,51 +159,49 @@ const ESG = () => {
         </div>
       </section>
 
-      {/* What ESG Means to Us */}
+      {/* What ESG Means to Us - NEW EXPANDED SECTION */}
       <section className="py-20">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              <Badge variant="secondary" className="mb-4">Understanding ESG</Badge>
+              <Badge variant="secondary" className="mb-4">Understanding Our Commitment</Badge>
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
                 What ESG Means for BeeYield
               </h2>
-              <p className="text-lg text-muted-foreground">
-                ESG stands for Environmental, Social, and Governance—three pillars that guide how we operate, make decisions, and measure our success. For a Kenyan agri-tech company working with bees and farmers, these aren't abstract concepts—they're daily realities.
+              <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                At BeeYield, ESG isn't a checkbox—it's our DNA. From bee disease prevention to women empowerment, from sustainable agritech to full traceability, these six pillars define how we operate and measure success.
               </p>
             </div>
 
-            {/* ESG Pillars */}
-            <div className="space-y-8">
+            {/* ESG Pillars Grid */}
+            <div className="grid md:grid-cols-2 gap-6">
               {esgPillars.map((pillar, index) => (
-                <Card key={index} className="overflow-hidden border-border/50">
+                <Card key={index} className="overflow-hidden border-border/50 hover:shadow-xl transition-all">
                   <CardContent className="p-0">
-                    <div className="grid md:grid-cols-3 gap-0">
-                      {/* Header */}
-                      <div className={`p-6 md:p-8 bg-gradient-to-br ${pillar.color} text-white`}>
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-                            <pillar.icon className="w-6 h-6" />
-                          </div>
-                          <h3 className="text-2xl font-bold">{pillar.title}</h3>
+                    {/* Header */}
+                    <div className={`p-6 bg-gradient-to-br ${pillar.color} text-white`}>
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                          <pillar.icon className="w-6 h-6" />
                         </div>
-                        <p className="text-white/90 text-sm font-medium">
-                          {pillar.impact}
-                        </p>
+                        <h3 className="text-xl font-bold">{pillar.title}</h3>
                       </div>
+                      <p className="text-white/90 text-sm font-medium">
+                        {pillar.impact}
+                      </p>
+                    </div>
 
-                      {/* Initiatives */}
-                      <div className="p-6 md:p-8 md:col-span-2 bg-card">
-                        <h4 className="font-semibold mb-4 text-foreground">Key Initiatives</h4>
-                        <ul className="space-y-3">
-                          {pillar.initiatives.map((initiative, i) => (
-                            <li key={i} className="flex items-start gap-3">
-                              <Check className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                              <span className="text-muted-foreground">{initiative}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                    {/* Initiatives */}
+                    <div className="p-6 bg-card">
+                      <h4 className="font-semibold mb-4 text-foreground text-sm uppercase tracking-wide">Key Initiatives</h4>
+                      <ul className="space-y-2">
+                        {pillar.initiatives.map((initiative, i) => (
+                          <li key={i} className="flex items-start gap-3">
+                            <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                            <span className="text-sm text-muted-foreground">{initiative}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   </CardContent>
                 </Card>
@@ -174,7 +211,7 @@ const ESG = () => {
         </div>
       </section>
 
-      {/* Food Security & Hunger Section */}
+      {/* Food Security & Hunger Section - WITH PHOTO */}
       <section className="py-20 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
@@ -187,7 +224,7 @@ const ESG = () => {
                   Fighting Hunger Through Pollination
                 </h2>
                 <p className="text-muted-foreground mb-6">
-                  In Makueni County, where droughts and food insecurity are recurring challenges, our pollination services directly improve crop yields for smallholder farmers. Every acre we pollinate means more food on local tables.
+                  In Makueni County, where droughts and food insecurity are recurring challenges, our pollination services directly improve crop yields for smallholder farmers. Every acre we pollinate means more food on local tables. Our 50/50 Harvest Promise ensures bees stay healthy and strong to continue this vital work season after season.
                 </p>
 
                 <div className="space-y-4 mb-8">
@@ -224,10 +261,10 @@ const ESG = () => {
               </div>
 
               <div className="relative">
-                <div className="aspect-square rounded-2xl overflow-hidden">
+                <div className="aspect-square rounded-2xl overflow-hidden shadow-2xl">
                   <img
-                    src="/placeholder.svg"
-                    alt="Farmers benefiting from pollination services"
+                    src="/pollination-farmers.png"
+                    alt="Kenyan farmers benefiting from pollination services in their mango and avocado orchards"
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -244,48 +281,78 @@ const ESG = () => {
         </div>
       </section>
 
-      {/* Partner Beekeepers Section */}
+      {/* Partner Beekeepers Section - UPDATED WITH COMMITMENT METRICS */}
       <section className="py-20">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="max-w-5xl mx-auto text-center">
             <Badge variant="secondary" className="mb-4">Social Impact</Badge>
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
               Empowering 20+ Local Beekeepers
             </h2>
             <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">
-              Our partner beekeeper program provides training, equipment, and a guaranteed market for honey. Each beekeeper manages 5-15 hives, creating sustainable income for their families.
+              Our partner beekeeper program provides training, equipment, and a guaranteed market for honey. Each beekeeper manages 5-15 hives, creating sustainable income for their families while practicing ethical and traceable beekeeping.
             </p>
 
             <div className="grid md:grid-cols-3 gap-8">
-              <Card className="text-center border-border/50">
+              <Card className="text-center border-border/50 hover:shadow-lg transition-all">
                 <CardContent className="pt-8 pb-6">
-                  <div className="text-4xl font-bold text-primary mb-2">KES 15,000</div>
-                  <div className="text-sm text-muted-foreground mb-4">Average monthly income per beekeeper</div>
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                    <Shield className="w-8 h-8 text-green-600 dark:text-green-400" />
+                  </div>
+                  <div className="text-3xl font-bold text-primary mb-2">&lt;15%</div>
+                  <div className="text-sm text-muted-foreground mb-4">Colony Loss Rate</div>
                   <div className="text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-3 py-1 rounded-full inline-block">
-                    +200% from baseline
+                    vs. 60% Global Average
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="text-center border-border/50">
+              <Card className="text-center border-border/50 hover:shadow-lg transition-all">
                 <CardContent className="pt-8 pb-6">
-                  <div className="text-4xl font-bold text-primary mb-2">40%</div>
-                  <div className="text-sm text-muted-foreground mb-4">Women beekeepers in our network</div>
-                  <div className="text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 px-3 py-1 rounded-full inline-block">
-                    Gender equality focus
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                    <Heart className="w-8 h-8 text-amber-600 dark:text-amber-400" />
                   </div>
-                </CardContent>
-              </Card>
-
-              <Card className="text-center border-border/50">
-                <CardContent className="pt-8 pb-6">
-                  <div className="text-4xl font-bold text-primary mb-2">100%</div>
-                  <div className="text-sm text-muted-foreground mb-4">Fair prices paid to all partners</div>
+                  <div className="text-3xl font-bold text-primary mb-2">50/50</div>
+                  <div className="text-sm text-muted-foreground mb-4">Harvest Promise</div>
                   <div className="text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-3 py-1 rounded-full inline-block">
-                    Above market rates
+                    Bees Keep Half
                   </div>
                 </CardContent>
               </Card>
+
+              <Card className="text-center border-border/50 hover:shadow-lg transition-all">
+                <CardContent className="pt-8 pb-6">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                    <Database className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div className="text-3xl font-bold text-primary mb-2">100%</div>
+                  <div className="text-sm text-muted-foreground mb-4">Full Traceability</div>
+                  <div className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-3 py-1 rounded-full inline-block">
+                    Hive to Jar via HoneyChain™
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Additional Women in Tech Highlight */}
+            <div className="mt-12 p-8 bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-950/20 dark:to-purple-950/20 rounded-2xl border border-pink-200/50 dark:border-pink-800/30">
+              <div className="flex flex-col md:flex-row items-center justify-center gap-8">
+                <div className="flex items-center gap-4">
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center">
+                    <Code className="w-10 h-10 text-white" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-4xl font-bold text-primary">66%</div>
+                    <div className="text-sm font-semibold">Women Founders</div>
+                  </div>
+                </div>
+                <div className="max-w-md text-left">
+                  <h4 className="font-bold text-lg mb-2">Women Leading in AgriTech</h4>
+                  <p className="text-sm text-muted-foreground">
+                    BeeYield is proudly co-founded by <strong>Carole Nduva</strong> (Chief Growth Officer) and <strong>Agatha Nduva</strong> (Chief IT Head). Their leadership in business strategy and technology infrastructure proves that women are at the forefront of Africa's digital revolution in agriculture.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

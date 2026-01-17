@@ -21,6 +21,24 @@ if settings.BACKEND_CORS_ORIGINS:
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
+@app.on_event("startup")
+async def startup_event():
+    """Run knowledge sync on startup and potentially in background."""
+    from app.services.content_service import ContentService
+    import asyncio
+    
+    async def periodic_sync():
+        from scripts.knowledge_sync import sync_all
+        while True:
+            try:
+                await sync_all()
+            except Exception as e:
+                print(f"Startup Sync Error: {e}")
+            await asyncio.sleep(600) # Sync every 10 minutes
+    
+    # Run first sync immediately without blocking startup
+    asyncio.create_task(periodic_sync())
+
 
 @app.get("/")
 def read_root():

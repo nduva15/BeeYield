@@ -1,67 +1,96 @@
-from typing import List, Dict, Any
-from app.db.supabase_db import db_select
+from typing import List, Dict, Any, Optional
+import os
+import json
+import re
 
 class ContentService:
-    # Fallback data in case DB is unavailable
-    FALLBACK_BLOGS = [
-        {"title": "Sustainable Beekeeping in Kenya", "slug": "sustainable-beekeeping"},
-        {"title": "The Role of Smart Hives in Modern Pollination", "slug": "smart-hives-tech"},
-        {"title": "Ensuring Purity with HoneyChain Blockchain", "slug": "honeychain-traceability"}
-    ]
-    
-    FALLBACK_PRODUCTS = [
-        {"name": "Acacia Honey", "category": "honey", "description": "Pure, light, and sweet Acacia honey from Kibwezi."},
-        {"name": "Solar Hive Monitor", "category": "technology", "description": "IoT sensor for real-time hive health tracking."},
-        {"name": "Highland Blossom Honey", "category": "honey", "description": "Rich multi-floral honey from Mount Kenya regions."},
-        {"name": "BeeYield Drone", "category": "technology", "description": "Precision pollination scouting drone."},
-        {"name": "Organic Honeycomb", "category": "honey", "description": "Raw honeycomb directly from our smart hives."}
-    ]
-
     @staticmethod
-    async def get_latest_blogs(limit: int = 3) -> List[Dict[str, Any]]:
-        """Fetch latest published blog posts from Supabase."""
-        blogs = db_select(
-            table="blog_posts",
-            columns="title, slug, excerpt",
-            filters={"status": "published"},
-            limit=limit,
-            order_by="published_at",
-            ascending=False
-        )
-        return blogs if blogs else ContentService.FALLBACK_BLOGS[:limit]
-
-    @staticmethod
-    async def get_featured_products(limit: int = 5) -> List[Dict[str, Any]]:
-        """Fetch active products from Supabase."""
-        products = db_select(
-            table="products",
-            columns="name, category, description",
-            filters={"is_active": True},
-            limit=limit,
-            order_by="created_at",
-            ascending=False
-        )
-        return products if products else ContentService.FALLBACK_PRODUCTS[:limit]
-
-    @staticmethod
-    async def get_website_knowledge_summary() -> str:
-        """Get a text summary of website content for AI context."""
+    async def get_raw_knowledge_base() -> Dict[str, Any]:
+        """Reads the ultra-granular knowledge base."""
+        kb_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../data/knowledge_base.json"))
+        if not os.path.exists(kb_path):
+            return {}
         try:
-            blogs = await ContentService.get_latest_blogs()
-            products = await ContentService.get_featured_products()
-            
-            summary = "WEBSITE CONTENT KNOWLEDGE:\n"
-            
-            if blogs:
-                summary += "Recent Blog Posts Available:\n"
-                for b in blogs:
-                    summary += f"- {b['title']} (Link: beeyield.com/blog/{b.get('slug', '')})\n"
-            
-            if products:
-                summary += "\nAvailable Shop Products:\n"
-                for p in products:
-                    summary += f"- {p['name']} ({p['category']}): {p.get('description', '')[:80]}...\n"
-                    
-            return summary
+            with open(kb_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
         except Exception:
-            return "WEBSITE CONTENT: Focus on professional pollination, smart hives, and traceable honey."
+            return {}
+
+    @staticmethod
+    async def search_knowledge(query: str, limit: int = 4) -> str:
+        """
+        Advanced Multi-Node Retrieval Scoring.
+        Prioritizes nodes with higher keyword density and relevant DNA matches.
+        """
+        kb = await ContentService.get_raw_knowledge_base()
+        if not kb:
+            return ""
+
+        query_words = [w for w in re.findall(r'\w+', query.lower()) if len(w) > 3]
+        if not query_words:
+            query_words = [w for w in re.findall(r'\w+', query.lower())]
+
+        nodes = kb.get("knowledge_nodes", [])
+        scored_nodes = []
+        
+        for node in nodes:
+            content = node.get("content", "").lower()
+            source = node.get("source", "").lower()
+            subtopic = node.get("subtopic", "").lower()
+            
+            score = 0
+            for word in query_words:
+                # Frequency match
+                matches = content.count(word)
+                score += (matches * 1)
+                
+                # Metadata bonus
+                if word in source or word in subtopic:
+                    score += 10
+                    
+                # Exact phrase bonus (if query has multiple words)
+                if len(query_words) > 1 and " ".join(query_words[:2]) in content:
+                    score += 20
+            
+            if score > 0:
+                # Length penalty (we want concise high-density nodes, not just giant blobs)
+                final_score = score / (1 + (len(content) / 2000))
+                scored_nodes.append((final_score, node))
+        
+        # Sort by score
+        scored_nodes.sort(key=lambda x: x[0], reverse=True)
+        top_results = scored_nodes[:limit]
+        
+        if not top_results:
+            # Absolute fallback if no keywords match - return high-level site data
+            top_results = [(0, n) for n in nodes if "OurStory" in n['source'] or "About" in n['source']][:3]
+
+        intel_summary = ""
+        for _, n in top_results:
+            intel_summary += f"{n.get('content')}\n\n"
+            
+        return intel_summary.strip()
+
+    @staticmethod
+    async def get_website_knowledge_summary(query: str = "") -> str:
+        """
+        Combines DNA (Identity) + Node Retrieval (Details).
+        """
+        kb = await ContentService.get_raw_knowledge_base()
+        if not kb:
+            return "BEEYIELD DNA: Knowledge Loading..."
+
+        # 1. Hardcoded Identity (Always included for grounding)
+        dna = kb.get("dna", {})
+        dna_text = (
+            f"BEE YIELD IDENTITY:\n"
+            f"- Mission: {dna.get('mission')}\n"
+            f"- HQ: {dna.get('hq', {}).get('location')} on a {dna.get('hq', {}).get('farm_size')}\n"
+            f"- Founders: {', '.join([f'{f.get('name')} ({f.get('role')})' for f in dna.get('founders', [])])}\n"
+            f"- Tech: {dna.get('tech_stack', {}).get('sensors')} using {dna.get('tech_stack', {}).get('blockchain')}\n"
+        )
+        
+        # 2. Dynamic Component Discovery
+        specific_intel = await ContentService.search_knowledge(query)
+        
+        return f"{dna_text}\nDETAILED TRAINING DATA:\n{specific_intel}"

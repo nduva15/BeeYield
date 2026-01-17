@@ -13,7 +13,7 @@ import {
     X, ChevronDown, MapPin, Search, ClipboardList, Calculator, Receipt, LifeBuoy, Settings,
     Hand, Map, TrendingUp, Volume2, Camera, BookOpen, Droplet, Flame, Zap, Building2, Home, PieChart,
     ArrowRightLeft, FileInput, Bot, Activity, Gauge, List, Layers, BarChart3, Upload, LayoutList, Hexagon, Puzzle,
-    LogIn, UserPlus, Loader2, ArrowLeft, Shield, Lock, Bell, Banknote
+    LogIn, UserPlus, Loader2, ArrowLeft, Shield, Lock, Bell, Banknote, Globe
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -31,6 +31,7 @@ import AIAssistantView from '@/components/beeyield/AIAssistantView';
 import AgroIntelligenceView from '@/components/beeyield/AgroIntelligenceView';
 import MyPlacesView from '@/components/beeyield/MyPlacesView';
 import BeeYieldHivesView from '@/components/beeyield/BeeYieldHivesView';
+import GlobalHiveNetwork from '@/pages/GlobalHiveNetwork';
 import MeasurementDataView from '@/components/beeyield/MeasurementDataView';
 import SettingsView from '@/components/beeyield/SettingsView';
 import {
@@ -47,6 +48,8 @@ import MetersView from '@/components/beeyield/MetersView';
 import BillingView from '@/components/beeyield/BillingView';
 import SupportCenterView from '@/components/beeyield/SupportCenterView';
 import ServerStatusView from '@/components/beeyield/ServerStatusView';
+import InspectionsView from '@/components/beeyield/InspectionsView';
+import HarvestsView from '@/components/beeyield/HarvestsView';
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 
@@ -145,6 +148,7 @@ const BeeYieldDashboard: React.FC = () => {
                 { id: 'sound', label: t('nav_sound'), icon: Volume2 },
                 { id: 'image-analysis', label: t('nav_image_analysis'), icon: Camera },
                 { id: 'health-guide', label: t('nav_health_guide'), icon: BookOpen },
+                { id: 'global-hive-network', label: t('nav_global_hive_network'), icon: Globe },
             ]
         },
         {
@@ -222,6 +226,12 @@ const BeeYieldDashboard: React.FC = () => {
                 return <MyPlacesView onTabChange={setActiveTab} />;
             case 'beeyield':
                 return <BeeYieldHivesView onTabChange={setActiveTab} />;
+            case 'inspections':
+                return <InspectionsView onTabChange={setActiveTab} />;
+            case 'harvests':
+                return <HarvestsView onTabChange={setActiveTab} />;
+            case 'global-hive-network':
+                return <GlobalHiveNetwork />;
             case 'data':
                 return <MeasurementDataView onTabChange={setActiveTab} />;
             case 'online':

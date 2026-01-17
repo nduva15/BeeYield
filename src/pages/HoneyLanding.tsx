@@ -36,6 +36,8 @@ import {
 } from "lucide-react";
 import { getProducts, Product, fallbackProducts } from "@/services/shopService";
 import { toast } from "sonner";
+import { BrandedProductImage } from "@/components/BrandedProductImage";
+import { submitNewsletterSubscription } from "@/services/contactService";
 
 // Hero Section matching reference design
 const HeroSection = () => {
@@ -68,12 +70,12 @@ const HeroSection = () => {
             {/* Stats badges - horizontal */}
             <div className="flex flex-wrap justify-center lg:justify-start gap-3 mb-6">
               <div className="flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-2xl border border-neutral-200/50 shadow-sm">
-                <span className="text-xl font-black text-amber-500">125+</span>
-                <span className="text-[10px] font-semibold text-neutral-500 uppercase">Products</span>
+                <span className="text-xl font-black text-amber-500">2500+</span>
+                <span className="text-[10px] font-semibold text-neutral-500 uppercase leading-none">Trees<br />Planted</span>
               </div>
               <div className="flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-2xl border border-neutral-200/50 shadow-sm">
-                <span className="text-xl font-black text-amber-500">10+</span>
-                <span className="text-[10px] font-semibold text-neutral-500 uppercase">Years</span>
+                <span className="text-xl font-black text-amber-500">50/50</span>
+                <span className="text-[10px] font-semibold text-neutral-500 uppercase leading-none">Harvest<br />Promise</span>
               </div>
             </div>
 
@@ -95,24 +97,24 @@ const HeroSection = () => {
             {/* Main honey jar image */}
             <div className="relative mx-auto max-w-sm lg:max-w-md">
               <img
-                src="/images/products/highland_blossom_honey.png"
+                src="/images/products/honey_lifestyle_1.jpg"
                 alt="Premium BeeYield Honey"
-                className="w-full h-auto object-contain drop-shadow-2xl"
+                className="w-full h-auto object-cover aspect-[4/5] rounded-[2rem] drop-shadow-2xl shadow-amber-900/20"
               />
 
               {/* Floating stats - top right */}
               <div className="absolute -top-4 -right-4 lg:right-0 flex flex-col gap-3">
                 <div className="bg-white/95 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-lg border border-neutral-100">
-                  <span className="text-2xl font-black text-amber-500">4K+</span>
-                  <p className="text-[10px] text-neutral-500 font-semibold">Satisfied clients</p>
+                  <span className="text-2xl font-black text-amber-500">100+</span>
+                  <p className="text-[10px] text-neutral-500 font-semibold uppercase">Satisfied Clients</p>
                 </div>
                 <div className="bg-white/95 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-lg border border-neutral-100">
-                  <span className="text-2xl font-black text-amber-500">50+</span>
-                  <p className="text-[10px] text-neutral-500 font-semibold">Bee Farmers</p>
+                  <span className="text-2xl font-black text-amber-500">20+</span>
+                  <p className="text-[10px] text-neutral-500 font-semibold uppercase">Professional Farmers</p>
                 </div>
                 <div className="bg-white/95 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-lg border border-neutral-100">
-                  <span className="text-2xl font-black text-amber-500">10+</span>
-                  <p className="text-[10px] text-neutral-500 font-semibold">Premium Qualities</p>
+                  <span className="text-2xl font-black text-amber-500">25+</span>
+                  <p className="text-[10px] text-neutral-500 font-semibold uppercase">Acres Pollinated</p>
                 </div>
               </div>
             </div>
@@ -146,16 +148,12 @@ const FeaturedProductsSection = ({
               className="group bg-white border border-neutral-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300"
             >
               {/* Product Image */}
-              <div className="relative h-48 bg-gradient-to-br from-amber-50 to-orange-50 flex items-center justify-center p-6">
-                <img
-                  src={product.images[0]}
-                  alt={product.name}
-                  className="h-full w-auto object-contain transition-transform duration-300 group-hover:scale-110"
-                  onError={(e) => {
-                    e.currentTarget.src = "/placeholder.svg";
-                  }}
-                />
-              </div>
+              <BrandedProductImage
+                src={product.images[0]}
+                alt={product.name}
+                category="honey"
+                className="h-48"
+              />
 
               <CardContent className="p-5">
                 <div className="flex items-center justify-between mb-2">
@@ -180,7 +178,7 @@ const FeaturedProductsSection = ({
                         name: product.name,
                         description: product.description,
                         price: product.variants[0].price_kes,
-                        image: product.images[0],
+                        image: product.images[1] || product.images[0], // Use 250g jar if available, or lifestyle
                         category: product.category,
                         badge: product.badge,
                         inStock: product.variants.some(v => v.stock_quantity > 0 && v.is_available)
@@ -209,7 +207,7 @@ const TestimonialSection = () => {
     {
       name: "Sarah Jurbina",
       title: "Happy customer",
-      quote: "Nature's Gold honey is the best I've ever had! The taste is so pure and rich, and I love knowing that it's ethically sourced. I use it daily in my tea and even for skincare. Highly recommended!",
+      quote: "BeeYield honey is the best I've ever had! The taste is so pure and rich, and I love knowing that it's ethically sourced through the 50/50 promise. I use it daily in my tea and even for skincare. Highly recommended!",
     },
     {
       name: "Michael Ochieng",
@@ -279,16 +277,22 @@ const AboutSection = () => {
     <section className="py-16 bg-neutral-50">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Bee illustration side */}
+          {/* Visual side */}
           <div className="flex justify-center">
-            <div className="relative">
-              <div className="text-[150px] leading-none">🐝</div>
-              {/* Decorative honey images */}
-              <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-2xl overflow-hidden shadow-lg">
-                <img src="/images/products/honey_comb_chunk.png" alt="" className="w-full h-full object-cover" />
+            <div className="relative group">
+              {/* Main Lifestyle Image */}
+              <div className="w-64 h-80 md:w-80 md:h-[450px] rounded-[3rem] overflow-hidden shadow-2xl transform -rotate-3 group-hover:rotate-0 transition-transform duration-700">
+                <img src="/images/products/honey_lifestyle_5.jpg" alt="BeeYield Journey" className="w-full h-full object-cover" />
               </div>
-              <div className="absolute -top-4 -right-8 w-24 h-24 rounded-2xl overflow-hidden shadow-lg">
-                <img src="/images/products/highland_blossom_honey.png" alt="" className="w-full h-full object-cover" />
+
+              {/* Overlapping Secondary Image */}
+              <div className="absolute -bottom-10 -right-8 w-40 h-40 md:w-56 md:h-56 rounded-[2rem] overflow-hidden shadow-2xl border-8 border-white transform rotate-6 group-hover:rotate-0 transition-transform duration-700 delay-100">
+                <img src="/images/products/honey_lifestyle_2.jpg" alt="Our Impact" className="w-full h-full object-cover" />
+              </div>
+
+              {/* Floating Badge */}
+              <div className="absolute -top-6 -left-6 bg-amber-500 text-white p-4 rounded-2xl shadow-xl transform -rotate-12 font-black text-sm uppercase tracking-widest">
+                50/50<br />Promise
               </div>
             </div>
           </div>
@@ -299,10 +303,13 @@ const AboutSection = () => {
               The <span className="text-amber-500">Buzzz</span> about our Honey !
             </h2>
             <p className="text-neutral-600 leading-relaxed mb-4 text-sm md:text-base">
-              Nature's Gold was founded with a simple mission: to provide the purest honey while promoting sustainability and ethical beekeeping. Our journey began with a passion for nature and a deep appreciation for the hardworking bees that make it all possible. Over the years, we have built strong relationships with local and international beekeepers who share our vision of producing high-quality honey without harming the environment.
+              BeeYield was founded with a singular vision: to revolutionize beekeeping through technology and radical transparency. Our journey began in the pristine landscapes of Kenya, where we saw the need for a more sustainable approach. Today, we are proud to lead with our <strong>50/50 Harvest Promise</strong>—ensuring that for every drop we take, enough is left for the bees to thrive and pollinate our future.
+            </p>
+            <p className="text-neutral-600 leading-relaxed mb-4 text-sm md:text-base">
+              With over <strong>2,500 trees planted</strong> and a growing network of tech-enabled apiaries, our impact goes beyond just honey. Every jar you hold is powered by <strong>HoneyChain™ Traceability</strong>, allowing you to trace your honey back to the very hive it came from, meeting the beekeeper and seeing the digital seal of authenticity.
             </p>
             <p className="text-neutral-600 leading-relaxed text-sm md:text-base">
-              We believe that honey should be enjoyed in its most natural state, free from artificial additives, processing, or synthetic chemicals. That's why every jar of Nature's Gold honey is carefully harvested, filtered, and packaged to preserve its raw, unaltered goodness. From supporting bee-friendly initiatives to educating our customers about the benefits of raw honey, we are dedicated to making a difference–one drop at a time.
+              We believe in "Pollination with Purpose." By choosing BeeYield, you're not just buying raw, unfiltered honey; you're supporting a circular ecosystem that restores biodiversity, empowers local farmers, and uses IoT monitoring to protect the health of our colonies. This is the new standard of sweetness.
             </p>
           </div>
         </div>
@@ -315,19 +322,19 @@ const AboutSection = () => {
 const FeaturesSection = () => {
   const features = [
     {
-      icon: Droplets,
-      title: "100% pure and raw",
-      description: "No additives, preservatives, or artificial flavours-just nature's finest honey.",
+      icon: ShieldCheck,
+      title: "HoneyChain™ Traceability",
+      description: "Scan the QR code on any jar to trace your honey back to the specific hive and harvest date.",
     },
     {
       icon: Leaf,
-      title: "Ethically Sourced",
-      description: "Our honey is harvested from eco-friendly farms that prioritize bee health and sustainability.",
+      title: "50/50 Harvest Promise",
+      description: "We only harvest what the bees can spare, leaving 50% of the surplus to ensure colony survival.",
     },
     {
-      icon: Award,
-      title: "Rich in Nutrients",
-      description: "Loaded with antioxidants, vitamins, and enzymes for a healthier lifestyle.",
+      icon: Droplets,
+      title: "IoT Health Monitoring",
+      description: "Our hives use AI and acoustic sensors to detect disease and stress before they impact the honey.",
     },
   ];
 
@@ -379,16 +386,16 @@ const FlashSaleSection = () => {
           {/* Decorative honey jar */}
           <div className="absolute right-4 md:right-12 bottom-0 opacity-80 hidden sm:block">
             <img
-              src="/images/products/savannah_blossom_honey.png"
+              src="/images/products/beeyield_honey_1kg.png"
               alt=""
-              className="h-48 md:h-64 object-contain drop-shadow-lg"
+              className="h-48 md:h-64 object-contain drop-shadow-2xl"
             />
           </div>
 
           <div className="relative z-10 max-w-lg">
             <h2 className="text-3xl md:text-4xl font-black text-white mb-3">Flash sale</h2>
             <p className="text-white/90 text-sm md:text-base mb-6">
-              Order now and get upto 20% discount,<br />plus a free minitag from us.
+              Order now and get up to 20% discount,<br />plus a free traceability tag from us.
             </p>
 
             {/* Countdown Timer */}
@@ -428,20 +435,44 @@ const FlashSaleSection = () => {
 const FAQSection = () => {
   const faqs = [
     {
-      question: "Is your honey raw and filtered?",
-      answer: "Yes! Our honey is 100% raw and unfiltered, preserving all the natural enzymes, antioxidants, and nutrients.",
+      question: "How can I verify the authenticity of my honey?",
+      answer: "Every jar of BeeYield honey features a unique HoneyChain™ QR code. By scanning it, you can access the 'Digital Birth Certificate' of your honey, showing the exact hive location, harvest date, moisture levels, and even the beekeeper who cared for the colony.",
     },
     {
-      question: "Can honey help with allergies?",
-      answer: "Many people find that consuming local, raw honey helps with seasonal allergies. While not scientifically proven, the theory is that exposure to local pollen in honey may help build tolerance.",
+      question: "What exactly is the 50/50 Harvest Promise?",
+      answer: "Traditional beekeeping often over-harvests, leaving bees with sugar water. Our 50/50 Promise means we only take a maximum of 50% of the surplus honey. We leave the rest to ensure the bees have their natural, nutrient-rich food to survive and thrive through all seasons.",
     },
     {
-      question: "Does your honey ever expire?",
-      answer: "Honey is one of the few foods that never spoils when stored properly. It may crystallize over time, but this is natural and can be reversed by gently warming the jar.",
+      question: "How does BeeYield protect bees from diseases?",
+      answer: "We use IoT-enabled sensors and AI-powered acoustic monitoring to listen to the hive. Our technology can detect the 'signature sounds' of stress or specific diseases (like Varroa mites or Foulbrood) up to 48 hours before they become critical, allowing for non-invasive, early intervention.",
     },
     {
-      question: "How should I store my honey?",
-      answer: "Store honey in a cool, dry place away from direct sunlight. Keep the lid tightly closed. Avoid refrigeration as it speeds up crystallization.",
+      question: "Why does protecting bees result in better honey?",
+      answer: "A healthy, stress-free bee colony has a stronger immune system and produces honey with higher enzymatic activity. By protecting bees from disease and environmental stress, we ensure the honey remains pure, potent, and free from the contaminants often found in struggling colonies.",
+    },
+    {
+      question: "How are you contributing to apiary restoration?",
+      answer: "We don't just place hives; we restore ecosystems. To date, we have planted over 2,500 indigenous trees around our apiary sites to provide diverse forage for bees and restore the natural biodiversity of the region.",
+    },
+    {
+      question: "Is your honey raw and unfiltered?",
+      answer: "Yes! Our honey is 100% raw and gravity-filtered, preserving all the natural pollen, enzymes, and antioxidants that commercial heat-processing destroys.",
+    },
+    {
+      question: "Can I visit the apiary from which my honey was harvested?",
+      answer: "Through our digital dashboard, you can virtually visit your honey's origin. For corporate partners and members, we also organize physical 'Open Apiary Days' to witness our beekeeping practices firsthand.",
+    },
+    {
+      question: "How does BeeYield support local farmers?",
+      answer: "We provide local farmers with professional beekeeping training and IoT hive monitoring technology. By creating a sustainable market for their honey, we ensure they earn significantly above fair-trade market rates.",
+    },
+    {
+      question: "Does BeeYield offer honey subscriptions?",
+      answer: "Yes! Our 'Hive Connection' subscription ensures you never run out of your favorite blossoms while directly supporting the maintenance of a specific apiary restoration project.",
+    },
+    {
+      question: "Is BeeYield honey suitable for medicinal use?",
+      answer: "While we don't make medical claims, our honey is tested for high 'Total Activity' (TA) levels. Because it is raw and never heat-modified, it retains the natural antibacterial properties prized in traditional wellness.",
     },
   ];
 
@@ -479,11 +510,22 @@ const FAQSection = () => {
 const NewsletterSection = () => {
   const [email, setEmail] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
+    if (!email) return;
+
+    setStatus("loading");
+    try {
+      await submitNewsletterSubscription({ email, source: "honey_landing" });
+      setStatus("success");
       toast.success("Welcome to the hive! Check your email for confirmation.");
       setEmail("");
+    } catch (error) {
+      console.error(error);
+      toast.error("Subscription failed. Please try again later.");
+    } finally {
+      setStatus("idle");
     }
   };
 
@@ -500,9 +542,9 @@ const NewsletterSection = () => {
             {/* Honeycomb illustration */}
             <div className="w-20 h-20 mx-auto mb-4 relative">
               <img
-                src="/images/products/honey_comb_chunk.png"
+                src="/images/products/honey_lifestyle_4.jpg"
                 alt=""
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover rounded-xl"
               />
             </div>
 
@@ -523,8 +565,9 @@ const NewsletterSection = () => {
               <Button
                 type="submit"
                 className="w-full h-10 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-full text-sm"
+                disabled={status === "loading"}
               >
-                Join
+                {status === "loading" ? "Joining..." : "Join"}
               </Button>
             </form>
           </div>
@@ -579,41 +622,51 @@ const AllProductsSection = ({
                 key={product.id}
                 className="group bg-white border border-neutral-200 rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-amber-100/50 transition-all duration-300"
               >
-                {/* Product Image */}
-                <div className="relative aspect-square bg-gradient-to-br from-amber-50 to-orange-50 p-6">
-                  <img
-                    src={product.images[0]}
-                    alt={product.name}
-                    className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
-                    onError={(e) => { e.currentTarget.src = "/placeholder.svg"; }}
-                  />
-                  {product.badge && (
-                    <Badge className="absolute top-3 left-3 bg-amber-500 text-white text-[10px] font-bold">
-                      {product.badge}
-                    </Badge>
-                  )}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleWishlist({
-                        id: product.id,
-                        name: product.name,
-                        description: product.description,
-                        price: product.variants[0].price_kes,
-                        image: product.images[0],
-                        category: product.category,
-                        badge: product.badge,
-                        inStock: product.variants.some(v => v.stock_quantity > 0 && v.is_available)
-                      });
-                    }}
-                    className={`absolute top-3 right-3 p-2 rounded-full transition-all ${isInWishlist(product.id)
-                      ? "opacity-100 bg-amber-500 text-white"
-                      : "opacity-0 group-hover:opacity-100 bg-white/90 hover:bg-amber-500 hover:text-white"
-                      }`}
-                  >
-                    <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? "fill-current" : ""}`} />
-                  </button>
-                </div>
+                {/* Product Image with Branded UI Overlay */}
+                {(() => {
+                  const variantIndex = product.variants.findIndex(v => v.size === selectedSize);
+                  // The new structure is: 0: Lifestyle, 1: 250g, 2: 500g, 3: 1kg
+                  // So we use variantIndex + 1 to get the specific jar, or fallback to lifestyle
+                  const displayImage = (variantIndex !== -1 && product.images[variantIndex + 1])
+                    ? product.images[variantIndex + 1]
+                    : product.images[0];
+
+                  return (
+                    <BrandedProductImage
+                      src={displayImage}
+                      alt={product.name}
+                      category="honey"
+                      badge={product.badge}
+                      className="aspect-square bg-gradient-to-br from-amber-50 to-orange-50"
+                    />
+                  );
+                })()}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const variantIndex = product.variants.findIndex(v => v.size === selectedSize);
+                    const displayImage = (variantIndex !== -1 && product.images[variantIndex + 1])
+                      ? product.images[variantIndex + 1]
+                      : product.images[0];
+
+                    toggleWishlist({
+                      id: product.id,
+                      name: product.name,
+                      description: product.description,
+                      price: selectedVariant.price_kes,
+                      image: displayImage,
+                      category: product.category,
+                      badge: product.badge,
+                      inStock: product.variants.some(v => v.stock_quantity > 0 && v.is_available)
+                    });
+                  }}
+                  className={`absolute top-3 right-3 z-20 p-2 rounded-full transition-all ${isInWishlist(product.id)
+                    ? "opacity-100 bg-amber-500 text-white"
+                    : "opacity-0 group-hover:opacity-100 bg-white/90 hover:bg-amber-500 hover:text-white"
+                    }`}
+                >
+                  <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? "fill-current" : ""}`} />
+                </button>
 
                 <CardContent className="p-4">
                   {/* Rating */}
@@ -689,33 +742,7 @@ const AllProductsSection = ({
   );
 };
 
-// Social Proof / Partners Section
-const SocialProofSection = () => {
-  const partners = [
-    "WHOLE EARTH", "APIARY ONE", "PURE LIFE", "GOLDEN DROP",
-    "NECTAR & CO", "HIVE MIND", "SWEET SUSTAIN", "ORGANIC ROOTS",
-  ];
 
-  return (
-    <section className="py-10 bg-white border-t border-neutral-100">
-      <div className="container mx-auto px-4 sm:px-6">
-        <p className="text-center text-xs font-semibold text-neutral-400 uppercase tracking-widest mb-6">
-          Featured in premium organic grocers worldwide
-        </p>
-        <div className="flex flex-wrap justify-center items-center gap-6 md:gap-10">
-          {partners.map((partner, index) => (
-            <span
-              key={index}
-              className="text-sm md:text-base font-bold text-neutral-300 hover:text-neutral-500 transition-colors"
-            >
-              {partner}
-            </span>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
 
 // Main HoneyLanding Component
 const HoneyLanding = () => {
@@ -744,11 +771,25 @@ const HoneyLanding = () => {
     fetchProducts();
   }, []);
 
-  const products = activeProducts.length > 0 ? activeProducts : fallbackProducts;
+  // Combine live products with fallbacks, prioritizing our curated fallbacks for the Honey Landing page
+  const products = [...fallbackProducts];
+  const fallbackIds = new Set(fallbackProducts.map(p => p.id));
+
+  // Add live products that aren't already represented by our curated fallbacks
+  activeProducts.forEach(live => {
+    if (!fallbackIds.has(live.id)) {
+      products.push(live);
+    }
+  });
 
   const handleAddToCart = (product: Product) => {
     const selectedSize = selectedSizes[product.id] || product.variants[0].size;
-    const variant = product.variants.find((v) => v.size === selectedSize) || product.variants[0];
+    const variantIndex = product.variants.findIndex((v) => v.size === selectedSize);
+    const variant = product.variants[variantIndex] || product.variants[0];
+    // Structure: [0: Lifestyle, 1: 250g, 2: 500g, 3: 1kg]
+    const image = (variantIndex !== -1 && product.images[variantIndex + 1])
+      ? product.images[variantIndex + 1]
+      : product.images[0];
 
     addToCart({
       productId: product.id,
@@ -760,7 +801,7 @@ const HoneyLanding = () => {
       quantity: 1,
       category: product.category as any,
       badge: product.badge,
-      image: product.images[0],
+      image: image,
     });
 
     toast.success(`${product.name} added to cart!`);
@@ -797,7 +838,6 @@ const HoneyLanding = () => {
           <FlashSaleSection />
           <FAQSection />
           <NewsletterSection />
-          <SocialProofSection />
         </>
       )}
     </div>

@@ -1,0 +1,965 @@
+{
+  "metadata": {
+    "version": "6.0.0-ELITE",
+    "last_sync": "Sun Jan 18 00:07:00 2026",
+    "total_nodes": 185
+  },
+  "dna": {
+    "company": "BeeYield",
+    "mission": "Revolutionizing African beekeeping through precision IoT and blockchain traceability.",
+    "hq": {
+      "location": "Kibwezi, Makueni County, Kenya",
+      "farm_size": "5-acre secure apiary site",
+      "hives_count": 184
+    },
+    "founders": [
+      {
+        "name": "Timothy Mathuva",
+        "role": "CEO",
+        "background": "Strathmore University, Visionary leader"
+      },
+      {
+        "name": "Agatha Mathuva",
+        "role": "IT & Blockchain Head",
+        "background": "Strathmore University, Tech Architect"
+      },
+      {
+        "name": "Carole Mathuva",
+        "role": "Chief Growth Officer",
+        "background": "Strathmore University, Scaling expert"
+      }
+    ],
+    "tech_stack": {
+      "sensors": "Acoustic (Buzz Analysis), Thermal (Brood Temp), Load Cells (Weight/Nectar), LoRaWAN Connectivity",
+      "blockchain": "HoneyChain - Immutable traceability from flower to jar",
+      "ml": "Proprietary algorithms for disease detection (AFB, Hive Health anomalies)"
+    }
+  },
+  "knowledge_nodes": [
+    {
+      "source": "About.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Est. 2020 \u2022 Kibwezi, Kenya. Cultivating the. Future. of Food. Read Our Full Story. Partner With Us. Our Roots & Growth. From a humble half-acre plot to a precision pollination leader.. BeeYield is born on a half-acre plot in Kibwezi with just 4 hives. Timothy Nduva sees an opportunity where others saw crisis.. The Family Unites. Sisters Agatha and Carole bring their expertise in web development and IoT, turning a beekeeping project into a tech-driven family legacy.. Expansion & Impact. Growth to 184 hives across a 5-acre apiary. 2,500+ trees planted, restoring local ecosystems and pollinating 25 acres of farmland.. Evolving into a Precision Pollination leader using IoT, Data, and AI to secure the future of food globally.. Explore Our Ecosystem. Dive deeper into the people, technology, and initiatives driving BeeYield forward.. Meet The Team. Get to know the founding family\u2014three Strathmore graduates combining tech, business, and beekeeping.. Meet the Founders. Our Impact."
+    },
+    {
+      "source": "About.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "From 4 to 184 hives, protecting ecosystems and planting 2,500+ trees. See our environmental footprint.. View Impact Report. Global Hive Network. Join our planetary initiative to save pollinators. Adopt a hive, support farmers, and be part of the solution.. Join the Network. HoneyChain\u2122 Traceability. Track every drop of honey from hive to jar. Verify our 50/50 harvest promise and meet the beekeeper.. Trace Your Honey. Pollination Services. Boost crop yields with our precision pollination services. Custom solutions for mango, bean, and sisal farmers.. Services for Farmers. Our Commitment. Our Promise. See the BeeYield Difference. About BeeYield. mx-auto max-w-3xl text-center mb-16. text-3xl font-bold mb-4 flex items-center justify-center gap-2. absolute inset-0 bg-gradient-to-t from-black/80 to-transparent pointer-events-none flex items-end justify-center pb-20."
+    },
+    {
+      "source": "AccountSettings.tsx",
+      "subtopic": "Key Facts",
+      "content": "Sign In. Create Account. Track Orders. Fast Checkout. Exclusive Deals. Identity. & Security. Manage your account security and authentication preferences.. Profile. Securely stored encrypted credentials. Honey ID. Auth Provider. Security Status. Pulse Member Since. Guardian Security. Session Management. Safely end your current session and clear local credentials.. End Session. container max-w-4xl mx-auto px-4 space-y-12. text-5xl font-black text-foreground tracking-tightest leading-none"
+    },
+    {
+      "source": "AdminAuth.tsx",
+      "subtopic": "Key Facts",
+      "content": "BeeYield. Secure gateway for BeeYield administrators.. Gateway Access. Exit Terminal. Authorized Personnel Only. All access attempts are logged."
+    },
+    {
+      "source": "AdminDashboard.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Authenticating Terminal.... Restricted Access. This terminal is for authorized administrators only.. Return Home. Pending. Processing. Shipped. Completed. Cancelled. BeeYield Admin. Global system metrics and analytics. Refresh. Overview. Orders. Traceability. Farmers. Apiaries. Pollination. Contact. Newsletter. Introducing new dashboard! Download now at. BeeYield.io. General Report. Weekly. Monthly. TOTAL TRANSACTIONS. CANCELLED ORDERS. Sales growth this month. GROSS RENTAL VALUE. KES 72,000. BEEKEEPER PROFITS. KES 54,000. Download Reports. Visitors. Realtime active users. Page per second. Top Active Pages. Real-Time Report \u2192. Users By Age. Show More. Active. Inactive. Active Users. Official Store. Filter by city. 250 Official stores in 21 countries, click the marker to see location details.. Satellite. Tangerang. Jakarta. Bekasi. Google. Weekly Best Sellers. View More. Apply now, quick registration. Start Now. Invite friends to get FREE bonuses!."
+    },
+    {
+      "source": "AdminDashboard.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Get KES 100,000 voucher by inviting your friends to fund #BecomeMember. Weekly Top Products. Export to Excel. Export to PDF. Images. Product Name. Status. Actions. Delete. Delete. 10 per page. 25 per page. 50 per page. Important Notes. Welcome to BeeYield Admin Dashboard. 24 hours ago. This dashboard gives you a complete overview of your beekeeping network metrics. Monitor honey production, track farmer performance, and manage your product inventory all in one place.. View Notes \u2192. Schedules. Add New Schedules. UX/UX Workshop. Hive Development Sprint. Recent Activities. Show More. Transactions. No transactions yet. View More \u2192. Seed Demo Batches. Seed Apiaries & Hives. Recent Orders. View and manage all customer transactions.. Order #. Customer. Status. Actions. No order data synchronized.. PENDING. PROCESSING. SHIPPED. COMPLETED. CANCELLED. Order Details. Full transaction manifest.. Order ID. Status. Customer. Shipping Address. Items Manifest. Total Value. Venture Inventory."
+    },
+    {
+      "source": "AdminDashboard.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Manage and deploy products to the digital storefront.. Sync Default Content. Add New Asset. Populate the matrix with product configurations.. Product Designation. Asset Description. Classification. Initial Reserve. Cancel. Stock Movements. Track inventory additions, removals, and adjustments.. New Movement. Product. Quantity. Reason. No stock movements recorded yet.. Record Movement. Register an addition or removal from product inventory.. Asset Selection. Movement Type. Quantity. Protocol Reasoning. Commit Inventory Update. Honey Chain Blocks. Immutable blockchain ledger of authenticated batches.. Seed Demo. Mint Block. Batch Code. Honey Type. Origin. Farmer / Beekeeper. Harvest Date. Block Hash. Actions. No honey batches in the blockchain yet.. View Map. Farmer. Beekeeper. Mint New Ledger Entry. This action will finalize the batch data on the irreversible HoneyChain network.. Batch Details. Honey Variety. Harvest Date. Packaged Date. Processing Method. Raw Filtered. Creamed."
+    },
+    {
+      "source": "AdminDashboard.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Pasteurized. Comb Honey. Source Origin. Farmer Name. Contact Phone. Beekeeper Name. Beekeeper ID. County. Region. Apiary Name. Quality Assurance. Color Grade. Water White. Extra White. Extra Light Amber. Light Amber. Dark Amber. Initialize Block Minting. Batch Verification. Batch Code. VERIFIED ON LEDGER. Product Details. Honey Type. Quantity. Processing. Harvest Date. Origin Source. Farmer. Beekeeper. Location. View Map. Contact. Quality Assurance. Moisture. Close Verification. Agricultural Partners. Authenticated network of honey harvesters and growers.. Register Farmer. Farmer. Contact. Location. Experience. Status. Actions. No registered farmers found.. Full Name. Phone Number. Email Address. ID Number. County. Region. Years Experience. Location Details / Ward. Apiary Locations. Geospatial management of hive clusters and honey production sites.. Register Apiary. Farmer. Location. Status. Actions. No apiaries registered on the BeeYield grid.."
+    },
+    {
+      "source": "AdminDashboard.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Define production site parameters and associate with agricultural partners.. Apiary Name. County. Region. Assigned Farmer. Latitude. Longitude. Smart Hive Ledger. Inventory and health status of individual colony units.. Deploy Hive. Hive Code. Apiary. Installed. Status. Actions. No hives deployed in the honeycomb network.. Register individual colony components and their mechanical signatures.. Hive Code. Hive Type. Langstroth. Traditional Log. Target Apiary. Installation Date. Health Status. Active & Healthy. Weak Colony. Abandoned. Recently Harvested. Mechanical Notes. Admin Command Circle. Elevate user privileges or terminate access protocols.. Clearance Level. Modify. De-Authenticate. Awaiting New Operator. Initialize authentication protocols. Configure system access and identity parameters.. First Name. Last Name. Email Address. Access Password. Clearance Level. Pollination Requests. All incoming pollination service requests from farmers.. Crop Type. Farm Size. Location. Status."
+    },
+    {
+      "source": "AdminDashboard.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Actions. No pollination requests yet.. Pending. Contacted. Completed. Rejected. Service Request. Farmer. Contact. Location. Additional Notes. Contact Submissions. Messages received through the contact form.. Subject. Message. Status. Actions. No contact messages yet.. Replied. Message Details. Location. Company. Farm Details. Farm Name. Apiary Details. Apiary Name. Hive Count. Experience. Reply via Email. Newsletter Subscribers. All email subscribers to the BeeYield newsletter.. Subscribed On. Actions. No subscribers yet.. e.g. Amber Infusion VII. Describe the sensory profile.... Select Product. e.g. New harvest arrival. View Public Blockchain Record. e.g. Acacia Noir. Select Method. e.g. John Doe. e.g. Jane Smith. ID-.... e.g. Kitui. e.g. Mwingi North. e.g. Acacia Grove. Select Color. Timothy Nduva. +254 7XX XXX XXX. timothy@beeyield.com. National ID or Passport. Makueni. Eastern. Kibwezi East, Mtito Andei. Brief background about the farmer.... Kibwezi East Cluster A. Makueni."
+    },
+    {
+      "source": "AdminDashboard.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Eastern. Select Partner. HIVE-KIB-001. Select Site. Condition of the box, queen status, etc.. operator@beeyield.com. Select Role. Failed to register farmer on network. bg-yellow-500/10 text-yellow-600 border-yellow-200. bg-blue-500/10 text-blue-600 border-blue-200. bg-purple-500/10 text-purple-600 border-purple-200. bg-green-500/10 text-green-600 border-green-200. bg-red-500/10 text-red-600 border-red-200. text-amber-600 text-xs p-0 h-auto mt-2. rounded-full bg-amber-500 text-white text-xs px-4 h-7. rounded-lg text-xs h-8 gap-2 bg-white. w-2 h-2 rounded-full bg-green-500 animate-pulse. text-xs text-muted-foreground mt-1. absolute top-4 left-4 z-10 flex bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden. bg-blue-600 rounded-2xl p-6 text-white relative overflow-hidden flex flex-col justify-center h-48. absolute right-4 top-1/2 transform -translate-y-1/2. w-full h-full object-cover opacity-80. font-bold text-sm text-foreground. , item.active ?."
+    },
+    {
+      "source": "AdminDashboard.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "w-8 h-8 rounded-lg bg-amber-500 text-white. text-amber-600 text-xs p-0 h-auto mt-2. flex items-center justify-between mb-4. , !isCurrentMonth &&. , isToday &&. , hasEvent && !isToday &&. text-amber-600 text-xs p-0 h-auto. text-amber-600 text-xs p-0 h-auto mt-4. rounded-xl h-11 bg-muted/50 border-border/50 font-mono text-xs. bg-green-500/10 text-green-600 border-green-200. bg-red-500/10 text-red-600 border-red-200. bg-blue-500/5 text-blue-600 border-blue-200. bg-green-500/10 text-green-600 border-none. bg-amber-500/10 text-amber-600 border-none. Initialize a new beekeeper record on the BeeYield network.. bg-green-500/10 text-green-600 border-green-200. bg-muted text-muted-foreground. Authenticate Site Registration. bg-green-500/10 text-green-600 border-green-200. bg-yellow-500/10 text-yellow-600 border-yellow-200. space-y-6 animate-in slide-in-from-bottom-4 duration-500. flex justify-between items-center. text-xl font-bold flex gap-2 items-center. rounded-full text-xs font-bold."
+    },
+    {
+      "source": "AuthCallback.tsx",
+      "subtopic": "Key Facts",
+      "content": "Completing sign in.... Please wait while we verify your account."
+    },
+    {
+      "source": "Authentication.tsx",
+      "subtopic": "Key Facts",
+      "content": "Back to Shop. BeeYield. Secure. Secure Transaction. One Account.. Unlimited. Intelligence.. Log In. Sign Up. All data is encrypted with AES-256 standard. Finish your order. \u00a9 2026 BeeYield Professional Pollination. All rights reserved.. Privacy Protocol. Terms of Engagement. Support Matrix. bg-primary text-white ring-4 ring-primary/20 shadow-glow. bg-muted text-muted-foreground. flex-1 h-0.5 mx-2 bg-muted relative -top-3. Securely store addresses and payment methods for 1-click buying.. Verify the origin and purity of every jar you purchase.. Access real-time data from your smart hives anywhere.. Every transaction is encrypted and monitored for your safety.. Secure access to your BeeYield profile. Join the precision pollination revolution. flex gap-1 p-1 bg-background/50 rounded-xl border border-border/50. bg-primary text-white shadow-sm. bg-primary text-white shadow-sm"
+    },
+    {
+      "source": "BeeLearn.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "BeeYield Learn Platform. Sustainable Beekeeping. Access expert-led video curriculums, comprehensive PDF field manuals, and apiary certifications. From backyard hobbyists to commercial producers.. Browse Course Catalog. Download Free Starter Guide. Students. Rating. LESSON 3. Resources. Certified Students. Instructor Rating. 50+ Digital Guides. Instant access to comprehensive field manuals. Preview Library. Best Seller. Commercial Apiary Management. Video Course + PDF Bundle. KES 14,900. Curriculum accredited by leading agricultural institutes. Years Combined Experience. About BeeYield Learn. Beekeeping. Our curriculum is developed by practicing apiarists, agricultural scientists, and business experts with decades of hands-on experience. Every course is designed to give you practical skills you can apply immediately.. Professional Beekeepers. Learn from certified experts with real-world experience. Educational Advocates. Committed to spreading sustainable beekeeping knowledge."
+    },
+    {
+      "source": "BeeLearn.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Learn More About Our Team. Sarah Johnson. Commercial Beekeeper, Nakuru. Our Programs. Sustainable Beekeeping. Join our comprehensive workshops designed for every level of expertise. Request a Quote for Your Company. Course Catalog. All Courses &. Field Guides. From beginner fundamentals to advanced commercial operations\u2014find the perfect learning path for your beekeeping journey.. Loading courses.... View All Products in Shop. Join Our Community. Premium Learning. Get exclusive access to new courses, early bird discounts, and monthly beekeeping tips delivered straight to your inbox.. Get All-Access Pass. Add to wishlist. Enter your email. Comprehensive 85-page PDF covering hive selection, bee health, and honey harvesting for beginners in East Africa.. /images/products/beekeeping_guide.png. Precision Pollination Handbook. Advanced techniques for using data to optimize crop yields. Essential for commercial farmers and professional beekeepers.. /images/products/beekeeping_guide.png."
+    },
+    {
+      "source": "BeeLearn.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Video course with 12 hours of expert instruction on queen breeding, grafting, and colony management.. /images/products/beekeeping_guide.png. Complete guide to extraction, filtering, bottling, and quality certification for commercial honey production.. /images/products/beekeeping_guide.png. Learn to set up, calibrate, and interpret data from BeeYield sensors. Includes troubleshooting guides.. /images/products/beekeeping_guide.png. Identify and treat common bee diseases and pests in East Africa. Includes natural and chemical treatment options.. /images/products/beekeeping_guide.png. Transform your hobby into a profitable venture. Covers pricing, marketing, regulations, and scaling operations.. /images/products/beekeeping_guide.png. All educational materials in one package! Includes all guides, courses, and lifetime updates.. /images/products/beekeeping_guide.png. Learn expert methods to safely capture and relocate bee swarms. Master sustainable honey extraction techniques and timing."
+    },
+    {
+      "source": "BeeLearn.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Advanced courses for commercial apiaries and research. Hands-on field training with industry experts. mb-6 px-4 py-1.5 border-amber-300 bg-amber-50 text-amber-700 font-semibold. font-bold text-neutral-900 text-sm mb-1. text-center text-sm font-medium text-neutral-500 mb-8. mb-4 border-amber-300 text-amber-700 font-semibold. absolute top-8 left-8 h-16 w-16 text-amber-200. As a beekeeping hobbyist, I rely on BeeYield. mb-4 border-amber-500 text-amber-400 font-semibold. mb-4 border-amber-300 text-amber-700 font-semibold. bg-amber-500 text-white opacity-100 translate-y-0. h-14 px-8 border-2 font-bold rounded-xl. absolute top-0 right-0 w-64 h-64 bg-amber-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2. absolute bottom-0 left-0 w-48 h-48 bg-amber-500/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2."
+    },
+    {
+      "source": "BeeYieldDashboard.tsx",
+      "subtopic": "Key Facts",
+      "content": "d.battery_level. This section is currently under development. Check back soon for updates!. Access Denied. RESTRICTED. AIRSPACE. Authenticate Session. Return to Public Shop. ENCRYPTED KERNEL ACCESS ONLY. Disconnected from Secure Ecosystem"
+    },
+    {
+      "source": "BlogPost.tsx",
+      "subtopic": "Key Facts",
+      "content": "Back to Blog. Related Topics. About the Author. Member of the BeeYield team, passionate about sustainable agriculture and technology.. Share this article. Copy Link. w-full flex items-center gap-2"
+    },
+    {
+      "source": "Blogs.tsx",
+      "subtopic": "Key Facts",
+      "content": "Our Blog. Stories, insights, and education about honey, bees, and sustainability. Read More. Load More Articles"
+    },
+    {
+      "source": "BuyerDashboard.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Pending. Processing. Shipped. Delivered. Cancelled. Dashboard. Overview. Start Shopping. Recent Orders. Your last 3 transactions. View All. No recent orders found.. Start Shopping. Quick Actions. Commonly tasks for your account. Order History. Refresh. No Orders Yet. Browse Shop. Invoice. Available Credits. KES 2,450.00. Top Up Credits. Transaction History. Recent Wallet Activity. Delivery Locations. Manage your shipping addresses.. Add Address. Add New Address. Add a new delivery location for checkout.. Street Address. County. Contact Phone. Save Address. Default. No addresses saved.. Payment Methods. Manage your saved cards and payment details.. Add Card. Card Holder. Expires. No saved payment methods.. Curated. Based on your interest in precision apiculture. Personal Details. Update your contact information.. First Name. Last Name. Email Address. Phone Number. Save Changes. Support. Center. How can we help you today?. Contact Specialist. Your cart is empty. Browse Products. Secure."
+    },
+    {
+      "source": "BuyerDashboard.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Checkout. Complete your premium order. Order Confirmed! \ud83c\udf89. Order Identifier. Continue Shopping. View My Orders. 1. Shipping. 2. Payment. Full Name. Phone Number. Address. Continue to Payment. M-Pesa. Bank Card. Order Summary. Shipping. Your data is secured with banking-grade encryption protocol.. In Development. This section is being custom built for your account.. Return Home. Account Required. To view your orders, wallet, and saved addresses, please sign in to your shop account.. Go to Login Dashboard. Continue as Guest. Track Parcel. Return to Dashboard. 123 Bee St. Nairobi. Nairobi. bg-yellow-500/10 text-yellow-600 border-yellow-200. bg-blue-500/10 text-blue-600 border-blue-200. bg-purple-500/10 text-purple-600 border-purple-200. bg-green-500/10 text-green-600 border-green-200. bg-red-500/10 text-red-600 border-red-200. bg-muted text-foreground border-none. rounded-full border border-white/20. Questions about delivery or returns. Trouble with the BeeYield platform."
+    },
+    {
+      "source": "BuyerDashboard.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "bg-muted/50 rounded-3xl p-6 inline-block mb-10 border border-border/50. text-xs font-black uppercase tracking-widest text-muted-foreground mb-1. text-3xl font-black text-primary. bg-primary text-white shadow-sm. bg-primary text-white shadow-sm. w-full rounded-full h-12 text-lg font-bold. w-full h-12 text-lg font-bold rounded-xl shadow-glow. bg-muted text-muted-foreground."
+    },
+    {
+      "source": "Careers.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Join the Hive. Join Us to Make. an Impact. View Openings. So why choose us?. Balance is key. We keep things fun and lighthearted, but our commitment to our mission is unwavering.. What to know about us. We are Pioneers. We aim to redefine pollination by leveraging technology to deliver predictability and precision to the process.. We are Technologists. We are Optimists. We believe pollination does not have to be a zero-sum game. All stakeholders can benefit from our solution.. We are Bridge Builders. Our work positions us to be leaders in the field of pollinator health and welfare. We embrace this responsibility.. We are Data-Driven. Innovation is in our DNA. Check out The Buzz Blog. Make Your Next Choice. Apply Now. BeeYield is an international company. We have offices in Tel Aviv, Fresno, Palo Alto, Australia, and. container mx-auto px-4 relative z-10 text-center max-w-4xl. mb-6 bg-primary/10 text-primary border-primary/20. container mx-auto px-4 max-w-5xl."
+    },
+    {
+      "source": "Careers.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "text-6xl font-bold mb-6 text-primary. text-lg text-muted-foreground leading-relaxed mb-6. container mx-auto px-4 max-w-4xl text-center. container mx-auto px-4 max-w-5xl. re seeking a new role, one that truly aligns with your goals, we. inline-flex items-center bg-secondary/50 rounded-full px-4 py-2 text-sm font-medium. text-sm text-muted-foreground bg-secondary/30 inline-block px-6 py-3 rounded-lg."
+    },
+    {
+      "source": "Checkout.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Your Cart is Empty. Discover our premium honey and sustainable beekeeping products. Start Shopping. Order Confirmed! \ud83c\udf89. Order Number. Continue Shopping. Track Your Order. Checkout. Check your Wishlist below! \ud83d\udc47. 20% OFF. Remove. Product. Stock Status. Action. In Stock. Out of Stock. Add To Cart. Shipping Information. Full Name. Phone Number. Address. County. Payment Method. M-Pesa. Pay via mobile money. Bank Card. Credit or Debit card. Back to Cart. Processing.... Coupons. Your Order. Delivery. Delivery. Pick Up. Nairobi. Mombasa. Kisumu. Service Fee. Coupon Discount. Use Store Credits. Total Payable. PROCEED TO CHECKOUT. Your payment is secured with banking-grade encryption. Sign in to Checkout. Create an account or sign in to complete your order. Sign In. Create Account. John Doe. john@example.com. 123 Bee Street, Building A. Nairobi. Nairobi County. Special delivery instructions.... Coupon code. bg-muted/50 rounded-3xl p-6 inline-block mb-10 border border-border/50."
+    },
+    {
+      "source": "Checkout.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "text-xs font-black uppercase tracking-widest text-muted-foreground mb-1. text-3xl font-black text-primary. border-green-200 text-green-700 bg-green-50. border-red-200 text-red-700 bg-red-50. flex items-center gap-2 cursor-pointer. flex items-center gap-2 cursor-pointer. bg-primary text-white border-primary. flex items-center gap-2 cursor-pointer text-sm."
+    },
+    {
+      "source": "Commitment.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Sustainable Development Goals. Our Commitment. To The Future. 8 UN Sustainable Development Goals. , creating measurable impact for communities, ecosystems, and global food security.. View ESG Impact. Scroll to Explore. Impact Delivered. Join The. Movement. Join Our Network. Partner With Us. We provide training programs and a sustainable platform for smallholder farmers and youth to earn income through beekeeping, hive management, and pollination services.. 50+ farmers trained on bee disease prevention & sustainable AgriTech. 75% of food crops rely on pollinators. Our pollination services directly boost agricultural yields, ensuring food security for communities across Africa.. 25 acres pollinated, increasing crop yields by up to 40%. Restoring local biodiversity through tree planting creates resilient ecosystems that naturally filter water and combat climate change, protecting vital water sources.. 2,500+ trees restoring biodiversity & climate resilience."
+    },
+    {
+      "source": "Commitment.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "re exploring solar-powered hive monitoring systems, reducing reliance on fossil fuels while enabling precision beekeeping in off-grid areas.. Solar-powered IoT sensors in development. Our platform creates dignified employment opportunities in rural areas, empowering beekeepers with fair compensation and market access.. Creating sustainable livelihoods for rural youth. ve planted 2,500+ trees to restore habitats and capture carbon. Our sustainable practices promote biodiversity and build climate resilience.. Estimated 30+ tons CO\u2082 captured annually. Reducing bee mortality rates and protecting wild pollinators ensures healthy terrestrial ecosystems. We maintain less than 15% colony loss rate vs. 60% global average.. 184 healthy hives across 5-acre restored habitat. We collaborate with strategic partners to scale our impact and share knowledge across borders, building a resilient ecosystem for bees and people.. Partnering with Farmers, ApiSense & Intelligent Hives."
+    },
+    {
+      "source": "Commitment.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "container mx-auto px-4 text-center. mb-8 px-4 py-2 border-primary/20 bg-primary/5 text-primary tracking-widest uppercase font-semibold text-xs rounded-full. text-transparent bg-clip-text bg-gradient-to-r from-primary to-amber-600. re a farmer, investor, or sustainability advocate\u2014there. flex flex-wrap justify-center gap-4 relative z-10."
+    },
+    {
+      "source": "Contact.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Contact Us Today. Fill in the form, and we will get back to you at our earliest convenience.. First Name *. Last Name *. City *. State *. Country *. Email *. Phone Number *. Farm Name *. Crop *. Mangoes. Sunflower. Oranges. Vegetables. Tomatoes. Onions. Acres *. Topic *. Pollination Services. Pricing. Partnership. Support. Apiary Name *. Number of Hives *. Years of Experience *. 1-5 years. 5-10 years. 10+ years. Topic *. Technology Integration. Hive Monitoring. Partnership. Support. Which disease are you inquiring about? *. Varroa Mite. American Foulbrood. European Foulbrood. Nosema. Chalkbrood. Sacbrood. Small Hive Beetle. Wax Moths. Tracheal Mites. Company / Organization. Topic *. Press Inquiry. Careers. Sustainability. General Question. Message. I agree with the. Terms and Conditions. Privacy Policy. Email Us. info@beeyield.com. Call Us. Visit Us. Kibwezi. New York. info@beeyield.com. Green Acres Farm. Crop selection. Topic selection. Busy Bee Apiaries."
+    },
+    {
+      "source": "Contact.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Years of experience selection. Topic selection for beekeeper. Disease selection. Optional. Topic selection for general inquiry. How can we help you?. ll get back to you as soon as possible.. There was an error sending your inquiry. Please try again.. border-primary bg-primary/5 text-primary shadow-soft. text-sm font-medium leading-none text-muted-foreground. w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4. w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4. w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4."
+    },
+    {
+      "source": "CropsWePollinate.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Precision Agriculture. Get Data-Driven. Crop Pollination. Our end-to-end solution gives unprecedented control and visibility into pollination, ensuring 40% crop yields and sustainable practices.. Get a Free Consultation. Explore Crops. Work With the Pollination Experts. BeeYield is comprised of leading experts in the field of pollination. Bee biologists and researchers, data-science experts, electrical engineers, leading agronomists, and veteran beekeepers make up our team, and all are committed to creating improved pollination outcomes for our customers.. Acres Managed. Country. Counties. Crop Varieties. Global Presence. Where We Operate. BeeYield is expanding its precision pollination services across Africa, starting with our home base in Kenya.. Active Regions. Operating in. 1 Country. East Africa. View Case Study. If your crop relies on bees for pollination, we would love to talk to see how we can improve your pollination."
+    },
+    {
+      "source": "CropsWePollinate.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Whether through optimized placement, more precise timing of bee removal, or simply more efficient and cost-effective outcomes.. Email Our Customer Success Team. Maize is a wind-pollinated crop, but bee activity can enhance pollination efficiency and improve yield quality. BeeYield monitors pollinator activity to ensure optimal conditions during the critical tasseling period.. Sisal plants produce abundant nectar that attracts bees. Our monitoring solutions help track bee activity around sisal plantations, contributing to both fiber production and honey yields.. Mango trees depend heavily on insect pollination for fruit set. BeeYield. Bean crops benefit significantly from bee pollination, with studies showing up to 30% yield increases. Our In-Field sensors track pollinator visits to ensure optimal bean pod development.. Sunflowers are highly attractive to bees and require cross-pollination for maximum seed production."
+    },
+    {
+      "source": "CropsWePollinate.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "BeeYield monitors hive activity to ensure thorough pollination across large sunflower fields.. Citrus orchards rely on bee pollination for fruit quality and quantity. Our technology provides real-time insights into colony health and foraging patterns throughout the orange bloom season.. Many vegetable crops require bee pollination for successful fruit and seed production. BeeYield helps growers optimize pollinator placement and timing for diverse vegetable operations.. Tomato flowers benefit from buzz pollination. Our monitoring systems track bee activity to ensure adequate pollination, leading to better fruit size, shape, and uniformity.. Onion seed production requires cross-pollination between male and female plants. BeeYield helps producers optimize hive placement and monitor pollination activity for maximum seed yield.. rounded-full px-4 py-1.5 text-sm font-medium. container mx-auto px-4 text-center. w-24 h-1 bg-primary mx-auto mb-8 rounded-full."
+    },
+    {
+      "source": "CropsWePollinate.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "max-w-3xl mx-auto text-lg text-muted-foreground mb-12. M5 0 L10 2.5 L10 7.5 L5 10 L0 7.5 L0 2.5 Z. inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-foreground/20 mb-6."
+    },
+    {
+      "source": "Diseases.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "BeeYield Protection for Your. Beehives. BeeYield is an innovative system that intelligently helps protect beehives from diseases and environmental threats. By combining modern technologies, we provide real-time monitoring of bee health \u2013 without disturbing their natural rhythm.. Get Started. Learn More. Innovative IoT Solution. BeeYield is a compact IoT device that can be easily installed inside a hive, together with an application that allows you to constantly monitor the condition of your apiary, no matter where you are.. BeeYield consists of easy-to-install and user-friendly sensors that require no complex maintenance and do not interfere with the life of the bees.. Why Choose BeeYield?. Discover all the benefits of our monitoring system. BeeYield System. BeeYield is the central hub for managing your entire apiary \u2013 it combines data from hive-installed devices, weather information, satellite data, beekeeper\u2019s notes and inspections, and AI analyses into one clear system.."
+    },
+    {
+      "source": "Diseases.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "BeeYield App Interface. What does our solution consist of?. The BeeYield solution is built on modern monitoring devices that collect data from the hive in real time, combined with satellite data and weather forecasts.. IoT Device Visualization. Try BeeYield in your apiary. BeeYield is constantly evolving. We invite you to take part in the international testing of our system \u2013 together, we can advance technology that protects bees worldwide.. Join the Program. We are building a global network of partners. BeeYield collaborates with leading partners worldwide, joining forces with beekeeping equipment manufacturers, industry organizations, and renowned universities.. Farmers. ApiSense. Intelligent Hives. We answer your questions. Contact us. Name & Surname. Mobile. Message. Send Message. Privacy Policy. Terms of Service. John Doe. john@example.com. How can we help?. BeeYield can be used in both large and small apiaries."
+    },
+    {
+      "source": "Diseases.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "The more hives you have, the easier it becomes to manage your apiary.. With BeeYield, you can reduce the need for chemical protection and treatments.. BeeYield reduces apiary management costs by minimizing hive inspections and lowering expenses for bee treatments.. Discover all the benefits of BeeYield.. With BeeYield, you will quickly notice the first signs of diseases in your apiary and take action before the problem spreads.. BeeYield minimizes the risk of disease spreading within the apiary, helping to avoid costly treatments or the need to eliminate infected bee colonies.. The BeeYield app will guide you on what to do when a threat is detected. You will receive clear instructions and practical recommendations.. BeeYield gives you constant access to up-to-date information about the condition of your apiary. Remotely monitor your hives anytime, anywhere.. Add and organize apiaries and individual hives.."
+    },
+    {
+      "source": "Diseases.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Track weight charts, monitor environmental conditions, and compare results across hives.. Receive alerts about threats along with a ready-to-follow action plan.. Record information about each bee colony, plan your work, and access the complete history of every hive.. Monitoring conditions inside the hive and enabling early disease detection.. Analyzing hive sounds to assess the mood and condition of the colony.. Providing continuous monitoring of honey yield and tracking external hive conditions.. Enabling the transmission of data from up to 100 measuring devices to the server. With a range of 30 m, a single gateway supports the entire apiary.. When installed according to the instructions, BeeYield sensors are fully adapted to operate in harsh weather conditions \u2013 resistant to moisture, rain, snow, and extreme temperatures.. Can I test BeeYield before deciding on full implementation?. If you want to experience how BeeYield works, join our field testing program.."
+    },
+    {
+      "source": "Diseases.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Why does the system use satellite data?. Satellite data enables the analysis of environmental conditions around the apiary, such as temperature, humidity, weather changes, and the availability of forage for bees. Combining this information with sensor data allows our machine learning algorithm to provide beekeepers with precise guidance on potential threats to their apiary.. BeeYield uses proprietary machine learning algorithms to analyze the collected data, enabling rapid detection of anomalies and prediction of disease risks.. What data do the in-hive sensors collect?. BeeYield is an intelligent hive monitoring system that enables early detection of bee diseases and other threats using IoT sensors, AI algorithms, and satellite data.. min-h-screen bg-background text-foreground. container mx-auto px-4 relative z-10. py-24 bg-primary text-primary-foreground relative overflow-hidden."
+    },
+    {
+      "source": "ESG.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Corporate Responsibility. Commitment. Download 2024 Report. View SDG Alignment. Our Impact in Numbers. Real, measurable results from our operations in Makueni County and beyond. Understanding Our Commitment. What ESG Means for BeeYield. Key Initiatives. Fighting Hunger Through Pollination. In Makueni County, where droughts and food insecurity are recurring challenges, our pollination services directly improve crop yields for smallholder farmers. Every acre we pollinate means more food on local tables. Our 50/50 Harvest Promise ensures bees stay healthy and strong to continue this vital work season after season.. Food Crops Need Bees. Of global food production relies on pollinators. Kilograms of Honey. Nutritious honey distributed locally & sold. Acres Pollinated. Mangoes, avocados, macadamia & more. \u2014 Mary Mutua, Farmer, Kibwezi. Social Impact. Empowering 20+ Local Beekeepers. Our partner beekeeper program provides training, equipment, and a guaranteed market for honey."
+    },
+    {
+      "source": "ESG.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Each beekeeper manages 5-15 hives, creating sustainable income for their families while practicing ethical and traceable beekeeping.. Colony Loss Rate. vs. 60% Global Average. Harvest Promise. Bees Keep Half. Full Traceability. Hive to Jar via HoneyChain\u2122. Women Founders. Women Leading in AgriTech. BeeYield is proudly co-founded by. Carole Nduva. Agatha Nduva. Timothy Nduva. CEO & Founder, BeeYield. Partner With Us for Impact. Contact Us. Explore Pollination Services. Local farmers trained & earning. Precision pollination coverage. Proactive Varroa mite detection and natural treatment protocols. Hygienic queen breeding programs to strengthen colony immunity. Quarantine protocols for new colonies to prevent disease spread. Training beekeepers on early warning signs of common bee diseases. Less than 15% colony loss rate vs. 60% global average through preventive care. Ethical beekeeping that prioritizes colony health over profit. No artificial feeding\u2014bees sustain themselves naturally."
+    },
+    {
+      "source": "ESG.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Seasonal harvest schedules aligned with bee lifecycles. Stronger, more resilient colonies that survive harsh conditions. Sustainable beekeeping that ensures long-term colony health and productivity. QR codes on every product linking to harvest origin data. GPS-tagged hive locations with environmental monitoring. Beekeeper profiles and fair payment records on-chain. Consumer transparency dashboard for complete product visibility. 100% of honey batches traceable to specific hive, beekeeper, and harvest date. AI-driven predictive analytics for optimal harvest timing. Real-time temperature and humidity sensors protecting colony health. Mobile app for beekeepers with instant hive health alerts. Carbon-neutral technology operations through renewable energy. Tech-enabled beekeeping reducing environmental impact while maximizing efficiency. Zero chemical pesticides in all partner apiaries. Water source protection and conservation programs."
+    },
+    {
+      "source": "ESG.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Native pollinator corridor creation across Makueni County. Regenerative agriculture partnerships with local farms. 3,000+ tons CO\u2082 avoided annually through ecosystem restoration. Women holding key decision-making roles in technology and strategy. Mentorship programs for young women in STEM and agriculture. Championing gender equality in the African tech ecosystem. Driving digital innovation to empower rural women farmers. Visionary women leaders driving 66% of our founding team. absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/10. absolute top-20 right-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl. absolute bottom-10 left-10 w-96 h-96 bg-accent/5 rounded-full blur-3xl. container relative z-10 mx-auto px-4. mb-6 px-4 py-2 text-sm font-medium border-primary/30 bg-primary/5. re the foundation of everything we do at BeeYield. From the semi-arid lands of Kibwezi, Kenya, we. flex flex-wrap justify-center gap-4. text-muted-foreground max-w-2xl mx-auto."
+    },
+    {
+      "source": "ESG.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Kenyan farmers benefiting from pollination services in their mango and avocado orchards. Since BeeYield brought their hives to my farm, my mango harvest has doubled. My family eats better now.. t a report we file once a year\u2014it. text-lg text-muted-foreground mb-8. re a farmer seeking pollination services, an investor aligned with ESG principles, or a beekeeper looking to join our network\u2014we. flex flex-wrap justify-center gap-4."
+    },
+    {
+      "source": "GlobalHiveNetwork.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "A Planetary Initiative. BeeYield is leading the charge to address the pollinator crisis in Africa and the world, where 60% of bee colonies are lost annually and 75% of food crops depend on pollination.. Support the Cause Today. Read the Whitepaper. Trusted By Global Leaders. Farmers. ApiSense. Intelligent Hives. Global Emergency. The Bee Crisis. Across Africa and the world, beekeepers are opening their hives to discover devastating losses. African bee colonies face unique challenges from climate change, habitat loss, and limited access to modern beekeeping technology.. Annual colony mortality rate in Africa. Food Security at Risk. With 75% of food crops relying on pollinators, the decline of African bee populations threatens agricultural productivity, farmer livelihoods, and regional food security. Crops like mangoes, beans, tomatoes, and sisal depend heavily on healthy bee colonies.. Learn More. A Data-Driven Approach to African Agriculture. GOAL 1. Smart Hives Network."
+    },
+    {
+      "source": "GlobalHiveNetwork.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Building a network of sensor-equipped hives across Makueni and Kitui Counties, empowering local beekeepers with real-time colony health data and precision pollination insights.. GOAL 2. Daily Health Signals. GOAL 3. Farmer Education. Training local farmers and beekeepers in sustainable pollination practices, improving yields for mangoes, beans, tomatoes, and sisal across Africa and the world.. Pioneering Work Across Africa and the World. MAKUENI COUNTY. Optimizing Mango Pollination. In partnership with local mango growers in Makueni County, BeeYield is deploying smart hive sensors to maximize fruit set during the critical flowering window. Our precision monitoring ensures bee colonies are active when trees need them most.. 40% increase in mango yields observed. Training 50+ local beekeepers. KITUI COUNTY. Vegetable Crop Revolution. MAKUENI COUNTY. Sisal & Honey Production. BeeYield is pioneering dual-benefit pollination models in sisal plantations."
+    },
+    {
+      "source": "GlobalHiveNetwork.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "While supporting fiber production, our monitored bee colonies also produce high-quality honey, creating additional income streams for local beekeepers and farmers.. Learn About Our Impact. Try BeeYield in your apiary. BeeYield is constantly evolving. We invite you to take part in the international testing of our system \u2013 together, we can advance technology that protects bees worldwide.. Join the Program. We are building a global network of partners. BeeYield collaborates with leading partners worldwide, joining forces with beekeeping equipment manufacturers, industry organizations, and renowned universities.. Farmers. ApiSense. Intelligent Hives. Support African and World Farmers. Join our community of supporters strengthening pollinator health and food security across Makueni and Kitui Counties today\u2014and building a global network for farmers everywhere.. One-time. Monthly. Fund sensor deployment. Support beekeeper education. Receive impact reports. Support. MOST POPULAR."
+    },
+    {
+      "source": "GlobalHiveNetwork.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Patron of the Hive. Adopt a smart hive. Access to webinars & events. Exclusive network insights. Support. Join Our Network. First Name *. Last Name *. Email *. Submit. About BeeYield. info@beeyield.com. text-sm font-medium text-muted-foreground mb-4 uppercase tracking-widest. py-24 bg-foreground text-background. max-w-3xl mx-auto text-center mb-16. text-4xl font-bold mb-6 text-foreground. text-xl text-muted-foreground leading-relaxed. border-none shadow-xl text-center. text-4xl font-bold text-center mb-4 text-foreground. w-20 h-1 bg-primary mx-auto rounded-full mb-16. border-l-4 border-primary pl-4 italic text-muted-foreground. ve seen 30% better pod development in our bean crops and more uniform tomato sizes.. mb-4 bg-amber-100 text-amber-700 border-amber-200. max-w-4xl mx-auto text-center mb-20 bg-background p-8 rounded-2xl shadow-xl. py-24 bg-primary relative overflow-hidden. bg-background shadow-sm text-primary. bg-background shadow-sm text-primary."
+    },
+    {
+      "source": "GlobalHiveNetwork.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "container mx-auto px-4 max-w-2xl. text-4xl font-bold mb-4 text-foreground."
+    },
+    {
+      "source": "HoneyLanding.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Discover the purest, most delicious honey straight from hive to your plate. Our honey is carefully harvested to preserve its rich flavor, natural nutrients, and health benefits.. Planted. Harvest. Promise. Watch Video. Satisfied Clients. Professional Farmers. Acres Pollinated. What people are. saying. Promise. about our Honey !. 50/50 Harvest Promise. \u2014ensuring that for every drop we take, enough is left for the bees to thrive and pollinate our future.. With over. 2,500 trees planted. and a growing network of tech-enabled apiaries, our impact goes beyond just honey. Every jar you hold is powered by. HoneyChain\u2122 Traceability. , allowing you to trace your honey back to the very hive it came from, meeting the beekeeper and seeing the digital seal of authenticity.. Flash sale. Order now and get up to 20% discount,. plus a free traceability tag from us.. Minutes. Seconds. Shop now. Join the Hive!."
+    },
+    {
+      "source": "HoneyLanding.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Become a part of our buzzing community by subscribing to our newsletter for exclusive offers, honey recipes, and beekeeping insights.. Our Collection. All Premium Honey Products. Discover our complete range of pure, traceable honey sourced from the finest apiaries.. View All Products. Loading products.... Enter your email address.... flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-2xl border border-neutral-200/50 shadow-sm. text-xl font-black text-amber-500. flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-2xl border border-neutral-200/50 shadow-sm. text-xl font-black text-amber-500. bg-white/95 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-lg border border-neutral-100. text-2xl font-black text-amber-500. bg-white/95 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-lg border border-neutral-100. text-2xl font-black text-amber-500. bg-white/95 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-lg border border-neutral-100."
+    },
+    {
+      "source": "HoneyLanding.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "text-2xl font-black text-amber-500. ve ever had! The taste is so pure and rich, and I love knowing that it. ve been buying BeeYield honey for my family for over a year now. The traceability feature gives me confidence that we. m very particular about ingredients. BeeYield. /images/products/honey_comb_chunk.png. /images/products/honey_lifestyle_5.jpg. /images/products/honey_lifestyle_2.jpg. Scan the QR code on any jar to trace your honey back to the specific hive and harvest date.. We only harvest what the bees can spare, leaving 50% of the surplus to ensure colony survival.. Our hives use AI and acoustic sensors to detect disease and stress before they impact the honey.. /images/products/beeyield_honey_1kg.png. Every jar of BeeYield honey features a unique HoneyChain\u2122 QR code. By scanning it, you can access the. of your honey, showing the exact hive location, harvest date, moisture levels, and even the beekeeper who cared for the colony.. What exactly is the 50/50 Harvest Promise?."
+    },
+    {
+      "source": "HoneyLanding.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Traditional beekeeping often over-harvests, leaving bees with sugar water. Our 50/50 Promise means we only take a maximum of 50% of the surplus honey. We leave the rest to ensure the bees have their natural, nutrient-rich food to survive and thrive through all seasons.. How does BeeYield protect bees from diseases?. We use IoT-enabled sensors and AI-powered acoustic monitoring to listen to the hive. Our technology can detect the. Why does protecting bees result in better honey?. A healthy, stress-free bee colony has a stronger immune system and produces honey with higher enzymatic activity. By protecting bees from disease and environmental stress, we ensure the honey remains pure, potent, and free from the contaminants often found in struggling colonies.. How are you contributing to apiary restoration?. Is your honey raw and unfiltered?."
+    },
+    {
+      "source": "HoneyLanding.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Yes! Our honey is 100% raw and gravity-filtered, preserving all the natural pollen, enzymes, and antioxidants that commercial heat-processing destroys.. Can I visit the apiary from which my honey was harvested?. Through our digital dashboard, you can virtually visit your honey. to witness our beekeeping practices firsthand.. How does BeeYield support local farmers?. We provide local farmers with professional beekeeping training and IoT hive monitoring technology. By creating a sustainable market for their honey, we ensure they earn significantly above fair-trade market rates.. Does BeeYield offer honey subscriptions?. subscription ensures you never run out of your favorite blossoms while directly supporting the maintenance of a specific apiary restoration project.. Is BeeYield honey suitable for medicinal use?. t make medical claims, our honey is tested for high. bg-neutral-50 rounded-xl px-5 border-none. Welcome to the hive! Check your email for confirmation.."
+    },
+    {
+      "source": "HoneyLanding.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "bg-white rounded-2xl p-8 shadow-sm border border-neutral-200 text-center relative. w-full h-full object-cover rounded-xl. text-xl font-black text-neutral-900 mb-2. mb-4 border-amber-300 bg-amber-50 text-amber-700. text-neutral-600 max-w-2xl mx-auto. opacity-100 bg-amber-500 text-white. rounded-full border-2 border-neutral-900 text-neutral-900 font-bold px-8."
+    },
+    {
+      "source": "Impact.tsx",
+      "subtopic": "Key Facts",
+      "content": "Our Environmental Impact. Every jar of BeeYield contributes to a healthier planet and thriving bee populations.. Download Our Impact Report. Pollinator Protection. Habitat Conservation. Chemical-Free Practices. Native Plant Restoration. Read More. Community Impact. Beyond environmental conservation, BeeYield is dedicated to supporting local beekeeping communities. We provide fair compensation, training, and resources to help our partner beekeepers thrive.. Fair trade pricing ensuring sustainable livelihoods. Educational programs for new beekeepers. Equipment grants for sustainable practices. Support for bee health research initiatives. Read More. Our 2030 Goals. Protect 10,000 additional beehives. Plant 10,000 native flowering plants. Achieve carbon-neutral operations. Expand to 200+ partner beekeepers. Join Our Global Hive Network. mx-auto max-w-2xl text-lg text-muted-foreground"
+    },
+    {
+      "source": "InLandPollinationPlatform.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "In-Land Technology. Pollination Land. Insight Platform. PLIP delivers key in-land data on per-flower bee visits to evaluate pollination efficacy.. Book Pollination Service. View Sensor Demo. Acoustic Monitoring. Detecting Flight Signatures. Avi Gabai. Hazera Seed Production Israel. We Can Hear Bees!. Redesigned to withstand the rigors of the land, our new sensor boasts a larger enclosure to deliver improved battery life, and features a custom algorithm precisely tuned to detect the flight audio signature of the bees.. Learn More. Visibility Into Every Land. Accurate information about forage rates allows for real-time responses. You can see actual pollinator visits on the flower, efficiency of the pollination process, and data on the degree to which synchronized bloom has occurred, all in real-time.. View Demo. PLIP Dashboard Live View. Visits / Min. Data Driven. All on an Easy-to-Read Dashboard."
+    },
+    {
+      "source": "InLandPollinationPlatform.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "With PLIP you can compare the impact of pollination activity among different genetic strains of the same varietal, filter by different production practices and treatments, track and correlate output rates, as well as quality levels and germination rates.. George Clouston. Research Director. Hear What Our Growers Have to Say. Real results from farms across the country using the Pollination Land Insight Platform.. We want our partnership with you to be as smooth and stress free as possible. Meet Alissa, Head of Customer Success. Her team is ready to provide you with all the help you need, from onboarding, to making sure all your contract paperwork is buttoned up.. Try BeeYield in your apiary. BeeYield is constantly evolving. We invite you to take part in the international testing of our system \u2013 together, we can advance technology that protects bees worldwide.. Join the Program. We are building a global network of partners."
+    },
+    {
+      "source": "InLandPollinationPlatform.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "BeeYield collaborates with leading partners worldwide, joining forces with beekeeping equipment manufacturers, industry organizations, and renowned universities.. Farmers. ApiSense. Intelligent Hives. Ready to optimize your lands?. Start getting actionable data on your pollination efficacy today.. Book Pollination Service. Looking for In-Hive Monitoring?. Check out our Precision Pollination solution to monitor colony health from the inside out.. Explore Precision Pollination. Almond Grower, Central Valley CA. PLIP gave us visibility we never had before. We identified a cold spot in the north orchard immediately and optimized our hive placement, resulting in a 15% yield increase.. The acoustic monitoring is game-changing. Knowing exactly when the bees are active helps us time our nutrient sprays perfectly to avoid disrupting pollination.. Real-time data on the dashboard allowed us to catch a weak pollination window early. We supplemented the hives within 24 hours and saved the season.."
+    },
+    {
+      "source": "InLandPollinationPlatform.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "container mx-auto px-4 relative z-10. mb-6 bg-primary/10 text-primary border-primary/20. text-xl text-muted-foreground leading-relaxed mb-8. text-4xl font-bold mb-6 text-foreground. PLIP lets us see the actual number of bees that visit the flowers. Now I can check the amount of pollination in our lands 24/7.. text-muted-foreground leading-relaxed mb-6. bg-muted/50 p-4 rounded-lg border-l-4 border-primary. text-sm italic text-foreground mb-2. We built highly sensitive algorithms that can distinguish the acoustic signature of a flying bee from a tractor engine on the same frequency.. text-xs font-bold text-foreground. text-4xl font-bold text-center mb-4 text-foreground. text-center text-muted-foreground max-w-2xl mx-auto mb-12. container mx-auto px-4 max-w-5xl. max-w-4xl mx-auto text-center mb-20 bg-background p-8 rounded-2xl shadow-xl. p-0 h-auto text-primary-foreground gap-1."
+    },
+    {
+      "source": "Media.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Field Reports. Crop Case. Studies. Explore how precision pollination is transforming yields across different crops. Real data, real stories, real results.. Schedule a Consultation. Ready to Write Your Success Story?. Start Your Transformation. Maize, a staple food crop, benefits significantly from bee pollination despite being wind-pollinated. Our targeted hive placement during the critical tasseling phase has demonstrated remarkable improvements in kernel filling and overall yield weight.. Sunflowers are heavily dependent on insect pollination. Our precision pollination service ensures distinct male and female rows in hybrid seed production are effectively cross-pollinated, maximizing seed set and oil content.. For export-quality mangoes, fruit shape and retention are key. Our bees ensure efficient pollination during the brief flowering window, resulting in better fruit set and reduced early drop.. While beans are self-pollinating, bee visits."
+    },
+    {
+      "source": "Media.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "the flowers, enhancing pollination and ensuring every pod is filled. This results in heavier harvests and uniform pod maturity.. s service helped us achieve a bumper harvest. The pods were consistently full, and we harvested everything at once.. Sisal flowering poles are massive nectar sources. Our bees thrive here, producing unique honey while ensuring the biodiversity of the plantation ecosystem is maintained.. Citrus trees yield more juicy and perfectly shaped fruits when well-pollinated. We track bee visits to ensure coverage across the entire orchard during peak bloom.. For diverse vegetable farms, generalist pollinators are crucial. Our hives ensure that everything from zucchinis to peppers gets the pollination visits they need.. For greenhouse tomatoes, buzz pollination is essential. Our managed colonies are perfect for enclosed environments, ensuring every flower sets fruit.. Seed production requires absolute pollination certainty."
+    },
+    {
+      "source": "Media.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Our high-density hive placement ensures massive flower visitation rates for maximum seed yield.. container mx-auto px-4 text-center max-w-4xl. mb-4 px-4 py-1.5 rounded-full text-primary border-primary/30. container mx-auto px-4 text-center max-w-3xl. w-16 h-16 mx-auto mb-6 opacity-90. text-xl opacity-90 mb-8 leading-relaxed."
+    },
+    {
+      "source": "NotFound.tsx",
+      "subtopic": "Key Facts",
+      "content": "Lost in the. Back to Home. Go Back. flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-background via-muted/50 to-accent/5 p-4 text-center. absolute inset-0 flex flex-col items-center justify-center. text-4xl font-black tracking-tightest"
+    },
+    {
+      "source": "OurStory.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "About Us. The Story of. BeeYield. Born in Kibwezi, Makueni County, Kenya \u2014 a story of family, resilience, and a mission to transform pollination for a sustainable future.. Native Innovation. Kenya Grown. Where would three beekeepers meet? In our case \u2014 around the family dinner table.. Kibwezi, Kenya \u2022 2020. A Family Mission Born in a Pandemic. In 2020, while the world stood still amid a global pandemic,. Timothy. , a Strathmore University student, saw an opportunity in the quiet of rural Kibwezi, Makueni County. With just. half an acre of land and 4 beehives. , BeeYield was born.. Agatha. Carole. Together, the three siblings transformed a modest apiary into something much greater \u2014 proving that innovation can flourish anywhere, even in the most unexpected places.. From 4 Hives to 184 \u2014 Our Growth Journey. What began on half an acre has grown into a thriving 5-acre apiary, fenced and flourishing.. Who We Are And What We Stand For. Our Services. From Traditional to Precision Pollination."
+    },
+    {
+      "source": "OurStory.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Our pollination journey started with traditional methods \u2014 moving hives to client farms and letting nature do its work. We successfully pollinated. 25 acres+. of farmland, proving the value of managed pollination services in Kenya.. But we knew we could do more. Today, BeeYield is evolving toward. precision pollination. \u2014 leveraging IoT sensors, data analytics, and smart hive management to deliver measurable, optimized pollination outcomes.. Our goal is to help farmers across the world increase their yields while supporting bee health and biodiversity.. Explore Our Solutions. Growing Together. Kibwezi, Kenya \u2192 Africa \u2192 Beeyond. Join Us on Our Journey. Get In Touch. Join Our Team. About BeeYield. absolute -bottom-6 -left-6 bg-background p-4 rounded-xl shadow-xl border border-border/50 flex items-center gap-3. p-2 bg-primary/10 rounded-full text-primary. mx-auto max-w-3xl text-center mb-12. mx-auto max-w-3xl text-center mb-12."
+    },
+    {
+      "source": "OurStory.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Built by siblings Timothy, Agatha, and Carole \u2014 we combine passion with purpose, bringing diverse skills under one shared vision.. re ecosystem builders committed to environmental restoration.. re now directing BeeYield toward precision pollination, using technology to maximize impact for farmers across Kenya.. bg-primary text-primary-foreground border-none."
+    },
+    {
+      "source": "PollinationRequest.tsx",
+      "subtopic": "Key Facts",
+      "content": "Request Pollination Service. Fill out the form below and our pollination experts will contact you to discuss your needs. Service Request Form. Contact Information. Full Name *. Email *. Phone Number *. Farm Information. Farm Name *. Farm Location *. Crop Type *. Mangoes. Sunflower. Oranges. Vegetables. Tomatoes. Onions. Acres to Pollinate *. Service Details. Preferred Pollination Start Date *. Additional Information. Our team typically responds within 24 hours. For urgent requests, please call us directly.. John Doe. info@beeyield.com. Green Valley Farm. City, State/Province. Select crop type. Tell us about any specific requirements, concerns, or questions you have.... Our team will contact you within 24 hours to discuss your pollination needs.. There was an error submitting your request. Please try again."
+    },
+    {
+      "source": "PollinationServices.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Technology. Meets the. Start Your Journey. See How It Works. Yield Increase. Managed Hives. Active Monitoring. Discover. Our Philosophy. Pollination is. Science. For centuries, farmers relied on hope and good weather. Bees came, bees went, and harvests were a mystery until the day of picking.. We changed that story.. precision agriculture. at its finest.. Our Solutions. Three Paths to. Perfection. In-Hive Precision. Explore In-Hive Tech. In-Field. Insights. Measure actual bee activity across your crops. See which areas are pollinated and identify gaps in real-time.. Explore Field Insights. Disease. Defense. Proactive protection for your apiary. Detect threats in the hive and across the land before they impact your harvest.. View Disease Solutions. The Standard. Difference. We bring a complete ecosystem of technology, expertise, and accountability that transforms your pollination from a gamble into a guarantee.. Our Expertise. Crops We. Transform. View Data. Try BeeYield in your apiary."
+    },
+    {
+      "source": "PollinationServices.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "BeeYield is constantly evolving. We invite you to take part in the international testing of our system \u2013 together, we can advance technology that protects bees worldwide.. Join the Program. We are building a global network of partners. BeeYield collaborates with leading partners worldwide, joining forces with beekeeping equipment manufacturers, industry organizations, and renowned universities.. Farmers. ApiSense. Intelligent Hives. Ready for. Results?. Get Your Custom Plan. Global Support \u2022 Real-time Data \u2022 Guaranteed Impact. Every decision backed by real-time hive analytics and field data, not guesswork.. Sensors in every hive transmitting colony health metrics 24/7 to our platform.. AI-optimized hive positioning ensures maximum coverage across your fields.. Watch bee foraging patterns in real-time and adjust strategies instantly.. Dedicated pollination specialists who understand your crop. We stake our reputation on measurable yield improvements for your harvest.."
+    },
+    {
+      "source": "PollinationServices.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "s journey is mapped. Every flower. text-amber-600 border-amber-300. flex flex-wrap justify-center gap-6. text-white/40 text-xs font-black uppercase tracking-widest."
+    },
+    {
+      "source": "PollinationSolutions.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "End-to-End Visibility. Pollination Solutions. We combine biological understanding with technological innovation to monitor pollination from the inside out.. In-Hive Precision. Our proprietary sensors live inside the hive box, monitoring acoustic signatures, temperature, and humidity 24/7. Know the strength of your colonies before they are deployed.. Queen health status. Colony strength grading. Environmental stress alerts. Explore In-Hive Technology. In-Field Insights. Sensors deployed across your orchards measure actual bee flight activity and pollination events. Visualize coverage maps to ensure every acre gets the attention it needs.. Real-time pollination maps. Foraging efficiency tracking. Weather impact analysis. Explore In-Field Technology. Disease Defense. Intelligent protection for your beehives. Detect diseases early and monitor colony health with AI-driven analysis and real-time alerts.. Early disease detection. Colony health grading. Reduced chemical use."
+    },
+    {
+      "source": "PollinationSolutions.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Explore Disease Technology. Try BeeYield in your apiary. BeeYield is constantly evolving. We invite you to take part in the international testing of our system \u2013 together, we can advance technology that protects bees worldwide.. Join the Program. We are building a global network of partners. BeeYield collaborates with leading partners worldwide, joining forces with beekeeping equipment manufacturers, industry organizations, and renowned universities.. Farmers. ApiSense. Intelligent Hives. The BeeYield Platform. Better Together. While powerful individually, our In-Hive and In-Field solutions work best in tandem, providing a complete feedback loop for growers and beekeepers.. Monitor. Track hive health and field conditions simultaneously.. Analyze. Correlate colony strength with yield outcomes using AI models.. Optimize. Make data-driven decisions to boost crop yield and bee welfare.. container mx-auto px-4 text-center max-w-4xl relative z-10."
+    },
+    {
+      "source": "PollinationSolutions.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "mb-6 bg-primary/10 text-primary border-primary/20. absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent. absolute top-0 left-0 w-full h-2 bg-primary. max-w-4xl mx-auto text-center mb-20 bg-background p-8 rounded-2xl shadow-xl. text-center max-w-3xl mx-auto mb-16. mb-4 bg-background border border-primary/20 text-primary. text-4xl font-bold mb-6 text-foreground. bg-card p-8 rounded-2xl shadow-sm border border-border. bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-6."
+    },
+    {
+      "source": "PrecisionPollination.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "In-Hive Technology. Precision Pollination. Accountability. Actionable data.. And a guarantee of the strongest bees available.. Get a Free Consultation. Live Monitoring Active. System Online. What is Precision Pollination?. Precision Pollination is a groundbreaking, innovative approach to the critical process of managed pollination in commercial crop growing. Growers whose crops rely on commercial beekeepers for their annual pollination can now, for the first time, get visibility and accountability for their pollination experience.. BeeYield Chief Sales and Marketing Officer. In-Hive Sensor. Read More. Gateway. Read More. Interactive Dashboard Preview. Optimal Temp. 35.4\u00b0C. Full Visibility. Easy-to-Understand Dashboard. All the key metrics for each orchard, from the day the bees are delivered until the day the beekeepers remove them, are displayed on the dashboard.."
+    },
+    {
+      "source": "PrecisionPollination.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "These include the current frames-per-acre count of the orchards, along with bee activity, flight time, location and temperature for drop points, and more \u2014 giving growers complete confidence that they are getting the pollination they have paid for.. The BeeYield Difference. Precision Calculation. Knowing the exact strength of every hive in your field means pollination can be calculated using a frames-per-acre model for a far more precise outcome.. Financial Prudence. We do.. When you pollinate with BeeYield you get complete visibility into the hives deployed in your orchards. We are accountable to you to bring the precise number of bees needed for optimal pollination outcomes. We replace any non-performing hives with stronger, more effective colonies.. How Much Should You Know About Bees?. Your call, of course. But you should know enough to speak your beekeepers language. For example, did you know that bee math is different from regular math?."
+    },
+    {
+      "source": "PrecisionPollination.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "\ud83d\udca1 2x8 does not equal sixteen when it comes to bee frames. A sixteen frame hive actually has 30% more foraging force than that of two 8 framers.. Download our free guide to understand bees and how to get the most from them during pollination.. Download Guide. Bee Math. We want our partnership with you to be as smooth and stress free as possible. Meet Alissa, Head of Customer Success. Her team is ready to provide you with all the help you need, from onboarding, to making sure all your contract paperwork is buttoned up.. Try BeeYield in your apiary. BeeYield is constantly evolving. We invite you to take part in the international testing of our system \u2013 together, we can advance technology that protects bees worldwide.. Join the Program. We are building a global network of partners. BeeYield collaborates with leading partners worldwide, joining forces with beekeeping equipment manufacturers, industry organizations, and renowned universities.. Farmers. ApiSense. Intelligent Hives."
+    },
+    {
+      "source": "PrecisionPollination.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Ready to work with us?. Contact Us Today. container mx-auto px-4 relative z-10. mb-6 bg-primary/10 text-primary border-primary/20. text-xl text-muted-foreground leading-relaxed mb-8. text-4xl font-bold mb-6 text-foreground. text-lg text-muted-foreground leading-relaxed. bg-secondary/50 p-8 rounded-2xl border-l-4 border-primary. h-10 w-10 text-primary mb-4 opacity-50. text-lg text-foreground italic leading-relaxed mb-6. Our commitment to our growers is to bring them unprecedented transparency for the most effective pollination outcomes.. bg-primary/10 w-16 h-16 rounded-xl flex items-center justify-center mb-6. container mx-auto px-4 text-center max-w-4xl. Knowledge is power. Data is even better.. bg-primary-foreground/10 p-6 rounded-xl backdrop-blur-sm. s accurate, efficient, and financially prudent. You stop paying for. container mx-auto px-4 max-w-3xl. text-4xl font-bold mb-2 text-foreground. bg-primary/10 w-14 h-14 rounded-xl flex items-center justify-center mb-6."
+    },
+    {
+      "source": "PrecisionPollination.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "container mx-auto px-4 max-w-5xl. max-w-4xl mx-auto text-center mb-20 bg-background p-8 rounded-2xl shadow-xl. container mx-auto px-4 max-w-2xl. text-4xl font-bold mb-4 text-foreground. text-lg text-muted-foreground mb-8."
+    },
+    {
+      "source": "ProfessionalAuth.tsx",
+      "subtopic": "Key Facts",
+      "content": "Initializing Protocol.... BEEYIELD. INDUSTRIAL IOT ECOSYSTEM. Exit to Public Site. System Operational. Secure. Intelligence. Interface. Initializing secure kernel session.... Authorize. Deploy. FIPS 140-2. ISO 27001. \u00a9 2026 BEEYIELD GLOBAL HUB // CORE v4.0.2. Secure Endpoint Connection. bg-white text-zinc-900 shadow-sm. bg-white text-zinc-900 shadow-sm. Enter credentials for identity validation. Register your professional IoT account"
+    },
+    {
+      "source": "Shop.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "The Future of Apiculture Is Here. Harvest the. Precision.. From our award-winning traceable honey to cutting-edge IoT hive sensors, everything in our shop supports the mission of sustainable pollination in Kenya.. Fast Delivery Nationwide. Secure Transactions. Order By. Featured Status. Economic to Premium. Premium to Economic. Technical Rating. Synchronizing Hive Inventory.... Add to Cart. Bring Professional Grade. Pollination Tech. To Your Farm.. Request Consultation. Try BeeYield in your apiary. BeeYield is constantly evolving. We invite you to take part in the international testing of our system \u2013 together, we can advance technology that protects bees worldwide.. Join the Program. Global Partners. Farmers. ApiSense. Intelligent Hives. Sort by. Add to wishlist. Pure, traceable honey from Kibwezi. Sustainable gear for beekeepers. absolute top-0 right-0 w-1/2 h-full bg-primary/5 rounded-l-full blur-3xl opacity-50."
+    },
+    {
+      "source": "Shop.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "absolute bottom-0 left-0 w-1/3 h-1/2 bg-accent/10 rounded-r-full blur-3xl opacity-30. h-auto p-1 bg-muted/30 border border-border/50 rounded-2xl self-start. bg-primary text-primary-foreground shadow-primary/25. text-2xl font-black mb-8 text-muted-foreground uppercase tracking-widest. flex items-center gap-3 px-6 py-4 bg-muted/30 rounded-2xl border border-border/50. h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center."
+    },
+    {
+      "source": "Team.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Leadership. Meet the BeeYield Team. A family-driven team combining agriculture, technology, and innovation to secure the future of pollination and food security.. Who is BeeYield?. The Siblings. Our Founders. Three siblings united by a shared vision to transform agriculture through precision pollination and Traceability.. Tech Wizards. Technical Team. Governance. Board of Directors. Guiding BeeYield with experience, expertise, and dedication to our mission.. Visionary leader driving BeeYield. Chief Growth Officer & Co-founder. Business Development lead, shaping partnerships and driving company growth.. Leading technology infrastructure and digital innovation at BeeYield.. Building seamless digital experiences across web and mobile platforms.. container mx-auto px-4 text-center relative z-10. mb-6 border-primary/30 text-primary. text-xl text-muted-foreground max-w-2xl mx-auto. absolute top-20 left-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl."
+    },
+    {
+      "source": "Team.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "absolute bottom-10 right-10 w-80 h-80 bg-secondary/5 rounded-full blur-3xl. flex items-center justify-center gap-3 mb-6. s founders guide a team of beekeepers, IOT Engineers, data scientists, programmers, researchers, ML Experts, Blockchain Experts and more who are committed to applying their diverse expertise to help secure the future of the world. flex items-center justify-center gap-2 mb-4. flex items-center justify-center gap-2 mb-4."
+    },
+    {
+      "source": "Traceability.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "100% HoneyChain\u2122 Verified. The Journey of. Every Drop. Scan Honey QR. Allow camera access and frame the QR code on your BeeYield jar.. Manual Verification. Enter the unique batch code found on the bottom or side of your honey jar.. Quick Scan. Use your smartphone camera to instantly verify authenticity and unlock the full story on HoneyChain\u2122.. Launch Scanner. Authenticated on HoneyChain. Generating PDF.... Download Traceability Certificate. Origin Details. Batch Identifier. Apiary Location. Flora Sources. Master Beekeeper. Certified Master Beekeeper. Our Story. Multi-Award Winner \u2022 50/50 Promise Champion. Photo Gallery. Timothy Nduva at Kibwezi HQ. Live Hive Link. Hive Intelligence. Remote monitoring data captured at moment of harvest. Temperature. OPTIMAL. Humidity. STABLE. Acoustic. Active Queen Pattern. Hive Weight. Productivity Peak. The Honey Journey. Immutable Ledger Records. Champions for. Saving Bees. we only harvest 50% of the honey our bees produce. ."
+    },
+    {
+      "source": "Traceability.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "The other half? It stays exactly where it belongs\u2014with the bees who made it.. 883 kg. Pure Traceable Honey. Harvested and verified on-chain to date. Ethical Harvest Rate. Half stays with the bees, ensuring survival. Full Transparency. Every drop traceable to source and hive. Trust in. Did you know that up to. 70% of honey. on supermarket shelves may be adulterated?. Our revolutionary traceability system lets you trace every jar back to its source\u2014not just the country or region, but the. exact hive, the beekeeper who cared for it, and the flowers the bees visited. Watch the Story. e.g. KIB-ACACIA-24. BeeYield Traceability Story. Know exactly which hive your honey came from. Meet the guardian who nurtured your honey. Discover the blooms that flavored your jar. Trace the pure water that sustained the colony. GPS coordinates of every harvest. Know when your honey was collected. absolute inset-0 bg-gradient-to-br from-amber-900 via-amber-800 to-orange-700."
+    },
+    {
+      "source": "Traceability.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "absolute inset-0 w-full h-full opacity-10. overflow-hidden rounded-3xl border-4 border-dashed border-amber-500/30. mt-6 text-center text-sm text-muted-foreground font-medium. mt-16 space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-700. flex items-center justify-center gap-4. flex items-center gap-2 px-6 py-2 bg-green-500/10 rounded-full border border-green-500/20 animate-pulse. bg-green-500/5 text-green-600 border-green-500/20. bg-gradient-to-br from-indigo-900 to-indigo-950 p-10 text-white. font-black text-xs uppercase tracking-widest mb-6 opacity-60. absolute inset-0 w-full h-full."
+    },
+    {
+      "source": "UpdatePassword.tsx",
+      "subtopic": "Key Facts",
+      "content": "Password Updated!. Your password has been successfully updated. You can now log in with your new password.. Go to Login. Verifying reset link.... Please wait while we verify your password reset link.. Set New Password. Create a strong password for your account. New Password. Confirm New Password. Updating password.... Password must be at least 6 characters long.. At least 6 characters"
+    },
+    {
+      "source": "CartDrawer.tsx",
+      "subtopic": "Key Facts",
+      "content": "Your Cart. Your cart is empty. Discover our premium honey and sustainable products!. Continue Shopping. Subtotal. Shipping. Calculated at checkout. Proceed to Checkout. Continue Shopping. Clear Cart. Close cart. Remove item. Decrease quantity. Increase quantity"
+    },
+    {
+      "source": "Footer.tsx",
+      "subtopic": "Key Facts",
+      "content": "BeeYield. Your partner in pollination.. Solutions. Traceability. Pollination Solutions. Professional Pollination. Pollination Solutions. Precision Pollination. In-Land Pollination. Global Hive Network. Stay Updated. Facebook. Instagram. Twitter. LinkedIn. border-t border-border/40 bg-muted/30. mb-4 text-sm font-semibold text-foreground uppercase tracking-wider. mb-4 text-sm font-semibold text-foreground uppercase tracking-wider. mt-8 border-t border-border/40 pt-8 text-center text-sm text-muted-foreground"
+    },
+    {
+      "source": "Header.tsx",
+      "subtopic": "Key Facts",
+      "content": "BeeYield. Professional Pollination. Pollination Solutions. In-Hive Precision Pollination. In-Land Pollination Insights Platform. Diseases. Beekeeping Network. Traceability. Main Navigation. Professional Pollination. Pollination Solutions. In-Hive Precision Pollination. In-Land Pollination Insights. Diseases. Beekeeping Network. Professional Portal. BeeYield Dashboard. BeeYield home. BeeYield Dashboard. View shopping cart. Toggle menu. flex items-center space-x-2 flex-shrink-0. fixed inset-0 bg-background/80 backdrop-blur-sm z-40. flex flex-col space-y-1 pb-4 border-b border-primary-foreground/20. text-xs uppercase tracking-wider text-primary-foreground/60 px-3 py-1 font-medium. text-yellow-300 bg-primary-foreground/10. text-yellow-300 bg-primary-foreground/10. text-yellow-300 bg-primary-foreground/10. text-yellow-300 bg-primary-foreground/10. text-yellow-300 bg-primary-foreground/10. text-yellow-300 bg-primary-foreground/10. text-yellow-300 bg-primary-foreground/10"
+    },
+    {
+      "source": "HoneyTracePDF.tsx",
+      "subtopic": "Key Facts",
+      "content": "BeeYield. HoneyChain Traceability Certificate. VERIFIED. Honey Traceability Certificate. Origin Details. Kibwezi, Makueni County, Kenya. Acacia, Wildflower. Master Beekeeper. Timothy Nduva. Certified Master Beekeeper. 15+ Years Experience. Environmental Impact. Acres Pollinated. Hive Count. Farmers Served. Temperature. OPTIMAL. Humidity. STABLE. Acoustic Health. Active Queen Pattern. Hive Weight. Productivity Peak. The Honey Journey. This certificate verifies the authenticity and traceability of your honey on HoneyChain. BeeYield - Champions for Saving Bees | 50% Ethical Harvest Promise. Kibwezi, Makueni County, Kenya. Scan the QR code on your jar or visit beeyield.com/trace to verify anytime. Timothy Nduva is a master beekeeper and conservationist in Kibwezi, leading the way in sustainable honey production. With 15 years of experience, he manages multiple apiaries across Makueni County, mentoring young beekeepers and championing the 50/50 harvest promise."
+    },
+    {
+      "source": "Newsletter.tsx",
+      "subtopic": "Key Facts",
+      "content": "Thanks for subscribing!. Subscribing.... Join for updates on harvest seasons and pollination tech.. Enter your email. ve successfully joined our newsletter."
+    },
+    {
+      "source": "SEO.tsx",
+      "subtopic": "Key Facts",
+      "content": "BeeYield - Your Partner in Pollination. Precision pollination services, sustainable beekeeping, and traceable honey.. BeeYield - Your Partner in Pollination. Precision pollination services, sustainable beekeeping, and traceable honey.. pollination, beekeeping, honey, sustainable agriculture, Kenya, Africa, bee farming"
+    },
+    {
+      "source": "AdminHeader.tsx",
+      "subtopic": "Key Facts",
+      "content": "Application. Dashboard. Search..."
+    },
+    {
+      "source": "AdminLayout.tsx",
+      "subtopic": "Key Facts",
+      "content": "flex h-screen bg-background overflow-hidden font-sans antialiased text-foreground. flex-1 flex flex-col overflow-hidden bg-muted/20"
+    },
+    {
+      "source": "AdminMetricCard.tsx",
+      "subtopic": "Key Facts",
+      "content": "flex justify-between items-start mb-4"
+    },
+    {
+      "source": "AdminSidebar.tsx",
+      "subtopic": "Key Facts",
+      "content": "BeeYield. Admin Panel. Log Out. BEEYIELD \u00a9 2026. , isActive || isChildActive ?. , isActive || isChildActive ?. , isExpanded ?. , isActive || isChildActive ?. , isChildItemActive ?. , isChildItemActive ?"
+    },
+    {
+      "source": "ForgotPasswordForm.tsx",
+      "subtopic": "Key Facts",
+      "content": "Check your inbox. . Click the link in the email to reset your password.. Try a different email. Back to login. Forgot your password?. Email Address. Sending reset link.... Back to login. you@example.com"
+    },
+    {
+      "source": "LoginForm.tsx",
+      "subtopic": "Key Facts",
+      "content": "Two-Factor Authentication. Enter the 6-digit code from your authenticator app. Verification Code. Verifying.... \u2190 Back to login. Or continue with email. Password. Forgot password?. Signing in.... Create one. you@example.com. Open your authenticator app and enter the code"
+    },
+    {
+      "source": "RegisterForm.tsx",
+      "subtopic": "Key Facts",
+      "content": "Or register with email. First Name. Last Name. Password. Confirm Password. Creating account.... Sign in. you@example.com. At least 6 characters"
+    },
+    {
+      "source": "TwoFactorSetup.tsx",
+      "subtopic": "Key Facts",
+      "content": "Please sign in to manage 2FA settings.. Set Up Two-Factor Authentication. Enter the 6-digit code from your app. Cancel. Verifying.... Two-Factor Authentication Enabled. Two-Factor Authentication. \u2713 Authenticator app is connected. Disabling.... Disable 2FA. \u26a0 Your account is not protected with 2FA. We recommend enabling 2FA to secure your account.. Setting up.... Enable 2FA. Add an extra layer of security to your account."
+    },
+    {
+      "source": "AddDeviceModal.tsx",
+      "subtopic": "Key Facts",
+      "content": "Add new device. Enter the details of your BeeYield IoT device to start monitoring.. Display Name. Assign to Apiary. North Orchard. Backyard. River Side. Cancel. Add device. e.g. BY-XXXX-XXXX. e.g. Hive 42 Sensor. Select an apiary"
+    },
+    {
+      "source": "AgroIntelligenceView.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "BeeYield Intelligence. Moving agriculture forward - Earth Observation + AI + Agronomy. Field-first workflows that connect satellite imagery, AI, and beekeeper data.. Earth Observation. AI + Agronomy. Pollinators. Quick links. Jump straight to the Copernicus tools.. BeeYield Intelligence Layer. From satellites to decisions. Copernicus Data. BeeYield Intelligence Layer. AI Models. BeeYield Dashboard. Decisions / Reports / Alerts. Field management. Auto area, perimeter, and centroid.. Assign crop, season, owner, apiary, or farm.. Change history and boundary versioning.. Leaflet Draw + GeoJSON/PostGIS ready.. True and false color imagery. Timeline slider with seasonal animation.. Cloud masking using SCL.. Analytical layers. NDRE - nitrogen stress.. EVI - biomass signal.. MSAVI - early vegetation.. Moisture index - drough signal.. Management zones. Automatic segmentation of fields.. K-means / DBSCAN on NDVI.. Year-over-year zone comparison.. Export GeoJSON, SHP, ISOXML.."
+    },
+    {
+      "source": "AgroIntelligenceView.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Crop Intelligence Engine. Forecasting, anomalies, phenology.. BeeYield integration advantage. Pollinators and crops in one view.. Honey plant phenology.. Pollination heatmap.. Story of the field. Click a field to see the season narrative.. Animated seasonal map.. Year-over-year comparison.. Timeline of operations and anomalies.. Search apiaries, beehives. flex flex-col animate-in fade-in duration-500 pb-12 space-y-8."
+    },
+    {
+      "source": "AIAssistantView.tsx",
+      "subtopic": "Key Facts",
+      "content": "BeeYield AI. BeeYield AI HUB INTELLIGENCE. Secure IoT Monitoring & Analysis | Neural Connectivity Active. New Chat. Start a conversation!. BeeYield AI. NEURAL CORE ONLINE. BeeYield AI HUB. Expert AI/ML Engineering Assistant. I use proprietary ML algorithms to analyze sensor data, detect anomalies, and predict disease risks with engineering precision.. New Chat. New Chat. Terms and Regulations. Delete Chat. Upload Document. Upload Photo. Add Link. Precision Pollination Services. Blockchain & Honey Traceability. Beekeeper Training & Consulting. Global Network & Sustainability. m having trouble thinking right now. Please try again."
+    },
+    {
+      "source": "BeeYieldHivesView.tsx",
+      "subtopic": "Key Facts",
+      "content": "BeeYield. No hives available. MY PLACES. Choose a place from the list below to browse its hives.. My Places. My Places. No places available. AI ASSISTANT. Report. Exporting.... ADD NOTES. Select a place. , showFab ?. opacity-0 translate-y-4 pointer-events-none. , showFab ?"
+    },
+    {
+      "source": "BillingView.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Analytics. Profitability across entities and periods. Export CSV. Monthly overview. Revenue. Profitability per entity type. Entity Type. Revenue. Costs by category. Category. No category data available. VAT summary. Placeholder. Cost vs Usage. PLATFORM MODULE. Billing & Accounting. Entity-based accounting for revenue, costs, documents, and analytics across BeeYield verticals.. This module is in beta.. Select currency. New document. Revenue vs costs. Series. Last 6 months. Profit per entity type. Series. Revenue minus costs. eTIMS readiness. UI only. Structured invoicing status. Not connected. View checklist. Configure eTIMS. Revenue. All revenue entries linked to entities. Source. Category. Honey Sales. Pollination Services. Bee Colony Sales. Equipment Rental. Consulting. Entity type. Apiary. Project. Entities. Payment Method. Bank Transfer. Mobile Payment. Status. Pending. Overdue. Reference #. Project Code. Internal Notes. Description. Add revenue. Revenue list."
+    },
+    {
+      "source": "BillingView.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Tracked income outside invoices. Date from. Date to. Entity type. Apiary. Entities. Source. Description. Entities. Amount. No revenue entries found. Add and allocate expenses to entities. Category. Services. Materials. Energy. Logistics. Entity type. Apiary. Project. Entities. Vendor. Document number. Status. Pending. Overdue. Payment Terms. Immediate. Net 15. Net 30. Net 60. Department. Operations. Maintenance. Logistics. Source Link. Description. Add cost. Recent costs. 25 mock entries. Date from. Date to. Category. Services. Materials. Entity type. Apiary. Entities. Category. Document. Description. Entities. Amount. No cost entries found. Documents. Invoices and receipts across entities. New document. Date from. Date it. Document type. Invoice. Receipt. Proforma. Entity type. Apiary. Entity name. Status. Pending. Number. Issue Date. Contractor. Entities. Status. Actions. No documents found. Organization profile. Default settings for billing. Organization name. Street address."
+    },
+    {
+      "source": "BillingView.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Postal code. Country. Tax status. VAT registered. Non-VAT payer. Default numbering. Other info. Save settings. Entity registry. Central list of entities for allocation. Metadata. No entities registered. eTIMS settings. Placeholder. Not connected. What is eTIMS?. eTIMS integration options, digital certificates, and transmission toggles will appear here once the connection is established.. Connect to eTIMS. New document. Multi-step editor with entity allocation. Reactive form. VAT invoice. Receipt. Proforma. Issue date. Sale date. Due date. Numbering. Currency. Language. English. Polish. Reference #. Sale method. Direct. Online. Wholesale. Seller name. Tax ID. Address. Buyer name. Tax ID. Address. Line item 1. Remove. Product / service. Add line. Entity type. Apiary. Project. Entities. Project / grant. Summary. PDF preview. Placeholder PDF preview for invoice layout and structured fields.. eTIMS fields. eTIMS Receipt #. eTIMS status. Structured invoice mapping. Save draft."
+    },
+    {
+      "source": "BillingView.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Issue document. e.g. Honey Sale. e.g. Apiary North. REF-2026-001. PROJ-01. For internal reference only.... Additional details.... e.g. Apiary North. Vendor name. FV/2026/001. Additional details.... Search.... Additional details.... Number assigned on issue. REF-001. Enter phone.... Enter buyer name.... Enter tax ID.... Enter address.... Enter email.... Enter phone.... Enter details.... Apiary North. Search.... text-xs text-gray-400 font-medium mb-6. text-xs text-gray-400 font-medium mb-6. rounded-full bg-gray-50 border-gray-200 text-gray-600 text-xs font-bold px-4 h-9. rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-10. rounded-xl border-gray-100 h-10. rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-12."
+    },
+    {
+      "source": "BillingView.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-10. rounded-xl border-gray-100 h-10. rounded-xl border-gray-100 h-10. rounded-xl border-gray-100 h-10. rounded-xl border-gray-100 h-10. rounded-xl border-gray-100 h-12 shadow-sm. rounded-xl border-gray-100 h-12 shadow-sm. rounded-xl border-gray-100 h-12 shadow-sm. rounded-xl border-gray-100 h-12 shadow-sm. rounded-xl border-gray-100 h-12 shadow-sm. rounded-xl border-gray-100 h-12 shadow-sm. rounded-xl border-gray-100 h-12 shadow-sm. rounded-xl border-gray-100 h-12 shadow-sm. rounded-xl border-gray-100 h-12 shadow-sm. rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-12."
+    },
+    {
+      "source": "BillingView.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-12. space-y-6 animate-in slide-in-from-bottom-2 duration-300. rounded-xl border-gray-100 h-11. rounded-xl border-gray-100 h-11. rounded-xl border-gray-100 h-11. rounded-xl border-gray-100 h-12. rounded-xl border-gray-100 h-12. bg-white rounded-3xl border border-gray-100 p-8 space-y-6 shadow-sm. rounded-xl border-gray-100 h-11 text-xs. rounded-xl border-gray-100 h-11 text-xs bg-gray-50/50. , isFormValid ?."
+    },
+    {
+      "source": "BuyBeeYieldHubView.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "First steps. Start here to set up your BeeYield Hub monitoring platform.. QUICK LINKS. IoT monitoring system. What to use when monitoring your apiary? Our BeeYield Hub system offers the most advanced and comprehensive solution for beekeepers. Optimize honey production, monitor health in real-time, and get early warnings for your hives.. Start a conversation. View development tools. User-friendly Interface. Innovative technology meets intuitive design to provide the most seamless beekeeping experience possible.. BeeYield family. A modular ecosystem of IoT devices designed to work together in harmony. Choose the components that fit your specific apiary needs.. Discover more. PRODUCT CODE. SERIAL NO. DESCRIPTION. LAST LAT. LAST LONG. STATUS. UP TIME. User-friendly Interface. Advanced power management for IoT platforms. Configuration & Maintenance. Consultants. Table of measurement parameters supported by the BeeYield Hub Platform. COMPLETE CAPABILITIES. PARAMETER. DESCRIPTION."
+    },
+    {
+      "source": "BuyBeeYieldHubView.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "The BeeYield Hub system is designed for quick and easy setup. Simply plug and play with our intuitive mounting system.. Advanced analytics and reporting tools to help you make informed decisions about your honey production.. Access your apiary data from anywhere in the world using our cloud-based BeeYield Hub dashboard.. Simple and intuitive design for beekeepers of all experience levels.. The brain of your apiary. Manages multiple sensors and transmits data via Satellite or GSM.. Internal hive monitoring. Tracks temperature, humidity, weight, and acoustic signatures.. Anti-theft and location tracking. Stay updated on the movement of your hives.. Surrounding environment temperature and conditions. Internal hive temperature monitoring for brood health. Internal humidity levels for honey curing and health. Real-time honey yield tracking and swarm detection. Acoustic analysis for queen status and swarm intent. Flight activity monitoring at the hive entrance."
+    },
+    {
+      "source": "BuyBeeYieldHubView.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Device voltage and solar charging performance. GSM/Satellite and Bluetooth connectivity strength. Precise location tracking and movement alerts. Barometric pressure for weather forecasting. Solar intensity and forage time monitoring. Anti-tamper and vibration detection. 3-axis orientation to detect hive tilting or falls. Impact detection and movement analysis. Entrance gate monitoring and magnetic disturbances. Carbon dioxide concentration within the hive hive. Volatile Organic Compounds for health diagnostics. Particulate matter monitoring in the apiary vicinity. Air quality monitoring for pollutants affecting bees. Real-time rainfall intensity and duration tracking. Anemometer data for flight safety alerts. Solar radiation intensity monitoring. Precise light intensity for biological clock correlation. Atmospheric visibility for foraging conditions. flex justify-between items-start mb-4. text-3xl font-black text-blue-600. text-xs font-bold text-gray-400 uppercase tracking-wider."
+    },
+    {
+      "source": "DashboardLayout.tsx",
+      "subtopic": "Key Facts",
+      "content": "relative z-10 flex w-full h-full. flex-1 flex flex-col h-full overflow-hidden relative"
+    },
+    {
+      "source": "DashboardSidebar.tsx",
+      "subtopic": "Key Facts",
+      "content": ", isActive ?. , isActive ?. , activeState ?. , activeState ?"
+    },
+    {
+      "source": "FirstStepsBanner.tsx",
+      "subtopic": "Key Facts",
+      "content": "First steps. Start here to set up your apiaries, devices, and measurements.. QUICK LINKS. Add apiaries and hives. My devices. Measurement data. Support Center. BeeYield Intelligence. Settings. flex justify-between items-start"
+    },
+    {
+      "source": "HarvestsView.tsx",
+      "subtopic": "Key Facts",
+      "content": "Add harvest. Harvest date. BeeYield HoneyChain\u2122. Batch Code. Acacia. Multi-flower. Forest. Rapeseed. Moisture %. Color Grade. Water White. Extra White. Extra Light Amber. Light Amber. Dark Amber. Seal on HoneyChain\u2122. Immutable traceability record. Go back. Harvests. PRODUCTIVITY OVERVIEW. WE ARE PREPARING MORE INSIGHTS FOR THIS SECTION.. Apiary / Batch. Productive families. Total harvests. kg per family. Change. HoneyChain\u2122 Verification. Verified. Filters. Fine-tune the harvest analytics using the filters below.. Add harvest. LOCATION. No places available. No hives available. PERIOD. QUICK YEAR. Custom range. Select a year to quickly load its harvest data.. Select type. e.g. 17.5. MY PLACES. , // Placeholder since we have. fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+    },
+    {
+      "source": "InspectionsView.tsx",
+      "subtopic": "Key Facts",
+      "content": "Back to inspections. No places available. No hives available. Inspections. State of colony. Was there...?. Capped brood. Larvae. Brood arrangement on the frames. Activity of bees. Weather. Weight. The queen cells. Possible illness. Private note. Inspections. No places available. No hives available. MY PLACES. Queen cells comment. Diagnosis. Treatment. Add your private note here.... MY PLACES. flex items-center gap-2 cursor-pointer. flex items-center gap-2 cursor-pointer. flex items-center gap-2 cursor-pointer"
+    },
+    {
+      "source": "MeasurementDataView.tsx",
+      "subtopic": "Key Facts",
+      "content": "Measurement Data. Historical and real-time sensor analytics.. Export CSV. Last 7 Days. In-hive Temperature Trend. Inner Cover. Ambient"
+    },
+    {
+      "source": "MetersAlarms.tsx",
+      "subtopic": "Key Facts",
+      "content": "First steps. Start here to set up your apiaries, devices, and measurements.. Quick Links. Alarms & events. Top notifications from last 48h. View all notifications. Response history. Quick view of response time and status. Responses. Service ticket. Response time 2h. Closed. Admin follow-up. In progress. Pending. text-red-600 border-red-200 bg-red-50. text-amber-600 border-amber-200 bg-amber-50. text-amber-600 border-amber-200 bg-amber-50. text-red-600 border-red-200 bg-red-50"
+    },
+    {
+      "source": "MetersPayments.tsx",
+      "subtopic": "Key Facts",
+      "content": "Payments & Settlements. Current Balance. Pay Now. History. Recent Transactions. View All. flex flex-row items-center justify-between p-6 pb-2"
+    },
+    {
+      "source": "MetersReports.tsx",
+      "subtopic": "Key Facts",
+      "content": "Reports. Ready summaries for administrators. Export PDF/XLS without heavy OMS workflows.. Monthly report. Usage and cost summary. Download. Anomalies report. List of deviations and alarms. Download. Cost report. Estimated costs by medium. Download. Generated reports. No reports generated yet.. Download"
+    },
+    {
+      "source": "MetersSettings.tsx",
+      "subtopic": "Key Facts",
+      "content": "Settings. Meter rules and preferences. Configure alarms, thresholds and integrations.. Notifications. Alert thresholds. Integrations. Connect to billing or ERP systems.. Configure integrations. Update your preferences below.. Email + SMS. Email + Push. All Channels. Cancel. Save Changes. Select method. e.g. +25%"
+    },
+    {
+      "source": "MetersView.tsx",
+      "subtopic": "Key Facts",
+      "content": "Meters. Water usage. 12.4 m3 / 384 m3. Heat usage. 8.9 GJ. Electricity. WARNING. 214 kWh. Active alarms. Usage trend. Hourly. MEDIUM. Recent events. AI assistant for meters. Sample questions for administrators. Suggested questions. Open AI Assistant. Ask about meters, billing, anomalies.... How to settle heat costs in a multi-unit building?. Overlay module or built-in module meters?. Mechanical or ultrasonic heat meter?. How to detect a water leak quickly?. Hi! I can help with meter operations and billing.. Ask about certification, settlement rules, or anomalies.. How long does meter certification take?. Certification usually takes 5-7 years depending on meter type.. ll analyze the meter data and get back to you shortly.. space-y-6 animate-in fade-in duration-500 pb-12. flex items-start justify-between"
+    },
+    {
+      "source": "MetricCard.tsx",
+      "subtopic": "Key Facts",
+      "content": "flex justify-between items-start mb-4"
+    },
+    {
+      "source": "MyDevicesView.tsx",
+      "subtopic": "Key Facts",
+      "content": "d.battery_level. 24.5\u00b0C. Status"
+    },
+    {
+      "source": "MyNotesView.tsx",
+      "subtopic": "Key Facts",
+      "content": "Back to Notes. Add Note. Note Date. Note Time. Description. Attachments. Add Photos or Documents. Priority. Category. Linked Context. My Notes. My Places. All Places. No places found. All Hives. Click the + button to create your first note. Write your observation here.... , isSelected ?. , isSelected ?. border-emerald-200 bg-emerald-50 text-emerald-600. border-amber-200 bg-amber-50 text-amber-600. border-rose-200 bg-rose-50 text-rose-600. , isPlacesOpen &&. , isHivesOpen &&. text-slate-400 text-sm font-medium. flex items-center justify-between. bg-emerald-50 text-emerald-600"
+    },
+    {
+      "source": "MyPlacesView.tsx",
+      "subtopic": "Key Facts",
+      "content": "Add Place. Apiary Name. Apiary Type. Permanent. Migratory. Breeding. Quarantine. Expected Hives. Location / Coordinates. Primary Forage. Discard. Deploy Apiary. My Places. e.g. Nanyuki North Field. Select type. Search location.... e.g. Acacia, Sunflowers. Add any special instructions or observations.... animate-in fade-in slide-in-from-bottom-2 duration-500 pb-20. , isFabExpanded ?"
+    },
+    {
+      "source": "MyRequestsView.tsx",
+      "subtopic": "Key Facts",
+      "content": "My Requests. My Places. All Places. No places found. All Hives. No hives found. , isPlacesOpen &&. , isHivesOpen &&"
+    },
+    {
+      "source": "MyTaskView.tsx",
+      "subtopic": "Key Facts",
+      "content": "Add Task. Apiary. Priority. Category. Description. Go Back. My Task. No tasks scheduled for this week. Enter task title.... Add any additional details about this task.... , isSelected ?. , isSelected ?. border-emerald-200 bg-emerald-50 text-emerald-600. border-amber-200 bg-amber-50 text-amber-600. border-rose-200 bg-rose-50 text-rose-600. , !isCurrentMonth &&. , isCurrentMonth ?. , isTodayDate &&"
+    },
+    {
+      "source": "RemainingViews.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "BeeYield Settings. MAKE DATA PUBLIC. KEEP UPDATE. CONSENT TO SHARE ANONYMIZED DATA FOR EDUCATIONAL PURPOSES. SEARCH WIRELESS BEEYIELD. Go back. Notifications -. APP NOTIFICATIONS. EMAIL NOTIFICATIONS FROM BEEYIELD DEVICES. SMS REPORTING - PREMIUM. TEMPERATURE ALERTS. WEIGHT ALERTS. Go back. Measurement data. SELECT HIVE. Search wireless BeeYield. MY PLACES. SELECTED HIVE. Search wireless BeeYield. Notifications. Settings. No BeeYield device assigned to this bee hive.. Contact us. learn more about BeeYield. Connect BeeYield via Bluetooth. Search for a BeeYield device near you and stream measurement data in real time.. Search wireless BeeYield. BLUETOOTH. BeeYield Scan. Make sure BeeYield is turned on and within range. After clicking the button, select the device from the system list.. Canceled device selection.. System. Browser. Support Status. Full support. Limited support. No support. No USB device detected. Connect your BeeYield device to your computer to perform local actions.."
+    },
+    {
+      "source": "RemainingViews.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Common Actions. Flash Firmware. Debug Logs. E-mail. Bluetooth BeeYield. Firmware updates and data export via wired connection.. Firmware updates and data export via wired connection.. w-12 h-12 text-gray-300 mx-auto mb-4. w-full justify-start rounded-xl text-xs h-10 border-gray-100. w-full justify-start rounded-xl text-xs h-10 border-gray-100."
+    },
+    {
+      "source": "ServerStatusView.tsx",
+      "subtopic": "Key Facts",
+      "content": "API status. Quick connectivity overview for BeeYield services.. Check now. System health. Online. Last refresh. API usage. Client-side estimate for last 7 days.. Total calls. TOP ENDPOINTS. Online. Check path. Last check. flex justify-between items-center text-sm"
+    },
+    {
+      "source": "ServiceForm.tsx",
+      "subtopic": "Key Facts",
+      "content": "BeeYield. Partner in pollination. Service Dept.. Service form. Fill in and include with the shipment.. Full name. Phone number. Device short id / serial. Issue description. Return address. Preferred contact. Signature. Service address. BeeYield. Kibwezi, Kenya. info@beeyield.com. flex items-center justify-between mb-10 border-b-2 border-gray-100 pb-8"
+    },
+    {
+      "source": "SettingsView.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Settings. General. Tap photo to update. Username. First name. Surname. Telephone number. Language. Save Changes. AI auto notifications. Enable AI notifications. Smart alerts based on hive data analysis. Email notifications from BeeYield Hub devices. BeeYield Hub devices send out vandalism alerts. You can temporarily disable this option, for example during an inspection.. Allow for email notifications from BeeYield Hub devices. Get notified about critical device status. Account information. Account type. Subscription. Joined. Change Email. Update your email address. You will need to verify the new email.. New Email Address. Change password. Secure your account with a strong password.. Change password. Delete Account. Delete Account means the action of deleting an Account. This removes the Account from the database entirely.. Delete My Account. Guides & Tutorials. Enable or disable in-app tips, guides and onboarding tutorials.. Enable tips & tutorials. Helper tooltips and walkthroughs."
+    },
+    {
+      "source": "SettingsView.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Enable / disable modules. Enable or disable the main application modules for your account. Changes affect the menu and access to features.. Enable all. Disable all. Core modules. PRIORITY. Save Changes. Select Language. Enter new email. Weather data and meteo stations. Care and records in veterinary mode. Please enter a valid email address. Database connection not available. Confirmation email sent to both addresses!."
+    },
+    {
+      "source": "SupportCenterView.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Support Center. Total Requests. Last Request. In Progress. Resolved. Contact Support. info@beeyield.com. PHONE / WHATSAPP. SERVICE ADDRESS. BeeYield. Kibwezi, Kenya. Attach the. printed service form. to your shipment.. Manuals. Print service form. Add request online. Add Request. Submit a new support ticket. We usually respond within 24 hours.. Category *. Technical Support. Hardware / Device Issue. App / Software Issue. Billing & Subscription. Beekeeping Advisory. Priority. Normal. Urgent. Device Serial Number / ID. Subject *. Email *. Description *. Cancel. Sending.... Submit Request. No requests found. Category. Status. Select category. Select priority. e.g. BY-2024-X-99. Brief summary of the issue. Please describe the issue in detail.... Filter requests.... Honey Press sensor calibration. text-xs font-bold uppercase tracking-wider text-gray-500. text-xs font-bold uppercase tracking-wider text-gray-500. text-xs font-bold uppercase tracking-wider text-gray-500."
+    },
+    {
+      "source": "SupportCenterView.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "text-xs font-bold uppercase tracking-wider text-gray-500. text-xs font-bold uppercase tracking-wider text-gray-500. text-xs font-bold uppercase tracking-wider text-gray-500. text-xs font-bold uppercase tracking-wider text-gray-500."
+    },
+    {
+      "source": "ShopDashboardHeader.tsx",
+      "subtopic": "Key Facts",
+      "content": "Welcome back,. Manage your orders and account preferences.. Search your orders.... My Orders. Notifications. flex items-center justify-between py-4 px-8 bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50"
+    },
+    {
+      "source": "ShopDashboardLayout.tsx",
+      "subtopic": "Key Facts",
+      "content": "flex h-screen bg-gray-50 overflow-hidden font-sans antialiased text-gray-900. flex-1 flex flex-col overflow-hidden"
+    },
+    {
+      "source": "ShopDashboardSidebar.tsx",
+      "subtopic": "Key Facts",
+      "content": "My Account. Shop Dashboard. Log out. BEE YIELD SHOP v2.0. flex flex-col h-full bg-white border-r border-gray-200 w-64 transition-all duration-300 shadow-sm. , isActive ?"
+    },
+    {
+      "source": "accordion.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef"
+    },
+    {
+      "source": "alert-dialog.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef"
+    },
+    {
+      "source": "avatar.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full"
+    },
+    {
+      "source": "breadcrumb.tsx",
+      "subtopic": "Key Facts",
+      "content": "breadcrumb. flex h-9 w-9 items-center justify-center"
+    },
+    {
+      "source": "calendar.tsx",
+      "subtopic": "Key Facts",
+      "content": "flex justify-center pt-1 relative items-center. w-full border-collapse space-y-1. bg-accent text-accent-foreground. text-muted-foreground opacity-50"
+    },
+    {
+      "source": "card.tsx",
+      "subtopic": "Key Facts",
+      "content": "rounded-lg border bg-card text-card-foreground shadow-sm"
+    },
+    {
+      "source": "carousel.tsx",
+      "subtopic": "Key Facts",
+      "content": "Previous slide. Next slide. carousel. min-w-0 shrink-0 grow-0 basis-full. -left-12 top-1/2 -translate-y-1/2. -top-12 left-1/2 -translate-x-1/2 rotate-90. -right-12 top-1/2 -translate-y-1/2. -bottom-12 left-1/2 -translate-x-1/2 rotate-90"
+    },
+    {
+      "source": "chart.tsx",
+      "subtopic": "Key Facts",
+      "content": "& React.ComponentProps. & Pick. , nestLabel ?"
+    },
+    {
+      "source": "checkbox.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef. flex items-center justify-center text-current"
+    },
+    {
+      "source": "command.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground. flex items-center border-b px-3. mr-2 h-4 w-4 shrink-0 opacity-50. ml-auto text-xs tracking-widest text-muted-foreground"
+    },
+    {
+      "source": "context-menu.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef"
+    },
+    {
+      "source": "dialog.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef"
+    },
+    {
+      "source": "drawers.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef"
+    },
+    {
+      "source": "dropdown-menu.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef"
+    },
+    {
+      "source": "form.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef"
+    },
+    {
+      "source": "hover-card.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef"
+    },
+    {
+      "source": "input-otp.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. z-10 ring-2 ring-ring ring-offset-background. pointer-events-none absolute inset-0 flex items-center justify-center. animate-caret-blink h-4 w-px bg-foreground duration-1000"
+    },
+    {
+      "source": "label.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef. & VariantProps"
+    },
+    {
+      "source": "menubar.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. flex h-10 items-center space-x-1 rounded-md border bg-background p-1"
+    },
+    {
+      "source": "navigation-bar.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. relative z-10 flex max-w-max flex-1 items-center justify-center. group flex flex-1 list-none items-center justify-center space-x-1"
+    },
+    {
+      "source": "pagination.tsx",
+      "subtopic": "Key Facts",
+      "content": "& React.ComponentProps. Previous. More pages. pagination. Go to previous page. Go to next page. mx-auto flex w-full justify-center"
+    },
+    {
+      "source": "popover.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef"
+    },
+    {
+      "source": "progress.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef. relative h-4 w-full overflow-hidden rounded-full bg-secondary. h-full w-full flex-1 bg-primary transition-all"
+    },
+    {
+      "source": "radio-group.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. h-2.5 w-2.5 fill-current text-current"
+    },
+    {
+      "source": "resizable.tsx",
+      "subtopic": "Key Facts",
+      "content": "z-10 flex h-4 w-3 items-center justify-center rounded-sm border bg-border"
+    },
+    {
+      "source": "scroll-area.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. relative flex-1 rounded-full bg-border"
+    },
+    {
+      "source": "select.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. py-1.5 pl-8 pr-2 text-sm font-semibold. absolute left-2 flex h-3.5 w-3.5 items-center justify-center"
+    },
+    {
+      "source": "separator.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef"
+    },
+    {
+      "source": "sheet.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef"
+    },
+    {
+      "source": "sidebar.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentProps. Toggle Sidebar. , React.ComponentProps. , React.ComponentProps. Toggle Sidebar. Toggle Sidebar. relative flex w-full min-w-0 flex-col p-2. , // Increases the hit area of the button on mobile.. flex w-full min-w-0 flex-col gap-1. , // Increases the hit area of the button on mobile.. flex h-8 items-center gap-2 rounded-md px-2"
+    },
+    {
+      "source": "skeleton.tsx",
+      "subtopic": "Key Facts",
+      "content": "animate-pulse rounded-md bg-muted"
+    },
+    {
+      "source": "slider.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef. relative flex w-full touch-none select-none items-center. relative h-2 w-full grow overflow-hidden rounded-full bg-secondary"
+    },
+    {
+      "source": "switch.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef"
+    },
+    {
+      "source": "tabs.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground"
+    },
+    {
+      "source": "toast.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. & VariantProps. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. , React.ComponentPropsWithoutRef. border bg-background text-foreground. destructive group border-destructive bg-destructive text-destructive-foreground"
+    },
+    {
+      "source": "toggle-group.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef. & VariantProps. , React.ComponentPropsWithoutRef. & VariantProps"
+    },
+    {
+      "source": "toggle.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef. & VariantProps"
+    },
+    {
+      "source": "tooltip.tsx",
+      "subtopic": "Key Facts",
+      "content": ", React.ComponentPropsWithoutRef"
+    }
+  ]
+}

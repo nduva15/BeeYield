@@ -1,26 +1,27 @@
 import { Linkedin, Globe, Award, Users, Code, Briefcase } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
 
 const Team = () => {
   const founders = [
-    { 
-      name: "Timothy Mathuva", 
-      role: "CEO & Founder", 
+    {
+      name: "Timothy Nduva",
+      role: "CEO & Founder",
       description: "Visionary leader driving BeeYield's mission to revolutionize pollination through technology.",
-      image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400",
+      image: TIMOTHY_PHOTO,
       linkedin: "#"
     },
-    { 
-      name: "Carole Mathuva", 
-      role: "Chief Growth Officer & Co-founder", 
+    {
+      name: "Carole Nduva",
+      role: "Chief Growth Officer & Co-founder",
       description: "Business Development lead, shaping partnerships and driving company growth.",
       image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400",
       linkedin: "#"
     },
-    { 
-      name: "Agatha Mathuva", 
-      role: "Chief IT Head & Co-founder", 
+    {
+      name: "Agatha Nduva",
+      role: "Chief IT Head & Co-founder",
       description: "Leading technology infrastructure and digital innovation at BeeYield.",
       image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400",
       linkedin: "#"
@@ -28,25 +29,18 @@ const Team = () => {
   ];
 
   const technicalTeam = [
-    { 
-      name: "Rose Ndinda", 
-      role: "VP Technology", 
+    {
+      name: "Rose Ndinda",
+      role: "VP Technology",
       description: "Building seamless digital experiences across web and mobile platforms.",
       image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400",
-      linkedin: "#"
-    },
-    { 
-      name: "Nandi Dean", 
-      role: "VP Technology", 
-      description: "Combining development expertise with research to drive innovation.",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400",
       linkedin: "#"
     },
   ];
 
   const boardMembers = [
-    { 
-      name: "Nicholas Nduva", 
+    {
+      name: "Nicholas Nduva",
       role: "Board Member",
       image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=400",
       linkedin: "#"
@@ -68,7 +62,7 @@ const Team = () => {
             A family-driven team combining agriculture, technology, and innovation to secure the future of pollination and food security.
           </p>
         </div>
-        
+
         {/* Abstract Background Shapes */}
         <div className="absolute top-20 left-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
         <div className="absolute bottom-10 right-10 w-80 h-80 bg-secondary/5 rounded-full blur-3xl" />
@@ -108,13 +102,13 @@ const Team = () => {
               <Card key={index} className="group overflow-hidden border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
                 <CardContent className="p-0">
                   <div className="relative overflow-hidden">
-                    <img 
-                      src={member.image} 
+                    <img
+                      src={member.image}
                       alt={member.name}
-                      className="w-full h-72 object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent" />
-                    <a 
+                    <a
                       href={member.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -150,18 +144,18 @@ const Team = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+          <div className="flex justify-center">
             {technicalTeam.map((member, index) => (
-              <Card key={index} className="group overflow-hidden border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
+              <Card key={index} className="group overflow-hidden border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg max-w-sm">
                 <CardContent className="p-0">
                   <div className="relative overflow-hidden">
-                    <img 
-                      src={member.image} 
+                    <img
+                      src={member.image}
                       alt={member.name}
                       className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent" />
-                    <a 
+                    <a
                       href={member.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -203,13 +197,13 @@ const Team = () => {
                 <Card key={index} className="group overflow-hidden border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg max-w-sm">
                   <CardContent className="p-0">
                     <div className="relative overflow-hidden">
-                      <img 
-                        src={member.image} 
+                      <img
+                        src={member.image}
                         alt={member.name}
                         className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent" />
-                      <a 
+                      <a
                         href={member.linkedin}
                         target="_blank"
                         rel="noopener noreferrer"

@@ -33,14 +33,20 @@ export const fallbackProducts: Product[] = [
         description: "Rare, multi-floral honey harvested from the pristine Aberdare highlands. Delicate floral notes with a smooth, lingering finish.",
         category: "honey",
         badge: "Bestseller",
-        images: ["/images/products/highland_blossom_honey.png"],
+        images: [
+            "/images/products/honey_lifestyle_1.jpg",
+            "/images/products/beeyield_honey_250g.png",
+            "/images/products/beeyield_honey_500g.png",
+            "/images/products/beeyield_honey_1kg.png",
+            "/images/products/highland_blossom_honey.png"
+        ],
         rating: 4.9,
         review_count: 128,
         is_active: true,
         variants: [
-            { id: "v1", size: "250g", price_kes: 850, stock_quantity: 100, is_available: true },
-            { id: "v2", size: "500g", price_kes: 1500, stock_quantity: 75, is_available: true },
-            { id: "v3", size: "1kg", price_kes: 2800, stock_quantity: 50, is_available: true }
+            { id: "v1", size: "250g", price_kes: 250, stock_quantity: 100, is_available: true },
+            { id: "v2", size: "500g", price_kes: 500, stock_quantity: 75, is_available: true },
+            { id: "v3", size: "1kg", price_kes: 1000, stock_quantity: 50, is_available: true }
         ]
     },
     {
@@ -49,14 +55,20 @@ export const fallbackProducts: Product[] = [
         description: "Rich, amber honey with distinctive citrus and acacia undertones from the Kibwezi savannah. Bold and energizing.",
         category: "honey",
         badge: "Premium",
-        images: ["/images/products/savannah_blossom_honey.png"],
+        images: [
+            "/images/products/honey_lifestyle_2.jpg",
+            "/images/products/beeyield_honey_250g.png",
+            "/images/products/beeyield_honey_500g.png",
+            "/images/products/beeyield_honey_1kg.png",
+            "/images/products/savannah_blossom_honey.png"
+        ],
         rating: 4.8,
         review_count: 89,
         is_active: true,
         variants: [
-            { id: "v4", size: "250g", price_kes: 950, stock_quantity: 80, is_available: true },
-            { id: "v5", size: "500g", price_kes: 1700, stock_quantity: 60, is_available: true },
-            { id: "v6", size: "1kg", price_kes: 3200, stock_quantity: 40, is_available: true }
+            { id: "v4", size: "250g", price_kes: 250, stock_quantity: 80, is_available: true },
+            { id: "v5", size: "500g", price_kes: 500, stock_quantity: 60, is_available: true },
+            { id: "v6", size: "1kg", price_kes: 1000, stock_quantity: 40, is_available: true }
         ]
     },
     {
@@ -65,14 +77,20 @@ export const fallbackProducts: Product[] = [
         description: "Exquisite wildflower honey from the Maasai Mara region. Complex, aromatic profile with hints of wild herbs and grassland blooms.",
         category: "honey",
         badge: "Limited Edition",
-        images: ["/images/products/wildflower_honey.png"],
+        images: [
+            "/images/products/honey_lifestyle_3.jpg",
+            "/images/products/beeyield_honey_250g.png",
+            "/images/products/beeyield_honey_500g.png",
+            "/images/products/beeyield_honey_1kg.png",
+            "/images/products/wildflower_honey.png"
+        ],
         rating: 4.9,
         review_count: 67,
         is_active: true,
         variants: [
-            { id: "v-h3-1", size: "250g", price_kes: 1100, stock_quantity: 40, is_available: true },
-            { id: "v-h3-2", size: "500g", price_kes: 2000, stock_quantity: 30, is_available: true },
-            { id: "v-h3-3", size: "1kg", price_kes: 3800, stock_quantity: 20, is_available: true }
+            { id: "v-h3-1", size: "250g", price_kes: 250, stock_quantity: 40, is_available: true },
+            { id: "v-h3-2", size: "500g", price_kes: 500, stock_quantity: 30, is_available: true },
+            { id: "v-h3-3", size: "1kg", price_kes: 1000, stock_quantity: 20, is_available: true }
         ]
     },
     {
@@ -81,14 +99,20 @@ export const fallbackProducts: Product[] = [
         description: "Light, mild honey with a subtle sweetness. Perfect for tea, baking, and those who prefer delicate flavors.",
         category: "honey",
         badge: "Organic",
-        images: ["/images/products/acacia_honey.png"],
+        images: [
+            "/images/products/honey_lifestyle_4.jpg",
+            "/images/products/beeyield_honey_250g.png",
+            "/images/products/beeyield_honey_500g.png",
+            "/images/products/beeyield_honey_1kg.png",
+            "/images/products/acacia_honey.png"
+        ],
         rating: 4.7,
         review_count: 156,
         is_active: true,
         variants: [
-            { id: "v-h4-1", size: "250g", price_kes: 800, stock_quantity: 120, is_available: true },
-            { id: "v-h4-2", size: "500g", price_kes: 1400, stock_quantity: 90, is_available: true },
-            { id: "v-h4-3", size: "1kg", price_kes: 2600, stock_quantity: 60, is_available: true }
+            { id: "v-h4-1", size: "250g", price_kes: 250, stock_quantity: 120, is_available: true },
+            { id: "v-h4-2", size: "500g", price_kes: 500, stock_quantity: 90, is_available: true },
+            { id: "v-h4-3", size: "1kg", price_kes: 1000, stock_quantity: 60, is_available: true }
         ]
     },
     {
@@ -97,13 +121,20 @@ export const fallbackProducts: Product[] = [
         description: "Unique honey from desert-adapted flora in Northern Kenya. Crystallizes naturally with a creamy texture.",
         category: "honey",
         badge: "Rare",
-        images: ["/images/products/desert_bloom_honey.png"],
+        images: [
+            "/images/products/honey_lifestyle_5.jpg",
+            "/images/products/beeyield_honey_250g.png",
+            "/images/products/beeyield_honey_500g.png",
+            "/images/products/beeyield_honey_1kg.png",
+            "/images/products/desert_bloom_honey.png"
+        ],
         rating: 4.8,
         review_count: 34,
         is_active: true,
         variants: [
-            { id: "v-h5-1", size: "250g", price_kes: 1200, stock_quantity: 25, is_available: true },
-            { id: "v-h5-2", size: "500g", price_kes: 2200, stock_quantity: 15, is_available: true }
+            { id: "v-h5-1", size: "250g", price_kes: 250, stock_quantity: 25, is_available: true },
+            { id: "v-h5-2", size: "500g", price_kes: 500, stock_quantity: 15, is_available: true },
+            { id: "v-h5-3", size: "1kg", price_kes: 1000, stock_quantity: 10, is_available: true }
         ]
     },
     {
@@ -112,29 +143,42 @@ export const fallbackProducts: Product[] = [
         description: "Bold, medicinal honey harvested from eucalyptus forests. Known for its immune-boosting properties.",
         category: "honey",
         badge: "Therapeutic",
-        images: ["/images/products/eucalyptus_honey.png"],
+        images: [
+            "/images/products/honey_lifestyle_1.jpg",
+            "/images/products/beeyield_honey_250g.png",
+            "/images/products/beeyield_honey_500g.png",
+            "/images/products/beeyield_honey_1kg.png",
+            "/images/products/eucalyptus_honey.png"
+        ],
         rating: 4.9,
         review_count: 78,
         is_active: true,
         variants: [
-            { id: "v-h6-1", size: "250g", price_kes: 900, stock_quantity: 70, is_available: true },
-            { id: "v-h6-2", size: "500g", price_kes: 1600, stock_quantity: 50, is_available: true },
-            { id: "v-h6-3", size: "1kg", price_kes: 3000, stock_quantity: 35, is_available: true }
+            { id: "v-h6-1", size: "250g", price_kes: 250, stock_quantity: 70, is_available: true },
+            { id: "v-h6-2", size: "500g", price_kes: 500, stock_quantity: 50, is_available: true },
+            { id: "v-h6-3", size: "1kg", price_kes: 1000, stock_quantity: 35, is_available: true }
         ]
     },
     {
         id: "honey-7",
-        name: "Raw Honeycomb Chunk",
-        description: "Pure, unprocessed honeycomb straight from the hive. Experience honey in its most natural form.",
+        name: "Raw Honeycomb Jar",
+        description: "Pure, unprocessed honeycomb straight from the hive, now in our signature jars. Experience honey in its most natural form.",
         category: "honey",
         badge: "Artisan",
-        images: ["/images/products/honey_comb_chunk.png"],
+        images: [
+            "/images/products/honey_lifestyle_2.jpg",
+            "/images/products/beeyield_honey_250g.png",
+            "/images/products/beeyield_honey_500g.png",
+            "/images/products/beeyield_honey_1kg.png",
+            "/images/products/honey_comb_chunk.png"
+        ],
         rating: 5.0,
         review_count: 92,
         is_active: true,
         variants: [
-            { id: "v-h7-1", size: "200g", price_kes: 1500, stock_quantity: 40, is_available: true },
-            { id: "v-h7-2", size: "400g", price_kes: 2800, stock_quantity: 25, is_available: true }
+            { id: "v-h7-1", size: "250g", price_kes: 250, stock_quantity: 40, is_available: true },
+            { id: "v-h7-2", size: "500g", price_kes: 500, stock_quantity: 25, is_available: true },
+            { id: "v-h7-3", size: "1kg", price_kes: 1000, stock_quantity: 15, is_available: true }
         ]
     },
     {
@@ -143,13 +187,20 @@ export const fallbackProducts: Product[] = [
         description: "Exotic honey from the mangrove forests of the Kenyan coast. Unique minerality with caramel undertones.",
         category: "honey",
         badge: "New",
-        images: ["/images/products/savannah_blossom_honey.png"],
+        images: [
+            "/images/products/honey_lifestyle_3.jpg",
+            "/images/products/beeyield_honey_250g.png",
+            "/images/products/beeyield_honey_500g.png",
+            "/images/products/beeyield_honey_1kg.png",
+            "/images/products/savannah_blossom_honey.png"
+        ],
         rating: 4.6,
         review_count: 23,
         is_active: true,
         variants: [
-            { id: "v-h8-1", size: "250g", price_kes: 1050, stock_quantity: 35, is_available: true },
-            { id: "v-h8-2", size: "500g", price_kes: 1900, stock_quantity: 20, is_available: true }
+            { id: "v-h8-1", size: "250g", price_kes: 250, stock_quantity: 35, is_available: true },
+            { id: "v-h8-2", size: "500g", price_kes: 500, stock_quantity: 20, is_available: true },
+            { id: "v-h8-3", size: "1kg", price_kes: 1000, stock_quantity: 10, is_available: true }
         ]
     },
     // ========== HARDWARE/SENSORS PRODUCTS (8) ==========

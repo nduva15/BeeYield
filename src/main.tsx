@@ -37,7 +37,6 @@ import InLandPollination from '@/pages/InLandPollinationPlatform'
 import CropsWePollinate from '@/pages/CropsWePollinate'
 import PollinationRequest from '@/pages/PollinationRequest'
 import Diseases from '@/pages/Diseases'
-import Notes from '@/pages/Notes'
 import Media from '@/pages/Media'
 import BeeYieldDashboard from '@/pages/BeeYieldDashboard'
 import AdminDashboard from '@/pages/AdminDashboard'
@@ -95,7 +94,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                                                 <Route path="/crops-we-pollinate" element={<CropsWePollinate />} />
                                                 <Route path="/pollination-request" element={<PollinationRequest />} />
                                                 <Route path="/diseases" element={<Diseases />} />
-                                                <Route path="/notes" element={<Notes />} />
                                                 <Route path="/media" element={<Media />} />
                                                 <Route path="/beeyield-dashboard" element={<BeeYieldDashboard />} />
                                                 <Route path="/ceba" element={<AdminDashboard />} />

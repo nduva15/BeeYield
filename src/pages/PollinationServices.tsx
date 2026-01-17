@@ -60,14 +60,15 @@ const PollinationServices = () => {
             {/* Hero Section - Mobile Responsive */}
             <section className="relative min-h-[100svh] sm:min-h-[90vh] flex items-center overflow-hidden py-16 sm:py-20 md:py-24">
                 {/* Animated Background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-900 via-amber-800 to-yellow-700">
-                    <div className="absolute inset-0 opacity-20">
-                        <div className="absolute top-10 sm:top-20 left-4 sm:left-10 w-40 sm:w-72 h-40 sm:h-72 bg-yellow-400 rounded-full blur-3xl animate-pulse" />
-                        <div className="absolute bottom-10 sm:bottom-20 right-4 sm:right-10 w-48 sm:w-96 h-48 sm:h-96 bg-amber-300 rounded-full blur-3xl animate-pulse delay-1000" />
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 sm:w-64 h-32 sm:h-64 bg-orange-400 rounded-full blur-3xl animate-pulse delay-500" />
+                {/* Animated Background */}
+                <div className="absolute inset-0 bg-[#FAF9F6]">
+                    <div className="absolute inset-0 opacity-10">
+                        <div className="absolute top-10 sm:top-20 left-4 sm:left-10 w-40 sm:w-72 h-40 sm:h-72 bg-amber-200 rounded-full blur-3xl animate-pulse" />
+                        <div className="absolute bottom-10 sm:bottom-20 right-4 sm:right-10 w-48 sm:w-96 h-48 sm:h-96 bg-yellow-100 rounded-full blur-3xl animate-pulse delay-1000" />
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 sm:w-64 h-32 sm:h-64 bg-orange-100 rounded-full blur-3xl animate-pulse delay-500" />
                     </div>
                     {/* Honeycomb Pattern */}
-                    <svg className="absolute inset-0 w-full h-full opacity-10" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <svg className="absolute inset-0 w-full h-full opacity-[0.03]" viewBox="0 0 100 100" preserveAspectRatio="none">
                         <pattern id="honeycomb-hero" x="0" y="0" width="20" height="17.32" patternUnits="userSpaceOnUse">
                             <polygon points="10,0 20,5.77 20,17.32 10,23.09 0,17.32 0,5.77" fill="none" stroke="currentColor" strokeWidth="0.5" />
                         </pattern>
@@ -77,50 +78,50 @@ const PollinationServices = () => {
 
                 <div className="container mx-auto px-4 sm:px-6 relative z-10">
                     <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-                        <div className="text-white space-y-6 sm:space-y-8 text-center lg:text-left">
-                            <Badge className="bg-white/20 text-white border-white/30 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 inline-flex">
+                        <div className="text-neutral-900 space-y-6 sm:space-y-8 text-center lg:text-left">
+                            <Badge className="bg-amber-100 text-amber-900 border-amber-200 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 inline-flex">
                                 🐝 East Africa's Premier Pollination Partner
                             </Badge>
 
                             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.1] tracking-tighter">
                                 Where
-                                <span className="text-yellow-300 block italic">Technology</span>
+                                <span className="text-amber-500 block italic">Technology</span>
                                 Meets the
-                                <span className="text-yellow-300 block">Hive</span>
+                                <span className="text-amber-500 block">Hive</span>
                             </h1>
 
-                            <p className="text-base sm:text-lg md:text-xl text-white/90 max-w-lg mx-auto lg:mx-0 leading-relaxed font-medium">
+                            <p className="text-base sm:text-lg md:text-xl text-neutral-600 max-w-lg mx-auto lg:mx-0 leading-relaxed font-medium">
                                 We don't just bring bees to your fields. We bring intelligence, precision, and
                                 a promise — every flower visited, every yield maximized, every harvest transformed.
                             </p>
 
                             <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center lg:justify-start">
                                 <Link to="/pollination-request" className="w-full sm:w-auto">
-                                    <Button size="lg" className="w-full sm:w-auto bg-white text-amber-900 hover:bg-yellow-100 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 font-black shadow-2xl rounded-xl sm:rounded-2xl">
+                                    <Button size="lg" className="w-full sm:w-auto bg-amber-900 text-white hover:bg-amber-800 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 font-black shadow-2xl shadow-amber-900/10 rounded-xl sm:rounded-2xl">
                                         Start Your Journey
                                         <ArrowRight className="ml-2 h-4 sm:h-5 w-4 sm:w-5" />
                                     </Button>
                                 </Link>
                                 <Link to="/pollination-solutions" className="w-full sm:w-auto">
-                                    <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 border-white text-white hover:bg-white/10 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 bg-transparent font-black rounded-xl sm:rounded-2xl">
+                                    <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 border-neutral-200 text-neutral-900 hover:bg-neutral-100 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 bg-transparent font-black rounded-xl sm:rounded-2xl">
                                         See How It Works
                                     </Button>
                                 </Link>
                             </div>
 
                             {/* Quick Stats - Responsive */}
-                            <div className="grid grid-cols-3 gap-3 sm:gap-6 pt-6 sm:pt-8 border-t border-white/20 font-black">
+                            <div className="grid grid-cols-3 gap-3 sm:gap-6 pt-6 sm:pt-8 border-t border-neutral-200 font-black">
                                 <div className="text-center lg:text-left">
-                                    <p className="text-2xl sm:text-3xl md:text-4xl text-yellow-300 tracking-tighter">35%</p>
-                                    <p className="text-white/70 text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-widest">Yield Increase</p>
+                                    <p className="text-2xl sm:text-3xl md:text-4xl text-amber-600 tracking-tighter">35%</p>
+                                    <p className="text-neutral-500 text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-widest">Yield Increase</p>
                                 </div>
                                 <div className="text-center lg:text-left">
-                                    <p className="text-2xl sm:text-3xl md:text-4xl text-yellow-300 tracking-tighter">150+</p>
-                                    <p className="text-white/70 text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-widest">Managed Hives</p>
+                                    <p className="text-2xl sm:text-3xl md:text-4xl text-amber-600 tracking-tighter">150+</p>
+                                    <p className="text-neutral-500 text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-widest">Managed Hives</p>
                                 </div>
                                 <div className="text-center lg:text-left">
-                                    <p className="text-2xl sm:text-3xl md:text-4xl text-yellow-300 tracking-tighter">24/7</p>
-                                    <p className="text-white/70 text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-widest">Active Monitoring</p>
+                                    <p className="text-2xl sm:text-3xl md:text-4xl text-amber-600 tracking-tighter">24/7</p>
+                                    <p className="text-neutral-500 text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-widest">Active Monitoring</p>
                                 </div>
                             </div>
                         </div>
@@ -130,7 +131,7 @@ const PollinationServices = () => {
                             <div className="relative w-full aspect-square max-w-[280px] sm:max-w-[350px] md:max-w-[400px] lg:max-w-full mx-auto">
                                 {/* Central Hexagon */}
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="w-full h-full max-w-[260px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[30rem] aspect-square bg-gradient-to-br from-yellow-400/30 to-amber-500/30 backdrop-blur-md rounded-3xl sm:rounded-[3rem] lg:rounded-[5rem] rotate-6 sm:rotate-12 border border-white/20 shadow-premium overflow-hidden">
+                                    <div className="w-full h-full max-w-[260px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[30rem] aspect-square bg-gradient-to-br from-amber-100/50 to-orange-100/50 backdrop-blur-md rounded-3xl sm:rounded-[3rem] lg:rounded-[5rem] rotate-6 sm:rotate-12 border border-white/40 shadow-premium overflow-hidden">
                                         <img
                                             src="/images/pollination-hives-hero.png"
                                             alt="Bees pollinating sunflowers with beehives in the background"
@@ -139,11 +140,11 @@ const PollinationServices = () => {
                                     </div>
                                 </div>
                                 {/* Floating Elements - Hidden on mobile, visible on tablet+ */}
-                                <div className="hidden sm:block absolute top-4 sm:top-10 right-0 sm:right-10 bg-white/20 backdrop-blur-md rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-white/30 animate-float shadow-2xl">
-                                    <Activity className="h-6 sm:h-10 w-6 sm:w-10 text-yellow-300" />
+                                <div className="hidden sm:block absolute top-4 sm:top-10 right-0 sm:right-10 bg-white/60 backdrop-blur-md rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-white/50 animate-float shadow-2xl shadow-amber-500/10">
+                                    <Activity className="h-6 sm:h-10 w-6 sm:w-10 text-amber-500" />
                                 </div>
-                                <div className="hidden sm:block absolute bottom-10 sm:bottom-20 left-0 bg-white/20 backdrop-blur-md rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-white/30 animate-float-delayed shadow-2xl">
-                                    <Smartphone className="h-6 sm:h-10 w-6 sm:w-10 text-yellow-300" />
+                                <div className="hidden sm:block absolute bottom-10 sm:bottom-20 left-0 bg-white/60 backdrop-blur-md rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-white/50 animate-float-delayed shadow-2xl shadow-amber-500/10">
+                                    <Smartphone className="h-6 sm:h-10 w-6 sm:w-10 text-amber-500" />
                                 </div>
                             </div>
                         </div>
@@ -151,7 +152,7 @@ const PollinationServices = () => {
                 </div>
 
                 {/* Scroll Indicator - Hidden on very small screens */}
-                <div className="hidden sm:flex absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 text-white/60 animate-bounce cursor-pointer">
+                <div className="hidden sm:flex absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 text-neutral-400 animate-bounce cursor-pointer">
                     <div className="flex flex-col items-center gap-2">
                         <span className="text-xs font-black uppercase tracking-widest">Discover</span>
                         <ArrowRight className="h-5 w-5 rotate-90" />
@@ -384,13 +385,19 @@ const PollinationServices = () => {
                                 <div className="h-12 w-12 bg-primary/20 rounded-full flex items-center justify-center">
                                     <Globe className="h-6 w-6 text-primary" />
                                 </div>
-                                <span className="font-bold text-xl">BeeYield Hives</span>
+                                <span className="font-bold text-xl">Farmers</span>
                             </div>
                             <div className="flex items-center gap-3 px-8 py-6 bg-background rounded-2xl shadow-sm border border-border">
                                 <div className="h-12 w-12 bg-primary/20 rounded-full flex items-center justify-center">
                                     <Activity className="h-6 w-6 text-primary" />
                                 </div>
                                 <span className="font-bold text-xl">ApiSense</span>
+                            </div>
+                            <div className="flex items-center gap-3 px-8 py-6 bg-background rounded-2xl shadow-sm border border-border">
+                                <div className="h-12 w-12 bg-primary/20 rounded-full flex items-center justify-center">
+                                    <Cpu className="h-6 w-6 text-primary" />
+                                </div>
+                                <span className="font-bold text-xl">Intelligent Hives</span>
                             </div>
                         </div>
                     </div>

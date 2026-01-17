@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { Product, fallbackProducts } from "@/services/shopService";
 import { toast } from "sonner";
+import { BrandedProductImage } from "@/components/BrandedProductImage";
 
 interface ShopProps {
   initialProducts?: Product[];
@@ -62,7 +63,13 @@ const Shop = ({ initialProducts = [] }: ShopProps) => {
 
   const handleAddToCart = (product: Product) => {
     const selectedSize = selectedSizes[product.id] || product.variants[0].size;
-    const variant = product.variants.find((v) => v.size === selectedSize) || product.variants[0];
+    const variantIndex = product.variants.findIndex((v) => v.size === selectedSize);
+    const variant = product.variants[variantIndex] || product.variants[0];
+
+    // Structure: [0: Lifestyle, 1: 250g, 2: 500g, 3: 1kg]
+    const image = (variantIndex !== -1 && product.images[variantIndex + 1])
+      ? product.images[variantIndex + 1]
+      : product.images[0];
 
     addToCart({
       productId: product.id,
@@ -74,7 +81,7 @@ const Shop = ({ initialProducts = [] }: ShopProps) => {
       quantity: 1,
       category: product.category as any,
       badge: product.badge,
-      image: product.images[0]
+      image: image
     });
 
     // Optionally open the cart drawer to show the success
@@ -207,45 +214,50 @@ const Shop = ({ initialProducts = [] }: ShopProps) => {
                         key={product.id}
                         className="group overflow-hidden border-none bg-card hover:bg-white/50 transition-all duration-500 shadow-premium hover:shadow-glow hover:shadow-primary/5 rounded-[2.5rem]"
                       >
-                        <div className="relative aspect-square overflow-hidden bg-muted m-2 rounded-[2rem]">
-                          <img
-                            src={product.images[0]}
-                            alt={product.name}
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                            onError={(e) => {
-                              // Image fallback if path doesn't exist
-                              e.currentTarget.src = "/placeholder.svg";
-                            }}
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <BrandedProductImage
+                          src={(() => {
+                            const selectedSize = selectedSizes[product.id] || product.variants[0].size;
+                            const variantIndex = product.variants.findIndex(v => v.size === selectedSize);
+                            // Structure: [0: Lifestyle, 1: 250g, 2: 500g, 3: 1kg]
+                            return (variantIndex !== -1 && product.images[variantIndex + 1])
+                              ? product.images[variantIndex + 1]
+                              : product.images[0];
+                          })()}
+                          alt={product.name}
+                          category={product.category}
+                          badge={product.badge}
+                          className="aspect-square bg-muted m-2 rounded-[2rem]"
+                        />
 
-                          {product.badge && (
-                            <Badge className="absolute top-4 left-4 min-h-[1.5rem] px-3 font-black uppercase tracking-tighter text-[10px]">
-                              {product.badge}
-                            </Badge>
-                          )}
+                        <button
+                          aria-label="Add to wishlist"
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent card click if any
+                            const selectedSize = selectedSizes[product.id] || product.variants[0].size;
+                            const variantIndex = product.variants.findIndex(v => v.size === selectedSize);
+                            // Structure: [0: Lifestyle, 1: 250g, 2: 500g, 3: 1kg]
+                            const image = (variantIndex !== -1 && product.images[variantIndex + 1])
+                              ? product.images[variantIndex + 1]
+                              : product.images[0];
 
-                          <button
-                            aria-label="Add to wishlist"
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent card click if any
-                              toggleWishlist({
-                                id: product.id,
-                                name: product.name,
-                                description: product.description,
-                                price: product.variants[0].price_kes,
-                                image: product.images[0],
-                                category: product.category,
-                                badge: product.badge,
-                                inStock: product.variants.some(v => v.stock_quantity > 0 && v.is_available)
-                              });
-                            }}
-                            className={`absolute top-4 right-4 p-2.5 backdrop-blur-md rounded-xl opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 hover:bg-primary hover:text-white ${isInWishlist(product.id) ? "bg-primary text-white" : "bg-background/80"
-                              }`}
-                          >
-                            <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? "fill-current" : ""}`} />
-                          </button>
-                        </div>
+                            toggleWishlist({
+                              id: product.id,
+                              name: product.name,
+                              description: product.description,
+                              price: product.variants[variantIndex]?.price_kes || product.variants[0].price_kes,
+                              image: image,
+                              category: product.category,
+                              badge: product.badge,
+                              inStock: product.variants.some(v => v.stock_quantity > 0 && v.is_available)
+                            });
+                          }}
+                          className={`absolute top-6 right-6 z-30 p-2.5 rounded-full shadow-sm transition-all duration-300 hover:scale-110 active:scale-95 ${isInWishlist(product.id)
+                            ? "bg-primary text-primary-foreground shadow-primary/25"
+                            : "bg-white text-muted-foreground hover:bg-primary hover:text-primary-foreground shadow-black/5 border border-border/10"
+                            }`}
+                        >
+                          <Heart className={`h-5 w-5 ${isInWishlist(product.id) ? "fill-current" : ""}`} />
+                        </button>
 
                         <CardContent className="p-8 pt-4">
                           <div className="flex justify-between items-start mb-2">
@@ -285,7 +297,7 @@ const Shop = ({ initialProducts = [] }: ShopProps) => {
 
                             <div className="flex items-center gap-3">
                               <div className="flex-1">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Investment</p>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Price</p>
                                 <p className="text-2xl font-black text-foreground">
                                   {formatPrice(
                                     product.variants.find(
@@ -312,10 +324,10 @@ const Shop = ({ initialProducts = [] }: ShopProps) => {
             ))
           )}
         </Tabs>
-      </section>
+      </section >
 
       {/* Tech CTA Section */}
-      <section className="container mx-auto px-4 py-12">
+      < section className="container mx-auto px-4 py-12" >
         <div className="bg-primary rounded-[3rem] p-8 lg:p-16 relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-white/20 transition-all duration-1000" />
 
@@ -348,7 +360,7 @@ const Shop = ({ initialProducts = [] }: ShopProps) => {
             </div>
           </div>
         </div>
-      </section>
+      </section >
 
       {/* Social Proof / Trust */}
       {/* Partners Section */}
@@ -371,7 +383,7 @@ const Shop = ({ initialProducts = [] }: ShopProps) => {
               <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
                 <Globe className="h-5 w-5 text-primary" />
               </div>
-              <span className="font-bold text-lg">BeeYield Hives</span>
+              <span className="font-bold text-lg">Farmers</span>
             </div>
             <div className="flex items-center gap-3 px-6 py-4 bg-muted/30 rounded-2xl border border-border/50">
               <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
@@ -379,10 +391,16 @@ const Shop = ({ initialProducts = [] }: ShopProps) => {
               </div>
               <span className="font-bold text-lg">ApiSense</span>
             </div>
+            <div className="flex items-center gap-3 px-6 py-4 bg-muted/30 rounded-2xl border border-border/50">
+              <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
+                <Cpu className="h-5 w-5 text-primary" />
+              </div>
+              <span className="font-bold text-lg">Intelligent Hives</span>
+            </div>
           </div>
         </div>
       </section>
-    </div>
+    </div >
   );
 };
 
