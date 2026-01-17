@@ -1,18 +1,8 @@
 import { Document, Page, Text, View, StyleSheet, Image, Font } from '@react-pdf/renderer';
+import BEEYIELD_LOGO from '@/assets/logo.png';
+import TIMOTHY_PHOTO from '@/assets/timothy-nduva.png';
 
-// Register fonts (optional - using system fonts)
-Font.register({
-    family: 'Helvetica',
-    fonts: [
-        { src: 'https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxP.ttf', fontWeight: 'normal' },
-        { src: 'https://fonts.gstatic.com/s/roboto/v30/KFOlCnqEu92Fr1MmWUlfBBc9.ttf', fontWeight: 'bold' },
-    ],
-});
-
-// BeeYield Logo URL (using origin for PDF compatibility)
-const getOrigin = () => typeof window !== 'undefined' ? window.location.origin : '';
-const BEEYIELD_LOGO = getOrigin() + '/logo.png';
-const TIMOTHY_PHOTO = getOrigin() + '/timothy-nduva.png';
+// Font registration disabled for safe mode compatibility
 
 // Create styles
 const styles = StyleSheet.create({
@@ -56,7 +46,8 @@ const styles = StyleSheet.create({
     badge: {
         backgroundColor: '#10B981',
         color: '#FFFFFF',
-        padding: '6 12',
+        paddingVertical: 6,
+        paddingHorizontal: 12,
         borderRadius: 20,
         fontSize: 10,
         fontWeight: 'bold',
@@ -223,14 +214,15 @@ const styles = StyleSheet.create({
     timelineHash: {
         fontSize: 7,
         color: '#9CA3AF',
-        fontFamily: 'Courier',
+        fontFamily: 'Helvetica',
         marginTop: 2,
     },
     floraTag: {
         backgroundColor: '#D1FAE5',
         color: '#065F46',
         fontSize: 9,
-        padding: '3 8',
+        paddingVertical: 3,
+        paddingHorizontal: 8,
         borderRadius: 10,
         marginRight: 5,
     },
@@ -304,6 +296,8 @@ interface HoneyTracePDFProps {
 }
 
 const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
+    if (!traceData) return null;
+
     const generatedDate = new Date().toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
@@ -321,10 +315,10 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
                         <Image src={BEEYIELD_LOGO} style={styles.logoImage} />
                         <View style={styles.logoTextContainer}>
                             <Text style={styles.logo}>BeeYield</Text>
-                            <Text style={styles.logoSubtext}>HoneyChain™ Traceability Certificate</Text>
+                            <Text style={styles.logoSubtext}>HoneyChain Traceability Certificate</Text>
                         </View>
                     </View>
-                    <Text style={styles.badge}>✓ VERIFIED</Text>
+                    <Text style={styles.badge}>VERIFIED</Text>
                 </View>
 
                 {/* Title */}
@@ -431,7 +425,7 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
 
                         <View style={styles.sensorItem}>
                             <Text style={styles.sensorLabel}>Temperature</Text>
-                            <Text style={styles.sensorValue}>{traceData.sensor_snapshot.avg_temp}°C</Text>
+                            <Text style={styles.sensorValue}>{traceData.sensor_snapshot.avg_temp} C</Text>
                             <Text style={styles.sensorStatus}>OPTIMAL</Text>
                         </View>
 
@@ -479,7 +473,7 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
                 {/* Footer with BeeYield Contact Info */}
                 <View style={styles.footer}>
                     <Text style={styles.footerText}>
-                        This certificate verifies the authenticity and traceability of your honey on HoneyChain™
+                        This certificate verifies the authenticity and traceability of your honey on HoneyChain
                     </Text>
                     <Text style={styles.footerHighlight}>
                         BeeYield - Champions for Saving Bees | 50% Ethical Harvest Promise

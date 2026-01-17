@@ -12,6 +12,8 @@ import { Html5QrcodeScanner } from "html5-qrcode";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import HoneyTracePDF from "@/components/HoneyTracePDF";
 import { useNavigate, useLocation } from "react-router-dom";
+import TIMOTHY_PHOTO from '@/assets/timothy-nduva.png';
+import PLACEHOLDER_SVG from '@/assets/placeholder.svg';
 import { traceBatch } from "@/services/traceabilityService";
 
 const Traceability = () => {
@@ -248,7 +250,7 @@ const Traceability = () => {
                   <div className="h-px bg-slate-200 dark:bg-slate-800 flex-1" />
                   <div className="flex items-center gap-2 px-6 py-2 bg-green-500/10 rounded-full border border-green-500/20 animate-pulse">
                     <ShieldCheck className="h-5 w-5 text-green-500" />
-                    <span className="text-sm font-black text-green-600 uppercase tracking-widest">Authenticated on HoneyChain™</span>
+                    <span className="text-sm font-black text-green-600 uppercase tracking-widest">Authenticated on HoneyChain</span>
                   </div>
                   <div className="h-px bg-slate-200 dark:bg-slate-800 flex-1" />
                 </div>
@@ -334,7 +336,13 @@ const Traceability = () => {
                     <div className="bg-gradient-to-br from-indigo-900 to-indigo-950 p-10 text-white">
                       <h3 className="font-black text-xs uppercase tracking-widest mb-6 opacity-60">Master Beekeeper</h3>
                       <div className="flex items-center gap-6">
-                        {traceData.farmer?.photo_url ? (
+                        {traceData.farmer?.name === "Timothy Nduva" ? (
+                          <img
+                            src={TIMOTHY_PHOTO}
+                            alt={traceData.farmer.name}
+                            className="h-28 w-28 rounded-[2rem] object-cover border-4 border-amber-500 shadow-xl"
+                          />
+                        ) : traceData.farmer?.photo_url ? (
                           <img
                             src={traceData.farmer.photo_url}
                             alt={traceData.farmer.name}
@@ -383,7 +391,7 @@ const Traceability = () => {
                             <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-indigo-600 rounded-[2rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
                             <div className="relative bg-white dark:bg-slate-900 rounded-[2rem] overflow-hidden border border-slate-100 dark:border-slate-800 shadow-xl">
                               <img
-                                src={traceData.farmer?.photo_url || "/placeholder.svg"}
+                                src={traceData.farmer?.name === "Timothy Nduva" ? TIMOTHY_PHOTO : (traceData.farmer?.photo_url || PLACEHOLDER_SVG)}
                                 alt="Farmer Photo"
                                 className="w-full h-64 object-cover"
                               />
