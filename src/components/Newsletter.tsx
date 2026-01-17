@@ -26,8 +26,8 @@ export const Newsletter = ({ className = "" }: { className?: string }) => {
             console.error(error);
             setStatus("idle");
             toast({
-                title: "Subscription Failed",
-                description: "Please try again later.",
+                title: "Submission Failed",
+                description: "There was an error submitting your request. Please try again.",
                 variant: "destructive",
             });
         }

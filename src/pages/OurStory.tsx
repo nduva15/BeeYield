@@ -3,31 +3,59 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  Users, Cpu, Sprout, Play, ArrowRight, Heart, TreePine, Home
+  Users, Cpu, Sprout, Play, ArrowRight, Heart, TreePine, Home, Hexagon
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import impactBeekeeping from "@/assets/impact-beekeeping.jpg";
+import Logo from "@/assets/Logo.png";
 
 const OurStory = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-accent/10 py-20 sm:py-28 lg:py-32">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-3xl text-center">
-            <Badge variant="secondary" className="mb-4">
-              About Us
-            </Badge>
-            <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-              The Story of BeeYield
-            </h1>
-            <p className="text-lg text-muted-foreground sm:text-xl">
-              Born in Kibwezi, Makueni County, Kenya — a story of family, resilience, and a mission to transform pollination.
-            </p>
-          </div>
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-background py-20 sm:py-28 lg:py-32">
+        {/* Decorative Background Icons */}
+        <div className="absolute top-20 right-10 text-primary/5 animate-pulse">
+          <Hexagon size={120} strokeWidth={1} />
+        </div>
+        <div className="absolute bottom-20 left-10 text-accent/10">
+          <Hexagon size={180} strokeWidth={1} className="rotate-12" />
+        </div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl -z-10" />
 
-          {/* Background Decorations */}
-          <div className="absolute -left-20 top-20 h-72 w-72 rounded-full bg-primary/5 blur-3xl" />
-          <div className="absolute -right-20 bottom-20 h-72 w-72 rounded-full bg-accent/5 blur-3xl" />
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+            <div className="text-center lg:text-left">
+              <Badge variant="secondary" className="mb-6 px-4 py-1 text-sm">
+                About Us
+              </Badge>
+              <h1 className="mb-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl leading-tight">
+                The Story of <span className="text-primary">BeeYield</span>
+              </h1>
+              <p className="text-lg text-muted-foreground sm:text-xl max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                Born in Kibwezi, Makueni County, Kenya — a story of family, resilience, and a mission to transform pollination for a sustainable future.
+              </p>
+            </div>
+
+            <div className="relative mx-auto lg:ml-auto max-w-md lg:max-w-full flex justify-center">
+              <div className="absolute -inset-4 bg-gradient-to-r from-primary to-accent opacity-20 blur-2xl rounded-full" />
+              <img
+                src={Logo}
+                alt="BeeYield Logo"
+                className="relative w-full max-w-[400px] h-auto object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500"
+              />
+              <div className="absolute -bottom-6 -left-6 bg-background p-4 rounded-xl shadow-xl border border-border/50 flex items-center gap-3">
+                <div className="p-2 bg-primary/10 rounded-full text-primary">
+                  <Sprout size={24} />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">Native Innovation</p>
+                  <p className="text-xs text-muted-foreground">Kenya Grown</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -35,14 +63,27 @@ const OurStory = () => {
       <section className="py-16 sm:py-20 lg:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
-            <div className="order-2 lg:order-1">
-              <Card className="border-none bg-primary/5 shadow-none">
-                <CardContent className="p-6 sm:p-8">
-                  <blockquote className="text-xl font-medium italic text-foreground sm:text-2xl">
-                    "Where would three beekeepers meet? In our case — around the family dinner table."
-                  </blockquote>
-                </CardContent>
-              </Card>
+            <div className="order-2 lg:order-1 relative">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-primary/10 rounded-3xl transform -rotate-2 group-hover:rotate-0 transition-transform duration-500" />
+                <img
+                  src={impactBeekeeping}
+                  alt="Early days in Kibwezi"
+                  className="relative rounded-3xl shadow-lg w-full object-cover h-[400px] lg:h-[500px]"
+                />
+
+                {/* Floating Quote Card */}
+                <Card className="absolute -bottom-8 -right-8 w-[90%] sm:w-[80%] shadow-xl border-none bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+                  <CardContent className="p-6">
+                    <div className="flex gap-4">
+                      <div className="text-4xl text-primary font-serif">"</div>
+                      <blockquote className="text-lg font-medium italic text-foreground">
+                        Where would three beekeepers meet? In our case — around the family dinner table.
+                      </blockquote>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
 
             <div className="order-1 lg:order-2 space-y-6">
@@ -85,7 +126,7 @@ const OurStory = () => {
             {[
               { number: "184+", label: "Beehives", desc: "From 4 to 184 hives" },
               { number: "1M+", label: "Bee Colonies", desc: "Thriving colonies" },
-              { number: "1,500+", label: "Trees Planted", desc: "Restoring the ecosystem" },
+              { number: "2,500+", label: "Trees Planted", desc: "Restoring the ecosystem" },
               { number: "25+", label: "Acres Pollinated", desc: "Client farmlands served" },
             ].map((stat, i) => (
               <Card key={i} className="text-center border-border/50">
@@ -122,7 +163,7 @@ const OurStory = () => {
               {
                 icon: Sprout,
                 title: "Guardians of Nature",
-                desc: "With 1,500+ trees planted, we're not just beekeepers — we're ecosystem builders committed to environmental restoration."
+                desc: "With 2,500+ trees planted, we're not just beekeepers — we're ecosystem builders committed to environmental restoration."
               },
               {
                 icon: Cpu,
@@ -170,7 +211,7 @@ const OurStory = () => {
                 </p>
               </div>
               <Button asChild className="mt-4">
-                <Link to="/PollinationSolutions">
+                <Link to="/pollination-solutions">
                   Explore Our Solutions <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>

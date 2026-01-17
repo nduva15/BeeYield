@@ -1,6 +1,7 @@
+
 import { Link } from "react-router-dom";
 import {
-  Mic, Map, LayoutDashboard, ArrowRight,
+  Mic, Map, LayoutDashboard, ArrowRight, Cpu,
   Quote, Activity, Mail, ChevronRight,
   BarChart3, Signal, Play, Star, Globe
 } from "lucide-react";
@@ -156,7 +157,7 @@ const InLandPollination = () => {
                   </div>
                   <div className="flex items-end gap-2 h-32">
                     {[40, 70, 50, 90, 60, 30, 80, 50].map((h, i) => (
-                      <div key={i} className="flex-1 bg-gradient-to-t from-primary to-primary/50 rounded-t-md" style={{ height: `${h}%` }} />
+                      <div key={i} className="flex-1 bg-gradient-to-t from-primary to-primary/50 rounded-t-md" style={{ height: `${h}% ` }} />
                     ))}
                   </div>
                 </div>
@@ -268,18 +269,24 @@ const InLandPollination = () => {
               BeeYield collaborates with leading partners worldwide, joining forces with beekeeping equipment manufacturers, industry organizations, and renowned universities.
             </p>
             {/* Partners */}
-            <div className="flex flex-wrap justify-center gap-8 items-center opacity-70 hover:opacity-100 transition-opacity">
-              <div className="flex items-center gap-2 px-6 py-4 bg-background rounded-lg shadow-sm border border-border">
+            <div className="flex flex-wrap justify-center gap-6 sm:gap-8 items-center opacity-70 hover:opacity-100 transition-opacity">
+              <div className="flex items-center gap-3 px-6 py-4 bg-muted/30 rounded-2xl border border-border/50">
                 <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
-                  <Globe className="h-6 w-6 text-primary" />
+                  <Globe className="h-5 w-5 text-primary" />
                 </div>
-                <span className="font-bold text-lg">BeeYield Hives</span>
+                <span className="font-bold text-lg">Farmers</span>
               </div>
-              <div className="flex items-center gap-2 px-6 py-4 bg-background rounded-lg shadow-sm border border-border">
+              <div className="flex items-center gap-3 px-6 py-4 bg-muted/30 rounded-2xl border border-border/50">
                 <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
-                  <Activity className="h-6 w-6 text-primary" />
+                  <Activity className="h-5 w-5 text-primary" />
                 </div>
                 <span className="font-bold text-lg">ApiSense</span>
+              </div>
+              <div className="flex items-center gap-3 px-6 py-4 bg-muted/30 rounded-2xl border border-border/50">
+                <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
+                  <Cpu className="h-5 w-5 text-primary" />
+                </div>
+                <span className="font-bold text-lg">Intelligent Hives</span>
               </div>
             </div>
           </div>

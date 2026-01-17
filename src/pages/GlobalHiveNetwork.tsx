@@ -42,7 +42,7 @@ const GlobalHiveNetwork = () => {
                 <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center">
                   <Globe className="h-4 w-4 text-primary" />
                 </div>
-                <span className="font-bold text-base text-foreground/80">BeeYield Hives</span>
+                <span className="font-bold text-base text-foreground/80">Farmers</span>
               </div>
               <div className="w-px h-8 bg-primary/20 hidden sm:block"></div>
               <div className="flex items-center gap-2">
@@ -50,6 +50,13 @@ const GlobalHiveNetwork = () => {
                   <Activity className="h-4 w-4 text-primary" />
                 </div>
                 <span className="font-bold text-base text-foreground/80">ApiSense</span>
+              </div>
+              <div className="w-px h-8 bg-primary/20 hidden sm:block"></div>
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center">
+                  <Activity className="h-4 w-4 text-primary" />
+                </div>
+                <span className="font-bold text-base text-foreground/80">Intelligent Hives</span>
               </div>
             </div>
           </div>
@@ -269,13 +276,19 @@ const GlobalHiveNetwork = () => {
                 <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
                   <Globe className="h-6 w-6 text-primary" />
                 </div>
-                <span className="font-bold text-lg">BeeYield Hives</span>
+                <span className="font-bold text-lg">Farmers</span>
               </div>
               <div className="flex items-center gap-2 px-6 py-4 bg-background rounded-lg shadow-sm border border-border">
                 <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
                   <Activity className="h-6 w-6 text-primary" />
                 </div>
                 <span className="font-bold text-lg">ApiSense</span>
+              </div>
+              <div className="flex items-center gap-2 px-6 py-4 bg-background rounded-lg shadow-sm border border-border">
+                <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
+                  <Activity className="h-6 w-6 text-primary" />
+                </div>
+                <span className="font-bold text-lg">Intelligent Hives</span>
               </div>
             </div>
           </div>

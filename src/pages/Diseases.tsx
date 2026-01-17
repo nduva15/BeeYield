@@ -348,17 +348,23 @@ const Diseases = () => {
                         </p>
                         {/* Partner Logo Placeholders */}
                         <div className="flex flex-wrap justify-center gap-8 items-center opacity-70 hover:opacity-100 transition-opacity">
-                            <div className="flex items-center gap-2 px-6 py-4 bg-background rounded-lg shadow-sm border border-border">
-                                <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
+                            <div className="flex items-center gap-3 px-8 py-6 bg-background rounded-2xl shadow-sm border border-border">
+                                <div className="h-12 w-12 bg-primary/20 rounded-full flex items-center justify-center">
                                     <Globe className="h-6 w-6 text-primary" />
                                 </div>
-                                <span className="font-bold text-lg">BeeYield Hives</span>
+                                <span className="font-bold text-xl">Farmers</span>
                             </div>
-                            <div className="flex items-center gap-2 px-6 py-4 bg-background rounded-lg shadow-sm border border-border">
-                                <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
+                            <div className="flex items-center gap-3 px-8 py-6 bg-background rounded-2xl shadow-sm border border-border">
+                                <div className="h-12 w-12 bg-primary/20 rounded-full flex items-center justify-center">
                                     <Activity className="h-6 w-6 text-primary" />
                                 </div>
-                                <span className="font-bold text-lg">ApiSense</span>
+                                <span className="font-bold text-xl">ApiSense</span>
+                            </div>
+                            <div className="flex items-center gap-3 px-8 py-6 bg-background rounded-2xl shadow-sm border border-border">
+                                <div className="h-12 w-12 bg-primary/20 rounded-full flex items-center justify-center">
+                                    <Cpu className="h-6 w-6 text-primary" />
+                                </div>
+                                <span className="font-bold text-xl">Intelligent Hives</span>
                             </div>
                         </div>
                     </div>

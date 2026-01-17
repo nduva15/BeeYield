@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Grid3X3, StickyNote, CheckSquare, Box, MapPin, Loader2 } from 'lucide-react';
+import { Plus, Grid3X3, StickyNote, CheckSquare, Box, MapPin, Loader2, FileSpreadsheet } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
+import * as XLSX from 'xlsx';
 
 interface BeeYieldHivesViewProps {
     onTabChange: (tab: string) => void;
@@ -12,14 +14,83 @@ interface BeeYieldHivesViewProps {
 const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) => {
     const [selectedPlace, setSelectedPlace] = useState('my-places');
     const [showFab, setShowFab] = useState(false);
+    const [isExporting, setIsExporting] = useState(false);
+
+    const handleExportExcel = async () => {
+        setIsExporting(true);
+        try {
+            // Sample hive data - in production this would come from your API/database
+            const hiveData = [
+                {
+                    hive_id: 'H001',
+                    location: 'Apiary 1',
+                    queen_age: '1 year',
+                    colony_strength: 'Strong',
+                    last_inspection: '2026-01-15',
+                    honey_production_kg: 12.5,
+                    notes: 'Healthy colony'
+                },
+                {
+                    hive_id: 'H002',
+                    location: 'Apiary 1',
+                    queen_age: '2 years',
+                    colony_strength: 'Medium',
+                    last_inspection: '2026-01-14',
+                    honey_production_kg: 8.2,
+                    notes: 'Needs feeding'
+                },
+                {
+                    hive_id: 'H003',
+                    location: 'Apiary 2',
+                    queen_age: '6 months',
+                    colony_strength: 'Strong',
+                    last_inspection: '2026-01-16',
+                    honey_production_kg: 15.0,
+                    notes: 'Excellent brood pattern'
+                },
+            ];
+
+            // Create worksheet
+            const ws = XLSX.utils.json_to_sheet(hiveData);
+
+            // Set column widths
+            ws['!cols'] = [
+                { wch: 10 }, // hive_id
+                { wch: 15 }, // location
+                { wch: 12 }, // queen_age
+                { wch: 15 }, // colony_strength
+                { wch: 15 }, // last_inspection
+                { wch: 18 }, // honey_production_kg
+                { wch: 25 }, // notes
+            ];
+
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Hives Data');
+
+            // Generate filename with current date
+            const date = new Date().toISOString().split('T')[0];
+            const filename = `BeeYield_Hives_Export_${date}.xlsx`;
+
+            // Save file
+            XLSX.writeFile(wb, filename);
+
+            toast.success('Excel file exported successfully!', {
+                description: filename
+            });
+        } catch (error) {
+            console.error('Export failed:', error);
+            toast.error('Failed to export Excel file');
+        } finally {
+            setIsExporting(false);
+        }
+    };
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-12 relative">
             {/* Page Title */}
             <div className="flex justify-between items-center">
                 <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">BeeYield</h1>
-                {/* Loading spinner */}
-                <Loader2 className="w-5 h-5 text-[#C4A77D] animate-spin" />
             </div>
 
             {/* Main Content Grid */}
@@ -27,7 +98,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                 {/* Left Side - Loading Data Card */}
                 <Card className="rounded-2xl border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm min-h-[200px]">
                     <CardContent className="p-6 flex items-center justify-start h-full">
-                        <span className="text-gray-400 dark:text-gray-500 italic text-sm">Loading data</span>
+                        <span className="text-gray-400 dark:text-gray-500 italic text-sm">No hives available</span>
                     </CardContent>
                 </Card>
 
@@ -52,9 +123,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="my-places">My Places</SelectItem>
-                                    <SelectItem value="apiary-1">North Orchard Apiary</SelectItem>
-                                    <SelectItem value="apiary-2">Backyard Bees</SelectItem>
-                                    <SelectItem value="apiary-3">River Side Hives</SelectItem>
+                                    <SelectItem value="none" disabled>No places available</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -71,12 +140,21 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                 variant="outline"
                                 className="rounded-full px-5 h-10 font-medium text-sm border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-[#1e1e1e]"
                             >
-                                Raport
+                                Report
                             </Button>
                             <Button
                                 className="bg-[#4ADE80] hover:bg-[#22C55E] text-black rounded-full px-5 h-10 font-bold text-sm shadow-none border-none"
+                                onClick={handleExportExcel}
+                                disabled={isExporting}
                             >
-                                Export Excel
+                                {isExporting ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                        Exporting...
+                                    </>
+                                ) : (
+                                    'Export Excel'
+                                )}
                             </Button>
                         </div>
                     </CardContent>

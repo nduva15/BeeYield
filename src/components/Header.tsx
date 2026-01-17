@@ -22,9 +22,9 @@ const Header = () => {
   const isActive = (path: string) => location.pathname === path;
 
   const menuLinks = [
+    { to: "/global-hive-network", label: "Global Hive Network" },
     { to: "/ourstory", label: "Our Story" },
     { to: "/media", label: "Media" },
-    { to: "/notes", label: "Notes" },
     { to: "/blogs", label: "Blog" },
     { to: "/contact", label: "Contact Us" },
     { to: "/esg", label: "ESG" },
