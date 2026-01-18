@@ -36,7 +36,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 />
 
                 <main className="flex-1 flex flex-col h-full overflow-hidden relative">
-                    {!hideHeader && <DashboardHeader onLogout={onLogout} onTabChange={onTabChange} />}
+                    {!hideHeader && <DashboardHeader onLogout={onLogout} onTabChange={onTabChange} activeTab={activeTab} />}
 
                     <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
                         <div className="max-w-[1600px] mx-auto">

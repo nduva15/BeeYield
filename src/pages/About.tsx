@@ -213,17 +213,17 @@ const About = () => {
       </section>
 
       {/* Full-width Video Section - Before Footer */}
-      <div className="relative w-full h-[60vh] md:h-[80vh] bg-black">
+      <div className="relative w-full h-[60vh] md:h-[80vh] bg-[#F0F7F0]">
         <iframe
-          className="absolute inset-0 w-full h-full opacity-90"
+          className="absolute inset-0 w-full h-full opacity-60"
           src="https://www.youtube.com/embed/VIDEO_ID_HERE"
           title="About BeeYield"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent pointer-events-none flex items-end justify-center pb-20">
-          <div className="text-center text-white p-4">
+        <div className="absolute inset-0 bg-gradient-to-t from-[#F0F7F0] via-transparent to-transparent pointer-events-none flex items-end justify-center pb-20">
+          <div className="text-center text-neutral-900 p-4">
             <h2 className="text-3xl md:text-5xl font-bold mb-4">See the BeeYield Difference</h2>
             <p className="text-lg md:text-xl opacity-80">Watch how we're transforming agriculture, one hive at a time.</p>
           </div>

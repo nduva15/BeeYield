@@ -105,29 +105,7 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
 
     return (
         <div className="space-y-12 animate-in fade-in duration-700 pb-20 max-w-[1400px] mx-auto">
-            {/* Header Banner - Custom styling to match image */}
-            <div className="bg-[#FFF9F4] dark:bg-[#1a1612] p-8 rounded-[2.5rem] border border-[#FDE6D2] dark:border-orange-900/10 shadow-sm">
-                <div className="flex justify-between items-start mb-4">
-                    <div>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">First steps</h2>
-                        <p className="text-gray-500 dark:text-gray-400 mt-1">Start here to set up your BeeYield Hub monitoring platform.</p>
-                    </div>
-                </div>
-                <div className="mt-6">
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">QUICK LINKS</p>
-                    <div className="flex flex-wrap gap-2">
-                        {['Basic product information', 'Specifications', 'Installation manual', 'Disposal Manual', 'Known issues with hardware', 'Gallery'].map((link) => (
-                            <Button
-                                key={link}
-                                variant="outline"
-                                className="rounded-full bg-white dark:bg-[#1e1e1e] border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 shadow-sm text-xs font-semibold px-6"
-                            >
-                                {link}
-                            </Button>
-                        ))}
-                    </div>
-                </div>
-            </div>
+
 
             {/* Hero Section */}
             <Card className="rounded-[3rem] border-none bg-white dark:bg-[#09090b] shadow-xl overflow-hidden">

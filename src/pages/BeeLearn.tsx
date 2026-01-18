@@ -249,10 +249,10 @@ const BeeLearn = () => {
   return (
     <main className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-amber-50 via-white to-orange-50/30 pt-8 pb-20 lg:pt-16 lg:pb-32">
+      <section className="relative overflow-hidden bg-[#F0F7F0] pt-8 pb-20 lg:pt-16 lg:pb-32">
         {/* Background decorative elements */}
-        <div className="absolute top-0 right-0 w-[40%] h-[80%] bg-gradient-to-bl from-amber-200/30 to-orange-300/20 rounded-bl-[100px] blur-3xl -z-10" />
-        <div className="absolute bottom-0 left-0 w-[30%] h-[50%] bg-gradient-to-tr from-amber-100/40 to-transparent rounded-tr-full blur-2xl -z-10" />
+        <div className="absolute top-0 right-0 w-[40%] h-[80%] bg-gradient-to-bl from-green-200/30 to-green-300/20 rounded-bl-[100px] blur-3xl -z-10" />
+        <div className="absolute bottom-0 left-0 w-[30%] h-[50%] bg-gradient-to-tr from-green-100/40 to-transparent rounded-tr-full blur-2xl -z-10" />
 
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
@@ -260,7 +260,7 @@ const BeeLearn = () => {
             <div className="text-center lg:text-left order-2 lg:order-1">
               <Badge
                 variant="outline"
-                className="mb-6 px-4 py-1.5 border-amber-300 bg-amber-50 text-amber-700 font-semibold"
+                className="mb-6 px-4 py-1.5 border-green-300 bg-green-50 text-green-700 font-semibold"
               >
                 <GraduationCap className="h-4 w-4 mr-2" />
                 BeeYield Learn Platform
@@ -268,7 +268,7 @@ const BeeLearn = () => {
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-neutral-900 mb-6 leading-[1.1] tracking-tight">
                 Master the Art of{" "}
-                <span className="text-amber-600 italic">Sustainable Beekeeping</span>
+                <span className="text-green-700 italic">Sustainable Beekeeping</span>
               </h1>
 
               <p className="text-lg lg:text-xl text-neutral-600 mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed">
@@ -299,8 +299,8 @@ const BeeLearn = () => {
               {/* Quick Stats */}
               <div className="flex flex-wrap gap-6 justify-center lg:justify-start">
                 <div className="flex items-center gap-2">
-                  <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center">
-                    <Users className="h-5 w-5 text-amber-600" />
+                  <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
+                    <Users className="h-5 w-5 text-green-700" />
                   </div>
                   <div className="text-left">
                     <p className="text-xl font-black text-neutral-900">12,500+</p>
@@ -308,8 +308,8 @@ const BeeLearn = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center">
-                    <Star className="h-5 w-5 text-amber-600 fill-amber-600" />
+                  <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
+                    <Star className="h-5 w-5 text-green-700 fill-green-700" />
                   </div>
                   <div className="text-left">
                     <p className="text-xl font-black text-neutral-900">4.9/5</p>
@@ -477,7 +477,7 @@ const BeeLearn = () => {
               </div>
 
               {/* Experience Badge */}
-              <div className="absolute bottom-4 left-4 lg:bottom-8 lg:left-8 bg-amber-500 text-white rounded-2xl p-4 lg:p-6 shadow-xl">
+              <div className="absolute bottom-4 left-4 lg:bottom-8 lg:left-8 bg-green-700 text-white rounded-2xl p-4 lg:p-6 shadow-xl">
                 <p className="text-4xl lg:text-5xl font-black">254+</p>
                 <p className="text-sm font-medium opacity-90">Years Combined Experience</p>
               </div>
@@ -485,12 +485,12 @@ const BeeLearn = () => {
 
             {/* Right - Content */}
             <div>
-              <Badge variant="outline" className="mb-4 border-amber-300 text-amber-700 font-semibold">
+              <Badge variant="outline" className="mb-4 border-green-300 text-green-700 font-semibold">
                 About BeeYield Learn
               </Badge>
               <h2 className="text-3xl lg:text-5xl font-black text-neutral-900 mb-6 leading-tight">
                 Experience & Expertise in{" "}
-                <span className="text-amber-600">Beekeeping</span>
+                <span className="text-green-700">Beekeeping</span>
               </h2>
               <p className="text-neutral-600 text-lg mb-8 leading-relaxed">
                 Our curriculum is developed by practicing apiarists, agricultural scientists, and business experts with decades of hands-on experience. Every course is designed to give you practical skills you can apply immediately.
@@ -498,8 +498,8 @@ const BeeLearn = () => {
 
               <div className="space-y-4 mb-8">
                 <div className="flex items-center gap-4 p-4 bg-neutral-50 rounded-2xl">
-                  <div className="h-12 w-12 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
-                    <CheckCircle className="h-6 w-6 text-amber-600" />
+                  <div className="h-12 w-12 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
+                    <CheckCircle className="h-6 w-6 text-green-700" />
                   </div>
                   <div>
                     <p className="font-bold text-neutral-900">Professional Beekeepers</p>
@@ -507,8 +507,8 @@ const BeeLearn = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-4 p-4 bg-neutral-50 rounded-2xl">
-                  <div className="h-12 w-12 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
-                    <CheckCircle className="h-6 w-6 text-amber-600" />
+                  <div className="h-12 w-12 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
+                    <CheckCircle className="h-6 w-6 text-green-700" />
                   </div>
                   <div>
                     <p className="font-bold text-neutral-900">Educational Advocates</p>
@@ -517,7 +517,7 @@ const BeeLearn = () => {
                 </div>
               </div>
 
-              <Button size="lg" className="h-14 px-8 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl">
+              <Button size="lg" className="h-14 px-8 bg-green-700 hover:bg-green-800 text-white font-bold rounded-xl">
                 Learn More About Our Team
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -549,7 +549,7 @@ const BeeLearn = () => {
                 </p>
                 <div>
                   <p className="font-bold text-neutral-900 text-lg">Sarah Johnson</p>
-                  <p className="text-amber-600 font-medium">Commercial Beekeeper, Nakuru</p>
+                  <p className="text-green-700 font-medium">Commercial Beekeeper, Nakuru</p>
                 </div>
               </div>
             </div>
@@ -558,17 +558,17 @@ const BeeLearn = () => {
       </section>
 
       {/* Educational Workshops Section */}
-      <section className="py-20 lg:py-28 bg-neutral-900 text-white">
+      <section className="py-20 lg:py-28 bg-[#0A2612] text-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <Badge variant="outline" className="mb-4 border-amber-500 text-amber-400 font-semibold">
+            <Badge variant="outline" className="mb-4 border-green-500 text-green-400 font-semibold">
               Our Programs
             </Badge>
             <h2 className="text-3xl lg:text-5xl font-black mb-6">
               Educational Workshops on{" "}
-              <span className="text-amber-400">Sustainable Beekeeping</span>
+              <span className="text-green-400">Sustainable Beekeeping</span>
             </h2>
-            <p className="text-neutral-400 text-lg max-w-2xl mx-auto">
+            <p className="text-green-100/60 text-lg max-w-2xl mx-auto">
               Join our comprehensive workshops designed for every level of expertise
             </p>
           </div>
@@ -588,7 +588,7 @@ const BeeLearn = () => {
           </div>
 
           <div className="text-center mt-12">
-            <Button size="lg" className="h-14 px-8 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl">
+            <Button size="lg" className="h-14 px-8 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl">
               Request a Quote for Your Company
               <ChevronRight className="ml-2 h-5 w-5" />
             </Button>
@@ -600,11 +600,11 @@ const BeeLearn = () => {
       <section id="courses" className="py-20 lg:py-28">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <Badge variant="outline" className="mb-4 border-amber-300 text-amber-700 font-semibold">
+            <Badge variant="outline" className="mb-4 border-green-300 text-green-700 font-semibold">
               Course Catalog
             </Badge>
             <h2 className="text-3xl lg:text-5xl font-black text-neutral-900 mb-6">
-              All Courses & <span className="text-amber-600">Field Guides</span>
+              All Courses & <span className="text-green-700">Field Guides</span>
             </h2>
             <p className="text-neutral-600 text-lg max-w-2xl mx-auto">
               From beginner fundamentals to advanced commercial operations—find the perfect learning path for your beekeeping journey.
@@ -655,7 +655,7 @@ const BeeLearn = () => {
                           inStock: product.variants.some(v => v.stock_quantity > 0 && v.is_available)
                         });
                       }}
-                      className={`absolute top-3 right-3 p-2 backdrop-blur-md rounded-full translate-y-2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ${isInWishlist(product.id) ? "bg-amber-500 text-white opacity-100 translate-y-0" : "bg-white/80 hover:bg-amber-500 hover:text-white"
+                      className={`absolute top-3 right-3 p-2 backdrop-blur-md rounded-full translate-y-2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ${isInWishlist(product.id) ? "bg-green-600 text-white opacity-100 translate-y-0" : "bg-white/80 hover:bg-green-600 hover:text-white"
                         }`}
                     >
                       <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? "fill-current" : ""}`} />
@@ -725,19 +725,19 @@ const BeeLearn = () => {
       {/* Newsletter CTA */}
       <section className="py-20">
         <div className="container mx-auto px-4">
-          <div className="bg-gradient-to-r from-neutral-900 to-neutral-800 rounded-3xl p-8 lg:p-16 text-center relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-amber-500/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
+          <div className="bg-[#0A2612] rounded-3xl p-8 lg:p-16 text-center relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-green-500/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
 
             <div className="relative z-10">
-              <Badge className="mb-6 bg-amber-600 text-white font-bold">
+              <Badge className="mb-6 bg-green-700 text-white font-bold">
                 Join Our Community
               </Badge>
               <h2 className="text-3xl lg:text-5xl font-black text-white mb-6">
                 Trusted Source for{" "}
-                <span className="text-amber-400">Premium Learning</span>
+                <span className="text-green-400">Premium Learning</span>
               </h2>
-              <p className="text-neutral-400 text-lg mb-10 max-w-2xl mx-auto">
+              <p className="text-green-100/60 text-lg mb-10 max-w-2xl mx-auto">
                 Get exclusive access to new courses, early bird discounts, and monthly beekeeping tips delivered straight to your inbox.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
@@ -746,7 +746,7 @@ const BeeLearn = () => {
                   placeholder="Enter your email"
                   className="flex-1 h-14 px-6 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
-                <Button size="lg" className="h-14 px-8 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl">
+                <Button size="lg" className="h-14 px-8 bg-green-700 hover:bg-green-800 text-white font-bold rounded-xl">
                   Get All-Access Pass
                 </Button>
               </div>

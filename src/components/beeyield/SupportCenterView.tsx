@@ -160,9 +160,6 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
 
             <div className="space-y-6 animate-in fade-in duration-500 pb-12 print:hidden">
 
-                {/* Page Title */}
-                <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">Support Center</h1>
-
                 {/* Stats Row */}
                 {/* Stats Row */}
                 <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
@@ -269,146 +266,90 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                     </DialogDescription>
                                 </DialogHeader>
 
-                                <form onSubmit={handleSubmit} className="p-8 space-y-6">
-                                    <div className="grid grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="category" className="text-xs font-bold uppercase tracking-wider text-gray-500">Category *</Label>
+                                <form onSubmit={handleSubmit} className="p-8 space-y-8 bg-[#FDFBF9] dark:bg-[#1A1816]">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        {/* Category Select */}
+                                        <div className="relative pt-2">
+                                            <div className="absolute -top-1 left-3 px-1.5 bg-[#FDFBF9] dark:bg-[#1A1816] z-10">
+                                                <span className="text-[11px] font-bold text-[#8B5E3C] uppercase tracking-wide">Category *</span>
+                                            </div>
                                             <Select
                                                 value={formData.category}
                                                 onValueChange={(val) => handleSelectChange('category', val)}
                                             >
-                                                <SelectTrigger id="category" className="h-12 rounded-xl bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-800 focus:ring-[#B48428]">
-                                                    <SelectValue placeholder="Select category" />
+                                                <SelectTrigger className="h-[52px] rounded-lg border-[#8B5E3C] border-2 bg-transparent text-[#8B5E3C] font-bold text-lg focus:ring-0">
+                                                    <SelectValue placeholder="Select" />
                                                 </SelectTrigger>
-                                                <SelectContent className="rounded-xl">
-                                                    <SelectItem value="technical">Technical Support</SelectItem>
-                                                    <SelectItem value="hardware">Hardware / Device Issue</SelectItem>
-                                                    <SelectItem value="app">App / Software Issue</SelectItem>
-                                                    <SelectItem value="billing">Billing & Subscription</SelectItem>
-                                                    <SelectItem value="advisory">Beekeeping Advisory</SelectItem>
-                                                    <SelectItem value="other">Other</SelectItem>
+                                                <SelectContent className="rounded-xl border-[#EEDCC8] bg-[#FDF3E9]">
+                                                    <SelectItem value="virgin" className="py-3 font-bold text-[#8B5E3C] focus:bg-[#EEDCC8] focus:text-[#8B5E3C]">Virgin</SelectItem>
+                                                    <SelectItem value="app" className="py-3 font-bold text-[#8B5E3C] focus:bg-[#EEDCC8] focus:text-[#8B5E3C]">App</SelectItem>
+                                                    <SelectItem value="date" className="py-3 font-bold text-[#8B5E3C] focus:bg-[#EEDCC8] focus:text-[#8B5E3C]">Date</SelectItem>
+                                                    <SelectItem value="other" className="py-3 font-bold text-[#8B5E3C] focus:bg-[#EEDCC8] focus:text-[#8B5E3C]">Other</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                         </div>
 
-                                        <div className="space-y-2">
-                                            <Label htmlFor="priority" className="text-xs font-bold uppercase tracking-wider text-gray-500">Priority</Label>
-                                            <Select
-                                                value={formData.priority}
-                                                onValueChange={(val) => handleSelectChange('priority', val)}
-                                            >
-                                                <SelectTrigger id="priority" className="h-12 rounded-xl bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-800 focus:ring-[#B48428]">
-                                                    <SelectValue placeholder="Select priority" />
-                                                </SelectTrigger>
-                                                <SelectContent className="rounded-xl">
-                                                    <SelectItem value="low">Low</SelectItem>
-                                                    <SelectItem value="normal">Normal</SelectItem>
-                                                    <SelectItem value="high">High</SelectItem>
-                                                    <SelectItem value="urgent">Urgent</SelectItem>
-                                                </SelectContent>
-                                            </Select>
+                                        {/* Email Input */}
+                                        <div className="relative pt-2">
+                                            <div className="absolute -top-1 left-3 px-1.5 bg-[#FDFBF9] dark:bg-[#1A1816] z-10">
+                                                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wide">Email*</span>
+                                            </div>
+                                            <Input
+                                                id="email"
+                                                name="email"
+                                                type="email"
+                                                value={formData.email}
+                                                onChange={handleInputChange}
+                                                className="h-[52px] rounded-lg border-gray-300 dark:border-gray-700 bg-transparent text-gray-500 font-bold text-lg focus-visible:ring-0 focus-visible:border-gray-400"
+                                                required
+                                            />
                                         </div>
                                     </div>
 
-                                    <div className="space-y-2">
-                                        <Label htmlFor="serialNumber" className="text-xs font-bold uppercase tracking-wider text-gray-500">Device Serial Number / ID</Label>
-                                        <Input
-                                            id="serialNumber"
-                                            name="serialNumber"
-                                            placeholder="e.g. BY-2024-X-99"
-                                            value={formData.serialNumber}
-                                            onChange={handleInputChange}
-                                            className="h-12 rounded-xl bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-800 focus-visible:ring-[#B48428]"
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label htmlFor="subject" className="text-xs font-bold uppercase tracking-wider text-gray-500">Subject *</Label>
+                                    {/* Large Subject Field */}
+                                    <div className="relative pt-2">
                                         <Input
                                             id="subject"
                                             name="subject"
-                                            placeholder="Brief summary of the issue"
+                                            placeholder=""
                                             value={formData.subject}
                                             onChange={handleInputChange}
-                                            className="h-12 rounded-xl bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-800 focus-visible:ring-[#B48428]"
+                                            className="h-[52px] rounded-lg border-gray-300 dark:border-gray-700 bg-transparent text-gray-800 dark:text-gray-100 font-medium text-lg focus-visible:ring-0"
                                             required
                                         />
                                     </div>
 
-                                    <div className="space-y-2">
-                                        <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-gray-500">Email *</Label>
-                                        <Input
-                                            id="email"
-                                            name="email"
-                                            type="email"
-                                            value={formData.email}
-                                            onChange={handleInputChange}
-                                            className="h-12 rounded-xl bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-800 focus-visible:ring-[#B48428]"
-                                            required
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label htmlFor="description" className="text-xs font-bold uppercase tracking-wider text-gray-500">Description *</Label>
+                                    {/* Description Textarea */}
+                                    <div className="relative pt-2">
                                         <Textarea
                                             id="description"
                                             name="description"
-                                            placeholder="Please describe the issue in detail..."
+                                            placeholder=""
                                             value={formData.description}
                                             onChange={handleInputChange}
-                                            className="min-h-[120px] rounded-xl bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-800 focus-visible:ring-[#B48428] resize-none p-4"
+                                            className="min-h-[180px] rounded-lg border-[#D94F3D] bg-transparent text-gray-800 dark:text-gray-100 text-lg focus-visible:ring-0 resize-none p-4"
                                             required
                                         />
                                     </div>
 
-                                    <div className="space-y-2">
-                                        <Label htmlFor="files" className="text-xs font-bold uppercase tracking-wider text-gray-500">Attachments (Optional)</Label>
-                                        <div className="flex items-center gap-4">
-                                            <div className="relative flex-1">
-                                                <Input
-                                                    id="files"
-                                                    type="file"
-                                                    onChange={handleFileChange}
-                                                    className="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10"
-                                                    multiple
-                                                />
-                                                <div className="h-12 rounded-xl bg-gray-50 dark:bg-gray-900 border border-dashed border-gray-300 dark:border-gray-700 flex items-center px-4 text-gray-400 text-sm">
-                                                    <Paperclip className="w-4 h-4 mr-2" />
-                                                    {formData.files && formData.files.length > 0
-                                                        ? `${formData.files.length} file(s) selected`
-                                                        : "Click to upload files or screenshosts"}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <DialogFooter className="pt-4">
+                                    <div className="flex justify-end gap-10 pt-4">
                                         <Button
                                             type="button"
                                             variant="ghost"
                                             onClick={() => setIsDialogOpen(false)}
-                                            className="rounded-xl h-12 px-6 font-bold text-gray-500 hover:text-gray-900 hover:bg-gray-100"
+                                            className="h-10 px-0 text-xl font-bold text-[#B45309] hover:text-[#92400E] hover:bg-transparent"
                                         >
                                             Cancel
                                         </Button>
                                         <Button
                                             type="submit"
                                             disabled={isSubmitting}
-                                            className="bg-[#B48428] hover:bg-[#966b1d] text-white rounded-xl h-12 px-8 font-bold shadow-lg shadow-amber-500/20"
+                                            variant="ghost"
+                                            className="h-10 px-0 text-xl font-bold text-[#B45309] hover:text-[#92400E] hover:bg-transparent"
                                         >
-                                            {isSubmitting ? (
-                                                <>
-                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                    Sending...
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Send className="mr-2 h-4 w-4" />
-                                                    Submit Request
-                                                </>
-                                            )}
+                                            {isSubmitting ? "Saving..." : "Save"}
                                         </Button>
-                                    </DialogFooter>
+                                    </div>
                                 </form>
                             </DialogContent>
                         </Dialog>

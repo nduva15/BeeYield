@@ -120,10 +120,10 @@ const PollinationSolutions = () => {
 
             {/* Path 3: Disease & Health */}
             <div className="relative group rounded-3xl overflow-hidden border border-border shadow-sm hover:shadow-lg transition-all duration-300">
-              <div className="absolute top-0 left-0 w-full h-2 bg-amber-500"></div>
+              <div className="absolute top-0 left-0 w-full h-2 bg-green-600"></div>
               <div className="p-8 md:p-12 flex flex-col h-full bg-card relative z-10">
-                <div className="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300">
-                  <Shield className="h-8 w-8 text-amber-600" />
+                <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300">
+                  <Shield className="h-8 w-8 text-green-700" />
                 </div>
 
                 <h2 className="text-3xl font-bold mb-4 text-foreground">Disease Defense</h2>
@@ -146,7 +146,7 @@ const PollinationSolutions = () => {
                   </div>
                 </div>
 
-                <Button size="lg" variant="outline" className="w-full gap-2 border-amber-500/20 text-amber-600 hover:bg-amber-500 hover:text-white" asChild>
+                <Button size="lg" variant="outline" className="w-full gap-2 border-green-500/20 text-green-700 hover:bg-green-600 hover:text-white" asChild>
                   <Link to="/diseases">Explore Disease Technology <ArrowRight className="h-4 w-4" /></Link>
                 </Button>
               </div>

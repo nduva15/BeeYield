@@ -20,7 +20,9 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 
 interface AIAssistantViewProps {
-    onTabChange: (tab: string) => void;
+    onTabChange: (tab: string, message?: string) => void;
+    initialMessage?: string;
+    onInitialMessageConsumed?: () => void;
 }
 
 interface Chat {
@@ -38,7 +40,7 @@ interface Message {
     timestamp: string;
 }
 
-const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange }) => {
+const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialMessage, onInitialMessageConsumed }) => {
     const [chats, setChats] = useState<Chat[]>(() => {
         const saved = localStorage.getItem('beeyield_chats');
         return saved ? JSON.parse(saved) : [];
@@ -54,6 +56,20 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange }) => {
     React.useEffect(() => {
         localStorage.setItem('beeyield_chats', JSON.stringify(chats));
     }, [chats]);
+
+    // Handle initial message from other views
+    React.useEffect(() => {
+        if (initialMessage) {
+            setInputValue(initialMessage);
+            onInitialMessageConsumed?.();
+            // Automatically send the message after a short delay to ensure UI is ready
+            const timer = setTimeout(() => {
+                const sendButton = document.getElementById('send-ai-message');
+                if (sendButton) sendButton.click();
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+    }, [initialMessage]);
 
     // Load messages when selecting a chat
     const switchChat = (chatId: string) => {

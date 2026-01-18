@@ -9,7 +9,6 @@ import { Plus, ArrowLeft, Grid3X3, Box, Search, Sun, Cloud, CloudRain, Snowflake
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
-import FirstStepsBanner from './FirstStepsBanner';
 
 interface InspectionsViewProps {
     onTabChange: (tab: string) => void;
@@ -95,8 +94,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
     if (isAddingInspection) {
         return (
             <div className="space-y-6 animate-in fade-in duration-500 pb-12">
-                {/* First Steps Banner */}
-                <FirstStepsBanner onTabChange={onTabChange} />
+
 
                 {/* Back Button */}
                 <button
@@ -418,8 +416,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-12 relative">
-            {/* First Steps Banner */}
-            <FirstStepsBanner onTabChange={onTabChange} />
+
 
             {/* Page Title */}
             <div className="flex justify-between items-center">

@@ -17,8 +17,6 @@ import {
 } from 'recharts';
 
 const MetersAlarms: React.FC = () => {
-    const [showBanner, setShowBanner] = useState(true);
-
     const alarms = [
         {
             id: 1,
@@ -78,45 +76,7 @@ const MetersAlarms: React.FC = () => {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-10">
-            {/* First Steps Banner */}
-            {showBanner && (
-                <Card className="bg-[#FFF8F0] dark:bg-[#2a2018] border-none shadow-sm relative overflow-hidden">
-                    <CardContent className="p-8">
-                        <div className="flex justify-between items-start mb-6">
-                            <div className="space-y-2">
-                                <h2 className="text-xl font-bold text-gray-900 dark:text-white">First steps</h2>
-                                <p className="text-gray-600 dark:text-gray-400">Start here to set up your apiaries, devices, and measurements.</p>
-                            </div>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 border-gray-200 dark:border-gray-700"
-                                onClick={() => setShowBanner(false)}
-                            >
-                                Hide
-                            </Button>
-                        </div>
 
-                        <div className="space-y-3">
-                            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Quick Links</p>
-                            <div className="flex flex-wrap gap-3">
-                                {[
-                                    "Add apiaries and hives",
-                                    "My devices",
-                                    "Measurement data",
-                                    "Support Center",
-                                    "BeeHUB Agro Intelligence",
-                                    "Settings"
-                                ].map((link) => (
-                                    <Button key={link} variant="secondary" className="bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 shadow-sm border border-gray-100 dark:border-gray-700 rounded-full text-sm">
-                                        {link}
-                                    </Button>
-                                ))}
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
 
             <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">Alarms & events</h1>
 
