@@ -1,28 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Search, Moon, Sun, BellRing, LifeBuoy, Settings2, LogOut,
-    Sparkles, Command, User, ChevronDown, Check
+    Search, Moon, Sun, Bell, LifeBuoy, Settings, LogOut,
+    ChevronDown, Check, Signal
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { toast } from 'sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { LanguageCode } from '@/lib/translations';
+import { cn } from '@/lib/utils';
 
 interface DashboardHeaderProps {
     onLogout: () => void;
     onTabChange: (tab: string) => void;
+    activeTab: string;
 }
 
 const languages = [
@@ -35,218 +32,120 @@ const languages = [
     { code: 'PL' as LanguageCode, name: 'Polski', country: 'Poland', flag: 'https://flagcdn.com/pl.svg' },
 ];
 
-const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onLogout, onTabChange }) => {
+const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onLogout, onTabChange, activeTab }) => {
     const [theme, setTheme] = useState<'light' | 'dark'>('light');
-    const [isSearchFocused, setIsSearchFocused] = useState(false);
     const { language, setLanguage, t } = useLanguage();
     const { user } = useAuth();
 
-    // Find initial selected language object
-    const selectedLang = languages.find(l => l.code === language) || languages[0];
-
-    // Initialize theme
     useEffect(() => {
         const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
         const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         const initialTheme = savedTheme || systemTheme;
-
         setTheme(initialTheme);
-        if (initialTheme === 'dark') {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
+        if (initialTheme === 'dark') document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
     }, []);
 
     const toggleTheme = () => {
         const newTheme = theme === 'light' ? 'dark' : 'light';
         setTheme(newTheme);
         localStorage.setItem('theme', newTheme);
+        if (newTheme === 'dark') document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
+    };
 
-        if (newTheme === 'dark') {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
+    const selectedLang = languages.find(l => l.code === language) || languages[0];
+
+    const getTitle = () => {
+        switch (activeTab) {
+            case 'devices': return { title: 'MEASUREMENT DATA', subtitle: 'BeeYield devices assigned to your hives.' };
+            case 'assistant': return { title: 'AI ASSISTANT', subtitle: 'Intelligent beekeeping insights.' };
+            case 'places': return { title: 'MY PLACES', subtitle: 'Manage your apiaries and locations.' };
+            case 'beeyield': return { title: 'BEEYIELD HIVES', subtitle: 'Comprehensive hive management.' };
+            case 'billing': return { title: 'BILLING', subtitle: 'Manage your subscription and usage.' };
+            case 'support': return { title: 'SUPPORT CENTER', subtitle: 'Get help and track requests.' };
+            default:
+                if (activeTab.startsWith('meters')) return { title: 'METERS', subtitle: 'Energy and consumption monitoring.' };
+                return { title: 'DASHBOARD', subtitle: 'Welcome back to your ecosystem.' };
         }
     };
 
-    const handleLanguageChange = (lang: typeof languages[0]) => {
-        setLanguage(lang.code);
-        toast.success(`Language changed to ${lang.name} (${lang.country})`);
-    };
-
-    const actionIcons = [
-        { icon: Sparkles, id: 'assistant', label: t('ai'), color: 'text-purple-500' },
-        { icon: LifeBuoy, id: 'support', label: t('help'), color: 'text-blue-500' },
-        { icon: BellRing, id: 'requests', label: t('notifications'), color: 'text-orange-500' },
-        { icon: Settings2, id: 'settings', label: t('settings'), color: 'text-gray-500' }
-    ];
+    const headerContent = getTitle();
 
     return (
-        <motion.header
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
-            className="flex items-center justify-between py-3 px-6 m-4 mb-2 rounded-[2rem] bg-white/60 dark:bg-black/40 backdrop-blur-2xl border border-white/40 dark:border-white/5 shadow-premium sticky top-4 z-50 transition-all duration-300"
-        >
-            {/* Search - Spotlight Style */}
-            <div className={`flex-1 max-w-2xl transition-all duration-500 ${isSearchFocused ? 'scale-[1.02]' : ''}`}>
-                <div className="relative group">
-                    <div className={`absolute inset-0 bg-gradient-to-r from-primary/20 to-amber-500/20 rounded-2xl blur-xl opacity-0 transition-opacity duration-500 ${isSearchFocused ? 'opacity-100' : ''}`} />
-                    <div className="relative flex items-center bg-white/50 dark:bg-white/5 border border-white/20 dark:border-white/5 rounded-2xl overflow-hidden backdrop-blur-sm transition-all shadow-inner hover:shadow-md focus-within:shadow-lg focus-within:ring-2 focus-within:ring-primary/20">
-                        <Search className={`ml-4 w-5 h-5 transition-colors ${isSearchFocused ? 'text-primary' : 'text-muted-foreground'}`} />
-                        <Input
-                            placeholder={t('search_placeholder')}
-                            onFocus={() => setIsSearchFocused(true)}
-                            onBlur={() => setIsSearchFocused(false)}
-                            className="border-none bg-transparent h-12 w-full focus-visible:ring-0 placeholder:text-muted-foreground/50 text-base"
-                        />
-                        <div className="pr-4 hidden md:flex items-center gap-2">
-                            <kbd className="pointer-events-none inline-flex h-6 select-none items-center gap-1 rounded bg-muted/50 px-2 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-                                <span className="text-xs">⌘</span>K
-                            </kbd>
-                        </div>
-                    </div>
-                </div>
+        <div className="bg-white dark:bg-[#1A1816] border-b border-slate-100 dark:border-white/10 px-8 py-4 flex items-center justify-between gap-4 sticky top-0 z-50 shadow-[0_1px_3px_rgba(0,0,0,0.02)] transition-all">
+            {/* Title Area */}
+            <div className="flex flex-col min-w-[200px]">
+                <h1 className="text-2xl font-black text-[#0F172A] dark:text-white uppercase tracking-tight">{headerContent.title}</h1>
+                <p className="text-[13px] text-slate-400 dark:text-slate-500 font-medium truncate">{headerContent.subtitle}</p>
             </div>
 
-            {/* Right Actions */}
-            <div className="flex items-center gap-3 ml-6">
+            {/* Actions Area */}
+            <div className="flex items-center gap-4 flex-1 justify-end">
+                {/* Search */}
+                <div className="relative group max-w-[400px] flex-1">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+                    <Input
+                        placeholder="Search apiaries, beehives"
+                        className="w-full bg-slate-50/50 dark:bg-white/5 border-slate-200/60 dark:border-white/10 pl-11 h-12 rounded-full text-sm font-medium focus-visible:ring-0 focus-visible:border-blue-400 transition-all placeholder:text-slate-400"
+                    />
+                </div>
 
-                {/* Language Dropdown */}
+                {/* Language Selector */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="hidden lg:flex items-center gap-3 px-5 h-11 rounded-full bg-white/60 dark:bg-white/5 border border-white/40 dark:border-white/10 hover:bg-white/80 active:bg-white/90 transition-all font-bold text-xs shadow-sm"
-                        >
-                            <div className="w-6 h-4 rounded-[2px] overflow-hidden shadow-sm border border-black/10">
+                        <Button variant="ghost" className="h-12 px-5 rounded-full bg-slate-50/50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 gap-3 hover:bg-slate-100/50 transition-all group shrink-0">
+                            <div className="w-5 h-3 overflow-hidden shadow-sm border border-black/5">
                                 <img src={selectedLang.flag} alt={selectedLang.country} className="w-full h-full object-cover" />
                             </div>
-                            <span className="text-foreground tracking-widest font-black uppercase">{selectedLang.name}</span>
-                            <ChevronDown className="w-4 h-4 text-muted-foreground/50" />
-                        </motion.button>
+                            <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300">{selectedLang.name}</span>
+                        </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-60 rounded-[2rem] p-3 bg-white/90 dark:bg-black/90 backdrop-blur-2xl border border-white/40 dark:border-white/10 z-[60] shadow-2xl">
-                        <DropdownMenuLabel className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-4 py-2 opacity-70">{t('region_language')}</DropdownMenuLabel>
+                    <DropdownMenuContent align="end" className="w-60 rounded-2xl p-2 bg-white dark:bg-[#1A1816] border-slate-200 dark:border-white/10 shadow-xl">
                         {languages.map((lang) => (
                             <DropdownMenuItem
                                 key={lang.code}
-                                onClick={() => handleLanguageChange(lang)}
-                                className={`rounded-xl px-3 py-2 cursor-pointer transition-colors mb-1 last:mb-0 focus:bg-primary/10 focus:text-primary ${language === lang.code ? 'bg-primary/10 text-primary' : 'hover:bg-primary/5'}`}
+                                onClick={() => setLanguage(lang.code)}
+                                className={cn(
+                                    "flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors mb-0.5 last:mb-0",
+                                    language === lang.code ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400" : "hover:bg-slate-50 dark:hover:bg-white/5"
+                                )}
                             >
-                                <div className="w-8 h-5 rounded-[2px] overflow-hidden shadow-sm border border-black/10 mr-3">
+                                <div className="w-6 h-4 overflow-hidden border border-black/5 shrink-0">
                                     <img src={lang.flag} alt={lang.country} className="w-full h-full object-cover" />
                                 </div>
-                                <div className="flex flex-col flex-1">
-                                    <span className="text-sm font-semibold leading-tight">{lang.country}</span>
-                                    <span className="text-[10px] text-muted-foreground/80 uppercase font-medium">{lang.name}</span>
-                                </div>
-                                {language === lang.code && <Check className="w-4 h-4 ml-2" />}
+                                <span className="text-sm font-semibold">{lang.name}</span>
+                                {language === lang.code && <Check className="w-4 h-4 ml-auto" />}
                             </DropdownMenuItem>
                         ))}
                     </DropdownMenuContent>
                 </DropdownMenu>
 
-                <div className="h-8 w-px bg-gradient-to-b from-transparent via-gray-200 dark:via-white/10 to-transparent mx-1 hidden sm:block" />
-
-                {/* Interactive Icons */}
-                <div className="flex items-center gap-2">
-                    {actionIcons.map((item) => (
-                        <motion.button
-                            key={item.id}
-                            whileHover={{ scale: 1.1, y: -2 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => onTabChange(item.id)}
-                            className="relative group w-11 h-11 rounded-2xl bg-white/40 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 flex items-center justify-center transition-all border border-transparent hover:border-white/50 dark:hover:border-white/10 hover:shadow-lg"
-                        >
-                            <item.icon className={`w-5 h-5 text-muted-foreground group-hover:${item.color} transition-colors duration-300`} />
-                            {item.id === 'requests' && (
-                                <span className="absolute top-2.5 right-3 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-black shadow-sm" />
-                            )}
-                        </motion.button>
-                    ))}
-
-                    {/* Theme Toggle - Animated */}
-                    <motion.button
-                        whileHover={{ rotate: 90 }}
-                        whileTap={{ scale: 0.8 }}
-                        onClick={toggleTheme}
-                        className="w-11 h-11 rounded-2xl bg-white/40 dark:bg-white/5 hover:bg-amber-100 dark:hover:bg-amber-900/30 flex items-center justify-center transition-all text-muted-foreground hover:text-amber-500"
-                    >
-                        <AnimatePresence mode="wait">
-                            {theme === 'light' ? (
-                                <motion.div
-                                    key="sun"
-                                    initial={{ scale: 0, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                    exit={{ scale: 0, opacity: 0 }}
-                                >
-                                    <Sun className="w-5 h-5 fill-current" />
-                                </motion.div>
-                            ) : (
-                                <motion.div
-                                    key="moon"
-                                    initial={{ scale: 0, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                    exit={{ scale: 0, opacity: 0 }}
-                                >
-                                    <Moon className="w-5 h-5 fill-current" />
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </motion.button>
+                {/* Action Icons */}
+                <div className="flex items-center gap-2 shrink-0">
+                    <Button variant="ghost" size="icon" onClick={toggleTheme} className="w-12 h-12 rounded-2xl bg-slate-50/50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 hover:bg-slate-100/50 transition-all">
+                        {theme === 'light' ? <Sun className="w-5 h-5 text-slate-500" /> : <Moon className="w-5 h-5 text-blue-400" />}
+                    </Button>
+                    <Button variant="ghost" size="icon" className="w-12 h-12 rounded-2xl bg-slate-50/50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 hover:bg-slate-100/50 relative transition-all">
+                        <Bell className="w-5 h-5 text-slate-500" />
+                        <span className="absolute top-3.5 right-3.5 w-2 h-2 bg-blue-500 rounded-full border-2 border-white dark:border-[#1A1816]" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => onTabChange('support')} className="w-12 h-12 rounded-2xl bg-slate-50/50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 hover:bg-slate-100/50 transition-all focus:bg-slate-100/50">
+                        <LifeBuoy className="w-5 h-5 text-slate-500" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="w-12 h-12 rounded-2xl bg-slate-50/50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 hover:bg-slate-100/50 transition-all">
+                        <Signal className="w-5 h-5 text-slate-500" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => onTabChange('settings')} className="w-12 h-12 rounded-2xl bg-slate-50/50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 hover:bg-slate-100/50 transition-all">
+                        <Settings className="w-5 h-5 text-slate-500" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={onLogout} className="w-12 h-12 rounded-2xl bg-slate-50/50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 hover:bg-red-50 dark:hover:bg-red-500/10 group transition-all">
+                        <LogOut className="w-5 h-5 text-slate-500 group-hover:text-red-500 transition-colors" />
+                    </Button>
                 </div>
-
-                {/* Profile Section */}
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <motion.button
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            className="ml-2 pl-1 pr-1 py-1 flex items-center gap-3 bg-white/50 dark:bg-white/5 rounded-full border border-white/50 dark:border-white/10 shadow-sm hover:shadow-md transition-all cursor-pointer group"
-                        >
-                            <Avatar className="h-9 w-9 border-2 border-white dark:border-black shadow-sm">
-                                <AvatarImage src={user?.user_metadata?.avatar_url || "https://ui.shadcn.com/avatars/01.png"} alt={user?.user_metadata?.first_name || "Timothy"} />
-                                <AvatarFallback className="bg-gradient-to-br from-primary to-amber-600 text-white font-bold">
-                                    {user ? (user.user_metadata?.first_name?.charAt(0) + (user.user_metadata?.last_name?.charAt(0) || user.email?.charAt(0).toUpperCase())) : "TN"}
-                                </AvatarFallback>
-                            </Avatar>
-                            <div className="hidden xl:flex flex-col items-start mr-3">
-                                <span className="text-xs font-bold text-foreground leading-none">{user?.user_metadata?.first_name || "Timothy"} {user?.user_metadata?.last_name || 'Nduva'}</span>
-                                <span className="text-[10px] text-muted-foreground font-medium leading-none mt-1 group-hover:text-primary transition-colors">{user?.user_metadata?.role || 'Professional'}</span>
-                            </div>
-                            <ChevronDown className="w-4 h-4 text-muted-foreground mr-2 hidden xl:block" />
-                        </motion.button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56" align="end" forceMount>
-                        <DropdownMenuLabel className="font-normal">
-                            <div className="flex flex-col space-y-1">
-                                <p className="text-sm font-medium leading-none">{user?.user_metadata?.first_name || "Timothy"} {user?.user_metadata?.last_name || "Nduva"}</p>
-                                <p className="text-xs leading-none text-muted-foreground">{user?.email || "timothy@beeyield.com"}</p>
-                            </div>
-                        </DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => onTabChange('settings')}>
-                            <User className="mr-2 h-4 w-4" />
-                            <span>{t('profile')}</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => onTabChange('billing')}>
-                            <Command className="mr-2 h-4 w-4" />
-                            <span>{t('billing')}</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-red-600 dark:text-red-400 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950/20" onClick={onLogout}>
-                            <LogOut className="mr-2 h-4 w-4" />
-                            <span>{t('logout')}</span>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
             </div>
-        </motion.header>
+        </div>
     );
 };
 
 export default DashboardHeader;
-

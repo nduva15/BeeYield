@@ -3,8 +3,8 @@ import { IoTDevice, SensorReading } from '@/services/beeyieldService';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
-    Plus, Battery, Signal, Clock, MapPin, X, MoreHorizontal,
-    Thermometer, Droplets, Search, Filter, Cpu, Wifi
+    Plus, Battery, Signal, Search, Filter, Cpu, Wifi,
+    Moon, Sun, Bell, Headset, Settings, LogOut, ChevronDown, Check
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -12,20 +12,24 @@ import AddDeviceModal from './AddDeviceModal';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 
-// Modern Stat Card
-const StatCard = ({ label, value, color, icon: Icon }: { label: string, value: number | string, color: string, icon?: any }) => (
-    <motion.div
-        whileHover={{ y: -4, boxShadow: "0 10px 30px -10px rgba(0,0,0,0.1)" }}
-        className="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md p-5 rounded-3xl border border-white/20 dark:border-white/10 shadow-sm relative overflow-hidden group"
-    >
-        <div className={cn("absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity", color)}>
-            {Icon && <Icon className="w-16 h-16" />}
-        </div>
-        <p className="text-[11px] font-bold text-muted-foreground/80 uppercase tracking-widest mb-2">{label}</p>
-        <p className="text-3xl font-bold text-foreground tracking-tight">{value}</p>
-        <div className={cn("absolute bottom-0 left-0 w-full h-1", color.replace('text-', 'bg-'))} />
-    </motion.div>
+// Stat Card Component matching screenshot
+const StatCard = ({ label, value, colorClass }: { label: string, value: number | string, colorClass: string }) => (
+    <div className="bg-white dark:bg-[#111111] p-4 rounded-sm border border-gray-100 dark:border-white/5 shadow-sm relative overflow-hidden h-24 flex flex-col justify-between">
+        <div className={cn("absolute top-0 left-0 w-full h-[3px]", colorClass)} />
+        <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{label}</p>
+        <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">{value}</p>
+    </div>
+);
+
+// Alert Card Component matching screenshot
+const AlertCard = ({ label, value, colorClass }: { label: string, value: number | string, colorClass: string }) => (
+    <div className="bg-white dark:bg-[#111111] p-4 rounded-lg border border-gray-100 dark:border-white/5 shadow-sm h-24 flex flex-col justify-between">
+        <div className={cn("w-full h-[2px] mb-2 rounded-full", colorClass)} />
+        <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-tighter leading-tight">{label}</p>
+        <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">{value}</p>
+    </div>
 );
 
 interface MyDevicesViewProps {
@@ -38,8 +42,11 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
     const [localDevices, setLocalDevices] = useState<IoTDevice[]>(initialDevices);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-    const { t } = useLanguage();
+    const [showShortId, setShowShortId] = useState(false);
+    const [showLastVal, setShowLastVal] = useState(false);
+    const { t, language } = useLanguage();
+    const { signOut } = useAuth();
+    const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
     // Sync local devices when initialDevices changes
     useEffect(() => {
@@ -51,207 +58,177 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
         toast.success(`Device ${newDevice.device_code} added successfully!`);
     };
 
-    // Filter Logic
-    const filteredDevices = localDevices.filter(d =>
-        d.device_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        d.device_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        d.location_name?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const toggleTheme = () => {
+        const newTheme = theme === 'light' ? 'dark' : 'light';
+        setTheme(newTheme);
+        if (newTheme === 'dark') document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
+    };
 
-    // Derived Stats
+    // Stats calculations
     const totalDevices = localDevices.length;
     const withMeasurement = localDevices.filter(d => readings.some(r => r.device_id === d.id)).length;
+    const now = new Date();
+    const oneDay = 24 * 60 * 60 * 1000;
+
+    const measured24h = localDevices.filter(d => readings.some(r => r.device_id === d.id && (now.getTime() - new Date(r.timestamp).getTime() < oneDay))).length;
+    const measured48h = localDevices.filter(d => readings.some(r => r.device_id === d.id && (now.getTime() - new Date(r.timestamp).getTime() < oneDay * 2))).length;
+    const measured7d = localDevices.filter(d => readings.some(r => r.device_id === d.id && (now.getTime() - new Date(r.timestamp).getTime() < oneDay * 7))).length;
+    const measured30d = localDevices.filter(d => readings.some(r => r.device_id === d.id && (now.getTime() - new Date(r.timestamp).getTime() < oneDay * 30))).length;
+    const measured365d = localDevices.filter(d => readings.some(r => r.device_id === d.id && (now.getTime() - new Date(r.timestamp).getTime() < oneDay * 365))).length;
+
+    const noMeasurement5d = localDevices.filter(d => !readings.some(r => r.device_id === d.id && (now.getTime() - new Date(r.timestamp).getTime() < oneDay * 5))).length;
     const lowBattery = localDevices.filter(d => d.battery_level < 20).length;
 
-    // Animation Variants
-    const container = {
-        hidden: { opacity: 0 },
-        show: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.1
-            }
-        }
-    };
-
-    const item = {
-        hidden: { y: 20, opacity: 0 },
-        show: { y: 0, opacity: 1 }
-    };
-
     return (
-        <div className="space-y-8 pb-12">
+        <div className="space-y-6 pb-20 -mt-2">
+            <div>
+                <h1 className="text-3xl font-black text-slate-900 dark:text-white px-2 mb-8 tracking-tight">My devices</h1>
+            </div>
 
-            {/* Header Area */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="space-y-2"
-                >
-                    <h1 className="text-4xl font-black text-foreground tracking-tight">{t('device_command')}</h1>
-                    <p className="text-lg text-muted-foreground max-w-lg">
-                        {t('device_subtitle')}
-                    </p>
-                </motion.div>
+            {/* Stats Row 1 */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                <StatCard label={t('total_devices')} value={totalDevices} colorClass="bg-blue-600" />
+                <StatCard label={t('with_measurement')} value={withMeasurement} colorClass="bg-sky-400" />
+                <StatCard label={t('measured_24h')} value={measured24h} colorClass="bg-emerald-500" />
+                <StatCard label={t('measured_48h')} value={measured48h} colorClass="bg-emerald-500" />
+                <StatCard label={t('measured_7d')} value={measured7d} colorClass="bg-orange-400" />
+            </div>
 
-                <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="flex gap-3"
-                >
+            {/* Stats Row 2 */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 max-w-[40%]">
+                <StatCard label={t('measured_30d')} value={measured30d} colorClass="bg-orange-500" />
+                <StatCard label={t('measured_365d')} value={measured365d} colorClass="bg-red-500" />
+            </div>
+
+            {/* Attention Needed Section */}
+            <div className="mt-8 bg-slate-50/50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/10 p-6">
+                <h3 className="text-sm font-black text-slate-800 dark:text-slate-200 tracking-tight">{t('attention_needed')}</h3>
+                <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 mt-1">{t('attention_subtitle')}</p>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                    <AlertCard label={t('no_measurement_5d')} value={noMeasurement5d} colorClass="bg-red-500" />
+                    <AlertCard label={t('no_measurement_24h_5d')} value={0} colorClass="bg-orange-400" />
+                    <AlertCard label={t('low_battery')} value={lowBattery} colorClass="bg-orange-400" />
+                    <AlertCard label={t('weak_signal')} value={0} colorClass="bg-blue-500" />
+                </div>
+
+                <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mt-6 px-1">{t('all_healthy')}</p>
+            </div>
+
+            {/* Actions Bar */}
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 mt-8">
+                <div className="flex items-center gap-2">
+                    <div className="relative">
+                        <span className="absolute -top-2 left-3 bg-white dark:bg-[#000000] px-1 text-[10px] font-bold text-slate-400 z-10">{t('apiary')}</span>
+                        <Select defaultValue="all">
+                            <SelectTrigger className="w-64 h-11 rounded-lg border-slate-300 dark:border-white/10 bg-white dark:bg-black/20 font-bold text-slate-700 dark:text-slate-300">
+                                <SelectValue placeholder={t('all_apiaries')} />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl">
+                                <SelectItem value="all">{t('all_apiaries')}</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-3">
                     <Button
                         onClick={() => setIsAddModalOpen(true)}
-                        className="rounded-2xl h-12 px-6 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 font-bold"
+                        className="h-11 px-6 rounded-full bg-[#6EE7B7] hover:bg-[#34D399] text-slate-900 font-bold shadow-lg shadow-emerald-500/10"
                     >
-                        <Plus className="w-5 h-5 mr-2" /> {t('deploy_sensor')}
+                        <Plus className="w-4 h-4 mr-2" /> {t('add_device')}
                     </Button>
-                </motion.div>
-            </div>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <StatCard label={t('active_units')} value={totalDevices} color="text-blue-500" icon={Cpu} />
-                <StatCard label={t('online')} value={withMeasurement} color="text-emerald-500" icon={Wifi} />
-                <StatCard label={t('low_battery')} value={lowBattery} color="text-red-500" icon={Battery} />
-                <StatCard label={t('network_load')} value="98%" color="text-purple-500" icon={Signal} />
-            </div>
-
-            {/* Filter Bar */}
-            <div className="bg-white/40 dark:bg-black/20 backdrop-blur-sm p-4 rounded-3xl border border-white/20 dark:border-white/5 flex flex-col md:flex-row gap-4 items-center justify-between">
-                <div className="relative w-full md:w-96">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                        placeholder={t('search_devices')}
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-11 h-12 rounded-2xl bg-white dark:bg-black/40 border-transparent focus:bg-white dark:focus:bg-black focus:border-primary/20 transition-all font-medium"
-                    />
+                    <Button
+                        variant="outline"
+                        onClick={() => setShowShortId(!showShortId)}
+                        className={cn(
+                            "h-11 px-6 rounded-full font-bold shadow-sm transition-all",
+                            showShortId
+                                ? "bg-[#3B82F6] hover:bg-[#2563EB] text-white border-transparent"
+                                : "bg-white dark:bg-black/20 border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-200"
+                        )}
+                    >
+                        {showShortId ? (
+                            <div className="w-2.5 h-2.5 rounded-full bg-[#4ADE80] mr-2 shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
+                        ) : (
+                            <div className="w-3 h-3 rounded-full border-2 border-slate-200 flex items-center justify-center mr-2">
+                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                            </div>
+                        )}
+                        {t('show_short_id')}
+                    </Button>
+                    <Button
+                        onClick={() => setShowLastVal(!showLastVal)}
+                        className={cn(
+                            "h-11 px-6 rounded-full font-bold shadow-lg transition-all",
+                            showLastVal
+                                ? "bg-[#3B82F6] hover:bg-[#2563EB] text-white shadow-blue-500/20"
+                                : "bg-white dark:bg-black/20 border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-200 border"
+                        )}
+                    >
+                        {showLastVal ? (
+                            <div className="w-2.5 h-2.5 rounded-full bg-[#4ADE80] mr-2 shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
+                        ) : (
+                            <div className="w-3 h-3 rounded-full border-2 border-slate-200 flex items-center justify-center mr-2">
+                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                            </div>
+                        )}
+                        {t('show_last_measurement')}
+                    </Button>
                 </div>
-
-                <div className="flex gap-2 w-full md:w-auto">
-                    <Select defaultValue="all">
-                        <SelectTrigger className="w-full md:w-[180px] h-12 rounded-2xl bg-white dark:bg-black/40 border-transparent">
-                            <SelectValue placeholder="Status" />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-2xl">
-                            <SelectItem value="all">{t('all_status')}</SelectItem>
-                            <SelectItem value="active">{t('active')}</SelectItem>
-                            <SelectItem value="offline">{t('offline')}</SelectItem>
-                            <SelectItem value="warning">{t('warning')}</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <Button variant="ghost" className="h-12 w-12 rounded-2xl hover:bg-white/50">
-                        <Filter className="w-5 h-5 text-muted-foreground" />
-                    </Button>
-                </div>
             </div>
 
-            {/* Devices Grid */}
-            {filteredDevices.length === 0 ? (
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="flex flex-col items-center justify-center py-24 text-center bg-white/40 dark:bg-white/5 rounded-[3rem] border-2 border-dashed border-gray-200 dark:border-white/10"
-                >
-                    <div className="w-24 h-24 bg-gray-50 dark:bg-white/5 rounded-3xl flex items-center justify-center mb-6 shadow-inner">
-                        <Search className="w-10 h-10 text-gray-300 dark:text-gray-600" />
-                    </div>
-                    <h3 className="text-xl font-bold text-foreground mb-2">{t('no_devices')}</h3>
-                    <p className="text-muted-foreground max-w-sm mb-8">
-                        {t('click_add')}
-                    </p>
-                    <Button onClick={() => setIsAddModalOpen(true)} variant="outline" className="rounded-xl h-12 px-8 border-primary text-primary hover:bg-primary/5">
-                        {t('add_first_device')}
-                    </Button>
-                </motion.div>
-            ) : (
-                <motion.div
-                    variants={container}
-                    initial="hidden"
-                    animate="show"
-                    className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
-                >
-                    {filteredDevices.map((device) => {
-                        // Find latest reading for this device logic placeholder
-                        // For demo, we assume readings prop connects here
-                        const hasReading = readings.some(r => r.device_id === device.id);
-
-                        return (
-                            <motion.div
-                                key={device.id}
-                                variants={item}
-                                whileHover={{ y: -6, transition: { duration: 0.2 } }}
-                                className="group bg-white dark:bg-[#09090b] rounded-[2.5rem] p-6 shadow-xl shadow-gray-200/50 dark:shadow-none border border-gray-100 dark:border-[#1e1e1e] relative overflow-hidden"
-                            >
-                                {/* Floating Status Pill */}
-                                <div className="absolute top-6 right-6">
-                                    <div className={cn(
-                                        "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm",
-                                        device.status === 'active'
-                                            ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400"
-                                            : "bg-gray-100 text-gray-500 dark:bg-white/10 dark:text-gray-400"
-                                    )}>
-                                        <div className={cn(
-                                            "w-1.5 h-1.5 rounded-full",
-                                            device.status === 'active' ? "bg-emerald-500 animate-pulse" : "bg-gray-400"
-                                        )} />
-                                        {device.status === 'active' ? t('online') : t('offline')}
-                                    </div>
-                                </div>
-
-                                {/* Icon & Name */}
-                                <div className="flex items-start gap-4 mb-6">
-                                    <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-500/20 dark:to-indigo-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-inner">
-                                        <Cpu className="w-8 h-8" />
-                                    </div>
-                                    <div className="mt-1">
-                                        <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">{device.device_name}</h3>
-                                        <p className="text-xs font-mono text-muted-foreground uppercase tracking-wider mt-1">{device.device_code}</p>
-                                    </div>
-                                </div>
-
-                                {/* Metrics Area */}
-                                <div className="grid grid-cols-2 gap-3 mb-6">
-                                    <div className="bg-gray-50/80 dark:bg-white/5 rounded-2xl p-4 flex flex-col justify-between h-24 border border-gray-100 dark:border-white/5">
-                                        <Thermometer className="w-5 h-5 text-orange-400 mb-2" />
-                                        <div>
-                                            <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('temp')}</p>
-                                            <p className="text-xl font-bold text-foreground">24.5°C</p>
-                                        </div>
-                                    </div>
-                                    <div className="bg-gray-50/80 dark:bg-white/5 rounded-2xl p-4 flex flex-col justify-between h-24 border border-gray-100 dark:border-white/5">
-                                        <Droplets className="w-5 h-5 text-blue-400 mb-2" />
-                                        <div>
-                                            <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('humidity')}</p>
-                                            <p className="text-xl font-bold text-foreground">62%</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Footer Info */}
-                                <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-white/5">
-                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                        <MapPin className="w-4 h-4" />
-                                        <span className="truncate max-w-[120px]">{device.location_name || 'Unassigned'}</span>
-                                    </div>
-
-                                    <div className="flex items-center gap-3">
-                                        <div className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground">
-                                            <Battery className={cn("w-4 h-4", device.battery_level > 20 ? "text-green-500" : "text-red-500")} />
-                                            {device.battery_level}%
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <Button variant="ghost" size="icon" className="absolute bottom-4 right-4 rounded-xl hover:bg-gray-100 dark:hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <MoreHorizontal className="w-5 h-5" />
-                                </Button>
-                            </motion.div>
-                        );
-                    })}
-                </motion.div>
-            )}
+            {/* Table */}
+            <div className="mt-8">
+                <div className="bg-[#FFF9F6] dark:bg-[#1A1816]/50 rounded-t-2xl border-b border-rose-100 dark:border-rose-900/20">
+                    <table className="w-full text-left">
+                        <thead>
+                            <tr className="h-14">
+                                {showShortId && <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap pl-8">{t('table_device_id')}</th>}
+                                <th className={cn("text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap", !showShortId && "pl-8")}>{t('table_status')}</th>
+                                <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">{t('table_battery')}</th>
+                                <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">{t('table_signal')}</th>
+                                <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">{t('table_last_ago')}</th>
+                                <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">{t('table_apiary')}</th>
+                                <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">{t('table_hive')}</th>
+                                {showLastVal && <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">{t('table_last_val')}</th>}
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                        <tbody>
+                            {localDevices.length === 0 ? (
+                                <tr>
+                                    <td colSpan={8} className="py-24 text-center text-slate-400 font-bold uppercase tracking-widest text-xs">
+                                        No hardware units detected
+                                    </td>
+                                </tr>
+                            ) : (
+                                localDevices.map((device, i) => (
+                                    <tr key={device.id} className="h-16 border-b border-slate-50 dark:border-white/5 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                                        {showShortId && <td className="px-8 font-mono text-xs font-bold text-slate-500">{device.device_code}</td>}
+                                        <td className={cn("px-6", !showShortId && "pl-8")}>
+                                            <div className="flex items-center gap-2">
+                                                <div className={cn("w-2 h-2 rounded-full", device.status === 'active' ? 'bg-emerald-500' : 'bg-slate-300')} />
+                                                <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-tight">{device.status === 'active' ? t('online') : t('offline')}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 font-bold text-xs text-slate-600">{device.battery_level}%</td>
+                                        <td className="px-6 font-bold text-xs text-slate-600">92%</td>
+                                        <td className="px-6 font-bold text-xs text-slate-600">2 min ago</td>
+                                        <td className="px-6 font-bold text-xs text-slate-600">{device.location_name || 'Global'}</td>
+                                        <td className="px-6 font-bold text-xs text-slate-600">Hive #1</td>
+                                        {showLastVal && <td className="px-6 font-bold text-sm text-slate-800 dark:text-slate-200">25.4°C</td>}
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
             <AddDeviceModal
                 open={isAddModalOpen}

@@ -14,7 +14,8 @@ load_dotenv("../.env")
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 SOURCE_DIRS = [
     os.path.join(BASE_DIR, "src/pages"),
-    os.path.join(BASE_DIR, "src/components")
+    os.path.join(BASE_DIR, "src/components"),
+    os.path.join(BASE_DIR, "src/data")
 ]
 
 KNOWLEDGE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../app/data/knowledge_base.json"))
@@ -142,8 +143,40 @@ async def sync_all():
                         fpath = os.path.join(root, file)
                         with open(fpath, 'r', encoding='utf-8') as f:
                             content = f.read()
+                            
+                            # GENERIC STRUCTURED DATA EXTRACTOR for all bee*Data.ts files
+                            if file.startswith("bee") and file.endswith("Data.ts"):
+                                # Extract topic name and its full block content
+                                blocks = re.findall(r'"([^"]+)":\s*\{([^\}]+)\}', content, flags=re.S)
+                                for subtopic, details in blocks:
+                                    clean_details = details.replace('\n', ' ').replace('"', '').strip()
+                                    
+                                    # Handle references specifically if they exist in the block
+                                    ref_match = re.search(r'references:\s*\[(.*?)\]', details, flags=re.S)
+                                    refs_text = ""
+                                    if ref_match:
+                                        refs = [r.strip().replace("'", "").replace('"', '') for r in ref_match.group(1).split(',')]
+                                        refs_text = "\n\nREFERENCES:\n- " + "\n- ".join(refs)
+                                        clean_details = re.sub(r'references:\s*\[.*?\]', '', clean_details, flags=re.S).strip()
+
+                                    # Format the content based on the file prefix for context
+                                    prefix = file.replace("bee", "").replace("Data.ts", "").upper()
+                                    source_label = f"BEE_{prefix}_CATALOG" if prefix else "BEE_GENERAL_KNOWLEDGE"
+                                    
+                                    # Fix spacing for key-value pairs
+                                    clean_details = re.sub(r'(\w+):', r'\n\1:', clean_details).strip()
+                                    
+                                    kb_chunks.append({
+                                        "source": source_label,
+                                        "subtopic": subtopic,
+                                        "content": f"{source_label} - {subtopic}:\n\n{clean_details}{refs_text}"
+                                    })
+                                continue
+
                             kb_chunks.extend(extract_structured_chunks(content, os.path.basename(fpath)))
-                    except: continue
+                    except Exception as e:
+                        print(f"Skipping {file}: {e}")
+                        continue
 
     async with httpx.AsyncClient() as client:
         if SUPABASE_URL and SUPABASE_KEY:

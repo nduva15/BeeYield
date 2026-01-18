@@ -1,0 +1,1090 @@
+export interface SymptomDetail {
+    scientificName?: string;
+    signs: string;
+    symptoms: string;
+    detection: string;
+    treatment: string;
+    prevention: string;
+    transmission: string;
+    riskLevel: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
+    steps: string[];
+    references?: string[];
+}
+
+export const beeHealthData: Record<string, SymptomDetail> = {
+    // === BACTERIAL DISEASES ===
+    "American Foulbrood (AFB)": {
+        scientificName: "Paenibacillus larvae",
+        signs: "Sunken, dark, perforated cappings; 'pupal tongue' protruding from remains.",
+        symptoms: "Larvae turn coffee-brown and ropy; distinct 'foul' decayed-fish odor.",
+        detection: "Rope Test; Holst Milk Test; EFD Diagnostic Kits.",
+        treatment: "Incineration of bees and equipment; scorching non-combustibles.",
+        prevention: "Regular inspection; tool sterilization; hygienic queens.",
+        transmission: "Robbing; drifting; contaminated equipment.",
+        riskLevel: "CRITICAL",
+        steps: ["Execute Rope Test", "Contact apiary inspector", "Incinerate infected frames"]
+    },
+    "European Foulbrood (EFB)": {
+        scientificName: "Melissococcus plutonius",
+        signs: "Twisted, yellow/brown larvae coiled in 'C' shape; die before capping.",
+        symptoms: "Melted/rubbery larvae; sour/yeasty smell; spotty brood pattern.",
+        detection: "Visual inspection of coiled larvae; potash test.",
+        treatment: "Re-queening; Shook Swarm; Terramycin (in some regions).",
+        prevention: "Strong nutrition; reducing spring stress.",
+        transmission: "Nurse bees; trophallaxis; contaminated pollen.",
+        riskLevel: "HIGH",
+        steps: ["Identify twisted yellow larvae", "Feed syrup", "Re-queen"]
+    },
+    "Parafoulbrood": {
+        scientificName: "Bacillus para-alvei",
+        signs: "Variable symptoms; larvae may die at various stages; localized in specific regions.",
+        symptoms: "Putrid odor; larvae darkened or slightly reddish.",
+        detection: "Laboratory culturing.",
+        treatment: "Sanitize equipment; re-queen.",
+        prevention: "Maintain colony vigor; apiary sanitation.",
+        transmission: "Fecal-oral; contaminated tools.",
+        riskLevel: "MEDIUM",
+        steps: ["Capture larvae sample", "Place in quarantine", "Sanitize tools"]
+    },
+    "Powdery Brood": {
+        scientificName: "Bacillus pulvifaciens",
+        signs: "Dry, powdery, light-brown larval remains; scales do not stick.",
+        symptoms: "Larvae collapse and dehydrate; minimal odor.",
+        detection: "Microscopic ID of spores.",
+        treatment: "Self-resolving; re-queen if persistent.",
+        prevention: "Select for VSH behavior.",
+        transmission: "Nurse bees; shared water.",
+        riskLevel: "LOW",
+        steps: ["Remove infected frames", "Boost with protein patties"]
+    },
+    "Chronic Serratia Infection": {
+        scientificName: "Serratia marcescens",
+        signs: "Reddish tint to dead bees; often occurs in high Varroa hives.",
+        symptoms: "Septicemia; rapid adult death.",
+        detection: "Lab culture (red colonies).",
+        treatment: "Varroa control; antibiotic syrup (rarely used).",
+        prevention: "Maintain low Varroa count.",
+        transmission: "Varroa wounds.",
+        riskLevel: "HIGH",
+        steps: ["Treat for Varroa", "Cycle old frames"]
+    },
+
+    // === FUNGAL DISEASES ===
+    "Chalkbrood": {
+        scientificName: "Ascosphaera apis",
+        signs: "Hard, white/grey 'mummies' on bottom board; cotton-like growth in cells.",
+        symptoms: "Larvae harden into blocks; reduced adult population.",
+        detection: "Visual 'mummy' identification.",
+        treatment: "Strengthen colony; improve ventilation; remove infected frames.",
+        prevention: "Dry apiary sites; tilt hives forward.",
+        transmission: "Spores carried by workers; shared water.",
+        riskLevel: "MEDIUM",
+        steps: ["Scrape bottom board", "Improve ventilation", "Tilt hive forward"]
+    },
+    "Stonebrood": {
+        scientificName: "Aspergillus flavus",
+        signs: "Rock-hard, greenish-yellow mummies; death of larvae and adults.",
+        symptoms: "Paralysis in adults; zoonotic risk (human lung irritation).",
+        detection: "Visual stonework larvae; conidiophore microscopy.",
+        treatment: "Incinerate severe infections; improve drainage; max ventilation.",
+        prevention: "Avoid damp/shaded sites; elevate hives.",
+        transmission: "Airborne spores; moldy pollen.",
+        riskLevel: "HIGH",
+        steps: ["Wear a mask", "Incinerate frames", "Move to full sun"]
+    },
+    "Nosema apis (Classic)": {
+        scientificName: "Nosema apis",
+        signs: "Dysentery (brown streaks) on hive face; bees crawling; disjointed wings.",
+        symptoms: "Digestive tract destruction; winter collapse; queen supersedure.",
+        detection: "Spore count microscopy.",
+        treatment: "Fumagillin-B (where legal); Nosevit; frame rotation.",
+        prevention: "Clean water; high-quality winter stores.",
+        transmission: "Fecal-oral; contaminated water.",
+        riskLevel: "HIGH",
+        steps: ["Sample 30 foragers", "Add upper entrance", "Replace frames"]
+    },
+    "Nosema ceranae (Disappearing)": {
+        scientificName: "Nosema ceranae",
+        signs: "No dysentery; quiet dwindling; foragers 'disappear' away from hive.",
+        symptoms: "Chronic intestinal damage; suppressed immune system.",
+        detection: "PCR testing; quantitative microscopy.",
+        treatment: "Keep colonies strong; probiotic supplements.",
+        prevention: "Minimize pesticide exposure; diverse pollen.",
+        transmission: "Queen trade; drifting; shared waterers.",
+        riskLevel: "CRITICAL",
+        steps: ["PCR test", "Protein supplements", "Limit stress"]
+    },
+
+    // === VIRAL DISEASES ===
+    "Deformed Wing Virus (DWV)": {
+        scientificName: "DWV-A/B",
+        signs: "Emerging bees with shriveled wings; truncated abdomens.",
+        symptoms: "Inability to fly; shortened lifestyle; population crash.",
+        detection: "Observation; RT-PCR.",
+        treatment: "Aggressive Varroa suppression.",
+        prevention: "Mite levels <1%; VSH queens.",
+        transmission: "Varroa destructor (vector); vertical.",
+        riskLevel: "CRITICAL",
+        steps: ["Alcohol Wash", "Miticide treatment", "Re-test count"]
+    },
+    "Black Queen Cell Virus (BQCV)": {
+        scientificName: "Black Queen Cell Virus",
+        signs: "Queen cells turn dark; larvae look pale/oily.",
+        symptoms: "Death of queen prepupae; linked to Nosema.",
+        detection: "Visual of cells; PCR.",
+        treatment: "Control Nosema; re-queen; sanitize gear.",
+        prevention: "Spring Nosema management; frame rotation.",
+        transmission: "Nurse bees; contaminated royal jelly.",
+        riskLevel: "MEDIUM",
+        steps: ["Destroy black cells", "Treat Nosema", "Sanitize tools"]
+    },
+    "Chronic Bee Paralysis (CBPV)": {
+        scientificName: "CBPV",
+        signs: "Shiny, hairless, black bees; trembling/shaking.",
+        symptoms: "Guard bees attacking hairless workers; crawling death.",
+        detection: "Visual of greasy bees; qPCR.",
+        treatment: "Add supers to reduce crowding; re-queen.",
+        prevention: "Avoid over-crowding; max ventilation.",
+        transmission: "Direct contact; fecal-oral.",
+        riskLevel: "HIGH",
+        steps: ["Add honey supers", "Clear bottom board", "Replace queen"]
+    },
+    "Acute Bee Paralysis (ABPV)": {
+        scientificName: "ABPV",
+        signs: "Sudden massive die-off; sub-clinical until Varroa spikes.",
+        symptoms: "Rapid paralysis and death in adults.",
+        detection: "Lab analysis; Varroa correlation.",
+        treatment: "Urgent Varroa control; nutritional support.",
+        prevention: "Low Varroa levels; protein availability.",
+        transmission: "Vectored by Varroa.",
+        riskLevel: "HIGH",
+        steps: ["Emergency miticide", "Feed 2:1 syrup", "Check for pesticides"]
+    },
+    "Israeli Acute Paralysis (IAPV)": {
+        scientificName: "IAPV",
+        signs: "Bees shivering; falling off frames; population collapse.",
+        symptoms: "Nervous twitching; CCD correlation.",
+        detection: "Genomic markers via PCR.",
+        treatment: "Boost immune system; re-queen; mite control.",
+        prevention: "Minimize migratory stress; disease-free queens.",
+        transmission: "Varroa; trophallaxis; pollen.",
+        riskLevel: "CRITICAL",
+        steps: ["Isolate apiary", "Identify Varroa level", "Supplement feed"]
+    },
+    "Sacbrood Virus (SBV)": {
+        scientificName: "SBV",
+        signs: "Larvae die in upright sac; pointed head; fluid filled.",
+        symptoms: "Failure to pupate; uncapping of fluid larvae.",
+        detection: "Visual fluid sac; PCR.",
+        treatment: "Self-resolving; break brood cycle.",
+        prevention: "Cycle old wax; hygienic selection.",
+        transmission: "Nurse bees; ingestion.",
+        riskLevel: "LOW",
+        steps: ["Remove infected frames", "Stimulate with syrup"]
+    },
+    "Kashmir Bee Virus (KBV)": {
+        scientificName: "KBV",
+        signs: "Hyper-acute mortality; sudden adult death.",
+        symptoms: "Metabolic shutdown; synergistic with Varroa.",
+        detection: "ELISA; RT-PCR.",
+        treatment: "Mite control; minimize stress.",
+        prevention: "IPM rotation.",
+        transmission: "Varroa; vertical.",
+        riskLevel: "HIGH",
+        steps: ["Monitor mites", "Improve foraging"]
+    },
+    "Cloudy Wing Virus (CWV)": {
+        scientificName: "CWV",
+        signs: "Opaque wings; inability to fly.",
+        symptoms: "Reduced flight capacity; foragers lost.",
+        detection: "Microscopy; Sequencing.",
+        treatment: "No cure; hygiene focus.",
+        prevention: "Genetic selection.",
+        transmission: "Aerosol; drifting.",
+        riskLevel: "MEDIUM",
+        steps: ["Inspect flight", "Improve ventilation"]
+    },
+    "Slow Bee Paralysis Virus (SbpV)": {
+        scientificName: "SbpV",
+        signs: "Adults trembling; falling off combs.",
+        symptoms: "Partial leg paralysis; death in 10 days.",
+        detection: "Lab analysis.",
+        treatment: "Control primary pathogens.",
+        prevention: "Frame rotation.",
+        transmission: "Varroa destructor.",
+        riskLevel: "HIGH",
+        steps: ["Check Varroa", "Insulate hive"]
+    },
+    "Lake Sinai Virus (LSV)": {
+        scientificName: "LSV",
+        signs: "Asymptomatic; general dwindling; poor performance.",
+        symptoms: "Shortened lifespan; immune fatigue.",
+        detection: "RT-PCR.",
+        treatment: "Nutritional diversity.",
+        prevention: "Clean water; minimize transport.",
+        transmission: "Shared flowers; pollen.",
+        riskLevel: "MEDIUM",
+        steps: ["Diverse protein", "Monitor weight"]
+    },
+    "Big Sioux River Virus (BSRV)": {
+        scientificName: "BSRV",
+        signs: "Common in Midwest US; linked to winter loss.",
+        symptoms: "Metabolic stress; larval dwindle.",
+        detection: "Molecular PCR.",
+        treatment: "Nutritional support.",
+        prevention: "Floral diversity.",
+        transmission: "Pollen; trophallaxis.",
+        riskLevel: "LOW",
+        steps: ["Check winter stores", "Improve diversity"]
+    },
+    "Kakugo Virus (KV)": {
+        scientificName: "Kakugo Virus",
+        signs: "Aggressive behavior in foragers; guard bees hyper-active.",
+        symptoms: "Neuro-behavioral shift; reduced hive productivity.",
+        detection: "Brain tissue RT-PCR.",
+        treatment: "Re-queen; minimize chemical stress.",
+        prevention: "Selection for gentleness.",
+        transmission: "Nurse interaction; Varroa.",
+        riskLevel: "MEDIUM",
+        steps: ["Identify aggressive hives", "Re-queen"]
+    },
+    "Apis mellifera filamentous virus (AmFV)": {
+        scientificName: "AmFV",
+        signs: "Milk-white hemolymph in adults.",
+        symptoms: "Impaired immunity; secondary infections.",
+        detection: "Microscopic hemolymph exam.",
+        treatment: "Control mites; diverse forage.",
+        prevention: "Hygiene.",
+        transmission: "Varroa wounds.",
+        riskLevel: "LOW",
+        steps: ["Hemolymph sampling", "Protein boost"]
+    },
+
+    // === MITES & PARASITES ===
+    "Varroa Destructor (Generic)": {
+        scientificName: "Varroa destructor",
+        signs: "Red-brown mites on bees; phoretic staging.",
+        symptoms: "Deformed wings; PMS; weight loss; collapse.",
+        detection: "Alcohol Wash (>3%); Sticky Board.",
+        treatment: "Organic Acids; Thymol; Amitraz.",
+        prevention: "VSH Queens; Drone Culling.",
+        transmission: "Drifting; robbing; transport.",
+        riskLevel: "CRITICAL",
+        steps: ["300-bee wash", "Apply treatment", "Re-test"]
+    },
+    "Varroa Mite PMS (Syndrome)": {
+        scientificName: "PMS",
+        signs: "Melted, sunken larval remains; patchy brood.",
+        symptoms: "Collapse of adult force; high viral load.",
+        detection: "Mite count >5%; visual brood check.",
+        treatment: "Aggressive miticide rotation; re-queen.",
+        prevention: "Frequency IPM.",
+        transmission: "Vectored by Varroa.",
+        riskLevel: "CRITICAL",
+        steps: ["Double-knockdown treatment", "Re-queen"]
+    },
+    "Amitraz-Resistant Varroa": {
+        scientificName: "Y337F Strain",
+        signs: "Mites persist after Apivar treatment.",
+        symptoms: "Rapid collapse despite care.",
+        detection: "Glass jar resistance test.",
+        treatment: "Rotate to Formic/Oxalic.",
+        prevention: "Strict IPM rotation.",
+        transmission: "Drones; equipment trade.",
+        riskLevel: "CRITICAL",
+        steps: ["Resistance test", "Switch to Acids"]
+    },
+    "Tropilaelaps mercedesae": {
+        scientificName: "Asian Brood Mite",
+        signs: "Fast-moving elongated mites; dead pupae.",
+        symptoms: "Aggressive colony dwindle; stunted adults.",
+        detection: "Bump test; brood inspection.",
+        treatment: "Brood break; Formic acid.",
+        prevention: "Quarantine.",
+        transmission: "Drifting workers.",
+        riskLevel: "CRITICAL",
+        steps: ["Confirm bump test", "Cage queen"]
+    },
+    "Tracheal Mite (Acarapis)": {
+        scientificName: "Acarapis woodi",
+        signs: "Disoriented bees; shivers; K-wing.",
+        symptoms: "Airway blockage; reduced winter life.",
+        detection: "Thoracic spiracle dissection.",
+        treatment: "Menthol; Grease patties; Formic acid.",
+        prevention: "Genetic resistance (Buckfast).",
+        transmission: "Bee-to-bee (<4 days old).",
+        riskLevel: "MEDIUM",
+        steps: ["Spiracle dissection", "Apply grease patty"]
+    },
+    "Acarapis externus": {
+        scientificName: "External Tracheal Mite",
+        signs: "Mites on neck; microscopic.",
+        symptoms: "Minor irritation; viral vector.",
+        detection: "Neck dissection.",
+        treatment: "Thymol; Formic.",
+        prevention: "Hygienic selection.",
+        transmission: "Contact.",
+        riskLevel: "LOW",
+        steps: ["Sample neck", "Thymol treatment"]
+    },
+    "Bee Louse (Braula)": {
+        scientificName: "Braula coeca",
+        signs: "Wingless flies on queen/workers.",
+        symptoms: "Nectar theft; reduced productivity.",
+        detection: "Visual of queen thorax.",
+        treatment: "Tobacco smoke; Manual cleaning.",
+        prevention: "Reg. cleaning; limit trade.",
+        transmission: "Drifting; queen trade.",
+        riskLevel: "LOW",
+        steps: ["Check queen", "Smoke treatment"]
+    },
+
+    // === INSECT PESTS ===
+    "Small Hive Beetle": {
+        signs: "Black beetles; slimy frames; rotting smell.",
+        symptoms: "Honey fermentation; absconding.",
+        detection: "Traps; Visual inspection.",
+        treatment: "Oil traps; ground drench; freezing.",
+        prevention: "Strong bee-to-comb ratio; full sun.",
+        transmission: "Flight; soil pupae.",
+        riskLevel: "HIGH",
+        steps: ["Install oil traps", "Move to sun"]
+    },
+    "Greater Wax Moth": {
+        signs: "Silken tunnels; frass; cocoon clusters.",
+        symptoms: "Destroyed wax; bald brood.",
+        detection: "Visual webbing; frass.",
+        treatment: "Freeze frames; BT treatment.",
+        prevention: "Colony strength; air/light storage.",
+        transmission: "Night flight moths.",
+        riskLevel: "MEDIUM",
+        steps: ["Remove frames", "Freeze frames"]
+    },
+    "Lesser Wax Moth": {
+        signs: "Fine silken paths; surface damage.",
+        symptoms: "Indicates weak hive; minor damage.",
+        detection: "Fine webbing.",
+        treatment: "Sanitize extraction area.",
+        prevention: "Cleanliness.",
+        transmission: "Night flight.",
+        riskLevel: "LOW",
+        steps: ["Clean bottom board", "Store properly"]
+    },
+    "Oriental Hornet": {
+        scientificName: "Vespa orientalis",
+        signs: "Large orange/yellow hornets attacking hive.",
+        symptoms: "Worker loss; brood theft.",
+        detection: "Direct observation.",
+        treatment: "Hornet traps; nest destruction.",
+        prevention: "Entrance reduction; mesh screens.",
+        transmission: "Scouting.",
+        riskLevel: "CRITICAL",
+        steps: ["Restrict entrance", "Set traps"]
+    },
+    "Yellowjacket Wasps": {
+        signs: "Wasps entering freely; fighting.",
+        symptoms: "Robbing honey/larvae; stress.",
+        detection: "Robbing behavior.",
+        treatment: "Traps; 1-bee width entrance.",
+        prevention: "Remove sugary waste.",
+        transmission: "Robbing.",
+        riskLevel: "HIGH",
+        steps: ["Reduce entrance", "Set traps"]
+    },
+    "Giant Hornet (V. mandarina)": {
+        signs: "2-inch hornets; piles of decapitated bees.",
+        symptoms: "Slaughter phase; occupation.",
+        detection: "Visual scouts.",
+        treatment: "6mm screens; targeted traps.",
+        prevention: "Queen traps in spring.",
+        transmission: "Predation.",
+        riskLevel: "CRITICAL",
+        steps: ["Install screens", "Kill scouts"]
+    },
+    "European Hornet (V. crabro)": {
+        signs: "Large hornets; nocturnal activity near lights.",
+        symptoms: "Forager loss; night-time stress.",
+        detection: "Observation at entrance.",
+        treatment: "Light-trapping; nest removal.",
+        prevention: "Avoid night lights in apiary.",
+        transmission: "Predatory.",
+        riskLevel: "MEDIUM",
+        steps: ["Remove lights", "Use hornet traps"]
+    },
+    "Termite Foundation Attack": {
+        signs: "Mud tunnels on hive stands; sagging floor.",
+        symptoms: "Structural failure; equipment loss.",
+        detection: "Mud tubes; wood tapping (hollow).",
+        treatment: "Replace bottom board; move to metal stands.",
+        prevention: "Termite barriers; pressure-treated stands.",
+        transmission: "Ground colonies.",
+        riskLevel: "MEDIUM",
+        steps: ["Inspect stand for mud tubes", "Replace floor"]
+    },
+    "Carpenter Ant Invasion": {
+        signs: "Large black ants in lid; frass sawdust.",
+        symptoms: "Wood damage; harassment; brood theft.",
+        detection: "Presence of frass.",
+        treatment: "Clean lid; ant-proof stands.",
+        prevention: "Dry wood; cinnamon powder.",
+        transmission: "Scouting.",
+        riskLevel: "LOW",
+        steps: ["Clean nest", "Replace wood"]
+    },
+    "Fire Ant Raiders": {
+        signs: "Small red ants in swarm; swarm of bees outside.",
+        symptoms: "Stinging bees; larvae theft; absconding.",
+        detection: "Mounds near apiary.",
+        treatment: "Baiting away from bees; grease on legs.",
+        prevention: "Clear ground; leg moats.",
+        transmission: "Ground invasion.",
+        riskLevel: "HIGH",
+        steps: ["Bait ant mounds", "Add oil moats"]
+    },
+    "Earwigs": {
+        signs: "Many earwigs under inner cover/lid.",
+        symptoms: "Mostly nuisance; minor scavenger.",
+        detection: "Visual when opening lid.",
+        treatment: "Shake out; clean debris.",
+        prevention: "Keep hives elevated.",
+        transmission: "Ground-based.",
+        riskLevel: "LOW",
+        steps: ["Shake out lid", "Clean debris"]
+    },
+    "Bed Bug (Cimex - rare)": {
+        signs: "Insects in hive crevices (rarely affect bees).",
+        symptoms: "Indicates contaminated equipment or proximity to humans.",
+        detection: "Visual crevices.",
+        treatment: "Heat treatments; replacement.",
+        prevention: "Equipment history check.",
+        transmission: "Hitchhiking.",
+        riskLevel: "LOW",
+        steps: ["Inspect crevices", "Heat treat"]
+    },
+
+    // === PREDATORS ===
+    "African Honey Badger": {
+        signs: "Smashed boxes; teeth marks; total destruction.",
+        symptoms: "Death/Absconding; total loss.",
+        detection: "Tracks; damage type.",
+        treatment: "Equipment replacement.",
+        prevention: "Elevated stands (>1m); cables; lion dung.",
+        transmission: "Predatory behavior.",
+        riskLevel: "CRITICAL",
+        steps: ["Secure lids with cables", "Raise stands"]
+    },
+    "Bear Destruction (Ursus)": {
+        signs: "Frames scattered; boxes smashed; teeth marks.",
+        symptoms: "Total loss.",
+        detection: "Presence; massive destruction.",
+        treatment: "Replace gear.",
+        prevention: "Electric fencing (6000V).",
+        transmission: "Scent tracking.",
+        riskLevel: "CRITICAL",
+        steps: ["Install electric fence", "Remove honey scent"]
+    },
+    "Skunk Predation": {
+        signs: "Scratches on hive face; chewed bees on ground.",
+        symptoms: "Guard bee depletion; aggressive hive.",
+        detection: "Tracks; mud on landing board.",
+        treatment: "Elevate hive; carpet tack strips.",
+        prevention: "Fencing; elevation.",
+        transmission: "Nocturnal visits.",
+        riskLevel: "HIGH",
+        steps: ["Raise hive >3ft", "Apply tack strips"]
+    },
+    "Raccoon Robbing": {
+        signs: "Inner covers moved; lid open; missing frames.",
+        symptoms: "Honey theft; disturbance.",
+        detection: "Hand-like tracks; lid displacement.",
+        treatment: "Ratchet straps on hives.",
+        prevention: "Secure lids.",
+        transmission: "Manual dexterity.",
+        riskLevel: "MEDIUM",
+        steps: ["Add ratchet strap", "Check frames"]
+    },
+    "Mouse Infestation": {
+        signs: "Chewed comb (corners); mouse nest (shredded leaf/paper).",
+        symptoms: "Destruction of winter frames; foul odor.",
+        detection: "Droppings on bottom board.",
+        treatment: "Remove mouse; replace chewed frames.",
+        prevention: "Mouse guards (1/4 inch hardware cloth).",
+        transmission: "Winter seeking warmth.",
+        riskLevel: "MEDIUM",
+        steps: ["Install mouse guard", "Remove nest"]
+    },
+    "Toad/Bullfrog Feeding": {
+        signs: "Large frogs at entrance at night; missing foragers.",
+        symptoms: "Dwindling population; high predator weight.",
+        detection: "Presence at night.",
+        treatment: "Move hive to stand >50cm.",
+        prevention: "Elevate hives.",
+        transmission: "Predatory.",
+        riskLevel: "LOW",
+        steps: ["Raise hive", "Check for frogs"]
+    },
+    "Lizard (Gecko/Agama) Predation": {
+        signs: "Lizards on hive face; fecal pellets on lid.",
+        symptoms: "Minor forager loss.",
+        detection: "Direct observation.",
+        treatment: "Screening; elevation.",
+        prevention: "Clean area around hive.",
+        transmission: "Predatory.",
+        riskLevel: "LOW",
+        steps: ["Observe face", "Clean landing"]
+    },
+    "Bird (Bee-Eater)": {
+        signs: "Birds diving near apiary; pellets with bee wings.",
+        symptoms: "Significant forager loss; queen mating failure.",
+        detection: "Auditory bird calls; wing pellets.",
+        treatment: "Netting (rare); re-locate; owl decoys.",
+        prevention: "Move apiary during migration periods.",
+        transmission: "Aerial predation.",
+        riskLevel: "MEDIUM",
+        steps: ["Install decoys", "Check pellets"]
+    },
+    "Crested Honey Buzzard": {
+        signs: "Total frame theft (takes whole comb); smashed lid.",
+        symptoms: "Total loss of frames.",
+        detection: "Presence of large buzzards.",
+        treatment: "Roof over apiary; mesh covering.",
+        prevention: "Hardware cloth on top of bars.",
+        transmission: "Aerial predatory.",
+        riskLevel: "HIGH",
+        steps: ["Cover with mesh", "Secure frames"]
+    },
+    "Spider (Orb Weaver/Black Widow)": {
+        signs: "Webs across entrance or under lid.",
+        symptoms: "Entanglement; nuisance; venom risk to beekeeper.",
+        detection: "Visible webs.",
+        treatment: "Physical removal.",
+        prevention: "Keep hives clean/painted.",
+        transmission: "Entrapment.",
+        riskLevel: "LOW",
+        steps: ["Clear webs", "Wear gloves"]
+    },
+
+    // === CHEMICALS & TOXINS ===
+    "Neonicotinoid (Subclinical)": {
+        scientificName: "Imidacloprid",
+        signs: "No dead piles; bees 'forget' to return.",
+        symptoms: "Learning impairment; immune fatigue.",
+        detection: "Pollen/Wax testing.",
+        treatment: "Syrup flush; move to wild forage.",
+        prevention: "Avoid systemic farm zones.",
+        transmission: "Nectar/pollen.",
+        riskLevel: "HIGH",
+        steps: ["Map history", "Syrup feed", "Move apiary"]
+    },
+    "Chlorpyrifos Toxicity": {
+        scientificName: "Organophosphate",
+        signs: "Mass die-off; smell of chemicals; curled bees.",
+        symptoms: "Acetylcholinesterase inhibition; paralysis.",
+        detection: "Residue analysis.",
+        treatment: "Move 5 miles; flush stores.",
+        prevention: "Spray Alert monitoring.",
+        transmission: "Drift/Direct.",
+        riskLevel: "CRITICAL",
+        steps: ["Move hives", "Collect lab sample"]
+    },
+    "Pyrethroid Overload": {
+        scientificName: "Bifenthrin",
+        signs: "Hyperactivity; shivering; erratic flight.",
+        symptoms: "Sodium channel disrupt; death.",
+        detection: "Dead bee count.",
+        treatment: "Dilute stores with syrup.",
+        prevention: "Avoid mosquito fogging zones.",
+        transmission: "Aerosol.",
+        riskLevel: "HIGH",
+        steps: ["Close hives night", "Provide water"]
+    },
+    "Fungicide (Boscalid)": {
+        scientificName: "SDHI Class",
+        signs: "Brood mortality; pale larvae.",
+        symptoms: "Thermal regulation disruption; immune drop.",
+        detection: "Bread residue test.",
+        treatment: "Fresh pollen; syrup.",
+        prevention: "Orchard communication.",
+        transmission: "Spray activity.",
+        riskLevel: "MEDIUM",
+        steps: ["Replace pollen", "Insulate hive"]
+    },
+    "Fungicide (Pyraclostrobin)": {
+        scientificName: "Strobilurin",
+        signs: "Synergy with neonics; high loss.",
+        symptoms: "Extreme metabolic stress.",
+        detection: "Lab analysis.",
+        treatment: "Protein boost.",
+        prevention: "Identify mix partners.",
+        transmission: "Pollen.",
+        riskLevel: "HIGH",
+        steps: ["Increase diversity", "Alert local groups"]
+    },
+    "Glyphosate Integration": {
+        signs: "Spotty brood; gut issues.",
+        symptoms: "Microbiome shift; immune fail.",
+        detection: "Residue test.",
+        treatment: "Probiotics (SuperDFM).",
+        prevention: "Chemical-free zones.",
+        transmission: "Direct/Bloom.",
+        riskLevel: "MEDIUM",
+        steps: ["Apply probiotics", "Monitor growth"]
+    },
+    "Coumaphos (Wax Sink)": {
+        signs: "Poor queen; supersedure cells.",
+        symptoms: "Reproductive fail; chronic stress.",
+        detection: "Wax analysis.",
+        treatment: "Cycle 30% frames annually.",
+        prevention: "Stop synthetic miticides.",
+        transmission: "Absorption.",
+        riskLevel: "CRITICAL",
+        steps: ["Cycle 4 frames", "Switch to organic"]
+    },
+    "Fluvalinate Resistance": {
+        signs: "Mites thrive despite treatment.",
+        symptoms: "Collapse.",
+        detection: "Mite counting.",
+        treatment: "Switch to Formic/Oxalic.",
+        prevention: "Varroa rotation.",
+        transmission: "Horizontal.",
+        riskLevel: "HIGH",
+        steps: ["Sample count", "Switch acids"]
+    },
+    "Paraquat (Herbicide)": {
+        signs: "Acute mortality; rapid die-off.",
+        symptoms: "Respiratory toxicity.",
+        detection: "Vegetation check.",
+        treatment: "Flush with water; syrup.",
+        prevention: "Buffer zones.",
+        transmission: "Direct spray.",
+        riskLevel: "HIGH",
+        steps: ["Move hives", "Provide internal water"]
+    },
+    "Heavy Metal (Lead/Cadmium)": {
+        signs: "Short lifespan; shimmering wings.",
+        symptoms: "Neurotoxicity; behavior shifts.",
+        detection: "Honey/wax test.",
+        treatment: "Wax cycle; locate away from hwy.",
+        prevention: "Avoid industrial zones.",
+        transmission: "Dust; water.",
+        riskLevel: "LOW",
+        steps: ["Test water", "Move apiary"]
+    },
+
+    // === MANAGEMENT & ENVIRONMENTAL ===
+    "Starvation (Acute)": {
+        signs: "Heads-in-cells; light hive.",
+        symptoms: "Cannibalism; slow movement.",
+        detection: "Haft test (lifting).",
+        treatment: "2:1 syrup; fondant.",
+        prevention: "Weight checks; 80lb winter rule.",
+        transmission: "None.",
+        riskLevel: "CRITICAL",
+        steps: ["Feed syrup", "Add fondant"]
+    },
+    "Chilled Brood": {
+        signs: "Dead larvae in C-shape; after cold snap.",
+        symptoms: "Population drop; dark larvae.",
+        detection: "Weather correlation.",
+        treatment: "Remove dead brood; feed syrup.",
+        prevention: "Avoid cold inspections.",
+        transmission: "Thermal failure.",
+        riskLevel: "MEDIUM",
+        steps: ["Remove moldy larvae", "Insulate"]
+    },
+    "Hive Meltdown (Heat)": {
+        signs: "Bearding; runny honey; sagging wax.",
+        symptoms: "Wax melting (62C); brood loss.",
+        detection: "Temp sensor >40C; bearding.",
+        treatment: "Shade; ventilation; water spray.",
+        prevention: "White lids; shaded sites.",
+        transmission: "Thermal.",
+        riskLevel: "HIGH",
+        steps: ["Provide shade", "Open vents"]
+    },
+    "Laying Workers (Anarchy)": {
+        signs: "Multiple eggs per cell; drone brood.",
+        symptoms: "Aggression; no worker replacement.",
+        detection: "Visual chaotic eggs.",
+        treatment: "Shake out; combine; add open brood.",
+        prevention: "Regular checks.",
+        transmission: "Pheromonal fail.",
+        riskLevel: "HIGH",
+        steps: ["Shake out", "Combine hive"]
+    },
+    "Drone Layer": {
+        signs: "Only domed drone brood; single eggs.",
+        symptoms: "Queen fail; population death.",
+        detection: "Brood pattern.",
+        treatment: "Pinch queen; re-queen.",
+        prevention: "Check queen age.",
+        transmission: "Sperm depletion.",
+        riskLevel: "CRITICAL",
+        steps: ["Remove queen", "Wait 24h", "Add new queen"]
+    },
+    "Robbing (Active)": {
+        signs: "Fights; ripped wax; frantic flight.",
+        symptoms: "Resource loss; disease spread.",
+        detection: "Visual entrance activity.",
+        treatment: "Robbing screens; 1-bee entrance.",
+        prevention: "No exposed honey/sugar.",
+        transmission: "Horizontal transport.",
+        riskLevel: "CRITICAL",
+        steps: ["Install robbing screen", "Close entrance"]
+    },
+    "Drifting": {
+        signs: "Uneven strength; disease spreading.",
+        symptoms: "Inefficient foraging.",
+        detection: "Marked bee error.",
+        treatment: "U-shape hives; colors.",
+        prevention: "Diverse apiary layout.",
+        transmission: "Movement.",
+        riskLevel: "MEDIUM",
+        steps: ["Paint markers", "Face different ways"]
+    },
+    "Swarm Fever": {
+        signs: "Bottom queen cells; loitering.",
+        symptoms: "Worker loss; queen loss.",
+        detection: "Swarm cell inspection.",
+        treatment: "Split (Artificial Swarm).",
+        prevention: "Venting; room to lay.",
+        transmission: "Instinct.",
+        riskLevel: "HIGH",
+        steps: ["Perform split", "Find queen"]
+    },
+    "Inbreeding Depression": {
+        signs: "Irregular brood; small workers.",
+        symptoms: "Poor resistance; low survival.",
+        detection: "Brood pattern; diploid drones.",
+        treatment: "Re-queen unrelated stock.",
+        prevention: "Breed diversity.",
+        transmission: "Inheritance.",
+        riskLevel: "MEDIUM",
+        steps: ["Add unrelated genetics"]
+    },
+    "Pollen Clogging": {
+        signs: "No laying room; pollen in center.",
+        symptoms: "Swarm prep; lethargy.",
+        detection: "Visual center check.",
+        treatment: "Add drawn comb; move frames.",
+        prevention: "Add supers early.",
+        transmission: "Management.",
+        riskLevel: "LOW",
+        steps: ["Add comb center"]
+    },
+    "Protein Deficency (Pollen Drought)": {
+        signs: "No larvae jelly; larvae being eaten.",
+        symptoms: "Brood rearing stops; hive dwindles.",
+        detection: "Check for jelly around larvae.",
+        treatment: "Protein patties; move to pollen area.",
+        prevention: "Plant pollen sources.",
+        transmission: "Environmental.",
+        riskLevel: "HIGH",
+        steps: ["Add 3 protein patties", "Feed 1:1 syrup"]
+    },
+    "Smoke/Wildfire Stress": {
+        signs: "Stay inside hive; high CO2.",
+        symptoms: "Navigation fail; brood desertion.",
+        detection: "AQI correlation.",
+        treatment: "Ventilation; internal water.",
+        prevention: "Entrance mesh.",
+        transmission: "Aerosol.",
+        riskLevel: "HIGH",
+        steps: ["Water provision", "Mesh entrance"]
+    },
+    "Vibration Stress": {
+        signs: "Hissing; defensive; no laying.",
+        symptoms: "Communication fail; balling.",
+        detection: "Sensor; machinery proximity.",
+        treatment: "Dampeners; relocate.",
+        prevention: "Avoid metal roofs.",
+        transmission: "Mechanical.",
+        riskLevel: "MEDIUM",
+        steps: ["Add rubber feet", "Move hive"]
+    },
+    "High CO2 Suffocation": {
+        signs: "Dead bee piles; damp hive.",
+        symptoms: "Anoxia; cluster death.",
+        detection: "Sensor; heavy air.",
+        treatment: "Max ventilation; dry hive.",
+        prevention: "Upper vent holes.",
+        transmission: "Anoxia.",
+        riskLevel: "CRITICAL",
+        steps: ["Drill vent", "Fan entrance"]
+    },
+    "Water Dehydration (Drought)": {
+        signs: "Bees collecting sweat/urine; foragers dying on landing board.",
+        symptoms: "Hive temp soaring; brood death.",
+        detection: "Observation of water collectors.",
+        treatment: "Internal waterer; external basin.",
+        prevention: "Permanent water source <50m.",
+        transmission: "Resource desert.",
+        riskLevel: "HIGH",
+        steps: ["Add frame waterer", "Set up drip basin"]
+    },
+    "Pesticide Synergy (P450 Inhibition)": {
+        signs: "Small doses killing whole hives.",
+        symptoms: "Loss of detoxification system.",
+        detection: "Lab analysis for mix.",
+        treatment: "Move to wild forage; syrup.",
+        prevention: "Avoid chemical mix zones.",
+        transmission: "Direct/Bloom contact; Synergistic intake.",
+        riskLevel: "CRITICAL",
+        steps: ["Immediate relocation"]
+    },
+
+    // === FURTHER EXPANSION (RARE & SPECIFIC) ===
+    "Grayanotoxin (Rhododendron) Poisoning": {
+        scientificName: "Nectar Intoxication",
+        signs: "Bees 'drunk' at entrance; unable to fly; paralyzed; dead bees with no marks.",
+        symptoms: "Neurological disruption; rapid adult death in high bloom periods.",
+        detection: "Foraging on Rhododendron/Azalea; nectar testing.",
+        treatment: "Divert to other forage; remove toxic frames.",
+        prevention: "Avoid apiary sites with high invasive Rhododendron concentrations.",
+        transmission: "Nectar ingestion.",
+        riskLevel: "MEDIUM",
+        steps: ["Identify local bloom", "Supply internal sugar", "Check for paralyzed foragers"]
+    },
+    "Tilia (Linden) Starvation": {
+        scientificName: "Sugar Density Anomaly",
+        signs: "Bees dead under Linden trees; foragers lethargic on ground.",
+        symptoms: "Insufficient nectar energy vs collection cost; low-sugar nectar intoxication.",
+        detection: "Dead bees near blooming Tilia trees in dry years.",
+        treatment: "Provide syrup immediately.",
+        prevention: "Avoid Linden monocultures in drought-prone areas.",
+        transmission: "Feeding.",
+        riskLevel: "LOW",
+        steps: ["Feed syrup", "Check nectar flow quality"]
+    },
+    "Nuptial Flight Failure": {
+        scientificName: "Mating Anomalies",
+        signs: "Queen returns but never lays; queen missing after flight.",
+        symptoms: "Colony becomes queenless or drone-layer high; high stress.",
+        detection: "Lack of brood 14 days post-emergence.",
+        treatment: "Introduce mated queen.",
+        prevention: "Manage mating yards with high drone density.",
+        transmission: "Environmental/Predatory during flight.",
+        riskLevel: "HIGH",
+        steps: ["Check for queen presence", "Re-queen"]
+    },
+    "Queen Balling": {
+        scientificName: "Genetic/Pheromonal Conflict",
+        signs: "A ball of workers 'cooking' the queen; high heat in cluster.",
+        symptoms: "Queen death; frantic workers.",
+        detection: "Visual balling during inspection.",
+        treatment: "Smoke heavily; sprinkle water; release queen in cage.",
+        prevention: "Gentle handling; avoid checking too often into new queens.",
+        transmission: "Social stress.",
+        riskLevel: "HIGH",
+        steps: ["Separate queen", "Cage her for 48h"]
+    },
+    "Supersedure Fail": {
+        signs: "Multiple queen cells on face of frames; queen missing.",
+        symptoms: "Old queen failed but new queen didn't hatch; brood gap.",
+        detection: "Visual cells vs no eggs.",
+        treatment: "Introduce new mated queen.",
+        prevention: "Avoid crushing queens during inspection.",
+        transmission: "Succession failure.",
+        riskLevel: "MEDIUM",
+        steps: ["Verify no queen", "Add mated queen"]
+    },
+    "Infectious Septicemia": {
+        scientificName: "Pseudomonas apiseptica",
+        signs: "Bees fall apart when touched; rapid darkening of adult bodies.",
+        symptoms: "Total biological collapse of the bee; liquefaction of muscles.",
+        detection: "Laboratory culture; visual 'brittleness'.",
+        treatment: "Cull infected hive; sanitize apiary.",
+        prevention: "Reduce humidity; increase ventilation.",
+        transmission: "Contact; contaminated water.",
+        riskLevel: "HIGH",
+        steps: ["Cull hive", "Sanitize ground"]
+    },
+    "Mermis Nematode Infection": {
+        scientificName: "Mermithidae",
+        signs: "Worm-like parasite emerging from bee abdomen.",
+        symptoms: "Abdominal swelling; eventual death.",
+        detection: "Direct visual (10-20mm worms).",
+        treatment: "None; remove infected individuals.",
+        prevention: "Drain standing water; salt on apiary soil.",
+        transmission: "Standing water; soil contact.",
+        riskLevel: "LOW",
+        steps: ["Drain apiary", "Clean surroundings"]
+    },
+    "Conopid Fly Parasitism": {
+        scientificName: "Physocephala spp.",
+        signs: "Bees burying themselves in soil; lethargy.",
+        symptoms: "Internal larva consuming the bee's organs.",
+        detection: "Larva in bee abdomen (post-mortem).",
+        treatment: "None for individuals.",
+        prevention: "Move apiary from conopid fly hotspots.",
+        transmission: "Egg injection during flight.",
+        riskLevel: "MEDIUM",
+        steps: ["Observe burying behavior", "Relocate apiary"]
+    },
+    "Melo beetle (Triungulin)": {
+        scientificName: "Meloe spp.",
+        signs: "Tiny black larvae clinging to bee thorax.",
+        symptoms: "Hitchhiking to hive; resource theft.",
+        detection: "Visual on bees.",
+        treatment: "Manual removal; strong hives kill them.",
+        prevention: "Mowing nearby flowers during beetle season.",
+        transmission: "Floral contact.",
+        riskLevel: "LOW",
+        steps: ["Remove by hand", "Mow grass"]
+    },
+    "Zombie Fly (Apocephalus)": {
+        scientificName: "Apocephalus borealis",
+        signs: "Bees flying at night toward lights; walking in circles.",
+        symptoms: "Neurological disruption; death away from hive.",
+        detection: "Larval emergence from bee neck after 7 days.",
+        treatment: "Trapping infected bees near lights.",
+        prevention: "Avoid night lights near apiary.",
+        transmission: "Egg injection.",
+        riskLevel: "MEDIUM",
+        steps: ["Turn off lights", "Observe night flight"]
+    },
+    "Sneezing Beekeepers (Allergic Stress)": {
+        signs: "Bees behaving aggressively when beekeeper approaches; scent of pheromones.",
+        symptoms: "Hive agitation; sting responses.",
+        detection: "Observing bee reaction to beekeeper odors.",
+        treatment: "Use clean suits; avoid perfumes; smoke properly.",
+        prevention: "Professional apiary hygiene.",
+        transmission: "Scent markers.",
+        riskLevel: "LOW",
+        steps: ["Wash suit", "Avoid strong scents"]
+    },
+    "High CO2 (Trucking Syndrome)": {
+        signs: "Bees vomiting in cluster; high heat; wet screen.",
+        symptoms: "Transport mortality; anoxia.",
+        detection: "Telemetry >5000ppm CO2.",
+        treatment: "Stop truck; unload; mist with water.",
+        prevention: "Forced air ventilation during transport.",
+        transmission: "Confined space.",
+        riskLevel: "HIGH",
+        steps: ["Unload hives", "Cool with mist"]
+    },
+    "Flooding (Flash Flood)": {
+        signs: "Mud in entrance; bottom board missing; wet comb.",
+        symptoms: "Colony death; mold; absconding.",
+        detection: "Visual water marks.",
+        treatment: "Dry frames; move to high ground; feed syrup.",
+        prevention: "Avoid low-lying apiary sites.",
+        transmission: "Environmental.",
+        riskLevel: "CRITICAL",
+        steps: ["Move to high ground", "Dry the hive"]
+    },
+    "Tornado/Wind Damage": {
+        signs: "Hives knocked over; lids missing; frames in trees.",
+        symptoms: "Exposure death; loss of stores.",
+        detection: "Visual storm damage.",
+        treatment: "Re-stack; strap hives; feed.",
+        prevention: "Hive straps; ground anchors.",
+        transmission: "Mechanical.",
+        riskLevel: "HIGH",
+        steps: ["Restrap hives", "Anchor to ground"]
+    },
+
+    // === 2026 EMERGING PATHOGENS & FUTURISTIC STRESSORS ===
+    "Synthetic Pesticide Synergy (v2026)": {
+        signs: "Foragers exhibit 'shimmer' behavior; sudden mid-flight collapse.",
+        symptoms: "Cross-resistance between fungicides and newer RNAi-based pesticides.",
+        detection: "BeeYield Spectral Analysis of hive entrance.",
+        treatment: "Relocate to BeeYield Certified Organic Buffer Zone.",
+        prevention: "Pre-bloom GIS mapping via BeeYield Dashboard.",
+        transmission: "Systemic crop uptake.",
+        riskLevel: "CRITICAL",
+        steps: ["Execute GIS scan", "Relocate hives", "Flush internal stores"]
+    },
+    "Microplastic Accumulation": {
+        signs: "Stunted larval growth; plastic fibers found in propolis.",
+        symptoms: "Digestive blockages in nurse bees; reduced longevity.",
+        detection: "Microscopic analysis of pollen loads.",
+        treatment: "Replace all old plastic frames with natural wax.",
+        prevention: "Locate apiaries away from industrial runoff.",
+        transmission: "Environmental ingestion.",
+        riskLevel: "MEDIUM",
+        steps: ["Audit equipment materials", "Sample propolis", "Cycle to woodenware"]
+    },
+    "Nano-Silica Dust Exposure": {
+        signs: "Abrasions on bee mandibles; 'dusty' appearance of foragers.",
+        symptoms: "Respiratory failure; inability to cool the hive via fanning.",
+        detection: "Acoustic sensor detects 'raspy' fanning sound.",
+        treatment: "Internal misting; temporary hive closure.",
+        prevention: "Monitor local construction/industrial activity via BeeYield Alerts.",
+        transmission: "Aerial drift.",
+        riskLevel: "HIGH",
+        steps: ["Close hives during dust events", "Provide internal water"]
+    },
+    "Mitochondrial Drift (Heat Stress v2.0)": {
+        signs: "Bees unable to fly even in optimal temps; low ATP levels.",
+        symptoms: "Genetic fatigue due to consistent 40°C+ summers.",
+        detection: "BeeYield metabolic tracking sensors.",
+        treatment: "Introduce heat-adapted genetics (e.g., jemenitica cross).",
+        prevention: "Active hive cooling systems (BeeYield Solar-Fan).",
+        transmission: "Inherited epigenetic shift.",
+        riskLevel: "HIGH",
+        steps: ["Install solar cooling", "Introduce desert genetics"]
+    },
+    "RNAi Off-Target Effects": {
+        signs: "Larvae developing into 'half-drones'; wing asymmetry.",
+        symptoms: "Gene-silencing interference from neighboring agricultural sprays.",
+        detection: "Quantitative RT-PCR; BeeYield Genomic Audit.",
+        treatment: "Quarantine; fresh queen introduction.",
+        prevention: "Advocate for 'Bee-Safe' RNAi protocols.",
+        transmission: "Pollen ingestion.",
+        riskLevel: "CRITICAL",
+        steps: ["Capture genomic sample", "Re-queen to shift lineage"]
+    },
+    "Cryptic Viral Dwindle": {
+        scientificName: "Unclassified Iflavirus",
+        signs: "Population drop with zero visual symptoms; 'ghost hives'.",
+        symptoms: "Chronic immune suppression; synergistic with minor Nosema.",
+        detection: "BeeYield Deep-Learning Acoustic Analysis.",
+        treatment: "Intensive probiotic rotation.",
+        prevention: "Annual biosecurity audit.",
+        transmission: "Shared water sources.",
+        riskLevel: "HIGH",
+        steps: ["Apply SuperDFM Probiotics", "Sanitize all water sources"]
+    },
+    "Electromagnetic Interference (5G/6G)": {
+        signs: "Bees lost in apiary; disorientation; clustering on outside of box.",
+        symptoms: "Navigational disruption; high forager loss.",
+        detection: "BeeYield Signal Shield™ diagnostic.",
+        treatment: "Apply grounded metallic paint to hive exterior.",
+        prevention: "Avoid apiary placement within 500m of high-power towers.",
+        transmission: "Radio-frequency interference.",
+        riskLevel: "MEDIUM",
+        steps: ["Move hive 1km", "Apply Faraday coating"]
+    },
+    "Fungal Bloom (Post-Flood)": {
+        scientificName: "Secondary Mycelial Growth",
+        signs: "White fuzz on outer frames; damp odor.",
+        symptoms: "Larval toxicity; respiratory stress in adults.",
+        detection: "Humidity sensor alert (>85% for 48h).",
+        treatment: "Max ventilation; dehumidify storage.",
+        prevention: "Maintain 'BeeYield Dry-Zone' protocols.",
+        transmission: "Airborne spores.",
+        riskLevel: "MEDIUM",
+        steps: ["Increase upper airflow", "Remove fuzzy frames"]
+    },
+    "Almond-Dust Syndrome": {
+        signs: "Bees returning gray/white; dead bees under nut trees.",
+        symptoms: "Desiccation of bee cuticle; rapid death.",
+        detection: "Visual inspection during bloom.",
+        treatment: "Syrup spray to wash bees; intensive internal hydrating.",
+        prevention: "Coordination with growers on dust-suppression sprays.",
+        transmission: "Contact during pollination.",
+        riskLevel: "HIGH",
+        steps: ["Mist the landing board", "Hydrate the hive"]
+    },
+    "Carbon Exhaust Poisoning": {
+        signs: "Blackened foragers; oily film on entrance.",
+        symptoms: "Carboxyhemoglobin-like stress; neurotoxicity.",
+        detection: "Smell of diesel; telemetry showing proximity to trucking.",
+        treatment: "Relocate 3 miles from highways.",
+        prevention: "Site selection audits via BeeYield GIS.",
+        transmission: "Aerosol.",
+        riskLevel: "MEDIUM",
+        steps: ["Move apiary", "Wash hive face"]
+    }
+};

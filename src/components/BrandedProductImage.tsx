@@ -44,28 +44,28 @@ export const BrandedProductImage: React.FC<BrandedProductImageProps> = ({
             {isHoney && (
                 <div className="absolute top-3 right-3 flex flex-col items-end gap-2 pointer-events-none">
                     {/* Official BeeYield Logo Attachment (Visual representation of branding) */}
-                    <div className="bg-white/90 backdrop-blur-md p-1.5 rounded-xl shadow-lg border border-amber-200/50 transform translate-y-0 group-hover:-translate-y-1 transition-transform duration-300">
+                    <div className="bg-white/90 backdrop-blur-md p-1.5 rounded-xl shadow-lg border border-green-200/50 transform translate-y-0 group-hover:-translate-y-1 transition-transform duration-300">
                         <img src="/logo.png" alt="BeeYield Official" className="h-6 w-auto object-contain" />
                     </div>
 
                     {/* HoneyChain Traceability Stamp */}
-                    <div className="bg-primary/10 backdrop-blur-md px-2 py-1 rounded-full border border-primary/20 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                        <ShieldCheck className="h-3 w-3 text-primary" />
-                        <span className="text-[8px] font-black uppercase tracking-tighter text-primary">HoneyChain™ Secure</span>
+                    <div className="bg-green-50 backdrop-blur-md px-2 py-1 rounded-full border border-green-200/50 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                        <ShieldCheck className="h-3 w-3 text-green-700" />
+                        <span className="text-[8px] font-black uppercase tracking-tighter text-green-700">HoneyChain™ Secure</span>
                     </div>
                 </div>
             )}
 
             {/* Badge Overlay */}
             {badge && (
-                <Badge className="absolute top-3 left-3 bg-neutral-900/80 backdrop-blur-md text-white border-none text-[10px] font-bold px-3 py-1 shadow-md">
+                <Badge className="absolute top-3 left-3 bg-green-700/90 backdrop-blur-md text-white border-none text-[10px] font-bold px-3 py-1 shadow-md">
                     {badge}
                 </Badge>
             )}
 
             {/* Honey Drip Decorative Icon (Bottom left) */}
             {isHoney && (
-                <div className="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0 text-amber-500">
+                <div className="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0 text-green-600">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 21.5c-3.1 0-5.5-2.4-5.5-5.5 0-2.4 2.1-5.1 4.3-7.5 0.5-0.5 1.4-0.5 1.9 0 2.2 2.4 4.3 5.1 4.3 7.5 0 3.1-2.4 5.5-5.5 5.5z" />
                     </svg>

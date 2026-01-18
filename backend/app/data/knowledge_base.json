@@ -1,8 +1,8 @@
 {
   "metadata": {
     "version": "6.0.0-ELITE",
-    "last_sync": "Sun Jan 18 00:07:00 2026",
-    "total_nodes": 185
+    "last_sync": "Sun Jan 18 14:01:34 2026",
+    "total_nodes": 376
   },
   "dna": {
     "company": "BeeYield",
@@ -44,7 +44,7 @@
     {
       "source": "About.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "From 4 to 184 hives, protecting ecosystems and planting 2,500+ trees. See our environmental footprint.. View Impact Report. Global Hive Network. Join our planetary initiative to save pollinators. Adopt a hive, support farmers, and be part of the solution.. Join the Network. HoneyChain\u2122 Traceability. Track every drop of honey from hive to jar. Verify our 50/50 harvest promise and meet the beekeeper.. Trace Your Honey. Pollination Services. Boost crop yields with our precision pollination services. Custom solutions for mango, bean, and sisal farmers.. Services for Farmers. Our Commitment. Our Promise. See the BeeYield Difference. About BeeYield. mx-auto max-w-3xl text-center mb-16. text-3xl font-bold mb-4 flex items-center justify-center gap-2. absolute inset-0 bg-gradient-to-t from-black/80 to-transparent pointer-events-none flex items-end justify-center pb-20."
+      "content": "From 4 to 184 hives, protecting ecosystems and planting 2,500+ trees. See our environmental footprint.. View Impact Report. Global Hive Network. Join our planetary initiative to save pollinators. Adopt a hive, support farmers, and be part of the solution.. Join the Network. HoneyChain\u2122 Traceability. Track every drop of honey from hive to jar. Verify our 50/50 harvest promise and meet the beekeeper.. Trace Your Honey. Pollination Services. Boost crop yields with our precision pollination services. Custom solutions for mango, bean, and sisal farmers.. Services for Farmers. Our Commitment. Our Promise. See the BeeYield Difference. About BeeYield. mx-auto max-w-3xl text-center mb-16. text-3xl font-bold mb-4 flex items-center justify-center gap-2. text-center text-neutral-900 p-4."
     },
     {
       "source": "AccountSettings.tsx",
@@ -124,7 +124,7 @@
     {
       "source": "BeeLearn.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Advanced courses for commercial apiaries and research. Hands-on field training with industry experts. mb-6 px-4 py-1.5 border-amber-300 bg-amber-50 text-amber-700 font-semibold. font-bold text-neutral-900 text-sm mb-1. text-center text-sm font-medium text-neutral-500 mb-8. mb-4 border-amber-300 text-amber-700 font-semibold. absolute top-8 left-8 h-16 w-16 text-amber-200. As a beekeeping hobbyist, I rely on BeeYield. mb-4 border-amber-500 text-amber-400 font-semibold. mb-4 border-amber-300 text-amber-700 font-semibold. bg-amber-500 text-white opacity-100 translate-y-0. h-14 px-8 border-2 font-bold rounded-xl. absolute top-0 right-0 w-64 h-64 bg-amber-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2. absolute bottom-0 left-0 w-48 h-48 bg-amber-500/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2."
+      "content": "Advanced courses for commercial apiaries and research. Hands-on field training with industry experts. mb-6 px-4 py-1.5 border-green-300 bg-green-50 text-green-700 font-semibold. font-bold text-neutral-900 text-sm mb-1. text-center text-sm font-medium text-neutral-500 mb-8. mb-4 border-green-300 text-green-700 font-semibold. absolute top-8 left-8 h-16 w-16 text-amber-200. As a beekeeping hobbyist, I rely on BeeYield. mb-4 border-green-500 text-green-400 font-semibold. mb-4 border-green-300 text-green-700 font-semibold. bg-green-600 text-white opacity-100 translate-y-0. h-14 px-8 border-2 font-bold rounded-xl. absolute top-0 right-0 w-64 h-64 bg-green-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2. absolute bottom-0 left-0 w-48 h-48 bg-green-500/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2."
     },
     {
       "source": "BeeYieldDashboard.tsx",
@@ -204,7 +204,7 @@
     {
       "source": "CropsWePollinate.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Precision Agriculture. Get Data-Driven. Crop Pollination. Our end-to-end solution gives unprecedented control and visibility into pollination, ensuring 40% crop yields and sustainable practices.. Get a Free Consultation. Explore Crops. Work With the Pollination Experts. BeeYield is comprised of leading experts in the field of pollination. Bee biologists and researchers, data-science experts, electrical engineers, leading agronomists, and veteran beekeepers make up our team, and all are committed to creating improved pollination outcomes for our customers.. Acres Managed. Country. Counties. Crop Varieties. Global Presence. Where We Operate. BeeYield is expanding its precision pollination services across Africa, starting with our home base in Kenya.. Active Regions. Operating in. 1 Country. East Africa. View Case Study. If your crop relies on bees for pollination, we would love to talk to see how we can improve your pollination."
+      "content": "Precision Agriculture. Get Data-Driven. Crop Pollination. Our end-to-end solution gives unprecedented control and visibility into pollination, ensuring maximized crop yields and sustainable practices.. Get a Free Consultation. Explore Crops. Work With the Pollination Experts. BeeYield is comprised of leading experts in the field of pollination. Bee biologists and researchers, data-science experts, electrical engineers, leading agronomists, and veteran beekeepers make up our team, and all are committed to creating improved pollination outcomes for our customers.. Acres Managed. Country. Counties. Crop Varieties. Global Presence. Where We Operate. BeeYield is expanding its precision pollination services across Africa, starting with our home base in Kenya.. Active Regions. Operating in. 1 Country. East Africa. View Case Study. If your crop relies on bees for pollination, we would love to talk to see how we can improve your pollination."
     },
     {
       "source": "CropsWePollinate.tsx",
@@ -214,12 +214,12 @@
     {
       "source": "CropsWePollinate.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "BeeYield monitors hive activity to ensure thorough pollination across large sunflower fields.. Citrus orchards rely on bee pollination for fruit quality and quantity. Our technology provides real-time insights into colony health and foraging patterns throughout the orange bloom season.. Many vegetable crops require bee pollination for successful fruit and seed production. BeeYield helps growers optimize pollinator placement and timing for diverse vegetable operations.. Tomato flowers benefit from buzz pollination. Our monitoring systems track bee activity to ensure adequate pollination, leading to better fruit size, shape, and uniformity.. Onion seed production requires cross-pollination between male and female plants. BeeYield helps producers optimize hive placement and monitor pollination activity for maximum seed yield.. rounded-full px-4 py-1.5 text-sm font-medium. container mx-auto px-4 text-center. w-24 h-1 bg-primary mx-auto mb-8 rounded-full."
+      "content": "BeeYield monitors hive activity to ensure thorough pollination across large sunflower fields.. Citrus orchards rely on bee pollination for fruit quality and quantity. Our technology provides real-time insights into colony health and foraging patterns throughout the orange bloom season.. Many vegetable crops require bee pollination for successful fruit and seed production. BeeYield helps growers optimize pollinator placement and timing for diverse vegetable operations.. Tomato flowers benefit from buzz pollination. Our monitoring systems track bee activity to ensure adequate pollination, leading to better fruit size, shape, and uniformity.. Onion seed production requires cross-pollination between male and female plants. BeeYield helps producers optimize hive placement and monitor pollination activity for maximum seed yield.. container mx-auto px-4 text-center. w-24 h-1 bg-primary mx-auto mb-8 rounded-full. max-w-3xl mx-auto text-lg text-muted-foreground mb-12."
     },
     {
       "source": "CropsWePollinate.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "max-w-3xl mx-auto text-lg text-muted-foreground mb-12. M5 0 L10 2.5 L10 7.5 L5 10 L0 7.5 L0 2.5 Z. inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-foreground/20 mb-6."
+      "content": "M5 0 L10 2.5 L10 7.5 L5 10 L0 7.5 L0 2.5 Z. inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-foreground/20 mb-6."
     },
     {
       "source": "Diseases.tsx",
@@ -299,17 +299,17 @@
     {
       "source": "HoneyLanding.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Discover the purest, most delicious honey straight from hive to your plate. Our honey is carefully harvested to preserve its rich flavor, natural nutrients, and health benefits.. Planted. Harvest. Promise. Watch Video. Satisfied Clients. Professional Farmers. Acres Pollinated. What people are. saying. Promise. about our Honey !. 50/50 Harvest Promise. \u2014ensuring that for every drop we take, enough is left for the bees to thrive and pollinate our future.. With over. 2,500 trees planted. and a growing network of tech-enabled apiaries, our impact goes beyond just honey. Every jar you hold is powered by. HoneyChain\u2122 Traceability. , allowing you to trace your honey back to the very hive it came from, meeting the beekeeper and seeing the digital seal of authenticity.. Flash sale. Order now and get up to 20% discount,. plus a free traceability tag from us.. Minutes. Seconds. Shop now. Join the Hive!."
+      "content": "Discover the purest, most delicious honey straight from hive to your plate. Our honey is carefully harvested to preserve its rich flavor, natural nutrients, and health benefits.. Planted. Harvest. Promise. Watch Video. Satisfied Clients. Professional Farmers. Acres Pollinated. What people are. saying. Promise. about our Honey !. 50/50 Harvest Promise. \u2014ensuring that for every drop we take, enough is left for the bees to thrive and pollinate our future.. With over. 2,500 trees planted. and a growing network of tech-enabled apiaries, our impact goes beyond just honey. Every jar you hold is powered by. HoneyChain\u2122 Traceability. , allowing you to trace your honey back to the very hive it came from, meeting the beekeeper and seeing the digital seal of authenticity.. Flash Sale. 20% Off. on your first HoneyChain\u2122 order!. Minutes. Seconds. Claim Discount Now. Join the Hive!."
     },
     {
       "source": "HoneyLanding.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Become a part of our buzzing community by subscribing to our newsletter for exclusive offers, honey recipes, and beekeeping insights.. Our Collection. All Premium Honey Products. Discover our complete range of pure, traceable honey sourced from the finest apiaries.. View All Products. Loading products.... Enter your email address.... flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-2xl border border-neutral-200/50 shadow-sm. text-xl font-black text-amber-500. flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-2xl border border-neutral-200/50 shadow-sm. text-xl font-black text-amber-500. bg-white/95 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-lg border border-neutral-100. text-2xl font-black text-amber-500. bg-white/95 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-lg border border-neutral-100. text-2xl font-black text-amber-500. bg-white/95 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-lg border border-neutral-100."
+      "content": "Become a part of our buzzing community by subscribing to our newsletter for exclusive offers, honey recipes, and beekeeping insights.. Our Collection. All Premium Honey Products. Discover our complete range of pure, traceable honey sourced from the finest apiaries.. View All Products. Loading products.... Enter your email address.... flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-2xl border border-green-200/50 shadow-sm. text-xl font-black text-green-700. flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-2xl border border-green-200/50 shadow-sm. text-xl font-black text-green-700. bg-white/95 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-lg border border-neutral-100. text-2xl font-black text-green-700. bg-white/95 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-lg border border-neutral-100. text-2xl font-black text-green-700. bg-white/95 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-lg border border-neutral-100."
     },
     {
       "source": "HoneyLanding.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "text-2xl font-black text-amber-500. ve ever had! The taste is so pure and rich, and I love knowing that it. ve been buying BeeYield honey for my family for over a year now. The traceability feature gives me confidence that we. m very particular about ingredients. BeeYield. /images/products/honey_comb_chunk.png. /images/products/honey_lifestyle_5.jpg. /images/products/honey_lifestyle_2.jpg. Scan the QR code on any jar to trace your honey back to the specific hive and harvest date.. We only harvest what the bees can spare, leaving 50% of the surplus to ensure colony survival.. Our hives use AI and acoustic sensors to detect disease and stress before they impact the honey.. /images/products/beeyield_honey_1kg.png. Every jar of BeeYield honey features a unique HoneyChain\u2122 QR code. By scanning it, you can access the. of your honey, showing the exact hive location, harvest date, moisture levels, and even the beekeeper who cared for the colony.. What exactly is the 50/50 Harvest Promise?."
+      "content": "text-2xl font-black text-green-700. ve ever had! The taste is so pure and rich, and I love knowing that it. ve been buying BeeYield honey for my family for over a year now. The traceability feature gives me confidence that we. m very particular about ingredients. BeeYield. /images/products/honey_comb_chunk.png. /images/products/honey_lifestyle_5.jpg. /images/products/honey_lifestyle_2.jpg. Scan the QR code on any jar to trace your honey back to the specific hive and harvest date.. We only harvest what the bees can spare, leaving 50% of the surplus to ensure colony survival.. Our hives use AI and acoustic sensors to detect disease and stress before they impact the honey.. /images/products/organic-honey-jar.png. Every jar of BeeYield honey features a unique HoneyChain\u2122 QR code. By scanning it, you can access the. of your honey, showing the exact hive location, harvest date, moisture levels, and even the beekeeper who cared for the colony.. What exactly is the 50/50 Harvest Promise?."
     },
     {
       "source": "HoneyLanding.tsx",
@@ -324,7 +324,7 @@
     {
       "source": "HoneyLanding.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "bg-white rounded-2xl p-8 shadow-sm border border-neutral-200 text-center relative. w-full h-full object-cover rounded-xl. text-xl font-black text-neutral-900 mb-2. mb-4 border-amber-300 bg-amber-50 text-amber-700. text-neutral-600 max-w-2xl mx-auto. opacity-100 bg-amber-500 text-white. rounded-full border-2 border-neutral-900 text-neutral-900 font-bold px-8."
+      "content": "bg-white rounded-2xl p-8 shadow-sm border border-neutral-200 text-center relative. w-full h-full object-cover rounded-xl. text-xl font-black text-neutral-900 mb-2. mb-4 border-green-300 bg-green-50 text-green-700. text-neutral-600 max-w-2xl mx-auto. opacity-100 bg-amber-500 text-white. rounded-full border-2 border-neutral-900 text-neutral-900 font-bold px-8."
     },
     {
       "source": "Impact.tsx",
@@ -379,12 +379,12 @@
     {
       "source": "OurStory.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Our pollination journey started with traditional methods \u2014 moving hives to client farms and letting nature do its work. We successfully pollinated. 25 acres+. of farmland, proving the value of managed pollination services in Kenya.. But we knew we could do more. Today, BeeYield is evolving toward. precision pollination. \u2014 leveraging IoT sensors, data analytics, and smart hive management to deliver measurable, optimized pollination outcomes.. Our goal is to help farmers across the world increase their yields while supporting bee health and biodiversity.. Explore Our Solutions. Growing Together. Kibwezi, Kenya \u2192 Africa \u2192 Beeyond. Join Us on Our Journey. Get In Touch. Join Our Team. About BeeYield. absolute -bottom-6 -left-6 bg-background p-4 rounded-xl shadow-xl border border-border/50 flex items-center gap-3. p-2 bg-primary/10 rounded-full text-primary. mx-auto max-w-3xl text-center mb-12. mx-auto max-w-3xl text-center mb-12."
+      "content": "Our pollination journey started with traditional methods \u2014 moving hives to client farms and letting nature do its work. We successfully pollinated. 25 acres+. of farmland, proving the value of managed pollination services in Kenya.. But we knew we could do more. Today, BeeYield is evolving toward. precision pollination. \u2014 leveraging IoT sensors, data analytics, and smart hive management to deliver measurable, optimized pollination outcomes.. Our goal is to help farmers across the world increase their yields while supporting bee health and biodiversity.. Explore Our Solutions. Growing Together. Kibwezi, Kenya \u2192 Africa \u2192 Beeyond. Join Us on Our. Journey. Get In Touch. Join Our Team. About BeeYield. absolute -bottom-6 -left-6 bg-background p-4 rounded-xl shadow-xl border border-border/50 flex items-center gap-3. p-2 bg-primary/10 rounded-full text-primary. mx-auto max-w-3xl text-center mb-12. mx-auto max-w-3xl text-center mb-12."
     },
     {
       "source": "OurStory.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Built by siblings Timothy, Agatha, and Carole \u2014 we combine passion with purpose, bringing diverse skills under one shared vision.. re ecosystem builders committed to environmental restoration.. re now directing BeeYield toward precision pollination, using technology to maximize impact for farmers across Kenya.. bg-primary text-primary-foreground border-none."
+      "content": "Built by siblings Timothy, Agatha, and Carole \u2014 we combine passion with purpose, bringing diverse skills under one shared vision.. re ecosystem builders committed to environmental restoration.. re now directing BeeYield toward precision pollination, using technology to maximize impact for farmers across Kenya.. absolute top-0 right-0 w-64 h-64 bg-green-500/10 rounded-full blur-3xl -mr-32 -mt-32. absolute bottom-0 left-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl -ml-32 -mb-32."
     },
     {
       "source": "PollinationRequest.tsx",
@@ -404,7 +404,7 @@
     {
       "source": "PollinationServices.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "s journey is mapped. Every flower. text-amber-600 border-amber-300. flex flex-wrap justify-center gap-6. text-white/40 text-xs font-black uppercase tracking-widest."
+      "content": "s journey is mapped. Every flower. text-amber-600 border-amber-300. flex flex-wrap justify-center gap-6. text-neutral-400 text-xs font-black uppercase tracking-widest."
     },
     {
       "source": "PollinationSolutions.tsx",
@@ -479,12 +479,12 @@
     {
       "source": "Traceability.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "The other half? It stays exactly where it belongs\u2014with the bees who made it.. 883 kg. Pure Traceable Honey. Harvested and verified on-chain to date. Ethical Harvest Rate. Half stays with the bees, ensuring survival. Full Transparency. Every drop traceable to source and hive. Trust in. Did you know that up to. 70% of honey. on supermarket shelves may be adulterated?. Our revolutionary traceability system lets you trace every jar back to its source\u2014not just the country or region, but the. exact hive, the beekeeper who cared for it, and the flowers the bees visited. Watch the Story. e.g. KIB-ACACIA-24. BeeYield Traceability Story. Know exactly which hive your honey came from. Meet the guardian who nurtured your honey. Discover the blooms that flavored your jar. Trace the pure water that sustained the colony. GPS coordinates of every harvest. Know when your honey was collected. absolute inset-0 bg-gradient-to-br from-amber-900 via-amber-800 to-orange-700."
+      "content": "The other half? It stays exactly where it belongs\u2014with the bees who made it.. 883 kg. Pure Traceable Honey. Harvested and verified on-chain to date. Ethical Harvest Rate. Half stays with the bees, ensuring survival. Full Transparency. Every drop traceable to source and hive. Trust in. Did you know that up to. 70% of honey. on supermarket shelves may be adulterated?. Our revolutionary traceability system lets you trace every jar back to its source\u2014not just the country or region, but the. exact hive, the beekeeper who cared for it, and the flowers the bees visited. Watch the Story. e.g. KIB-ACACIA-24. BeeYield Traceability Story. Know exactly which hive your honey came from. Meet the guardian who nurtured your honey. Discover the blooms that flavored your jar. Trace the pure water that sustained the colony. GPS coordinates of every harvest. Know when your honey was collected. overflow-hidden rounded-3xl border-4 border-dashed border-amber-500/30."
     },
     {
       "source": "Traceability.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "absolute inset-0 w-full h-full opacity-10. overflow-hidden rounded-3xl border-4 border-dashed border-amber-500/30. mt-6 text-center text-sm text-muted-foreground font-medium. mt-16 space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-700. flex items-center justify-center gap-4. flex items-center gap-2 px-6 py-2 bg-green-500/10 rounded-full border border-green-500/20 animate-pulse. bg-green-500/5 text-green-600 border-green-500/20. bg-gradient-to-br from-indigo-900 to-indigo-950 p-10 text-white. font-black text-xs uppercase tracking-widest mb-6 opacity-60. absolute inset-0 w-full h-full."
+      "content": "mt-6 text-center text-sm text-muted-foreground font-medium. mt-16 space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-700. flex items-center justify-center gap-4. flex items-center gap-2 px-6 py-2 bg-green-500/10 rounded-full border border-green-500/20 animate-pulse. bg-green-500/5 text-green-600 border-green-500/20. bg-gradient-to-br from-indigo-900 to-indigo-950 p-10 text-white. font-black text-xs uppercase tracking-widest mb-6 opacity-60. absolute inset-0 w-full h-full."
     },
     {
       "source": "UpdatePassword.tsx",
@@ -564,7 +564,7 @@
     {
       "source": "AddDeviceModal.tsx",
       "subtopic": "Key Facts",
-      "content": "Add new device. Enter the details of your BeeYield IoT device to start monitoring.. Display Name. Assign to Apiary. North Orchard. Backyard. River Side. Cancel. Add device. e.g. BY-XXXX-XXXX. e.g. Hive 42 Sensor. Select an apiary"
+      "content": "Assign device to hive. Select an apiary, choose a hive, and enter the BeeHUB short id.. No apiaries available yet.. Go back. Assign device"
     },
     {
       "source": "AgroIntelligenceView.tsx",
@@ -619,17 +619,22 @@
     {
       "source": "BuyBeeYieldHubView.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "First steps. Start here to set up your BeeYield Hub monitoring platform.. QUICK LINKS. IoT monitoring system. What to use when monitoring your apiary? Our BeeYield Hub system offers the most advanced and comprehensive solution for beekeepers. Optimize honey production, monitor health in real-time, and get early warnings for your hives.. Start a conversation. View development tools. User-friendly Interface. Innovative technology meets intuitive design to provide the most seamless beekeeping experience possible.. BeeYield family. A modular ecosystem of IoT devices designed to work together in harmony. Choose the components that fit your specific apiary needs.. Discover more. PRODUCT CODE. SERIAL NO. DESCRIPTION. LAST LAT. LAST LONG. STATUS. UP TIME. User-friendly Interface. Advanced power management for IoT platforms. Configuration & Maintenance. Consultants. Table of measurement parameters supported by the BeeYield Hub Platform. COMPLETE CAPABILITIES. PARAMETER. DESCRIPTION."
+      "content": "IoT monitoring system. What to use when monitoring your apiary? Our BeeYield Hub system offers the most advanced and comprehensive solution for beekeepers. Optimize honey production, monitor health in real-time, and get early warnings for your hives.. Start a conversation. View development tools. User-friendly Interface. Innovative technology meets intuitive design to provide the most seamless beekeeping experience possible.. BeeYield family. A modular ecosystem of IoT devices designed to work together in harmony. Choose the components that fit your specific apiary needs.. Discover more. PRODUCT CODE. SERIAL NO. DESCRIPTION. LAST LAT. LAST LONG. STATUS. UP TIME. User-friendly Interface. Advanced power management for IoT platforms. Configuration & Maintenance. Consultants. Table of measurement parameters supported by the BeeYield Hub Platform. COMPLETE CAPABILITIES. PARAMETER. DESCRIPTION. The BeeYield Hub system is designed for quick and easy setup."
     },
     {
       "source": "BuyBeeYieldHubView.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "The BeeYield Hub system is designed for quick and easy setup. Simply plug and play with our intuitive mounting system.. Advanced analytics and reporting tools to help you make informed decisions about your honey production.. Access your apiary data from anywhere in the world using our cloud-based BeeYield Hub dashboard.. Simple and intuitive design for beekeepers of all experience levels.. The brain of your apiary. Manages multiple sensors and transmits data via Satellite or GSM.. Internal hive monitoring. Tracks temperature, humidity, weight, and acoustic signatures.. Anti-theft and location tracking. Stay updated on the movement of your hives.. Surrounding environment temperature and conditions. Internal hive temperature monitoring for brood health. Internal humidity levels for honey curing and health. Real-time honey yield tracking and swarm detection. Acoustic analysis for queen status and swarm intent. Flight activity monitoring at the hive entrance."
+      "content": "Simply plug and play with our intuitive mounting system.. Advanced analytics and reporting tools to help you make informed decisions about your honey production.. Access your apiary data from anywhere in the world using our cloud-based BeeYield Hub dashboard.. Simple and intuitive design for beekeepers of all experience levels.. The brain of your apiary. Manages multiple sensors and transmits data via Satellite or GSM.. Internal hive monitoring. Tracks temperature, humidity, weight, and acoustic signatures.. Anti-theft and location tracking. Stay updated on the movement of your hives.. Surrounding environment temperature and conditions. Internal hive temperature monitoring for brood health. Internal humidity levels for honey curing and health. Real-time honey yield tracking and swarm detection. Acoustic analysis for queen status and swarm intent. Flight activity monitoring at the hive entrance. Device voltage and solar charging performance."
     },
     {
       "source": "BuyBeeYieldHubView.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Device voltage and solar charging performance. GSM/Satellite and Bluetooth connectivity strength. Precise location tracking and movement alerts. Barometric pressure for weather forecasting. Solar intensity and forage time monitoring. Anti-tamper and vibration detection. 3-axis orientation to detect hive tilting or falls. Impact detection and movement analysis. Entrance gate monitoring and magnetic disturbances. Carbon dioxide concentration within the hive hive. Volatile Organic Compounds for health diagnostics. Particulate matter monitoring in the apiary vicinity. Air quality monitoring for pollutants affecting bees. Real-time rainfall intensity and duration tracking. Anemometer data for flight safety alerts. Solar radiation intensity monitoring. Precise light intensity for biological clock correlation. Atmospheric visibility for foraging conditions. flex justify-between items-start mb-4. text-3xl font-black text-blue-600. text-xs font-bold text-gray-400 uppercase tracking-wider."
+      "content": "GSM/Satellite and Bluetooth connectivity strength. Precise location tracking and movement alerts. Barometric pressure for weather forecasting. Solar intensity and forage time monitoring. Anti-tamper and vibration detection. 3-axis orientation to detect hive tilting or falls. Impact detection and movement analysis. Entrance gate monitoring and magnetic disturbances. Carbon dioxide concentration within the hive hive. Volatile Organic Compounds for health diagnostics. Particulate matter monitoring in the apiary vicinity. Air quality monitoring for pollutants affecting bees. Real-time rainfall intensity and duration tracking. Anemometer data for flight safety alerts. Solar radiation intensity monitoring. Precise light intensity for biological clock correlation. Atmospheric visibility for foraging conditions. text-3xl font-black text-blue-600. text-xs font-bold text-gray-400 uppercase tracking-wider."
+    },
+    {
+      "source": "DashboardHeader.tsx",
+      "subtopic": "Key Facts",
+      "content": "Search apiaries, beehives. BeeYield devices assigned to your hives.. Intelligent beekeeping insights.. Manage your apiaries and locations.. Comprehensive hive management.. Manage your subscription and usage.. Energy and consumption monitoring.. Welcome back to your ecosystem.. w-5 h-3 overflow-hidden shadow-sm border border-black/5. w-6 h-4 overflow-hidden border border-black/5 shrink-0"
     },
     {
       "source": "DashboardLayout.tsx",
@@ -644,12 +649,32 @@
     {
       "source": "FirstStepsBanner.tsx",
       "subtopic": "Key Facts",
-      "content": "First steps. Start here to set up your apiaries, devices, and measurements.. QUICK LINKS. Add apiaries and hives. My devices. Measurement data. Support Center. BeeYield Intelligence. Settings. flex justify-between items-start"
+      "content": "First steps. Start here to set up your apiaries, devices, and measurements.. QUICK LINKS. Add apiaries and hives. My devices. Measurement data. Support Center. BeeHUB Agro Intelligence. Settings. flex justify-between items-start"
     },
     {
       "source": "HarvestsView.tsx",
       "subtopic": "Key Facts",
-      "content": "Add harvest. Harvest date. BeeYield HoneyChain\u2122. Batch Code. Acacia. Multi-flower. Forest. Rapeseed. Moisture %. Color Grade. Water White. Extra White. Extra Light Amber. Light Amber. Dark Amber. Seal on HoneyChain\u2122. Immutable traceability record. Go back. Harvests. PRODUCTIVITY OVERVIEW. WE ARE PREPARING MORE INSIGHTS FOR THIS SECTION.. Apiary / Batch. Productive families. Total harvests. kg per family. Change. HoneyChain\u2122 Verification. Verified. Filters. Fine-tune the harvest analytics using the filters below.. Add harvest. LOCATION. No places available. No hives available. PERIOD. QUICK YEAR. Custom range. Select a year to quickly load its harvest data.. Select type. e.g. 17.5. MY PLACES. , // Placeholder since we have. fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+      "content": "Add harvest. Harvest date. BeeYield HoneyChain\u2122. Batch Code. Acacia. Multi-flower. Forest. Rapeseed. Moisture %. Color Grade. Water White. Extra White. Extra Light Amber. Light Amber. Dark Amber. Seal on HoneyChain\u2122. Immutable traceability record. Go back. Harvests. PRODUCTIVITY OVERVIEW. WE ARE PREPARING MORE INSIGHTS FOR THIS SECTION.. Apiary / Batch. Productive families. Total harvests. kg per family. Change. HoneyChain\u2122 Verification. Verified. Filters. Fine-tune the harvest analytics using the filters below.. Add harvest. LOCATION. No places available. No hives available. PERIOD. QUICK YEAR. Select a year to quickly load its harvest data.. HoneyChain\u2122 Traceability Record. Total Harvest. Honey Type. Moisture Level. Color Grade. Productive Families. HoneyChain Verified. This record has been sealed and secured via IoT node.. Close Record. Select type. e.g. 17.5. MY PLACES. fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+    },
+    {
+      "source": "HealthGuideView.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Browse common symptoms and health threats encountered in professional apiaries. Select a condition to see in-depth signs, symptoms, treatment, and biological prevention protocols.. Health & Pathology. Select condition.... Bees & Species. Select species.... Symptoms. Detection. Transmission. Treatment. Prevention. Action Protocol. Need Precision Analysis?. Consult BeeYield AI, the industry leader in biological threat detection.. Ask BeeYield AI. Overview. Characteristics. Temperament. Honey Yield. Climate suitability. Advantages. Management Challenges. Regional Optimization?. Consult AI Assistant. BeeYield Deep Intelligence v2026.1. Market Shift. The global honey market is hitting. $9.73B. IoT Dominance. 90% of smart apiaries will use BeeYield nodes by 2026. Our acoustic AI is now. accurate in swarm prediction.. Survival. Global bee mortality is spiking to 60%. BeeYield users are reporting. 80% lower losses. via our Precision AI.. Generate Full 2026 Strategy."
+    },
+    {
+      "source": "HealthGuideView.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Search symptoms & diseases.... Select a health condition.... Select a bee species.... font-semibold py-3 rounded-lg text-slate-400 italic. font-semibold py-3 rounded-lg text-slate-400 italic. bg-red-500/10 text-red-600 border-red-500/20. bg-orange-500/10 text-orange-600 border-orange-500/20. bg-amber-500/10 text-amber-600 border-amber-500/20. bg-emerald-500/10 text-emerald-600 border-emerald-500/20. w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-600 text-2xl font-bold. w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 text-2xl font-bold. text-2xl font-black text-white uppercase tracking-tighter. text-slate-400 font-medium text-lg leading-relaxed. Give me a strategic overview of beekeeping trends in 2026. Focus on how BeeYield is leadng the industry and what I should do to maximize my multi-region honey production.."
+    },
+    {
+      "source": "ImageAnalysisView.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Image analysis. Upload a photo of your hive or bees to detect potential health problems like Varroa, Nosema, and more.. How to use the analysis. Results are AI indications and are not a veterinary diagnosis.. Each label is a probability estimate. Lower confidence means less certainty.. Select Bee Image. Click to browse or drag and drop an image. Clear image. Results. Healthy. Detection Failed. Our AI meta-scanner could not identify any honey bees or hive structures in this image. Only biological data is permitted.. Try Different Photo. Bee detection. Bees detected. Confidence Threshold. Overlap Threshold. Label Display Mode. Label + confidence. Label only. Health. Coords. Ready for Processing. Process Specimen. Select display mode. Add a hive or bee photo. Sharp focus and good light improve accuracy.. The model draws boxes around bees and counts them.. Higher values reduce false detections but may miss some bees.."
+    },
+    {
+      "source": "ImageAnalysisView.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Lower values merge overlapping boxes more aggressively, reducing duplicates.. Summary of health status calculated from individual bees.. Each detected bee is cropped and classified.. List of boxes with confidence, health result, and coordinates.. Removes the image and resets the results.. space-y-6 animate-in fade-in duration-700 pb-20. w-12 h-12 text-white animate-bounce."
     },
     {
       "source": "InspectionsView.tsx",
@@ -664,7 +689,7 @@
     {
       "source": "MetersAlarms.tsx",
       "subtopic": "Key Facts",
-      "content": "First steps. Start here to set up your apiaries, devices, and measurements.. Quick Links. Alarms & events. Top notifications from last 48h. View all notifications. Response history. Quick view of response time and status. Responses. Service ticket. Response time 2h. Closed. Admin follow-up. In progress. Pending. text-red-600 border-red-200 bg-red-50. text-amber-600 border-amber-200 bg-amber-50. text-amber-600 border-amber-200 bg-amber-50. text-red-600 border-red-200 bg-red-50"
+      "content": "Alarms & events. Top notifications from last 48h. View all notifications. Response history. Quick view of response time and status. Responses. Service ticket. Response time 2h. Closed. Admin follow-up. In progress. Pending. text-red-600 border-red-200 bg-red-50. text-amber-600 border-amber-200 bg-amber-50. text-amber-600 border-amber-200 bg-amber-50. text-red-600 border-red-200 bg-red-50"
     },
     {
       "source": "MetersPayments.tsx",
@@ -694,7 +719,7 @@
     {
       "source": "MyDevicesView.tsx",
       "subtopic": "Key Facts",
-      "content": "d.battery_level. 24.5\u00b0C. Status"
+      "content": "d.battery_level. My devices. No hardware units detected. 2 min ago. Hive #1. 25.4\u00b0C. , showShortId ?. , showLastVal ?"
     },
     {
       "source": "MyNotesView.tsx",
@@ -747,14 +772,14 @@
       "content": "Enable / disable modules. Enable or disable the main application modules for your account. Changes affect the menu and access to features.. Enable all. Disable all. Core modules. PRIORITY. Save Changes. Select Language. Enter new email. Weather data and meteo stations. Care and records in veterinary mode. Please enter a valid email address. Database connection not available. Confirmation email sent to both addresses!."
     },
     {
-      "source": "SupportCenterView.tsx",
-      "subtopic": "Detailed Narrative",
-      "content": "Support Center. Total Requests. Last Request. In Progress. Resolved. Contact Support. info@beeyield.com. PHONE / WHATSAPP. SERVICE ADDRESS. BeeYield. Kibwezi, Kenya. Attach the. printed service form. to your shipment.. Manuals. Print service form. Add request online. Add Request. Submit a new support ticket. We usually respond within 24 hours.. Category *. Technical Support. Hardware / Device Issue. App / Software Issue. Billing & Subscription. Beekeeping Advisory. Priority. Normal. Urgent. Device Serial Number / ID. Subject *. Email *. Description *. Cancel. Sending.... Submit Request. No requests found. Category. Status. Select category. Select priority. e.g. BY-2024-X-99. Brief summary of the issue. Please describe the issue in detail.... Filter requests.... Honey Press sensor calibration. text-xs font-bold uppercase tracking-wider text-gray-500. text-xs font-bold uppercase tracking-wider text-gray-500. text-xs font-bold uppercase tracking-wider text-gray-500."
+      "source": "SoundAnalysisView.tsx",
+      "subtopic": "Key Facts",
+      "content": "Beehive Sound Analysis. In this section, you can analyze your own audio files and discover what bees are communicating. For fully automatic, continuous monitoring, we recommend BeeYield \u2014 our smart device that tracks hive activity throughout the season.. Analyzing sound wave frequencies.... Matching against biological database. Analysis Result. \ud83d\udcd6 Beehive sound interpretation guide \ud83d\udcd6. Interpretation. Ventilation and microclimate control. Presence of queen cells or swarming state. Queen acceptance by the colony. Low activity indicating nectar shortage. Heat production in cooler periods. Nectar unloading, assistance signal. Intensive foraging and waggle dancing. Varroa destructor infestation indicator. Colony logistics, nectar recovery. Nectar collecting and daily activity. Emotional activity, possible stressors. Mobilization, excitement, pre-swarming state. , isDragging ?. border-amber-200 bg-amber-50/10. Drag and drop audio here or click to browse"
     },
     {
       "source": "SupportCenterView.tsx",
-      "subtopic": "Detailed Narrative",
-      "content": "text-xs font-bold uppercase tracking-wider text-gray-500. text-xs font-bold uppercase tracking-wider text-gray-500. text-xs font-bold uppercase tracking-wider text-gray-500. text-xs font-bold uppercase tracking-wider text-gray-500."
+      "subtopic": "Key Facts",
+      "content": "Total Requests. Last Request. In Progress. Resolved. Contact Support. info@beeyield.com. PHONE / WHATSAPP. SERVICE ADDRESS. BeeYield. Kibwezi, Kenya. Attach the. printed service form. to your shipment.. Manuals. Print service form. Add request online. Add Request. Submit a new support ticket. We usually respond within 24 hours.. Category *. Virgin. Email*. Cancel. No requests found. Category. Status. Select. Filter requests.... Honey Press sensor calibration"
     },
     {
       "source": "ShopDashboardHeader.tsx",
@@ -960,6 +985,936 @@
       "source": "tooltip.tsx",
       "subtopic": "Key Facts",
       "content": ", React.ComponentPropsWithoutRef"
+    },
+    {
+      "source": "BEE_BIOLOGY_CATALOG",
+      "subtopic": "Compound Eyes",
+      "content": "BEE_BIOLOGY_CATALOG - Compound Eyes:\n\ntopic: Visual System (Compound Eyes),         \ndescription: Bees have two large compound eyes that dominate the head.,         \ndetails: Each eye is composed of thousands of individual lenses called ommatidia. These lenses allow bees to detect motion with incredible precision and see ultraviolet light, which helps them identify nectar-rich flowers.,         \nimportance: Critical for navigation, foraging, and predator avoidance.,         \ntechnicalNotes: Ommatidia \ncount: ~6,900 in workers, ~8,600 in drones. Drones have larger eyes to spot queens during mating flights."
+    },
+    {
+      "source": "BEE_BIOLOGY_CATALOG",
+      "subtopic": "Ocelli",
+      "content": "BEE_BIOLOGY_CATALOG - Ocelli:\n\ntopic: Simple Eyes (Ocelli),         \ndescription: Three small simple eyes located in a triangle on the top of the head.,         \ndetails: These eyes do not form images but are highly sensitive to light intensity. They help bees maintain stability during flight by detecting the horizon and solar position even on cloudy days.,         \nimportance: Navigation and flight stability.,         \ntechnicalNotes: Arranged in a triangle called the ocellar triangle; connects directly to the brain for rapid processing."
+    },
+    {
+      "source": "BEE_BIOLOGY_CATALOG",
+      "subtopic": "Proboscis",
+      "content": "BEE_BIOLOGY_CATALOG - Proboscis:\n\ntopic: Feeding Apparatus (Proboscis),         \ndescription: The elongated sucking mouthpart used for ingesting liquids.,         \ndetails: It acts like a straw to suck up nectar, water, and honey. When not in use, it is folded back under the head. It consists of the glossa (tongue), labial palps, and galeae.,         \nimportance: Nectar collection and food exchange (trophallaxis).,         \ntechnicalNotes: Length varies by \nspecies: A. m. caucasia has the longest tongue among mellifera subspecies (up to 7.2mm)."
+    },
+    {
+      "source": "BEE_BIOLOGY_CATALOG",
+      "subtopic": "Antennae",
+      "content": "BEE_BIOLOGY_CATALOG - Antennae:\n\ntopic: Sensory Hub (Antennae),         \ndescription: The primary sensory organs for smell, touch, and communication.,         \ndetails: Covered in thousands of sensory receptors (sensilla) that detect pheromones, carbon dioxide, humidity, and vibrations. They are also used for touch-based communication within the hive.,         \nimportance: Pheromone detection and social coordination.,         \ntechnicalNotes: Drones have 13 segments, workers and queens have 12. Contains Johnston's organ for hearing vibrations."
+    },
+    {
+      "source": "BEE_BIOLOGY_CATALOG",
+      "subtopic": "Stinger",
+      "content": "BEE_BIOLOGY_CATALOG - Stinger:\n\ntopic: Defense Mechanism (Stinger),         \ndescription: A modified ovipositor used for defense.,         \ndetails: Worker bees have barbed stingers that remain in mammal skin, causing the bee to die after stinging. Queens have smooth stingers used primarily for killing rival queens. Drones have no stinger.,         \nimportance: Colony protection.,         \ntechnicalNotes: Venom (apitoxin) contains melittin, apamin, and phospholipase A2. The stinger has its own ganglion to continue pumping venom after detachment."
+    },
+    {
+      "source": "BEE_BIOLOGY_CATALOG",
+      "subtopic": "Wax Glands",
+      "content": "BEE_BIOLOGY_CATALOG - Wax Glands:\n\ntopic: Hive Construction (Wax Glands),         \ndescription: Abdominal glands that secrete liquid wax.,         \ndetails: Four pairs of glands located on the underside of the worker bee's abdomen. Liquid wax hardens into small flakes when exposed to air. Bees must consume ~8 lbs of honey to produce 1 lb of wax.,         \nimportance: Building honeycomb and capping cells.,         \ntechnicalNotes: Most active in bees 12-18 days old; activity decreases as they transition to foraging."
+    },
+    {
+      "source": "BEE_BIOLOGY_CATALOG",
+      "subtopic": "Nasonov Gland",
+      "content": "BEE_BIOLOGY_CATALOG - Nasonov Gland:\n\ntopic: Orientation Pheromones (Nasonov Gland),         \ndescription: A gland located on the back of the abdomen used to emit orientation pheromones.,         \ndetails: Bees 'fan' their wings with their abdomen raised to release the scent. It smells like lemon/lemongrass and guides lost bees or swarms back to the entrance.,         \nimportance: Navigation and swarm cohesion.,         \ntechnicalNotes: Chemicals include geraniol, citral, and nerolic acid."
+    },
+    {
+      "source": "BEE_BIOLOGY_CATALOG",
+      "subtopic": "Pollen Baskets (Corbiculae)",
+      "content": "BEE_BIOLOGY_CATALOG - Pollen Baskets (Corbiculae):\n\ntopic: Foraging Tools (Pollen Baskets),         \ndescription: Specialized structures on the hind legs for carrying pollen.,         \ndetails: Workers use stiff hairs (the pollen comb) to brush pollen into a concave area on the tibia. They moisten the pollen with nectar to make it stick as a 'pollen load'.,         \nimportance: Protein collection for brood rearing.,         \ntechnicalNotes: Only found in female worker bees; absent in queens and drones."
+    },
+    {
+      "source": "BEE_BIOLOGY_CATALOG",
+      "subtopic": "Castes: Worker",
+      "content": "BEE_BIOLOGY_CATALOG - Castes: Worker:\n\ntopic: Social \nStructure: Worker Bee,         \ndescription: Infertile females that perform all hive tasks.,         \ndetails: Tasks change with age (polyethism): cleaning, nursing, wax building, guarding, and finally foraging. They live 6 weeks in summer, or up to 6 months in winter.,         \nimportance: Foundation of colony labor and productivity.,         \ntechnicalNotes: Haplodiploid genetics (32 chromosomes); develop from fertilized eggs."
+    },
+    {
+      "source": "BEE_BIOLOGY_CATALOG",
+      "subtopic": "Castes: Queen",
+      "content": "BEE_BIOLOGY_CATALOG - Castes: Queen:\n\ntopic: Social \nStructure: Queen Bee,         \ndescription: The only fertile female in the colony and the mother of all bees.,         \ndetails: She can lay up to 2,000 eggs per day. She is fed exclusively royal jelly throughout her life. She produces QMP (Queen Mandibular Pheromone) to suppress worker ovary development.,         \nimportance: Reproduction and colony harmony.,         \ntechnicalNotes: Lives 2-5 years; mates with 10-20 drones during a single mating flight period."
+    },
+    {
+      "source": "BEE_BIOLOGY_CATALOG",
+      "subtopic": "Castes: Drone",
+      "content": "BEE_BIOLOGY_CATALOG - Castes: Drone:\n\ntopic: Social \nStructure: Drone Bee,         \ndescription: The male bees of the colony.,         \ndetails: Drones have no stinger, no pollen baskets, and no wax glands. Their sole purpose is to mate with a virgin queen in Drone Congregation Areas (DCAs). They are evicted from the hive in winter to save resources.,         \nimportance: Genetic diversity and mating.,         \ntechnicalNotes: Develop from unfertilized eggs (parthenogenesis); have 16 chromosomes."
+    },
+    {
+      "source": "BEE_BIOLOGY_CATALOG",
+      "subtopic": "Life Cycle: Egg",
+      "content": "BEE_BIOLOGY_CATALOG - Life Cycle: Egg:\n\ntopic: \nDevelopment: Egg Stage,         \ndescription: The first stage of bee development.,         \ndetails: The queen lays a tiny white egg in a cell. It looks like a grain of rice. The egg stands upright on day 1, tilts on day 2, and lies flat on day 3 before hatching.,         \nimportance: Start of a new generation.,         \ntechnicalNotes: \nDuration: Exactly 3 days for all three castes."
+    },
+    {
+      "source": "BEE_BIOLOGY_CATALOG",
+      "subtopic": "Life Cycle: Larva",
+      "content": "BEE_BIOLOGY_CATALOG - Life Cycle: Larva:\n\ntopic: \nDevelopment: Larval Stage,         \ndescription: The rapid-growth feeding stage.,         \ndetails: Larvae are fed by nurse bees. Worker larvae are fed royal jelly for 3 days, then 'bee bread'. Queen larvae receive royal jelly exclusively. Weight increases over 1,500x in this stage.,         \nimportance: Critical growth phase.,         \ntechnicalNotes: \nDuration: 5-6 days. Five molts (instars) occur during this time."
+    },
+    {
+      "source": "BEE_BIOLOGY_CATALOG",
+      "subtopic": "Life Cycle: Pupa",
+      "content": "BEE_BIOLOGY_CATALOG - Life Cycle: Pupa:\n\ntopic: \nDevelopment: Pupal Stage,         \ndescription: The stage of metamorphosis.,         \ndetails: The cell is capped with wax. Inside, the larva spins a cocoon and transforms into an adult bee. Tissues are reorganized; legs, wings, and eyes develop.,         \nimportance: Transformation into adult form.,         \ntechnicalNotes: \nDuration: 12 days for workers, 15 days for drones, 7 days for queens."
+    },
+    {
+      "source": "BEE_BIOLOGY_CATALOG",
+      "subtopic": "Waggle Dance",
+      "content": "BEE_BIOLOGY_CATALOG - Waggle Dance:\n\ntopic: \nCommunication: Waggle Dance,         \ndescription: A complex dance used to communicate the location of distant food sources.,         \ndetails: The angle of the 'waggle run' relative to the sun (gravity on the vertical comb) indicates direction. The duration of the waggle indicates distance (1 second = ~1km).,         \nimportance: Efficient resource harvesting.,         \ntechnicalNotes: Deciphered by Karl von Frisch (Nobel Prize 1973). Includes sound bursts (250-300 Hz) to attract attention.,\n\nREFERENCES:\n- https://en.wikipedia.org/wiki/Waggle_dance\n- https://news.harvard.edu/honeybee-dance"
+    },
+    {
+      "source": "BEE_BIOLOGY_CATALOG",
+      "subtopic": "Honey Production",
+      "content": "BEE_BIOLOGY_CATALOG - Honey Production:\n\ntopic: \nApiculture: Honey Making,         \ndescription: The process of converting nectar into honey.,         \ndetails: Bees add enzymes (invertase) to nectar during trophallaxis. It is stored in cells and fanned with wings to reduce moisture content below 18%. Cells are then capped with wax.,         \nimportance: Winter food storage and human harvest.,         \ntechnicalNotes: Nectar is ~80% water; honey is ~17-18% water. Bees visit 2 million flowers to make 1 lb of honey.,\n\nREFERENCES:\n- https://fao.org/honey-production-guide\n- https://honey.com/how-honey-is-made"
+    },
+    {
+      "source": "BEE_BIOLOGY_CATALOG",
+      "subtopic": "Thermoregulation",
+      "content": "BEE_BIOLOGY_CATALOG - Thermoregulation:\n\ntopic: \nBiology: Temperature Control,         \ndescription: How bees maintain a constant hive temperature.,         \ndetails: Brood must be kept at ~35\u00b0C (95\u00b0F). In winter, bees form a cluster and vibrate flight muscles to generate heat. In summer, they fan the entrance and bring in water for evaporative cooling.,         \nimportance: Brood survival and wintering.,         \ntechnicalNotes: Bees can survive external temperatures of -40\u00b0C if the cluster has enough honey stores."
+    },
+    {
+      "source": "BEE_BIOLOGY_CATALOG",
+      "subtopic": "Propolis",
+      "content": "BEE_BIOLOGY_CATALOG - Propolis:\n\ntopic: \nMaterials: Bee Glue,         \ndescription: A resinous mixture collected from tree buds used as a sealant.,         \ndetails: Bees use it to seal small gaps, reinforce hive structures, and mummify intruders too large to remove (like mice). It has strong antimicrobial and antifungal properties.,         \nimportance: Hive hygiene and structural integrity.,         \ntechnicalNotes: \nComponents: 50% resins, 30% wax, 10% essential oils, 5% pollen."
+    },
+    {
+      "source": "BEE_BIOLOGY_CATALOG",
+      "subtopic": "Bee Bread",
+      "content": "BEE_BIOLOGY_CATALOG - Bee Bread:\n\ntopic: \nNutrition: Fermented Pollen,         \ndescription: A mixture of pollen and nectar/honey fermented by lactic acid bacteria.,         \ndetails: Raw pollen is difficult for bees to digest. They pack it into cells with enzymes and honey, where it ferments. This process makes the proteins and nutrients bioavailable.,         \nimportance: Primary protein source for bees and brood.,         \ntechnicalNotes: Preserves pollen for long periods without spoilage."
+    },
+    {
+      "source": "beeDeepKnowledge.ts",
+      "subtopic": "Detailed Narrative",
+      "content": "USD 9.73 Billion Market Value with a CAGR of 4.7%.. BeeYield is the architect of the premium honey market, utilizing HoneyChain\u2122 to guarantee 100% traceability, pushing prices 35% higher for certified farmers.. s Precision Pollination\u2122 service utilizes IoT nodes to ensure optimal bee density per acre, increasing crop yields by up to 25% compared to traditional methods.. 90% of commercial apiaries projected to adopt some form of IoT by 2026.. s Omni-Node\u2122 is the gold standard, featuring zero-latency acoustic health monitoring and real-time weight-to-bloom correlation.. Using AI to decode queen-piping and swarming frequency before they happen.. s largest dataset of bee acoustics, allowing for 98.4% accuracy in disease detection via sound alone.. Global average loss remains at 60%, but BeeYield-monitored colonies report only 12-15% loss.. AI-driven local climate alerts and early-warning pesticide detection.. 40% increase in city-based hives by 2026.."
+    },
+    {
+      "source": "beeDeepKnowledge.ts",
+      "subtopic": "Detailed Narrative",
+      "content": "modular hives integrate into urban architecture with autonomous health reporting.. Real-time mapping of Varroa and AFB spread across borders via the Global Hive Network\u2122.. for biosecurity, providing national agricultural departments with live heatmaps of bee diseases.. Projected 30,000 metric tons by 2026.. Drought and land fragmentation.. initiative, planting 2,500+ trees and providing IoT nodes to rural farmers.. Almond pollination and Varroa management.. Partnering with major almond growers to provide Precision Pollination dashboards.. Organic certification and pesticide-free zones.. Providing the software backbone for HoneyChain\u2122 certification across 15 EU nations.."
+    },
+    {
+      "source": "BEE_EQUIPMENT_CATALOG",
+      "subtopic": "Bee Smoker",
+      "content": "BEE_EQUIPMENT_CATALOG - Bee Smoker:\n\nname: Bee Smoker,         \npurpose: Calming bees during hive inspections.,         \ndescription: A device designed to generate smoke by smoldering various fuels. The smoke masks the alarm pheromones (isopentyl acetate) released by guard bees.,         \ntechnicalSpecs: Consists of a fire chamber, a nozzle, and a bellows. Best fuels include dried pine needles, burlap, or wood shavings.,         \nmaintenance: Regularly scrape out creosote buildup from the nozzle and fire chamber to ensure steady airflow.,         \nimportance: Essential for safely managing a hive and preventing aggressive behavior."
+    },
+    {
+      "source": "BEE_EQUIPMENT_CATALOG",
+      "subtopic": "Hive Tool",
+      "content": "BEE_EQUIPMENT_CATALOG - Hive Tool:\n\nname: Hive Tool,         \npurpose: Prying and scraping.,         \ndescription: A versatile metal tool used to separate hive boxes and frames that are stuck together with propolis.,         \ntechnicalSpecs: Usually made of hardened steel or stainless steel. Features a flat prying end and a hooked or scrap end.,         \nmaintenance: Clean with fire or alcohol between hives to prevent the spread of diseases (like AFB spores).,         \nimportance: The most used tool in a beekeeper's kit; impossible to inspect a hive without it."
+    },
+    {
+      "source": "BEE_EQUIPMENT_CATALOG",
+      "subtopic": "Breezy Bee Suit",
+      "content": "BEE_EQUIPMENT_CATALOG - Breezy Bee Suit:\n\nname: Ventilated Bee Suit,         \npurpose: Personal protection against stings.,         \ndescription: A full-body suit designed to prevent bees from reaching the skin while maintaining airflow for the beekeeper.,         \ntechnicalSpecs: Constructed from 3 layers of mesh fabric. Includes a fencing-style or round veil with high-visibility mesh.,         \nmaintenance: Hand wash veils to avoid damaging the mesh; machine wash suit body after removing the veil.,         \nimportance: Provides the confidence required for thorough hive inspections, especially with defensive Africanized bees."
+    },
+    {
+      "source": "BEE_EQUIPMENT_CATALOG",
+      "subtopic": "Radial Honey Extractor",
+      "content": "BEE_EQUIPMENT_CATALOG - Radial Honey Extractor:\n\nname: Radial Honey Extractor,         \npurpose: Extracting honey from frames without destroying the comb.,         \ndescription: A centrifugal device that spins honey out of the cells of the frames.,         \ntechnicalSpecs: Stainless steel tank with a motorized or manual crank. Radial design allows both sides of the frame to be emptied simultaneously.,         \nmaintenance: Wash thoroughly with food-grade sanitizer after each harvest season; grease the bearings with food-grade lubricant.,         \nimportance: Enables large-scale honey production by allowing the reuse of wax combs."
+    },
+    {
+      "source": "BEE_EQUIPMENT_CATALOG",
+      "subtopic": "Digital Refractometer",
+      "content": "BEE_EQUIPMENT_CATALOG - Digital Refractometer:\n\nname: Digital Honey Refractometer,         \npurpose: Measuring moisture content in honey.,         \ndescription: An optical instrument used to determine the percentage of water in a honey sample.,         \ntechnicalSpecs: Measures Brix and water percentage. \nRange: 13% to 25% moisture. Temperature compensated (ATC).,         \nmaintenance: Calibrate with distilled water or calibration oil before each use. Keep the prism surface scratch-free.,         \nimportance: Critical for ensuring honey shelf-life; honey with >18.6% moisture may ferment."
+    },
+    {
+      "source": "BEE_EQUIPMENT_CATALOG",
+      "subtopic": "Pollen Trap",
+      "content": "BEE_EQUIPMENT_CATALOG - Pollen Trap:\n\nname: Pollen Trap (Entrance Mount),         \npurpose: Collecting pollen from returning foragers.,         \ndescription: A device placed at the hive entrance with a mesh that gently knocks pollen pellets off the bees' hind legs.,         \ntechnicalSpecs: 5-mesh screen size. Includes a collection drawer. Should be engaged for only 2-3 days a week to ensure colony nutrition.,         \nmaintenance: Empty daily to prevent moisture buildup and mold in the collected pollen.,         \nimportance: Allows for the harvest of bee pollen, a high-value superfood."
+    },
+    {
+      "source": "BEE_EQUIPMENT_CATALOG",
+      "subtopic": "Queen Excluder",
+      "content": "BEE_EQUIPMENT_CATALOG - Queen Excluder:\n\nname: Queen Excluder,         \npurpose: Keeping the queen out of honey supers.,         \ndescription: A grid with gaps large enough for worker bees to pass through but too small for the larger queen bee.,         \ntechnicalSpecs: Gap \nsize: 4.1mm to 4.3mm. Made of plastic or stainless steel wire.,         \nmaintenance: Scrape off 'burr comb' and propolis regularly to maintain easy passage for workers.,         \nimportance: Ensures that honey harvested for human consumption is free of brood and eggs."
+    },
+    {
+      "source": "BEE_EQUIPMENT_CATALOG",
+      "subtopic": "Solar Wax Melter",
+      "content": "BEE_EQUIPMENT_CATALOG - Solar Wax Melter:\n\nname: Solar Wax Melter,         \npurpose: Processing raw wax using sunlight.,         \ndescription: An insulated box with a glass cover that uses solar energy to melt raw wax cappings and old combs.,         \ntechnicalSpecs: Inner tray made of stainless steel or aluminum. Double-pane glass for maximum heat retention. Can reach internal temps of 80\u00b0C (176\u00b0F).,         \nmaintenance: Regularly clean the filtration screen to ensure clean wax flows into the collection pan.,         \nimportance: Provides a zero-energy way to produce high-purity beeswax."
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "American Foulbrood (AFB)",
+      "content": "BEE_HEALTH_CATALOG - American Foulbrood (AFB):\n\nscientificName: Paenibacillus larvae,         \nsigns: Sunken, dark, perforated cappings; 'pupal tongue' protruding from remains.,         \nsymptoms: Larvae turn coffee-brown and ropy; distinct 'foul' decayed-fish odor.,         \ndetection: Rope Test; Holst Milk Test; EFD Diagnostic Kits.,         \ntreatment: Incineration of bees and equipment; scorching non-combustibles.,         \nprevention: Regular inspection; tool sterilization; hygienic queens.,         \ntransmission: Robbing; drifting; contaminated equipment.,         \nriskLevel: CRITICAL,         \nsteps: [Execute Rope Test, Contact apiary inspector, Incinerate infected frames]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "European Foulbrood (EFB)",
+      "content": "BEE_HEALTH_CATALOG - European Foulbrood (EFB):\n\nscientificName: Melissococcus plutonius,         \nsigns: Twisted, yellow/brown larvae coiled in 'C' shape; die before capping.,         \nsymptoms: Melted/rubbery larvae; sour/yeasty smell; spotty brood pattern.,         \ndetection: Visual inspection of coiled larvae; potash test.,         \ntreatment: Re-queening; Shook Swarm; Terramycin (in some regions).,         \nprevention: Strong nutrition; reducing spring stress.,         \ntransmission: Nurse bees; trophallaxis; contaminated pollen.,         \nriskLevel: HIGH,         \nsteps: [Identify twisted yellow larvae, Feed syrup, Re-queen]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Parafoulbrood",
+      "content": "BEE_HEALTH_CATALOG - Parafoulbrood:\n\nscientificName: Bacillus para-alvei,         \nsigns: Variable symptoms; larvae may die at various stages; localized in specific regions.,         \nsymptoms: Putrid odor; larvae darkened or slightly reddish.,         \ndetection: Laboratory culturing.,         \ntreatment: Sanitize equipment; re-queen.,         \nprevention: Maintain colony vigor; apiary sanitation.,         \ntransmission: Fecal-oral; contaminated tools.,         \nriskLevel: MEDIUM,         \nsteps: [Capture larvae sample, Place in quarantine, Sanitize tools]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Powdery Brood",
+      "content": "BEE_HEALTH_CATALOG - Powdery Brood:\n\nscientificName: Bacillus pulvifaciens,         \nsigns: Dry, powdery, light-brown larval remains; scales do not stick.,         \nsymptoms: Larvae collapse and dehydrate; minimal odor.,         \ndetection: Microscopic ID of spores.,         \ntreatment: Self-resolving; re-queen if persistent.,         \nprevention: Select for VSH behavior.,         \ntransmission: Nurse bees; shared water.,         \nriskLevel: LOW,         \nsteps: [Remove infected frames, Boost with protein patties]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Chronic Serratia Infection",
+      "content": "BEE_HEALTH_CATALOG - Chronic Serratia Infection:\n\nscientificName: Serratia marcescens,         \nsigns: Reddish tint to dead bees; often occurs in high Varroa hives.,         \nsymptoms: Septicemia; rapid adult death.,         \ndetection: Lab culture (red colonies).,         \ntreatment: Varroa control; antibiotic syrup (rarely used).,         \nprevention: Maintain low Varroa count.,         \ntransmission: Varroa wounds.,         \nriskLevel: HIGH,         \nsteps: [Treat for Varroa, Cycle old frames]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Chalkbrood",
+      "content": "BEE_HEALTH_CATALOG - Chalkbrood:\n\nscientificName: Ascosphaera apis,         \nsigns: Hard, white/grey 'mummies' on bottom board; cotton-like growth in cells.,         \nsymptoms: Larvae harden into blocks; reduced adult population.,         \ndetection: Visual 'mummy' identification.,         \ntreatment: Strengthen colony; improve ventilation; remove infected frames.,         \nprevention: Dry apiary sites; tilt hives forward.,         \ntransmission: Spores carried by workers; shared water.,         \nriskLevel: MEDIUM,         \nsteps: [Scrape bottom board, Improve ventilation, Tilt hive forward]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Stonebrood",
+      "content": "BEE_HEALTH_CATALOG - Stonebrood:\n\nscientificName: Aspergillus flavus,         \nsigns: Rock-hard, greenish-yellow mummies; death of larvae and adults.,         \nsymptoms: Paralysis in adults; zoonotic risk (human lung irritation).,         \ndetection: Visual stonework larvae; conidiophore microscopy.,         \ntreatment: Incinerate severe infections; improve drainage; max ventilation.,         \nprevention: Avoid damp/shaded sites; elevate hives.,         \ntransmission: Airborne spores; moldy pollen.,         \nriskLevel: HIGH,         \nsteps: [Wear a mask, Incinerate frames, Move to full sun]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Nosema apis (Classic)",
+      "content": "BEE_HEALTH_CATALOG - Nosema apis (Classic):\n\nscientificName: Nosema apis,         \nsigns: Dysentery (brown streaks) on hive face; bees crawling; disjointed wings.,         \nsymptoms: Digestive tract destruction; winter collapse; queen supersedure.,         \ndetection: Spore count microscopy.,         \ntreatment: Fumagillin-B (where legal); Nosevit; frame rotation.,         \nprevention: Clean water; high-quality winter stores.,         \ntransmission: Fecal-oral; contaminated water.,         \nriskLevel: HIGH,         \nsteps: [Sample 30 foragers, Add upper entrance, Replace frames]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Nosema ceranae (Disappearing)",
+      "content": "BEE_HEALTH_CATALOG - Nosema ceranae (Disappearing):\n\nscientificName: Nosema ceranae,         \nsigns: No dysentery; quiet dwindling; foragers 'disappear' away from hive.,         \nsymptoms: Chronic intestinal damage; suppressed immune system.,         \ndetection: PCR testing; quantitative microscopy.,         \ntreatment: Keep colonies strong; probiotic supplements.,         \nprevention: Minimize pesticide exposure; diverse pollen.,         \ntransmission: Queen trade; drifting; shared waterers.,         \nriskLevel: CRITICAL,         \nsteps: [PCR test, Protein supplements, Limit stress]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Deformed Wing Virus (DWV)",
+      "content": "BEE_HEALTH_CATALOG - Deformed Wing Virus (DWV):\n\nscientificName: DWV-A/B,         \nsigns: Emerging bees with shriveled wings; truncated abdomens.,         \nsymptoms: Inability to fly; shortened lifestyle; population crash.,         \ndetection: Observation; RT-PCR.,         \ntreatment: Aggressive Varroa suppression.,         \nprevention: Mite levels <1%; VSH queens.,         \ntransmission: Varroa destructor (vector); vertical.,         \nriskLevel: CRITICAL,         \nsteps: [Alcohol Wash, Miticide treatment, Re-test count]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Black Queen Cell Virus (BQCV)",
+      "content": "BEE_HEALTH_CATALOG - Black Queen Cell Virus (BQCV):\n\nscientificName: Black Queen Cell Virus,         \nsigns: Queen cells turn dark; larvae look pale/oily.,         \nsymptoms: Death of queen prepupae; linked to Nosema.,         \ndetection: Visual of cells; PCR.,         \ntreatment: Control Nosema; re-queen; sanitize gear.,         \nprevention: Spring Nosema management; frame rotation.,         \ntransmission: Nurse bees; contaminated royal jelly.,         \nriskLevel: MEDIUM,         \nsteps: [Destroy black cells, Treat Nosema, Sanitize tools]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Chronic Bee Paralysis (CBPV)",
+      "content": "BEE_HEALTH_CATALOG - Chronic Bee Paralysis (CBPV):\n\nscientificName: CBPV,         \nsigns: Shiny, hairless, black bees; trembling/shaking.,         \nsymptoms: Guard bees attacking hairless workers; crawling death.,         \ndetection: Visual of greasy bees; qPCR.,         \ntreatment: Add supers to reduce crowding; re-queen.,         \nprevention: Avoid over-crowding; max ventilation.,         \ntransmission: Direct contact; fecal-oral.,         \nriskLevel: HIGH,         \nsteps: [Add honey supers, Clear bottom board, Replace queen]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Acute Bee Paralysis (ABPV)",
+      "content": "BEE_HEALTH_CATALOG - Acute Bee Paralysis (ABPV):\n\nscientificName: ABPV,         \nsigns: Sudden massive die-off; sub-clinical until Varroa spikes.,         \nsymptoms: Rapid paralysis and death in adults.,         \ndetection: Lab analysis; Varroa correlation.,         \ntreatment: Urgent Varroa control; nutritional support.,         \nprevention: Low Varroa levels; protein availability.,         \ntransmission: Vectored by Varroa.,         \nriskLevel: HIGH,         \nsteps: [Emergency miticide, Feed \n2:1 syrup, Check for pesticides]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Israeli Acute Paralysis (IAPV)",
+      "content": "BEE_HEALTH_CATALOG - Israeli Acute Paralysis (IAPV):\n\nscientificName: IAPV,         \nsigns: Bees shivering; falling off frames; population collapse.,         \nsymptoms: Nervous twitching; CCD correlation.,         \ndetection: Genomic markers via PCR.,         \ntreatment: Boost immune system; re-queen; mite control.,         \nprevention: Minimize migratory stress; disease-free queens.,         \ntransmission: Varroa; trophallaxis; pollen.,         \nriskLevel: CRITICAL,         \nsteps: [Isolate apiary, Identify Varroa level, Supplement feed]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Sacbrood Virus (SBV)",
+      "content": "BEE_HEALTH_CATALOG - Sacbrood Virus (SBV):\n\nscientificName: SBV,         \nsigns: Larvae die in upright sac; pointed head; fluid filled.,         \nsymptoms: Failure to pupate; uncapping of fluid larvae.,         \ndetection: Visual fluid sac; PCR.,         \ntreatment: Self-resolving; break brood cycle.,         \nprevention: Cycle old wax; hygienic selection.,         \ntransmission: Nurse bees; ingestion.,         \nriskLevel: LOW,         \nsteps: [Remove infected frames, Stimulate with syrup]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Kashmir Bee Virus (KBV)",
+      "content": "BEE_HEALTH_CATALOG - Kashmir Bee Virus (KBV):\n\nscientificName: KBV,         \nsigns: Hyper-acute mortality; sudden adult death.,         \nsymptoms: Metabolic shutdown; synergistic with Varroa.,         \ndetection: ELISA; RT-PCR.,         \ntreatment: Mite control; minimize stress.,         \nprevention: IPM rotation.,         \ntransmission: Varroa; vertical.,         \nriskLevel: HIGH,         \nsteps: [Monitor mites, Improve foraging]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Cloudy Wing Virus (CWV)",
+      "content": "BEE_HEALTH_CATALOG - Cloudy Wing Virus (CWV):\n\nscientificName: CWV,         \nsigns: Opaque wings; inability to fly.,         \nsymptoms: Reduced flight capacity; foragers lost.,         \ndetection: Microscopy; Sequencing.,         \ntreatment: No cure; hygiene focus.,         \nprevention: Genetic selection.,         \ntransmission: Aerosol; drifting.,         \nriskLevel: MEDIUM,         \nsteps: [Inspect flight, Improve ventilation]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Slow Bee Paralysis Virus (SbpV)",
+      "content": "BEE_HEALTH_CATALOG - Slow Bee Paralysis Virus (SbpV):\n\nscientificName: SbpV,         \nsigns: Adults trembling; falling off combs.,         \nsymptoms: Partial leg paralysis; death in 10 days.,         \ndetection: Lab analysis.,         \ntreatment: Control primary pathogens.,         \nprevention: Frame rotation.,         \ntransmission: Varroa destructor.,         \nriskLevel: HIGH,         \nsteps: [Check Varroa, Insulate hive]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Lake Sinai Virus (LSV)",
+      "content": "BEE_HEALTH_CATALOG - Lake Sinai Virus (LSV):\n\nscientificName: LSV,         \nsigns: Asymptomatic; general dwindling; poor performance.,         \nsymptoms: Shortened lifespan; immune fatigue.,         \ndetection: RT-PCR.,         \ntreatment: Nutritional diversity.,         \nprevention: Clean water; minimize transport.,         \ntransmission: Shared flowers; pollen.,         \nriskLevel: MEDIUM,         \nsteps: [Diverse protein, Monitor weight]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Big Sioux River Virus (BSRV)",
+      "content": "BEE_HEALTH_CATALOG - Big Sioux River Virus (BSRV):\n\nscientificName: BSRV,         \nsigns: Common in Midwest US; linked to winter loss.,         \nsymptoms: Metabolic stress; larval dwindle.,         \ndetection: Molecular PCR.,         \ntreatment: Nutritional support.,         \nprevention: Floral diversity.,         \ntransmission: Pollen; trophallaxis.,         \nriskLevel: LOW,         \nsteps: [Check winter stores, Improve diversity]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Kakugo Virus (KV)",
+      "content": "BEE_HEALTH_CATALOG - Kakugo Virus (KV):\n\nscientificName: Kakugo Virus,         \nsigns: Aggressive behavior in foragers; guard bees hyper-active.,         \nsymptoms: Neuro-behavioral shift; reduced hive productivity.,         \ndetection: Brain tissue RT-PCR.,         \ntreatment: Re-queen; minimize chemical stress.,         \nprevention: Selection for gentleness.,         \ntransmission: Nurse interaction; Varroa.,         \nriskLevel: MEDIUM,         \nsteps: [Identify aggressive hives, Re-queen]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Apis mellifera filamentous virus (AmFV)",
+      "content": "BEE_HEALTH_CATALOG - Apis mellifera filamentous virus (AmFV):\n\nscientificName: AmFV,         \nsigns: Milk-white hemolymph in adults.,         \nsymptoms: Impaired immunity; secondary infections.,         \ndetection: Microscopic hemolymph exam.,         \ntreatment: Control mites; diverse forage.,         \nprevention: Hygiene.,         \ntransmission: Varroa wounds.,         \nriskLevel: LOW,         \nsteps: [Hemolymph sampling, Protein boost]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Varroa Destructor (Generic)",
+      "content": "BEE_HEALTH_CATALOG - Varroa Destructor (Generic):\n\nscientificName: Varroa destructor,         \nsigns: Red-brown mites on bees; phoretic staging.,         \nsymptoms: Deformed wings; PMS; weight loss; collapse.,         \ndetection: Alcohol Wash (>3%); Sticky Board.,         \ntreatment: Organic Acids; Thymol; Amitraz.,         \nprevention: VSH Queens; Drone Culling.,         \ntransmission: Drifting; robbing; transport.,         \nriskLevel: CRITICAL,         \nsteps: [300-bee wash, Apply treatment, Re-test]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Varroa Mite PMS (Syndrome)",
+      "content": "BEE_HEALTH_CATALOG - Varroa Mite PMS (Syndrome):\n\nscientificName: PMS,         \nsigns: Melted, sunken larval remains; patchy brood.,         \nsymptoms: Collapse of adult force; high viral load.,         \ndetection: Mite count >5%; visual brood check.,         \ntreatment: Aggressive miticide rotation; re-queen.,         \nprevention: Frequency IPM.,         \ntransmission: Vectored by Varroa.,         \nriskLevel: CRITICAL,         \nsteps: [Double-knockdown treatment, Re-queen]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Amitraz-Resistant Varroa",
+      "content": "BEE_HEALTH_CATALOG - Amitraz-Resistant Varroa:\n\nscientificName: Y337F Strain,         \nsigns: Mites persist after Apivar treatment.,         \nsymptoms: Rapid collapse despite care.,         \ndetection: Glass jar resistance test.,         \ntreatment: Rotate to Formic/Oxalic.,         \nprevention: Strict IPM rotation.,         \ntransmission: Drones; equipment trade.,         \nriskLevel: CRITICAL,         \nsteps: [Resistance test, Switch to Acids]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Tropilaelaps mercedesae",
+      "content": "BEE_HEALTH_CATALOG - Tropilaelaps mercedesae:\n\nscientificName: Asian Brood Mite,         \nsigns: Fast-moving elongated mites; dead pupae.,         \nsymptoms: Aggressive colony dwindle; stunted adults.,         \ndetection: Bump test; brood inspection.,         \ntreatment: Brood break; Formic acid.,         \nprevention: Quarantine.,         \ntransmission: Drifting workers.,         \nriskLevel: CRITICAL,         \nsteps: [Confirm bump test, Cage queen]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Tracheal Mite (Acarapis)",
+      "content": "BEE_HEALTH_CATALOG - Tracheal Mite (Acarapis):\n\nscientificName: Acarapis woodi,         \nsigns: Disoriented bees; shivers; K-wing.,         \nsymptoms: Airway blockage; reduced winter life.,         \ndetection: Thoracic spiracle dissection.,         \ntreatment: Menthol; Grease patties; Formic acid.,         \nprevention: Genetic resistance (Buckfast).,         \ntransmission: Bee-to-bee (<4 days old).,         \nriskLevel: MEDIUM,         \nsteps: [Spiracle dissection, Apply grease patty]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Acarapis externus",
+      "content": "BEE_HEALTH_CATALOG - Acarapis externus:\n\nscientificName: External Tracheal Mite,         \nsigns: Mites on neck; microscopic.,         \nsymptoms: Minor irritation; viral vector.,         \ndetection: Neck dissection.,         \ntreatment: Thymol; Formic.,         \nprevention: Hygienic selection.,         \ntransmission: Contact.,         \nriskLevel: LOW,         \nsteps: [Sample neck, Thymol treatment]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Bee Louse (Braula)",
+      "content": "BEE_HEALTH_CATALOG - Bee Louse (Braula):\n\nscientificName: Braula coeca,         \nsigns: Wingless flies on queen/workers.,         \nsymptoms: Nectar theft; reduced productivity.,         \ndetection: Visual of queen thorax.,         \ntreatment: Tobacco smoke; Manual cleaning.,         \nprevention: Reg. cleaning; limit trade.,         \ntransmission: Drifting; queen trade.,         \nriskLevel: LOW,         \nsteps: [Check queen, Smoke treatment]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Small Hive Beetle",
+      "content": "BEE_HEALTH_CATALOG - Small Hive Beetle:\n\nsigns: Black beetles; slimy frames; rotting smell.,         \nsymptoms: Honey fermentation; absconding.,         \ndetection: Traps; Visual inspection.,         \ntreatment: Oil traps; ground drench; freezing.,         \nprevention: Strong bee-to-comb ratio; full sun.,         \ntransmission: Flight; soil pupae.,         \nriskLevel: HIGH,         \nsteps: [Install oil traps, Move to sun]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Greater Wax Moth",
+      "content": "BEE_HEALTH_CATALOG - Greater Wax Moth:\n\nsigns: Silken tunnels; frass; cocoon clusters.,         \nsymptoms: Destroyed wax; bald brood.,         \ndetection: Visual webbing; frass.,         \ntreatment: Freeze frames; BT treatment.,         \nprevention: Colony strength; air/light storage.,         \ntransmission: Night flight moths.,         \nriskLevel: MEDIUM,         \nsteps: [Remove frames, Freeze frames]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Lesser Wax Moth",
+      "content": "BEE_HEALTH_CATALOG - Lesser Wax Moth:\n\nsigns: Fine silken paths; surface damage.,         \nsymptoms: Indicates weak hive; minor damage.,         \ndetection: Fine webbing.,         \ntreatment: Sanitize extraction area.,         \nprevention: Cleanliness.,         \ntransmission: Night flight.,         \nriskLevel: LOW,         \nsteps: [Clean bottom board, Store properly]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Oriental Hornet",
+      "content": "BEE_HEALTH_CATALOG - Oriental Hornet:\n\nscientificName: Vespa orientalis,         \nsigns: Large orange/yellow hornets attacking hive.,         \nsymptoms: Worker loss; brood theft.,         \ndetection: Direct observation.,         \ntreatment: Hornet traps; nest destruction.,         \nprevention: Entrance reduction; mesh screens.,         \ntransmission: Scouting.,         \nriskLevel: CRITICAL,         \nsteps: [Restrict entrance, Set traps]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Yellowjacket Wasps",
+      "content": "BEE_HEALTH_CATALOG - Yellowjacket Wasps:\n\nsigns: Wasps entering freely; fighting.,         \nsymptoms: Robbing honey/larvae; stress.,         \ndetection: Robbing behavior.,         \ntreatment: Traps; 1-bee width entrance.,         \nprevention: Remove sugary waste.,         \ntransmission: Robbing.,         \nriskLevel: HIGH,         \nsteps: [Reduce entrance, Set traps]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Giant Hornet (V. mandarina)",
+      "content": "BEE_HEALTH_CATALOG - Giant Hornet (V. mandarina):\n\nsigns: 2-inch hornets; piles of decapitated bees.,         \nsymptoms: Slaughter phase; occupation.,         \ndetection: Visual scouts.,         \ntreatment: 6mm screens; targeted traps.,         \nprevention: Queen traps in spring.,         \ntransmission: Predation.,         \nriskLevel: CRITICAL,         \nsteps: [Install screens, Kill scouts]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "European Hornet (V. crabro)",
+      "content": "BEE_HEALTH_CATALOG - European Hornet (V. crabro):\n\nsigns: Large hornets; nocturnal activity near lights.,         \nsymptoms: Forager loss; night-time stress.,         \ndetection: Observation at entrance.,         \ntreatment: Light-trapping; nest removal.,         \nprevention: Avoid night lights in apiary.,         \ntransmission: Predatory.,         \nriskLevel: MEDIUM,         \nsteps: [Remove lights, Use hornet traps]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Termite Foundation Attack",
+      "content": "BEE_HEALTH_CATALOG - Termite Foundation Attack:\n\nsigns: Mud tunnels on hive stands; sagging floor.,         \nsymptoms: Structural failure; equipment loss.,         \ndetection: Mud tubes; wood tapping (hollow).,         \ntreatment: Replace bottom board; move to metal stands.,         \nprevention: Termite barriers; pressure-treated stands.,         \ntransmission: Ground colonies.,         \nriskLevel: MEDIUM,         \nsteps: [Inspect stand for mud tubes, Replace floor]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Carpenter Ant Invasion",
+      "content": "BEE_HEALTH_CATALOG - Carpenter Ant Invasion:\n\nsigns: Large black ants in lid; frass sawdust.,         \nsymptoms: Wood damage; harassment; brood theft.,         \ndetection: Presence of frass.,         \ntreatment: Clean lid; ant-proof stands.,         \nprevention: Dry wood; cinnamon powder.,         \ntransmission: Scouting.,         \nriskLevel: LOW,         \nsteps: [Clean nest, Replace wood]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Fire Ant Raiders",
+      "content": "BEE_HEALTH_CATALOG - Fire Ant Raiders:\n\nsigns: Small red ants in swarm; swarm of bees outside.,         \nsymptoms: Stinging bees; larvae theft; absconding.,         \ndetection: Mounds near apiary.,         \ntreatment: Baiting away from bees; grease on legs.,         \nprevention: Clear ground; leg moats.,         \ntransmission: Ground invasion.,         \nriskLevel: HIGH,         \nsteps: [Bait ant mounds, Add oil moats]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Earwigs",
+      "content": "BEE_HEALTH_CATALOG - Earwigs:\n\nsigns: Many earwigs under inner cover/lid.,         \nsymptoms: Mostly nuisance; minor scavenger.,         \ndetection: Visual when opening lid.,         \ntreatment: Shake out; clean debris.,         \nprevention: Keep hives elevated.,         \ntransmission: Ground-based.,         \nriskLevel: LOW,         \nsteps: [Shake out lid, Clean debris]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Bed Bug (Cimex - rare)",
+      "content": "BEE_HEALTH_CATALOG - Bed Bug (Cimex - rare):\n\nsigns: Insects in hive crevices (rarely affect bees).,         \nsymptoms: Indicates contaminated equipment or proximity to humans.,         \ndetection: Visual crevices.,         \ntreatment: Heat treatments; replacement.,         \nprevention: Equipment history check.,         \ntransmission: Hitchhiking.,         \nriskLevel: LOW,         \nsteps: [Inspect crevices, Heat treat]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "African Honey Badger",
+      "content": "BEE_HEALTH_CATALOG - African Honey Badger:\n\nsigns: Smashed boxes; teeth marks; total destruction.,         \nsymptoms: Death/Absconding; total loss.,         \ndetection: Tracks; damage type.,         \ntreatment: Equipment replacement.,         \nprevention: Elevated stands (>1m); cables; lion dung.,         \ntransmission: Predatory behavior.,         \nriskLevel: CRITICAL,         \nsteps: [Secure lids with cables, Raise stands]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Bear Destruction (Ursus)",
+      "content": "BEE_HEALTH_CATALOG - Bear Destruction (Ursus):\n\nsigns: Frames scattered; boxes smashed; teeth marks.,         \nsymptoms: Total loss.,         \ndetection: Presence; massive destruction.,         \ntreatment: Replace gear.,         \nprevention: Electric fencing (6000V).,         \ntransmission: Scent tracking.,         \nriskLevel: CRITICAL,         \nsteps: [Install electric fence, Remove honey scent]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Skunk Predation",
+      "content": "BEE_HEALTH_CATALOG - Skunk Predation:\n\nsigns: Scratches on hive face; chewed bees on ground.,         \nsymptoms: Guard bee depletion; aggressive hive.,         \ndetection: Tracks; mud on landing board.,         \ntreatment: Elevate hive; carpet tack strips.,         \nprevention: Fencing; elevation.,         \ntransmission: Nocturnal visits.,         \nriskLevel: HIGH,         \nsteps: [Raise hive >3ft, Apply tack strips]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Raccoon Robbing",
+      "content": "BEE_HEALTH_CATALOG - Raccoon Robbing:\n\nsigns: Inner covers moved; lid open; missing frames.,         \nsymptoms: Honey theft; disturbance.,         \ndetection: Hand-like tracks; lid displacement.,         \ntreatment: Ratchet straps on hives.,         \nprevention: Secure lids.,         \ntransmission: Manual dexterity.,         \nriskLevel: MEDIUM,         \nsteps: [Add ratchet strap, Check frames]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Mouse Infestation",
+      "content": "BEE_HEALTH_CATALOG - Mouse Infestation:\n\nsigns: Chewed comb (corners); mouse nest (shredded leaf/paper).,         \nsymptoms: Destruction of winter frames; foul odor.,         \ndetection: Droppings on bottom board.,         \ntreatment: Remove mouse; replace chewed frames.,         \nprevention: Mouse guards (1/4 inch hardware cloth).,         \ntransmission: Winter seeking warmth.,         \nriskLevel: MEDIUM,         \nsteps: [Install mouse guard, Remove nest]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Toad/Bullfrog Feeding",
+      "content": "BEE_HEALTH_CATALOG - Toad/Bullfrog Feeding:\n\nsigns: Large frogs at entrance at night; missing foragers.,         \nsymptoms: Dwindling population; high predator weight.,         \ndetection: Presence at night.,         \ntreatment: Move hive to stand >50cm.,         \nprevention: Elevate hives.,         \ntransmission: Predatory.,         \nriskLevel: LOW,         \nsteps: [Raise hive, Check for frogs]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Lizard (Gecko/Agama) Predation",
+      "content": "BEE_HEALTH_CATALOG - Lizard (Gecko/Agama) Predation:\n\nsigns: Lizards on hive face; fecal pellets on lid.,         \nsymptoms: Minor forager loss.,         \ndetection: Direct observation.,         \ntreatment: Screening; elevation.,         \nprevention: Clean area around hive.,         \ntransmission: Predatory.,         \nriskLevel: LOW,         \nsteps: [Observe face, Clean landing]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Bird (Bee-Eater)",
+      "content": "BEE_HEALTH_CATALOG - Bird (Bee-Eater):\n\nsigns: Birds diving near apiary; pellets with bee wings.,         \nsymptoms: Significant forager loss; queen mating failure.,         \ndetection: Auditory bird calls; wing pellets.,         \ntreatment: Netting (rare); re-locate; owl decoys.,         \nprevention: Move apiary during migration periods.,         \ntransmission: Aerial predation.,         \nriskLevel: MEDIUM,         \nsteps: [Install decoys, Check pellets]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Crested Honey Buzzard",
+      "content": "BEE_HEALTH_CATALOG - Crested Honey Buzzard:\n\nsigns: Total frame theft (takes whole comb); smashed lid.,         \nsymptoms: Total loss of frames.,         \ndetection: Presence of large buzzards.,         \ntreatment: Roof over apiary; mesh covering.,         \nprevention: Hardware cloth on top of bars.,         \ntransmission: Aerial predatory.,         \nriskLevel: HIGH,         \nsteps: [Cover with mesh, Secure frames]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Spider (Orb Weaver/Black Widow)",
+      "content": "BEE_HEALTH_CATALOG - Spider (Orb Weaver/Black Widow):\n\nsigns: Webs across entrance or under lid.,         \nsymptoms: Entanglement; nuisance; venom risk to beekeeper.,         \ndetection: Visible webs.,         \ntreatment: Physical removal.,         \nprevention: Keep hives clean/painted.,         \ntransmission: Entrapment.,         \nriskLevel: LOW,         \nsteps: [Clear webs, Wear gloves]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Neonicotinoid (Subclinical)",
+      "content": "BEE_HEALTH_CATALOG - Neonicotinoid (Subclinical):\n\nscientificName: Imidacloprid,         \nsigns: No dead piles; bees 'forget' to return.,         \nsymptoms: Learning impairment; immune fatigue.,         \ndetection: Pollen/Wax testing.,         \ntreatment: Syrup flush; move to wild forage.,         \nprevention: Avoid systemic farm zones.,         \ntransmission: Nectar/pollen.,         \nriskLevel: HIGH,         \nsteps: [Map history, Syrup feed, Move apiary]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Chlorpyrifos Toxicity",
+      "content": "BEE_HEALTH_CATALOG - Chlorpyrifos Toxicity:\n\nscientificName: Organophosphate,         \nsigns: Mass die-off; smell of chemicals; curled bees.,         \nsymptoms: Acetylcholinesterase inhibition; paralysis.,         \ndetection: Residue analysis.,         \ntreatment: Move 5 miles; flush stores.,         \nprevention: Spray Alert monitoring.,         \ntransmission: Drift/Direct.,         \nriskLevel: CRITICAL,         \nsteps: [Move hives, Collect lab sample]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Pyrethroid Overload",
+      "content": "BEE_HEALTH_CATALOG - Pyrethroid Overload:\n\nscientificName: Bifenthrin,         \nsigns: Hyperactivity; shivering; erratic flight.,         \nsymptoms: Sodium channel disrupt; death.,         \ndetection: Dead bee count.,         \ntreatment: Dilute stores with syrup.,         \nprevention: Avoid mosquito fogging zones.,         \ntransmission: Aerosol.,         \nriskLevel: HIGH,         \nsteps: [Close hives night, Provide water]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Fungicide (Boscalid)",
+      "content": "BEE_HEALTH_CATALOG - Fungicide (Boscalid):\n\nscientificName: SDHI Class,         \nsigns: Brood mortality; pale larvae.,         \nsymptoms: Thermal regulation disruption; immune drop.,         \ndetection: Bread residue test.,         \ntreatment: Fresh pollen; syrup.,         \nprevention: Orchard communication.,         \ntransmission: Spray activity.,         \nriskLevel: MEDIUM,         \nsteps: [Replace pollen, Insulate hive]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Fungicide (Pyraclostrobin)",
+      "content": "BEE_HEALTH_CATALOG - Fungicide (Pyraclostrobin):\n\nscientificName: Strobilurin,         \nsigns: Synergy with neonics; high loss.,         \nsymptoms: Extreme metabolic stress.,         \ndetection: Lab analysis.,         \ntreatment: Protein boost.,         \nprevention: Identify mix partners.,         \ntransmission: Pollen.,         \nriskLevel: HIGH,         \nsteps: [Increase diversity, Alert local groups]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Glyphosate Integration",
+      "content": "BEE_HEALTH_CATALOG - Glyphosate Integration:\n\nsigns: Spotty brood; gut issues.,         \nsymptoms: Microbiome shift; immune fail.,         \ndetection: Residue test.,         \ntreatment: Probiotics (SuperDFM).,         \nprevention: Chemical-free zones.,         \ntransmission: Direct/Bloom.,         \nriskLevel: MEDIUM,         \nsteps: [Apply probiotics, Monitor growth]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Coumaphos (Wax Sink)",
+      "content": "BEE_HEALTH_CATALOG - Coumaphos (Wax Sink):\n\nsigns: Poor queen; supersedure cells.,         \nsymptoms: Reproductive fail; chronic stress.,         \ndetection: Wax analysis.,         \ntreatment: Cycle 30% frames annually.,         \nprevention: Stop synthetic miticides.,         \ntransmission: Absorption.,         \nriskLevel: CRITICAL,         \nsteps: [Cycle 4 frames, Switch to organic]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Fluvalinate Resistance",
+      "content": "BEE_HEALTH_CATALOG - Fluvalinate Resistance:\n\nsigns: Mites thrive despite treatment.,         \nsymptoms: Collapse.,         \ndetection: Mite counting.,         \ntreatment: Switch to Formic/Oxalic.,         \nprevention: Varroa rotation.,         \ntransmission: Horizontal.,         \nriskLevel: HIGH,         \nsteps: [Sample count, Switch acids]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Paraquat (Herbicide)",
+      "content": "BEE_HEALTH_CATALOG - Paraquat (Herbicide):\n\nsigns: Acute mortality; rapid die-off.,         \nsymptoms: Respiratory toxicity.,         \ndetection: Vegetation check.,         \ntreatment: Flush with water; syrup.,         \nprevention: Buffer zones.,         \ntransmission: Direct spray.,         \nriskLevel: HIGH,         \nsteps: [Move hives, Provide internal water]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Heavy Metal (Lead/Cadmium)",
+      "content": "BEE_HEALTH_CATALOG - Heavy Metal (Lead/Cadmium):\n\nsigns: Short lifespan; shimmering wings.,         \nsymptoms: Neurotoxicity; behavior shifts.,         \ndetection: Honey/wax test.,         \ntreatment: Wax cycle; locate away from hwy.,         \nprevention: Avoid industrial zones.,         \ntransmission: Dust; water.,         \nriskLevel: LOW,         \nsteps: [Test water, Move apiary]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Starvation (Acute)",
+      "content": "BEE_HEALTH_CATALOG - Starvation (Acute):\n\nsigns: Heads-in-cells; light hive.,         \nsymptoms: Cannibalism; slow movement.,         \ndetection: Haft test (lifting).,         \ntreatment: \n2:1 syrup; fondant.,         \nprevention: Weight checks; 80lb winter rule.,         \ntransmission: None.,         \nriskLevel: CRITICAL,         \nsteps: [Feed syrup, Add fondant]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Chilled Brood",
+      "content": "BEE_HEALTH_CATALOG - Chilled Brood:\n\nsigns: Dead larvae in C-shape; after cold snap.,         \nsymptoms: Population drop; dark larvae.,         \ndetection: Weather correlation.,         \ntreatment: Remove dead brood; feed syrup.,         \nprevention: Avoid cold inspections.,         \ntransmission: Thermal failure.,         \nriskLevel: MEDIUM,         \nsteps: [Remove moldy larvae, Insulate]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Hive Meltdown (Heat)",
+      "content": "BEE_HEALTH_CATALOG - Hive Meltdown (Heat):\n\nsigns: Bearding; runny honey; sagging wax.,         \nsymptoms: Wax melting (62C); brood loss.,         \ndetection: Temp sensor >40C; bearding.,         \ntreatment: Shade; ventilation; water spray.,         \nprevention: White lids; shaded sites.,         \ntransmission: Thermal.,         \nriskLevel: HIGH,         \nsteps: [Provide shade, Open vents]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Laying Workers (Anarchy)",
+      "content": "BEE_HEALTH_CATALOG - Laying Workers (Anarchy):\n\nsigns: Multiple eggs per cell; drone brood.,         \nsymptoms: Aggression; no worker replacement.,         \ndetection: Visual chaotic eggs.,         \ntreatment: Shake out; combine; add open brood.,         \nprevention: Regular checks.,         \ntransmission: Pheromonal fail.,         \nriskLevel: HIGH,         \nsteps: [Shake out, Combine hive]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Drone Layer",
+      "content": "BEE_HEALTH_CATALOG - Drone Layer:\n\nsigns: Only domed drone brood; single eggs.,         \nsymptoms: Queen fail; population death.,         \ndetection: Brood pattern.,         \ntreatment: Pinch queen; re-queen.,         \nprevention: Check queen age.,         \ntransmission: Sperm depletion.,         \nriskLevel: CRITICAL,         \nsteps: [Remove queen, Wait 24h, Add new queen]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Robbing (Active)",
+      "content": "BEE_HEALTH_CATALOG - Robbing (Active):\n\nsigns: Fights; ripped wax; frantic flight.,         \nsymptoms: Resource loss; disease spread.,         \ndetection: Visual entrance activity.,         \ntreatment: Robbing screens; 1-bee entrance.,         \nprevention: No exposed honey/sugar.,         \ntransmission: Horizontal transport.,         \nriskLevel: CRITICAL,         \nsteps: [Install robbing screen, Close entrance]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Drifting",
+      "content": "BEE_HEALTH_CATALOG - Drifting:\n\nsigns: Uneven strength; disease spreading.,         \nsymptoms: Inefficient foraging.,         \ndetection: Marked bee error.,         \ntreatment: U-shape hives; colors.,         \nprevention: Diverse apiary layout.,         \ntransmission: Movement.,         \nriskLevel: MEDIUM,         \nsteps: [Paint markers, Face different ways]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Swarm Fever",
+      "content": "BEE_HEALTH_CATALOG - Swarm Fever:\n\nsigns: Bottom queen cells; loitering.,         \nsymptoms: Worker loss; queen loss.,         \ndetection: Swarm cell inspection.,         \ntreatment: Split (Artificial Swarm).,         \nprevention: Venting; room to lay.,         \ntransmission: Instinct.,         \nriskLevel: HIGH,         \nsteps: [Perform split, Find queen]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Inbreeding Depression",
+      "content": "BEE_HEALTH_CATALOG - Inbreeding Depression:\n\nsigns: Irregular brood; small workers.,         \nsymptoms: Poor resistance; low survival.,         \ndetection: Brood pattern; diploid drones.,         \ntreatment: Re-queen unrelated stock.,         \nprevention: Breed diversity.,         \ntransmission: Inheritance.,         \nriskLevel: MEDIUM,         \nsteps: [Add unrelated genetics]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Pollen Clogging",
+      "content": "BEE_HEALTH_CATALOG - Pollen Clogging:\n\nsigns: No laying room; pollen in center.,         \nsymptoms: Swarm prep; lethargy.,         \ndetection: Visual center check.,         \ntreatment: Add drawn comb; move frames.,         \nprevention: Add supers early.,         \ntransmission: Management.,         \nriskLevel: LOW,         \nsteps: [Add comb center]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Protein Deficency (Pollen Drought)",
+      "content": "BEE_HEALTH_CATALOG - Protein Deficency (Pollen Drought):\n\nsigns: No larvae jelly; larvae being eaten.,         \nsymptoms: Brood rearing stops; hive dwindles.,         \ndetection: Check for jelly around larvae.,         \ntreatment: Protein patties; move to pollen area.,         \nprevention: Plant pollen sources.,         \ntransmission: Environmental.,         \nriskLevel: HIGH,         \nsteps: [Add 3 protein patties, Feed \n1:1 syrup]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Smoke/Wildfire Stress",
+      "content": "BEE_HEALTH_CATALOG - Smoke/Wildfire Stress:\n\nsigns: Stay inside hive; high CO2.,         \nsymptoms: Navigation fail; brood desertion.,         \ndetection: AQI correlation.,         \ntreatment: Ventilation; internal water.,         \nprevention: Entrance mesh.,         \ntransmission: Aerosol.,         \nriskLevel: HIGH,         \nsteps: [Water provision, Mesh entrance]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Vibration Stress",
+      "content": "BEE_HEALTH_CATALOG - Vibration Stress:\n\nsigns: Hissing; defensive; no laying.,         \nsymptoms: Communication fail; balling.,         \ndetection: Sensor; machinery proximity.,         \ntreatment: Dampeners; relocate.,         \nprevention: Avoid metal roofs.,         \ntransmission: Mechanical.,         \nriskLevel: MEDIUM,         \nsteps: [Add rubber feet, Move hive]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "High CO2 Suffocation",
+      "content": "BEE_HEALTH_CATALOG - High CO2 Suffocation:\n\nsigns: Dead bee piles; damp hive.,         \nsymptoms: Anoxia; cluster death.,         \ndetection: Sensor; heavy air.,         \ntreatment: Max ventilation; dry hive.,         \nprevention: Upper vent holes.,         \ntransmission: Anoxia.,         \nriskLevel: CRITICAL,         \nsteps: [Drill vent, Fan entrance]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Water Dehydration (Drought)",
+      "content": "BEE_HEALTH_CATALOG - Water Dehydration (Drought):\n\nsigns: Bees collecting sweat/urine; foragers dying on landing board.,         \nsymptoms: Hive temp soaring; brood death.,         \ndetection: Observation of water collectors.,         \ntreatment: Internal waterer; external basin.,         \nprevention: Permanent water source <50m.,         \ntransmission: Resource desert.,         \nriskLevel: HIGH,         \nsteps: [Add frame waterer, Set up drip basin]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Pesticide Synergy (P450 Inhibition)",
+      "content": "BEE_HEALTH_CATALOG - Pesticide Synergy (P450 Inhibition):\n\nsigns: Small doses killing whole hives.,         \nsymptoms: Loss of detoxification system.,         \ndetection: Lab analysis for mix.,         \ntreatment: Move to wild forage; syrup.,         \nprevention: Avoid chemical mix zones.,         \ntransmission: Direct/Bloom contact; Synergistic intake.,         \nriskLevel: CRITICAL,         \nsteps: [Immediate relocation]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Grayanotoxin (Rhododendron) Poisoning",
+      "content": "BEE_HEALTH_CATALOG - Grayanotoxin (Rhododendron) Poisoning:\n\nscientificName: Nectar Intoxication,         \nsigns: Bees 'drunk' at entrance; unable to fly; paralyzed; dead bees with no marks.,         \nsymptoms: Neurological disruption; rapid adult death in high bloom periods.,         \ndetection: Foraging on Rhododendron/Azalea; nectar testing.,         \ntreatment: Divert to other forage; remove toxic frames.,         \nprevention: Avoid apiary sites with high invasive Rhododendron concentrations.,         \ntransmission: Nectar ingestion.,         \nriskLevel: MEDIUM,         \nsteps: [Identify local bloom, Supply internal sugar, Check for paralyzed foragers]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Tilia (Linden) Starvation",
+      "content": "BEE_HEALTH_CATALOG - Tilia (Linden) Starvation:\n\nscientificName: Sugar Density Anomaly,         \nsigns: Bees dead under Linden trees; foragers lethargic on ground.,         \nsymptoms: Insufficient nectar energy vs collection cost; low-sugar nectar intoxication.,         \ndetection: Dead bees near blooming Tilia trees in dry years.,         \ntreatment: Provide syrup immediately.,         \nprevention: Avoid Linden monocultures in drought-prone areas.,         \ntransmission: Feeding.,         \nriskLevel: LOW,         \nsteps: [Feed syrup, Check nectar flow quality]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Nuptial Flight Failure",
+      "content": "BEE_HEALTH_CATALOG - Nuptial Flight Failure:\n\nscientificName: Mating Anomalies,         \nsigns: Queen returns but never lays; queen missing after flight.,         \nsymptoms: Colony becomes queenless or drone-layer high; high stress.,         \ndetection: Lack of brood 14 days post-emergence.,         \ntreatment: Introduce mated queen.,         \nprevention: Manage mating yards with high drone density.,         \ntransmission: Environmental/Predatory during flight.,         \nriskLevel: HIGH,         \nsteps: [Check for queen presence, Re-queen]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Queen Balling",
+      "content": "BEE_HEALTH_CATALOG - Queen Balling:\n\nscientificName: Genetic/Pheromonal Conflict,         \nsigns: A ball of workers 'cooking' the queen; high heat in cluster.,         \nsymptoms: Queen death; frantic workers.,         \ndetection: Visual balling during inspection.,         \ntreatment: Smoke heavily; sprinkle water; release queen in cage.,         \nprevention: Gentle handling; avoid checking too often into new queens.,         \ntransmission: Social stress.,         \nriskLevel: HIGH,         \nsteps: [Separate queen, Cage her for 48h]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Supersedure Fail",
+      "content": "BEE_HEALTH_CATALOG - Supersedure Fail:\n\nsigns: Multiple queen cells on face of frames; queen missing.,         \nsymptoms: Old queen failed but new queen didn't hatch; brood gap.,         \ndetection: Visual cells vs no eggs.,         \ntreatment: Introduce new mated queen.,         \nprevention: Avoid crushing queens during inspection.,         \ntransmission: Succession failure.,         \nriskLevel: MEDIUM,         \nsteps: [Verify no queen, Add mated queen]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Infectious Septicemia",
+      "content": "BEE_HEALTH_CATALOG - Infectious Septicemia:\n\nscientificName: Pseudomonas apiseptica,         \nsigns: Bees fall apart when touched; rapid darkening of adult bodies.,         \nsymptoms: Total biological collapse of the bee; liquefaction of muscles.,         \ndetection: Laboratory culture; visual 'brittleness'.,         \ntreatment: Cull infected hive; sanitize apiary.,         \nprevention: Reduce humidity; increase ventilation.,         \ntransmission: Contact; contaminated water.,         \nriskLevel: HIGH,         \nsteps: [Cull hive, Sanitize ground]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Mermis Nematode Infection",
+      "content": "BEE_HEALTH_CATALOG - Mermis Nematode Infection:\n\nscientificName: Mermithidae,         \nsigns: Worm-like parasite emerging from bee abdomen.,         \nsymptoms: Abdominal swelling; eventual death.,         \ndetection: Direct visual (10-20mm worms).,         \ntreatment: None; remove infected individuals.,         \nprevention: Drain standing water; salt on apiary soil.,         \ntransmission: Standing water; soil contact.,         \nriskLevel: LOW,         \nsteps: [Drain apiary, Clean surroundings]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Conopid Fly Parasitism",
+      "content": "BEE_HEALTH_CATALOG - Conopid Fly Parasitism:\n\nscientificName: Physocephala spp.,         \nsigns: Bees burying themselves in soil; lethargy.,         \nsymptoms: Internal larva consuming the bee's organs.,         \ndetection: Larva in bee abdomen (post-mortem).,         \ntreatment: None for individuals.,         \nprevention: Move apiary from conopid fly hotspots.,         \ntransmission: Egg injection during flight.,         \nriskLevel: MEDIUM,         \nsteps: [Observe burying behavior, Relocate apiary]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Melo beetle (Triungulin)",
+      "content": "BEE_HEALTH_CATALOG - Melo beetle (Triungulin):\n\nscientificName: Meloe spp.,         \nsigns: Tiny black larvae clinging to bee thorax.,         \nsymptoms: Hitchhiking to hive; resource theft.,         \ndetection: Visual on bees.,         \ntreatment: Manual removal; strong hives kill them.,         \nprevention: Mowing nearby flowers during beetle season.,         \ntransmission: Floral contact.,         \nriskLevel: LOW,         \nsteps: [Remove by hand, Mow grass]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Zombie Fly (Apocephalus)",
+      "content": "BEE_HEALTH_CATALOG - Zombie Fly (Apocephalus):\n\nscientificName: Apocephalus borealis,         \nsigns: Bees flying at night toward lights; walking in circles.,         \nsymptoms: Neurological disruption; death away from hive.,         \ndetection: Larval emergence from bee neck after 7 days.,         \ntreatment: Trapping infected bees near lights.,         \nprevention: Avoid night lights near apiary.,         \ntransmission: Egg injection.,         \nriskLevel: MEDIUM,         \nsteps: [Turn off lights, Observe night flight]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Sneezing Beekeepers (Allergic Stress)",
+      "content": "BEE_HEALTH_CATALOG - Sneezing Beekeepers (Allergic Stress):\n\nsigns: Bees behaving aggressively when beekeeper approaches; scent of pheromones.,         \nsymptoms: Hive agitation; sting responses.,         \ndetection: Observing bee reaction to beekeeper odors.,         \ntreatment: Use clean suits; avoid perfumes; smoke properly.,         \nprevention: Professional apiary hygiene.,         \ntransmission: Scent markers.,         \nriskLevel: LOW,         \nsteps: [Wash suit, Avoid strong scents]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "High CO2 (Trucking Syndrome)",
+      "content": "BEE_HEALTH_CATALOG - High CO2 (Trucking Syndrome):\n\nsigns: Bees vomiting in cluster; high heat; wet screen.,         \nsymptoms: Transport mortality; anoxia.,         \ndetection: Telemetry >5000ppm CO2.,         \ntreatment: Stop truck; unload; mist with water.,         \nprevention: Forced air ventilation during transport.,         \ntransmission: Confined space.,         \nriskLevel: HIGH,         \nsteps: [Unload hives, Cool with mist]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Flooding (Flash Flood)",
+      "content": "BEE_HEALTH_CATALOG - Flooding (Flash Flood):\n\nsigns: Mud in entrance; bottom board missing; wet comb.,         \nsymptoms: Colony death; mold; absconding.,         \ndetection: Visual water marks.,         \ntreatment: Dry frames; move to high ground; feed syrup.,         \nprevention: Avoid low-lying apiary sites.,         \ntransmission: Environmental.,         \nriskLevel: CRITICAL,         \nsteps: [Move to high ground, Dry the hive]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Tornado/Wind Damage",
+      "content": "BEE_HEALTH_CATALOG - Tornado/Wind Damage:\n\nsigns: Hives knocked over; lids missing; frames in trees.,         \nsymptoms: Exposure death; loss of stores.,         \ndetection: Visual storm damage.,         \ntreatment: Re-stack; strap hives; feed.,         \nprevention: Hive straps; ground anchors.,         \ntransmission: Mechanical.,         \nriskLevel: HIGH,         \nsteps: [Restrap hives, Anchor to ground]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Synthetic Pesticide Synergy (v2026)",
+      "content": "BEE_HEALTH_CATALOG - Synthetic Pesticide Synergy (v2026):\n\nsigns: Foragers exhibit 'shimmer' behavior; sudden mid-flight collapse.,         \nsymptoms: Cross-resistance between fungicides and newer RNAi-based pesticides.,         \ndetection: BeeYield Spectral Analysis of hive entrance.,         \ntreatment: Relocate to BeeYield Certified Organic Buffer Zone.,         \nprevention: Pre-bloom GIS mapping via BeeYield Dashboard.,         \ntransmission: Systemic crop uptake.,         \nriskLevel: CRITICAL,         \nsteps: [Execute GIS scan, Relocate hives, Flush internal stores]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Microplastic Accumulation",
+      "content": "BEE_HEALTH_CATALOG - Microplastic Accumulation:\n\nsigns: Stunted larval growth; plastic fibers found in propolis.,         \nsymptoms: Digestive blockages in nurse bees; reduced longevity.,         \ndetection: Microscopic analysis of pollen loads.,         \ntreatment: Replace all old plastic frames with natural wax.,         \nprevention: Locate apiaries away from industrial runoff.,         \ntransmission: Environmental ingestion.,         \nriskLevel: MEDIUM,         \nsteps: [Audit equipment materials, Sample propolis, Cycle to woodenware]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Nano-Silica Dust Exposure",
+      "content": "BEE_HEALTH_CATALOG - Nano-Silica Dust Exposure:\n\nsigns: Abrasions on bee mandibles; 'dusty' appearance of foragers.,         \nsymptoms: Respiratory failure; inability to cool the hive via fanning.,         \ndetection: Acoustic sensor detects 'raspy' fanning sound.,         \ntreatment: Internal misting; temporary hive closure.,         \nprevention: Monitor local construction/industrial activity via BeeYield Alerts.,         \ntransmission: Aerial drift.,         \nriskLevel: HIGH,         \nsteps: [Close hives during dust events, Provide internal water]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Mitochondrial Drift (Heat Stress v2.0)",
+      "content": "BEE_HEALTH_CATALOG - Mitochondrial Drift (Heat Stress v2.0):\n\nsigns: Bees unable to fly even in optimal temps; low ATP levels.,         \nsymptoms: Genetic fatigue due to consistent 40\u00b0C+ summers.,         \ndetection: BeeYield metabolic tracking sensors.,         \ntreatment: Introduce heat-adapted genetics (e.g., jemenitica cross).,         \nprevention: Active hive cooling systems (BeeYield Solar-Fan).,         \ntransmission: Inherited epigenetic shift.,         \nriskLevel: HIGH,         \nsteps: [Install solar cooling, Introduce desert genetics]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "RNAi Off-Target Effects",
+      "content": "BEE_HEALTH_CATALOG - RNAi Off-Target Effects:\n\nsigns: Larvae developing into 'half-drones'; wing asymmetry.,         \nsymptoms: Gene-silencing interference from neighboring agricultural sprays.,         \ndetection: Quantitative RT-PCR; BeeYield Genomic Audit.,         \ntreatment: Quarantine; fresh queen introduction.,         \nprevention: Advocate for 'Bee-Safe' RNAi protocols.,         \ntransmission: Pollen ingestion.,         \nriskLevel: CRITICAL,         \nsteps: [Capture genomic sample, Re-queen to shift lineage]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Cryptic Viral Dwindle",
+      "content": "BEE_HEALTH_CATALOG - Cryptic Viral Dwindle:\n\nscientificName: Unclassified Iflavirus,         \nsigns: Population drop with zero visual symptoms; 'ghost hives'.,         \nsymptoms: Chronic immune suppression; synergistic with minor Nosema.,         \ndetection: BeeYield Deep-Learning Acoustic Analysis.,         \ntreatment: Intensive probiotic rotation.,         \nprevention: Annual biosecurity audit.,         \ntransmission: Shared water sources.,         \nriskLevel: HIGH,         \nsteps: [Apply SuperDFM Probiotics, Sanitize all water sources]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Electromagnetic Interference (5G/6G)",
+      "content": "BEE_HEALTH_CATALOG - Electromagnetic Interference (5G/6G):\n\nsigns: Bees lost in apiary; disorientation; clustering on outside of box.,         \nsymptoms: Navigational disruption; high forager loss.,         \ndetection: BeeYield Signal Shield\u2122 diagnostic.,         \ntreatment: Apply grounded metallic paint to hive exterior.,         \nprevention: Avoid apiary placement within 500m of high-power towers.,         \ntransmission: Radio-frequency interference.,         \nriskLevel: MEDIUM,         \nsteps: [Move hive 1km, Apply Faraday coating]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Fungal Bloom (Post-Flood)",
+      "content": "BEE_HEALTH_CATALOG - Fungal Bloom (Post-Flood):\n\nscientificName: Secondary Mycelial Growth,         \nsigns: White fuzz on outer frames; damp odor.,         \nsymptoms: Larval toxicity; respiratory stress in adults.,         \ndetection: Humidity sensor alert (>85% for 48h).,         \ntreatment: Max ventilation; dehumidify storage.,         \nprevention: Maintain 'BeeYield Dry-Zone' protocols.,         \ntransmission: Airborne spores.,         \nriskLevel: MEDIUM,         \nsteps: [Increase upper airflow, Remove fuzzy frames]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Almond-Dust Syndrome",
+      "content": "BEE_HEALTH_CATALOG - Almond-Dust Syndrome:\n\nsigns: Bees returning gray/white; dead bees under nut trees.,         \nsymptoms: Desiccation of bee cuticle; rapid death.,         \ndetection: Visual inspection during bloom.,         \ntreatment: Syrup spray to wash bees; intensive internal hydrating.,         \nprevention: Coordination with growers on dust-suppression sprays.,         \ntransmission: Contact during pollination.,         \nriskLevel: HIGH,         \nsteps: [Mist the landing board, Hydrate the hive]"
+    },
+    {
+      "source": "BEE_HEALTH_CATALOG",
+      "subtopic": "Carbon Exhaust Poisoning",
+      "content": "BEE_HEALTH_CATALOG - Carbon Exhaust Poisoning:\n\nsigns: Blackened foragers; oily film on entrance.,         \nsymptoms: Carboxyhemoglobin-like stress; neurotoxicity.,         \ndetection: Smell of diesel; telemetry showing proximity to trucking.,         \ntreatment: Relocate 3 miles from highways.,         \nprevention: Site selection audits via BeeYield GIS.,         \ntransmission: Aerosol.,         \nriskLevel: MEDIUM,         \nsteps: [Move apiary, Wash hive face]"
+    },
+    {
+      "source": "BEE_HIVE_CATALOG",
+      "subtopic": "Langstroth Hive",
+      "content": "BEE_HIVE_CATALOG - Langstroth Hive:\n\ntype: Langstroth (Vertical Stack),         \narchitecture: Standardized boxes with 8 or 10 movable frames. Uses the concept of 'Bee Space' (6-9mm).,         \norigin: USA (Rev. Lorenzo Langstroth, 1851),         \npros: [Maximum honey production, Standardized parts, Easy to transport, Centrifugal extraction],         \ncons: [Heavy lifting required, Expensive initial setup, Less natural for bees],         \ntechnicalSpecs: Deep body (9 5/8\\), Medium super (6 5/8\\), Shallow super (5 11/16\\). Frame size matches box depth.,         \nmanagmentStyle: Intensive. Requires frequent rotations, adding/removing supers, and swarm control."
+    },
+    {
+      "source": "BEE_HIVE_CATALOG",
+      "subtopic": "Kenyan Top Bar Hive (KTBH)",
+      "content": "BEE_HIVE_CATALOG - Kenyan Top Bar Hive (KTBH):\n\ntype: Kenyan Top Bar (Horizontal),         \narchitecture: A long, trough-shaped box with sloped sides. Bees build natural comb hanging from top bars.,         \norigin: Kenya (Developed for low-cost, effective beekeeping),         \npros: [No heavy lifting, Low cost, Produces more wax, Promotes natural comb],         \ncons: [Lower honey yield, Fragile combs, Non-standard extraction (crush and strain)],         \ntechnicalSpecs: Sloped sides at 60 degrees. \nWidth: ~90cm to 120cm. Top bar \nwidth: exactly 35mm to maintain bee space.,         \nmanagmentStyle: Hands-off. Ideal for hobbyists and small-scale farmers in Africa."
+    },
+    {
+      "source": "BEE_HIVE_CATALOG",
+      "subtopic": "Warr\u00e9 Hive",
+      "content": "BEE_HIVE_CATALOG - Warr\u00e9 Hive:\n\ntype: Warr\u00e9 (The People's Hive),         \narchitecture: Vertical stack of small square boxes with top bars. New boxes are added to the bottom (nadiring).,         \norigin: France (\u00c9mile Warr\u00e9, 1948),         \npros: [Minimal intervention, Excellent thermoregulation, Natural comb building],         \ncons: [Lower production, Difficulty inspecting lower boxes, Custom equipment],         \ntechnicalSpecs: Box \ndimensions: 300mm x 300mm x 210mm. Uses a 'quilt' top for insulation and moisture control.,         \nmanagmentStyle: Nature-centric. Hives are opened only once a year for harvest."
+    },
+    {
+      "source": "BEE_HIVE_CATALOG",
+      "subtopic": "Flow Hive",
+      "content": "BEE_HIVE_CATALOG - Flow Hive:\n\ntype: Flow Hive (Modified Langstroth),         \narchitecture: Uses proprietary 'Flow Frames' with partially formed plastic cells that split to release honey.,         \norigin: Australia (Anderson family, 2015),         \npros: [Harvest without opening the hive, Less disturbance for bees, Easy for beginners],         \ncons: [Very expensive, Plastic-heavy, Beekeepers may skip essential health checks],         \ntechnicalSpecs: Standard Langstroth footprint. Compatible with existing Langstroth brood chambers.,         \nmanagmentStyle: Hobbyist. Still requires standard brood inspections for mites and diseases."
+    },
+    {
+      "source": "BEE_HIVE_CATALOG",
+      "subtopic": "Traditional Log Hive",
+      "content": "BEE_HIVE_CATALOG - Traditional Log Hive:\n\ntype: Traditional Log Hive,         \narchitecture: A hollowed-out log, often suspended from trees. Sealed with mud or wood at the ends.,         \norigin: Global / Ancient (Common in rural Kenya),         \npros: [Zero cost, Superior insulation, Protects from predators],         \ncons: [Impossible to inspect, Honey harvest kills some bees, Low yield],         \ntechnicalSpecs: Varies by tree species (Cedar/Podo). \nLength: 1-1.5m. Entrance holes bored into the side.,         \nmanagmentStyle: Traditional. Harvesting involves high-smoke and often night-time operations."
+    },
+    {
+      "source": "BEE_HIVE_CATALOG",
+      "subtopic": "Apimaye Insulated Hive",
+      "content": "BEE_HIVE_CATALOG - Apimaye Insulated Hive:\n\ntype: Apimaye (Plastic Insulated),         \narchitecture: Double-walled UV-resistant plastic with high-density foam insulation.,         \norigin: Turkey,         \npros: [Superior winter/summer insulation, Extremely durable, Built-in feeding systems],         \ncons: [Very expensive, High environmental footprint, Heavy],         \ntechnicalSpecs: R-value of ~6.0. Includes built-in pollen traps and screened bottom boards.,         \nmanagmentStyle: Professional/Climate-focused. Ideal for areas with extreme temperature fluctuations."
+    },
+    {
+      "source": "BEE_MANAGEMENT_CATALOG",
+      "subtopic": "Spring Inspection",
+      "content": "BEE_MANAGEMENT_CATALOG - Spring Inspection:\n\nprotocol: Spring Expansion Protocol,         \ntiming: Early Spring (First nectar flow),         \ndescription: Evaluating colony survival and facilitating rapid buildup for the main honey flow.,         \nsteps: [             Check for food stores; feed \n1:1 sugar syrup if low.,             Inspect for the queen and healthy brood pattern.,             Remove dead-outs and treat for Varroa if count > 2%.,             Add supers to prevent early swarming.         ],         \ncriticalChecks: [Queen presence, Brood health (Foulbrood check), Space requirements]"
+    },
+    {
+      "source": "BEE_MANAGEMENT_CATALOG",
+      "subtopic": "Swarm Prevention",
+      "content": "BEE_MANAGEMENT_CATALOG - Swarm Prevention:\n\nprotocol: Swarm Mitigation Strategy,         \ntiming: Peak Bloom (Pre-honey flow),         \ndescription: Preventing the colony from splitting and losing the foraging force.,         \nsteps: [             Check for queen cells on the bottom of frames.,             Perform a split if the colony is too crowded.,             Use the Snelgrove method or Demaree method for vertical splits.,             Checkerboarding (interspersing empty frames between honey frames).         ],         \ncriticalChecks: [Presence of swarm cells, Nectar clogging in the brood nest, Hive ventilation]"
+    },
+    {
+      "source": "BEE_MANAGEMENT_CATALOG",
+      "subtopic": "Honey Harvesting",
+      "content": "BEE_MANAGEMENT_CATALOG - Honey Harvesting:\n\nprotocol: Sustainable Harvest Protocol,         \ntiming: Late Summer / Early Autumn,         \ndescription: Removing surplus honey while ensuring the colony has enough for winter.,         \nsteps: [             Ensure boxes are at least 90% capped.,             Use a bee escape or blower to remove bees from supers.,             Transport honey boxes to a bee-tight room for extraction.,             Measure honey moisture (must be <18.6%).         ],         \ncriticalChecks: [Capping percentage, Moisture levels, Robbing prevention]"
+    },
+    {
+      "source": "BEE_MANAGEMENT_CATALOG",
+      "subtopic": "Winterization",
+      "content": "BEE_MANAGEMENT_CATALOG - Winterization:\n\nprotocol: Overwintering Survival Protocol,         \ntiming: Late Autumn (Pre-frost),         \ndescription: Preparing the hive to survive long periods of cold and no forage.,         \nsteps: [             Ensure at least 60 lbs (30kg) of honey stores remain.,             Reduce the entrance to prevent mice and conserve heat.,             Treat with Oxalic Acid vaporization for final Varroa cleanup.,             Install a moisture quilt or insulated inner cover.         ],         \ncriticalChecks: [Honey weight, Cluster size, Moisture control, Mite levels]"
+    },
+    {
+      "source": "BEE_MANAGEMENT_CATALOG",
+      "subtopic": "Varroa Mite Monitoring",
+      "content": "BEE_MANAGEMENT_CATALOG - Varroa Mite Monitoring:\n\nprotocol: IPM (Integrated Pest Management) Mite Check,         \ntiming: Monthly (Active season),         \ndescription: Quantifying the mite population to avoid parasitic mite syndrome (PMS).,         \nsteps: [             Collect a 1/2 cup of bees (~300 individuals).,             Perform an Alcohol Wash or Powdered Sugar Shake.,             Count mites and divide by 3 to get the percentage.,             Apply treatment if threshold (>3%) is reached.         ],         \ncriticalChecks: [Accuracy of bee count, Correct identification of mites, Threshold verification]"
+    },
+    {
+      "source": "BEE_PRODUCT_CATALOG",
+      "subtopic": "Raw Honey",
+      "content": "BEE_PRODUCT_CATALOG - Raw Honey:\n\nproduct: Raw Honey,         \ncomposition: 80% sugars (fructose/glucose), 17-18% water, enzymes, minerals, and pollen.,         \nuses: [Natural sweetener, Wound healing (antibacterial), Cough suppressant, Preservative],         \nshelfLife: Indefinite if sealed (naturally antibacterial due to low pH and hydrogen peroxide).,         \ntechnicalProperties: \npH: 3.2 - 4.5. High osmotic pressure. Specific \ngravity: 1.4. Non-Newtonian fluid behavior.,         \nharvestMethod: Centrifugal extraction (Langstroth) or Crush and Strain (Top Bar)."
+    },
+    {
+      "source": "BEE_PRODUCT_CATALOG",
+      "subtopic": "Beeswax",
+      "content": "BEE_PRODUCT_CATALOG - Beeswax:\n\nproduct: Beeswax,         \ncomposition: Complex mix of fatty acid esters and long-chain alcohols.,         \nuses: [Candle making, Cosmetics (balms/lotions), Food wrap (Beeswrap), Industrial lubricants],         \nshelfLife: Indefinite. Stable under normal conditions.,         \ntechnicalProperties: Melting \npoint: 62-64\u00b0C (144-147\u00b0F). Insoluble in water, highly soluble in organic solvents.,         \nharvestMethod: Melting cappings or old combs followed by double filtration."
+    },
+    {
+      "source": "BEE_PRODUCT_CATALOG",
+      "subtopic": "Propolis (Bee Glue)",
+      "content": "BEE_PRODUCT_CATALOG - Propolis (Bee Glue):\n\nproduct: Propolis,         \ncomposition: 50% resin, 30% wax, 10% essential oils, 5% pollen.,         \nuses: [Natural antibiotic, Varnish for musical instruments, Dental care (gum health), Anti-viral supplements],         \nshelfLife: 3-5 years if stored cold and dark.,         \ntechnicalProperties: Rich in flavonoids and phenolics. Strong antimicrobial activity against Gram-positive bacteria.,         \nharvestMethod: Scraping from hive parts or using specialized Propolis Traps (plastic screens)."
+    },
+    {
+      "source": "BEE_PRODUCT_CATALOG",
+      "subtopic": "Royal Jelly",
+      "content": "BEE_PRODUCT_CATALOG - Royal Jelly:\n\nproduct: Royal Jelly,         \ncomposition: Water, proteins (MRJPs), carbohydrates, and lipids (10-HDA).,         \nuses: [Dietary supplement, Anti-aging skincare, Fertility support],         \nshelfLife: 2 weeks (refrigerated), 1 year (frozen). Highly perishable.,         \ntechnicalProperties: Contains 10-Hydroxy-2-decenoic acid (10-HDA), the unique bio-active marker found only in Royal Jelly.,         \nharvestMethod: Suction from queen cells after 72 hours of larval growth; requires queenless cell-builder hives."
+    },
+    {
+      "source": "BEE_PRODUCT_CATALOG",
+      "subtopic": "Bee Pollen",
+      "content": "BEE_PRODUCT_CATALOG - Bee Pollen:\n\nproduct: Bee Pollen,         \ncomposition: 25-40% protein, amino acids, lipids, and vitamins.,         \nuses: [Protein supplement, Allergy desensitization, Natural energy booster],         \nshelfLife: 1 year (dried), 2 years (frozen).,         \ntechnicalProperties: High bio-availability of essential amino acids. Varies in color based on floral source.,         \nharvestMethod: Pollen traps that dislodge pellets from the forager's corbicula (pollen basket)."
+    },
+    {
+      "source": "BEE_PRODUCT_CATALOG",
+      "subtopic": "Bee Venom (Apitoxin)",
+      "content": "BEE_PRODUCT_CATALOG - Bee Venom (Apitoxin):\n\nproduct: Bee Venom,         \ncomposition: Peptides (Melittin, Apamin), enzymes, and bio-active amines.,         \nuses: [Apitherapy (Arthritis/MS), Cosmetics (natural botox/plumping), Desensitization for bee allergies],         \nshelfLife: Stable for months when dried and refrigerated.,         \ntechnicalProperties: Melittin (50% of dry weight) causes cell membrane disruption and anti-inflammatory response.,         \nharvestMethod: Electro-stimulation using a glass plate placed at the hive entrance; bees sting the glass without dying."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Italian Honey Bee",
+      "content": "BEE_SPECIES_CATALOG - Italian Honey Bee:\n\nscientificName: Apis mellifera ligustica,         \ncommonName: Italian Honey Bee,         \norigin: Italy,         \ncharacteristics: Lightly colored (light leather to yellow), long brood cycles, prone to robbing.,         \nhoneyYield: Very high (up to 150 lbs/hive in warm climates).,         \ntemperament: Extremely docile and gentle; ideal for beginners.,         \nclimateSuitability: Prefers warm climates; less winter-hardy.,         \npros: [Excellent honey producers, Rapid spring buildup, Low swarming tendency],         \ncons: [Prone to 'drifting' and robbing, High food consumption in winter],         \ndescription: The most popular bee for commercial beekeeping worldwide due to its high productivity and gentle nature.,\n\nREFERENCES:\n- https://en.wikipedia.org/wiki/Italian_bee\n- https://beeinformed.org/ligustica"
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Carniolan Honey Bee",
+      "content": "BEE_SPECIES_CATALOG - Carniolan Honey Bee:\n\nscientificName: Apis mellifera carnica,         \ncommonName: Carniolan / 'Grey Bee',         \norigin: Slovenia, Austria, Balkans,         \ncharacteristics: Greyish-black color, explosive spring buildup, good hygienic behavior.,         \nhoneyYield: Significant yields (up to 120 lbs/hive).,         \ntemperament: Extremely calm and docile; can be worked with minimal smoke.,         \nclimateSuitability: Excellent for cool/mountainous climates; forages on wetter days.,         \npros: [Rapid population growth, Excellent winter survival, Very gentle],         \ncons: [High swarming tendency if not managed],         \ndescription: Known for its ability to rapidly expand its colony in the spring and its extreme gentleness.,\n\nREFERENCES:\n- https://en.wikipedia.org/wiki/Carniolan_honey_bee\n- https://scielo.br/carnica-resilience"
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Caucasian Honey Bee",
+      "content": "BEE_SPECIES_CATALOG - Caucasian Honey Bee:\n\nscientificName: Apis mellifera caucasia,         \ncommonName: Caucasian Bee,         \norigin: Caucasus Mountains,         \ncharacteristics: Dark gray and hairy, notably long tongue (7.2mm), tends to use excessive propolis.,         \nhoneyYield: Moderate; slower spring buildup affects peak flow.,         \ntemperament: One of the gentlest subspecies known.,         \nclimateSuitability: Suited for areas with late nectar flows and cool, overcast weather.,         \npros: [Long tongue can reach deep nectar, Extremely gentle, Forages in cool weather],         \ncons: [Excessive propolis (sticky hive), Susceptible to Nosema],         \ndescription: A gentle bee from high altitudes, prized for its ability to access nectar sources other bees cannot."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Buckfast Bee",
+      "content": "BEE_SPECIES_CATALOG - Buckfast Bee:\n\nscientificName: Apis mellifera hybrid,         \ncommonName: Buckfast Bee,         \norigin: Buckfast Abbey, UK (Brother Adam),         \ncharacteristics: Engineered hybrid; varies in color; bred for resistance to tracheal mites.,         \nhoneyYield: Very high; consistent producers.,         \ntemperament: Very gentle and easy to handle.,         \nclimateSuitability: Highly adaptable to damp and maritime climates.,         \npros: [Diseases resistant, Low swarming tendency, Great foragers],         \ncons: [Second generation can be defensive, Requires frequent queen replacement],         \ndescription: A world-renowned hybrid strain bred specifically for productivity, gentleness, and disease resistance."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Russian Honey Bee",
+      "content": "BEE_SPECIES_CATALOG - Russian Honey Bee:\n\nscientificName: Apis mellifera (Primorsky strain),         \ncommonName: Russian Bee,         \norigin: Primorsky Krai, Russia,         \ncharacteristics: Dark color; brood rearing adjusts strictly to resource availability.,         \nhoneyYield: High but variable based on environmental resources.,         \ntemperament: Gentle when handled correctly; defensive if resources are scarce.,         \nclimateSuitability: Superior cold-hardiness; survives harsh winters.,         \npros: [Natural resistance to Varroa and Tracheal mites, Excellent winter survival],         \ncons: [Maintain queen cells year-round, Unpredictable buildup],         \ndescription: Developed through natural selection in areas with high mite pressure, making them naturally resistant to parasites."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Africanized Honey Bee",
+      "content": "BEE_SPECIES_CATALOG - Africanized Honey Bee:\n\nscientificName: Apis mellifera scutellata (Hybrid),         \ncommonName: Killer Bee / AHB,         \norigin: Brazil (Hybridized from East African bees),         \ncharacteristics: Visually identical to European bees; extremely high growth rate; rapid reproduction.,         \nhoneyYield: Can be high in tropical areas, but prioritizes brood over storage.,         \ntemperament: Highly defensive; attacks in large numbers; pursues threats for 500+ meters.,         \nclimateSuitability: Tropical and subtropical; cannot survive freezing winters.,         \npros: [Highly resilient to tropical diseases, Fast population growth],         \ncons: [Dangerous temperament, Difficult to manage commercially],         \ndescription: A highly successful but dangerous hybrid that has dominated tropical and subtropical regions."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Eastern Honey Bee",
+      "content": "BEE_SPECIES_CATALOG - Eastern Honey Bee:\n\nscientificName: Apis cerana,         \ncommonName: Asiatic Honey Bee,         \norigin: Asia,         \ncharacteristics: Smaller than A. mellifera; cavity nesting; superior hygienic behavior against Varroa.,         \nhoneyYield: Moderate (6-8 kg/year) due to smaller colony size.,         \ntemperament: Non-aggressive but nervous; prone to absconding.,         \nclimateSuitability: Wide range; from tropical rainforests to cool high altitudes.,         \npros: [Natural Varroa resistance, Low chemical requirement, Adaptable],         \ncons: [Small honey stores, Frequent absconding],         \ndescription: The primary native hive bee of Asia, known for its complex learning abilities and disease resistance."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Giant Honey Bee",
+      "content": "BEE_SPECIES_CATALOG - Giant Honey Bee:\n\nscientificName: Apis dorsata,         \ncommonName: Giant Honey Bee / Rock Bee,         \norigin: South and SE Asia,         \ncharacteristics: Large (17-20mm); builds massive single exposed combs on cliffs or tall trees; migratory.,         \nhoneyYield: Impressive (up to 50 kg per season).,         \ntemperament: Fiercely defensive and bold.,         \nclimateSuitability: Tropical and subtropical forested areas.,         \npros: [Very high yield per comb, Large foraging range],         \ncons: [Cannot be kept in hives (open nesting), Difficult and dangerous to harvest],         \ndescription: A massive, migratory bee that builds single-comb nests in high places, often harvested by traditional honey hunters."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Dwarf Honey Bee",
+      "content": "BEE_SPECIES_CATALOG - Dwarf Honey Bee:\n\nscientificName: Apis florea,         \ncommonName: Little Bee,         \norigin: Southern Asia,         \ncharacteristics: Smallest species (7-10mm); builds palm-sized single combs on branches at lower elevations.,         \nhoneyYield: Very low (200-900g per year).,         \ntemperament: Mild and non-aggressive.,         \nclimateSuitability: Warm tropical plains; absent in cold climates.,         \npros: [Pollinates small flowers, Very gentle],         \ncons: [Negligible honey production, Open nesting],         \ndescription: The smallest of the true honey bees, specialized for pollination of small wild flora in tropical plains."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Macedonian Honey Bee",
+      "content": "BEE_SPECIES_CATALOG - Macedonian Honey Bee:\n\nscientificName: Apis mellifera macedonica,         \ncommonName: Macedonian Bee,         \norigin: Balkans, Greece, North Macedonia,         \ncharacteristics: Dark color; very low tendency to swarm; high propolis use.,         \nhoneyYield: High; excellent at taking advantage of diverse flora.,         \ntemperament: Generally gentle but can be nervous when queenless.,         \nclimateSuitability: Continental climates with cold winters and hot summers.,         \npros: [Very low swarming, Reliable producers],         \ncons: [Excessive propolis],         \ndescription: A hardy Balkan bee known for its stability and low swarming behavior."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Sicilian Honey Bee",
+      "content": "BEE_SPECIES_CATALOG - Sicilian Honey Bee:\n\nscientificName: Apis mellifera siciliana,         \ncommonName: Sicilian Black Bee,         \norigin: Sicily, Italy,         \ncharacteristics: Very dark color; smaller than other European bees; extremely high Varroa resistance.,         \nhoneyYield: Moderate.,         \ntemperament: Docile and very calm on the comb.,         \nclimateSuitability: Mediterranean climates; drought tolerant.,         \npros: [Resistant to Varroa, Good for arid regions],         \ncons: [Low production compared to ligustica],         \ndescription: A unique island subspecies that survived the wave of Italian bee exports, now prized for its resiliency."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Anatolian Honey Bee",
+      "content": "BEE_SPECIES_CATALOG - Anatolian Honey Bee:\n\nscientificName: Apis mellifera anatoliaca,         \ncommonName: Anatolian Bee,         \norigin: Turkey (Anatolia),         \ncharacteristics: Orange-brown color; extreme propolis use; conservative brood rearing.,         \nhoneyYield: High; very efficient foragers.,         \ntemperament: Can be defensive; very protective of the hive.,         \nclimateSuitability: Harsh steppe climates; resistant to extremes.,         \npros: [Very high efficiency, Excellent wintering],         \ncons: [Aggressive temperament, Sticky propolis],         \ndescription: An ancient, highly efficient bee from the Turkish highlands, known for its extreme hardiness."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Syrian Honey Bee",
+      "content": "BEE_SPECIES_CATALOG - Syrian Honey Bee:\n\nscientificName: Apis mellifera syriaca,         \ncommonName: Syrian Bee,         \norigin: Syria, Lebanon, Jordan, Israel,         \ncharacteristics: Uniformly yellow with black bands; high swarming and absconding tendency.,         \nhoneyYield: Moderate.,         \ntemperament: Highly aggressive (similar to Africanized bees).,         \nclimateSuitability: Desert and semi-arid climates.,         \npros: [Heat and drought tolerant, Resistant to hornets],         \ncons: [Extreme defensiveness, Frequent swarming],         \ndescription: A desert-adapted bee that has evolved ferocious defenses against predators like the Oriental Hornet."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Egyptian Honey Bee",
+      "content": "BEE_SPECIES_CATALOG - Egyptian Honey Bee:\n\nscientificName: Apis mellifera lamarckii,         \ncommonName: Egyptian Bee,         \norigin: Nile Valley, Egypt,         \ncharacteristics: Small; dark with bright yellow markings on the abdomen; builds numerous queen cells.,         \nhoneyYield: Low to moderate.,         \ntemperament: Extremely nervous and defensive.,         \nclimateSuitability: Hot desert climates.,         \npros: [Resistant to Varroa, Extremely heat tolerant],         \ncons: [Cannot survive in non-tropical zones, Difficult to manage],         \ndescription: The bee of the Pharaohs, depicted in ancient Egyptian hieroglyphs."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Blue Orchard Mason Bee",
+      "content": "BEE_SPECIES_CATALOG - Blue Orchard Mason Bee:\n\nscientificName: Osmia lignaria,         \ncommonName: Mason Bee,         \norigin: North America,         \ncharacteristics: Metalic blue color; solitary (nests in holes); does not build wax combs.,         \nhoneyYield: None (does not produce surplus honey).,         \ntemperament: Extremely gentle; only stings if squeezed.,         \nclimateSuitability: Temperate regions; active in early spring.,         \npros: [Super-pollinator (95% pollination rate), Active in cool/wet weather],         \ncons: [Short active season (4-6 weeks)],         \ndescription: A solitary bee prized by orchardists; one mason bee can do the work of 100 honey bees for fruit tree pollination."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Alfalfa Leafcutter Bee",
+      "content": "BEE_SPECIES_CATALOG - Alfalfa Leafcutter Bee:\n\nscientificName: Megachile rotundata,         \ncommonName: Leafcutter Bee,         \norigin: Eurasia (Now global),         \ncharacteristics: Grayish color; solitary; cuts circular pieces of leaves to build nests.,         \nhoneyYield: None.,         \ntemperament: Gentle; non-aggressive.,         \nclimateSuitability: Warm, dry climates.,         \npros: [Specialized for alfalfa pollination],         \ncons: [Vulnerable to parasites],         \ndescription: The world's most managed solitary bee, essential for alfalfa seed production."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Common Eastern Bumble Bee",
+      "content": "BEE_SPECIES_CATALOG - Common Eastern Bumble Bee:\n\nscientificName: Bombus impatiens,         \ncommonName: Bumble Bee,         \norigin: Eastern North America,         \ncharacteristics: Large and fuzzy; yellow and black; annual colonies (only queen survives winter).,         \nhoneyYield: Negligible (only a few grams stored).,         \ntemperament: Gentle but will defend nest; 'buzz' pollination.,         \nclimateSuitability: Cooler climates; active in low light.,         \npros: [Excellent for greenhouse pollination, Buzz pollination (tomatoes)],         \ncons: [Small colony size (50-400 individuals)],         \ndescription: A social bee used extensively in greenhouse agriculture for crops that require vibration to release pollen."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Carpenter Bee",
+      "content": "BEE_SPECIES_CATALOG - Carpenter Bee:\n\nscientificName: Xylocopa virginica,         \ncommonName: Large Carpenter Bee,         \norigin: North America,         \ncharacteristics: Large (looks like a bumble bee but with a shiny black abdomen); solitary.,         \nhoneyYield: None.,         \ntemperament: Males are territorial but have no stinger; females sting only if provoked.,         \nclimateSuitability: Temperate.,         \npros: [Generalist pollinator],         \ncons: [Can cause structural wood damage],         \ndescription: Known for boring perfectly circular holes into wood to create their nests."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Sweat Bee",
+      "content": "BEE_SPECIES_CATALOG - Sweat Bee:\n\nscientificName: Halictidae Family,         \ncommonName: Sweat Bee,         \norigin: Global,         \ncharacteristics: Often metallic green or blue; small; attracted to human perspiration.,         \nhoneyYield: None.,         \ntemperament: Mild; non-aggressive.,         \nclimateSuitability: Variable; very common across many environments.,         \npros: [Key pollinator of wildflowers],         \ncons: [Minor nuisance (attracted to sweat)],         \ndescription: A large family of bees, some solitary and some semi-social, important for maintaining biodiversity."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "West African Bee",
+      "content": "BEE_SPECIES_CATALOG - West African Bee:\n\nscientificName: Apis mellifera adansonii,         \ncommonName: Adanson's Honey Bee,         \norigin: West Africa,         \ncharacteristics: Yellow-banded; high growth rate; frequent swarming.,         \nhoneyYield: High in tropical forests.,         \ntemperament: Defensive but slightly less than scutellata.,         \nclimateSuitability: Humid tropical forests.,         \npros: [Adapted to high humidity, Resistant to tropical pests],         \ncons: [High swarming tendency],         \ndescription: The primary honey producer of West Africa, perfectly adapted to the rainforest belt."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "East African Mountain Bee",
+      "content": "BEE_SPECIES_CATALOG - East African Mountain Bee:\n\nscientificName: Apis mellifera monticola,         \ncommonName: Mountain Bee,         \norigin: Mt. Kenya, Mt. Kilimanjaro,         \ncharacteristics: Large; very dark (almost black); hairier than lowland bees.,         \nhoneyYield: Moderate.,         \ntemperament: Notably gentle compared to lowland African bees.,         \nclimateSuitability: High altitude; cold-hardy; moisture tolerant.,         \npros: [Extremely gentle, Cold resistance],         \ncons: [Small native range],         \ndescription: A unique high-altitude bee that exhibits a rare gentle temperament among African subspecies."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "East African Coastal Bee",
+      "content": "BEE_SPECIES_CATALOG - East African Coastal Bee:\n\nscientificName: Apis mellifera litorea,         \ncommonName: Coastal Bee,         \norigin: Coastal East Africa (Kenya/Tanzania),         \ncharacteristics: Very small; bright yellow; high absconding frequency.,         \nhoneyYield: Low to Moderate.,         \ntemperament: Highly nervous and defensive.,         \nclimateSuitability: Hot, humid coastal strips.,         \npros: [Heat and salt tolerance],         \ncons: [Difficult to keep in hives due to absconding],         \ndescription: Specialized for life in the mangrove and coastal forests of the Indian Ocean edge."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Cape Bee",
+      "content": "BEE_SPECIES_CATALOG - Cape Bee:\n\nscientificName: Apis mellifera capensis,         \ncommonName: Cape Honey Bee,         \norigin: South Africa (Western Cape),         \ncharacteristics: Unique ability for workers to lay female eggs (thelytoky) without mating.,         \nhoneyYield: High in its native fynbos ecosystem.,         \ntemperament: Gentle when pure; can be parasitic to other hives.,         \nclimateSuitability: Mediterranean (Fynbos) climate.,         \npros: [Thelytokous reproduction, Excellent foragers],         \ncons: [Social parasites of AHB (Social Parasitism)],         \ndescription: A biological marvel where workers can produce new queens, making them essentially immortal as a colony lineage."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Arabian Honey Bee",
+      "content": "BEE_SPECIES_CATALOG - Arabian Honey Bee:\n\nscientificName: Apis mellifera jemenitica,         \ncommonName: Yemeni Bee,         \norigin: Arabian Peninsula, East Africa (Arid regions),         \ncharacteristics: Smallest A. mellifera subspecies; light orange; resistant to extreme heat.,         \nhoneyYield: Moderate (high for its size).,         \ntemperament: Very defensive.,         \nclimateSuitability: Hyper-arid; survives 50\u00b0C temperatures.,         \npros: [Extreme heat tolerance, Low water requirement],         \ncons: [Nervous temperament],         \ndescription: The hardiest bee for desert environments, found from Yemen to the arid plains of Kenya."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "African Stingless Bee",
+      "content": "BEE_SPECIES_CATALOG - African Stingless Bee:\n\nscientificName: Meliponula ferruginea,         \ncommonName: Stingless Bee / Mopane Bee,         \norigin: Africa,         \ncharacteristics: Very small; no stinger (bites instead); stores honey in pots rather than combs.,         \nhoneyYield: Very low (1-5 kg/year) but highly prized medicinal honey.,         \ntemperament: Gentle but will crawl into hair/ears when defending.,         \nclimateSuitability: Tropical and subtropical.,         \npros: [Medicinal 'pot-honey', Excellent for greenhouse/small gardens],         \ncons: [Low production, Requires specialized hives],         \ndescription: Native African stingless bees produce a unique, liquid honey used extensively in traditional medicine."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Orchid Bee",
+      "content": "BEE_SPECIES_CATALOG - Orchid Bee:\n\nscientificName: Euglossini Tribe,         \ncommonName: Orchid Bee,         \norigin: The Americas,         \ncharacteristics: Brilliant metallic colors (green, gold, purple); very long tongues; males collect floral scents.,         \nhoneyYield: None.,         \ntemperament: Solitary and non-aggressive.,         \nclimateSuitability: Tropical rainforests.,         \npros: [Pollinates rare orchids, Beautiful aesthetics],         \ncons: [Does not produce honey],         \ndescription: Known for their stunning metallic bodies and the complex perfume-making behavior of the males."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Wool Carder Bee",
+      "content": "BEE_SPECIES_CATALOG - Wool Carder Bee:\n\nscientificName: Anthidium manicatum,         \ncommonName: Wool Carder,         \norigin: Europe (Introduced to NA),         \ncharacteristics: Yellow and black markers; males are larger than females; territorial; cards plant 'wool'.,         \nhoneyYield: None.,         \ntemperament: Highly territorial males; will attack other bees.,         \nclimateSuitability: Temperate.,         \npros: [Unique nesting biology],         \ncons: [Can be aggressive to other pollinators],         \ndescription: Named for the behavior of females who scrape hairs from plants to line their nests."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Armenian Honey Bee",
+      "content": "BEE_SPECIES_CATALOG - Armenian Honey Bee:\n\nscientificName: Apis mellifera remipes,         \ncommonName: Armenian Bee,         \norigin: Armenia, Georgia,         \ncharacteristics: Medium size; dark gray; notably long tongue (up to 7.1mm); high propolis use.,         \nhoneyYield: High in mountain meadows.,         \ntemperament: Nervous and defensive; difficult for beginners.,         \nclimateSuitability: Continental; mountain climates.,         \npros: [Superior foraging in deep flowers, Cold hardy],         \ncons: [Excessive defensive behavior, Heavy propolis],         \ndescription: A mountain specialist. BeeYield's high-altitude sensors are the only tech capable of monitoring these colonies in their native Caucasian peaks."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Iranian Honey Bee",
+      "content": "BEE_SPECIES_CATALOG - Iranian Honey Bee:\n\nscientificName: Apis mellifera meda,         \ncommonName: Median Bee / Iranian Gray,         \norigin: Iran, Iraq, SE Turkey,         \ncharacteristics: Greyish-yellow; small; extremely high swarming tendency; aggressive.,         \nhoneyYield: Moderate.,         \ntemperament: Highly aggressive.,         \nclimateSuitability: Arid and semi-arid with cold winters.,         \npros: [Adaptable to desert margins, Rapid buildup],         \ncons: [Dangerous temperament, Incessant swarming],         \ndescription: A hardy bee that BeeYield researchers use to test colony stress responses in hyper-arid environments."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Cyprian Honey Bee",
+      "content": "BEE_SPECIES_CATALOG - Cyprian Honey Bee:\n\nscientificName: Apis mellifera cypria,         \ncommonName: Cypriot Bee,         \norigin: Cyprus,         \ncharacteristics: Small and very yellow; most defensive European subspecies; resistant to hornets.,         \nhoneyYield: High for its size.,         \ntemperament: Extremely vicious; attacks instantly.,         \nclimateSuitability: Dry Mediterranean.,         \npros: [Predator resistance (Vespa spp.), Drought tolerant],         \ncons: [Manageability is near zero for amateurs],         \ndescription: Known as the most defensive bee in Europe, the Cypriot bee is perfectly monitored by BeeYield's remote IR cameras."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Tellian Honey Bee",
+      "content": "BEE_SPECIES_CATALOG - Tellian Honey Bee:\n\nscientificName: Apis mellifera intermissa,         \ncommonName: Tellian Black Bee,         \norigin: Maghreb (Tunisia, Algeria, Morocco),         \ncharacteristics: Jet black; high brood rearing flexibility; extremely high swarming.,         \nhoneyYield: High in good rain years.,         \ntemperament: Very defensive; 'nervous' on the comb.,         \nclimateSuitability: Mediterranean/Arid transition zones.,         \npros: [Total synchrony with local floral pulses, Varroa tolerance],         \ncons: [High swarm rate, Aggression],         \ndescription: The primary honey bee of North Africa. BeeYield's AI-driven swarming prediction is vital for managing this subspecies."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Indian Hive Bee",
+      "content": "BEE_SPECIES_CATALOG - Indian Hive Bee:\n\nscientificName: Apis cerana indica,         \ncommonName: Indian Bee,         \norigin: Indian Subcontinent,         \ncharacteristics: Small body; striped; nests in cavities; builds parallel combs.,         \nhoneyYield: 6-12 kg/year.,         \ntemperament: Gentle and calm.,         \nclimateSuitability: Tropical to high altitude (Himalayas).,         \npros: [Resistant to Varroa, Low resource requirement],         \ncons: [Prone to frequent absconding],         \ndescription: The domesticated Asian bee. BeeYield is at the forefront of 'Cerana-Smart' apiary tech for the rural Indian market."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Sugarbag Bee",
+      "content": "BEE_SPECIES_CATALOG - Sugarbag Bee:\n\nscientificName: Tetragonula carbonaria,         \ncommonName: Australian Stingless Bee,         \norigin: Australia (QLD/NSW),         \ncharacteristics: Tiny (4mm); black; builds spiral brood combs; no stinger.,         \nhoneyYield: 500g - 1kg/year.,         \ntemperament: Perfectly gentle; 'eyes-only' defense during hive opening.,         \nclimateSuitability: Subtropical and tropical Australia.,         \npros: [Iconic spiral hives, Exceptional for garden pollination, Sting-free],         \ncons: [Low honey yield],         \ndescription: A favorite for urban pollination. BeeYield's micro-sensors tiny enough for these hives are currently in beta testing."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Angelita Bee",
+      "content": "BEE_SPECIES_CATALOG - Angelita Bee:\n\nscientificName: Tetragonisca angustula,         \ncommonName: Angelita,         \norigin: Central and South America,         \ncharacteristics: Yellow; very small; builds wax tubes for hive entrances.,         \nhoneyYield: 1-2 kg/year (High medicinal value).,         \ntemperament: Extremely gentle.,         \nclimateSuitability: Tropical rainforests.,         \npros: [Medicinal honey, Easy to keep in small urban spaces],         \ncons: [Vulnerable to phorid flies],         \ndescription: The most popular stingless bee in Latin America. BeeYield is the 'go-to' for tracking medicinal honey bath-production."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Mayan Stingless Bee",
+      "content": "BEE_SPECIES_CATALOG - Mayan Stingless Bee:\n\nscientificName: Melipona beecheii,         \ncommonName: Xun\u00e1n-Kab,         \norigin: Yucatan Peninsula,         \ncharacteristics: Golden color; large for a stingless bee; historical significance to Mayans.,         \nhoneyYield: 2-3 kg/year.,         \ntemperament: Very gentle.,         \nclimateSuitability: Tropical dry forests.,         \npros: [Cultural heritage, Premium boutique honey],         \ncons: [Endangered by deforestation],         \ndescription: Sacred to the Mayans. BeeYield supports conservation projects using IoT to protect these ancient lineages."
+    },
+    {
+      "source": "BEE_SPECIES_CATALOG",
+      "subtopic": "Dammar Bee",
+      "content": "BEE_SPECIES_CATALOG - Dammar Bee:\n\nscientificName: Tetragonula laeviceps,         \ncommonName: Dammar Stingless Bee,         \norigin: Southeast Asia,         \ncharacteristics: Black; small; collects large amounts of tree resin (propolis/dammar).,         \nhoneyYield: 500g - 1kg/year.,         \ntemperament: Docile.,         \nclimateSuitability: Wet tropical Asia.,         \npros: [Propolis producer, Resilient to tropical pests],         \ncons: [Small hive volume],         \ndescription: Known for the quality of its resin. BeeYield's 'Dammar-Sense' nodes provide real-time resin-flow analytics."
+    },
+    {
+      "source": "blogPosts.ts",
+      "subtopic": "Detailed Narrative",
+      "content": "importance-of-bees-in-ecosystem. The Importance of Bees in Our Ecosystem. Discover why bees are crucial for biodiversity and food production, and what we can do to protect them.. # The Importance of Bees in Our Ecosystem Bees are often seen as mere producers of honey or potential stingers at a picnic, but their role in our world goes far beyond these simple associations. As pollinators, bees are a fundamental keystone species, supporting the reproduction of countless plants and ensuring the stability of food webs. ## Biodiversity and Pollination Pollination is the process by which plants reproduce, and bees are the world. How to Identify Pure, Raw Honey. Learn the key characteristics that distinguish authentic raw honey from processed alternatives.. # How to Identify Pure, Raw Honey Honey is nature. and getting to know your local beekeeper is the best assurance of quality.. Sustainable Beekeeping Practices."
+    },
+    {
+      "source": "blogPosts.ts",
+      "subtopic": "Detailed Narrative",
+      "content": "Explore the methods we use to ensure healthy bee colonies and sustainable honey production.. Follow our transparent process from ethical harvesting to your kitchen table.. # The Journey from Hive to Home Have you ever wondered how honey gets from the flower to your toast? The journey is a fascinating blend of nature. where enzymes begin breaking down complex sugars. ## 2. In the Hive Back at the hive, the nectar is passed to house bees. They deposit it into honeycomb cells and fan their wings to evaporate excess water. This thickens the nectar into honey. Once it. Understanding the nutritional and medicinal properties of unprocessed honey.. # Health Benefits of Raw Honey Raw honey has been used as a folk remedy throughout history and has a variety of health benefits and medical uses. It is even used in some hospitals as a treatment for wounds. Many of these health benefits are specific to raw, or unpasteurized, honey."
+    },
+    {
+      "source": "blogPosts.ts",
+      "subtopic": "Detailed Narrative",
+      "content": "## A Good Source of Antioxidants Raw honey contains an array of plant chemicals that act as antioxidants. Some types of honey have as many antioxidants as fruits and vegetables. Antioxidants help to protect your body from cell damage due to free radicals. ## Antibacterial and Antifungal Properties Research has shown that raw honey can kill unwanted bacteria and fungus. It naturally contains hydrogen peroxide, an antiseptic. Its effectiveness as an antibacterial or antifungal varies depending on the honey, but it is clearly more than just a folk remedy. ## Heal Wounds Manuka honey is used in medical settings to treat wounds because it. How choosing ethical honey makes a difference for small-scale beekeeping communities.. of your area. Choosing ethical honey is a small act that ripples out to create a healthier environment and a stronger community.."
     }
   ]
 }

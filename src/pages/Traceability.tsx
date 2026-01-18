@@ -122,16 +122,16 @@ const Traceability = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section - Premium Orange/Amber - Mobile Responsive */}
-      <section className="relative min-h-[50vh] sm:min-h-[55vh] md:min-h-[60vh] flex items-center overflow-hidden py-12 sm:py-16 md:py-20">
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-900 via-amber-800 to-orange-700">
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-10 sm:top-20 left-4 sm:left-10 w-40 sm:w-72 h-40 sm:h-72 bg-yellow-400 rounded-full blur-3xl animate-pulse" />
-            <div className="absolute bottom-10 sm:bottom-20 right-4 sm:right-10 w-48 sm:w-96 h-48 sm:h-96 bg-amber-300 rounded-full blur-3xl animate-pulse delay-1000" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 sm:w-64 h-32 sm:h-64 bg-orange-400 rounded-full blur-3xl animate-pulse delay-500" />
+      {/* Hero Section - Premium Sage Green theme - Mobile Responsive */}
+      <section className="relative min-h-[50vh] sm:min-h-[55vh] md:min-h-[60vh] flex items-center overflow-hidden py-12 sm:py-16 md:py-20 lg:py-24">
+        <div className="absolute inset-0 bg-[#F0F7F0]">
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-10 sm:top-20 left-4 sm:left-10 w-40 sm:w-72 h-40 sm:h-72 bg-green-200 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-10 sm:bottom-20 right-4 sm:right-10 w-48 sm:w-96 h-48 sm:h-96 bg-amber-100 rounded-full blur-3xl animate-pulse delay-1000" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 sm:w-64 h-32 sm:h-64 bg-secondary/10 rounded-full blur-3xl animate-pulse delay-500" />
           </div>
           {/* Honeycomb Pattern */}
-          <svg className="absolute inset-0 w-full h-full opacity-10" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <svg className="absolute inset-0 w-full h-full opacity-[0.04]" viewBox="0 0 100 100" preserveAspectRatio="none">
             <pattern id="honeycomb-trace" x="0" y="0" width="20" height="17.32" patternUnits="userSpaceOnUse">
               <polygon points="10,0 20,5.77 20,17.32 10,23.09 0,17.32 0,5.77" fill="none" stroke="currentColor" strokeWidth="0.5" />
             </pattern>
@@ -140,16 +140,16 @@ const Traceability = () => {
         </div>
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
-          <div className="max-w-4xl mx-auto text-center text-white space-y-4 sm:space-y-6 md:space-y-8">
+          <div className="max-w-4xl mx-auto text-center text-neutral-900 space-y-4 sm:space-y-6 md:space-y-8">
             <div className="flex justify-center">
-              <Badge className="bg-white/20 text-white border-white/30 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 hover:bg-white/30 transition-colors inline-flex items-center">
+              <Badge className="bg-green-100 text-green-900 border-green-200 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 hover:bg-green-200/80 transition-colors inline-flex items-center font-bold">
                 <ShieldCheck className="mr-1.5 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" /> 100% HoneyChain™ Verified
               </Badge>
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black leading-tight tracking-tighter px-2">
-              The Journey of <span className="text-yellow-400 italic">Every Drop</span>
+              The Journey of <span className="text-green-700 italic">Every Drop</span>
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed px-4">
+            <p className="text-base sm:text-lg md:text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed px-4">
               Transparent. Ethical. Traceable. Scan your jar's QR code to meet your bees,
               view real-time hive metrics, and verify our 50/50 harvest promise.
             </p>
@@ -506,22 +506,30 @@ const Traceability = () => {
             )}
 
             {/* Mission Statement */}
-            <div className="bg-amber-50/50 dark:bg-slate-900/30 py-32 rounded-[4rem] mt-24">
-              <div className="container mx-auto px-6 lg:px-12">
+            <div className="bg-[#F0F7F0] py-32 rounded-[4rem] mt-24 relative overflow-hidden">
+              <div className="absolute inset-0 opacity-5">
+                <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  <pattern id="hex-mission" width="10" height="10" patternUnits="userSpaceOnUse">
+                    <path d="M5 0 L10 2.5 L10 7.5 L5 10 L0 7.5 L0 2.5 Z" fill="none" stroke="currentColor" strokeWidth="0.5" />
+                  </pattern>
+                  <rect width="100%" height="100%" fill="url(#hex-mission)" />
+                </svg>
+              </div>
+              <div className="container mx-auto px-6 lg:px-12 relative z-10">
                 <div className="mx-auto max-w-4xl text-center space-y-12">
-                  <div className="inline-block rounded-[2rem] bg-orange-500/10 p-8">
-                    <Heart className="h-16 w-16 text-orange-600 fill-orange-600" />
+                  <div className="inline-block rounded-[2.5rem] bg-green-100 p-8 shadow-inner">
+                    <Heart className="h-16 w-16 text-green-700 fill-green-700" />
                   </div>
-                  <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-none">
-                    Champions for <span className="text-orange-600 italic">Saving Bees</span>
+                  <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-none text-neutral-900">
+                    Champions for <span className="text-green-700 italic">Saving Bees</span>
                   </h2>
                   <div className="space-y-8">
-                    <p className="text-2xl leading-relaxed text-slate-700 dark:text-slate-300 font-medium">
+                    <p className="text-2xl leading-relaxed text-neutral-800 font-medium">
                       At BeeYield, we believe that the future of our planet depends on the health of our pollinators.
-                      That's why we've made a radical commitment: <span className="text-amber-600 font-black">we only harvest 50% of the honey our bees produce</span>.
+                      That's why we've made a radical commitment: <span className="text-green-800 font-black">we only harvest 50% of the honey our bees produce</span>.
                       The other half? It stays exactly where it belongs—with the bees who made it.
                     </p>
-                    <p className="text-lg leading-relaxed text-muted-foreground">
+                    <p className="text-lg leading-relaxed text-neutral-600">
                       While others chase profits, we chase purpose. Our bees aren't just workers; they're partners in a mission
                       to restore balance to our ecosystem. Every jar you purchase directly supports sustainable beekeeping practices
                       and funds our bee conservation initiatives across the region.
@@ -561,37 +569,38 @@ const Traceability = () => {
             </div>
 
             {/* Why Traceability Matters */}
-            <div className="bg-slate-900 text-white py-32 rounded-[5rem] overflow-hidden relative">
+            <div className="bg-[#F0F7F0] text-neutral-900 py-32 rounded-[5rem] overflow-hidden relative border border-green-100/50">
               <div className="absolute inset-0 opacity-10">
-                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-amber-500 rounded-full blur-[140px] -mr-32 -mt-32" />
+                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-green-200 rounded-full blur-[140px] -mr-32 -mt-32" />
+                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-amber-100/50 rounded-full blur-[120px] -ml-24 -mb-24" />
               </div>
 
               <div className="container mx-auto px-6 lg:px-12 relative z-10">
                 <div className="mx-auto max-w-6xl text-center">
                   <div className="mb-20 space-y-6">
-                    <div className="inline-block rounded-3xl bg-amber-500/20 p-6">
-                      <Shield className="h-12 w-12 text-amber-500" />
+                    <div className="inline-block rounded-3xl bg-green-100 p-6 shadow-sm border border-green-200">
+                      <Shield className="h-12 w-12 text-green-700" />
                     </div>
-                    <h2 className="text-5xl md:text-8xl font-black tracking-tighter leading-none">Trust in <br /> Every <span className="text-amber-500 italic">Drop</span></h2>
+                    <h2 className="text-5xl md:text-8xl font-black tracking-tighter leading-none text-neutral-900">Trust in <br /> Every <span className="text-green-700 italic">Drop</span></h2>
                   </div>
 
                   <div className="grid lg:grid-cols-2 gap-16 items-center text-left">
                     <div className="space-y-8">
-                      <p className="text-2xl leading-relaxed font-medium">
-                        Did you know that up to <span className="text-red-500 font-black">70% of honey</span> on supermarket shelves may be
+                      <p className="text-2xl leading-relaxed font-bold text-neutral-800">
+                        Did you know that up to <span className="text-red-600 font-black">70% of honey</span> on supermarket shelves may be
                         adulterated?
                       </p>
-                      <p className="text-lg text-slate-400 leading-relaxed font-medium">
+                      <p className="text-lg text-neutral-600 leading-relaxed font-medium">
                         Our revolutionary traceability system lets you trace every jar back to its source—not just the country
-                        or region, but the <span className="text-amber-500 font-black">exact hive, the beekeeper who cared for it,
+                        or region, but the <span className="text-green-700 font-black">exact hive, the beekeeper who cared for it,
                           and the flowers the bees visited</span>. This isn't just honey; it's a story you can verify.
                       </p>
                     </div>
                     <div className="grid gap-4 grid-cols-2">
                       {traceabilityFeatures.slice(0, 4).map((f) => (
-                        <div key={f.label} className="p-6 bg-white/5 backdrop-blur-md rounded-3xl border border-white/10 space-y-3">
-                          <f.icon className="h-8 w-8 text-amber-500" />
-                          <h4 className="font-black tracking-tight">{f.label}</h4>
+                        <div key={f.label} className="p-6 bg-white rounded-3xl border border-green-100 shadow-sm space-y-3 hover:shadow-md transition-all">
+                          <f.icon className="h-8 w-8 text-green-700" />
+                          <h4 className="font-black tracking-tight text-neutral-900">{f.label}</h4>
                         </div>
                       ))}
                     </div>

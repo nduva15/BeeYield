@@ -50,6 +50,9 @@ import SupportCenterView from '@/components/beeyield/SupportCenterView';
 import ServerStatusView from '@/components/beeyield/ServerStatusView';
 import InspectionsView from '@/components/beeyield/InspectionsView';
 import HarvestsView from '@/components/beeyield/HarvestsView';
+import ImageAnalysisView from '@/components/beeyield/ImageAnalysisView';
+import SoundAnalysisView from '@/components/beeyield/SoundAnalysisView';
+import HealthGuideView from '@/components/beeyield/HealthGuideView';
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 
@@ -65,7 +68,15 @@ const BeeYieldDashboard: React.FC = () => {
     const [devices, setDevices] = useState<IoTDevice[]>([]);
     const [readings, setReadings] = useState<SensorReading[]>([]);
     const [activeTab, setActiveTab] = useState('devices');
+    const [aiInitialMessage, setAiInitialMessage] = useState<string | null>(null);
     const [showBanner, setShowBanner] = useState(true);
+
+    const handleTabChange = (tab: string, message?: string) => {
+        if (tab === 'assistant' && message) {
+            setAiInitialMessage(message);
+        }
+        setActiveTab(tab);
+    };
 
     const handleLogout = async () => {
         await signOut();
@@ -219,37 +230,43 @@ const BeeYieldDashboard: React.FC = () => {
     const renderContent = () => {
         switch (activeTab) {
             case 'assistant':
-                return <AIAssistantView onTabChange={setActiveTab} />;
+                return (
+                    <AIAssistantView
+                        onTabChange={handleTabChange}
+                        initialMessage={aiInitialMessage || undefined}
+                        onInitialMessageConsumed={() => setAiInitialMessage(null)}
+                    />
+                );
             case 'agro-intelligence':
-                return <AgroIntelligenceView onTabChange={setActiveTab} />;
+                return <AgroIntelligenceView onTabChange={handleTabChange} />;
             case 'places':
-                return <MyPlacesView onTabChange={setActiveTab} />;
+                return <MyPlacesView onTabChange={handleTabChange} />;
             case 'beeyield':
-                return <BeeYieldHivesView onTabChange={setActiveTab} />;
+                return <BeeYieldHivesView onTabChange={handleTabChange} />;
             case 'inspections':
-                return <InspectionsView onTabChange={setActiveTab} />;
+                return <InspectionsView onTabChange={handleTabChange} />;
             case 'harvests':
-                return <HarvestsView onTabChange={setActiveTab} />;
+                return <HarvestsView onTabChange={handleTabChange} />;
             case 'global-hive-network':
                 return <GlobalHiveNetwork />;
             case 'data':
-                return <MeasurementDataView onTabChange={setActiveTab} />;
+                return <MeasurementDataView onTabChange={handleTabChange} />;
             case 'online':
-                return <BeeYieldOnlineView onTabChange={setActiveTab} />;
+                return <BeeYieldOnlineView onTabChange={handleTabChange} />;
             case 'bluetooth':
-                return <BluetoothView onTabChange={setActiveTab} />;
+                return <BluetoothView onTabChange={handleTabChange} />;
             case 'devices':
-                return <MyDevicesView devices={devices} readings={readings} onTabChange={setActiveTab} />;
+                return <MyDevicesView devices={devices} readings={readings} onTabChange={handleTabChange} />;
             case 'usb':
-                return <USBView onTabChange={setActiveTab} />;
+                return <USBView onTabChange={handleTabChange} />;
             case 'notes':
-                return <MyNotesView onTabChange={setActiveTab} />;
+                return <MyNotesView onTabChange={handleTabChange} />;
             case 'requests':
-                return <MyRequestsView onTabChange={setActiveTab} />;
+                return <MyRequestsView onTabChange={handleTabChange} />;
             case 'task':
-                return <MyTaskView onTabChange={setActiveTab} />;
+                return <MyTaskView onTabChange={handleTabChange} />;
             case 'buy':
-                return <BuyBeeYieldHubView onTabChange={setActiveTab} />;
+                return <BuyBeeYieldHubView onTabChange={handleTabChange} />;
             case 'meters':
             case 'meters-dashboard':
             case 'meters-list':
@@ -268,15 +285,21 @@ const BeeYieldDashboard: React.FC = () => {
             case 'meters-payments':
             case 'meters-reports':
             case 'meters-settings':
-                return <MetersView onTabChange={setActiveTab} activeSubTab={activeTab} />;
+                return <MetersView onTabChange={handleTabChange} activeSubTab={activeTab} />;
             case 'billing':
-                return <BillingView onTabChange={setActiveTab} />;
+                return <BillingView onTabChange={handleTabChange} />;
             case 'support':
-                return <SupportCenterView onTabChange={setActiveTab} />;
+                return <SupportCenterView onTabChange={handleTabChange} />;
             case 'server-status':
-                return <ServerStatusView onTabChange={setActiveTab} />;
+                return <ServerStatusView onTabChange={handleTabChange} />;
             case 'settings': // Special case from top bar or banner
-                return <SettingsView onTabChange={setActiveTab} />;
+                return <SettingsView onTabChange={handleTabChange} />;
+            case 'image-analysis':
+                return <ImageAnalysisView onTabChange={handleTabChange} />;
+            case 'sound':
+                return <SoundAnalysisView onTabChange={handleTabChange} />;
+            case 'health-guide':
+                return <HealthGuideView onTabChange={handleTabChange} />;
             default:
                 return (
                     <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8 bg-white dark:bg-[#09090b] rounded-[2.5rem] border border-dashed border-gray-200 dark:border-[#1e1e1e]">
@@ -365,7 +388,7 @@ const BeeYieldDashboard: React.FC = () => {
     return (
         <DashboardLayout
             activeTab={activeTab}
-            onTabChange={setActiveTab}
+            onTabChange={handleTabChange}
             onLogout={handleLogout}
             navItems={navItems}
         >

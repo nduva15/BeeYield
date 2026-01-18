@@ -44,11 +44,11 @@ const HeroSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="relative py-8 lg:py-16 overflow-hidden bg-gradient-to-br from-amber-50/80 via-orange-50/30 to-white">
+    <section className="relative py-8 lg:py-16 overflow-hidden bg-[#F0F7F0]">
       {/* Vertical "Honey" text accent */}
       <div className="absolute left-0 top-1/2 -translate-y-1/2 hidden lg:block pointer-events-none">
         <span
-          className="text-[140px] xl:text-[180px] font-black text-amber-200/40 tracking-tighter leading-none select-none"
+          className="text-[140px] xl:text-[180px] font-black text-green-200/40 tracking-tighter leading-none select-none"
           style={{
             writingMode: "vertical-rl",
             textOrientation: "mixed",
@@ -69,12 +69,12 @@ const HeroSection = () => {
 
             {/* Stats badges - horizontal */}
             <div className="flex flex-wrap justify-center lg:justify-start gap-3 mb-6">
-              <div className="flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-2xl border border-neutral-200/50 shadow-sm">
-                <span className="text-xl font-black text-amber-500">2500+</span>
+              <div className="flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-2xl border border-green-200/50 shadow-sm">
+                <span className="text-xl font-black text-green-700">2500+</span>
                 <span className="text-[10px] font-semibold text-neutral-500 uppercase leading-none">Trees<br />Planted</span>
               </div>
-              <div className="flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-2xl border border-neutral-200/50 shadow-sm">
-                <span className="text-xl font-black text-amber-500">50/50</span>
+              <div className="flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-2xl border border-green-200/50 shadow-sm">
+                <span className="text-xl font-black text-green-700">50/50</span>
                 <span className="text-[10px] font-semibold text-neutral-500 uppercase leading-none">Harvest<br />Promise</span>
               </div>
             </div>
@@ -83,7 +83,7 @@ const HeroSection = () => {
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
               <Button
                 size="lg"
-                className="bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-full px-8 h-12 shadow-lg shadow-amber-500/30"
+                className="bg-green-700 hover:bg-green-800 text-white font-bold rounded-full px-8 h-12 shadow-lg shadow-green-900/10"
                 onClick={() => navigate("/shop")}
               >
                 <Play className="mr-2 h-4 w-4 fill-white" />
@@ -105,15 +105,15 @@ const HeroSection = () => {
               {/* Floating stats - top right */}
               <div className="absolute -top-4 -right-4 lg:right-0 flex flex-col gap-3">
                 <div className="bg-white/95 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-lg border border-neutral-100">
-                  <span className="text-2xl font-black text-amber-500">100+</span>
+                  <span className="text-2xl font-black text-green-700">100+</span>
                   <p className="text-[10px] text-neutral-500 font-semibold uppercase">Satisfied Clients</p>
                 </div>
                 <div className="bg-white/95 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-lg border border-neutral-100">
-                  <span className="text-2xl font-black text-amber-500">20+</span>
+                  <span className="text-2xl font-black text-green-700">20+</span>
                   <p className="text-[10px] text-neutral-500 font-semibold uppercase">Professional Farmers</p>
                 </div>
                 <div className="bg-white/95 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-lg border border-neutral-100">
-                  <span className="text-2xl font-black text-amber-500">25+</span>
+                  <span className="text-2xl font-black text-green-700">25+</span>
                   <p className="text-[10px] text-neutral-500 font-semibold uppercase">Acres Pollinated</p>
                 </div>
               </div>
@@ -225,7 +225,7 @@ const TestimonialSection = () => {
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4 sm:px-6">
         <h2 className="text-3xl md:text-4xl font-black text-neutral-900 text-center mb-12">
-          What people are <span className="text-amber-500">saying</span>
+          What people are <span className="text-green-700">saying</span>
         </h2>
 
         <div className="max-w-4xl mx-auto">
@@ -233,11 +233,11 @@ const TestimonialSection = () => {
             {/* Customer Image */}
             <div className="flex justify-center">
               <div className="relative">
-                <div className="w-48 h-48 md:w-64 md:h-64 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center overflow-hidden">
+                <div className="w-48 h-48 md:w-64 md:h-64 rounded-full bg-gradient-to-br from-green-100 to-green-50 flex items-center justify-center overflow-hidden">
                   <span className="text-6xl">👩</span>
                 </div>
                 {/* Decorative honey elements */}
-                <div className="absolute -top-4 -right-4 w-16 h-16 bg-amber-400 rounded-full opacity-80"></div>
+                <div className="absolute -top-4 -right-4 w-16 h-16 bg-green-200 rounded-full opacity-80"></div>
                 <div className="absolute -bottom-2 -left-2 w-12 h-12 rounded-full overflow-hidden">
                   <img src="/images/products/honey_comb_chunk.png" alt="" className="w-full h-full object-cover" />
                 </div>
@@ -250,7 +250,7 @@ const TestimonialSection = () => {
                 {testimonials[currentIndex].quote}
               </p>
               <p className="font-bold text-neutral-900">– {testimonials[currentIndex].name},</p>
-              <p className="text-amber-600 text-sm font-semibold">{testimonials[currentIndex].title}</p>
+              <p className="text-green-700 text-sm font-semibold">{testimonials[currentIndex].title}</p>
             </div>
           </div>
 
@@ -260,7 +260,7 @@ const TestimonialSection = () => {
               <button
                 key={index}
                 onClick={() => setCurrentIndex(index)}
-                className={`w-2.5 h-2.5 rounded-full transition-all ${index === currentIndex ? "bg-amber-500 w-8" : "bg-neutral-300 hover:bg-neutral-400"
+                className={`w-2.5 h-2.5 rounded-full transition-all ${index === currentIndex ? "bg-green-600 w-8" : "bg-neutral-300 hover:bg-neutral-400"
                   }`}
               />
             ))}
@@ -291,7 +291,7 @@ const AboutSection = () => {
               </div>
 
               {/* Floating Badge */}
-              <div className="absolute -top-6 -left-6 bg-amber-500 text-white p-4 rounded-2xl shadow-xl transform -rotate-12 font-black text-sm uppercase tracking-widest">
+              <div className="absolute -top-6 -left-6 bg-green-700 text-white p-4 rounded-2xl shadow-xl transform -rotate-12 font-black text-sm uppercase tracking-widest">
                 50/50<br />Promise
               </div>
             </div>
@@ -300,7 +300,7 @@ const AboutSection = () => {
           {/* Text content */}
           <div>
             <h2 className="text-3xl md:text-4xl font-black text-neutral-900 mb-6">
-              The <span className="text-amber-500">Buzzz</span> about our Honey !
+              The <span className="text-green-700">Buzzz</span> about our Honey !
             </h2>
             <p className="text-neutral-600 leading-relaxed mb-4 text-sm md:text-base">
               BeeYield was founded with a singular vision: to revolutionize beekeeping through technology and radical transparency. Our journey began in the pristine landscapes of Kenya, where we saw the need for a more sustainable approach. Today, we are proud to lead with our <strong>50/50 Harvest Promise</strong>—ensuring that for every drop we take, enough is left for the bees to thrive and pollinate our future.
@@ -348,7 +348,7 @@ const FeaturesSection = () => {
               className="bg-neutral-50 rounded-2xl p-6 text-center hover:bg-neutral-100 transition-colors"
             >
               <div className="w-14 h-14 mx-auto mb-4 bg-white rounded-xl flex items-center justify-center shadow-sm">
-                <feature.icon className="h-7 w-7 text-amber-500" />
+                <feature.icon className="h-7 w-7 text-green-700" />
               </div>
               <h3 className="text-base font-bold text-neutral-900 mb-2">{feature.title}</h3>
               <p className="text-sm text-neutral-500">{feature.description}</p>
@@ -382,47 +382,46 @@ const FlashSaleSection = () => {
   return (
     <section className="py-12">
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="bg-gradient-to-r from-amber-400 to-amber-500 rounded-3xl p-8 md:p-12 relative overflow-hidden">
+        <div className="bg-[#F0F7F0] border border-green-100 rounded-3xl p-8 md:p-12 relative overflow-hidden">
           {/* Decorative honey jar */}
           <div className="absolute right-4 md:right-12 bottom-0 opacity-80 hidden sm:block">
             <img
-              src="/images/products/beeyield_honey_1kg.png"
+              src="/images/products/organic-honey-jar.png"
               alt=""
-              className="h-48 md:h-64 object-contain drop-shadow-2xl"
+              className="w-48 md:w-64 transform translate-y-8"
             />
           </div>
 
-          <div className="relative z-10 max-w-lg">
-            <h2 className="text-3xl md:text-4xl font-black text-white mb-3">Flash sale</h2>
-            <p className="text-white/90 text-sm md:text-base mb-6">
-              Order now and get up to 20% discount,<br />plus a free traceability tag from us.
-            </p>
+          <div className="relative z-10 max-w-xl">
+            <Badge className="bg-green-700 text-white mb-6 animate-bounce">Flash Sale</Badge>
+            <h2 className="text-3xl md:text-5xl font-black text-neutral-900 mb-4 leading-tight">
+              Get <span className="text-green-700">20% Off</span> on your first HoneyChain™ order!
+            </h2>
 
             {/* Countdown Timer */}
             <div className="flex gap-3 mb-6">
-              <div className="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2 text-center min-w-[60px]">
-                <p className="text-2xl md:text-3xl font-black text-white">{String(timeLeft.hours).padStart(2, "0")}</p>
-                <p className="text-[10px] text-white/80 font-semibold uppercase">Hours</p>
+              <div className="bg-white rounded-xl px-4 py-2 text-center min-w-[60px] border border-green-100 shadow-sm">
+                <p className="text-2xl md:text-3xl font-black text-green-700">{String(timeLeft.hours).padStart(2, "0")}</p>
+                <p className="text-[10px] text-neutral-500 font-semibold uppercase">Hours</p>
               </div>
-              <span className="text-2xl text-white font-bold self-center">:</span>
-              <div className="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2 text-center min-w-[60px]">
-                <p className="text-2xl md:text-3xl font-black text-white">{String(timeLeft.minutes).padStart(2, "0")}</p>
-                <p className="text-[10px] text-white/80 font-semibold uppercase">Minutes</p>
+              <span className="text-2xl text-neutral-300 font-bold self-center">:</span>
+              <div className="bg-white rounded-xl px-4 py-2 text-center min-w-[60px] border border-green-100 shadow-sm">
+                <p className="text-2xl md:text-3xl font-black text-green-700">{String(timeLeft.minutes).padStart(2, "0")}</p>
+                <p className="text-[10px] text-neutral-500 font-semibold uppercase">Minutes</p>
               </div>
-              <span className="text-2xl text-white font-bold self-center">:</span>
-              <div className="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2 text-center min-w-[60px]">
-                <p className="text-2xl md:text-3xl font-black text-white">{String(timeLeft.seconds).padStart(2, "0")}</p>
-                <p className="text-[10px] text-white/80 font-semibold uppercase">Seconds</p>
+              <span className="text-2xl text-neutral-300 font-bold self-center">:</span>
+              <div className="bg-white rounded-xl px-4 py-2 text-center min-w-[60px] border border-green-100 shadow-sm">
+                <p className="text-2xl md:text-3xl font-black text-green-700">{String(timeLeft.seconds).padStart(2, "0")}</p>
+                <p className="text-[10px] text-neutral-500 font-semibold uppercase">Seconds</p>
               </div>
             </div>
 
             <Button
               size="lg"
-              className="bg-neutral-900 hover:bg-neutral-800 text-white font-bold rounded-full px-8"
+              className="bg-green-700 hover:bg-green-800 text-white font-bold rounded-full px-10 h-14 shadow-xl shadow-green-900/10"
               onClick={() => navigate("/shop")}
             >
-              Shop now
-              <ArrowRight className="ml-2 h-5 w-5" />
+              Claim Discount Now
             </Button>
           </div>
         </div>
@@ -481,7 +480,7 @@ const FAQSection = () => {
       <div className="container mx-auto px-4 sm:px-6">
         <div className="max-w-2xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-black text-neutral-900 text-center mb-8">
-            Some <span className="text-amber-500">FAQs</span>
+            Some <span className="text-green-700">FAQs</span>
           </h2>
 
           <Accordion type="single" collapsible className="space-y-3">
@@ -600,7 +599,7 @@ const AllProductsSection = ({
       <div className="container mx-auto px-4 sm:px-6">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <Badge variant="outline" className="mb-4 border-amber-300 bg-amber-50 text-amber-700">
+          <Badge variant="outline" className="mb-4 border-green-300 bg-green-50 text-green-700">
             Our Collection
           </Badge>
           <h2 className="text-3xl md:text-4xl font-black text-neutral-900 mb-4">

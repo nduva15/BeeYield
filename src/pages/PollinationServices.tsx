@@ -61,14 +61,14 @@ const PollinationServices = () => {
             <section className="relative min-h-[100svh] sm:min-h-[90vh] flex items-center overflow-hidden py-16 sm:py-20 md:py-24">
                 {/* Animated Background */}
                 {/* Animated Background */}
-                <div className="absolute inset-0 bg-[#FAF9F6]">
+                <div className="absolute inset-0 bg-[#F0F7F0]">
                     <div className="absolute inset-0 opacity-10">
-                        <div className="absolute top-10 sm:top-20 left-4 sm:left-10 w-40 sm:w-72 h-40 sm:h-72 bg-amber-200 rounded-full blur-3xl animate-pulse" />
-                        <div className="absolute bottom-10 sm:bottom-20 right-4 sm:right-10 w-48 sm:w-96 h-48 sm:h-96 bg-yellow-100 rounded-full blur-3xl animate-pulse delay-1000" />
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 sm:w-64 h-32 sm:h-64 bg-orange-100 rounded-full blur-3xl animate-pulse delay-500" />
+                        <div className="absolute top-10 sm:top-20 left-4 sm:left-10 w-40 sm:w-72 h-40 sm:h-72 bg-secondary/10 rounded-full blur-3xl animate-pulse" />
+                        <div className="absolute bottom-10 sm:bottom-20 right-4 sm:right-10 w-48 sm:w-96 h-48 sm:h-96 bg-primary/10 rounded-full blur-3xl animate-pulse delay-1000" />
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 sm:w-64 h-32 sm:h-64 bg-green-100/50 rounded-full blur-3xl animate-pulse delay-500" />
                     </div>
                     {/* Honeycomb Pattern */}
-                    <svg className="absolute inset-0 w-full h-full opacity-[0.03]" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <svg className="absolute inset-0 w-full h-full opacity-[0.04]" viewBox="0 0 100 100" preserveAspectRatio="none">
                         <pattern id="honeycomb-hero" x="0" y="0" width="20" height="17.32" patternUnits="userSpaceOnUse">
                             <polygon points="10,0 20,5.77 20,17.32 10,23.09 0,17.32 0,5.77" fill="none" stroke="currentColor" strokeWidth="0.5" />
                         </pattern>
@@ -79,7 +79,7 @@ const PollinationServices = () => {
                 <div className="container mx-auto px-4 sm:px-6 relative z-10">
                     <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
                         <div className="text-neutral-900 space-y-6 sm:space-y-8 text-center lg:text-left">
-                            <Badge className="bg-amber-100 text-amber-900 border-amber-200 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 inline-flex">
+                            <Badge className="bg-green-100 text-green-900 border-green-200 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 inline-flex font-bold">
                                 🐝 East Africa's Premier Pollination Partner
                             </Badge>
 
@@ -97,30 +97,30 @@ const PollinationServices = () => {
 
                             <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center lg:justify-start">
                                 <Link to="/pollination-request" className="w-full sm:w-auto">
-                                    <Button size="lg" className="w-full sm:w-auto bg-amber-900 text-white hover:bg-amber-800 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 font-black shadow-2xl shadow-amber-900/10 rounded-xl sm:rounded-2xl">
+                                    <Button size="lg" className="w-full sm:w-auto bg-green-700 text-white hover:bg-green-800 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 font-black shadow-2xl shadow-green-900/10 rounded-xl sm:rounded-2xl">
                                         Start Your Journey
                                         <ArrowRight className="ml-2 h-4 sm:h-5 w-4 sm:w-5" />
                                     </Button>
                                 </Link>
                                 <Link to="/pollination-solutions" className="w-full sm:w-auto">
-                                    <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 border-neutral-200 text-neutral-900 hover:bg-neutral-100 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 bg-transparent font-black rounded-xl sm:rounded-2xl">
+                                    <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 border-neutral-300 text-neutral-900 hover:bg-white/50 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 bg-transparent font-black rounded-xl sm:rounded-2xl">
                                         See How It Works
                                     </Button>
                                 </Link>
                             </div>
 
                             {/* Quick Stats - Responsive */}
-                            <div className="grid grid-cols-3 gap-3 sm:gap-6 pt-6 sm:pt-8 border-t border-neutral-200 font-black">
+                            <div className="grid grid-cols-3 gap-3 sm:gap-6 pt-6 sm:pt-8 border-t border-neutral-300/50 font-black">
                                 <div className="text-center lg:text-left">
-                                    <p className="text-2xl sm:text-3xl md:text-4xl text-amber-600 tracking-tighter">35%</p>
+                                    <p className="text-2xl sm:text-3xl md:text-4xl text-green-700 tracking-tighter">35%</p>
                                     <p className="text-neutral-500 text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-widest">Yield Increase</p>
                                 </div>
                                 <div className="text-center lg:text-left">
-                                    <p className="text-2xl sm:text-3xl md:text-4xl text-amber-600 tracking-tighter">150+</p>
+                                    <p className="text-2xl sm:text-3xl md:text-4xl text-green-700 tracking-tighter">150+</p>
                                     <p className="text-neutral-500 text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-widest">Managed Hives</p>
                                 </div>
                                 <div className="text-center lg:text-left">
-                                    <p className="text-2xl sm:text-3xl md:text-4xl text-amber-600 tracking-tighter">24/7</p>
+                                    <p className="text-2xl sm:text-3xl md:text-4xl text-green-700 tracking-tighter">24/7</p>
                                     <p className="text-neutral-500 text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-widest">Active Monitoring</p>
                                 </div>
                             </div>
@@ -140,11 +140,11 @@ const PollinationServices = () => {
                                     </div>
                                 </div>
                                 {/* Floating Elements - Hidden on mobile, visible on tablet+ */}
-                                <div className="hidden sm:block absolute top-4 sm:top-10 right-0 sm:right-10 bg-white/60 backdrop-blur-md rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-white/50 animate-float shadow-2xl shadow-amber-500/10">
-                                    <Activity className="h-6 sm:h-10 w-6 sm:w-10 text-amber-500" />
+                                <div className="hidden sm:block absolute top-4 sm:top-10 right-0 sm:right-10 bg-white/60 backdrop-blur-md rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-white/50 animate-float shadow-2xl shadow-green-500/10">
+                                    <Activity className="h-6 sm:h-10 w-6 sm:w-10 text-green-600" />
                                 </div>
-                                <div className="hidden sm:block absolute bottom-10 sm:bottom-20 left-0 bg-white/60 backdrop-blur-md rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-white/50 animate-float-delayed shadow-2xl shadow-amber-500/10">
-                                    <Smartphone className="h-6 sm:h-10 w-6 sm:w-10 text-amber-500" />
+                                <div className="hidden sm:block absolute bottom-10 sm:bottom-20 left-0 bg-white/60 backdrop-blur-md rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-white/50 animate-float-delayed shadow-2xl shadow-green-500/10">
+                                    <Smartphone className="h-6 sm:h-10 w-6 sm:w-10 text-green-600" />
                                 </div>
                             </div>
                         </div>
@@ -405,28 +405,28 @@ const PollinationServices = () => {
             </section>
 
             {/* Final CTA Section */}
-            <section className="py-32 relative overflow-hidden bg-amber-900 text-white rounded-[5rem] mx-4 mb-8">
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-600 via-amber-800 to-orange-900 opacity-90" />
-                <div className="absolute inset-0">
-                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-yellow-400/20 rounded-full blur-[120px] -mr-32 -mt-32" />
+            <section className="py-32 relative overflow-hidden bg-[#F0F7F0] text-neutral-900 rounded-[5rem] mx-4 mb-8 border border-green-100">
+                <div className="absolute inset-0 opacity-10">
+                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-green-200 rounded-full blur-[120px] -mr-32 -mt-32" />
+                    <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-amber-100/50 rounded-full blur-[120px] -ml-24 -mb-24" />
                 </div>
 
                 <div className="container mx-auto px-4 relative z-10 text-center space-y-12">
-                    <h2 className="text-5xl md:text-9xl font-black tracking-tighter leading-none">
-                        Ready for <br /> Real <span className="text-yellow-300 italic">Results?</span>
+                    <h2 className="text-5xl md:text-9xl font-black tracking-tighter leading-none text-neutral-900">
+                        Ready for <br /> Real <span className="text-green-700 italic">Results?</span>
                     </h2>
-                    <p className="text-2xl text-white/80 max-w-3xl mx-auto font-medium">
+                    <p className="text-2xl text-neutral-600 max-w-3xl mx-auto font-medium">
                         Join the global network of high-yield growers who've stopped guessing
                         and started growing with data.
                     </p>
                     <div className="flex flex-wrap justify-center gap-6">
                         <Link to="/contact">
-                            <Button size="lg" className="bg-white text-amber-900 hover:bg-yellow-100 text-2xl font-black h-24 px-16 rounded-[2rem] shadow-2xl">
+                            <Button size="lg" className="bg-green-700 text-white hover:bg-green-800 text-2xl font-black h-24 px-16 rounded-[2rem] shadow-2xl">
                                 Get Your Custom Plan
                             </Button>
                         </Link>
                     </div>
-                    <p className="text-white/40 text-xs font-black uppercase tracking-widest">Global Support • Real-time Data • Guaranteed Impact</p>
+                    <p className="text-neutral-400 text-xs font-black uppercase tracking-widest">Global Support • Real-time Data • Guaranteed Impact</p>
                 </div>
             </section>
         </div >

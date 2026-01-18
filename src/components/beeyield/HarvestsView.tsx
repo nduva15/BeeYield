@@ -7,6 +7,12 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -24,10 +30,11 @@ import {
     Link as LinkIcon,
     Droplets,
     Palette,
-    Factory
+    Factory,
+    ChevronDown
 } from 'lucide-react';
 import { Switch } from "@/components/ui/switch";
-import FirstStepsBanner from './FirstStepsBanner';
+
 import Logo from '@/assets/Logo.png';
 
 interface HarvestsViewProps {
@@ -51,27 +58,38 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
     const [colorGrade, setColorGrade] = useState('');
     const [sealOnHoneyChain, setSealOnHoneyChain] = useState(true);
 
-    // Mock Data based on HoneyChain - moved to state for interactivity
-    const [harvests, setHarvests] = useState([
-        { id: 1, apiary: 'Rogulski', families: 4, totalKg: 27.52, perFamily: 6.88, change: '+0.72 kg', batch: 'BY-2024-1182', type: 'Multiflora', verified: true },
-        { id: 2, apiary: 'Caesar', families: 9, totalKg: 52.60, perFamily: 5.84, change: '-0.32 kg', batch: 'BY-2024-2291', type: 'Acacia', verified: true },
+    // Mock Data based on HoneyChain - updated with year mapping
+    const [allHarvests, setAllHarvests] = useState([
+        { id: 1, apiary: 'Rogulski', families: 4, totalKg: 27.52, perFamily: 6.88, change: '+0.72 kg', batch: 'BY-2024-1182', type: 'Multiflora', verified: true, moisture: 17.5, color: 'White', year: '2024' },
+        { id: 2, apiary: 'Caesar', families: 9, totalKg: 52.60, perFamily: 5.84, change: '-0.32 kg', batch: 'BY-2024-2291', type: 'Acacia', verified: true, moisture: 16.2, color: 'Extra Light Amber', year: '2024' },
+        { id: 3, apiary: 'North Orchard', families: 12, totalKg: 85.20, perFamily: 7.10, change: '+1.20 kg', batch: 'BY-2025-4421', type: 'Forest', verified: true, moisture: 18.1, color: 'Dark Amber', year: '2025' },
+        { id: 4, apiary: 'Rogulski', families: 5, totalKg: 38.45, perFamily: 7.69, change: '+0.81 kg', batch: 'BY-2025-3310', type: 'Acacia', verified: true, moisture: 16.8, color: 'White', year: '2025' },
+        { id: 5, apiary: 'Main Valley', families: 15, totalKg: 112.30, perFamily: 7.48, change: '+0.55 kg', batch: 'BY-2026-9901', type: 'Rapeseed', verified: true, moisture: 17.2, color: 'Extra White', year: '2026' },
+        { id: 6, apiary: 'Rogulski', families: 6, totalKg: 42.10, perFamily: 7.02, change: '-0.15 kg', batch: 'BY-2026-7782', type: 'Multiflora', verified: true, moisture: 17.8, color: 'White', year: '2026' },
     ]);
+
+    const filteredHarvests = allHarvests.filter(h => h.year === (quickYear || '2026'));
+
+    const [selectedHarvest, setSelectedHarvest] = useState<any>(null);
 
     const handleSave = () => {
         // Create new harvest object
         const newHarvest = {
-            id: harvests.length + 1,
-            apiary: 'New Harvest', // Placeholder since we have "No apiaries"
+            id: allHarvests.length + 1,
+            apiary: 'New Harvest', // Placeholder
             families: 0,
             totalKg: parseFloat(amount) || 0,
             perFamily: 0,
             change: '+0.00 kg',
             batch: batchCode,
             type: honeyType || 'Unknown',
-            verified: sealOnHoneyChain
+            verified: sealOnHoneyChain,
+            moisture: parseFloat(moisture) || 17.0,
+            color: colorGrade || 'White',
+            year: quickYear || '2026'
         };
 
-        setHarvests([newHarvest, ...harvests]);
+        setAllHarvests([newHarvest, ...allHarvests]);
         setIsAddingHarvest(false);
 
         // Reset form
@@ -237,7 +255,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-12 relative">
-            {/* First Steps Banner - Keeping consistent with other pages */}
+
             <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">Harvests</h1>
 
             {/* Productivity Overview Card */}
@@ -246,10 +264,10 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                     <div className="flex justify-between items-start mb-6">
                         <div>
                             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">PRODUCTIVITY OVERVIEW</p>
-                            <h2 className="text-4xl font-bold text-gray-900 dark:text-white">2024</h2>
+                            <h2 className="text-4xl font-bold text-gray-900 dark:text-white">{quickYear || "2026"}</h2>
                         </div>
                         <div className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-bold text-sm">
-                            2024
+                            {quickYear || "2026"}
                         </div>
                     </div>
 
@@ -270,47 +288,59 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {harvests.map((harvest, index) => (
-                                    <tr key={harvest.id} className="group hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                                        <td className="py-4 font-medium text-gray-900 dark:text-white">
-                                            <div className="flex items-center gap-3">
-                                                <span className={cn(
-                                                    "w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold",
-                                                    index === 0 ? "bg-green-100 text-green-700" : "bg-amber-50 text-amber-600"
-                                                )}>
-                                                    #{index + 1}
-                                                </span>
-                                                <div className="flex flex-col">
-                                                    <span>{harvest.apiary}</span>
-                                                    <span className="text-[10px] text-gray-400 font-mono">{harvest.batch}</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="py-4 text-right text-gray-600 dark:text-gray-400">{harvest.families}</td>
-                                        <td className="py-4 text-right font-medium text-gray-900 dark:text-white">{harvest.totalKg} kg</td>
-                                        <td className="py-4 text-right text-gray-600 dark:text-gray-400">{harvest.perFamily} kg</td>
-                                        <td className="py-4 text-right">
-                                            <span className={cn(
-                                                "text-xs font-bold",
-                                                harvest.change.startsWith('+') ? "text-green-600" : harvest.change.startsWith('-') ? "text-red-500" : "text-gray-500"
-                                            )}>
-                                                {harvest.change}
-                                            </span>
-                                        </td>
-                                        <td className="py-4">
-                                            <div className="flex justify-center">
-                                                {harvest.verified ? (
-                                                    <div className="flex items-center gap-1.5 px-3 py-1 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/30 rounded-full">
-                                                        <ShieldCheck className="w-3 h-3 text-green-600" />
-                                                        <span className="text-[10px] font-bold text-green-700 dark:text-green-400 uppercase tracking-wide">Verified</span>
-                                                    </div>
-                                                ) : (
-                                                    <span className="text-xs text-gray-400">-</span>
-                                                )}
-                                            </div>
+                                {filteredHarvests.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={6} className="py-20 text-center text-gray-400 font-bold uppercase tracking-widest text-xs">
+                                            No harvest records for {quickYear || '2026'}
                                         </td>
                                     </tr>
-                                ))}
+                                ) : (
+                                    filteredHarvests.map((harvest, index) => (
+                                        <tr
+                                            key={harvest.id}
+                                            onClick={() => setSelectedHarvest(harvest)}
+                                            className="group hover:bg-gray-50 dark:hover:bg-amber-900/10 transition-all cursor-pointer border-b border-gray-50 dark:border-gray-800/50"
+                                        >
+                                            <td className="py-4 font-medium text-gray-900 dark:text-white">
+                                                <div className="flex items-center gap-3">
+                                                    <span className={cn(
+                                                        "w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold",
+                                                        index === 0 ? "bg-green-100 text-green-700" : "bg-amber-50 text-amber-600"
+                                                    )}>
+                                                        #{index + 1}
+                                                    </span>
+                                                    <div className="flex flex-col">
+                                                        <span className="group-hover:text-amber-600 transition-colors">{harvest.apiary}</span>
+                                                        <span className="text-[10px] text-gray-400 font-mono">{harvest.batch}</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="py-4 text-right text-gray-600 dark:text-gray-400">{harvest.families}</td>
+                                            <td className="py-4 text-right font-medium text-gray-900 dark:text-white">{harvest.totalKg} kg</td>
+                                            <td className="py-4 text-right text-gray-600 dark:text-gray-400">{harvest.perFamily} kg</td>
+                                            <td className="py-4 text-right">
+                                                <span className={cn(
+                                                    "text-xs font-bold",
+                                                    harvest.change.startsWith('+') ? "text-green-600" : harvest.change.startsWith('-') ? "text-red-500" : "text-gray-500"
+                                                )}>
+                                                    {harvest.change}
+                                                </span>
+                                            </td>
+                                            <td className="py-4">
+                                                <div className="flex justify-center">
+                                                    {harvest.verified ? (
+                                                        <div className="flex items-center gap-1.5 px-3 py-1 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/30 rounded-full">
+                                                            <ShieldCheck className="w-3 h-3 text-green-600" />
+                                                            <span className="text-[10px] font-bold text-green-700 dark:text-green-400 uppercase tracking-wide">Verified</span>
+                                                        </div>
+                                                    ) : (
+                                                        <span className="text-xs text-gray-400">-</span>
+                                                    )}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
                             </tbody>
                         </table>
                     </div>
@@ -371,7 +401,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                             <div className="relative">
                                 <span className="absolute -top-2 left-3 bg-white dark:bg-[#09090b] px-1 text-[10px] text-gray-500 font-bold">From</span>
                                 <Input
-                                    value="1/1/2026"
+                                    value={`1/1/${quickYear || "2026"}`}
                                     readOnly
                                     className="h-12 rounded-2xl border-gray-200 bg-white dark:bg-[#1e1e1e] dark:border-gray-700"
                                 />
@@ -380,7 +410,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                             <div className="relative">
                                 <span className="absolute -top-2 left-3 bg-white dark:bg-[#09090b] px-1 text-[10px] text-gray-500 font-bold">To</span>
                                 <Input
-                                    value="1/17/2026"
+                                    value={`12/31/${quickYear || "2026"}`}
                                     readOnly
                                     className="h-12 rounded-2xl border-gray-200 bg-white dark:bg-[#1e1e1e] dark:border-gray-700"
                                 />
@@ -396,9 +426,25 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                             <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">QUICK YEAR</span>
                         </div>
 
-                        <Button variant="outline" className="w-full h-12 rounded-2xl border-gray-200 dark:border-gray-700 justify-start font-medium text-gray-700 dark:text-gray-300">
-                            Custom range
-                        </Button>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" className="w-full h-12 rounded-2xl border-gray-200 dark:border-gray-700 justify-between font-medium text-gray-700 dark:text-gray-300">
+                                    {quickYear || "Custom range"}
+                                    <ChevronDown className="w-4 h-4 opacity-50" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] rounded-xl bg-white dark:bg-[#1e1e1e] border-gray-200 dark:border-gray-700">
+                                {[2026, 2025, 2024, 2023, 2022, 2021, 2020].map((year) => (
+                                    <DropdownMenuItem
+                                        key={year}
+                                        onClick={() => setQuickYear(year.toString())}
+                                        className="py-3 font-bold text-gray-700 dark:text-gray-300 cursor-pointer focus:bg-amber-50 dark:focus:bg-amber-900/10"
+                                    >
+                                        Year {year}
+                                    </DropdownMenuItem>
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
 
                         <p className="text-[10px] text-gray-400 mt-4">
                             Select a year to quickly load its harvest data.
@@ -406,6 +452,83 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                     </div>
                 </div>
             </Card>
+
+            {/* Harvest Detail Modal */}
+            <Dialog open={!!selectedHarvest} onOpenChange={(open) => !open && setSelectedHarvest(null)}>
+                <DialogContent className="sm:max-w-[500px] bg-white dark:bg-[#111111] border-none rounded-[2rem] p-0 overflow-hidden shadow-2xl">
+                    {selectedHarvest && (
+                        <div className="relative">
+                            {/* Accent Header */}
+                            <div className="h-24 bg-gradient-to-r from-amber-400 to-amber-600 p-8 flex items-end justify-between">
+                                <Hexagon className="absolute -top-6 -left-6 w-32 h-32 text-white/10 fill-white/10 rotate-12" />
+                                <div className="relative z-10">
+                                    <p className="text-[10px] font-black text-white/60 uppercase tracking-widest mb-1">HoneyChain™ Traceability Record</p>
+                                    <h3 className="text-2xl font-black text-white">{selectedHarvest.apiary}</h3>
+                                </div>
+                                <div className="px-3 py-1 bg-white/20 backdrop-blur-md rounded-lg border border-white/30 text-white text-[10px] font-bold uppercase tracking-wider">
+                                    {selectedHarvest.batch}
+                                </div>
+                            </div>
+
+                            {/* Details Grid */}
+                            <div className="p-8 space-y-6">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl border border-gray-100 dark:border-white/5">
+                                        <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-2">Total Harvest</p>
+                                        <div className="flex items-baseline gap-1">
+                                            <span className="text-2xl font-black text-gray-900 dark:text-white">{selectedHarvest.totalKg}</span>
+                                            <span className="text-xs font-bold text-gray-400">kg</span>
+                                        </div>
+                                    </div>
+                                    <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl border border-gray-100 dark:border-white/5">
+                                        <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-2">Honey Type</p>
+                                        <div className="flex items-center gap-2">
+                                            <Droplets className="w-4 h-4 text-amber-500" />
+                                            <span className="text-lg font-black text-gray-900 dark:text-white">{selectedHarvest.type}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-white/5">
+                                        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Moisture Level</span>
+                                        <span className="text-sm font-black text-gray-900 dark:text-white">{selectedHarvest.moisture}%</span>
+                                    </div>
+                                    <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-white/5">
+                                        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Color Grade</span>
+                                        <span className="text-sm font-black text-gray-900 dark:text-white">{selectedHarvest.color}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-white/5">
+                                        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Productive Families</span>
+                                        <span className="text-sm font-black text-gray-900 dark:text-white">{selectedHarvest.families}</span>
+                                    </div>
+                                </div>
+
+                                {selectedHarvest.verified && (
+                                    <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/10 border border-green-100 dark:border-green-900/30 rounded-2xl flex items-center gap-4">
+                                        <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                                            <ShieldCheck className="w-6 h-6 text-green-600" />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-black text-green-800 dark:text-green-400 uppercase tracking-widest">HoneyChain Verified</p>
+                                            <p className="text-[10px] text-green-600/70 font-medium">This record has been sealed and secured via IoT node.</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="p-8 pt-0">
+                                <Button
+                                    onClick={() => setSelectedHarvest(null)}
+                                    className="w-full h-14 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-2xl font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                >
+                                    Close Record
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };
