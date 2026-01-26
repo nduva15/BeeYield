@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Any
+from typing import Optional, list, dict, Any
 from datetime import date, datetime
 
 # --- Shared ---
@@ -39,7 +39,7 @@ class ApiaryBase(BaseModel):
     apiary_code: str = Field(..., description="Unique code e.g. NYR-001")
     name: str
     environment_type: str = Field(..., description="E.g. Forest, Savannah, Acacia Farm")
-    flora_types: List[str] = Field(default=[], description="Predominant flowers nearby")
+    flora_types: list[str] = Field(default=[], description="Predominant flowers nearby")
     water_source: Optional[str] = None
     sun_exposure: str = "Full Sun"
     
@@ -107,7 +107,7 @@ class TraceJourneyStep(BaseModel):
     location: str
     description: str
     icon: str  # Icon name for frontend
-    data: Dict[str, Any]
+    data: dict[str, Any]
     hash: Optional[str] = None
 
 class TraceResponse(BaseModel):
@@ -127,11 +127,11 @@ class TraceResponse(BaseModel):
     story_content: str
     
     # Stats / Impact
-    impact_stats: Dict[str, Any]
+    impact_stats: dict[str, Any]
     
     # Sensor Snapshot (at harvest time or realtime)
-    sensor_snapshot: Optional[Dict[str, Any]] = None
+    sensor_snapshot: Optional[dict[str, Any]] = None
     
     # Full Journey
-    timeline: List[TraceJourneyStep]
+    timeline: list[TraceJourneyStep]
 

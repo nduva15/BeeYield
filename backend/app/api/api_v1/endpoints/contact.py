@@ -280,15 +280,19 @@ def subscribe_newsletter(
              raise HTTPException(status_code=500, detail="Submission failed. Please try again later.")
     
     try:
-        background_tasks.add_task(
-            email.send_email,
-            request_in.email,
-            "Welcome to the BeeYield Hive! 🐝",
-            f"Hi {request_in.first_name or 'there'},\n\nThanks for subscribing to our newsletter! You'll now be the first to know about our latest updates, honey harvests, and pollination insights.\n\nStay buzzing,\nThe BeeYield Team"
-        )
-        
-        return {"status": "success", "message": "Subscribed successfully"}
+        # Wrap email in a try-except to ensure we return success if DB/Offline worked
+        try:
+            background_tasks.add_task(
+                email.send_email,
+                request_in.email,
+                "Welcome to the BeeYield Hive! 🐝",
+                f"Hi {request_in.first_name or 'there'},\n\nThanks for subscribing to our newsletter! You'll now be the first to know about our latest updates, honey harvests, and pollination insights.\n\nStay buzzing,\nThe BeeYield Team"
+            )
+        except Exception as email_err:
+            print(f"⚠️ Newsletter Email Notification failed (Non-critical): {email_err}")
+
+        return {"status": "success", "message": "Subscribed successfully" + (" (Offline Mode)" if not success else "")}
     except Exception as e:
-        print(f"Error subscribing to newsletter: {e}")
-        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+        print(f"❌ Critical error in newsletter subscription: {e}")
+        raise HTTPException(status_code=500, detail=f"Submission failed: {str(e)}")
 

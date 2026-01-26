@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -33,9 +33,9 @@ const Traceability = () => {
       setQrCode(code);
       handleTrace(code);
     }
-  }, [location.search]);
+  }, [location.search, handleTrace]);
 
-  const handleTrace = async (code: string) => {
+  const handleTrace = useCallback(async (code: string) => {
     if (!code.trim()) return;
 
     setLoading(true);
@@ -64,7 +64,7 @@ const Traceability = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,7 +99,7 @@ const Traceability = () => {
         scanner.clear().catch((error) => console.error("Failed to clear scanner", error));
       }
     };
-  }, [showScanner]);
+  }, [showScanner, handleTrace]);
 
   // Scroll to results when trace data is loaded
   useEffect(() => {
@@ -621,7 +621,7 @@ const Traceability = () => {
                 <div className="relative mx-auto max-w-6xl aspect-video rounded-[3rem] overflow-hidden shadow-2xl">
                   <iframe
                     className="absolute inset-0 w-full h-full"
-                    src="https://www.youtube.com/embed/VIDEO_ID_HERE"
+                    src="https://www.youtube.com/embed/vV-m_k8E5Yc"
                     title="BeeYield Traceability Story"
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

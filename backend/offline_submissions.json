@@ -1,14 +1,6 @@
 [
   {
-    "timestamp": "2026-01-26T09:48:49.986623",
-    "type": "newsletter_subscription",
-    "data": {
-      "email": "timothy.mathuva@strathmore.edu",
-      "source": "footer"
-    }
-  },
-  {
-    "timestamp": "2026-01-26T09:49:24.301513",
+    "timestamp": "2026-01-26T22:00:51.614678",
     "type": "pollination_request",
     "data": {
       "full_name": "Timothy MATHUVA NDUVA Timothy MATHUVA NDUVA",
@@ -16,65 +8,7 @@
       "phone": "+254742004187",
       "farm_name": "n ",
       "farm_location": "jnok;",
-      "crop_type": "beans",
-      "acres": 6789,
-      "preferred_start_date": "2026-01-27",
-      "additional_info": "",
-      "status": "pending"
-    }
-  },
-  {
-    "timestamp": "2026-01-26T09:49:38.690976",
-    "type": "contact_submission",
-    "data": {
-      "inquiry_type": "grower",
-      "first_name": "Timothy MATHUVA NDUVA",
-      "last_name": "Timothy MATHUVA NDUVA",
-      "email": "timothynduva349@gmail.com",
-      "phone": "+254742004187",
-      "city": "Nairobi",
-      "state": "kij",
-      "country": "Kenya",
-      "topic": "Pollination Services",
-      "farm_name": "NJ",
-      "crop_type": "Maize",
-      "acres": 88,
-      "name": "Timothy MATHUVA NDUVA Timothy MATHUVA NDUVA",
-      "subject": "GROWER: Pollination Services",
-      "status": "new"
-    }
-  },
-  {
-    "timestamp": "2026-01-26T09:49:55.534644",
-    "type": "contact_submission",
-    "data": {
-      "inquiry_type": "beekeeper",
-      "first_name": "Timothy MATHUVA NDUVA",
-      "last_name": "Timothy MATHUVA NDUVA",
-      "email": "timothynduva349@gmail.com",
-      "phone": "+254742004187",
-      "city": "Kenya, Nairobi",
-      "state": "j",
-      "country": "Kenya",
-      "topic": "Technology Integration",
-      "apiary_name": "jnk;l",
-      "hive_count": 9,
-      "experience_years": "1-5 years",
-      "name": "Timothy MATHUVA NDUVA Timothy MATHUVA NDUVA",
-      "subject": "BEEKEEPER: Technology Integration",
-      "status": "new"
-    }
-  },
-  {
-    "timestamp": "2026-01-26T09:55:52.236534",
-    "type": "pollination_request",
-    "data": {
-      "full_name": "Timothy MATHUVA NDUVA Timothy MATHUVA NDUVA",
-      "email": "timothynduva349@gmail.com",
-      "phone": "+254742004187",
-      "farm_name": "n ",
-      "farm_location": "jnok;",
-      "crop_type": "beans",
+      "crop_type": "",
       "acres": 6789,
       "preferred_start_date": "2026-01-27",
       "additional_info": "",

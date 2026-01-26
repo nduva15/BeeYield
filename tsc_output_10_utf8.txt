@@ -1,4 +1,0 @@
-﻿src/pages/BeeYieldDashboard.tsx(126,11): error TS17002: Expected corresponding JSX closing tag for 'DashboardLayout'.
-src/pages/BeeYieldDashboard.tsx(127,9): error TS1005: ')' expected.
-src/pages/BeeYieldDashboard.tsx(128,5): error TS1109: Expression expected.
-src/pages/BeeYieldDashboard.tsx(129,1): error TS1128: Declaration or statement expected.

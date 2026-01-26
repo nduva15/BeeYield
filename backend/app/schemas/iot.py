@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional, Union, Dict, Any
+from typing import list, Optional, Union, dict, Any
 from datetime import datetime
 
 class IoTDeviceBase(BaseModel):
@@ -25,7 +25,7 @@ class SensorReadingBase(BaseModel):
     device_id: str
     sensor_type: str # infield, inland, disease
     timestamp: datetime
-    readings: Dict[str, Any]
+    readings: dict[str, Any]
     battery_level: Optional[int] = None
     signal_strength: Optional[int] = None
     latitude: Optional[float] = None
