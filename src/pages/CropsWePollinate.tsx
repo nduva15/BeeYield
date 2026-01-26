@@ -68,10 +68,10 @@ const CropsWePollinate = () => {
               <div className="absolute -right-4 -top-4 h-32 w-32 rounded-2xl bg-green-500/10 blur-3xl animate-pulse" />
               <div className="absolute -bottom-8 -left-8 h-40 w-40 rounded-full bg-amber-500/10 blur-3xl animate-pulse delay-1000" />
               <div className="grid grid-cols-2 gap-4">
-                <img src={`https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&q=80&w=600`} alt={pollinationCrops[0].cropName} className="h-48 w-full rounded-3xl object-cover shadow-2xl border-4 border-white/50" />
-                <img src={`https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&q=80&w=600`} alt={pollinationCrops[2].cropName} className="h-48 w-full rounded-3xl object-cover shadow-2xl border-4 border-white/50 mt-8" />
-                <img src={`https://images.unsplash.com/photo-1597848212624-a19eb35e2651?auto=format&fit=crop&q=80&w=600`} alt={pollinationCrops[4].cropName} className="h-48 w-full rounded-3xl object-cover shadow-2xl border-4 border-white/50 -mt-4" />
-                <img src={`https://images.unsplash.com/photo-1509587584298-0f3b3a3a1797?auto=format&fit=crop&q=80&w=600`} alt={pollinationCrops[1].cropName} className="h-48 w-full rounded-3xl object-cover shadow-2xl border-4 border-white/50 mt-4" />
+                <img src={pollinationCrops[0].image} alt={pollinationCrops[0].cropName} className="h-48 w-full rounded-3xl object-cover shadow-2xl border-4 border-white/50" />
+                <img src={pollinationCrops[2].image} alt={pollinationCrops[2].cropName} className="h-48 w-full rounded-3xl object-cover shadow-2xl border-4 border-white/50 mt-8" />
+                <img src={pollinationCrops[4].image} alt={pollinationCrops[4].cropName} className="h-48 w-full rounded-3xl object-cover shadow-2xl border-4 border-white/50 -mt-4" />
+                <img src={pollinationCrops[1].image} alt={pollinationCrops[1].cropName} className="h-48 w-full rounded-3xl object-cover shadow-2xl border-4 border-white/50 mt-4" />
               </div>
             </div>
           </div>
@@ -217,7 +217,7 @@ const CropsWePollinate = () => {
                     </Badge>
                   </div>
                   <img
-                    src={`https://images.unsplash.com/photo-${index === 0 ? '1551754655-cd27e38d2076' : index === 1 ? '1509587584298-0f3b3a3a1797' : index === 2 ? '1553279768-865429fa0078' : '1597848212624-a19eb35e2651'}?auto=format&fit=crop&q=80&w=600`}
+                    src={crop.image}
                     alt={crop.cropName}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
@@ -225,35 +225,12 @@ const CropsWePollinate = () => {
                   <div className="absolute bottom-6 left-6 space-y-1">
                     <h3 className="text-[2.5rem] font-black text-white leading-none uppercase tracking-tighter">{crop.cropName}</h3>
                     <p className="text-emerald-400 font-bold uppercase tracking-widest text-xs">BeeYield Dynamic Optimization</p>
+                    <Link to="/media" className="inline-flex items-center gap-2 text-white/50 hover:text-white text-xs font-black uppercase tracking-widest mt-2 transition-colors">
+                      View Media <ArrowRight className="w-3 h-3" />
+                    </Link>
                   </div>
                 </div>
-                <CardContent className="p-8 space-y-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3 text-sm font-bold text-slate-500 dark:text-zinc-400">
-                      <Cpu className="w-4 h-4 text-emerald-500" />
-                      <span className="uppercase tracking-widest">Scientific Recommendation: {crop.optimalHivesPerAcre} / Acre</span>
-                    </div>
-                    <p className="text-slate-600 dark:text-zinc-400 text-[16px] leading-relaxed font-medium">
-                      {crop.regionalTrends2026}
-                    </p>
-                  </div>
 
-                  <div className="p-6 bg-emerald-50 dark:bg-emerald-900/10 rounded-2xl border border-emerald-100 dark:border-emerald-900/20">
-                    <h4 className="text-xs font-black text-emerald-800 dark:text-emerald-400 uppercase tracking-widest mb-2 flex items-center gap-2">
-                      <Check className="w-3 h-3" /> BeeYield Advantage
-                    </h4>
-                    <p className="text-sm font-bold text-emerald-900/70 dark:text-emerald-500/70 leading-relaxed italic">
-                      "{crop.beeyieldAdvantage}"
-                    </p>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-4">
-                    <div className="space-y-1">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Market Impact</p>
-                      <p className="text-sm font-black text-slate-900 dark:text-white uppercase">{crop.economicImpact}</p>
-                    </div>
-                  </div>
-                </CardContent>
               </Card>
             ))}
           </div>

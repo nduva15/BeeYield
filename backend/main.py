@@ -1,3 +1,9 @@
+try:
+    import dns_fix
+    dns_fix.patch_dns()
+except ImportError:
+    print("Could not load DNS patch")
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
