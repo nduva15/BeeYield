@@ -1,7 +1,7 @@
 {
   "metadata": {
     "version": "6.0.0-ELITE",
-    "last_sync": "Mon Jan 26 10:06:40 2026",
+    "last_sync": "Mon Jan 26 16:27:30 2026",
     "total_nodes": 390
   },
   "dna": {
@@ -659,12 +659,12 @@
     {
       "source": "ImageAnalysisView.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Image analysis. Upload a photo of your hive or bees to detect potential health problems like Varroa, Nosema, and more.. How to use the analysis. Results are AI indications and are not a veterinary diagnosis.. Each label is a probability estimate. Lower confidence means less certainty.. Select Bee Image. Click to browse or drag and drop an image. Bees Detected. Clear image. Results. Healthy. Scanning specimen.... Our AI Meta-Scanner is isolating biological signatures across the hive structure.. Detection Failed. Our AI meta-scanner could not identify any honey bees or hive structures in this image. Only biological data is permitted.. Try Different Photo. Bee detection. Bees detected. Confidence Threshold. Overlap Threshold. Label Display Mode. Label + confidence. Label only. Health. Coords. Ready for Processing. Process Specimen. Select display mode. , // Housing/Structure terms for Traditional & Modern Hives. Add a hive or bee photo. Sharp focus and good light improve accuracy.."
+      "content": "Image analysis. Upload a photo of your hive or bees to detect potential health problems like Varroa, Nosema, and more.. How to use the analysis. Results are AI indications and are not a veterinary diagnosis.. Each label is a probability estimate. Lower confidence means less certainty.. Select Bee Image. Click to browse or drag and drop an image. Bees Detected. Clear image. Results. Healthy. Scanning specimen.... Our AI Meta-Scanner is isolating biological signatures across the hive structure.. Detection Failed. Our AI meta-scanner could not identify any honey bees or hive structures in this image. Only biological data is permitted.. Try Different Photo. Bee detection. Bees detected. Confidence Threshold. Overlap Threshold. Label Display Mode. Label + confidence. Label only. Health. Coords. Ready for Processing. Process Specimen. Select display mode. Add a hive or bee photo. Sharp focus and good light improve accuracy.. The model draws boxes around bees and counts them.."
     },
     {
       "source": "ImageAnalysisView.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "The model draws boxes around bees and counts them.. Higher values reduce false detections but may miss some bees.. Lower values merge overlapping boxes more aggressively, reducing duplicates.. Summary of health status calculated from individual bees.. Each detected bee is cropped and classified.. List of boxes with confidence, health result, and coordinates.. Removes the image and resets the results.. space-y-6 animate-in fade-in duration-700 pb-20. text-6xl font-black text-amber-500 animate-pulse drop-shadow-lg. w-12 h-12 text-white animate-bounce."
+      "content": "Higher values reduce false detections but may miss some bees.. Lower values merge overlapping boxes more aggressively, reducing duplicates.. Summary of health status calculated from individual bees.. Each detected bee is cropped and classified.. List of boxes with confidence, health result, and coordinates.. Removes the image and resets the results.. space-y-6 animate-in fade-in duration-700 pb-20. text-6xl font-black text-amber-500 animate-pulse drop-shadow-lg. w-12 h-12 text-white animate-bounce."
     },
     {
       "source": "InspectionsView.tsx",
