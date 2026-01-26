@@ -207,6 +207,12 @@ All colors MUST be HSL.
   }
 }
 
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }

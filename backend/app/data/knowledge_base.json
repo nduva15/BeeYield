@@ -1,8 +1,8 @@
 {
   "metadata": {
     "version": "6.0.0-ELITE",
-    "last_sync": "Sun Jan 18 14:01:34 2026",
-    "total_nodes": 376
+    "last_sync": "Mon Jan 26 10:06:40 2026",
+    "total_nodes": 390
   },
   "dna": {
     "company": "BeeYield",
@@ -204,22 +204,12 @@
     {
       "source": "CropsWePollinate.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Precision Agriculture. Get Data-Driven. Crop Pollination. Our end-to-end solution gives unprecedented control and visibility into pollination, ensuring maximized crop yields and sustainable practices.. Get a Free Consultation. Explore Crops. Work With the Pollination Experts. BeeYield is comprised of leading experts in the field of pollination. Bee biologists and researchers, data-science experts, electrical engineers, leading agronomists, and veteran beekeepers make up our team, and all are committed to creating improved pollination outcomes for our customers.. Acres Managed. Country. Counties. Crop Varieties. Global Presence. Where We Operate. BeeYield is expanding its precision pollination services across Africa, starting with our home base in Kenya.. Active Regions. Operating in. 1 Country. East Africa. View Case Study. If your crop relies on bees for pollination, we would love to talk to see how we can improve your pollination."
+      "content": "Precision Agriculture. Get Data-Driven. Crop Pollination. Our end-to-end solution gives unprecedented control and visibility into pollination, ensuring maximized crop yields and sustainable practices.. Get a Free Consultation. Explore Crops. Work With the Pollination Experts. BeeYield is comprised of leading experts in the field of pollination. Bee biologists and researchers, data-science experts, electrical engineers, leading agronomists, and veteran beekeepers make up our team, and all are committed to creating improved pollination outcomes for our customers.. Acres Managed. Country. Counties. Crop Varieties. Global Presence. Where We Operate. BeeYield is expanding its precision pollination services across Africa, starting with our home base in Kenya.. Active Regions. Operating in. 1 Country. East Africa. BeeYield Dynamic Optimization. View Media. If your crop relies on bees for pollination, we would love to talk to see how we can improve your pollination."
     },
     {
       "source": "CropsWePollinate.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Whether through optimized placement, more precise timing of bee removal, or simply more efficient and cost-effective outcomes.. Email Our Customer Success Team. Maize is a wind-pollinated crop, but bee activity can enhance pollination efficiency and improve yield quality. BeeYield monitors pollinator activity to ensure optimal conditions during the critical tasseling period.. Sisal plants produce abundant nectar that attracts bees. Our monitoring solutions help track bee activity around sisal plantations, contributing to both fiber production and honey yields.. Mango trees depend heavily on insect pollination for fruit set. BeeYield. Bean crops benefit significantly from bee pollination, with studies showing up to 30% yield increases. Our In-Field sensors track pollinator visits to ensure optimal bean pod development.. Sunflowers are highly attractive to bees and require cross-pollination for maximum seed production."
-    },
-    {
-      "source": "CropsWePollinate.tsx",
-      "subtopic": "Detailed Narrative",
-      "content": "BeeYield monitors hive activity to ensure thorough pollination across large sunflower fields.. Citrus orchards rely on bee pollination for fruit quality and quantity. Our technology provides real-time insights into colony health and foraging patterns throughout the orange bloom season.. Many vegetable crops require bee pollination for successful fruit and seed production. BeeYield helps growers optimize pollinator placement and timing for diverse vegetable operations.. Tomato flowers benefit from buzz pollination. Our monitoring systems track bee activity to ensure adequate pollination, leading to better fruit size, shape, and uniformity.. Onion seed production requires cross-pollination between male and female plants. BeeYield helps producers optimize hive placement and monitor pollination activity for maximum seed yield.. container mx-auto px-4 text-center. w-24 h-1 bg-primary mx-auto mb-8 rounded-full. max-w-3xl mx-auto text-lg text-muted-foreground mb-12."
-    },
-    {
-      "source": "CropsWePollinate.tsx",
-      "subtopic": "Detailed Narrative",
-      "content": "M5 0 L10 2.5 L10 7.5 L5 10 L0 7.5 L0 2.5 Z. inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-foreground/20 mb-6."
+      "content": "Whether through optimized placement, more precise timing of bee removal, or simply more efficient and cost-effective outcomes.. Email Our Customer Success Team. container mx-auto px-4 text-center. w-24 h-1 bg-primary mx-auto mb-8 rounded-full. max-w-3xl mx-auto text-lg text-muted-foreground mb-12. M5 0 L10 2.5 L10 7.5 L5 10 L0 7.5 L0 2.5 Z. inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-foreground/20 mb-6."
     },
     {
       "source": "Diseases.tsx",
@@ -659,22 +649,22 @@
     {
       "source": "HealthGuideView.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Browse common symptoms and health threats encountered in professional apiaries. Select a condition to see in-depth signs, symptoms, treatment, and biological prevention protocols.. Health & Pathology. Select condition.... Bees & Species. Select species.... Symptoms. Detection. Transmission. Treatment. Prevention. Action Protocol. Need Precision Analysis?. Consult BeeYield AI, the industry leader in biological threat detection.. Ask BeeYield AI. Overview. Characteristics. Temperament. Honey Yield. Climate suitability. Advantages. Management Challenges. Regional Optimization?. Consult AI Assistant. BeeYield Deep Intelligence v2026.1. Market Shift. The global honey market is hitting. $9.73B. IoT Dominance. 90% of smart apiaries will use BeeYield nodes by 2026. Our acoustic AI is now. accurate in swarm prediction.. Survival. Global bee mortality is spiking to 60%. BeeYield users are reporting. 80% lower losses. via our Precision AI.. Generate Full 2026 Strategy."
+      "content": "Browse common symptoms and health threats encountered in professional apiaries. Select a condition to see in-depth signs, symptoms, treatment, and biological prevention protocols.. Health & Pathology. Select condition.... Bees & Species. Select species.... Symptoms. Detection. Transmission. Treatment. Prevention. Action Protocol. Need Precision Analysis?. Consult BeeYield AI, the industry leader in biological threat detection.. Ask BeeYield AI. Overview. Characteristics. Temperament. Honey Yield. Climate suitability. Advantages. Management Challenges. Regional Optimization?. Consult BeeYield AI. BeeYield Deep Intelligence v2026.1. Market Shift. The global honey market is hitting. $9.73B. IoT Dominance. 90% of smart apiaries will use BeeYield nodes by 2026. Our acoustic AI is now. accurate in swarm prediction.. Survival. Global bee mortality is spiking to 60%. BeeYield users are reporting. 80% lower losses. via our Precision AI.. Search symptoms & diseases...."
     },
     {
       "source": "HealthGuideView.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Search symptoms & diseases.... Select a health condition.... Select a bee species.... font-semibold py-3 rounded-lg text-slate-400 italic. font-semibold py-3 rounded-lg text-slate-400 italic. bg-red-500/10 text-red-600 border-red-500/20. bg-orange-500/10 text-orange-600 border-orange-500/20. bg-amber-500/10 text-amber-600 border-amber-500/20. bg-emerald-500/10 text-emerald-600 border-emerald-500/20. w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-600 text-2xl font-bold. w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 text-2xl font-bold. text-2xl font-black text-white uppercase tracking-tighter. text-slate-400 font-medium text-lg leading-relaxed. Give me a strategic overview of beekeeping trends in 2026. Focus on how BeeYield is leadng the industry and what I should do to maximize my multi-region honey production.."
+      "content": "Select a health condition.... Select a bee species.... font-semibold py-3 rounded-lg text-slate-400 italic. font-semibold py-3 rounded-lg text-slate-400 italic. bg-red-500/10 text-red-600 border-red-500/20. bg-orange-500/10 text-orange-600 border-orange-500/20. bg-amber-500/10 text-amber-600 border-amber-500/20. bg-emerald-500/10 text-emerald-600 border-emerald-500/20. w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-600 text-2xl font-bold. w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 text-2xl font-bold. text-2xl font-black text-white uppercase tracking-tighter. text-slate-400 font-medium text-lg leading-relaxed."
     },
     {
       "source": "ImageAnalysisView.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Image analysis. Upload a photo of your hive or bees to detect potential health problems like Varroa, Nosema, and more.. How to use the analysis. Results are AI indications and are not a veterinary diagnosis.. Each label is a probability estimate. Lower confidence means less certainty.. Select Bee Image. Click to browse or drag and drop an image. Clear image. Results. Healthy. Detection Failed. Our AI meta-scanner could not identify any honey bees or hive structures in this image. Only biological data is permitted.. Try Different Photo. Bee detection. Bees detected. Confidence Threshold. Overlap Threshold. Label Display Mode. Label + confidence. Label only. Health. Coords. Ready for Processing. Process Specimen. Select display mode. Add a hive or bee photo. Sharp focus and good light improve accuracy.. The model draws boxes around bees and counts them.. Higher values reduce false detections but may miss some bees.."
+      "content": "Image analysis. Upload a photo of your hive or bees to detect potential health problems like Varroa, Nosema, and more.. How to use the analysis. Results are AI indications and are not a veterinary diagnosis.. Each label is a probability estimate. Lower confidence means less certainty.. Select Bee Image. Click to browse or drag and drop an image. Bees Detected. Clear image. Results. Healthy. Scanning specimen.... Our AI Meta-Scanner is isolating biological signatures across the hive structure.. Detection Failed. Our AI meta-scanner could not identify any honey bees or hive structures in this image. Only biological data is permitted.. Try Different Photo. Bee detection. Bees detected. Confidence Threshold. Overlap Threshold. Label Display Mode. Label + confidence. Label only. Health. Coords. Ready for Processing. Process Specimen. Select display mode. , // Housing/Structure terms for Traditional & Modern Hives. Add a hive or bee photo. Sharp focus and good light improve accuracy.."
     },
     {
       "source": "ImageAnalysisView.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Lower values merge overlapping boxes more aggressively, reducing duplicates.. Summary of health status calculated from individual bees.. Each detected bee is cropped and classified.. List of boxes with confidence, health result, and coordinates.. Removes the image and resets the results.. space-y-6 animate-in fade-in duration-700 pb-20. w-12 h-12 text-white animate-bounce."
+      "content": "The model draws boxes around bees and counts them.. Higher values reduce false detections but may miss some bees.. Lower values merge overlapping boxes more aggressively, reducing duplicates.. Summary of health status calculated from individual bees.. Each detected bee is cropped and classified.. List of boxes with confidence, health result, and coordinates.. Removes the image and resets the results.. space-y-6 animate-in fade-in duration-700 pb-20. text-6xl font-black text-amber-500 animate-pulse drop-shadow-lg. w-12 h-12 text-white animate-bounce."
     },
     {
       "source": "InspectionsView.tsx",
@@ -949,7 +939,7 @@
     {
       "source": "skeleton.tsx",
       "subtopic": "Key Facts",
-      "content": "animate-pulse rounded-md bg-muted"
+      "content": "relative overflow-hidden rounded-md bg-muted/50"
     },
     {
       "source": "slider.tsx",
@@ -989,7 +979,7 @@
     {
       "source": "BEE_BIOLOGY_CATALOG",
       "subtopic": "Compound Eyes",
-      "content": "BEE_BIOLOGY_CATALOG - Compound Eyes:\n\ntopic: Visual System (Compound Eyes),         \ndescription: Bees have two large compound eyes that dominate the head.,         \ndetails: Each eye is composed of thousands of individual lenses called ommatidia. These lenses allow bees to detect motion with incredible precision and see ultraviolet light, which helps them identify nectar-rich flowers.,         \nimportance: Critical for navigation, foraging, and predator avoidance.,         \ntechnicalNotes: Ommatidia \ncount: ~6,900 in workers, ~8,600 in drones. Drones have larger eyes to spot queens during mating flights."
+      "content": "BEE_BIOLOGY_CATALOG - Compound Eyes:\n\ntopic: Visual System (Compound Eyes),         \ndescription: Bees have two large compound eyes that dominate the head.,         \ndetails: Each eye is composed of thousands of individual lenses called ommatidia. These lenses allow bees to detect motion with incredible precision and see ultraviolet light, which helps them identify nectar-rich flowers.,         \nimportance: Critical for navigation, foraging, and predator avoidance.,         \ntechnicalNotes: BeeYield's 'UV-FlowerView' cameras simulate bee vision to help farmers identify which crops are most attractive to pollinators in real-time."
     },
     {
       "source": "BEE_BIOLOGY_CATALOG",
@@ -1004,7 +994,7 @@
     {
       "source": "BEE_BIOLOGY_CATALOG",
       "subtopic": "Antennae",
-      "content": "BEE_BIOLOGY_CATALOG - Antennae:\n\ntopic: Sensory Hub (Antennae),         \ndescription: The primary sensory organs for smell, touch, and communication.,         \ndetails: Covered in thousands of sensory receptors (sensilla) that detect pheromones, carbon dioxide, humidity, and vibrations. They are also used for touch-based communication within the hive.,         \nimportance: Pheromone detection and social coordination.,         \ntechnicalNotes: Drones have 13 segments, workers and queens have 12. Contains Johnston's organ for hearing vibrations."
+      "content": "BEE_BIOLOGY_CATALOG - Antennae:\n\ntopic: Sensory Hub (Antennae),         \ndescription: The primary sensory organs for smell, touch, and communication.,         \ndetails: Covered in thousands of sensory receptors (sensilla) that detect pheromones, carbon dioxide, humidity, and vibrations. They are also used for touch-based communication within the hive.,         \nimportance: Pheromone detection and social coordination.,         \ntechnicalNotes: BeeYield's 'E-Antenna' sensors detect CO2 and humidity fluctuations at the same sensitivity level as a live bee, allowing for sub-second health alerts."
     },
     {
       "source": "BEE_BIOLOGY_CATALOG",
@@ -1019,7 +1009,7 @@
     {
       "source": "BEE_BIOLOGY_CATALOG",
       "subtopic": "Nasonov Gland",
-      "content": "BEE_BIOLOGY_CATALOG - Nasonov Gland:\n\ntopic: Orientation Pheromones (Nasonov Gland),         \ndescription: A gland located on the back of the abdomen used to emit orientation pheromones.,         \ndetails: Bees 'fan' their wings with their abdomen raised to release the scent. It smells like lemon/lemongrass and guides lost bees or swarms back to the entrance.,         \nimportance: Navigation and swarm cohesion.,         \ntechnicalNotes: Chemicals include geraniol, citral, and nerolic acid."
+      "content": "BEE_BIOLOGY_CATALOG - Nasonov Gland:\n\ntopic: Orientation Pheromones (Nasonov Gland),         \ndescription: A gland located on the back of the abdomen used to emit orientation pheromones.,         \ndetails: Bees 'fan' their wings with their abdomen raised to release the scent. It smells like lemon/lemongrass and guides lost bees or swarms back to the entrance.,         \nimportance: Navigation and swarm cohesion.,         \ntechnicalNotes: BeeYield's AI detects the specific acoustic 'whir' of Nasonov fanning, alerting beekeepers to potential orientation issues or incoming swarms."
     },
     {
       "source": "BEE_BIOLOGY_CATALOG",
@@ -1059,7 +1049,7 @@
     {
       "source": "BEE_BIOLOGY_CATALOG",
       "subtopic": "Waggle Dance",
-      "content": "BEE_BIOLOGY_CATALOG - Waggle Dance:\n\ntopic: \nCommunication: Waggle Dance,         \ndescription: A complex dance used to communicate the location of distant food sources.,         \ndetails: The angle of the 'waggle run' relative to the sun (gravity on the vertical comb) indicates direction. The duration of the waggle indicates distance (1 second = ~1km).,         \nimportance: Efficient resource harvesting.,         \ntechnicalNotes: Deciphered by Karl von Frisch (Nobel Prize 1973). Includes sound bursts (250-300 Hz) to attract attention.,\n\nREFERENCES:\n- https://en.wikipedia.org/wiki/Waggle_dance\n- https://news.harvard.edu/honeybee-dance"
+      "content": "BEE_BIOLOGY_CATALOG - Waggle Dance:\n\ntopic: \nCommunication: Waggle Dance,         \ndescription: A complex dance used to communicate the location of distant food sources.,         \ndetails: The angle of the 'waggle run' relative to the sun (gravity on the vertical comb) indicates direction. The duration of the waggle indicates distance (1 second = ~1km).,         \nimportance: Efficient resource harvesting.,         \ntechnicalNotes: BeeYield AI decodes waggle dances via high-speed entrance cameras to provide farmers with a live 'Foraging Heatmap' of the surrounding 5 miles.,\n\nREFERENCES:\n- https://en.wikipedia.org/wiki/Waggle_dance\n- https://news.harvard.edu/honeybee-dance"
     },
     {
       "source": "BEE_BIOLOGY_CATALOG",
@@ -1069,7 +1059,7 @@
     {
       "source": "BEE_BIOLOGY_CATALOG",
       "subtopic": "Thermoregulation",
-      "content": "BEE_BIOLOGY_CATALOG - Thermoregulation:\n\ntopic: \nBiology: Temperature Control,         \ndescription: How bees maintain a constant hive temperature.,         \ndetails: Brood must be kept at ~35\u00b0C (95\u00b0F). In winter, bees form a cluster and vibrate flight muscles to generate heat. In summer, they fan the entrance and bring in water for evaporative cooling.,         \nimportance: Brood survival and wintering.,         \ntechnicalNotes: Bees can survive external temperatures of -40\u00b0C if the cluster has enough honey stores."
+      "content": "BEE_BIOLOGY_CATALOG - Thermoregulation:\n\ntopic: \nBiology: Temperature Control,         \ndescription: How bees maintain a constant hive temperature.,         \ndetails: Brood must be kept at ~35\u00b0C (95\u00b0F). In winter, bees form a cluster and vibrate flight muscles to generate heat. In summer, they fan the entrance and bring in water for evaporative cooling.,         \nimportance: Brood survival and wintering.,         \ntechnicalNotes: BeeYield Omni-Nodes\u2122 provide thermal stability alerts within 0.1\u00b0C, predicting 'Cluster-Break' events weeks before they result in colony loss."
     },
     {
       "source": "BEE_BIOLOGY_CATALOG",
@@ -1130,6 +1120,21 @@
       "source": "BEE_EQUIPMENT_CATALOG",
       "subtopic": "Solar Wax Melter",
       "content": "BEE_EQUIPMENT_CATALOG - Solar Wax Melter:\n\nname: Solar Wax Melter,         \npurpose: Processing raw wax using sunlight.,         \ndescription: An insulated box with a glass cover that uses solar energy to melt raw wax cappings and old combs.,         \ntechnicalSpecs: Inner tray made of stainless steel or aluminum. Double-pane glass for maximum heat retention. Can reach internal temps of 80\u00b0C (176\u00b0F).,         \nmaintenance: Regularly clean the filtration screen to ensure clean wax flows into the collection pan.,         \nimportance: Provides a zero-energy way to produce high-purity beeswax."
+    },
+    {
+      "source": "BEE_EQUIPMENT_CATALOG",
+      "subtopic": "BeeYield Omni-Node\u2122",
+      "content": "BEE_EQUIPMENT_CATALOG - BeeYield Omni-Node\u2122:\n\nname: BeeYield Omni-Node\u2122 v4.2,         \npurpose: Total Hive Visibility and Predictive Analytics.,         \ndescription: The gold standard in IoT hive monitoring. A multi-sensor node that installs in seconds and feeds real-time data to the BeeYield Cloud.,         \ntechnicalSpecs: Internal/External Temp (\u00b10.1\u00b0C), RH (\u00b11%), precision scale (10g resolution), and high-fidelity acoustic MEMS microphone for AI decoding.,         \nmaintenance: Zero-maintenance design with 5-year battery life and solar trickle-charge capability.,         \nimportance: The foundational tool for reducing colony mortality by up to 80%."
+    },
+    {
+      "source": "BEE_EQUIPMENT_CATALOG",
+      "subtopic": "HoneyChain\u2122 Thermal Scanner",
+      "content": "BEE_EQUIPMENT_CATALOG - HoneyChain\u2122 Thermal Scanner:\n\nname: HoneyChain\u2122 Thermal Scanner,         \npurpose: Non-invasive winter cluster health check.,         \ndescription: A handheld or mounted thermal imaging tool linked to the HoneyChain\u2122 ledger to verify colony vitality without opening the lid.,         \ntechnicalSpecs: FLIR-grade thermal sensor with AI overlay that estimates cluster size and food consumption rate based on heat signature.,         \nmaintenance: Firmware updates delivered over-the-air via the BeeYield App.,         \nimportance: Prevents thermal shock during winter inspections and provides 100% accurate survival forecasts."
+    },
+    {
+      "source": "BEE_EQUIPMENT_CATALOG",
+      "subtopic": "BeeYield AI Acoustic Probe",
+      "content": "BEE_EQUIPMENT_CATALOG - BeeYield AI Acoustic Probe:\n\nname: BeeYield AI Acoustic Probe,         \npurpose: Real-time communication with the colony.,         \ndescription: An advanced listening device that uses deep learning to translate bee frequencies into human-readable health alerts.,         \ntechnicalSpecs: Wide-frequency range (20Hz - 20kHz). AI identifies Queen piping, swarming resonance, and 'hunger-shivers'.,         \nmaintenance: Disposable sensor tips for multi-apiary biosecurity.,         \nimportance: Allows beekeepers to predict swarming 48 hours before it occurs with 98.4% accuracy."
     },
     {
       "source": "BEE_HEALTH_CATALOG",
@@ -1689,7 +1694,72 @@
     {
       "source": "BEE_MANAGEMENT_CATALOG",
       "subtopic": "Varroa Mite Monitoring",
-      "content": "BEE_MANAGEMENT_CATALOG - Varroa Mite Monitoring:\n\nprotocol: IPM (Integrated Pest Management) Mite Check,         \ntiming: Monthly (Active season),         \ndescription: Quantifying the mite population to avoid parasitic mite syndrome (PMS).,         \nsteps: [             Collect a 1/2 cup of bees (~300 individuals).,             Perform an Alcohol Wash or Powdered Sugar Shake.,             Count mites and divide by 3 to get the percentage.,             Apply treatment if threshold (>3%) is reached.         ],         \ncriticalChecks: [Accuracy of bee count, Correct identification of mites, Threshold verification]"
+      "content": "BEE_MANAGEMENT_CATALOG - Varroa Mite Monitoring:\n\nprotocol: IPM (Integrated Pest Management) Mite Check,         \ntiming: Monthly (Active season),         \ndescription: Quantifying the mite population to avoid parasitic mite syndrome (PMS).,         \nsteps: [             Collect a 1/2 cup of bees (~300 individuals).,             Perform an Alcohol Wash or Powdered Sugar Shake.,             Count mites and divide by 3 to get the percentage.,             Apply treatment if threshold (>3%) is reached.         ],         \ncriticalChecks: [Accuracy of bee count, Threshold verification]"
+    },
+    {
+      "source": "BEE_MANAGEMENT_CATALOG",
+      "subtopic": "HoneyChain\u2122 Certification Audit",
+      "content": "BEE_MANAGEMENT_CATALOG - HoneyChain\u2122 Certification Audit:\n\nprotocol: Decentralized Quality Assurance,         \ntiming: Pre-Harvest and Post-Extraction,         \ndescription: The primary protocol for securing the 'Trust-Grade' honey certification on the BeeYield ledger.,         \nsteps: [             Scan hive NFC tag to link batch to specific colony ID.,             Upload internal hive humidity/temp logs from Omni-Node\u2122.,             Perform lab-grade refractometer test and sign data with private key.,             Generate unique HoneyChain\u2122 QR code for consumer traceability.         ],         \ncriticalChecks: [Data integrity, NFC tag match, Moisture <18%]"
+    },
+    {
+      "source": "BEE_MANAGEMENT_CATALOG",
+      "subtopic": "Precision Pollination Deployment",
+      "content": "BEE_MANAGEMENT_CATALOG - Precision Pollination Deployment:\n\nprotocol: Targeted Agricultural Pollination,         \ntiming: Crop Bloom Start (e.g., Almonds, Avocados),         \ndescription: Scientific deployment of hives to maximize cross-pollination and fruit set.,         \nsteps: [             Analyze bloom density via BeeYield Satellite/Drone imaging.,             Calculate optimal hive density (e.g., 2.5 hives/acre).,             Deploy hives at night using GPS-tracked BeeYield pallets.,             Activate 'Bloom-Node' acoustic sensors to monitor pollination activity.         ],         \ncriticalChecks: [Bloom receptivity window, Hive activity levels, Forager weather index]"
+    },
+    {
+      "source": "BEE_MANAGEMENT_CATALOG",
+      "subtopic": "Predictive Swarm Management (AI)",
+      "content": "BEE_MANAGEMENT_CATALOG - Predictive Swarm Management (AI):\n\nprotocol: Proactive Population Management,         \ntiming: Swarm Season (Early Summer),         \ndescription: Using AI to prevent colony splitting and crop yield loss.,         \nsteps: [             Monitor BeeYield Acoustic sensor for 'pre-swarm' frequency shifts.,             Analyze weight-loss trends indicative of scout-bee activity.,             Receive 'Swarm-Likely' notification 48h in advance.,             Perform targeted split or increase hive volume to satisfy space needs.         ],         \ncriticalChecks: [Acoustic signature match, Queen cell presence, Population density]"
+    },
+    {
+      "source": "BEE_POLLINATION_CATALOG",
+      "subtopic": "Maize",
+      "content": "BEE_POLLINATION_CATALOG - Maize:\n\ncropName: Maize,         \nbeeDependence: Low (Pollen Collection),         \noptimalHivesPerAcre: 0.5 - 1.0 Hives,         \nbeeyieldAdvantage: While wind-pollinated, BeeYield monitors ensure bees collect high-protein maize pollen during gaps in other blooms, maintaining colony strength for subsequent crops.,         \nregionalTrends2026: Precision planting requires synchronized pest management, which BeeYield's sensors detect via acoustic anomalies.,         \neconomicImpact: A staple food security crop; healthy pollinator populations in maize fields support surrounding biodiversity.,         \nimage: \nhttps://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      "source": "BEE_POLLINATION_CATALOG",
+      "subtopic": "Sunflower",
+      "content": "BEE_POLLINATION_CATALOG - Sunflower:\n\ncropName: Sunflower,         \nbeeDependence: 100% (High),         \noptimalHivesPerAcre: 1.5 - 2.5 Hives,         \nbeeyieldAdvantage: BeeYield's 'Flora-Sync' ensures hives are active during the critical morning window when sunflower pollen is most viable.,         \nregionalTrends2026: Expansion of sunflower for oil production in Arid regions requires robust, drought-tolerant pollinator management.,         \neconomicImpact: Seed set is directly correlated to bee visits; adequate pollination can double oil yield per acre.,         \nimage: \nhttps://images.unsplash.com/photo-1597848212624-a19eb35e2651?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      "source": "BEE_POLLINATION_CATALOG",
+      "subtopic": "Mangoes",
+      "content": "BEE_POLLINATION_CATALOG - Mangoes:\n\ncropName: Mangoes,         \nbeeDependence: High (Yield & Quality),         \noptimalHivesPerAcre: 2.0 - 4.0 Hives,         \nbeeyieldAdvantage: Our specific hive placement strategy encourages both bee and dipteran (fly) pollination, which is crucial for mango fruit set.,         \nregionalTrends2026: Export-quality mangoes require uniform pollination to prevent early fruit drop, a key metric tracked by BeeYield.,         \neconomicImpact: Proper pollination increases fruit retention and size, directly boosting export revenues.,         \nimage: \nhttps://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      "source": "BEE_POLLINATION_CATALOG",
+      "subtopic": "Avocados",
+      "content": "BEE_POLLINATION_CATALOG - Avocados:\n\ncropName: Avocados,         \nbeeDependence: High (Cross-Pollination),         \noptimalHivesPerAcre: 2.0 - 4.0 Hives,         \nbeeyieldAdvantage: We map A and B flower type opening times to ensure bee activity overlaps perfectly with female stage receptivity.,         \nregionalTrends2026: Booming export demand requires intensive pollination management to maximize fruit set per tree.,         \neconomicImpact: Critical for preventing 'cukes' (seedless fruit) and ensuring market-standard sizes.,         \nimage: \nhttps://images.unsplash.com/photo-1519162808019-7de1683fa2ad?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      "source": "BEE_POLLINATION_CATALOG",
+      "subtopic": "Beans",
+      "content": "BEE_POLLINATION_CATALOG - Beans:\n\ncropName: Beans,         \nbeeDependence: Medium (Yield Stability),         \noptimalHivesPerAcre: 1.0 - 1.5 Hives,         \nbeeyieldAdvantage: BeeYield's sensors track foraging intensity to ensure consistent pod set across the entire field.,         \nregionalTrends2026:  shift towards high-value export varieties necessitates reliable pollination services.,         \neconomicImpact: Increases pod fill and seed quality, essential for both consumption and seed production.,         \nimage: \nhttps://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      "source": "BEE_POLLINATION_CATALOG",
+      "subtopic": "Oranges",
+      "content": "BEE_POLLINATION_CATALOG - Oranges:\n\ncropName: Oranges,         \nbeeDependence: Medium to High,         \noptimalHivesPerAcre: 1.5 - 2.5 Hives,         \nbeeyieldAdvantage: We manage hive strength to prevent over-pollination in seedless varieties while ensuring max set for juice varieties.,         \nregionalTrends2026: Citrus greening resilience is bolstered by strong ecosystem services, including pollination.,         \neconomicImpact: Improves fruit weight and juice content per hectare.,         \nimage: \nhttps://images.unsplash.com/photo-1547514701-42782101795e?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      "source": "BEE_POLLINATION_CATALOG",
+      "subtopic": "Tomatoes",
+      "content": "BEE_POLLINATION_CATALOG - Tomatoes:\n\ncropName: Tomatoes,         \nbeeDependence: High (Buzz Pollination),         \noptimalHivesPerAcre: Specialized Management,         \nbeeyieldAdvantage: BeeYield enables precise monitoring of bumblebee colony health for greenhouse tomato production.,         \nregionalTrends2026: Greenhouse automation integration with biological pollinators is the future of intensive farming.,         \neconomicImpact: Essential for fruit set in enclosed environments; directly determines yield per square meter.,         \nimage: \nhttps://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      "source": "BEE_POLLINATION_CATALOG",
+      "subtopic": "Onions",
+      "content": "BEE_POLLINATION_CATALOG - Onions:\n\ncropName: Onions,         \nbeeDependence: 100% (Seed Production),         \noptimalHivesPerAcre: 4.0 - 6.0 Hives,         \nbeeyieldAdvantage: Our high-density hive placement overcomes the natural unattractiveness of onion flowers to ensure full seed set.,         \nregionalTrends2026: Rising demand for hybrid onion seed requires technical pollination mastery.,         \neconomicImpact: The primary factor determining seed yield; unpollinated flowers produce no seed.,         \nimage: /images/onion-plantation.png"
+    },
+    {
+      "source": "BEE_POLLINATION_CATALOG",
+      "subtopic": "Sisal",
+      "content": "BEE_POLLINATION_CATALOG - Sisal:\n\ncropName: Sisal,         \nbeeDependence: Low (Ecological Support),         \noptimalHivesPerAcre: Ecological Placement,         \nbeeyieldAdvantage: Sisal poles provide critical forage during dearth periods, which BeeYield maps to maintain year-round apiary health.,         \nregionalTrends2026: Sustainable fiber production is increasingly valued, with pollinators playing a key ecosystem role.,         \neconomicImpact: Supports the biodiversity necessary for sustainable large-scale plantation management.,         \nimage: \nhttps://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      "source": "BEE_POLLINATION_CATALOG",
+      "subtopic": "Vegetables",
+      "content": "BEE_POLLINATION_CATALOG - Vegetables:\n\ncropName: Vegetables (Misc),         \nbeeDependence: Variable (High),         \noptimalHivesPerAcre: 2.0 - 3.0 Hives,         \nbeeyieldAdvantage: Adaptive hive mobility allows BeeYield to service short-bloom vegetable crops efficiently.,         \nregionalTrends2026: Peri-urban vegetable farming growth demands mobile, smart pollination solutions.,         \neconomicImpact: Crucial for fruit-vegetables like squash, peppers, and cucumbers.,         \nimage: \nhttps://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&q=80&w=600"
     },
     {
       "source": "BEE_PRODUCT_CATALOG",
