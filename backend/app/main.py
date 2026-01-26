@@ -4,6 +4,17 @@ from starlette.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.api.api_v1.api import api_router
 
+# Import and apply DNS Patch if needed (Fixes [Errno 11001] getaddrinfo failed on some Windows/Network setups)
+try:
+    import sys
+    import os
+    # Add project root to path to find dns_fix
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+    from dns_fix import patch_dns
+    patch_dns()
+except Exception as e:
+    print(f"⚠️ Could not apply DNS patch: {e}")
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url=f"{settings.API_V1_STR}/openapi.json",

@@ -215,7 +215,7 @@ const Checkout = () => {
             quantity: 1,
             image: item.image,
             badge: null,
-            category: item.category as any
+            category: item.category as 'honey' | 'merch' | 'education' | 'hardware'
         });
         removeFromWishlist(item.id);
         // toast handles in addToCart
@@ -590,7 +590,7 @@ const Checkout = () => {
                                     {/* Payment Method Selection */}
                                     <div className="space-y-4 pt-4 border-t border-border">
                                         <Label className="text-lg font-bold">Payment Method</Label>
-                                        <RadioGroup value={paymentMethod} onValueChange={v => setPaymentMethod(v as any)} className="grid gap-4">
+                                        <RadioGroup value={paymentMethod} onValueChange={v => setPaymentMethod(v as 'mpesa' | 'card')} className="grid gap-4">
                                             <div
                                                 className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${paymentMethod === 'mpesa' ? 'border-primary bg-primary/5' : 'border-border'}`}
                                                 onClick={() => setPaymentMethod('mpesa')}

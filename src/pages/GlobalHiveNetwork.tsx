@@ -68,7 +68,7 @@ const GlobalHiveNetwork = () => {
       <div className="relative w-full h-[70vh] bg-foreground">
         <iframe
           className="absolute inset-0 w-full h-full"
-          src="https://www.youtube.com/embed/VIDEO_ID_HERE"
+          src="https://www.youtube.com/embed/vV-m_k8E5Yc"
           title="About BeeYield"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

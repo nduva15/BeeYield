@@ -2,7 +2,7 @@
 Traceability Endpoints - Powered by BeeYield Blockchain
 """
 from fastapi import APIRouter, HTTPException, Request, BackgroundTasks
-from typing import List, Dict, Any
+from typing import Optional, Any
 from app.schemas import traceability as schemas
 from app.services import traceability_service
 from app.blockchain.honey_chain import honey_blockchain
@@ -38,7 +38,7 @@ async def get_trace_by_code(code: str, request: Request, background_tasks: Backg
 
     raise HTTPException(status_code=404, detail=f"Traceability code '{code}' not found on the blockchain.")
 
-@router.get("/chain", response_model=Dict[str, Any])
+@router.get("/chain", response_model=dict[str, Any])
 def get_blockchain_status():
     """
     Get current status and stats of the BeeYield Blockchain.
@@ -50,33 +50,33 @@ def get_blockchain_status():
         "latest_blocks": honey_blockchain.get_chain_history(limit=5)
     }
 
-@router.post("/farmers", response_model=Dict[str, Any])
+@router.post("/farmers", response_model=dict[str, Any])
 def create_farmer(farmer_in: schemas.FarmerCreate):
     """Register a new farmer/beekeeper."""
     return traceability_service.register_farmer(farmer_in)
 
-@router.post("/apiaries", response_model=Dict[str, Any])
+@router.post("/apiaries", response_model=dict[str, Any])
 def create_apiary(apiary_in: schemas.ApiaryCreate):
     """Register a new apiary location."""
     return traceability_service.register_apiary(apiary_in)
 
-@router.post("/hives", response_model=Dict[str, Any])
+@router.post("/hives", response_model=dict[str, Any])
 def create_hive(hive_in: schemas.HiveCreate):
     """Register a new hive."""
     return traceability_service.register_hive(hive_in)
 
-@router.post("/sensors", response_model=Dict[str, Any])
+@router.post("/sensors", response_model=dict[str, Any])
 def record_sensor_data(sensor_in: schemas.HiveSensorData):
     """Record IoT sensor data for a hive."""
     return traceability_service.record_sensor_data(sensor_in)
 
-@router.post("/harvests", response_model=Dict[str, Any])
+@router.post("/harvests", response_model=dict[str, Any])
 def record_harvest(harvest_in: schemas.HarvestCreate):
     """Record a harvest."""
     return traceability_service.record_harvest(harvest_in)
 
-@router.post("/batches", response_model=Dict[str, Any])
-def create_batch(batch_in: Dict[str, Any]):
+@router.post("/batches", response_model=dict[str, Any])
+def create_batch(batch_in: dict[str, Any]):
     """Create a final product batch."""
     return traceability_service.create_batch(batch_in)
 

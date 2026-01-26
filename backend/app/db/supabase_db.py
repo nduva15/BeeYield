@@ -6,8 +6,20 @@ from supabase import create_client, Client
 from typing import Optional, List, Dict, Any
 from app.core.config import settings
 
+# ... (existing imports)
 # Global Supabase client
 _supabase_client: Optional[Client] = None
+
+# Apply DNS Patch to handle getaddrinfo failures
+try:
+    import sys
+    import os
+    # Add project root to path
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+    from dns_fix import patch_dns
+    patch_dns()
+except:
+    pass
 
 
 def get_supabase() -> Optional[Client]:

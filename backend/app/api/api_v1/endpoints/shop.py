@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Header
-from typing import List, Optional, Dict, Any
+from typing import Optional, Any
 from jose import jwt
 from app.core.config import settings
 from app.core import security
@@ -9,7 +9,7 @@ from app.db.clickhouse_db import track_order_event
 
 router = APIRouter()
 
-@router.get("/products", response_model=List[schemas.Product])
+@router.get("/products", response_model=list[schemas.Product])
 def get_products(category: Optional[str] = None):
     """
     Get all active products, optionally filtered by category.
@@ -37,7 +37,7 @@ def add_to_cart(item: schemas.CartItemAdd):
 @router.post("/checkout/init", response_model=dict)
 def initialize_checkout(
     order_in: schemas.OrderCreate,
-    current_user: Dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user)
 ):
     """
     Initialize payment for order.
@@ -96,10 +96,10 @@ def initialize_checkout(
         "payment_info": payment_response
     }
 
-@router.get("/orders", response_model=List[schemas.Order])
+@router.get("/orders", response_model=list[schemas.Order])
 def get_user_orders(
     email: Optional[str] = None,
-    current_user: Dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user)
 ):
     """
     Get orders for the current user.

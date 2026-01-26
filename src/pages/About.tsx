@@ -216,7 +216,7 @@ const About = () => {
       <div className="relative w-full h-[60vh] md:h-[80vh] bg-[#F0F7F0]">
         <iframe
           className="absolute inset-0 w-full h-full opacity-60"
-          src="https://www.youtube.com/embed/VIDEO_ID_HERE"
+          src="https://www.youtube.com/embed/vV-m_k8E5Yc"
           title="About BeeYield"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

@@ -58,94 +58,94 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onLogout, onTabChange
 
     const getTitle = () => {
         switch (activeTab) {
-            case 'devices': return { title: 'MEASUREMENT DATA', subtitle: 'BeeYield devices assigned to your hives.' };
-            case 'assistant': return { title: 'AI ASSISTANT', subtitle: 'Intelligent beekeeping insights.' };
-            case 'places': return { title: 'MY PLACES', subtitle: 'Manage your apiaries and locations.' };
-            case 'beeyield': return { title: 'BEEYIELD HIVES', subtitle: 'Comprehensive hive management.' };
-            case 'billing': return { title: 'BILLING', subtitle: 'Manage your subscription and usage.' };
-            case 'support': return { title: 'SUPPORT CENTER', subtitle: 'Get help and track requests.' };
+            case 'devices': return { title: 'Measurement Data', subtitle: 'BeeYield devices assigned to your hives.' };
+            case 'assistant': return { title: 'AI Assistant', subtitle: 'Intelligent beekeeping insights.' };
+            case 'places': return { title: 'My Places', subtitle: 'Manage your apiaries and locations.' };
+            case 'beeyield': return { title: 'BeeYield Hives', subtitle: 'Comprehensive hive management.' };
+            case 'billing': return { title: 'Billing', subtitle: 'Manage your subscription and usage.' };
+            case 'support': return { title: 'Support Center', subtitle: 'Get help and track requests.' };
             default:
-                if (activeTab.startsWith('meters')) return { title: 'METERS', subtitle: 'Energy and consumption monitoring.' };
-                return { title: 'DASHBOARD', subtitle: 'Welcome back to your ecosystem.' };
+                if (activeTab.startsWith('meters')) return { title: 'Meters', subtitle: 'Energy and consumption monitoring.' };
+                return { title: 'Dashboard', subtitle: 'Welcome back to your ecosystem.' };
         }
     };
 
     const headerContent = getTitle();
 
     return (
-        <div className="bg-white dark:bg-[#1A1816] border-b border-slate-100 dark:border-white/10 px-8 py-4 flex items-center justify-between gap-4 sticky top-0 z-50 shadow-[0_1px_3px_rgba(0,0,0,0.02)] transition-all">
-            {/* Title Area */}
-            <div className="flex flex-col min-w-[200px]">
-                <h1 className="text-2xl font-black text-[#0F172A] dark:text-white uppercase tracking-tight">{headerContent.title}</h1>
-                <p className="text-[13px] text-slate-400 dark:text-slate-500 font-medium truncate">{headerContent.subtitle}</p>
+        <div className="bg-white/70 backdrop-blur-md border-b border-[#E5E5E5]/60 px-8 py-5 flex items-center justify-between gap-6 sticky top-0 z-50 transition-all antialiased">
+            {/* Title Area - Enhanced Typography */}
+            <div className="flex flex-col min-w-[220px]">
+                <h1 className="text-[20px] font-semibold text-[#171717] tracking-[-0.02em] leading-tight">
+                    {headerContent.title}
+                </h1>
+                <p className="text-[13px] text-[#737373] font-medium mt-0.5 tracking-tight">
+                    {headerContent.subtitle}
+                </p>
             </div>
 
             {/* Actions Area */}
             <div className="flex items-center gap-4 flex-1 justify-end">
-                {/* Search */}
-                <div className="relative group max-w-[400px] flex-1">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
-                    <Input
-                        placeholder="Search apiaries, beehives"
-                        className="w-full bg-slate-50/50 dark:bg-white/5 border-slate-200/60 dark:border-white/10 pl-11 h-12 rounded-full text-sm font-medium focus-visible:ring-0 focus-visible:border-blue-400 transition-all placeholder:text-slate-400"
+                {/* Search - Refined */}
+                <div className="relative group max-w-[420px] flex-1">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A3A3A3] group-focus-within:text-[#171717] transition-all" />
+                    <input
+                        placeholder="Search Intelligence..."
+                        className="w-full bg-[#F5F5F5]/50 border border-[#E5E5E5]/80 pl-11 h-11 rounded-xl text-[13px] font-medium focus:outline-none focus:ring-1 focus:ring-[#E5E5E5] focus:bg-white transition-all placeholder:text-[#A3A3A3]"
                     />
                 </div>
 
-                {/* Language Selector */}
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-12 px-5 rounded-full bg-slate-50/50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 gap-3 hover:bg-slate-100/50 transition-all group shrink-0">
-                            <div className="w-5 h-3 overflow-hidden shadow-sm border border-black/5">
-                                <img src={selectedLang.flag} alt={selectedLang.country} className="w-full h-full object-cover" />
-                            </div>
-                            <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300">{selectedLang.name}</span>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-60 rounded-2xl p-2 bg-white dark:bg-[#1A1816] border-slate-200 dark:border-white/10 shadow-xl">
-                        {languages.map((lang) => (
-                            <DropdownMenuItem
-                                key={lang.code}
-                                onClick={() => setLanguage(lang.code)}
-                                className={cn(
-                                    "flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors mb-0.5 last:mb-0",
-                                    language === lang.code ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400" : "hover:bg-slate-50 dark:hover:bg-white/5"
-                                )}
-                            >
-                                <div className="w-6 h-4 overflow-hidden border border-black/5 shrink-0">
-                                    <img src={lang.flag} alt={lang.country} className="w-full h-full object-cover" />
+                <div className="flex items-center gap-2">
+                    {/* Language Selector */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-11 px-4 rounded-xl bg-white border border-[#E5E5E5] gap-3 hover:bg-[#FAFAFA] transition-all group shrink-0 shadow-sm active:scale-95">
+                                <div className="w-5 h-3 overflow-hidden shadow-sm border border-black/5 rounded-[2px]">
+                                    <img src={selectedLang.flag} alt={selectedLang.country} className="w-full h-full object-cover" />
                                 </div>
-                                <span className="text-sm font-semibold">{lang.name}</span>
-                                {language === lang.code && <Check className="w-4 h-4 ml-auto" />}
-                            </DropdownMenuItem>
-                        ))}
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                                <span className="text-[13px] font-semibold text-[#171717]">{selectedLang.name}</span>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-56 rounded-xl p-1.5 bg-white border border-[#E5E5E5] shadow-[0_10px_25px_rgba(0,0,0,0.08)]">
+                            {languages.map((lang) => (
+                                <DropdownMenuItem
+                                    key={lang.code}
+                                    onClick={() => setLanguage(lang.code)}
+                                    className={cn(
+                                        "flex items-center gap-2.5 px-3 py-2.5 rounded-lg cursor-pointer transition-colors mb-0.5 last:mb-0",
+                                        language === lang.code ? "bg-[#F5F5F5] text-[#171717]" : "hover:bg-[#FAFAFA]"
+                                    )}
+                                >
+                                    <div className="w-5 h-3 overflow-hidden border border-black/5 shrink-0 rounded-[1px]">
+                                        <img src={lang.flag} alt={lang.country} className="w-full h-full object-cover" />
+                                    </div>
+                                    <span className="text-[13px] font-medium">{lang.name}</span>
+                                    {language === lang.code && <Check className="w-3.5 h-3.5 ml-auto text-[#171717]" />}
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
 
-                {/* Action Icons */}
-                <div className="flex items-center gap-2 shrink-0">
-                    <Button variant="ghost" size="icon" onClick={toggleTheme} className="w-12 h-12 rounded-2xl bg-slate-50/50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 hover:bg-slate-100/50 transition-all">
-                        {theme === 'light' ? <Sun className="w-5 h-5 text-slate-500" /> : <Moon className="w-5 h-5 text-blue-400" />}
-                    </Button>
-                    <Button variant="ghost" size="icon" className="w-12 h-12 rounded-2xl bg-slate-50/50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 hover:bg-slate-100/50 relative transition-all">
-                        <Bell className="w-5 h-5 text-slate-500" />
-                        <span className="absolute top-3.5 right-3.5 w-2 h-2 bg-blue-500 rounded-full border-2 border-white dark:border-[#1A1816]" />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={() => onTabChange('support')} className="w-12 h-12 rounded-2xl bg-slate-50/50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 hover:bg-slate-100/50 transition-all focus:bg-slate-100/50">
-                        <LifeBuoy className="w-5 h-5 text-slate-500" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="w-12 h-12 rounded-2xl bg-slate-50/50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 hover:bg-slate-100/50 transition-all">
-                        <Signal className="w-5 h-5 text-slate-500" />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={() => onTabChange('settings')} className="w-12 h-12 rounded-2xl bg-slate-50/50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 hover:bg-slate-100/50 transition-all">
-                        <Settings className="w-5 h-5 text-slate-500" />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={onLogout} className="w-12 h-12 rounded-2xl bg-slate-50/50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 hover:bg-red-50 dark:hover:bg-red-500/10 group transition-all">
-                        <LogOut className="w-5 h-5 text-slate-500 group-hover:text-red-500 transition-colors" />
-                    </Button>
+                    {/* Action Icons */}
+                    <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                        <Button variant="ghost" size="icon" onClick={toggleTheme} className="w-11 h-11 rounded-xl bg-white border border-[#E5E5E5] hover:bg-[#FAFAFA] shadow-sm transition-all active:scale-95">
+                            {theme === 'light' ? <Sun className="w-[18px] h-[18px] text-[#737373]" /> : <Moon className="w-[18px] h-[18px] text-[#2563EB]" />}
+                        </Button>
+                        <Button variant="ghost" size="icon" className="w-11 h-11 rounded-xl bg-white border border-[#E5E5E5] hover:bg-[#FAFAFA] shadow-sm relative transition-all active:scale-95">
+                            <Bell className="w-[18px] h-[18px] text-[#737373]" />
+                            <span className="absolute top-[13px] right-[13px] w-1.5 h-1.5 bg-[#2563EB] rounded-full border border-white" />
+                        </Button>
+                        <div className="w-[1px] h-6 bg-[#E5E5E5] mx-1.5" />
+                        <Button variant="ghost" size="icon" onClick={() => onTabChange('settings')} className="w-11 h-11 rounded-xl bg-white border border-[#E5E5E5] hover:bg-[#FAFAFA] shadow-sm transition-all active:scale-95">
+                            <Settings className="w-[18px] h-[18px] text-[#737373]" />
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>
     );
 };
+
+
 
 export default DashboardHeader;

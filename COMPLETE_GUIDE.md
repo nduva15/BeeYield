@@ -72,3 +72,10 @@ Here is how every page on your site uses the backend:
 2.  **Real Blockchain**: Currently, the blockchain runs in your backend's memory. For "Real" decentralization, you can connect the same logic to a network like **Polygon** (I've included placeholders for this).
 
 **You now have a complete, professional-grade backend and blockchain system!** 🚀
+
+## 7. Permanent Database Fix (Forms & Newsletter)
+If your forms are not appearing in Supabase:
+1. Open the file 'FIX_SUPABASE_PERMANENTLY.sql' in this folder.
+2. Copy all the content.
+3. Go to your Supabase Dashboard -> SQL Editor.
+4. Run the code. This will fix all permission issues and ensure the tables are ready.

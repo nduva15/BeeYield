@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import list, Optional
 from datetime import datetime
 
 # --- Products ---
@@ -14,10 +14,10 @@ class ProductBase(BaseModel):
     description: str
     category: str
     badge: Optional[str] = None
-    images: List[str] = []
+    images: list[str] = []
 
 class ProductCreate(ProductBase):
-    variants: List[ProductVariantBase]
+    variants: list[ProductVariantBase]
 
 class ProductVariant(ProductVariantBase):
     id: str
@@ -27,7 +27,7 @@ class Product(ProductBase):
     rating: float
     review_count: int
     is_active: bool
-    variants: List[ProductVariant] = []
+    variants: list[ProductVariant] = []
 
 # --- Cart ---
 class CartItemAdd(BaseModel):
@@ -51,7 +51,7 @@ class OrderItem(BaseModel):
 class OrderCreate(BaseModel):
     shipping_address: dict
     payment_method: str # mpesa, card
-    items: List[OrderItem]
+    items: list[OrderItem]
     total_kes: float
     notes: Optional[str] = None
 
