@@ -2,7 +2,7 @@
 Media Schemas - Press, News, Videos
 """
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, list
 from datetime import date, datetime
 
 
@@ -36,8 +36,8 @@ class MediaItem(MediaItemBase):
 # ============ MEDIA PAGE RESPONSE ============
 
 class MediaPageResponse(BaseModel):
-    press_releases: List[MediaItem] = []
-    news_coverage: List[MediaItem] = []
-    videos: List[MediaItem] = []
-    featured: List[MediaItem] = []
+    press_releases: list[MediaItem] = []
+    news_coverage: list[MediaItem] = []
+    videos: list[MediaItem] = []
+    featured: list[MediaItem] = []
     total_items: int = 0

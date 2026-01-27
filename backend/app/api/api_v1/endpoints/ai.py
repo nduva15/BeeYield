@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Body
-from typing import List, Dict, Optional, Any
+from typing import Optional, Any
 from app.services.ai_service import AIService
 from pydantic import BaseModel
 from datetime import datetime
@@ -9,7 +9,7 @@ router = APIRouter()
 
 class ChatRequest(BaseModel):
     message: str
-    history: Optional[List[Dict[str, str]]] = None
+    history: Optional[list[dict[str, str]]] = None
     language: Optional[str] = 'EN'
 
 class SearchRequest(BaseModel):

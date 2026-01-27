@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from typing import Optional, Dict
+from typing import Optional, dict
 
 class ContactSubmissionCreate(BaseModel):
     inquiry_type: str # grower, beekeeper, general
@@ -23,7 +23,7 @@ class ContactSubmissionCreate(BaseModel):
     experience_years: Optional[str] = None
     
     # Catch-all for form-specific data
-    form_specific_data: Optional[Dict] = None
+    form_specific_data: Optional[dict] = None
 
 
 class PollinationRequestCreate(BaseModel):

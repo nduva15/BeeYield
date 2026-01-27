@@ -146,7 +146,7 @@ const Impact = () => {
                 </li>
               </ul>
               <Link
-                to="/GlobalHiveNetwork"
+                to="/global-hive-network"
                 className="mt-6 inline-flex items-center gap-2 bg-primary-foreground text-primary px-4 py-2 rounded-lg font-semibold hover:opacity-90 transition-opacity"
               >
                 Join Our Global Hive Network <ArrowRight className="h-4 w-4" />

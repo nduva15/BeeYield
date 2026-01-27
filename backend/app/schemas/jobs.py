@@ -2,7 +2,7 @@
 Jobs/Careers Schemas
 """
 from pydantic import BaseModel, EmailStr, HttpUrl
-from typing import Optional, List
+from typing import Optional, list
 from datetime import date, datetime
 
 
@@ -15,8 +15,8 @@ class JobPositionBase(BaseModel):
     job_type: str = "full-time"  # full-time, part-time, contract, internship
     experience_level: Optional[str] = None
     description: Optional[str] = None
-    requirements: List[str] = []
-    benefits: List[str] = []
+    requirements: list[str] = []
+    benefits: list[str] = []
     salary_range: Optional[str] = None
     is_remote: bool = False
 
@@ -70,16 +70,16 @@ class JobApplication(JobApplicationBase):
 # ============ CAREERS PAGE RESPONSE ============
 
 class CareersPageResponse(BaseModel):
-    open_positions: List[JobPosition] = []
+    open_positions: list[JobPosition] = []
     total_positions: int = 0
-    benefits_offered: List[str] = [
+    benefits_offered: list[str] = [
         "Competitive salary",
         "Health insurance",
         "Remote work options",
         "Professional development",
         "Equity participation"
     ]
-    culture_highlights: List[str] = [
+    culture_highlights: list[str] = [
         "Mission-driven team",
         "Work-life balance",
         "Innovative environment",

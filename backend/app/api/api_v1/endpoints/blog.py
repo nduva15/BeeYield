@@ -2,7 +2,7 @@
 Blog/CMS Endpoints
 """
 from fastapi import APIRouter, HTTPException, Query
-from typing import List, Optional
+from typing import list, Optional
 from app.schemas import blog as schemas
 from app.db.supabase_db import db_select, db_insert, db_update, db_get_by_id
 from datetime import datetime
@@ -12,7 +12,7 @@ router = APIRouter()
 
 # ============ PUBLIC BLOG ENDPOINTS ============
 
-@router.get("/posts", response_model=List[dict])
+@router.get("/posts", response_model=list[dict])
 def get_blog_posts(
     category: Optional[str] = None,
     tag: Optional[str] = None,
@@ -697,7 +697,7 @@ Join us on this journey. Whether you are a honey lover, a farmer, or an investor
     raise HTTPException(status_code=404, detail="Blog post not found")
 
 
-@router.get("/categories", response_model=List[dict])
+@router.get("/categories", response_model=list[dict])
 def get_blog_categories():
     """
     Get all blog categories.

@@ -3,7 +3,7 @@ Supabase Database Connection for BeeYield
 Primary database for all transactional data
 """
 from supabase import create_client, Client
-from typing import Optional, List, Dict, Any
+from typing import Optional, list, dict, Any
 from app.core.config import settings
 
 # ... (existing imports)
@@ -72,7 +72,7 @@ def get_supabase_admin() -> Optional[Client]:
 
 # ============ HELPER FUNCTIONS ============
 
-def db_insert(table: str, data: Dict[str, Any]) -> Dict[str, Any]:
+def db_insert(table: str, data: dict[str, Any]) -> dict[str, Any]:
     """Insert a record into a table"""
     supabase = get_supabase()
     if supabase:
@@ -87,11 +87,11 @@ def db_insert(table: str, data: Dict[str, Any]) -> Dict[str, Any]:
 def db_select(
     table: str, 
     columns: str = "*",
-    filters: Optional[Dict[str, Any]] = None,
+    filters: Optional[dict[str, Any]] = None,
     limit: int = 100,
     order_by: Optional[str] = None,
     ascending: bool = True
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """Select records from a table"""
     supabase = get_supabase()
     if supabase:
@@ -114,7 +114,7 @@ def db_select(
     return []
 
 
-def db_update(table: str, data: Dict[str, Any], filters: Dict[str, Any]) -> Dict[str, Any]:
+def db_update(table: str, data: dict[str, Any], filters: dict[str, Any]) -> dict[str, Any]:
     """Update records in a table"""
     supabase = get_supabase()
     if supabase:
@@ -129,7 +129,7 @@ def db_update(table: str, data: Dict[str, Any], filters: Dict[str, Any]) -> Dict
     return {"success": False, "error": "Database not connected"}
 
 
-def db_delete(table: str, filters: Dict[str, Any]) -> Dict[str, Any]:
+def db_delete(table: str, filters: dict[str, Any]) -> dict[str, Any]:
     """Delete records from a table"""
     supabase = get_supabase()
     if supabase:
@@ -144,7 +144,7 @@ def db_delete(table: str, filters: Dict[str, Any]) -> Dict[str, Any]:
     return {"success": False, "error": "Database not connected"}
 
 
-def db_upsert(table: str, data: Dict[str, Any], on_conflict: str = "id") -> Dict[str, Any]:
+def db_upsert(table: str, data: dict[str, Any], on_conflict: str = "id") -> dict[str, Any]:
     """Upsert (insert or update) a record"""
     supabase = get_supabase()
     if supabase:
@@ -156,7 +156,7 @@ def db_upsert(table: str, data: Dict[str, Any], on_conflict: str = "id") -> Dict
     return {"success": False, "error": "Database not connected"}
 
 
-def db_get_by_id(table: str, id: str, id_column: str = "id") -> Optional[Dict[str, Any]]:
+def db_get_by_id(table: str, id: str, id_column: str = "id") -> Optional[dict[str, Any]]:
     """Get a single record by ID"""
     supabase = get_supabase()
     if supabase:

@@ -4,7 +4,7 @@ Stores: Page views, traceability scans, order analytics, IoT sensor data
 """
 import clickhouse_connect
 from datetime import datetime
-from typing import Optional, List, Dict, Any
+from typing import Optional, list, dict, Any
 from app.core.config import settings
 
 
@@ -40,7 +40,7 @@ class ClickHouseService:
             return None
 
     @classmethod
-    def execute(cls, query: str, parameters: Optional[Dict] = None):
+    def execute(cls, query: str, parameters: Optional[dict] = None):
         """Execute a query (INSERT, CREATE, etc.)"""
         client = cls.get_client()
         if client:
@@ -48,7 +48,7 @@ class ClickHouseService:
         return None
 
     @classmethod
-    def query(cls, query: str, parameters: Optional[Dict] = None) -> List[Dict[str, Any]]:
+    def query(cls, query: str, parameters: Optional[dict] = None) -> list[dict[str, Any]]:
         """Execute SELECT query and return results as list of dicts"""
         client = cls.get_client()
         if client:
@@ -58,7 +58,7 @@ class ClickHouseService:
         return []
 
     @classmethod
-    def insert(cls, table: str, data: List[Dict[str, Any]], column_names: List[str] = None):
+    def insert(cls, table: str, data: list[dict[str, Any]], column_names: list[str] = None):
         """Insert rows into a table"""
         client = cls.get_client()
         if client and data:
@@ -120,7 +120,7 @@ def track_order_event(
     }])
 
 
-def get_analytics_summary(days: int = 30) -> Dict[str, Any]:
+def get_analytics_summary(days: int = 30) -> dict[str, Any]:
     """Get summary analytics for dashboard"""
     results = ClickHouseService.query(f"""
         SELECT
@@ -141,7 +141,7 @@ def get_analytics_summary(days: int = 30) -> Dict[str, Any]:
         "traceability_scans": scans[0]["total_scans"] if scans else 0
     }
 
-def get_page_views_chart(days: int = 7) -> List[Dict[str, Any]]:
+def get_page_views_chart(days: int = 7) -> list[dict[str, Any]]:
     """Get daily page views for chart"""
     return ClickHouseService.query(f"""
         SELECT
@@ -154,7 +154,7 @@ def get_page_views_chart(days: int = 7) -> List[Dict[str, Any]]:
         ORDER BY date ASC
     """)
 
-def get_top_pages(limit: int = 10, days: int = 30) -> List[Dict[str, Any]]:
+def get_top_pages(limit: int = 10, days: int = 30) -> list[dict[str, Any]]:
     """Get top visited pages"""
     return ClickHouseService.query(f"""
         SELECT
@@ -167,7 +167,7 @@ def get_top_pages(limit: int = 10, days: int = 30) -> List[Dict[str, Any]]:
         LIMIT {limit}
     """)
 
-def get_scans_chart(days: int = 7) -> List[Dict[str, Any]]:
+def get_scans_chart(days: int = 7) -> list[dict[str, Any]]:
     """Get daily traceability scans"""
     return ClickHouseService.query(f"""
         SELECT
@@ -179,7 +179,7 @@ def get_scans_chart(days: int = 7) -> List[Dict[str, Any]]:
         ORDER BY date ASC
     """)
 
-def get_sales_analytics(days: int = 30) -> List[Dict[str, Any]]:
+def get_sales_analytics(days: int = 30) -> list[dict[str, Any]]:
     """Get sales performance"""
     return ClickHouseService.query(f"""
         SELECT

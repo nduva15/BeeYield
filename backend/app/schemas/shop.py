@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import list, Optional
+from typing import Optional
 from datetime import datetime
 
 # --- Products ---

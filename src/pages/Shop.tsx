@@ -62,14 +62,22 @@ const Shop = ({ initialProducts = [] }: ShopProps) => {
   });
 
   const handleAddToCart = (product: Product) => {
-    const selectedSize = selectedSizes[product.id] || product.variants[0].size;
-    const variantIndex = product.variants.findIndex((v) => v.size === selectedSize);
-    const variant = product.variants[variantIndex] || product.variants[0];
+    const selectedSize = selectedSizes[product.id] || (product.variants && product.variants.length > 0 ? product.variants[0].size : "");
+    const variant = product.variants && product.variants.length > 0
+      ? (product.variants.find((v) => v.size === selectedSize) || product.variants[0])
+      : null;
+
+    if (!variant) {
+      toast.error("This product is currently unavailable");
+      return;
+    }
+
+    const variantIndex = variant ? product.variants.indexOf(variant) : -1;
 
     // Structure: [0: Lifestyle, 1: 250g, 2: 500g, 3: 1kg]
     const image = (variantIndex !== -1 && product.images[variantIndex + 1])
       ? product.images[variantIndex + 1]
-      : product.images[0];
+      : product.images[0] || "/placeholder.svg";
 
     addToCart({
       productId: product.id,
@@ -79,7 +87,7 @@ const Shop = ({ initialProducts = [] }: ShopProps) => {
       size: selectedSize,
       price: variant.price_kes,
       quantity: 1,
-      category: product.category as any,
+      category: product.category as 'honey' | 'merch' | 'education' | 'hardware',
       badge: product.badge,
       image: image
     });
@@ -212,7 +220,7 @@ const Shop = ({ initialProducts = [] }: ShopProps) => {
                     .map((product) => (
                       <Card
                         key={product.id}
-                        className="group overflow-hidden border-none bg-card hover:bg-white/50 transition-all duration-500 shadow-premium hover:shadow-glow hover:shadow-primary/5 rounded-[2.5rem]"
+                        className="group relative overflow-hidden border-none bg-card hover:bg-white/50 transition-all duration-500 shadow-premium hover:shadow-glow hover:shadow-primary/5 rounded-[2.5rem]"
                       >
                         <BrandedProductImage
                           src={(() => {
@@ -233,25 +241,27 @@ const Shop = ({ initialProducts = [] }: ShopProps) => {
                           aria-label="Add to wishlist"
                           onClick={(e) => {
                             e.stopPropagation(); // Prevent card click if any
-                            const selectedSize = selectedSizes[product.id] || product.variants[0].size;
+                            const selectedSize = selectedSizes[product.id] || (product.variants && product.variants.length > 0 ? product.variants[0].size : "");
                             const variantIndex = product.variants.findIndex(v => v.size === selectedSize);
+                            const variant = variantIndex !== -1 ? product.variants[variantIndex] : (product.variants[0] || null);
+
                             // Structure: [0: Lifestyle, 1: 250g, 2: 500g, 3: 1kg]
                             const image = (variantIndex !== -1 && product.images[variantIndex + 1])
                               ? product.images[variantIndex + 1]
-                              : product.images[0];
+                              : product.images[0] || "/placeholder.svg";
 
                             toggleWishlist({
                               id: product.id,
                               name: product.name,
                               description: product.description,
-                              price: product.variants[variantIndex]?.price_kes || product.variants[0].price_kes,
+                              price: variant?.price_kes || 0,
                               image: image,
                               category: product.category,
                               badge: product.badge,
                               inStock: product.variants.some(v => v.stock_quantity > 0 && v.is_available)
                             });
                           }}
-                          className={`absolute top-6 right-6 z-30 p-2.5 rounded-full shadow-sm transition-all duration-300 hover:scale-110 active:scale-95 ${isInWishlist(product.id)
+                          className={`absolute top-6 left-6 z-30 p-2.5 rounded-full shadow-sm transition-all duration-300 hover:scale-110 active:scale-95 ${isInWishlist(product.id)
                             ? "bg-primary text-primary-foreground shadow-primary/25"
                             : "bg-white text-muted-foreground hover:bg-primary hover:text-primary-foreground shadow-black/5 border border-border/10"
                             }`}

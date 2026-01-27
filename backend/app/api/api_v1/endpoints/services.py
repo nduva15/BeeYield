@@ -3,7 +3,7 @@
 Services Endpoints - Pollination, Learning, ESG, Crops
 """
 from fastapi import APIRouter, HTTPException
-from typing import List, Optional
+from typing import list, Optional
 from app.schemas import services as schemas
 from app.db.supabase_db import db_select, db_get_by_id
 
@@ -12,7 +12,7 @@ router = APIRouter()
 
 # ============ POLLINATION SOLUTIONS ============
 
-@router.get("/pollination", response_model=List[schemas.PollinationService])
+@router.get("/pollination", response_model=list[schemas.PollinationService])
 def get_pollination_services():
     """
     Get all pollination services.
@@ -51,7 +51,7 @@ def get_pollination_services():
 
 # ============ CROPS ============
 
-@router.get("/crops", response_model=List[schemas.Crop])
+@router.get("/crops", response_model=list[schemas.Crop])
 def get_crops():
     """
     Get all crops pollinated by BeeYield.
@@ -81,7 +81,7 @@ def get_crops():
 
 # ============ LEARNING / BEE LEARN ============
 
-@router.get("/learning/modules", response_model=List[schemas.LearningModule])
+@router.get("/learning/modules", response_model=list[schemas.LearningModule])
 def get_learning_modules(category: Optional[str] = None):
     """
     Get all learning modules for Bee Learn.
@@ -161,7 +161,7 @@ def get_learning_modules(category: Optional[str] = None):
 
 # ============ ESG & IMPACT ============
 
-@router.get("/esg/metrics", response_model=List[schemas.ESGMetric])
+@router.get("/esg/metrics", response_model=list[schemas.ESGMetric])
 def get_esg_metrics():
     """
     Get ESG (Environmental, Social, Governance) metrics.
@@ -184,7 +184,7 @@ def get_esg_metrics():
     return metrics
 
 
-@router.get("/impact/stories", response_model=List[dict])
+@router.get("/impact/stories", response_model=list[dict])
 def get_impact_stories():
     """
     Get impact stories.
@@ -204,7 +204,7 @@ def get_impact_stories():
     return stories
 
 
-@router.get("/impact/sdgs", response_model=List[dict])
+@router.get("/impact/sdgs", response_model=list[dict])
 def get_sdgs():
     """
     Get UN Sustainable Development Goals commitment.
@@ -213,7 +213,7 @@ def get_sdgs():
     return sdgs if sdgs else []
 
 
-@router.get("/esg/pillars", response_model=List[dict])
+@router.get("/esg/pillars", response_model=list[dict])
 def get_esg_pillars():
     """
     Get ESG pillars and their initiatives.
@@ -235,7 +235,7 @@ def get_esg_pillars():
 
 # ============ GLOBAL HIVE NETWORK ============
 
-@router.get("/apiaries", response_model=List[dict])
+@router.get("/apiaries", response_model=list[dict])
 def get_apiaries():
     """
     Get all apiary locations in the network.

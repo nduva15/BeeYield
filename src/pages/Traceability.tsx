@@ -14,26 +14,16 @@ import HoneyTracePDF from "@/components/HoneyTracePDF";
 import { useNavigate, useLocation } from "react-router-dom";
 import TIMOTHY_PHOTO from '@/assets/timothy-nduva.png';
 import PLACEHOLDER_SVG from '@/assets/placeholder.svg';
-import { traceBatch } from "@/services/traceabilityService";
+import { traceBatch, TraceResponse, TraceJourneyStep } from "@/services/traceabilityService";
 
 const Traceability = () => {
   const [qrCode, setQrCode] = useState("");
   const [loading, setLoading] = useState(false);
-  const [traceData, setTraceData] = useState<any>(null);
+  const [traceData, setTraceData] = useState<TraceResponse | null>(null);
   const [showScanner, setShowScanner] = useState(false);
   const { toast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
-
-  // Handle direct trace from URL params
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const code = params.get("code");
-    if (code) {
-      setQrCode(code);
-      handleTrace(code);
-    }
-  }, [location.search, handleTrace]);
 
   const handleTrace = useCallback(async (code: string) => {
     if (!code.trim()) return;
@@ -54,17 +44,28 @@ const Traceability = () => {
         title: "Chain Verified!",
         description: `Full journey data retrieved for batch ${code}`,
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Trace error:", error);
+      const errorMessage = error instanceof Error ? error.message : "Please check the code and try again.";
       toast({
         variant: "destructive",
         title: "Code not found",
-        description: error.message || "Please check the code and try again.",
+        description: errorMessage,
       });
     } finally {
       setLoading(false);
     }
   }, [toast]);
+
+  // Handle direct trace from URL params
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const code = params.get("code");
+    if (code) {
+      setQrCode(code);
+      handleTrace(code);
+    }
+  }, [location.search, handleTrace]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -473,7 +474,7 @@ const Traceability = () => {
                     <div className="space-y-12 relative">
                       <div className="absolute left-[27px] top-4 bottom-4 w-1 bg-gradient-to-b from-amber-500 to-amber-100 dark:to-slate-800" />
 
-                      {traceData.timeline?.map((step: any, idx: number) => (
+                      {traceData.timeline?.map((step: TraceJourneyStep, idx: number) => (
                         <div key={idx} className="flex gap-10 group">
                           <div className="relative z-10">
                             <div className="h-14 w-14 rounded-2xl bg-white dark:bg-slate-950 border-4 border-amber-500 flex items-center justify-center text-amber-600 shadow-xl group-hover:scale-110 transition-transform">

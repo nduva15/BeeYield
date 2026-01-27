@@ -14,5 +14,24 @@
       "additional_info": "",
       "status": "pending"
     }
+  },
+  {
+    "timestamp": "2026-01-26T22:13:33.529270",
+    "type": "contact_submission",
+    "data": {
+      "inquiry_type": "diseases",
+      "first_name": "Timothy MATHUVA NDUVA",
+      "last_name": "Timothy MATHUVA NDUVA",
+      "email": "timothynduva349@gmail.com",
+      "phone": "+254742004187",
+      "city": "Nairobi",
+      "state": "kij",
+      "country": "Kenya",
+      "topic": "Varroa Mite",
+      "message": "",
+      "name": "Timothy MATHUVA NDUVA Timothy MATHUVA NDUVA",
+      "subject": "DISEASES: Varroa Mite",
+      "status": "new"
+    }
   }
 ]
