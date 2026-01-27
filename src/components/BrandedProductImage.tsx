@@ -58,7 +58,7 @@ export const BrandedProductImage: React.FC<BrandedProductImageProps> = ({
 
             {/* Badge Overlay */}
             {badge && (
-                <Badge className="absolute top-3 left-3 bg-green-700/90 backdrop-blur-md text-white border-none text-[10px] font-bold px-3 py-1 shadow-md">
+                <Badge className="absolute bottom-3 left-3 bg-green-700/90 backdrop-blur-md text-white border-none text-[10px] font-bold px-3 py-1 shadow-md z-20">
                     {badge}
                 </Badge>
             )}

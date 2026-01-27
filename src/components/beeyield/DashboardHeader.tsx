@@ -58,15 +58,16 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onLogout, onTabChange
 
     const getTitle = () => {
         switch (activeTab) {
-            case 'devices': return { title: 'Measurement Data', subtitle: 'BeeYield devices assigned to your hives.' };
-            case 'assistant': return { title: 'AI Assistant', subtitle: 'Intelligent beekeeping insights.' };
-            case 'places': return { title: 'My Places', subtitle: 'Manage your apiaries and locations.' };
-            case 'beeyield': return { title: 'BeeYield Hives', subtitle: 'Comprehensive hive management.' };
-            case 'billing': return { title: 'Billing', subtitle: 'Manage your subscription and usage.' };
-            case 'support': return { title: 'Support Center', subtitle: 'Get help and track requests.' };
+            case 'devices': return { title: t('nav_measurement_data'), subtitle: t('device_subtitle') };
+            case 'assistant': return { title: t('nav_ai_assistant'), subtitle: t('agro_intel_desc') || 'Intelligent beekeeping insights.' };
+            case 'places': return { title: t('nav_my_places'), subtitle: t('places_desc') || 'Manage your apiaries and locations.' };
+            case 'beeyield': return { title: t('nav_beeyield_hives'), subtitle: t('hives_desc') || 'Comprehensive hive management.' };
+            case 'billing': return { title: t('billing'), subtitle: t('billing_desc') || 'Manage your subscription and usage.' };
+            case 'support': return { title: t('nav_support'), subtitle: t('support_desc') || 'Get help and track requests.' };
+            case 'settings': return { title: t('settings'), subtitle: t('region_language') };
             default:
-                if (activeTab.startsWith('meters')) return { title: 'Meters', subtitle: 'Energy and consumption monitoring.' };
-                return { title: 'Dashboard', subtitle: 'Welcome back to your ecosystem.' };
+                if (activeTab.startsWith('meters')) return { title: t('nav_meters'), subtitle: t('meters_desc') || 'Energy and consumption monitoring.' };
+                return { title: t('dashboard_title'), subtitle: t('dashboard_subtitle') };
         }
     };
 
@@ -90,7 +91,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onLogout, onTabChange
                 <div className="relative group max-w-[420px] flex-1">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A3A3A3] group-focus-within:text-[#171717] transition-all" />
                     <input
-                        placeholder="Search Intelligence..."
+                        placeholder={t('search_placeholder')}
                         className="w-full bg-[#F5F5F5]/50 border border-[#E5E5E5]/80 pl-11 h-11 rounded-xl text-[13px] font-medium focus:outline-none focus:ring-1 focus:ring-[#E5E5E5] focus:bg-white transition-all placeholder:text-[#A3A3A3]"
                     />
                 </div>
@@ -106,7 +107,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onLogout, onTabChange
                                 <span className="text-[13px] font-semibold text-[#171717]">{selectedLang.name}</span>
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-56 rounded-xl p-1.5 bg-white border border-[#E5E5E5] shadow-[0_10px_25px_rgba(0,0,0,0.08)]">
+                        <DropdownMenuContent align="end" className="w-56 rounded-xl p-1.5 bg-white border border-[#E5E5E5] shadow-[0_10px_25_rgba(0,0,0,0.08)]">
                             {languages.map((lang) => (
                                 <DropdownMenuItem
                                     key={lang.code}

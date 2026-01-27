@@ -2,11 +2,11 @@
 Careers / Jobs Schemas
 """
 from pydantic import BaseModel, EmailStr
-from typing import Optional, List
+from typing import Optional, list
 from datetime import date
 
 
-class JobListingBase(BaseModel):
+class JoblistingBase(BaseModel):
     title: str
     slug: str
     department: Optional[str] = None
@@ -15,17 +15,17 @@ class JobListingBase(BaseModel):
     description: Optional[str] = None
 
 
-class JobListingCreate(JobListingBase):
-    requirements: List[str] = []
-    benefits: List[str] = []
+class JoblistingCreate(JoblistingBase):
+    requirements: list[str] = []
+    benefits: list[str] = []
     salary_range: Optional[str] = None
     closing_date: Optional[date] = None
 
 
-class JobListing(JobListingBase):
+class Joblisting(JoblistingBase):
     id: str
-    requirements: List[str] = []
-    benefits: List[str] = []
+    requirements: list[str] = []
+    benefits: list[str] = []
     salary_range: Optional[str] = None
     is_active: bool = True
     posted_date: date

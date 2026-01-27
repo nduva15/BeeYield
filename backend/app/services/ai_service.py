@@ -1,4 +1,4 @@
-from typing import List, Dict, Any, Optional
+from typing import list, dict, Any, Optional
 import json
 import httpx
 import os
@@ -44,7 +44,7 @@ class AIService:
     @staticmethod
     async def chat(
         message: str, 
-        history: List[Dict[str, str]] = None, 
+        history: list[dict[str, str]] = None, 
         language: str = 'EN',
         current_time: str = None,
         current_date: str = None

@@ -2,7 +2,7 @@
 BeeYield Honey Blockchain - Complete Traceability Chain
 A custom blockchain implementation for tracking honey from hive to jar
 """
-from typing import List, Dict, Any, Optional
+from typing import list, dict, Any, Optional
 from datetime import datetime, timedelta
 import json
 import threading
@@ -30,8 +30,8 @@ class HoneyBlockchain:
             difficulty: Number of leading zeros required in block hash
             auto_mine: Whether to automatically mine blocks when added
         """
-        self.chain: List[HoneyBlock] = []
-        self.pending_records: List[Dict[str, Any]] = []
+        self.chain: list[HoneyBlock] = []
+        self.pending_records: list[dict[str, Any]] = []
         self.difficulty = difficulty
         self.auto_mine = auto_mine
         self.crypto = BeeYieldCrypto()
@@ -84,7 +84,7 @@ class HoneyBlockchain:
     def add_block(
         self,
         block_type: BlockType,
-        data: Dict[str, Any],
+        data: dict[str, Any],
         creator_id: str = "SYSTEM"
     ) -> HoneyBlock:
         """
@@ -186,7 +186,7 @@ class HoneyBlockchain:
     
     # ==================== FARMER OPERATIONS ====================
     
-    def register_farmer(self, farmer_data: Dict[str, Any]) -> HoneyBlock:
+    def register_farmer(self, farmer_data: dict[str, Any]) -> HoneyBlock:
         """
         Register a new farmer/beekeeper on the blockchain.
         
@@ -199,7 +199,7 @@ class HoneyBlockchain:
         - village: Village/town
         - coordinates: GPS coordinates
         - registration_date: Date of registration
-        - certifications: List of certifications
+        - certifications: list of certifications
         """
         enriched_data = {
             **farmer_data,
@@ -216,7 +216,7 @@ class HoneyBlockchain:
     
     # ==================== APIARY OPERATIONS ====================
     
-    def register_apiary(self, apiary_data: Dict[str, Any]) -> HoneyBlock:
+    def register_apiary(self, apiary_data: dict[str, Any]) -> HoneyBlock:
         """
         Register a new apiary (bee yard) on the blockchain.
         
@@ -231,7 +231,7 @@ class HoneyBlockchain:
         - coordinates: {"latitude": x, "longitude": y}
         - altitude_meters: Altitude above sea level
         - environment_type: Forest, Savannah, Farmland, etc.
-        - flora_types: List of predominant flowers/plants
+        - flora_types: list of predominant flowers/plants
         - water_source: Nearby water source
         - established_date: Date established
         """
@@ -251,7 +251,7 @@ class HoneyBlockchain:
     
     # ==================== HIVE OPERATIONS ====================
     
-    def register_hive(self, hive_data: Dict[str, Any]) -> HoneyBlock:
+    def register_hive(self, hive_data: dict[str, Any]) -> HoneyBlock:
         """
         Register a new hive on the blockchain.
         
@@ -286,7 +286,7 @@ class HoneyBlockchain:
     
     # ==================== SENSOR DATA OPERATIONS ====================
     
-    def record_sensor_data(self, sensor_data: Dict[str, Any]) -> HoneyBlock:
+    def record_sensor_data(self, sensor_data: dict[str, Any]) -> HoneyBlock:
         """
         Record IoT sensor data from a hive.
         
@@ -314,7 +314,7 @@ class HoneyBlockchain:
             creator_id=sensor_data.get("hive_id", "SENSOR_SYSTEM")
         )
     
-    def record_bulk_sensor_data(self, readings: List[Dict[str, Any]]) -> HoneyBlock:
+    def record_bulk_sensor_data(self, readings: list[dict[str, Any]]) -> HoneyBlock:
         """
         Record multiple sensor readings in a single block.
         More efficient for batch processing.
@@ -330,7 +330,7 @@ class HoneyBlockchain:
             creator_id="SENSOR_SYSTEM"
         )
     
-    def _detect_anomalies(self, sensor_data: dict) -> List[str]:
+    def _detect_anomalies(self, sensor_data: dict) -> list[str]:
         """Detect anomalies in sensor readings"""
         anomalies = []
         
@@ -359,7 +359,7 @@ class HoneyBlockchain:
 
     # ==================== HARVEST OPERATIONS ====================
     
-    def record_harvest(self, harvest_data: Dict[str, Any]) -> HoneyBlock:
+    def record_harvest(self, harvest_data: dict[str, Any]) -> HoneyBlock:
         """
         Record a honey harvest on the blockchain.
         
@@ -375,7 +375,7 @@ class HoneyBlockchain:
         - extraction_method: Method used (Centrifuge, Crush & Strain, etc.)
         - honey_color: Color description
         - initial_moisture_content: Moisture percentage
-        - flower_sources: List of flower sources (based on season/location)
+        - flower_sources: list of flower sources (based on season/location)
         - bee_flower: Primary nectar source flower
         - weather_at_harvest: Weather conditions
         - notes: Additional observations
@@ -421,13 +421,13 @@ class HoneyBlockchain:
     
     # ==================== PROCESSING OPERATIONS ====================
     
-    def record_processing(self, processing_data: Dict[str, Any]) -> HoneyBlock:
+    def record_processing(self, processing_data: dict[str, Any]) -> HoneyBlock:
         """
         Record honey processing/packaging on the blockchain.
         
         Expected data:
         - processing_id: Unique identifier
-        - harvest_ids: List of harvest IDs being processed
+        - harvest_ids: list of harvest IDs being processed
         - facility_name: Processing facility
         - facility_location: Location of facility
         - processing_date: Date of processing
@@ -435,7 +435,7 @@ class HoneyBlockchain:
         - final_moisture_content: Final moisture percentage
         - quality_grade: A, B, C grade
         - batch_quantity_kg: Total batch quantity
-        - jar_sizes: List of jar sizes produced
+        - jar_sizes: list of jar sizes produced
         - jar_count: Number of jars produced
         - certifications: Any certifications (Organic, etc.)
         """
@@ -453,7 +453,7 @@ class HoneyBlockchain:
     
     # ==================== BATCH OPERATIONS ====================
     
-    def create_batch(self, batch_data: Dict[str, Any]) -> HoneyBlock:
+    def create_batch(self, batch_data: dict[str, Any]) -> HoneyBlock:
         """
         Create a traceable batch of honey jars.
         
@@ -496,7 +496,7 @@ class HoneyBlockchain:
     
     # ==================== QUALITY TESTING ====================
     
-    def record_quality_test(self, test_data: Dict[str, Any]) -> HoneyBlock:
+    def record_quality_test(self, test_data: dict[str, Any]) -> HoneyBlock:
         """
         Record quality test results.
         
@@ -528,7 +528,7 @@ class HoneyBlockchain:
     
     # ==================== CHAIN VERIFICATION ====================
     
-    def verify_chain(self) -> Dict[str, Any]:
+    def verify_chain(self) -> dict[str, Any]:
         """
         Verify the entire blockchain integrity.
         
@@ -580,17 +580,17 @@ class HoneyBlockchain:
     
     # ==================== SEARCH & QUERY ====================
     
-    def get_chain_history(self, limit: int = 50) -> List[Dict[str, Any]]:
+    def get_chain_history(self, limit: int = 50) -> list[dict[str, Any]]:
         """Get the chain history as list of dictionaries"""
         return [block.to_dict() for block in self.chain[-limit:]]
     
-    def get_block_by_index(self, index: int) -> Optional[Dict[str, Any]]:
+    def get_block_by_index(self, index: int) -> Optional[dict[str, Any]]:
         """Get a specific block by its index"""
         if 0 <= index < len(self.chain):
             return self.chain[index].to_dict()
         return None
     
-    def search_by_record_id(self, record_id: str) -> Optional[Dict[str, Any]]:
+    def search_by_record_id(self, record_id: str) -> Optional[dict[str, Any]]:
         """
         Search for a block by its record ID or entity-specific IDs.
         Searches for: record_id, farmer_id, apiary_id, hive_id, harvest_id, 
@@ -610,28 +610,28 @@ class HoneyBlockchain:
                     return block.to_dict()
         return None
     
-    def search_by_type(self, block_type: BlockType) -> List[Dict[str, Any]]:
+    def search_by_type(self, block_type: BlockType) -> list[dict[str, Any]]:
         """Get all blocks of a specific type"""
         return [
             block.to_dict() for block in self.chain 
             if block.block_type == block_type
         ]
     
-    def get_farmer_history(self, farmer_id: str) -> List[Dict[str, Any]]:
+    def get_farmer_history(self, farmer_id: str) -> list[dict[str, Any]]:
         """Get all blocks related to a specific farmer"""
         return [
             block.to_dict() for block in self.chain
             if block.data.get("farmer_id") == farmer_id
         ]
     
-    def get_hive_history(self, hive_id: str) -> List[Dict[str, Any]]:
+    def get_hive_history(self, hive_id: str) -> list[dict[str, Any]]:
         """Get all blocks related to a specific hive"""
         return [
             block.to_dict() for block in self.chain
             if block.data.get("hive_id") == hive_id
         ]
     
-    def get_latest_sensor_data(self, hive_id: str) -> Optional[Dict[str, Any]]:
+    def get_latest_sensor_data(self, hive_id: str) -> Optional[dict[str, Any]]:
         """Get the most recent sensor reading for a specific hive."""
         # Search backwards through the chain
         for block in reversed(self.chain):
@@ -647,7 +647,7 @@ class HoneyBlockchain:
                             return reading
         return None
     
-    def trace_batch(self, batch_code: str) -> Dict[str, Any]:
+    def trace_batch(self, batch_code: str) -> dict[str, Any]:
         """
         Get complete traceability info for a batch code.
         Returns the full journey from hive to jar with all linked entities.
@@ -708,7 +708,7 @@ class HoneyBlockchain:
         
         return trace
     
-    def get_chain_stats(self) -> Dict[str, Any]:
+    def get_chain_stats(self) -> dict[str, Any]:
         """Get statistics about the blockchain"""
         block_types = {}
         for block in self.chain:

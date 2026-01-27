@@ -3,7 +3,7 @@ Merkle Tree Implementation for BeeYield Blockchain
 Provides data integrity verification for honey traceability records
 """
 import hashlib
-from typing import List, Optional
+from typing import list, Optional
 
 
 class MerkleNode:
@@ -35,7 +35,7 @@ class MerkleTree:
     Used to efficiently verify that traceability data hasn't been tampered with.
     """
     
-    def __init__(self, data_items: List[str]):
+    def __init__(self, data_items: list[str]):
         """
         Build a Merkle Tree from a list of data items.
         Each item is typically a JSON string of a record (harvest, hive reading, etc.)
@@ -43,7 +43,7 @@ class MerkleTree:
         self.data_items = data_items
         self.root = self._build_tree(data_items)
     
-    def _build_tree(self, items: List[str]) -> Optional[MerkleNode]:
+    def _build_tree(self, items: list[str]) -> Optional[MerkleNode]:
         """
         Recursively build the Merkle Tree
         """
@@ -71,7 +71,7 @@ class MerkleTree:
         """Get the root hash of the Merkle Tree"""
         return self.root.hash if self.root else ""
     
-    def get_proof(self, index: int) -> List[tuple]:
+    def get_proof(self, index: int) -> list[tuple]:
         """
         Get the Merkle proof for a specific data item.
         Returns list of (hash, direction) tuples for verification.
@@ -106,7 +106,7 @@ class MerkleTree:
         return proof
     
     @staticmethod
-    def verify_proof(data: str, proof: List[tuple], root_hash: str) -> bool:
+    def verify_proof(data: str, proof: list[tuple], root_hash: str) -> bool:
         """
         Verify a Merkle proof for a piece of data.
         """

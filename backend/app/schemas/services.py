@@ -2,7 +2,7 @@
 Services Schemas - Pollination, Learning, ESG
 """
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, list
 from datetime import datetime
 
 
@@ -15,8 +15,8 @@ class PollinationServiceBase(BaseModel):
     short_description: Optional[str] = None
     image_url: Optional[str] = None
     icon: Optional[str] = None
-    features: List[str] = []
-    benefits: List[str] = []
+    features: list[str] = []
+    benefits: list[str] = []
     pricing_info: Optional[str] = None
 
 
@@ -98,7 +98,7 @@ class LearningModule(LearningModuleBase):
     id: str
     is_active: bool
     display_order: int
-    lessons: List[LearningLesson] = []
+    lessons: list[LearningLesson] = []
     created_at: datetime
 
     class Config:
@@ -192,19 +192,19 @@ class Apiary(ApiaryBase):
 # ============ PAGE RESPONSES ============
 
 class PollinationSolutionsResponse(BaseModel):
-    services: List[PollinationService] = []
-    crops: List[Crop] = []
+    services: list[PollinationService] = []
+    crops: list[Crop] = []
     stats: dict = {}
 
 
 class ESGResponse(BaseModel):
-    metrics: List[ESGMetric] = []
+    metrics: list[ESGMetric] = []
     by_category: dict = {}
-    impact_stories: List[ImpactStory] = []
+    impact_stories: list[ImpactStory] = []
 
 
 class GlobalHiveNetworkResponse(BaseModel):
-    apiaries: List[Apiary] = []
+    apiaries: list[Apiary] = []
     total_hives: int = 0
     total_beekeepers: int = 0
-    countries: List[str] = []
+    countries: list[str] = []

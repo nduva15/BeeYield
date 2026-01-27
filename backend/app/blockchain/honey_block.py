@@ -5,7 +5,7 @@ Specialized block implementation for honey traceability with rich metadata
 from datetime import datetime
 import json
 import hashlib
-from typing import Any, Dict, Optional, List
+from typing import Any, dict, Optional, list
 from enum import Enum
 from .merkle_tree import MerkleTree
 
@@ -41,7 +41,7 @@ class HoneyBlock:
         self,
         index: int,
         block_type: BlockType,
-        data: Dict[str, Any],
+        data: dict[str, Any],
         previous_hash: str,
         creator_signature: str = "",
         timestamp: Optional[float] = None,
@@ -108,7 +108,7 @@ class HoneyBlock:
         
         print(f"Block mined! Nonce: {self.nonce}, Hash: {self.hash}")
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """
         Convert block to dictionary for storage/API responses.
         """
@@ -132,7 +132,7 @@ class HoneyBlock:
         """
         return self.hash == self.calculate_hash()
     
-    def get_block_summary(self) -> Dict[str, Any]:
+    def get_block_summary(self) -> dict[str, Any]:
         """
         Get a human-readable summary of the block.
         """
@@ -169,7 +169,7 @@ def create_farmer_block(
 def create_hive_sensor_block(
     index: int,
     previous_hash: str,
-    sensor_readings: List[dict],
+    sensor_readings: list[dict],
     signature: str
 ) -> HoneyBlock:
     """Create a block for hive sensor data"""

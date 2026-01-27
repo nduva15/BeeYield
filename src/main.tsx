@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import ScrollToTop from './components/ScrollToTop'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
@@ -68,6 +69,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                                     <Toaster />
                                     <Sonner />
                                     <BrowserRouter>
+                                        <ScrollToTop />
                                         <Layout>
                                             <Routes>
                                                 <Route path="/" element={<PollinationServices />} />

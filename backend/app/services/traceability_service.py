@@ -1,6 +1,6 @@
 from datetime import datetime
 import uuid
-from typing import Dict, Any, List, Optional
+from typing import dict, Any, list, Optional
 
 from app.blockchain.honey_chain import honey_blockchain, BlockType
 from app.db.supabase_db import db_select, db_insert, db_get_by_id
@@ -8,7 +8,7 @@ from app.schemas import traceability as schemas
 
 # --- Write Operations (Blockchain + DB) ---
 
-def register_farmer(farmer_in: schemas.FarmerCreate) -> Dict[str, Any]:
+def register_farmer(farmer_in: schemas.FarmerCreate) -> dict[str, Any]:
     """Register a farmer in DB and Blockchain"""
     data = farmer_in.dict()
     data['farmer_id'] = f"F-{str(uuid.uuid4())[:8].upper()}" if not data.get('farmer_id') else data.get('farmer_id')
@@ -25,7 +25,7 @@ def register_farmer(farmer_in: schemas.FarmerCreate) -> Dict[str, Any]:
     
     return data
 
-def register_apiary(apiary_in: schemas.ApiaryCreate) -> Dict[str, Any]:
+def register_apiary(apiary_in: schemas.ApiaryCreate) -> dict[str, Any]:
     """Register an apiary"""
     data = apiary_in.dict()
     data['apiary_id'] = str(uuid.uuid4())
@@ -36,7 +36,7 @@ def register_apiary(apiary_in: schemas.ApiaryCreate) -> Dict[str, Any]:
     db_insert("apiaries", data)
     return data
 
-def register_hive(hive_in: schemas.HiveCreate) -> Dict[str, Any]:
+def register_hive(hive_in: schemas.HiveCreate) -> dict[str, Any]:
     """Register a hive"""
     data = hive_in.dict()
     data['hive_id'] = str(uuid.uuid4())
@@ -48,7 +48,7 @@ def register_hive(hive_in: schemas.HiveCreate) -> Dict[str, Any]:
     db_insert("hives", data)
     return data
 
-def record_sensor_data(sensor_in: schemas.HiveSensorData) -> Dict[str, Any]:
+def record_sensor_data(sensor_in: schemas.HiveSensorData) -> dict[str, Any]:
     """Record IoT sensor readings"""
     data = sensor_in.dict()
     # Ensure timestamp is string for serialization
@@ -63,7 +63,7 @@ def record_sensor_data(sensor_in: schemas.HiveSensorData) -> Dict[str, Any]:
         "anomalies": block.data.get("anomalies_detected", [])
     }
 
-def record_harvest(harvest_in: schemas.HarvestCreate) -> Dict[str, Any]:
+def record_harvest(harvest_in: schemas.HarvestCreate) -> dict[str, Any]:
     """Record a harvest"""
     data = harvest_in.dict()
     data['harvest_id'] = str(uuid.uuid4())
@@ -77,7 +77,7 @@ def record_harvest(harvest_in: schemas.HarvestCreate) -> Dict[str, Any]:
     db_insert("harvests", data)
     return data
 
-def create_batch(batch_data: Dict[str, Any]) -> Dict[str, Any]:
+def create_batch(batch_data: dict[str, Any]) -> dict[str, Any]:
     """Create a final product batch"""
     # Ensure ID
     if not batch_data.get('id'):

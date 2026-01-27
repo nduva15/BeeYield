@@ -3,7 +3,7 @@ Jobs Endpoints - Alias for Careers
 Maps /api/v1/jobs to the careers endpoints for frontend compatibility
 """
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form, BackgroundTasks
-from typing import List
+from typing import list
 from datetime import date
 from app.schemas import careers as schemas
 from app.db.supabase_db import db_select, db_insert, get_supabase
@@ -12,7 +12,7 @@ from app.services import email
 router = APIRouter()
 
 
-@router.get("/", response_model=List[schemas.JobListing])
+@router.get("/", response_model=list[schemas.Joblisting])
 def get_jobs():
     """
     Get all active job listings.

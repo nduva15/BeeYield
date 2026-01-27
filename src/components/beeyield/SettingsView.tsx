@@ -179,7 +179,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
             className="space-y-8 pb-24 max-w-[1600px] mx-auto"
         >
 
-            <motion.h1 variants={itemVariants} className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight px-2">Settings</motion.h1>
+            <motion.h1 variants={itemVariants} className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight px-2">{t('settings')}</motion.h1>
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                 {/* Left Column */}
@@ -188,7 +188,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                     <motion.div variants={itemVariants}>
                         <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-xl shadow-sm overflow-hidden hover:shadow-md transition-all duration-500">
                             <CardHeader className="p-10 pb-2">
-                                <CardTitle className="text-2xl font-black tracking-tight">General</CardTitle>
+                                <CardTitle className="text-2xl font-black tracking-tight">{t('general')}</CardTitle>
                             </CardHeader>
                             <CardContent className="p-10 space-y-6">
                                 {/* Profile Photo Upload */}
@@ -219,43 +219,43 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                             <Camera className="w-4 h-4" />
                                         </motion.div>
                                     </div>
-                                    <p className="text-xs font-bold text-gray-400 mt-6 uppercase tracking-widest bg-gray-50 dark:bg-white/5 py-1.5 px-4 rounded-full">Tap photo to update</p>
+                                    <p className="text-xs font-bold text-gray-400 mt-6 uppercase tracking-widest bg-gray-50 dark:bg-white/5 py-1.5 px-4 rounded-full">{t('tap_to_update')}</p>
                                 </div>
 
                                 <div className="relative group">
-                                    <Label htmlFor="username" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10 pointer-events-none">Username</Label>
+                                    <Label htmlFor="username" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10 pointer-events-none">{t('username')}</Label>
                                     <Input id="username" defaultValue={email.split('@')[0]} className="pt-8 pb-3 px-4 rounded-2xl bg-gray-50/50 dark:bg-[#1e1e1e] border-gray-100 dark:border-gray-800 h-[4.5rem] shadow-none font-bold text-gray-400 cursor-not-allowed group-hover:border-amber-200/50 transition-colors focus-visible:ring-0 focus-visible:border-amber-400" readOnly />
                                 </div>
 
                                 <div className="relative group">
-                                    <Label htmlFor="email" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10 pointer-events-none">Email</Label>
+                                    <Label htmlFor="email" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10 pointer-events-none">{t('email')}</Label>
                                     <Input id="email" defaultValue={email} className="pt-8 pb-3 px-4 rounded-2xl bg-gray-50/50 dark:bg-[#1e1e1e] border-gray-100 dark:border-gray-800 h-[4.5rem] shadow-none font-bold text-gray-400 cursor-not-allowed group-hover:border-amber-200/50 transition-colors focus-visible:ring-0 focus-visible:border-amber-400" readOnly />
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="relative group">
-                                        <Label htmlFor="firstname" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10 pointer-events-none">First name</Label>
+                                        <Label htmlFor="firstname" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10 pointer-events-none">{t('first_name')}</Label>
                                         <Input id="firstname" defaultValue={firstName} className="pt-8 pb-3 px-4 rounded-2xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-[4.5rem] shadow-none font-bold group-hover:border-amber-500/30 focus:border-amber-500 transition-all outline-none focus-visible:ring-0 focus-visible:bg-white dark:focus-visible:bg-black" />
                                     </div>
                                     <div className="relative group">
-                                        <Label htmlFor="surname" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10 pointer-events-none">Surname</Label>
+                                        <Label htmlFor="surname" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10 pointer-events-none">{t('surname')}</Label>
                                         <Input id="surname" defaultValue={lastName} className="pt-8 pb-3 px-4 rounded-2xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-[4.5rem] shadow-none font-bold group-hover:border-amber-500/30 focus:border-amber-500 transition-all outline-none focus-visible:ring-0 focus-visible:bg-white dark:focus-visible:bg-black" />
                                     </div>
                                 </div>
 
                                 <div className="relative group">
-                                    <Label htmlFor="phone" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10 pointer-events-none">Telephone number</Label>
+                                    <Label htmlFor="phone" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10 pointer-events-none">{t('phone')}</Label>
                                     <Input id="phone" defaultValue="0742014187" className="pt-8 pb-3 px-4 rounded-2xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-[4.5rem] shadow-none font-bold group-hover:border-amber-500/30 focus:border-amber-500 transition-all outline-none focus-visible:ring-0 focus-visible:bg-white dark:focus-visible:bg-black" />
                                 </div>
 
                                 <div className="relative group">
-                                    <Label htmlFor="language" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-40 pointer-events-none">Language</Label>
+                                    <Label htmlFor="language" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-40 pointer-events-none">{t('language')}</Label>
                                     <Select value={language} onValueChange={(val) => setLanguage(val as LanguageCode)}>
                                         <SelectTrigger
                                             className="w-full pt-8 pb-3 px-4 rounded-2xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-[4.5rem] shadow-none font-bold hover:border-amber-500/30 focus:border-amber-500 transition-all outline-none focus:ring-0 flex items-center justify-between group"
                                         >
                                             <div className="flex items-center w-full pt-1">
-                                                <SelectValue placeholder="Select Language" />
+                                                <SelectValue placeholder={t('language')} />
                                             </div>
                                         </SelectTrigger>
                                         <SelectContent className="rounded-2xl border-gray-100 dark:border-gray-800 bg-white/95 dark:bg-[#09090b]/95 backdrop-blur-xl shadow-xl overflow-hidden min-w-[300px]">
@@ -286,7 +286,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                         whileTap={{ scale: 0.98 }}
                                         className="bg-[#B48428]/10 text-[#B48428] border-2 border-[#B48428]/20 hover:bg-[#B48428] hover:text-white rounded-2xl px-12 py-3 font-bold text-sm transition-all shadow-sm hover:shadow-lg hover:shadow-amber-500/20"
                                     >
-                                        Save Changes
+                                        {t('save_changes')}
                                     </motion.button>
                                 </div>
                             </CardContent>

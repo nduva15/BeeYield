@@ -1,6 +1,7 @@
 import { Document, Page, Text, View, StyleSheet, Image, Font } from '@react-pdf/renderer';
-import BEEYIELD_LOGO from '@/assets/logo.png';
+import BEEYIELD_LOGO from '@/assets/Logo.png';
 import TIMOTHY_PHOTO from '@/assets/timothy-nduva.png';
+import { TraceResponse, TraceJourneyStep } from '@/services/traceabilityService';
 
 // Font registration disabled for safe mode compatibility
 
@@ -292,7 +293,7 @@ const styles = StyleSheet.create({
 });
 
 interface HoneyTracePDFProps {
-    traceData: any;
+    traceData: TraceResponse;
 }
 
 const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
@@ -356,7 +357,7 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
                     <View style={styles.row}>
                         <Text style={styles.label}>Harvest Date:</Text>
                         <Text style={styles.value}>
-                            {traceData.timeline?.find((t: any) => t.title === 'Harvested')?.date || 'Unknown'}
+                            {traceData.timeline?.find((t: TraceJourneyStep) => t.title === 'Harvested')?.date || 'Unknown'}
                         </Text>
                     </View>
 
@@ -454,7 +455,7 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
                     <View style={styles.timelineSection}>
                         <Text style={styles.sectionTitle}>The Honey Journey</Text>
 
-                        {traceData.timeline.map((step: any, idx: number) => (
+                        {traceData.timeline.map((step: TraceJourneyStep, idx: number) => (
                             <View key={idx} style={styles.timelineItem}>
                                 <View style={styles.timelineContent}>
                                     <Text style={styles.timelineTitle}>{step.title}</Text>

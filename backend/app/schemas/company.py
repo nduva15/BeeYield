@@ -2,7 +2,7 @@
 Company Schemas - About, Story, Team, Stats, Partners, FAQs
 """
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, list
 from datetime import datetime
 
 
@@ -141,7 +141,7 @@ class CompanyInfo(BaseModel):
     headquarters: str = "Nairobi, Kenya"
     contact_email: str = "hello@beeyield.com"
     contact_phone: str = "+254 700 000 000"
-    values: List[dict] = []
+    values: list[dict] = []
     social_links: dict = {
         "twitter": "https://twitter.com/beeyield",
         "linkedin": "https://linkedin.com/company/beeyield",
@@ -155,7 +155,7 @@ class CompanyInfo(BaseModel):
 class CompanyStory(BaseModel):
     title: str = "Our Story"
     intro: str
-    milestones: List[Milestone] = []
+    milestones: list[Milestone] = []
     founders_message: Optional[str] = None
 
 
@@ -164,5 +164,5 @@ class CompanyStory(BaseModel):
 class AboutPageResponse(BaseModel):
     company_info: CompanyInfo
     story: CompanyStory
-    stats: List[CompanyStat] = []
-    leadership_team: List[TeamMember] = []
+    stats: list[CompanyStat] = []
+    leadership_team: list[TeamMember] = []

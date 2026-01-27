@@ -3,7 +3,7 @@
 Company Endpoints - About, Story, Team, Stats
 """
 from fastapi import APIRouter, HTTPException
-from typing import List, Optional
+from typing import list, Optional
 from app.schemas import company as schemas
 from app.db.supabase_db import db_select, db_insert, db_get_by_id
 
@@ -49,7 +49,7 @@ def company_info():
 
 # ============ TEAM ============
 
-@router.get("/team", response_model=List[schemas.TeamMember])
+@router.get("/team", response_model=list[schemas.TeamMember])
 def team_members():
     """
     Returns all active team members.
@@ -140,7 +140,7 @@ def get_company_story():
 
 # ============ STATS ============
 
-@router.get("/stats", response_model=List[schemas.CompanyStat])
+@router.get("/stats", response_model=list[schemas.CompanyStat])
 def get_company_stats(category: Optional[str] = None):
     """
     Get company statistics/impact numbers.
@@ -185,7 +185,7 @@ def get_about_page():
 
 # ============ PARTNERS ============
 
-@router.get("/partners", response_model=List[schemas.Partner])
+@router.get("/partners", response_model=list[schemas.Partner])
 def get_partners():
     """
     Get all active partners, certifications, and investors.
@@ -212,7 +212,7 @@ def get_partners():
 
 # ============ FAQs ============
 
-@router.get("/faqs", response_model=List[schemas.FAQ])
+@router.get("/faqs", response_model=list[schemas.FAQ])
 def get_faqs(category: Optional[str] = None):
     """
     Get Frequently Asked Questions.

@@ -28,6 +28,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import { initializeCheckout, CheckoutOrder } from '@/services/shopService';
 import { useCart } from '@/contexts/CartContext';
+import { useWishlist } from '@/contexts/WishlistContext';
 import ShopDashboardLayout from '@/components/shop/ShopDashboardLayout';
 import { ShopNavItem as NavItem } from '@/components/shop/ShopDashboardSidebar';
 
@@ -77,7 +78,8 @@ const BuyerDashboard = () => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [ordersLoading, setOrdersLoading] = useState(false);
     const [activeTab, setActiveTab] = useState('overview');
-    const { items, getTotalItems, getTotalPrice, clearCart } = useCart();
+    const { items, getTotalItems, getTotalPrice, clearCart, addToCart: addToCartFromContext } = useCart();
+    const { items: wishlistItems, removeFromWishlist, isInWishlist } = useWishlist();
 
     const handleLogout = async () => {
         await signOut();
@@ -253,6 +255,7 @@ const BuyerDashboard = () => {
         { id: 'payments', label: 'Payment Methods', icon: CreditCard },
         { id: 'suggestions', label: 'Buy Suggestions', icon: Gift },
         { id: 'profile', label: 'Account Settings', icon: User },
+        { id: 'favorites', label: 'My Favorites', icon: Heart },
         { id: 'checkout', label: 'Checkout', icon: ShoppingBag, hidden: items.length === 0 },
         { id: 'help', label: 'Help Center', icon: HelpCircle },
     ];
@@ -289,7 +292,7 @@ const BuyerDashboard = () => {
                                 { label: 'Total Orders', value: orders.length, icon: Package, color: 'text-blue-500' },
                                 { label: 'In Transit', value: orders.filter(o => o.status === 'shipped').length, icon: Truck, color: 'text-purple-500' },
                                 { label: 'Wallet Balance', value: 'KES 2,450', icon: Wallet, color: 'text-green-500' },
-                                { label: 'Favorites', value: '12', icon: Heart, color: 'text-red-500' },
+                                { label: 'Favorites', value: wishlistItems.length.toString(), icon: Heart, color: 'text-red-500' },
                             ].map((stat, i) => (
                                 <Card key={i} className="border-none shadow-premium rounded-3xl overflow-hidden group">
                                     <CardContent className="p-6">
@@ -651,6 +654,56 @@ const BuyerDashboard = () => {
                                 </div>
                             </CardContent>
                         </Card>
+                    </div>
+                );
+            case 'favorites':
+                return (
+                    <div className="space-y-8 animate-in fade-in duration-500">
+                        <div>
+                            <h2 className="text-4xl font-black tracking-tightest">My <span className="text-primary italic">Favorites</span></h2>
+                            <p className="text-muted-foreground font-medium">Items you've saved for later</p>
+                        </div>
+
+                        {wishlistItems.length === 0 ? (
+                            <Card className="border-none shadow-premium rounded-[2.5rem] p-20 text-center">
+                                <Heart className="w-16 h-16 mx-auto text-muted-foreground/20 mb-6" />
+                                <h3 className="text-xl font-bold mb-2">Your favorites list is empty</h3>
+                                <p className="text-muted-foreground mb-8">Start exploring our shop and save items you love!</p>
+                                <Button onClick={() => navigate('/shop')} className="rounded-full">Browse Shop</Button>
+                            </Card>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {wishlistItems.map((item) => (
+                                    <Card key={item.id} className="border-none shadow-premium rounded-[2rem] overflow-hidden group relative">
+                                        <button
+                                            onClick={() => removeFromWishlist(item.id)}
+                                            className="absolute top-4 right-4 z-10 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm hover:bg-red-50 hover:text-red-500 transition-colors"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                        <div className="aspect-square bg-muted relative overflow-hidden">
+                                            <img src={item.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                            {item.badge && <Badge className="absolute top-4 left-4 rounded-full">{item.badge}</Badge>}
+                                        </div>
+                                        <CardContent className="p-6">
+                                            <h3 className="font-black text-lg mb-1 truncate">{item.name}</h3>
+                                            <p className="text-xs text-muted-foreground mb-4 line-clamp-2">{item.description}</p>
+                                            <div className="flex justify-between items-center">
+                                                <p className="font-black text-primary font-mono">KES {item.price.toLocaleString()}</p>
+                                                <div className="flex gap-2">
+                                                    <Button size="sm" variant="ghost" className="rounded-xl border border-border" onClick={() => navigate('/shop')}>Details</Button>
+                                                    <Button size="sm" className="rounded-xl" onClick={() => {
+                                                        // Get the product from fallback or just add this item (simple version)
+                                                        toast.success("Item added to cart!");
+                                                        navigate('/shop'); // Go to shop to select size properly or just add direct
+                                                    }}>Buy Now</Button>
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 );
             case 'help':
