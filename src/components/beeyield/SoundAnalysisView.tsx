@@ -107,8 +107,8 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                 onClick={() => !isAnalyzing && fileInputRef.current?.click()}
                 className={cn(
                     "w-full min-h-[160px] border border-dashed rounded-[2rem] flex flex-col items-center justify-center gap-3 transition-all duration-300 relative overflow-hidden bg-white dark:bg-[#0d0d0d]",
-                    isDragging ? "border-amber-500 bg-amber-50/50" : "border-slate-200 dark:border-white/10 hover:border-slate-300",
-                    selectedFile && "border-amber-200 bg-amber-50/10",
+                    isDragging ? "border-[#F4D03F] bg-[#F4D03F]/5" : "border-slate-200 dark:border-white/10 hover:border-slate-300",
+                    selectedFile && "border-amber-200 bg-[#F4D03F]/10",
                     isAnalyzing && "cursor-wait"
                 )}
             >
@@ -124,9 +124,9 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                     <div className="flex flex-col items-center gap-4 py-8 animate-in fade-in zoom-in duration-300">
                         <div className="relative">
                             <div className="w-16 h-16 rounded-full border-4 border-amber-100 dark:border-amber-900 animate-pulse flex items-center justify-center">
-                                <Volume2 className="w-8 h-8 text-amber-500 animate-bounce" />
+                                <Volume2 className="w-8 h-8 text-[#F4D03F] animate-bounce" />
                             </div>
-                            <div className="absolute inset-0 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+                            <div className="absolute inset-0 border-4 border-[#F4D03F] border-t-transparent rounded-full animate-spin"></div>
                         </div>
                         <div className="text-center">
                             <h3 className="text-sm font-bold text-[#0F172A] dark:text-white">Analyzing sound wave frequencies...</h3>
@@ -140,7 +140,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                         </div>
                         <div className="text-center">
                             <h3 className="text-[17px] font-bold text-[#0F172A] dark:text-white flex items-center justify-center gap-2">
-                                <MusicNote className="w-5 h-5 text-amber-500/60" />
+                                <MusicNote className="w-5 h-5 text-[#F4D03F]/60" />
                                 {selectedFile ? selectedFile.name : "Select an audio file"}
                             </h3>
                             <p className="text-[13px] text-slate-400 dark:text-slate-500 font-medium mt-1">

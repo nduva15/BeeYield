@@ -11,7 +11,7 @@ const ViewLayout = ({ title, subtitle, icon: Icon, onTabChange, showIcon = true,
     <div className="space-y-8 animate-in fade-in duration-500 pb-12">
         <div className="flex items-center gap-4">
             {showIcon && Icon && (
-                <div className="w-14 h-14 bg-[#B48428] rounded-[1.25rem] flex items-center justify-center text-white shadow-lg shadow-amber-500/20">
+                <div className="w-14 h-14 bg-[#F4D03F] rounded-[1.25rem] flex items-center justify-center text-white shadow-lg shadow-amber-500/20">
                     <Icon className="w-8 h-8" />
                 </div>
             )}
@@ -81,25 +81,25 @@ const SettingsDialog = ({ open, onOpenChange }: SettingsDialogProps) => {
 
                 <div className="space-y-6">
                     <div>
-                        <h4 className="text-[#B48428] text-xs font-bold uppercase tracking-wider mb-3">MEASUREMENT INTERVAL (MIN)</h4>
+                        <h4 className="text-[#F4D03F] text-xs font-bold uppercase tracking-wider mb-3">MEASUREMENT INTERVAL (MIN)</h4>
                         <MeasurementIntervalSelector />
                     </div>
 
                     <div className="space-y-4">
                         <div>
-                            <h4 className="text-[#B48428] text-xs font-bold uppercase tracking-wider mb-2">MAKE DATA PUBLIC</h4>
+                            <h4 className="text-[#F4D03F] text-xs font-bold uppercase tracking-wider mb-2">MAKE DATA PUBLIC</h4>
                             <ToggleSwitch checked={makePublic} onCheckedChange={setMakePublic} />
                         </div>
                         <div>
-                            <h4 className="text-[#B48428] text-xs font-bold uppercase tracking-wider mb-2">KEEP UPDATE</h4>
+                            <h4 className="text-[#F4D03F] text-xs font-bold uppercase tracking-wider mb-2">KEEP UPDATE</h4>
                             <ToggleSwitch checked={keepUpdate} onCheckedChange={setKeepUpdate} />
                         </div>
                         <div>
-                            <h4 className="text-[#B48428] text-xs font-bold uppercase tracking-wider mb-2">CONSENT TO SHARE ANONYMIZED DATA FOR EDUCATIONAL PURPOSES</h4>
+                            <h4 className="text-[#F4D03F] text-xs font-bold uppercase tracking-wider mb-2">CONSENT TO SHARE ANONYMIZED DATA FOR EDUCATIONAL PURPOSES</h4>
                             <ToggleSwitch checked={consent} onCheckedChange={setConsent} />
                         </div>
                         <div>
-                            <h4 className="text-[#B48428] text-xs font-bold uppercase tracking-wider mb-2">SEARCH WIRELESS BEEYIELD</h4>
+                            <h4 className="text-[#F4D03F] text-xs font-bold uppercase tracking-wider mb-2">SEARCH WIRELESS BEEYIELD</h4>
                             <ToggleSwitch checked={searchWireless} onCheckedChange={setSearchWireless} />
                         </div>
                     </div>
@@ -109,7 +109,7 @@ const SettingsDialog = ({ open, onOpenChange }: SettingsDialogProps) => {
                     <Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-full h-12 text-base font-medium border-gray-200">
                         Go back
                     </Button>
-                    <Button onClick={() => onOpenChange(false)} className="rounded-full h-12 text-base font-bold bg-white border-2 border-[#FCD34D] text-[#B48428] hover:bg-[#FEF9E7] hover:border-[#FCD34D] hover:text-[#B48428]">
+                    <Button onClick={() => onOpenChange(false)} className="rounded-full h-12 text-base font-bold bg-white border-2 border-[#F4D03F] text-[#F4D03F] hover:bg-[#F4D03F]/5 hover:border-[#F4D03F] hover:text-[#F4D03F]">
                         Save
                     </Button>
                 </div>
@@ -141,12 +141,12 @@ const NotificationsDialog = ({ open, onOpenChange }: NotificationsDialogProps) =
 
                 <div className="space-y-6">
                     <div>
-                        <h4 className="text-[#B48428] text-xs font-bold uppercase tracking-wider mb-2">APP NOTIFICATIONS</h4>
+                        <h4 className="text-[#F4D03F] text-xs font-bold uppercase tracking-wider mb-2">APP NOTIFICATIONS</h4>
                         <ToggleSwitch checked={appNotif} onCheckedChange={setAppNotif} />
                     </div>
 
                     <div>
-                        <h4 className="text-[#B48428] text-xs font-bold uppercase tracking-wider mb-2">EMAIL NOTIFICATIONS FROM BEEYIELD DEVICES</h4>
+                        <h4 className="text-[#F4D03F] text-xs font-bold uppercase tracking-wider mb-2">EMAIL NOTIFICATIONS FROM BEEYIELD DEVICES</h4>
                         <div className="space-y-3">
                             <ToggleSwitch checked={emailNotif} onCheckedChange={setEmailNotif} />
                             <input
@@ -158,17 +158,17 @@ const NotificationsDialog = ({ open, onOpenChange }: NotificationsDialogProps) =
                     </div>
 
                     <div>
-                        <h4 className="text-[#B48428] text-xs font-bold uppercase tracking-wider mb-2">SMS REPORTING - PREMIUM</h4>
+                        <h4 className="text-[#F4D03F] text-xs font-bold uppercase tracking-wider mb-2">SMS REPORTING - PREMIUM</h4>
                         <ToggleSwitch checked={smsNotif} onCheckedChange={setSmsNotif} />
                     </div>
 
                     <div>
-                        <h4 className="text-[#B48428] text-xs font-bold uppercase tracking-wider mb-2">TEMPERATURE ALERTS</h4>
+                        <h4 className="text-[#F4D03F] text-xs font-bold uppercase tracking-wider mb-2">TEMPERATURE ALERTS</h4>
                         <ToggleSwitch checked={tempAlerts} onCheckedChange={setTempAlerts} />
                     </div>
 
                     <div>
-                        <h4 className="text-[#B48428] text-xs font-bold uppercase tracking-wider mb-2">WEIGHT ALERTS</h4>
+                        <h4 className="text-[#F4D03F] text-xs font-bold uppercase tracking-wider mb-2">WEIGHT ALERTS</h4>
                         <ToggleSwitch checked={weightAlerts} onCheckedChange={setWeightAlerts} />
                     </div>
                 </div>
@@ -177,7 +177,7 @@ const NotificationsDialog = ({ open, onOpenChange }: NotificationsDialogProps) =
                     <Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-full h-12 text-base font-medium border-gray-200">
                         Go back
                     </Button>
-                    <Button onClick={() => onOpenChange(false)} className="rounded-full h-12 text-base font-bold bg-white border-2 border-[#FCD34D] text-[#B48428] hover:bg-[#FEF9E7] hover:border-[#FCD34D] hover:text-[#B48428]">
+                    <Button onClick={() => onOpenChange(false)} className="rounded-full h-12 text-base font-bold bg-white border-2 border-[#F4D03F] text-[#F4D03F] hover:bg-[#F4D03F]/5 hover:border-[#F4D03F] hover:text-[#F4D03F]">
                         Save
                     </Button>
                 </div>
@@ -211,7 +211,7 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                 <Card className="rounded-[2rem] p-6 border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm">
                     <div className="flex items-center gap-3 mb-6">
                         <div className="w-10 h-10 bg-[#E8F4FD] dark:bg-blue-900/20 rounded-xl flex items-center justify-center">
-                            <Grid3X3 className="w-5 h-5 text-[#B48428]" />
+                            <Grid3X3 className="w-5 h-5 text-[#F4D03F]" />
                         </div>
                         <div>
                             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">SELECT HIVE</p>
@@ -225,7 +225,7 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                             <Select value={selectedPlace} onValueChange={setSelectedPlace}>
                                 <SelectTrigger className="w-full border-none shadow-none h-auto py-3 px-3 focus:ring-0">
                                     <div className="flex items-center gap-3 w-full text-left">
-                                        <Grid3X3 className="w-4 h-4 text-[#B48428]" />
+                                        <Grid3X3 className="w-4 h-4 text-[#F4D03F]" />
                                         <div className="flex flex-col">
                                             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">MY PLACES</span>
                                             <span className="text-sm font-medium text-gray-900 dark:text-white">{selectedPlace || 'None'}</span>
@@ -243,7 +243,7 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                             <Select value={selectedHive} onValueChange={setSelectedHive}>
                                 <SelectTrigger className="w-full border-none shadow-none h-auto py-3 px-3 focus:ring-0">
                                     <div className="flex items-center gap-3 w-full text-left">
-                                        <Box className="w-4 h-4 text-[#B48428]" />
+                                        <Box className="w-4 h-4 text-[#F4D03F]" />
                                         <div className="flex flex-col">
                                             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">HIVE</span>
                                             <span className="text-sm font-medium text-gray-900 dark:text-white">{selectedHive || 'None'}</span>
@@ -284,8 +284,8 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                             onClick={() => setSettingsOpen(true)}
                             className="flex items-center gap-2 rounded-full px-5 py-2 h-auto bg-white dark:bg-[#09090b] border-gray-200 dark:border-[#1e1e1e] hover:bg-gray-50"
                         >
-                            <div className="w-8 h-8 bg-[#FEF3C7] rounded-full flex items-center justify-center">
-                                <Settings className="w-4 h-4 text-[#B48428]" />
+                            <div className="w-8 h-8 bg-[#F4D03F]/10 rounded-full flex items-center justify-center">
+                                <Settings className="w-4 h-4 text-[#F4D03F]" />
                             </div>
                             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Settings</span>
                         </Button>
@@ -294,16 +294,16 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
             </div>
 
             {/* Warning Message */}
-            <div className="bg-[#FEF9E7] dark:bg-amber-900/10 border border-[#FCD34D] dark:border-amber-700/30 rounded-2xl p-4 text-center">
-                <p className="text-[#B48428] font-medium">No BeeYield device assigned to this bee hive.</p>
+            <div className="bg-[#F4D03F]/5 dark:bg-amber-900/10 border border-[#F4D03F] dark:border-amber-700/30 rounded-2xl p-4 text-center">
+                <p className="text-[#F4D03F] font-medium">No BeeYield device assigned to this bee hive.</p>
             </div>
 
             {/* Contact Link */}
             <div className="bg-[#FFFDF5] dark:bg-amber-900/5 border border-[#FEF3C7] dark:border-amber-800/20 rounded-2xl p-4 text-center">
                 <p className="text-gray-600 dark:text-gray-400">
-                    <a href="#" className="text-[#B48428] underline hover:text-[#8A6420] font-medium">Contact us</a>
+                    <a href="#" className="text-[#F4D03F] underline hover:text-[#8A6420] font-medium">Contact us</a>
                     {' '}in order to buy one or{' '}
-                    <a href="#" className="text-[#B48428] underline hover:text-[#8A6420] font-medium">learn more about BeeYield</a>.
+                    <a href="#" className="text-[#F4D03F] underline hover:text-[#8A6420] font-medium">learn more about BeeYield</a>.
                 </p>
             </div>
 

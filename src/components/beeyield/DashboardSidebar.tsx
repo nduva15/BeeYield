@@ -87,15 +87,15 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                             whileHover={{ rotate: 5, scale: 1.05 }}
                             className="flex items-center gap-3 cursor-default"
                         >
-                            <div className="w-10 h-10 bg-white border border-[#E5E5E5] rounded-[14px] flex items-center justify-center shadow-sm">
-                                <Zap className="w-6 h-6 text-[#171717] fill-[#171717]/5 stroke-[2]" />
+                            <div className="w-10 h-10 bg-gradient-to-br from-[#F4D03F]/20 to-[#F4D03F]/5 border border-[#F4D03F]/30 rounded-[14px] flex items-center justify-center shadow-sm">
+                                <Zap className="w-6 h-6 text-[#F4D03F] fill-[#F4D03F]/20 stroke-[2]" />
                             </div>
                             <div className="flex flex-col">
                                 <h1 className="text-[17px] font-bold text-[#171717] tracking-[-0.03em] leading-tight">
                                     {t('dashboard_title')}
                                 </h1>
-                                <span className="text-[11px] font-semibold text-[#A3A3A3] tracking-[0.02em] uppercase">
-                                    {isAdmin ? "Admin Core" : "Main Hub"}
+                                <span className="text-[11px] font-semibold text-[#1B9157] tracking-[0.02em] uppercase">
+                                    {isAdmin ? t('admin_core') : t('main_hub')}
                                 </span>
                             </div>
                         </motion.div>
@@ -114,8 +114,8 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A3A3A3] transition-colors group-focus-within:text-[#171717]" />
                     <input
                         type="text"
-                        placeholder="Quick search..."
-                        className="w-full bg-[#F5F5F5] border border-[#E5E5E5] rounded-2xl py-2.5 pl-10 pr-12 text-[13px] text-[#171717] placeholder:text-[#A3A3A3] focus:outline-none focus:ring-1 focus:ring-[#171717]/10 focus:bg-white transition-all shadow-inner"
+                        placeholder={t('quick_search')}
+                        className="w-full bg-[#F5F5F5] border border-[#E5E5E5] rounded-2xl py-2.5 pl-10 pr-12 text-[13px] text-[#171717] placeholder:text-[#A3A3A3] focus:outline-none focus:ring-1 focus:ring-[#F4D03F] focus:border-[#F4D03F] focus:bg-white transition-all shadow-inner"
                         readOnly
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
@@ -129,7 +129,7 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                 <div>
                     <motion.div variants={itemVariants} className="px-4 pb-3">
                         <span className="text-[9px] font-bold text-[#D4D4D4] uppercase tracking-[0.15em]">
-                            Intelligence Explorer
+                            {t('intelligence_explorer')}
                         </span>
                     </motion.div>
 
@@ -154,14 +154,14 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                                         className={cn(
                                             "w-full flex items-center justify-between px-3.5 py-3 rounded-2xl transition-all duration-300 group",
                                             isActive
-                                                ? "bg-white text-[#171717] shadow-[0_4px_20px_-8px_rgba(0,0,0,0.1)] border border-[#E5E5E5]"
-                                                : "text-[#737373] hover:text-[#171717] hover:bg-white hover:shadow-sm"
+                                                ? "bg-white text-[#1B9157] shadow-[0_4px_20px_-8px_rgba(244,208,63,0.3)] border border-[#F4D03F]"
+                                                : "text-[#737373] hover:text-[#1B9157] hover:bg-white hover:shadow-sm"
                                         )}
                                     >
                                         <div className="flex items-center gap-4">
                                             <div className={cn(
                                                 "w-5 h-5 flex items-center justify-center transition-colors",
-                                                isActive ? "text-[#171717]" : "text-[#737373]"
+                                                isActive ? "text-[#F4D03F]" : "text-[#737373] group-hover:text-[#F4D03F]"
                                             )}>
                                                 <item.icon className="w-5 h-5 stroke-[1.8]" />
                                             </div>
@@ -171,13 +171,13 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                                         {item.hasSubmenu ? (
                                             <ChevronDown className={cn(
                                                 "w-4 h-4 transition-transform duration-500",
-                                                isExpanded ? "rotate-0 text-[#171717]" : "-rotate-90 text-[#D4D4D4]"
+                                                isExpanded ? "rotate-0 text-[#1B9157]" : "-rotate-90 text-[#D4D4D4]"
                                             )} />
                                         ) : (
                                             isActive && (
                                                 <motion.div
                                                     layoutId="active-pill"
-                                                    className="w-1.5 h-1.5 rounded-full bg-[#171717] shadow-[0_0_8px_rgba(23,23,23,0.3)]"
+                                                    className="w-1.5 h-1.5 rounded-full bg-[#F4D03F] shadow-[0_0_8px_rgba(244,208,63,0.5)]"
                                                 />
                                             )
                                         )}
@@ -213,8 +213,8 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                                                                     className={cn(
                                                                         "w-full text-left py-2 px-3 text-[13px] font-semibold transition-all rounded-xl flex items-center justify-between",
                                                                         activeState
-                                                                            ? "text-[#171717] bg-white shadow-sm border border-[#E5E5E5]"
-                                                                            : "text-[#737373] hover:text-[#171717] hover:bg-white/50"
+                                                                            ? "text-[#1B9157] bg-white shadow-sm border border-[#F4D03F]/50"
+                                                                            : "text-[#737373] hover:text-[#1B9157] hover:bg-white/50"
                                                                     )}
                                                                 >
                                                                     <div className="flex items-center gap-3">
@@ -245,8 +245,8 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                                                                                     className={cn(
                                                                                         "w-full text-left py-1.5 px-3 text-[12px] font-semibold transition-all rounded-lg",
                                                                                         activeTab === child.id
-                                                                                            ? "text-[#171717] bg-white shadow-sm"
-                                                                                            : "text-[#A3A3A3] hover:text-[#171717]"
+                                                                                            ? "text-[#1B9157] bg-[#F4D03F]/10 shadow-sm border border-[#F4D03F]/20"
+                                                                                            : "text-[#A3A3A3] hover:text-[#1B9157]"
                                                                                     )}
                                                                                 >
                                                                                     {child.label}
@@ -277,10 +277,10 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                 <div className="flex items-center justify-between mb-6 px-1">
                     <div className="flex items-center gap-2.5 group">
                         <div className="relative">
-                            <div className="w-2.5 h-2.5 rounded-full bg-[#10B981] shadow-[0_0_12px_rgba(16,185,129,0.4)]" />
-                            <div className="absolute inset-0 rounded-full bg-[#10B981] animate-ping opacity-20" />
+                            <div className="w-2.5 h-2.5 rounded-full bg-[#1B9157] shadow-[0_0_12px_rgba(27,145,87,0.4)]" />
+                            <div className="absolute inset-0 rounded-full bg-[#1B9157] animate-ping opacity-20" />
                         </div>
-                        <span className="text-[10px] font-black text-[#10B981] uppercase tracking-[0.1em] group-hover:tracking-[0.15em] transition-all">
+                        <span className="text-[10px] font-black text-[#1B9157] uppercase tracking-[0.1em] group-hover:tracking-[0.15em] transition-all">
                             {t('system_normal')}
                         </span>
                     </div>
@@ -294,7 +294,7 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                         className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-[18px] border border-[#E5E5E5] bg-white text-[13px] font-bold text-[#171717] transition-all shadow-sm"
                     >
                         <LogOut className="w-4 h-4 stroke-[2.5]" />
-                        <span>Logout</span>
+                        <span>{t('logout')}</span>
                     </motion.button>
                     <motion.button
                         whileHover={{ rotate: 90, scale: 1.1 }}
@@ -305,7 +305,7 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                         <Hexagon className="w-5 h-5" />
                     </motion.button>
                 </div>
-            </motion.div>
+            </motion.div >
 
             <style dangerouslySetInnerHTML={{
                 __html: `
@@ -323,7 +323,7 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                     background: #E5E5E5;
                 }
             `}} />
-        </motion.div>
+        </motion.div >
     );
 };
 

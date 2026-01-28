@@ -99,7 +99,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                 {/* Back Button */}
                 <button
                     onClick={() => setIsAddingInspection(false)}
-                    className="flex items-center gap-2 text-[#1e3a5f] dark:text-blue-400 font-semibold hover:underline"
+                    className="flex items-center gap-2 text-[#1B9157] dark:text-[#F4D03F] font-semibold hover:underline"
                 >
                     <ArrowLeft className="w-5 h-5" />
                     Back to inspections
@@ -125,7 +125,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                                     <Select value={selectedPlace} onValueChange={setSelectedPlace}>
                                         <SelectTrigger className="w-full max-w-xs rounded-xl border-gray-200 dark:border-gray-700 h-11 bg-white dark:bg-[#1e1e1e]">
                                             <div className="flex items-center gap-2">
-                                                <Grid3X3 className="w-4 h-4 text-amber-500" />
+                                                <Grid3X3 className="w-4 h-4 text-[#F4D03F]" />
                                                 <SelectValue placeholder="MY PLACES" />
                                             </div>
                                         </SelectTrigger>
@@ -140,7 +140,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                                     <Select value={selectedHive} onValueChange={setSelectedHive}>
                                         <SelectTrigger className="w-full max-w-xs rounded-xl border-gray-200 dark:border-gray-700 h-11 bg-white dark:bg-[#1e1e1e]">
                                             <div className="flex items-center gap-2">
-                                                <Box className="w-4 h-4 text-amber-600" />
+                                                <Box className="w-4 h-4 text-[#1B9157]" />
                                                 <SelectValue placeholder="HIVE" />
                                             </div>
                                         </SelectTrigger>
@@ -164,11 +164,11 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                                                         name="colonyState"
                                                         checked={colonyState === state}
                                                         onChange={() => setColonyState(state)}
-                                                        className="w-4 h-4 text-amber-500 border-gray-300 focus:ring-amber-500"
+                                                        className="w-4 h-4 text-[#1B9157] border-gray-300 focus:ring-[#1B9157]"
                                                     />
                                                     <span className={cn(
                                                         "text-sm capitalize",
-                                                        colonyState === state ? "text-amber-600 font-medium" : "text-gray-600 dark:text-gray-400"
+                                                        colonyState === state ? "text-[#1B9157] font-medium" : "text-gray-600 dark:text-gray-400"
                                                     )}>
                                                         {state.charAt(0).toUpperCase() + state.slice(1)}
                                                     </span>
@@ -182,20 +182,20 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                                         <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Was there...?</p>
                                         <div className="space-y-2">
                                             <label className="flex items-center gap-2 cursor-pointer">
-                                                <Switch checked={hasQueen} onCheckedChange={setHasQueen} className="data-[state=checked]:bg-amber-600" />
-                                                <span className={cn("text-sm", hasQueen ? "text-amber-600 font-medium" : "text-gray-600 dark:text-gray-400")}>Queen</span>
+                                                <Switch checked={hasQueen} onCheckedChange={setHasQueen} className="data-[state=checked]:bg-[#1B9157]" />
+                                                <span className={cn("text-sm", hasQueen ? "text-[#1B9157] font-medium" : "text-gray-600 dark:text-gray-400")}>Queen</span>
                                             </label>
                                             <label className="flex items-center gap-2 cursor-pointer">
-                                                <Switch checked={hasCappedBrood} onCheckedChange={setHasCappedBrood} className="data-[state=checked]:bg-amber-600" />
-                                                <span className={cn("text-sm", hasCappedBrood ? "text-amber-600 font-medium" : "text-gray-600 dark:text-gray-400")}>Capped brood</span>
+                                                <Switch checked={hasCappedBrood} onCheckedChange={setHasCappedBrood} className="data-[state=checked]:bg-[#1B9157]" />
+                                                <span className={cn("text-sm", hasCappedBrood ? "text-[#1B9157] font-medium" : "text-gray-600 dark:text-gray-400")}>Capped brood</span>
                                             </label>
                                             <label className="flex items-center gap-2 cursor-pointer">
-                                                <Switch checked={hasEggs} onCheckedChange={setHasEggs} className="data-[state=checked]:bg-amber-600" />
-                                                <span className={cn("text-sm", hasEggs ? "text-amber-600 font-medium" : "text-gray-600 dark:text-gray-400")}>Eggs</span>
+                                                <Switch checked={hasEggs} onCheckedChange={setHasEggs} className="data-[state=checked]:bg-[#1B9157]" />
+                                                <span className={cn("text-sm", hasEggs ? "text-[#1B9157] font-medium" : "text-gray-600 dark:text-gray-400")}>Eggs</span>
                                             </label>
                                             <label className="flex items-center gap-2 cursor-pointer">
-                                                <Switch checked={hasLarvae} onCheckedChange={setHasLarvae} className="data-[state=checked]:bg-amber-600" />
-                                                <span className={cn("text-sm", hasLarvae ? "text-amber-600 font-medium" : "text-gray-600 dark:text-gray-400")}>Larvae</span>
+                                                <Switch checked={hasLarvae} onCheckedChange={setHasLarvae} className="data-[state=checked]:bg-[#1B9157]" />
+                                                <span className={cn("text-sm", hasLarvae ? "text-[#1B9157] font-medium" : "text-gray-600 dark:text-gray-400")}>Larvae</span>
                                             </label>
                                         </div>
                                     </div>
@@ -212,11 +212,11 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                                                     name="broodArrangement"
                                                     checked={broodArrangement === arrangement}
                                                     onChange={() => setBroodArrangement(arrangement)}
-                                                    className="w-4 h-4 text-amber-500 border-gray-300 focus:ring-amber-500"
+                                                    className="w-4 h-4 text-[#1B9157] border-gray-300 focus:ring-[#1B9157]"
                                                 />
                                                 <span className={cn(
                                                     "text-sm capitalize",
-                                                    broodArrangement === arrangement ? "text-amber-600 font-medium" : "text-gray-600 dark:text-gray-400"
+                                                    broodArrangement === arrangement ? "text-[#1B9157] font-medium" : "text-gray-600 dark:text-gray-400"
                                                 )}>
                                                     {arrangement.charAt(0).toUpperCase() + arrangement.slice(1)}
                                                 </span>
@@ -240,11 +240,11 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                                                 name="beeActivity"
                                                 checked={beeActivity === activity}
                                                 onChange={() => setBeeActivity(activity)}
-                                                className="w-4 h-4 text-amber-500 border-gray-300 focus:ring-amber-500"
+                                                className="w-4 h-4 text-[#1B9157] border-gray-300 focus:ring-[#1B9157]"
                                             />
                                             <span className={cn(
                                                 "text-sm capitalize",
-                                                beeActivity === activity ? "text-amber-600 font-medium" : "text-gray-600 dark:text-gray-400"
+                                                beeActivity === activity ? "text-[#1B9157] font-medium" : "text-gray-600 dark:text-gray-400"
                                             )}>
                                                 {activity.charAt(0).toUpperCase() + activity.slice(1)}
                                             </span>
@@ -260,7 +260,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                                     {[
                                         { id: 'sunshine', icon: Sun, label: 'Sunshine', color: 'text-yellow-500' },
                                         { id: 'clouds', icon: Cloud, label: 'Clouds', color: 'text-blue-400' },
-                                        { id: 'rain', icon: CloudRain, label: 'Rain', color: 'text-blue-600' },
+                                        { id: 'rain', icon: CloudRain, label: 'Rain', color: 'text-[#1B9157]' },
                                         { id: 'elevators', icon: Wind, label: 'Elevators', color: 'text-teal-500' },
                                         { id: 'snow', icon: Snowflake, label: 'Snow', color: 'text-cyan-400' },
                                     ].map((w) => (
@@ -270,12 +270,12 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                                                 name="weather"
                                                 checked={weather === w.id}
                                                 onChange={() => setWeather(w.id)}
-                                                className="w-4 h-4 text-amber-500 border-gray-300 focus:ring-amber-500"
+                                                className="w-4 h-4 text-[#1B9157] border-gray-300 focus:ring-[#1B9157]"
                                             />
                                             <w.icon className={cn("w-4 h-4", w.color)} />
                                             <span className={cn(
                                                 "text-xs",
-                                                weather === w.id ? "text-amber-600 font-medium" : "text-gray-600 dark:text-gray-400"
+                                                weather === w.id ? "text-[#1B9157] font-medium" : "text-gray-600 dark:text-gray-400"
                                             )}>
                                                 {w.label}
                                             </span>
@@ -295,11 +295,11 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                                                 name="weight"
                                                 checked={weightCategory === weight}
                                                 onChange={() => setWeightCategory(weight)}
-                                                className="w-4 h-4 text-amber-500 border-gray-300 focus:ring-amber-500"
+                                                className="w-4 h-4 text-[#1B9157] border-gray-300 focus:ring-[#1B9157]"
                                             />
                                             <span className={cn(
                                                 "text-sm capitalize",
-                                                weightCategory === weight ? "text-amber-600 font-medium" : "text-gray-600 dark:text-gray-400"
+                                                weightCategory === weight ? "text-[#1B9157] font-medium" : "text-gray-600 dark:text-gray-400"
                                             )}>
                                                 {weight.charAt(0).toUpperCase() + weight.slice(1)}
                                             </span>
@@ -322,7 +322,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                             <div className="space-y-4">
                                 <div className="space-y-3">
                                     <label className="flex items-center gap-3 cursor-pointer">
-                                        <Switch checked={hasQueenCells} onCheckedChange={setHasQueenCells} className="data-[state=checked]:bg-amber-600" />
+                                        <Switch checked={hasQueenCells} onCheckedChange={setHasQueenCells} className="data-[state=checked]:bg-[#1B9157]" />
                                         <span className="font-semibold text-gray-800 dark:text-white">The queen cells</span>
                                     </label>
                                     {hasQueenCells && (
@@ -338,7 +338,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
 
                                 <div className="space-y-3">
                                     <label className="flex items-center gap-3 cursor-pointer">
-                                        <Switch checked={hasPossibleIllness} onCheckedChange={setHasPossibleIllness} className="data-[state=checked]:bg-amber-600" />
+                                        <Switch checked={hasPossibleIllness} onCheckedChange={setHasPossibleIllness} className="data-[state=checked]:bg-[#1B9157]" />
                                         <span className="font-semibold text-gray-800 dark:text-white">Possible illness</span>
                                     </label>
                                     {hasPossibleIllness && (
@@ -401,9 +401,8 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                         {/* Save Button */}
                         <div className="flex justify-center mt-8">
                             <Button
-                                variant="ghost"
                                 onClick={handleSave}
-                                className="text-amber-600 hover:text-amber-700 font-semibold"
+                                className="bg-[#1B9157] hover:bg-[#167d4a] text-white rounded-xl px-12 h-12 font-bold shadow-lg shadow-green-500/10"
                             >
                                 Save
                             </Button>
@@ -420,7 +419,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
 
             {/* Page Title */}
             <div className="flex justify-between items-center">
-                <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">Inspections</h1>
+                <h1 className="text-[2.5rem] font-bold text-[#1B9157] dark:text-[#F4D03F] tracking-tight">Inspections</h1>
             </div>
 
             {/* Dropdowns */}
@@ -429,7 +428,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                 <Select value={selectedPlace} onValueChange={setSelectedPlace}>
                     <SelectTrigger className="w-full rounded-xl border-gray-200 dark:border-gray-700 h-11 bg-white dark:bg-[#1e1e1e]">
                         <div className="flex items-center gap-2">
-                            <Grid3X3 className="w-4 h-4 text-amber-500" />
+                            <Grid3X3 className="w-4 h-4 text-[#F4D03F]" />
                             <SelectValue placeholder="MY PLACES" />
                         </div>
                     </SelectTrigger>
@@ -442,7 +441,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                 <Select value={selectedHive} onValueChange={setSelectedHive}>
                     <SelectTrigger className="w-full rounded-xl border-gray-200 dark:border-gray-700 h-11 bg-white dark:bg-[#1e1e1e]">
                         <div className="flex items-center gap-2">
-                            <Box className="w-4 h-4 text-amber-600" />
+                            <Box className="w-4 h-4 text-[#1B9157]" />
                             <SelectValue placeholder="HIVE" />
                         </div>
                     </SelectTrigger>
@@ -456,9 +455,9 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
             <div className="fixed right-6 bottom-6 z-50">
                 <Button
                     onClick={() => setIsAddingInspection(true)}
-                    className="w-14 h-14 rounded-full shadow-xl flex items-center justify-center bg-[#F97B5C] hover:bg-[#E86B4C]"
+                    className="w-16 h-16 rounded-full shadow-xl flex items-center justify-center bg-[#F4D03F] hover:bg-[#EBC735] text-slate-800 border-none transition-all hover:scale-110"
                 >
-                    <Plus className="w-6 h-6 text-white" />
+                    <Plus className="w-6 h-6" />
                 </Button>
             </div>
         </div>

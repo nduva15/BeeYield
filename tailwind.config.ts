@@ -14,6 +14,11 @@ export default {
         "2xl": "1400px",
       },
     },
+    fontFamily: {
+      sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+      display: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+      mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+    },
     extend: {
       colors: {
         border: "hsl(var(--border))",
@@ -21,6 +26,16 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        // BeeYield Brand Colors (from logo)
+        beeyield: {
+          gold: "#F4D03F",          // Logo outer ring
+          green: "#1B9157",         // Logo center dot
+          black: "#1A1A1A",         // Logo text
+          "gold-light": "#F7DC6F",  // Lighter gold
+          "gold-dark": "#D4AC0D",   // Darker gold
+          "green-light": "#2ECC71", // Lighter green
+          "green-dark": "#145A32",  // Darker green
+        },
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",

@@ -131,7 +131,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                             </Button>
                             <Button
                                 onClick={() => setIsAddingPlace(false)}
-                                className="h-14 px-10 rounded-2xl font-[900] bg-[#F6AD55] hover:bg-[#ED8936] text-white shadow-xl shadow-orange-200 dark:shadow-none tracking-widest uppercase text-xs"
+                                className="h-14 px-10 rounded-2xl font-[900] bg-[#F4D03F] hover:bg-[#D4AF37] text-white shadow-xl shadow-[#F4D03F]/40 dark:shadow-none tracking-widest uppercase text-xs"
                             >
                                 Deploy Apiary
                             </Button>
@@ -185,7 +185,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                 }}
                                 className="bg-[#2D3748] dark:bg-[#1e293b] text-white pl-4 pr-6 py-3 rounded-2xl font-bold shadow-2xl flex items-center gap-3 hover:scale-105 transition-transform mr-1 mb-2"
                             >
-                                <MapPin className="w-4 h-4 text-[#F6E05E] fill-current" />
+                                <MapPin className="w-4 h-4 text-[#F4D03F] fill-current" />
                                 <span className="tracking-[0.2em] text-[11px] font-black">PLACE</span>
                             </motion.button>
                         </>
@@ -197,7 +197,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                     onClick={() => setIsFabExpanded(!isFabExpanded)}
                     className={cn(
                         "w-[64px] h-[64px] text-white rounded-full shadow-[0_15px_30px_-5px_rgba(246,173,85,0.4)] flex items-center justify-center transition-all duration-500 active:scale-90 group overflow-hidden relative",
-                        isFabExpanded ? "bg-[#2D3748] rotate-90 shadow-xl" : "bg-[#F6AD55] hover:bg-[#ED8936]"
+                        isFabExpanded ? "bg-[#2D3748] rotate-90 shadow-xl" : "bg-[#F4D03F] hover:bg-[#D4AF37]"
                     )}
                 >
                     <AnimatePresence mode="wait">

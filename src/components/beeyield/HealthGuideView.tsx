@@ -121,7 +121,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                             <div className={`px-6 py-2 rounded-full text-sm font-black tracking-widest border-2 ${detail.riskLevel === 'CRITICAL' ? 'bg-red-500/10 text-red-600 border-red-500/20' :
                                                 detail.riskLevel === 'HIGH' ? 'bg-orange-500/10 text-orange-600 border-orange-500/20' :
                                                     detail.riskLevel === 'MEDIUM' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' :
-                                                        'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
+                                                        'bg-[#1B9157]/10 text-[#1B9157] border-[#1B9157]/20'
                                                 }`}>
                                                 {detail.riskLevel} RISK
                                             </div>
@@ -147,7 +147,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                     {/* Detection & Transmission */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                                         <div className="space-y-4">
-                                            <h2 className="text-[2.2rem] font-black text-blue-600 dark:text-blue-400 tracking-tight leading-tight uppercase">Detection</h2>
+                                            <h2 className="text-[2.2rem] font-black text-[#F4D03F] dark:text-[#F4D03F] tracking-tight leading-tight uppercase">Detection</h2>
                                             <p className="text-[18px] text-slate-600 dark:text-slate-400 font-medium leading-relaxed">
                                                 {detail.detection}
                                             </p>
@@ -169,7 +169,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                             </p>
                                         </div>
                                         <div className="space-y-4">
-                                            <h2 className="text-[2.2rem] font-black text-green-600 dark:text-green-500 tracking-tight leading-tight uppercase">Prevention</h2>
+                                            <h2 className="text-[2.2rem] font-black text-[#1B9157] dark:text-[#1B9157] tracking-tight leading-tight uppercase">Prevention</h2>
                                             <p className="text-[18px] text-slate-700 dark:text-slate-300 font-bold leading-relaxed">
                                                 {detail.prevention}
                                             </p>
@@ -227,7 +227,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                                 </p>
                                             )}
                                         </div>
-                                        <div className="px-6 py-2 rounded-full text-sm font-black tracking-widest border-2 bg-blue-500/10 text-blue-600 border-blue-500/20 uppercase">
+                                        <div className="px-6 py-2 rounded-full text-sm font-black tracking-widest border-2 bg-[#F4D03F]/10 text-[#F4D03F] border-[#F4D03F]/20 uppercase">
                                             {speciesDetail.origin}
                                         </div>
                                     </div>
@@ -259,13 +259,13 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                     {/* Yield & Climate */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10 bg-slate-50/50 dark:bg-white/5 -mx-10 p-10 border-y border-slate-100 dark:border-white/5">
                                         <div className="space-y-4">
-                                            <h2 className="text-[2.2rem] font-black text-emerald-600 dark:text-emerald-500 tracking-tight leading-tight uppercase">Honey Yield</h2>
+                                            <h2 className="text-[2.2rem] font-black text-[#F4D03F] dark:text-[#F4D03F] tracking-tight leading-tight uppercase">Honey Yield</h2>
                                             <p className="text-[18px] text-slate-700 dark:text-slate-300 font-bold leading-relaxed">
                                                 {speciesDetail.honeyYield}
                                             </p>
                                         </div>
                                         <div className="space-y-4">
-                                            <h2 className="text-[2.2rem] font-black text-blue-600 dark:text-blue-500 tracking-tight leading-tight uppercase">Climate suitability</h2>
+                                            <h2 className="text-[2.2rem] font-black text-[#1B9157] dark:text-[#1B9157] tracking-tight leading-tight uppercase">Climate suitability</h2>
                                             <p className="text-[18px] text-slate-700 dark:text-slate-300 font-bold leading-relaxed">
                                                 {speciesDetail.climateSuitability}
                                             </p>
@@ -275,11 +275,11 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                     {/* Pros & Cons */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                                         <div className="space-y-6">
-                                            <h2 className="text-2xl font-black text-emerald-600 uppercase tracking-tighter">Advantages</h2>
+                                            <h2 className="text-2xl font-black text-[#1B9157] uppercase tracking-tighter">Advantages</h2>
                                             <ul className="space-y-3">
                                                 {speciesDetail.pros.map((pro: string, i: number) => (
                                                     <li key={i} className="flex items-center gap-3 text-lg font-bold text-slate-600 dark:text-slate-400">
-                                                        <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                                                        <div className="w-2 h-2 rounded-full bg-[#1B9157]" />
                                                         {pro}
                                                     </li>
                                                 ))}
@@ -321,10 +321,10 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                     {/* Industry Intelligence 2026 - Always Visible when nothing selected */}
                     {selectedSymptom === 'none' && selectedSpecies === 'none' && (
                         <div className="mt-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-                            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-blue-500 mb-6">BeeYield Deep Intelligence v2026.1</h2>
+                            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-[#F4D03F] mb-6">BeeYield Deep Intelligence v2026.1</h2>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <Card className="p-8 bg-blue-50/30 dark:bg-blue-900/10 border-blue-100/50 dark:border-blue-900/20 rounded-3xl space-y-4">
-                                    <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-600 text-2xl font-bold">📊</div>
+                                <Card className="p-8 bg-yellow-50/30 dark:bg-yellow-900/10 border-yellow-100/50 dark:border-yellow-900/20 rounded-3xl space-y-4">
+                                    <div className="w-12 h-12 rounded-2xl bg-[#F4D03F]/10 flex items-center justify-center text-[#F4D03F] text-2xl font-bold">📊</div>
                                     <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase">Market Shift</h3>
                                     <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
                                         The global honey market is hitting <b>$9.73B</b>. BeeYield's HoneyChain™ is the only decentralized ledger securing this growth.
@@ -337,8 +337,8 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                         90% of smart apiaries will use BeeYield nodes by 2026. Our acoustic AI is now <b>98.4%</b> accurate in swarm prediction.
                                     </p>
                                 </Card>
-                                <Card className="p-8 bg-emerald-50/30 dark:bg-emerald-900/10 border-emerald-100/50 dark:border-emerald-900/20 rounded-3xl space-y-4">
-                                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 text-2xl font-bold">🌱</div>
+                                <Card className="p-8 bg-green-50/30 dark:bg-green-900/10 border-green-100/50 dark:border-green-900/20 rounded-3xl space-y-4">
+                                    <div className="w-12 h-12 rounded-2xl bg-[#1B9157]/10 flex items-center justify-center text-[#1B9157] text-2xl font-bold">🌱</div>
                                     <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase">Survival</h3>
                                     <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
                                         Global bee mortality is spiking to 60%. BeeYield users are reporting <b>80% lower losses</b> via our Precision AI.

@@ -90,24 +90,24 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
         <div className="space-y-8 animate-in fade-in duration-500 pb-12 relative">
             {/* Page Title */}
             <div className="flex justify-between items-center">
-                <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">BeeYield</h1>
+                <h1 className="text-[2.5rem] font-bold text-[#1B9157] dark:text-[#F4D03F] tracking-tight">BeeYield</h1>
             </div>
 
             {/* Main Content Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Left Side - Loading Data Card */}
-                <Card className="rounded-2xl border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm min-h-[200px]">
+                <Card className="rounded-2xl border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm min-h-[200px] border-t-4 border-t-[#F4D03F]">
                     <CardContent className="p-6 flex items-center justify-start h-full">
                         <span className="text-gray-400 dark:text-gray-500 italic text-sm">No hives available</span>
                     </CardContent>
                 </Card>
 
                 {/* Right Side - My Places Card */}
-                <Card className="rounded-2xl border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm">
+                <Card className="rounded-2xl border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm border-t-4 border-t-[#F4D03F]">
                     <CardContent className="p-6 space-y-5">
                         {/* Card Header */}
                         <div>
-                            <h3 className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-[0.15em] mb-1">MY PLACES</h3>
+                            <h3 className="text-[10px] font-bold text-[#1B9157] dark:text-[#F4D03F] uppercase tracking-[0.15em] mb-1">MY PLACES</h3>
                             <p className="text-sm text-gray-500 dark:text-gray-400">Choose a place from the list below to browse its hives.</p>
                         </div>
 
@@ -115,9 +115,9 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">My Places</label>
                             <Select value={selectedPlace} onValueChange={setSelectedPlace}>
-                                <SelectTrigger className="w-full rounded-xl border-gray-200 dark:border-gray-700 h-11 bg-white dark:bg-[#1e1e1e]">
+                                <SelectTrigger className="w-full rounded-xl border-gray-200 dark:border-gray-700 h-11 bg-white dark:bg-[#1e1e1e] focus:ring-[#F4D03F]/20 focus:border-[#F4D03F]/50">
                                     <div className="flex items-center gap-2">
-                                        <Grid3X3 className="w-4 h-4 text-gray-400" />
+                                        <Grid3X3 className="w-4 h-4 text-[#1B9157]" />
                                         <SelectValue placeholder="Select a place" />
                                     </div>
                                 </SelectTrigger>
@@ -131,19 +131,19 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                         {/* Action Buttons */}
                         <div className="flex flex-wrap gap-3 pt-2">
                             <Button
-                                className="bg-[#F5C842] hover:bg-[#E5B832] text-black rounded-full px-5 h-10 font-bold text-sm shadow-none border-none"
+                                className="bg-[#F4D03F] hover:bg-[#e0be36] text-[#1A1A1A] rounded-full px-5 h-10 font-bold text-sm shadow-none border-none"
                                 onClick={() => onTabChange('assistant')}
                             >
                                 AI ASSISTANT
                             </Button>
                             <Button
                                 variant="outline"
-                                className="rounded-full px-5 h-10 font-medium text-sm border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-[#1e1e1e]"
+                                className="rounded-full px-5 h-10 font-bold text-sm border-[#1B9157]/20 text-[#1B9157] hover:bg-[#1B9157]/5 hover:border-[#1B9157]/40"
                             >
                                 Report
                             </Button>
                             <Button
-                                className="bg-[#4ADE80] hover:bg-[#22C55E] text-black rounded-full px-5 h-10 font-bold text-sm shadow-none border-none"
+                                className="bg-[#1B9157] hover:bg-[#167d4a] text-white rounded-full px-5 h-10 font-bold text-sm shadow-none border-none"
                                 onClick={handleExportExcel}
                                 disabled={isExporting}
                             >
@@ -170,29 +170,29 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                 )}>
                     <Button
                         onClick={() => onTabChange('notes')}
-                        className="bg-[#F97B5C] hover:bg-[#E86B4C] text-white rounded-full pl-4 pr-5 h-11 font-bold text-sm shadow-lg flex items-center gap-2"
+                        className="bg-[#1B9157] hover:bg-[#167d4a] text-white rounded-full pl-4 pr-5 h-12 font-bold text-sm shadow-lg flex items-center gap-2 border-2 border-white dark:border-[#141414]"
                     >
                         <StickyNote className="w-4 h-4" />
                         ADD NOTES
                     </Button>
                     <Button
                         onClick={() => onTabChange('task')}
-                        className="bg-[#F5C842] hover:bg-[#E5B832] text-black rounded-full pl-4 pr-5 h-11 font-bold text-sm shadow-lg flex items-center gap-2"
+                        className="bg-[#F4D03F] hover:bg-[#e0be36] text-[#1A1A1A] rounded-full pl-4 pr-5 h-12 font-bold text-sm shadow-lg flex items-center gap-2 border-2 border-white dark:border-[#141414]"
                     >
                         <CheckSquare className="w-4 h-4" />
                         TASK
                     </Button>
                     <Button
-                        className="bg-[#C4A77D] hover:bg-[#B4975D] text-white rounded-full pl-4 pr-5 h-11 font-bold text-sm shadow-lg flex items-center gap-2"
+                        className="bg-[#1B9157] hover:bg-[#167d4a] text-white rounded-full pl-4 pr-5 h-12 font-bold text-sm shadow-lg flex items-center gap-2 border-2 border-white dark:border-[#141414]"
                     >
                         <Box className="w-4 h-4" />
                         HIVE
                     </Button>
                     <Button
                         onClick={() => onTabChange('places')}
-                        className="bg-[#3D3D3D] hover:bg-[#2D2D2D] text-white rounded-full pl-4 pr-5 h-11 font-bold text-sm shadow-lg flex items-center gap-2"
+                        className="bg-white hover:bg-gray-50 text-[#1B9157] rounded-full pl-4 pr-5 h-12 font-bold text-sm shadow-lg flex items-center gap-2 border-2 border-[#1B9157]/20"
                     >
-                        <MapPin className="w-4 h-4 text-[#4ADE80]" />
+                        <MapPin className="w-4 h-4 text-[#1B9157]" />
                         PLACE
                     </Button>
                 </div>
@@ -204,10 +204,10 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                         "w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300",
                         showFab
                             ? "bg-gray-800 hover:bg-gray-700 rotate-45"
-                            : "bg-[#F97B5C] hover:bg-[#E86B4C]"
+                            : "bg-[#F4D03F] hover:bg-[#e0be36] text-[#1A1A1A]"
                     )}
                 >
-                    <Plus className="w-6 h-6 text-white" />
+                    <Plus className="w-6 h-6" />
                 </Button>
             </div>
         </div>

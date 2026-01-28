@@ -52,17 +52,17 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
         {
             name: 'BeeYield Control',
             description: 'The brain of your apiary. Manages multiple sensors and transmits data via Satellite or GSM.',
-            color: 'bg-blue-50'
+            color: 'bg-yellow-50'
         },
         {
             name: 'BeeYield Sensor',
             description: 'Internal hive monitoring. Tracks temperature, humidity, weight, and acoustic signatures.',
-            color: 'bg-blue-100/50'
+            color: 'bg-green-50'
         },
         {
             name: 'BeeYield GPS',
             description: 'Anti-theft and location tracking. Stay updated on the movement of your hives.',
-            color: 'bg-blue-50'
+            color: 'bg-yellow-50'
         }
     ];
 
@@ -122,7 +122,7 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                             </div>
 
                             <div className="flex flex-wrap gap-4">
-                                <Button className="bg-[#2563EB] hover:bg-blue-700 text-white rounded-2xl px-10 h-16 text-lg font-bold shadow-xl shadow-blue-500/20">
+                                <Button className="bg-[#1B9157] hover:bg-[#146c43] text-white rounded-2xl px-10 h-16 text-lg font-bold shadow-xl shadow-green-500/20">
                                     Start a conversation
                                 </Button>
                                 <Button variant="outline" className="rounded-2xl px-10 h-16 text-lg font-bold border-gray-200 dark:border-gray-800">
@@ -133,7 +133,7 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                             <div className="pt-8 flex gap-12 border-t border-gray-100 dark:border-gray-800">
                                 {stats.map(stat => (
                                     <div key={stat.label}>
-                                        <p className="text-3xl font-black text-blue-600">{stat.value}</p>
+                                        <p className="text-3xl font-black text-[#F4D03F]">{stat.value}</p>
                                         <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">{stat.label}</p>
                                     </div>
                                 ))}
@@ -161,9 +161,9 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {features.map((feature, i) => (
-                        <Card key={i} className="rounded-[2.5rem] border-none bg-blue-50/50 dark:bg-blue-900/5 p-8 hover:transform hover:-translate-y-2 transition-all duration-300">
-                            <div className="w-14 h-14 bg-white dark:bg-blue-900/20 rounded-2xl flex items-center justify-center shadow-sm mb-6">
-                                <feature.icon className="w-7 h-7 text-blue-600" />
+                        <Card key={i} className="rounded-[2.5rem] border-none bg-[#FAFAFA] dark:bg-white/5 p-8 hover:transform hover:-translate-y-2 transition-all duration-300">
+                            <div className="w-14 h-14 bg-white dark:bg-white/10 rounded-2xl flex items-center justify-center shadow-sm mb-6">
+                                <feature.icon className="w-7 h-7 text-[#F4D03F]" />
                             </div>
                             <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
                             <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-4">
@@ -172,8 +172,8 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                             {feature.points && (
                                 <ul className="space-y-2">
                                     {feature.points.map(pt => (
-                                        <li key={pt} className="flex items-center gap-2 text-xs font-bold text-blue-600/70">
-                                            <div className="w-1 h-1 rounded-full bg-blue-600" />
+                                        <li key={pt} className="flex items-center gap-2 text-xs font-bold text-[#1B9157]">
+                                            <div className="w-1 h-1 rounded-full bg-[#1B9157]" />
                                             {pt}
                                         </li>
                                     ))}
@@ -197,12 +197,12 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                     {family.map((item, i) => (
                         <Card key={i} className={cn("rounded-[2.5rem] border-none p-10 flex flex-col justify-between h-[300px]", item.color)}>
                             <div className="space-y-4">
-                                <h3 className="text-2xl font-black text-blue-900 dark:text-blue-100">{item.name}</h3>
-                                <p className="text-blue-700 dark:text-blue-300 text-sm leading-relaxed">
+                                <h3 className="text-2xl font-black text-[#1A1A1A] dark:text-white">{item.name}</h3>
+                                <p className="text-[#1A1A1A]/70 dark:text-gray-300 text-sm leading-relaxed">
                                     {item.description}
                                 </p>
                             </div>
-                            <Button variant="ghost" className="p-0 h-auto font-bold text-blue-600 hover:text-blue-800 w-fit gap-2">
+                            <Button variant="ghost" className="p-0 h-auto font-bold text-[#1B9157] hover:text-[#146c43] w-fit gap-2">
                                 Discover more <ArrowRight className="w-4 h-4" />
                             </Button>
                         </Card>
@@ -263,7 +263,7 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                         <p className="text-blue-200/60 font-medium">Advanced power management for IoT platforms</p>
                     </div>
                     <div className="flex gap-4">
-                        <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-2xl px-8 h-14 font-bold border-none">
+                        <Button className="bg-[#1B9157] hover:bg-[#146c43] text-white rounded-2xl px-8 h-14 font-bold border-none">
                             Configuration & Maintenance
                         </Button>
                         <Button variant="outline" className="bg-white hover:bg-gray-100 text-[#0F172A] border-none rounded-2xl px-10 h-14 font-bold">
@@ -279,7 +279,7 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                     <h2 className="text-3xl font-bold tracking-tight px-12">
                         Table of measurement parameters supported by the BeeYield Hub Platform
                     </h2>
-                    <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">COMPLETE CAPABILITIES</p>
+                    <p className="text-[10px] font-bold text-[#F4D03F] uppercase tracking-widest">COMPLETE CAPABILITIES</p>
                 </div>
 
                 <div className="bg-white dark:bg-[#09090b] rounded-[2.5rem] border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm">
@@ -295,7 +295,7 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                             {parameters.map((p, i) => (
                                 <TableRow key={i} className="border-gray-50 dark:border-gray-800 hover:bg-gray-50/50 dark:hover:bg-gray-800/30">
                                     <TableCell className="px-8 py-4 font-medium text-gray-500">{i + 1}</TableCell>
-                                    <TableCell className="py-4 font-bold text-blue-600">{p.name}</TableCell>
+                                    <TableCell className="py-4 font-bold text-[#1B9157]">{p.name}</TableCell>
                                     <TableCell className="px-8 py-4 text-gray-500 text-sm">{p.description}</TableCell>
                                 </TableRow>
                             ))}

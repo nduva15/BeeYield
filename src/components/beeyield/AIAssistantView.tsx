@@ -49,7 +49,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
     const [messages, setMessages] = useState<Message[]>([]);
     const [inputValue, setInputValue] = useState('');
     const [showWelcome, setShowWelcome] = useState(true);
-    const { language } = useLanguage();
+    const { language, t } = useLanguage();
     const navigate = useNavigate();
 
     // Persist chats to localStorage
@@ -93,20 +93,20 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
     };
 
     const topicCategories = [
-        { icon: '🌸', label: 'Precision Pollination Services', color: 'bg-gray-50 dark:bg-gray-800/10' },
-        { icon: '📋', label: 'Blockchain & Honey Traceability', color: 'bg-gray-50 dark:bg-gray-800/10' },
-        { icon: '🩺', label: 'Bee Health & Acoustic AI', color: 'bg-gray-50 dark:bg-gray-800/10' },
-        { icon: '🛰️', label: 'IoT Smart Hive Technology', color: 'bg-gray-50 dark:bg-gray-800/10' },
-        { icon: '🎓', label: 'Beekeeper Training & Consulting', color: 'bg-gray-50 dark:bg-gray-800/10' },
-        { icon: '🌍', label: 'Global Network & Sustainability', color: 'bg-gray-50 dark:bg-gray-800/10' },
+        { icon: '🌸', label: t('topic_pollination'), color: 'bg-gray-50 dark:bg-gray-800/10' },
+        { icon: '📋', label: t('topic_blockchain'), color: 'bg-gray-50 dark:bg-gray-800/10' },
+        { icon: '🩺', label: t('topic_bee_health'), color: 'bg-gray-50 dark:bg-gray-800/10' },
+        { icon: '🛰️', label: t('topic_iot_hive'), color: 'bg-gray-50 dark:bg-gray-800/10' },
+        { icon: '🎓', label: t('topic_training'), color: 'bg-gray-50 dark:bg-gray-800/10' },
+        { icon: '🌍', label: t('topic_global_network'), color: 'bg-gray-50 dark:bg-gray-800/10' },
     ];
 
     const handleNewChat = () => {
         const newChat: Chat = {
             id: Date.now().toString(),
-            title: 'New Conversation',
+            title: t('new_conversation_title'),
             date: new Date().toLocaleDateString(),
-            preview: 'Start a new conversation...',
+            preview: t('start_new_conversation'),
             messages: []
         };
         setChats([newChat, ...chats]);
@@ -144,7 +144,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
         } else {
             setChats(prev => prev.map(c => {
                 if (c.id === selectedChat) {
-                    const isNewTitle = c.title === 'New Conversation';
+                    const isNewTitle = c.title === t('new_conversation_title');
                     return {
                         ...c,
                         title: isNewTitle ? (inputValue.length > 30 ? inputValue.substring(0, 30) + '...' : inputValue) : c.title,
@@ -185,7 +185,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
             const errorMessage: Message = {
                 id: (Date.now() + 2).toString(),
                 role: 'assistant',
-                content: "I'm sorry, I'm having trouble thinking right now. Please try again.",
+                content: t('error_ai_thinking'),
                 timestamp: new Date().toLocaleTimeString()
             };
             setMessages(prev => [...prev, errorMessage]);
@@ -219,7 +219,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                                 href={path}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-amber-600 dark:text-amber-400 font-bold hover:underline underline-offset-4 decoration-2 px-1 rounded hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-all cursor-pointer inline-flex items-center"
+                                className="text-[#F4D03F] dark:text-[#F4D03F] font-bold hover:underline underline-offset-4 decoration-2 px-1 rounded hover:bg-[#F4D03F]/5 dark:hover:bg-[#F4D03F]/20 transition-all cursor-pointer inline-flex items-center"
                             >
                                 {match[1].replace(/-/g, ' ').toUpperCase()}
                             </a>
@@ -236,18 +236,18 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
 
             {/* Page Title */}
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3 mb-8">
-                BeeYield AI <span role="img" aria-label="robot">🤖</span>
+                {t('ai_assistant_title')} <span role="img" aria-label="robot">🤖</span>
             </h1>
 
             {/* Orange Hero Card */}
-            <div className="relative mb-8 overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-[#FFA000] to-[#FF6F00] p-10 shadow-lg">
+            <div className="relative mb-8 overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-[#F4D03F] to-[#D4AF37] p-10 shadow-lg">
                 <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
                     <div className="space-y-4 max-w-2xl">
                         <h2 className="text-3xl md:text-4xl font-black text-white uppercase tracking-tight">
-                            BeeYield AI HUB INTELLIGENCE
+                            {t('ai_hub_intelligence')}
                         </h2>
                         <p className="text-white font-bold opacity-90 uppercase tracking-widest text-xs">
-                            Secure IoT Monitoring & Analysis | Neural Connectivity Active
+                            {t('ai_hub_status')}
                         </p>
                         <div className="flex flex-wrap gap-2 mt-6">
                             {topicCategories.map((topic, index) => (
@@ -267,7 +267,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                         className="bg-[#0F172A] hover:bg-[#1E293B] text-white rounded-2xl px-8 h-14 font-bold flex items-center gap-2 shadow-xl shrink-0"
                     >
                         <Plus className="w-5 h-5" />
-                        New Chat
+                        {t('new_chat')}
                     </Button>
                 </div>
             </div>
@@ -280,13 +280,13 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                     <div className="p-6 border-b border-gray-50 dark:border-[#1e1e1e]">
                         <div className="flex items-center gap-3 text-gray-900 dark:text-white">
                             <MessageSquare className="w-5 h-5 text-gray-400" />
-                            <span className="font-bold">Chats</span>
+                            <span className="font-bold">{t('chats_label')}</span>
                         </div>
                     </div>
                     <div className="flex-1 overflow-y-auto">
                         {chats.length === 0 ? (
                             <div className="p-8 text-center">
-                                <p className="text-gray-400 text-sm font-medium">Start a conversation!</p>
+                                <p className="text-gray-400 text-sm font-medium">{t('start_conversation')}</p>
                             </div>
                         ) : (
                             <div className="p-3 space-y-2">
@@ -314,8 +314,8 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                                                 <p className="text-[10px] text-gray-400 font-medium">
                                                     {chat.date}
                                                 </p>
-                                                <p className="text-[10px] text-amber-500/60 font-bold group-hover/chat:opacity-100 opacity-0 transition-opacity">
-                                                    {chat.messages.length} msgs
+                                                <p className="text-[10px] text-[#F4D03F]/60 font-bold group-hover/chat:opacity-100 opacity-0 transition-opacity">
+                                                    {chat.messages.length} {t('msgs_count')}
                                                 </p>
                                             </div>
                                         </button>
@@ -338,7 +338,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                     {/* Chat Header */}
                     {!showWelcome && (
                         <div className="p-6 border-b border-gray-50 dark:border-[#1e1e1e] flex items-center gap-4 bg-gray-50/50 dark:bg-white/5">
-                            <div className="w-16 h-16 rounded-2xl bg-white dark:bg-amber-900/40 border-2 border-amber-200 dark:border-amber-900/50 flex items-center justify-center p-3 shadow-md animate-in fade-in zoom-in duration-500">
+                            <div className="w-16 h-16 rounded-2xl bg-white dark:bg-[#F4D03F]/20 border-[#F4D03F]/20 dark:border-[#F4D03F]/30 flex items-center justify-center p-3 shadow-md animate-in fade-in zoom-in duration-500">
                                 <img src={Logo} alt="BEEYIELD" className="w-full h-full object-contain" />
                             </div>
                             <div>
@@ -347,7 +347,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                                 </h3>
                                 <p className="text-[10px] text-amber-500 font-bold uppercase tracking-[0.2em] flex items-center gap-2">
                                     <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                                    NEURAL CORE ONLINE
+                                    {t('neural_core_online')}
                                 </p>
                             </div>
                         </div>
@@ -364,18 +364,18 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                                                 <img src={Logo} alt="BeeYield AI" className="w-full h-full object-contain" />
                                             </div>
                                             <h3 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tighter mb-2">
-                                                BeeYield AI HUB
+                                                {t('ai_hub_title')}
                                             </h3>
                                         </div>
                                         <p className="text-gray-500 dark:text-gray-400 font-bold text-xs uppercase tracking-[0.15em] opacity-70">
-                                            Expert AI/ML Engineering Assistant
+                                            {t('ai_expert_assistant')}
                                         </p>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             {topicCategories.map((category, index) => (
                                                 <button
                                                     key={index}
                                                     onClick={() => handleTopicClick(category.label)}
-                                                    className="p-6 rounded-3xl bg-gray-50 dark:bg-[#1a1a1a] border border-gray-100 dark:border-gray-800 text-left transition-all duration-200 hover:border-amber-400 hover:shadow-md hover:bg-white dark:hover:bg-[#222]"
+                                                    className="p-6 rounded-3xl bg-gray-50 dark:bg-[#1a1a1a] border border-gray-100 dark:border-gray-800 text-left transition-all duration-200 hover:border-[#F4D03F] hover:shadow-md hover:bg-white dark:hover:bg-[#222]"
                                                 >
                                                     <div className="flex items-start gap-4">
                                                         <span className="text-2xl shrink-0">{category.icon}</span>
@@ -388,14 +388,14 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                                         </div>
                                         <div className="space-y-4 pt-4">
                                             <p className="text-gray-400 font-bold text-[10px] uppercase tracking-widest leading-relaxed px-10">
-                                                I use proprietary ML algorithms to analyze sensor data, detect anomalies, and predict disease risks with engineering precision.
+                                                {t('ai_proprietary_ml')}
                                             </p>
                                         </div>
                                         <Button
                                             onClick={handleNewChat}
-                                            className="bg-[#FFB300] hover:bg-[#FFA000] text-gray-900 rounded-2xl px-10 h-14 font-extrabold shadow-lg shadow-amber-500/20 transition-all hover:scale-105"
+                                            className="bg-[#F4D03F] hover:bg-[#FFA000] text-gray-900 rounded-2xl px-10 h-14 font-extrabold shadow-lg shadow-[#F4D03F]/20 transition-all hover:scale-105"
                                         >
-                                            New Chat
+                                            {t('new_chat')}
                                         </Button>
                                     </CardContent>
                                 </Card>
@@ -405,7 +405,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                                 {messages.length === 0 ? (
                                     <div className="flex-1 flex items-center justify-center">
                                         <div className="px-6 py-3 bg-gray-200/50 dark:bg-gray-800 rounded-full text-gray-500 font-bold text-sm">
-                                            New Chat
+                                            {t('new_chat')}
                                         </div>
                                     </div>
                                 ) : (
@@ -426,7 +426,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                                                 className={cn(
                                                     "max-w-[80%] p-6 rounded-[2rem] shadow-sm",
                                                     message.role === 'user'
-                                                        ? "bg-[#FFB300] text-gray-900 font-medium rounded-br-none"
+                                                        ? "bg-[#F4D03F] text-gray-900 font-medium rounded-br-none"
                                                         : "bg-white dark:bg-[#1e1e1e] text-gray-800 dark:text-gray-200 font-medium rounded-bl-none border border-gray-50 dark:border-gray-800"
                                                 )}
                                             >
@@ -479,8 +479,8 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                                     value={inputValue}
                                     onChange={(e) => setInputValue(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                                    placeholder="Ask BeeYield AI... (Upload photos, docs or links)"
-                                    className="w-full h-16 pl-6 pr-16 rounded-3xl bg-gray-50 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 focus-visible:ring-amber-200 shadow-inner group-hover:border-amber-200 transition-all text-base font-medium"
+                                    placeholder={t('ask_ai_placeholder')}
+                                    className="w-full h-16 pl-6 pr-16 rounded-3xl bg-gray-50 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 focus-visible:ring-[#F4D03F]/20 border-[#F4D03F]/20 transition-all text-base font-medium"
                                 />
                                 <Button
                                     id="send-ai-message"
@@ -499,9 +499,9 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
             {/* Terms and Regulations Footer */}
             <div className="mt-8 text-center bg-white dark:bg-[#141414] py-4 rounded-3xl border border-gray-50 dark:border-[#1e1e1e] shadow-sm">
                 <p className="text-xs font-bold text-gray-400 flex items-center justify-center gap-1">
-                    By using AI Assistant, you agree to our{' '}
+                    {t('ai_terms_agree')}{' '}
                     <a href="#" className="text-amber-500 hover:underline">
-                        Terms and Regulations
+                        {t('terms_regulations')}
                     </a>
                     .
                 </p>

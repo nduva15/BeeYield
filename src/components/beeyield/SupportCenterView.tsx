@@ -165,7 +165,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                 <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
                     <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-6 rounded-2xl shadow-sm">
                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Total Requests</p>
-                        <span className="text-3xl font-black text-gray-900 dark:text-white">{stats.total}</span>
+                        <span className="text-3xl font-black text-[#1B9157] dark:text-[#F4D03F]">{stats.total}</span>
                     </div>
                     <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-6 rounded-2xl shadow-sm">
                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Last Request</p>
@@ -195,7 +195,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                             className={cn(
                                 "px-6 py-2.5 rounded-full text-sm font-bold transition-all border shadow-sm",
                                 activeTab === tab.id
-                                    ? "bg-emerald-500 text-white border-emerald-500 shadow-emerald-500/20"
+                                    ? "bg-[#1B9157] text-white border-[#1B9157] shadow-green-500/20"
                                     : "bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800"
                             )}
                         >
@@ -229,8 +229,8 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                             <p className="text-gray-500 dark:text-gray-400">Kibwezi, Kenya</p>
                         </div>
 
-                        <p className="text-[#B48428] text-sm font-medium">
-                            Attach the <span onClick={handlePrint} className="underline cursor-pointer hover:text-amber-600 font-bold">printed service form</span> to your shipment.
+                        <p className="text-[#1B9157] text-sm font-medium">
+                            Attach the <span onClick={handlePrint} className="underline cursor-pointer hover:text-[#1B9157]/80 font-bold">printed service form</span> to your shipment.
                         </p>
                     </div>
 
@@ -244,7 +244,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                         </Button>
                         <Button
                             onClick={handlePrint}
-                            className="bg-amber-100 dark:bg-amber-900/30 hover:bg-amber-200 dark:hover:bg-amber-900/50 text-amber-900 dark:text-amber-100 border-none rounded-xl px-6 h-12 font-bold w-full justify-center gap-2"
+                            className="bg-[#F4D03F] hover:bg-[#EBC735] text-slate-800 border-none rounded-xl px-6 h-12 font-bold w-full justify-center gap-2"
                         >
                             <Printer className="w-4 h-4" />
                             Print service form
@@ -253,7 +253,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                             <DialogTrigger asChild>
                                 <Button
-                                    className="bg-[#B48428] hover:bg-[#966b1d] text-white rounded-xl px-6 h-12 font-bold w-full shadow-lg shadow-amber-500/20 justify-center transition-all hover:scale-[1.02]"
+                                    className="bg-[#1B9157] hover:bg-[#167d4a] text-white rounded-xl px-6 h-12 font-bold w-full shadow-lg shadow-green-500/10 justify-center transition-all hover:scale-[1.02]"
                                 >
                                     Add request online
                                 </Button>
@@ -327,7 +327,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                             placeholder=""
                                             value={formData.description}
                                             onChange={handleInputChange}
-                                            className="min-h-[180px] rounded-lg border-[#D94F3D] bg-transparent text-gray-800 dark:text-gray-100 text-lg focus-visible:ring-0 resize-none p-4"
+                                            className="min-h-[180px] rounded-lg border-[#1B9157] bg-transparent text-gray-800 dark:text-gray-100 text-lg focus-visible:ring-0 resize-none p-4"
                                             required
                                         />
                                     </div>
@@ -337,7 +337,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                             type="button"
                                             variant="ghost"
                                             onClick={() => setIsDialogOpen(false)}
-                                            className="h-10 px-0 text-xl font-bold text-[#B45309] hover:text-[#92400E] hover:bg-transparent"
+                                            className="h-10 px-0 text-xl font-bold text-[#1B9157] hover:text-[#167d4a] hover:bg-transparent"
                                         >
                                             Cancel
                                         </Button>
@@ -345,7 +345,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                             type="submit"
                                             disabled={isSubmitting}
                                             variant="ghost"
-                                            className="h-10 px-0 text-xl font-bold text-[#B45309] hover:text-[#92400E] hover:bg-transparent"
+                                            className="h-10 px-0 text-xl font-bold text-[#1B9157] hover:text-[#167d4a] hover:bg-transparent"
                                         >
                                             {isSubmitting ? "Saving..." : "Save"}
                                         </Button>
@@ -366,7 +366,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                         placeholder="Filter requests..."
                         value={filterText}
                         onChange={(e) => setFilterText(e.target.value)}
-                        className="w-full max-w-lg px-6 py-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl text-gray-900 dark:text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-[#B48428]/20 focus:border-[#B48428] transition-all font-medium shadow-sm"
+                        className="w-full max-w-lg px-6 py-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl text-gray-900 dark:text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-[#1B9157]/20 focus:border-[#1B9157] transition-all font-medium shadow-sm"
                     />
                 </div>
 
@@ -400,9 +400,9 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                         <td className="px-8 py-6 whitespace-nowrap">
                                             <span className={cn(
                                                 "px-3 py-1 text-xs font-black uppercase tracking-wider rounded-lg",
-                                                request.status === 'new' && "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-                                                request.status === 'in_progress' && "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-                                                request.status === 'resolved' && "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                                                request.status === 'new' && "bg-[#F4D03F]/10 text-[#7a6820]",
+                                                request.status === 'in_progress' && "bg-[#F4D03F]/10 text-[#7a6820]",
+                                                request.status === 'resolved' && "bg-[#1B9157]/10 text-[#1B9157]"
                                             )}>
                                                 {request.status === 'new' && 'New'}
                                                 {request.status === 'in_progress' && 'In Progress'}

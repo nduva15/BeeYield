@@ -246,8 +246,8 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
             <Card className="rounded-[2rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-[#111111] shadow-sm overflow-hidden mb-6">
                 <CardContent className="p-8">
                     <div className="flex items-center gap-3 mb-6">
-                        <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center border border-amber-100 dark:border-amber-500/20">
-                            <Info className="w-4 h-4 text-amber-600" />
+                        <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 dark:border-amber-500/20">
+                            <Info className="w-4 h-4 text-[#D4AF37]" />
                         </div>
                         <h2 className="text-xl font-bold text-[#0F172A] dark:text-white">How to use the analysis</h2>
                     </div>
@@ -300,7 +300,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                                     <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex flex-col items-center justify-center z-10 rounded-[1.5rem]">
                                         {realtimeCount > 0 ? (
                                             <>
-                                                <div className="text-6xl font-black text-amber-500 animate-pulse drop-shadow-lg">{realtimeCount}</div>
+                                                <div className="text-6xl font-black text-[#F4D03F] animate-pulse drop-shadow-lg">{realtimeCount}</div>
                                                 <div className="text-white font-bold uppercase tracking-widest text-[10px] mt-2 bg-black/50 px-3 py-1 rounded-full border border-white/10">Bees Detected</div>
                                             </>
                                         ) : (
@@ -327,7 +327,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                                     <div className="flex items-center justify-between gap-4">
                                         <span className="text-sm font-bold text-[#0F172A] dark:text-white">Healthy</span>
                                         <div className="flex-1 h-2 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden">
-                                            <div className="h-full bg-amber-600" style={{ width: `${results.overallConfidence}%` }} />
+                                            <div className="h-full bg-[#F4D03F]" style={{ width: `${results.overallConfidence}%` }} />
                                         </div>
                                         <span className="text-sm font-bold text-[#0F172A] dark:text-white">{results.overallConfidence}%</span>
                                     </div>
@@ -339,8 +339,8 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                     <div className="lg:col-span-6 space-y-6">
                         {isAnalyzing ? (
                             <Card className="rounded-[1.5rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-[#111111] p-8 h-full flex flex-col justify-center items-center text-center space-y-8 min-h-[400px]">
-                                <div className="w-24 h-24 rounded-[2rem] bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center border border-amber-100 dark:border-amber-500/20 shadow-inner">
-                                    <Bot className="w-12 h-12 text-amber-500 animate-bounce" />
+                                <div className="w-24 h-24 rounded-[2rem] bg-amber-50 dark:bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 dark:border-amber-500/20 shadow-inner">
+                                    <Bot className="w-12 h-12 text-[#F4D03F] animate-bounce" />
                                 </div>
                                 <div className="space-y-3">
                                     <h3 className="text-2xl font-black text-[#0F172A] dark:text-white uppercase tracking-tight leading-tight italic">Scanning specimen...</h3>
@@ -443,7 +443,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                             <Card className="rounded-[1.5rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-[#111111] p-8 h-full flex flex-col justify-center items-center text-center space-y-8 border-dashed min-h-[400px]">
                                 <Bot className="w-12 h-12 text-blue-500 animate-pulse" />
                                 <h3 className="text-xl font-bold text-slate-500">Ready for Processing</h3>
-                                <Button onClick={() => handleStartAnalysis()} className="w-full h-16 rounded-2xl bg-[#F97B5C] hover:bg-[#E86B4C] text-white font-black text-lg uppercase shadow-xl shadow-orange-500/20">
+                                <Button onClick={() => handleStartAnalysis()} className="w-full h-16 rounded-2xl bg-[#F4D03F]/10 text-white font-black text-lg uppercase shadow-xl shadow-orange-500/20">
                                     Process Specimen
                                 </Button>
                             </Card>

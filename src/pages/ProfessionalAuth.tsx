@@ -46,7 +46,7 @@ const ProfessionalAuth: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-[#f8f9fc] text-zinc-900 selection:bg-primary/30 font-mono overflow-hidden relative">
+        <div className="min-h-screen bg-[#f8f9fc] text-zinc-900 selection:bg-primary/30 overflow-hidden relative">
             {/* Soft Light Background Elements */}
             <div className="absolute inset-0 z-0">
                 <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(241,210,160,0.15)_0%,transparent_70%)]" />
@@ -62,7 +62,7 @@ const ProfessionalAuth: React.FC = () => {
                         </div>
                         <div>
                             <h1 className="text-lg font-bold tracking-tighter leading-none text-zinc-900">BEEYIELD <span className="text-primary">PRO</span></h1>
-                            <p className="text-[10px] text-zinc-400 leading-none mt-1 font-bold tracking-wider">INDUSTRIAL IOT ECOSYSTEM</p>
+                            <p className="text-xs text-zinc-400 leading-none mt-1 font-bold tracking-wider">INDUSTRIAL IOT ECOSYSTEM</p>
                         </div>
                     </div>
 
@@ -82,7 +82,7 @@ const ProfessionalAuth: React.FC = () => {
                             <div className="space-y-6">
                                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
                                     <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                                    <span className="text-[10px] font-bold text-primary tracking-widest uppercase">System Operational</span>
+                                    <span className="text-xs font-bold text-primary tracking-widest uppercase">System Operational</span>
                                 </div>
                                 <h2 className="text-6xl font-black tracking-tighter leading-tight text-zinc-900">
                                     Secure <br />
@@ -101,14 +101,14 @@ const ProfessionalAuth: React.FC = () => {
                                     <div key={i} className="p-6 rounded-2xl bg-white border border-zinc-200 hover:border-primary/50 transition-all group shadow-sm hover:shadow-md">
                                         <item.icon className="h-6 w-6 text-zinc-400 group-hover:text-primary mb-4 transition-colors" />
                                         <h4 className="font-bold text-sm mb-1 text-zinc-900">{item.label}</h4>
-                                        <p className="text-[10px] text-zinc-500 leading-relaxed font-sans">{item.desc}</p>
+                                        <p className="text-xs text-zinc-500 leading-relaxed">{item.desc}</p>
                                     </div>
                                 ))}
                             </div>
 
                             <div className="p-6 rounded-2xl bg-white border border-zinc-200 flex items-center gap-4 shadow-sm">
                                 <Terminal className="h-5 w-5 text-zinc-400" />
-                                <div className="font-mono text-[10px] text-zinc-400 overflow-hidden whitespace-nowrap">
+                                <div className="font-mono text-xs text-zinc-400 overflow-hidden whitespace-nowrap">
                                     <p className="animate-typing">root@beeyield-hub: auth --mode professional_v2.0.4</p>
                                     <p className="opacity-50 tracking-tighter">Initializing secure kernel session...</p>
                                 </div>
@@ -140,7 +140,7 @@ const ProfessionalAuth: React.FC = () => {
                                     <h3 className="text-2xl font-black tracking-tightest text-zinc-900">
                                         {authMode === 'login' ? 'PORTAL ACCESS' : authMode === 'register' ? 'NETWORK JOIN' : 'KEY RECOVERY'}
                                     </h3>
-                                    <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-[0.2em] mt-2">
+                                    <p className="text-xs text-zinc-400 font-bold uppercase tracking-[0.2em] mt-2">
                                         {authMode === 'login' ? 'Enter credentials for identity validation' : 'Register your professional IoT account'}
                                     </p>
                                 </div>
@@ -188,10 +188,10 @@ const ProfessionalAuth: React.FC = () => {
 
                                     <div className="mt-12 pt-8 border-t border-zinc-100 flex flex-col items-center gap-4 text-center">
                                         <div className="flex gap-4">
-                                            <div className="flex items-center gap-2 text-[8px] font-bold text-zinc-300 uppercase tracking-[0.3em]">
+                                            <div className="flex items-center gap-2 text-xs font-bold text-zinc-300 uppercase tracking-[0.3em]">
                                                 <Shield className="h-3 w-3" /> FIPS 140-2
                                             </div>
-                                            <div className="flex items-center gap-2 text-[8px] font-bold text-zinc-300 uppercase tracking-[0.3em]">
+                                            <div className="flex items-center gap-2 text-xs font-bold text-zinc-300 uppercase tracking-[0.3em]">
                                                 <Lock className="h-3 w-3" /> ISO 27001
                                             </div>
                                         </div>
@@ -203,7 +203,7 @@ const ProfessionalAuth: React.FC = () => {
                 </div>
 
                 {/* Cyber Footer (Light Version) */}
-                <div className="py-8 border-t border-zinc-200 flex items-center justify-between text-[8px] font-bold text-zinc-400 uppercase tracking-[0.3em]">
+                <div className="py-8 border-t border-zinc-200 flex items-center justify-between text-xs font-bold text-zinc-400 uppercase tracking-[0.3em]">
                     <p>© 2026 BEEYIELD GLOBAL HUB // CORE v4.0.2</p>
                     <div className="flex gap-8">
                         <span>LAT: 1.2921 N</span>
@@ -213,60 +213,7 @@ const ProfessionalAuth: React.FC = () => {
                 </div>
             </div>
 
-            <style>{`
-                .pro-auth-forms input {
-                    background: #ffffff !important;
-                    border: 1px solid #e4e4e7 !important;
-                    color: #18181b !important;
-                    height: 52px !important;
-                    border-radius: 14px !important;
-                    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
-                    font-size: 13px !important;
-                    transition: all 0.2s ease !important;
-                }
-                .pro-auth-forms input:focus {
-                    border-color: #f1d2a0 !important;
-                    box-shadow: 0 0 0 4px rgba(241, 210, 160, 0.15) !important;
-                }
-                .pro-auth-forms label {
-                    color: #71717a !important;
-                    font-size: 10px !important;
-                    text-transform: uppercase !important;
-                    letter-spacing: 0.1em !important;
-                    font-weight: 700 !important;
-                    margin-bottom: 6px !important;
-                }
-                .pro-auth-forms button[type="submit"] {
-                    background: #f1d2a0 !important;
-                    color: black !important;
-                    font-weight: 900 !important;
-                    height: 52px !important;
-                    border-radius: 14px !important;
-                    text-transform: uppercase !important;
-                    letter-spacing: 0.1em !important;
-                    font-size: 12px !important;
-                    border: none !important;
-                    box-shadow: 0 4px 20px -4px rgba(241, 210, 160, 0.4) !important;
-                    transition: all 0.2s ease !important;
-                }
-                .pro-auth-forms button[type="submit"]:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 8px 30px -4px rgba(241, 210, 160, 0.6) !important;
-                }
-                .animate-typing {
-                    border-right: 2px solid #f1d2a0;
-                    width: fit-content;
-                    animation: typing 3s steps(40, end), blink-caret .75s step-end infinite;
-                }
-                @keyframes typing {
-                    from { width: 0 }
-                    to { width: 100% }
-                }
-                @keyframes blink-caret {
-                    from, to { border-color: transparent }
-                    50% { border-color: #f1d2a0; }
-                }
-            `}</style>
+
         </div>
     );
 };

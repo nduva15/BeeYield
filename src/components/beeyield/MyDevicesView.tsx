@@ -88,16 +88,16 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
 
             {/* Stats Row 1 */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                <StatCard label={t('total_devices')} value={totalDevices} colorClass="bg-blue-600" />
-                <StatCard label={t('with_measurement')} value={withMeasurement} colorClass="bg-sky-400" />
-                <StatCard label={t('measured_24h')} value={measured24h} colorClass="bg-emerald-500" />
-                <StatCard label={t('measured_48h')} value={measured48h} colorClass="bg-emerald-500" />
-                <StatCard label={t('measured_7d')} value={measured7d} colorClass="bg-orange-400" />
+                <StatCard label={t('total_devices')} value={totalDevices} colorClass="bg-[#F4D03F]" />
+                <StatCard label={t('with_measurement')} value={withMeasurement} colorClass="bg-[#1B9157]" />
+                <StatCard label={t('measured_24h')} value={measured24h} colorClass="bg-[#1B9157]" />
+                <StatCard label={t('measured_48h')} value={measured48h} colorClass="bg-[#1B9157]" />
+                <StatCard label={t('measured_7d')} value={measured7d} colorClass="bg-[#F4D03F]" />
             </div>
 
             {/* Stats Row 2 */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3 max-w-[40%]">
-                <StatCard label={t('measured_30d')} value={measured30d} colorClass="bg-orange-500" />
+                <StatCard label={t('measured_30d')} value={measured30d} colorClass="bg-[#F4D03F]" />
                 <StatCard label={t('measured_365d')} value={measured365d} colorClass="bg-red-500" />
             </div>
 
@@ -108,9 +108,9 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
                     <AlertCard label={t('no_measurement_5d')} value={noMeasurement5d} colorClass="bg-red-500" />
-                    <AlertCard label={t('no_measurement_24h_5d')} value={0} colorClass="bg-orange-400" />
-                    <AlertCard label={t('low_battery')} value={lowBattery} colorClass="bg-orange-400" />
-                    <AlertCard label={t('weak_signal')} value={0} colorClass="bg-blue-500" />
+                    <AlertCard label={t('no_measurement_24h_5d')} value={0} colorClass="bg-[#F4D03F]" />
+                    <AlertCard label={t('low_battery')} value={lowBattery} colorClass="bg-[#F4D03F]" />
+                    <AlertCard label={t('weak_signal')} value={0} colorClass="bg-[#F4D03F]" />
                 </div>
 
                 <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mt-6 px-1">{t('all_healthy')}</p>
@@ -135,7 +135,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                 <div className="flex items-center gap-3">
                     <Button
                         onClick={() => setIsAddModalOpen(true)}
-                        className="h-11 px-6 rounded-full bg-[#6EE7B7] hover:bg-[#34D399] text-slate-900 font-bold shadow-lg shadow-emerald-500/10"
+                        className="h-11 px-6 rounded-full bg-[#1B9157] hover:bg-[#146c43] text-white font-bold shadow-lg shadow-green-500/10"
                     >
                         <Plus className="w-4 h-4 mr-2" /> {t('add_device')}
                     </Button>
@@ -145,7 +145,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                         className={cn(
                             "h-11 px-6 rounded-full font-bold shadow-sm transition-all",
                             showShortId
-                                ? "bg-[#3B82F6] hover:bg-[#2563EB] text-white border-transparent"
+                                ? "bg-[#F4D03F] hover:bg-[#e0be36] text-[#1A1A1A] border-transparent"
                                 : "bg-white dark:bg-black/20 border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-200"
                         )}
                     >
@@ -153,7 +153,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                             <div className="w-2.5 h-2.5 rounded-full bg-[#4ADE80] mr-2 shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
                         ) : (
                             <div className="w-3 h-3 rounded-full border-2 border-slate-200 flex items-center justify-center mr-2">
-                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#F4D03F]" />
                             </div>
                         )}
                         {t('show_short_id')}
@@ -163,7 +163,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                         className={cn(
                             "h-11 px-6 rounded-full font-bold shadow-lg transition-all",
                             showLastVal
-                                ? "bg-[#3B82F6] hover:bg-[#2563EB] text-white shadow-blue-500/20"
+                                ? "bg-[#F4D03F] hover:bg-[#e0be36] text-[#1A1A1A] shadow-yellow-500/20"
                                 : "bg-white dark:bg-black/20 border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-200 border"
                         )}
                     >
@@ -171,7 +171,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                             <div className="w-2.5 h-2.5 rounded-full bg-[#4ADE80] mr-2 shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
                         ) : (
                             <div className="w-3 h-3 rounded-full border-2 border-slate-200 flex items-center justify-center mr-2">
-                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#F4D03F]" />
                             </div>
                         )}
                         {t('show_last_measurement')}
@@ -212,7 +212,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                                         {showShortId && <td className="px-8 font-mono text-xs font-bold text-slate-500">{device.device_code}</td>}
                                         <td className={cn("px-6", !showShortId && "pl-8")}>
                                             <div className="flex items-center gap-2">
-                                                <div className={cn("w-2 h-2 rounded-full", device.status === 'active' ? 'bg-emerald-500' : 'bg-slate-300')} />
+                                                <div className={cn("w-2 h-2 rounded-full", device.status === 'active' ? 'bg-[#1B9157]' : 'bg-slate-300')} />
                                                 <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-tight">{device.status === 'active' ? t('online') : t('offline')}</span>
                                             </div>
                                         </td>

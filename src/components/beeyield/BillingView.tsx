@@ -115,7 +115,7 @@ const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
                     <Button
                         onClick={handleExportCSV}
                         variant="outline"
-                        className="rounded-full px-5 h-10 font-bold border-gray-200 hover:bg-gray-50 flex items-center gap-2"
+                        className="rounded-full px-5 h-10 font-bold border-[#1B9157]/20 hover:bg-[#1B9157]/5 text-[#1B9157] flex items-center gap-2"
                     >
                         <Download className="w-4 h-4" />
                         Export CSV
@@ -131,8 +131,8 @@ const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
                             className={cn(
                                 "px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap",
                                 activeAnalyticsTab === tab
-                                    ? "bg-[#1E293B] text-white"
-                                    : "bg-gray-50 text-gray-500 hover:bg-gray-100"
+                                    ? "bg-[#1B9157] text-white"
+                                    : "bg-gray-50 text-gray-500 hover:bg-[#1B9157]/10"
                             )}
                         >
                             {tab}
@@ -158,7 +158,7 @@ const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
                                     {monthlyOverviewData.map((row, i) => (
                                         <tr key={i}>
                                             <td className="py-4 text-sm font-medium text-gray-600">{row.month}</td>
-                                            <td className="py-4 text-sm font-bold text-green-600">{row.revenue} {currency}</td>
+                                            <td className="py-4 text-sm font-bold text-[#1B9157]">{row.revenue} {currency}</td>
                                             <td className="py-4 text-sm font-bold text-red-500">{row.costs} {currency}</td>
                                             <td className="py-4 text-sm font-bold text-gray-900">{row.net} {currency}</td>
                                         </tr>
@@ -186,8 +186,8 @@ const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
                                 <tbody className="divide-y divide-gray-50">
                                     {entityProfitabilityData.map((row, i) => (
                                         <tr key={i}>
-                                            <td className="py-4 text-sm font-medium text-blue-600 hover:underline cursor-pointer">{row.type}</td>
-                                            <td className="py-4 text-sm font-bold text-green-600">{row.revenue} {currency}</td>
+                                            <td className="py-4 text-sm font-medium text-[#1B9157] hover:underline cursor-pointer">{row.type}</td>
+                                            <td className="py-4 text-sm font-bold text-[#1B9157]">{row.revenue} {currency}</td>
                                             <td className="py-4 text-sm font-bold text-red-500">{row.costs} {currency}</td>
                                             <td className="py-4 text-sm font-bold text-gray-900">{row.net} {currency}</td>
                                         </tr>
@@ -351,8 +351,8 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                 <div>
                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">PLATFORM MODULE</p>
                     <div className="flex items-center gap-3">
-                        <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">Billing & Accounting</h1>
-                        <Badge className="bg-[#1E293B] text-white rounded-md text-[10px] px-2 py-0.5 border-none font-bold uppercase">BETA</Badge>
+                        <h1 className="text-[2.5rem] font-bold text-[#1B9157] dark:text-[#F4D03F] tracking-tight">Billing & Accounting</h1>
+                        <Badge className="bg-[#F4D03F] text-[#1A1A1A] rounded-md text-[10px] px-2 py-0.5 border-none font-bold uppercase">BETA</Badge>
                     </div>
                     <p className="text-xs text-gray-500 font-medium mt-1 max-w-xl">
                         Entity-based accounting for revenue, costs, documents, and analytics across BeeYield verticals.
@@ -363,11 +363,11 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                     <div className="relative">
                         <div
                             onClick={() => setIsCurrencyOpen(!isCurrencyOpen)}
-                            className="flex items-center gap-3 bg-white dark:bg-[#09090b] border border-gray-100 dark:border-[#1e1e1e] rounded-full px-5 h-10 shadow-sm cursor-pointer hover:border-gray-200 transition-all select-none"
+                            className="flex items-center gap-3 bg-white dark:bg-[#09090b] border border-gray-100 dark:border-[#1e1e1e] rounded-full px-5 h-10 shadow-sm cursor-pointer hover:border-[#1B9157]/40 transition-all select-none"
                         >
                             <span className="text-lg">{currentCurrency.flag}</span>
-                            <span className="text-sm font-black text-[#0F172A] dark:text-white uppercase tracking-wider">{currentCurrency.code}</span>
-                            <ChevronDown className={cn("w-3.5 h-3.5 text-gray-400 transition-transform duration-300", isCurrencyOpen && "rotate-180")} />
+                            <span className="text-sm font-black text-[#1B9157] dark:text-[#F4D03F] uppercase tracking-wider">{currentCurrency.code}</span>
+                            <ChevronDown className={cn("w-3.5 h-3.5 text-[#1B9157] transition-transform duration-300", isCurrencyOpen && "rotate-180")} />
                         </div>
 
                         {isCurrencyOpen && (
@@ -399,7 +399,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                                         <p className="text-[10px] text-gray-400 font-medium uppercase">{c.code}</p>
                                                     </div>
                                                 </div>
-                                                {currency === c.code && <div className="w-1.5 h-1.5 rounded-full bg-orange-400" />}
+                                                {currency === c.code && <div className="w-1.5 h-1.5 rounded-full bg-[#F4D03F]" />}
                                             </button>
                                         ))}
                                     </div>
@@ -409,7 +409,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                     </div>
                     <Button
                         onClick={() => setActiveSubTab('Documents')}
-                        className="bg-[#1E293B] hover:bg-[#0F172A] text-white rounded-full px-6 h-10 font-bold flex items-center gap-2"
+                        className="bg-[#1B9157] hover:bg-[#167d4a] text-white rounded-full px-6 h-10 font-bold flex items-center gap-2 shadow-lg shadow-green-500/10"
                     >
                         New document
                     </Button>
@@ -426,7 +426,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                         className={cn(
                             "px-6 py-2.5 rounded-full text-sm font-bold transition-all border shrink-0",
                             activeSubTab === tab
-                                ? "bg-[#1E293B] text-white border-[#1E293B]"
+                                ? "bg-[#1B9157] text-white border-[#1B9157]"
                                 : "bg-white text-gray-500 border-gray-100 hover:border-gray-300 dark:bg-[#141414] dark:border-[#1e1e1e]"
                         )}
                     >
@@ -443,7 +443,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                         {summaryCards.map((card, i) => (
                             <Card key={i} className="rounded-3xl border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm hover:shadow-md transition-shadow">
                                 <CardContent className="p-6">
-                                    <p className="text-sm font-bold text-gray-900 dark:text-white mb-2">{card.title}</p>
+                                    <p className="text-sm font-bold text-[#1B9157] dark:text-[#F4D03F] mb-2">{card.title}</p>
                                     <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-2">{card.value}</h2>
                                     <p className="text-xs text-gray-400 font-medium">{card.subtitle}</p>
                                 </CardContent>
@@ -502,7 +502,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
 
                                 <div className="flex items-center gap-2 mb-6">
                                     <span className="text-[10px] text-gray-400 uppercase font-black">Status:</span>
-                                    <Badge className="bg-orange-50 text-orange-500 border border-orange-100 rounded-md text-[10px] px-2 py-0.5 font-bold uppercase">Not connected</Badge>
+                                    <Badge className="bg-[#F4D03F]/10 text-[#7a6820] border border-[#F4D03F]/20 rounded-md text-[10px] px-2 py-0.5 font-bold uppercase">Not connected</Badge>
                                 </div>
 
                                 <div className="flex gap-2 mt-4">
@@ -607,7 +607,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                 </div>
                             </div>
 
-                            <Button className="mt-8 bg-[#1E293B] hover:bg-[#0F172A] text-white rounded-full px-8 h-12 font-bold shadow-lg shadow-gray-200">
+                            <Button className="mt-8 bg-[#1B9157] hover:bg-[#167d4a] text-white rounded-full px-8 h-12 font-bold shadow-lg shadow-green-500/10">
                                 Add revenue
                             </Button>
                         </CardContent>
@@ -669,11 +669,11 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                             {/* Pagination/Scrollbar UI from screenshot */}
                             <div className="mt-4 flex items-center justify-between">
                                 <div className="h-1.5 bg-gray-100 rounded-full flex-1 mx-4 relative overflow-hidden">
-                                    <div className="absolute inset-y-0 left-0 w-1/3 bg-orange-400 rounded-full" />
+                                    <div className="absolute inset-y-0 left-0 w-1/3 bg-[#1B9157] rounded-full" />
                                 </div>
                                 <div className="flex gap-1">
-                                    <button className="p-1 hover:bg-gray-50 rounded text-orange-400"><Plus className="w-3 h-3 rotate-45" /></button>
-                                    <button className="p-1 hover:bg-gray-50 rounded text-orange-400"><Plus className="w-3 h-3 rotate-45" /></button>
+                                    <button className="p-1 hover:bg-gray-50 rounded text-[#1B9157]"><Plus className="w-3 h-3 rotate-45" /></button>
+                                    <button className="p-1 hover:bg-gray-50 rounded text-[#1B9157]"><Plus className="w-3 h-3 rotate-45" /></button>
                                 </div>
                             </div>
                         </CardContent>
@@ -782,7 +782,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                             </div>
 
                             <div className="mt-8 flex flex-col gap-4">
-                                <Button className="bg-[#1E293B] hover:bg-[#0F172A] text-white rounded-full px-8 h-12 font-bold shadow-lg shadow-gray-200 self-start">
+                                <Button className="bg-[#1B9157] hover:bg-[#167d4a] text-white rounded-full px-8 h-12 font-bold shadow-lg shadow-green-500/10 self-start">
                                     Add cost
                                 </Button>
 
@@ -1102,7 +1102,7 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                 </p>
                             </div>
 
-                            <Button className="bg-[#2563EB] hover:bg-blue-700 text-white rounded-full px-8 h-11 font-bold shadow-md shadow-blue-100 transition-all">
+                            <Button className="bg-[#1B9157] hover:bg-[#146c43] text-white rounded-full px-8 h-11 font-bold shadow-md shadow-green-100 transition-all">
                                 Connect to eTIMS
                             </Button>
                         </CardContent>
