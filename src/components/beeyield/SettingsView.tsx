@@ -39,7 +39,7 @@ const languages = [
 
 const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
     const { user } = useAuth();
-    const { language, setLanguage } = useLanguage();
+    const { language, setLanguage, t } = useLanguage();
     const { showGuides, setShowGuides } = useSettings();
     const [uploading, setUploading] = useState(false);
     const [emailUpdating, setEmailUpdating] = useState(false);
@@ -164,7 +164,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
             y: 0,
             opacity: 1,
             transition: {
-                type: "spring",
+                type: "spring" as const,
                 stiffness: 100,
                 damping: 15
             }
@@ -297,15 +297,15 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                     <motion.div variants={itemVariants}>
                         <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-xl shadow-sm overflow-hidden hover:shadow-md transition-all duration-500">
                             <CardHeader className="p-10 pb-4">
-                                <CardTitle className="text-2xl font-black leading-tight">AI auto notifications</CardTitle>
-                                <p className="text-sm text-gray-400 font-medium pt-2">When significant patterns are detected (e.g., anomalies, swarming risk, sensor issues), we'll send an automatic notification.</p>
+                                <CardTitle className="text-2xl font-black leading-tight">{t('ai_notifications')}</CardTitle>
+                                <p className="text-sm text-gray-400 font-medium pt-2">{t('ai_notifications_desc')}</p>
                             </CardHeader>
                             <CardContent className="p-10 pt-0 space-y-8">
                                 <div className="flex items-center gap-4 bg-gray-50/50 dark:bg-white/5 p-4 rounded-2xl border border-gray-100 dark:border-white/5">
                                     <Switch defaultChecked className="data-[state=checked]:bg-[#B48428] scale-125 ml-2" />
                                     <div className="flex flex-col">
-                                        <span className="text-sm font-bold text-gray-700 dark:text-gray-300">Enable AI notifications</span>
-                                        <span className="text-[10px] text-gray-400 font-medium">Smart alerts based on hive data analysis</span>
+                                        <span className="text-sm font-bold text-gray-700 dark:text-gray-300">{t('enable_ai_notifications')}</span>
+                                        <span className="text-[10px] text-gray-400 font-medium">{t('smart_alerts_desc')}</span>
                                     </div>
                                 </div>
                                 <div className="flex justify-end">
@@ -314,7 +314,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                         whileTap={{ scale: 0.98 }}
                                         className="bg-transparent border-2 border-gray-200 dark:border-gray-800 text-gray-500 hover:border-[#B48428] hover:text-[#B48428] rounded-2xl px-10 py-3 font-bold text-sm transition-all"
                                     >
-                                        Save
+                                        {t('save')}
                                     </motion.button>
                                 </div>
                             </CardContent>
@@ -325,15 +325,15 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                     <motion.div variants={itemVariants}>
                         <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-xl shadow-sm overflow-hidden hover:shadow-md transition-all duration-500">
                             <CardHeader className="p-10 pb-4">
-                                <CardTitle className="text-2xl font-black leading-tight">Email notifications from BeeYield Hub devices</CardTitle>
-                                <p className="text-sm text-gray-400 font-medium pt-2">BeeYield Hub devices send out vandalism alerts. You can temporarily disable this option, for example during an inspection.</p>
+                                <CardTitle className="text-2xl font-black leading-tight">{t('email_notifications_hub')}</CardTitle>
+                                <p className="text-sm text-gray-400 font-medium pt-2">{t('email_notifications_hub_desc')}</p>
                             </CardHeader>
                             <CardContent className="p-10 pt-0 space-y-8">
                                 <div className="flex items-center gap-4 bg-gray-50/50 dark:bg-white/5 p-4 rounded-2xl border border-gray-100 dark:border-white/5">
                                     <Switch defaultChecked className="data-[state=checked]:bg-[#B48428] scale-125 ml-2" />
                                     <div className="flex flex-col">
-                                        <span className="text-sm font-bold text-gray-700 dark:text-gray-300">Allow for email notifications from BeeYield Hub devices</span>
-                                        <span className="text-[10px] text-gray-400 font-medium">Get notified about critical device status</span>
+                                        <span className="text-sm font-bold text-gray-700 dark:text-gray-300">{t('allow_hub_notifications')}</span>
+                                        <span className="text-[10px] text-gray-400 font-medium">{t('critical_device_status')}</span>
                                     </div>
                                 </div>
                                 <div className="flex justify-end">
@@ -342,7 +342,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                         whileTap={{ scale: 0.98 }}
                                         className="bg-transparent border-2 border-gray-200 dark:border-gray-800 text-gray-500 hover:border-[#B48428] hover:text-[#B48428] rounded-2xl px-10 py-3 font-bold text-sm transition-all"
                                     >
-                                        Save
+                                        {t('save')}
                                     </motion.button>
                                 </div>
                             </CardContent>
@@ -356,24 +356,24 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                     <motion.div variants={itemVariants}>
                         <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-xl shadow-sm overflow-hidden hover:shadow-md transition-all duration-500">
                             <CardHeader className="p-10 pb-4">
-                                <CardTitle className="text-2xl font-black">Account information</CardTitle>
+                                <CardTitle className="text-2xl font-black">{t('account_info')}</CardTitle>
                             </CardHeader>
                             <CardContent className="p-10 pt-0 space-y-6">
                                 <div className="flex justify-between items-center py-4 border-b border-gray-50 dark:border-white/5">
                                     <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                        <UserRound className="w-4 h-4" /> Account type
+                                        <UserRound className="w-4 h-4" /> {t('account_type')}
                                     </span>
                                     <Badge className="bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-lg text-[10px] uppercase font-black tracking-widest border border-blue-200 dark:border-blue-900/50 px-3 py-1.5">{userMetadata.role || 'BEEKEEPER'}</Badge>
                                 </div>
                                 <div className="flex justify-between items-center py-4 border-b border-gray-50 dark:border-white/5">
                                     <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                        <Star className="w-4 h-4" /> Subscription
+                                        <Star className="w-4 h-4" /> {t('subscription')}
                                     </span>
                                     <span className="text-sm font-black text-gray-900 dark:text-white bg-gray-100 dark:bg-white/10 px-3 py-1 rounded-lg">-</span>
                                 </div>
                                 <div className="flex justify-between items-center py-4">
                                     <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                        <CloudRain className="w-4 h-4" /> Joined
+                                        <CloudRain className="w-4 h-4" /> {t('joined')}
                                     </span>
                                     <span className="text-sm font-black text-gray-900 dark:text-white font-mono">{new Date(user?.created_at || Date.now()).toLocaleDateString()}</span>
                                 </div>
@@ -385,12 +385,12 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                     <motion.div variants={itemVariants}>
                         <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-xl shadow-sm overflow-hidden hover:shadow-md transition-all duration-500">
                             <CardHeader className="p-10 pb-4">
-                                <CardTitle className="text-2xl font-black">Change Email</CardTitle>
-                                <p className="text-sm text-gray-400 font-medium pt-2">Update your email address. You will need to verify the new email.</p>
+                                <CardTitle className="text-2xl font-black">{t('change_email')}</CardTitle>
+                                <p className="text-sm text-gray-400 font-medium pt-2">{t('change_email_desc')}</p>
                             </CardHeader>
                             <CardContent className="p-10 pt-0 space-y-4">
                                 <div className="relative group">
-                                    <Label htmlFor="new-email" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10 pointer-events-none">New Email Address</Label>
+                                    <Label htmlFor="new-email" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10 pointer-events-none">{t('new_email_address')}</Label>
                                     <Input
                                         id="new-email"
                                         type="email"
@@ -412,7 +412,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                         disabled={emailUpdating || !newEmail}
                                     >
                                         {emailUpdating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2" />}
-                                        Update Email
+                                        {t('update_email')}
                                     </motion.button>
                                 </div>
                             </CardContent>
@@ -423,8 +423,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                     <motion.div variants={itemVariants}>
                         <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-xl shadow-sm overflow-hidden hover:shadow-md transition-all duration-500">
                             <CardHeader className="p-10 pb-4">
-                                <CardTitle className="text-2xl font-black">Change password</CardTitle>
-                                <p className="text-sm text-gray-400 font-medium pt-2">Secure your account with a strong password.</p>
+                                <CardTitle className="text-2xl font-black">{t('change_password')}</CardTitle>
+                                <p className="text-sm text-gray-400 font-medium pt-2">{t('change_password_desc')}</p>
                             </CardHeader>
                             <CardContent className="p-10 pt-0">
                                 <div className="flex justify-end">
@@ -433,7 +433,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                         whileTap={{ scale: 0.98 }}
                                         className="bg-transparent border-2 border-gray-200 dark:border-gray-800 text-gray-500 hover:border-gray-400 hover:text-gray-900 dark:hover:text-white rounded-2xl px-10 py-3 font-bold text-sm transition-all"
                                     >
-                                        Change password
+                                        {t('change_password')}
                                     </motion.button>
                                 </div>
                             </CardContent>
@@ -444,8 +444,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                     <motion.div variants={itemVariants}>
                         <Card className="rounded-[2.5rem] border border-red-50 dark:border-red-900/10 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-xl shadow-sm overflow-hidden hover:shadow-md transition-all duration-500">
                             <CardHeader className="p-10 pb-4">
-                                <CardTitle className="text-2xl font-black text-red-600">Delete Account</CardTitle>
-                                <p className="text-sm text-red-400 font-medium pt-4 leading-relaxed">Delete Account means the action of deleting an Account. This removes the Account from the database entirely.</p>
+                                <CardTitle className="text-2xl font-black text-red-600">{t('delete_account')}</CardTitle>
+                                <p className="text-sm text-red-400 font-medium pt-4 leading-relaxed">{t('delete_account_desc')}</p>
                             </CardHeader>
                             <CardContent className="p-10 pt-0">
                                 <div className="flex justify-end pt-4">
@@ -454,7 +454,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                         whileTap={{ scale: 0.98 }}
                                         className="bg-red-50 dark:bg-red-900/10 border-2 border-red-100 dark:border-red-900/20 text-red-500 hover:bg-red-500 hover:text-white rounded-2xl px-10 py-3 font-bold text-sm transition-all shadow-none"
                                     >
-                                        Delete My Account
+                                        {t('delete_my_account')}
                                     </motion.button>
                                 </div>
                             </CardContent>
@@ -465,8 +465,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                     <motion.div variants={itemVariants}>
                         <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-xl shadow-sm overflow-hidden hover:shadow-md transition-all duration-500">
                             <CardHeader className="p-10 pb-4">
-                                <CardTitle className="text-2xl font-black">Guides & Tutorials</CardTitle>
-                                <p className="text-sm text-gray-400 font-medium pt-2">Enable or disable in-app tips, guides and onboarding tutorials.</p>
+                                <CardTitle className="text-2xl font-black">{t('guides_tutorials')}</CardTitle>
+                                <p className="text-sm text-gray-400 font-medium pt-2">{t('guides_tutorials_desc')}</p>
                             </CardHeader>
                             <CardContent className="p-10 pt-0 space-y-8">
                                 <div className="flex items-center gap-4 bg-gray-50/50 dark:bg-white/5 p-4 rounded-2xl border border-gray-100 dark:border-white/5">
@@ -476,8 +476,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                         className="data-[state=checked]:bg-[#B48428] scale-125 ml-2"
                                     />
                                     <div className="flex flex-col">
-                                        <span className="text-sm font-bold text-gray-700 dark:text-gray-300">Enable tips & tutorials</span>
-                                        <span className="text-[10px] text-gray-400 font-medium">Helper tooltips and walkthroughs</span>
+                                        <span className="text-sm font-bold text-gray-700 dark:text-gray-300">{t('enable_tips_tutorials')}</span>
+                                        <span className="text-[10px] text-gray-400 font-medium">{t('helper_tooltips_desc')}</span>
                                     </div>
                                 </div>
                                 <div className="flex justify-end">
@@ -486,7 +486,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                         whileTap={{ scale: 0.98 }}
                                         className="bg-transparent border-2 border-gray-200 dark:border-gray-800 text-gray-500 hover:border-[#B48428] hover:text-[#B48428] rounded-2xl px-10 py-3 font-bold text-sm transition-all"
                                     >
-                                        Save
+                                        {t('save')}
                                     </motion.button>
                                 </div>
                             </CardContent>
@@ -501,8 +501,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                     <CardHeader className="p-10 pb-6 border-b border-gray-50 dark:border-[#1e1e1e]">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div>
-                                <CardTitle className="text-3xl font-black">Enable / disable modules</CardTitle>
-                                <p className="text-sm text-gray-400 font-medium mt-4 max-w-2xl leading-relaxed">Enable or disable the main application modules for your account. Changes affect the menu and access to features.</p>
+                                <CardTitle className="text-3xl font-black">{t('modules_settings')}</CardTitle>
+                                <p className="text-sm text-gray-400 font-medium mt-4 max-w-2xl leading-relaxed">{t('modules_settings_desc')}</p>
                             </div>
                             <div className="flex gap-2">
                                 <motion.button
@@ -510,14 +510,14 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     whileHover={{ scale: 1.05 }}
                                     className="bg-gray-100 dark:bg-white/5 rounded-xl px-5 py-2 text-xs font-black uppercase tracking-widest text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors"
                                 >
-                                    Enable all
+                                    {t('enable_all')}
                                 </motion.button>
                                 <motion.button
                                     onClick={disableAllModules}
                                     whileHover={{ scale: 1.05 }}
                                     className="bg-gray-100 dark:bg-white/5 rounded-xl px-5 py-2 text-xs font-black uppercase tracking-widest text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors"
                                 >
-                                    Disable all
+                                    {t('disable_all')}
                                 </motion.button>
                             </div>
                         </div>
@@ -525,8 +525,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                     <CardContent className="p-10 pt-8">
                         <div className="border border-gray-100 dark:border-[#1e1e1e] rounded-[2.5rem] overflow-hidden">
                             <div className="bg-gray-50/50 dark:bg-[#1e1e1e]/20 px-8 py-6 border-b border-gray-100 dark:border-[#1e1e1e]">
-                                <p className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Core modules</p>
-                                <p className="text-[10px] font-bold text-gray-400 opacity-60">UI only for now (no persistence).</p>
+                                <p className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-1">{t('core_modules')}</p>
+                                <p className="text-[10px] font-bold text-gray-400 opacity-60">{t('ui_only_desc')}</p>
                             </div>
 
                             <div className="divide-y divide-gray-50 dark:divide-[#1e1e1e] bg-white dark:bg-[#09090b]">
@@ -544,7 +544,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                 <div className="flex items-center gap-2 mb-1">
                                                     <span className="text-lg font-black text-gray-900 dark:text-white">{mod.label}</span>
                                                     {mod.priority && (
-                                                        <Badge className="bg-[#B48428] text-white text-[8px] font-black tracking-widest px-2 py-0.5 rounded-sm border-none shadow-sm">PRIORITY</Badge>
+                                                        <Badge className="bg-[#B48428] text-white text-[8px] font-black tracking-widest px-2 py-0.5 rounded-sm border-none shadow-sm">{t('priority')}</Badge>
                                                     )}
                                                 </div>
                                                 <p className="text-sm text-gray-400 font-medium">{mod.desc}</p>
@@ -571,7 +571,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     whileHover={{ scale: 1.05 }}
                                     className="bg-[#B48428] hover:bg-[#966b1d] text-white rounded-2xl px-12 h-14 font-black shadow-xl shadow-amber-500/20 border-none transition-all ml-4 text-base"
                                 >
-                                    Save Changes
+                                    {t('save_changes')}
                                 </motion.button>
                             </div>
                         </div>

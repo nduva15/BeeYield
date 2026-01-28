@@ -70,7 +70,7 @@ const MetersSettings: React.FC = () => {
             <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm">
                 <CardHeader>
                     <div className="flex items-center gap-2">
-                        <Settings2 className="w-5 h-5 text-primary" />
+                        <Settings2 className="w-5 h-5 text-[#1B9157]" />
                         <CardTitle>Meter rules and preferences</CardTitle>
                     </div>
                     <CardDescription>Configure alarms, thresholds and integrations.</CardDescription>
@@ -82,7 +82,7 @@ const MetersSettings: React.FC = () => {
                 <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm">
                     <CardHeader>
                         <div className="flex items-center gap-2">
-                            <Bell className="w-5 h-5 text-primary" />
+                            <Bell className="w-5 h-5 text-[#1B9157]" />
                             <CardTitle>Notifications</CardTitle>
                         </div>
                     </CardHeader>
@@ -105,7 +105,7 @@ const MetersSettings: React.FC = () => {
                 <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm">
                     <CardHeader>
                         <div className="flex items-center gap-2">
-                            <Shield className="w-5 h-5 text-primary" />
+                            <Shield className="w-5 h-5 text-[#1B9157]" />
                             <CardTitle>Alert thresholds</CardTitle>
                         </div>
                     </CardHeader>
@@ -129,7 +129,7 @@ const MetersSettings: React.FC = () => {
             <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm">
                 <CardHeader>
                     <div className="flex items-center gap-2">
-                        <Plug className="w-5 h-5 text-primary" />
+                        <Plug className="w-5 h-5 text-[#1B9157]" />
                         <CardTitle>Integrations</CardTitle>
                     </div>
                     <CardDescription>Connect to billing or ERP systems.</CardDescription>

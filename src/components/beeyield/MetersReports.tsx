@@ -46,7 +46,7 @@ const MetersReports: React.FC = () => {
             <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm">
                 <CardHeader>
                     <div className="flex items-center gap-2">
-                        <Activity className="w-5 h-5 text-primary" />
+                        <Activity className="w-5 h-5 text-[#1B9157]" />
                         <CardTitle>Ready summaries for administrators</CardTitle>
                     </div>
                     <CardDescription>Export PDF/XLS without heavy OMS workflows.</CardDescription>
@@ -55,7 +55,7 @@ const MetersReports: React.FC = () => {
 
             {/* Report Generation Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm border-l-4 border-l-primary/50">
+                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm border-l-4 border-l-[#F4D03F]">
                     <CardContent className="p-6 space-y-4">
                         <div className="flex items-center gap-2">
                             <FileText className="w-5 h-5 text-gray-700 dark:text-gray-300" />
@@ -74,7 +74,7 @@ const MetersReports: React.FC = () => {
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm border-l-4 border-l-primary/50">
+                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm border-l-4 border-l-[#F4D03F]">
                     <CardContent className="p-6 space-y-4">
                         <div className="flex items-center gap-2">
                             <BarChart className="w-5 h-5 text-gray-700 dark:text-gray-300" />
@@ -93,7 +93,7 @@ const MetersReports: React.FC = () => {
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm border-l-4 border-l-primary/50">
+                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm border-l-4 border-l-[#F4D03F]">
                     <CardContent className="p-6 space-y-4">
                         <div className="flex items-center gap-2">
                             <DollarSign className="w-5 h-5 text-gray-700 dark:text-gray-300" />

@@ -8,110 +8,113 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 42 45% 97%;
-    --foreground: 28 25% 15%;
+    --background: 48 30% 97%;
+    --foreground: 0 0% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 28 25% 15%;
+    --card-foreground: 0 0% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 28 25% 15%;
+    --popover-foreground: 0 0% 10%;
 
-    /* Honey gold primary color */
-    --primary: 35 65% 55%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 38 80% 65%;
+    /* BeeYield Logo Yellow/Gold - #F4D03F */
+    --primary: 48 87% 60%;
+    --primary-foreground: 0 0% 10%;
+    --primary-glow: 48 90% 65%;
 
-    /* Sustainable green secondary */
-    --secondary: 142 45% 35%;
+    /* BeeYield Logo Green - #1B9157 */
+    --secondary: 153 68% 34%;
     --secondary-foreground: 0 0% 100%;
 
     /* Warm cream muted */
-    --muted: 40 35% 92%;
-    --muted-foreground: 28 20% 40%;
+    --muted: 48 30% 92%;
+    --muted-foreground: 0 0% 35%;
 
-    /* Accent amber */
-    --accent: 32 75% 60%;
-    --accent-foreground: 0 0% 100%;
+    /* Accent - lighter gold variant */
+    --accent: 48 80% 55%;
+    --accent-foreground: 0 0% 10%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 35 30% 88%;
-    --input: 35 30% 88%;
-    --ring: 35 65% 55%;
+    --border: 48 30% 88%;
+    --input: 48 30% 88%;
+    --ring: 48 87% 60%;
 
     --radius: 0.75rem;
 
-    /* Custom tokens */
-    --honey-light: 42 80% 85%;
-    --honey-dark: 32 60% 40%;
-    --nature-green: 142 45% 35%;
-    --nature-green-light: 142 35% 85%;
+    /* Custom tokens - BeeYield Logo Colors */
+    --honey-light: 48 85% 85%;
+    --honey-dark: 48 75% 45%;
+    --nature-green: 153 68% 34%;
+    --nature-green-light: 153 50% 85%;
 
-    /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(35 65% 55%) 0%, hsl(32 75% 60%) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(42 45% 97%) 0%, hsl(40 35% 92%) 100%);
+    /* Gradients - BeeYield brand */
+    --gradient-hero: linear-gradient(135deg, hsl(48 87% 60%) 0%, hsl(153 68% 34%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(48 30% 97%) 0%, hsl(48 30% 92%) 100%);
 
     /* Shadows */
-    --shadow-soft: 0 4px 20px -2px hsl(35 65% 55% / 0.15);
-    --shadow-glow: 0 8px 32px -4px hsl(38 80% 65% / 0.3);
+    --shadow-soft: 0 4px 20px -2px hsl(48 87% 60% / 0.15);
+    --shadow-glow: 0 8px 32px -4px hsl(48 90% 65% / 0.3);
 
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 35 25% 26%;
-    --sidebar-primary: 35 65% 55%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 35 60% 95%;
-    --sidebar-accent-foreground: 35 65% 25%;
-    --sidebar-border: 35 20% 90%;
-    --sidebar-ring: 35 65% 55%;
+    --sidebar-foreground: 0 0% 15%;
+    --sidebar-primary: 48 87% 60%;
+    --sidebar-primary-foreground: 0 0% 10%;
+    --sidebar-accent: 48 70% 95%;
+    --sidebar-accent-foreground: 48 80% 25%;
+    --sidebar-border: 48 20% 90%;
+    --sidebar-ring: 48 87% 60%;
   }
 
   .dark {
-    --background: 28 35% 8%;
-    --foreground: 42 45% 95%;
+    --background: 0 0% 8%;
+    --foreground: 48 30% 95%;
 
-    --card: 28 30% 12%;
-    --card-foreground: 42 45% 95%;
+    --card: 0 0% 12%;
+    --card-foreground: 48 30% 95%;
 
-    --popover: 28 30% 12%;
-    --popover-foreground: 42 45% 95%;
+    --popover: 0 0% 12%;
+    --popover-foreground: 48 30% 95%;
 
-    --primary: 35 65% 55%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 38 80% 65%;
+    /* BeeYield Logo Yellow/Gold - #F4D03F */
+    --primary: 48 87% 60%;
+    --primary-foreground: 0 0% 10%;
+    --primary-glow: 48 90% 65%;
 
-    --secondary: 142 40% 40%;
+    /* BeeYield Logo Green - #1B9157 */
+    --secondary: 153 60% 42%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 28 25% 20%;
-    --muted-foreground: 40 20% 65%;
+    --muted: 0 0% 18%;
+    --muted-foreground: 48 20% 65%;
 
-    --accent: 32 75% 60%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 48 80% 55%;
+    --accent-foreground: 0 0% 10%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 28 25% 25%;
-    --input: 28 25% 25%;
-    --ring: 35 65% 55%;
+    --border: 0 0% 22%;
+    --input: 0 0% 22%;
+    --ring: 48 87% 60%;
 
-    --honey-light: 42 60% 35%;
-    --honey-dark: 32 80% 65%;
-    --nature-green: 142 40% 40%;
-    --nature-green-light: 142 25% 25%;
-    --sidebar-background: 28 35% 10%;
-    --sidebar-foreground: 40 40% 95%;
-    --sidebar-primary: 35 65% 55%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 35 40% 18%;
-    --sidebar-accent-foreground: 40 40% 95%;
-    --sidebar-border: 28 25% 18%;
-    --sidebar-ring: 35 65% 55%;
+    /* Custom tokens - BeeYield Logo Colors (Dark Mode) */
+    --honey-light: 48 65% 35%;
+    --honey-dark: 48 90% 65%;
+    --nature-green: 153 58% 42%;
+    --nature-green-light: 153 35% 22%;
+    --sidebar-background: 0 0% 10%;
+    --sidebar-foreground: 48 30% 95%;
+    --sidebar-primary: 48 87% 60%;
+    --sidebar-primary-foreground: 0 0% 10%;
+    --sidebar-accent: 48 50% 18%;
+    --sidebar-accent-foreground: 48 30% 95%;
+    --sidebar-border: 0 0% 18%;
+    --sidebar-ring: 48 87% 60%;
   }
 }
 
@@ -120,8 +123,73 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  html {
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
   body {
     @apply bg-background text-foreground;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  /* Consistent heading sizes */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  h1 {
+    font-size: 2.25rem;
+  }
+
+  h2 {
+    font-size: 1.875rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+  }
+
+  h4 {
+    font-size: 1.25rem;
+  }
+
+  h5 {
+    font-size: 1.125rem;
+  }
+
+  h6 {
+    font-size: 1rem;
+  }
+
+  /* Consistent paragraph and text */
+  p,
+  span,
+  div,
+  label,
+  a {
+    font-family: inherit;
+  }
+
+  /* Consistent button and input typography */
+  button,
+  input,
+  select,
+  textarea {
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.875rem;
   }
 }
 

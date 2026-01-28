@@ -96,7 +96,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
         return <MetersAlarms />;
     }
     if (activeSubTab === 'meters-payments') {
-        return <MetersPayments />;
+        return <MetersPayments onTabChange={onTabChange} />;
     }
     if (activeSubTab === 'meters-reports') {
         return <MetersReports />;
@@ -133,35 +133,35 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
     return (
         <div className="space-y-6 animate-in fade-in duration-500 pb-12">
             {/* Title */}
-            <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">Meters</h1>
+            <h1 className="text-[2.5rem] font-bold text-[#1B9157] dark:text-[#F4D03F] tracking-tight">Meters</h1>
 
             {/* Usage Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Water Usage Card */}
-                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm p-5">
+                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm p-5 border-t-4 border-t-[#F4D03F]">
                     <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center">
-                                <Droplet className="w-5 h-5 text-blue-500" />
+                            <div className="w-10 h-10 rounded-xl bg-[#1B9157]/10 flex items-center justify-center">
+                                <Droplet className="w-5 h-5 text-[#1B9157]" />
                             </div>
                             <div>
                                 <p className="text-xs text-gray-500 font-medium">Water usage</p>
                                 <p className="text-[10px] text-gray-400">(today / month)</p>
                             </div>
                         </div>
-                        <Badge className="bg-green-100 text-green-700 border-0 text-[10px] font-bold px-2">
-                            <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1"></span>
+                        <Badge className="bg-[#1B9157]/10 text-[#1B9157] border-0 text-[10px] font-bold px-2">
+                            <span className="w-1.5 h-1.5 bg-[#1B9157] rounded-full mr-1"></span>
                             OK
                         </Badge>
                     </div>
                     <div className="mt-4">
                         <p className="text-xl font-black text-gray-900 dark:text-white">12.4 m3 / 384 m3</p>
-                        <p className="text-xs text-green-500 font-medium mt-1">+21%</p>
+                        <p className="text-xs text-[#1B9157] font-medium mt-1">+21%</p>
                     </div>
                 </Card>
 
                 {/* Heat Usage Card */}
-                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm p-5">
+                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm p-5 border-t-4 border-t-[#F4D03F]">
                     <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-950/30 flex items-center justify-center">
@@ -171,23 +171,23 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                 <p className="text-xs text-gray-500 font-medium">Heat usage</p>
                             </div>
                         </div>
-                        <Badge className="bg-green-100 text-green-700 border-0 text-[10px] font-bold px-2">
-                            <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1"></span>
+                        <Badge className="bg-[#1B9157]/10 text-[#1B9157] border-0 text-[10px] font-bold px-2">
+                            <span className="w-1.5 h-1.5 bg-[#1B9157] rounded-full mr-1"></span>
                             OK
                         </Badge>
                     </div>
                     <div className="mt-4">
                         <p className="text-xl font-black text-gray-900 dark:text-white">8.9 GJ</p>
-                        <p className="text-xs text-green-500 font-medium mt-1">+0.4%</p>
+                        <p className="text-xs text-[#1B9157] font-medium mt-1">+0.4%</p>
                     </div>
                 </Card>
 
                 {/* Electricity Usage Card */}
-                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm p-5">
+                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm p-5 border-t-4 border-t-[#F4D03F]">
                     <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-yellow-50 dark:bg-yellow-950/30 flex items-center justify-center">
-                                <Zap className="w-5 h-5 text-yellow-500" />
+                                <Zap className="w-5 h-5 text-[#F4D03F]" />
                             </div>
                             <div>
                                 <p className="text-xs text-gray-500 font-medium">Electricity</p>
@@ -201,12 +201,12 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                     </div>
                     <div className="mt-4">
                         <p className="text-xl font-black text-gray-900 dark:text-white">214 kWh</p>
-                        <p className="text-xs text-green-500 font-medium mt-1">+4.8%</p>
+                        <p className="text-xs text-[#1B9157] font-medium mt-1">+4.8%</p>
                     </div>
                 </Card>
 
                 {/* Active Alarms Card */}
-                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm p-5">
+                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm p-5 border-t-4 border-t-[#F4D03F]">
                     <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-950/30 flex items-center justify-center">
@@ -248,8 +248,8 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                 className={cn(
                                     "rounded-lg h-8 px-4 text-xs font-medium",
                                     usagePeriod === 'Daily'
-                                        ? "bg-gray-900 text-white hover:bg-gray-800"
-                                        : "border-gray-200 dark:border-gray-700"
+                                        ? "bg-[#1B9157] text-white hover:bg-[#167d4a]"
+                                        : "border-gray-200 dark:border-gray-700 hover:bg-[#1B9157]/5 hover:border-[#1B9157]/30"
                                 )}
                                 onClick={() => setUsagePeriod('Daily')}
                             >
@@ -261,8 +261,8 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                 className={cn(
                                     "rounded-lg h-8 px-4 text-xs font-medium",
                                     usagePeriod === 'Hourly'
-                                        ? "bg-gray-900 text-white hover:bg-gray-800"
-                                        : "border-gray-200 dark:border-gray-700"
+                                        ? "bg-[#1B9157] text-white hover:bg-[#167d4a]"
+                                        : "border-gray-200 dark:border-gray-700 hover:bg-[#1B9157]/5 hover:border-[#1B9157]/30"
                                 )}
                                 onClick={() => setUsagePeriod('Hourly')}
                             >
@@ -282,8 +282,8 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                         className={cn(
                                             "rounded-lg h-7 px-3 text-xs font-medium",
                                             usageFilter === filter
-                                                ? "bg-gray-900 text-white hover:bg-gray-800"
-                                                : "border-gray-200 dark:border-gray-700 text-gray-500"
+                                                ? "bg-[#1B9157] text-white hover:bg-[#167d4a]"
+                                                : "border-gray-200 dark:border-gray-700 text-gray-500 hover:bg-[#1B9157]/5 hover:border-[#1B9157]/30"
                                         )}
                                         onClick={() => setUsageFilter(filter)}
                                     >
@@ -299,8 +299,8 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                 <AreaChart data={usageTrendData}>
                                     <defs>
                                         <linearGradient id="colorUsage" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.2} />
-                                            <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
+                                            <stop offset="5%" stopColor="#F4D03F" stopOpacity={0.2} />
+                                            <stop offset="95%" stopColor="#F4D03F" stopOpacity={0} />
                                         </linearGradient>
                                     </defs>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
@@ -329,8 +329,8 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                     <Area
                                         type="monotone"
                                         dataKey="value"
-                                        stroke="#3B82F6"
-                                        strokeWidth={2}
+                                        stroke="#F4D03F"
+                                        strokeWidth={3}
                                         fillOpacity={1}
                                         fill="url(#colorUsage)"
                                     />
@@ -341,9 +341,9 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                 </Card>
 
                 {/* Recent Events */}
-                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm overflow-hidden">
+                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm overflow-hidden border-t-2 border-[#1B9157]/10">
                     <CardHeader className="p-6 pb-4">
-                        <CardTitle className="text-lg font-bold">Recent events</CardTitle>
+                        <CardTitle className="text-lg font-bold text-[#1B9157]">Recent events</CardTitle>
                     </CardHeader>
                     <CardContent className="p-6 pt-0 max-h-[380px] overflow-y-auto custom-scrollbar">
                         <div className="space-y-4">
@@ -352,7 +352,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                     <div className="flex items-start gap-3">
                                         <div className={cn(
                                             "w-2 h-2 rounded-full mt-2",
-                                            event.severity === 'ALERT' ? "bg-red-500" : "bg-amber-500"
+                                            event.severity === 'ALERT' ? "bg-red-500" : "bg-[#F4D03F]"
                                         )} />
                                         <div>
                                             <div className="flex items-center gap-2">
@@ -361,11 +361,11 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                                     "text-[10px] font-bold px-2 border-0",
                                                     event.severity === 'ALERT'
                                                         ? "bg-red-100 text-red-700"
-                                                        : "bg-amber-100 text-amber-700"
+                                                        : "bg-[#F4D03F]/10 text-[#7a6820]"
                                                 )}>
                                                     <span className={cn(
                                                         "w-1.5 h-1.5 rounded-full mr-1",
-                                                        event.severity === 'ALERT' ? "bg-red-500" : "bg-amber-500"
+                                                        event.severity === 'ALERT' ? "bg-red-500" : "bg-[#F4D03F]"
                                                     )}></span>
                                                     {event.severity}
                                                 </Badge>
@@ -383,11 +383,11 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
             </div>
 
             {/* AI Assistant Section */}
-            <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm overflow-hidden">
+            <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm overflow-hidden border-t-4 border-t-[#F4D03F]">
                 <CardHeader className="p-6 pb-4">
                     <div className="flex items-center gap-2">
-                        <Bot className="w-5 h-5 text-gray-400" />
-                        <CardTitle className="text-lg font-bold">AI assistant for meters</CardTitle>
+                        <Bot className="w-5 h-5 text-[#1B9157]" />
+                        <CardTitle className="text-lg font-bold text-[#1B9157]">AI assistant for meters</CardTitle>
                     </div>
                     <p className="text-xs text-gray-400 mt-1">Sample questions for administrators</p>
                 </CardHeader>
@@ -401,7 +401,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                     "py-3 px-4 rounded-2xl max-w-[80%]",
                                     msg.role === 'assistant'
                                         ? "bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
-                                        : "bg-amber-50 dark:bg-amber-950/30 text-gray-700 dark:text-gray-300 ml-auto"
+                                        : "bg-[#F4D03F]/10 text-gray-700 dark:text-gray-300 ml-auto border border-[#F4D03F]/20"
                                 )}
                             >
                                 <p className="text-sm">{msg.content}</p>
@@ -416,11 +416,11 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                             value={aiMessage}
                             onChange={(e) => setAiMessage(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                            className="flex-1 rounded-xl h-11 border-gray-200 dark:border-gray-700"
+                            className="flex-1 rounded-xl h-11 border-gray-200 dark:border-gray-700 focus:border-[#F4D03F]/50 focus:ring-[#F4D03F]/20"
                         />
                         <Button
                             onClick={handleSendMessage}
-                            className="bg-[#B48428] hover:bg-[#966b1d] text-white rounded-xl h-11 px-5"
+                            className="bg-[#F4D03F] hover:bg-[#e0be36] text-[#1A1A1A] font-bold rounded-xl h-11 px-6 shadow-sm shadow-yellow-500/10"
                         >
                             Send
                         </Button>
@@ -435,7 +435,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                     key={idx}
                                     variant="outline"
                                     size="sm"
-                                    className="rounded-full h-8 px-3 text-xs font-medium border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+                                    className="rounded-full h-8 px-3 text-xs font-medium border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-[#F4D03F]/5 hover:border-[#F4D03F]/30"
                                     onClick={() => setAiMessage(question)}
                                 >
                                     {question}
@@ -447,7 +447,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                     {/* Open AI Assistant Link */}
                     <Button
                         variant="link"
-                        className="text-[#B48428] hover:text-[#966b1d] px-0 mt-4 text-sm font-medium"
+                        className="text-[#1B9157] font-bold hover:text-[#1B9157]/80 px-0 mt-4 text-sm"
                         onClick={() => onTabChange('assistant')}
                     >
                         Open AI Assistant

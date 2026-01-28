@@ -5,16 +5,6 @@ import { Button } from '@/components/ui/button';
 import {
     Bell, Clock, Activity
 } from 'lucide-react';
-import {
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    Cell
-} from 'recharts';
 
 const MetersAlarms: React.FC = () => {
     const alarms = [
@@ -37,8 +27,8 @@ const MetersAlarms: React.FC = () => {
             priority: 'Medium',
             type: 'WARNING',
             notified: 'Email',
-            priorityColor: 'text-amber-600 border-amber-200 bg-amber-50',
-            typeColor: 'bg-amber-100 text-amber-700'
+            priorityColor: 'text-[#F4D03F] border-[#F4D03F]/20 bg-[#F4D03F]/5',
+            typeColor: 'bg-[#F4D03F]/20 text-[#D4AF37]'
         },
         {
             id: 3,
@@ -48,8 +38,8 @@ const MetersAlarms: React.FC = () => {
             priority: 'Medium',
             type: 'WARNING',
             notified: 'SMS',
-            priorityColor: 'text-amber-600 border-amber-200 bg-amber-50',
-            typeColor: 'bg-amber-100 text-amber-700'
+            priorityColor: 'text-[#F4D03F] border-[#F4D03F]/20 bg-[#F4D03F]/5',
+            typeColor: 'bg-[#F4D03F]/20 text-[#D4AF37]'
         },
         {
             id: 4,
@@ -64,45 +54,35 @@ const MetersAlarms: React.FC = () => {
         },
     ];
 
-    const chartData = [
-        { name: 'Mon', responseTime: 2.5 },
-        { name: 'Tue', responseTime: 3.2 },
-        { name: 'Wed', responseTime: 1.8 },
-        { name: 'Thu', responseTime: 4.5 },
-        { name: 'Fri', responseTime: 2.1 },
-        { name: 'Sat', responseTime: 1.5 },
-        { name: 'Sun', responseTime: 1.2 },
-    ];
-
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-10">
 
 
-            <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">Alarms & events</h1>
+            <h1 className="text-[2.5rem] font-bold text-[#1B9157] dark:text-[#F4D03F] tracking-tight">Alarms & events</h1>
 
             {/* Top Notifications Section */}
-            <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm overflow-hidden">
+            <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm overflow-hidden border-t-4 border-t-[#F4D03F]">
                 <CardHeader className="pb-4">
                     <div className="flex items-center gap-2 mb-4">
-                        <Bell className="w-5 h-5 text-gray-900 dark:text-white" fill="currentColor" />
-                        <CardTitle className="text-lg font-bold">Top notifications from last 48h</CardTitle>
+                        <Bell className="w-5 h-5 text-[#1B9157] dark:text-[#F4D03F]" fill="currentColor" />
+                        <CardTitle className="text-lg font-bold text-[#1B9157] dark:text-[#F4D03F]">Top notifications from last 48h</CardTitle>
                     </div>
                 </CardHeader>
                 <CardContent className="p-0">
                     <div className="divide-y divide-gray-100 dark:divide-gray-800">
                         {alarms.map((alarm) => (
-                            <div key={alarm.id} className="p-6 flex flex-col md:flex-row md:items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-900/40 transition-all cursor-pointer group">
+                            <div key={alarm.id} className="p-6 flex flex-col md:flex-row md:items-center justify-between hover:bg-[#F4D03F]/5 dark:hover:bg-[#F4D03F]/10 transition-all cursor-pointer group">
                                 <div className="space-y-1 mb-4 md:mb-0">
-                                    <h4 className="font-bold text-gray-900 dark:text-gray-100 group-hover:text-primary transition-colors">{alarm.title}</h4>
+                                    <h4 className="font-bold text-gray-900 dark:text-gray-100 group-hover:text-[#1B9157] dark:group-hover:text-[#F4D03F] transition-colors">{alarm.title}</h4>
                                     <p className="text-sm text-gray-500">{alarm.location} • {alarm.time}</p>
                                 </div>
                                 <div className="flex items-center gap-6">
                                     <div className="flex gap-3">
-                                        <Badge variant="outline" className={`px-3 py-1 font-medium ${alarm.priorityColor}`}>
+                                        <Badge variant="outline" className={`px-3 py-1 font-bold ${alarm.priorityColor}`}>
                                             {alarm.priority}
                                         </Badge>
                                         <Badge className={`px-3 py-1 font-bold items-center gap-1.5 ${alarm.typeColor} hover:${alarm.typeColor} border-none shadow-none`}>
-                                            <div className={`w-1.5 h-1.5 rounded-full ${alarm.type === 'ALERT' ? 'bg-red-500' : 'bg-amber-500'}`}></div>
+                                            <div className={`w-1.5 h-1.5 rounded-full ${alarm.type === 'ALERT' ? 'bg-red-500' : 'bg-[#F4D03F]'}`}></div>
                                             {alarm.type}
                                         </Badge>
                                     </div>
@@ -112,7 +92,7 @@ const MetersAlarms: React.FC = () => {
                         ))}
                         {/* Generate Alarm Report Placeholder Row */}
                         <div className="p-4 bg-gray-50/50 dark:bg-gray-900/20 text-center">
-                            <span className="text-xs font-medium text-gray-400 uppercase tracking-widest cursor-pointer hover:text-primary transition-colors">
+                            <span className="text-xs font-bold text-[#1B9157] hover:text-[#1B9157]/80 uppercase tracking-widest cursor-pointer transition-colors">
                                 View all notifications
                             </span>
                         </div>
@@ -123,74 +103,46 @@ const MetersAlarms: React.FC = () => {
             {/* Bottom Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Response History Chart */}
-                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm">
+                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm border-t-2 border-t-[#1B9157]/10">
                     <CardHeader>
-                        <CardTitle className="text-lg font-bold">Response history</CardTitle>
+                        <CardTitle className="text-lg font-bold text-[#1B9157]">Response history</CardTitle>
                         <CardDescription>Quick view of response time and status</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="h-[250px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                                    <XAxis
-                                        dataKey="name"
-                                        axisLine={false}
-                                        tickLine={false}
-                                        tick={{ fill: '#94A3B8', fontSize: 12 }}
-                                        dy={10}
-                                    />
-                                    <YAxis
-                                        axisLine={false}
-                                        tickLine={false}
-                                        tick={{ fill: '#94A3B8', fontSize: 12 }}
-                                    />
-                                    <Tooltip
-                                        cursor={{ fill: 'transparent' }}
-                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                    />
-                                    <Bar dataKey="responseTime" name="Avg Response (h)" radius={[4, 4, 0, 0]}>
-                                        {chartData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={entry.responseTime > 3 ? '#F59E0B' : '#B48428'} />
-                                        ))}
-                                    </Bar>
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-                        <div className="mt-4 text-center">
-                            <p className="text-sm text-gray-500">Average response time this week: <span className="font-bold text-gray-900 dark:text-white">2.4h</span></p>
+                        <div className="h-[250px] w-full border border-dashed border-[#F4D03F]/30 dark:border-[#F4D03F]/10 rounded-xl flex items-center justify-center bg-[#F4D03F]/5">
+                            <span className="text-[#7a6820] dark:text-[#F4D03F] font-bold">Timeline alarm</span>
                         </div>
                     </CardContent>
                 </Card>
 
                 {/* Responses List */}
-                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm h-full">
+                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm h-full border-t-2 border-t-[#1B9157]/10">
                     <CardHeader>
-                        <CardTitle className="text-lg font-bold">Responses</CardTitle>
+                        <CardTitle className="text-lg font-bold text-[#1B9157]">Responses</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="flex items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-gray-800 hover:shadow-sm transition-shadow">
+                        <div className="flex items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-gray-800 hover:shadow-sm transition-shadow hover:border-[#1B9157]/30">
                             <div className="space-y-1">
                                 <h4 className="font-bold text-gray-900 dark:text-white">Service ticket</h4>
-                                <div className="flex items-center gap-2 text-sm text-gray-500">
+                                <div className="flex items-center gap-2 text-sm text-[#1B9157]">
                                     <Clock className="w-3.5 h-3.5" />
                                     Response time 2h
                                 </div>
                             </div>
-                            <Badge variant="secondary" className="bg-green-100 text-green-700 hover:bg-green-100 border-none px-3 py-1">
+                            <Badge variant="outline" className="text-[#1B9157] border-[#1B9157]/20 bg-[#1B9157]/5 px-3 py-1 font-bold">
                                 Closed
                             </Badge>
                         </div>
 
-                        <div className="flex items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-gray-800 hover:shadow-sm transition-shadow">
+                        <div className="flex items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-gray-800 hover:shadow-sm transition-shadow hover:border-[#F4D03F]/30">
                             <div className="space-y-1">
                                 <h4 className="font-bold text-gray-900 dark:text-white">Admin follow-up</h4>
-                                <div className="flex items-center gap-2 text-sm text-gray-500">
+                                <div className="flex items-center gap-2 text-sm text-[#7a6820] dark:text-[#F4D03F]">
                                     <Activity className="w-3.5 h-3.5" />
                                     In progress
                                 </div>
                             </div>
-                            <Badge variant="secondary" className="bg-gray-100 text-gray-700 hover:bg-gray-100 border-none px-3 py-1">
+                            <Badge variant="outline" className="text-[#7a6820] dark:text-[#F4D03F] border-[#F4D03F]/20 bg-[#F4D03F]/5 px-3 py-1 font-bold">
                                 Pending
                             </Badge>
                         </div>

@@ -24,14 +24,14 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
         <div className="space-y-8 animate-in fade-in duration-500 pb-12">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Measurement Data</h1>
+                    <h1 className="text-3xl font-bold text-[#1B9157] dark:text-[#F4D03F]">Measurement Data</h1>
                     <p className="text-gray-500 dark:text-gray-400 mt-1">Historical and real-time sensor analytics.</p>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" className="rounded-xl border-gray-100 dark:border-gray-800 gap-2 font-bold h-11 px-5 shadow-sm">
+                    <Button variant="outline" className="rounded-xl border-[#F4D03F]/20 hover:border-[#F4D03F] gap-2 font-bold h-11 px-5 shadow-sm">
                         <Download className="w-4 h-4" /> Export CSV
                     </Button>
-                    <Button className="bg-[#B48428] hover:bg-[#966b1d] text-white rounded-xl gap-2 font-bold h-11 px-6 shadow-lg shadow-amber-500/20 border-none">
+                    <Button className="bg-[#F4D03F] hover:bg-[#e0be36] text-[#1A1A1A] rounded-xl gap-2 font-bold h-11 px-6 shadow-lg shadow-yellow-500/20 border-none">
                         <Calendar className="w-4 h-4" /> Last 7 Days
                     </Button>
                 </div>
@@ -41,11 +41,11 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {[
                     { label: 'Avg temperature', value: '33.2°C', icon: Thermometer, color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-900/20' },
-                    { label: 'Avg humidity', value: '43.5%', icon: Droplets, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
-                    { label: 'Total weight gain', value: '+2.3kg', icon: Weight, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
+                    { label: 'Avg humidity', value: '43.5%', icon: Droplets, color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/10 dark:bg-[#1B9157]/20' },
+                    { label: 'Total weight gain', value: '+2.3kg', icon: Weight, color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/10 dark:bg-[#1B9157]/20' },
                     { label: 'Weather impact', value: 'Low', icon: CloudRain, color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-900/20' },
                 ].map((stat) => (
-                    <Card key={stat.label} className="rounded-3xl border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm">
+                    <Card key={stat.label} className="rounded-3xl border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm hover:border-[#F4D03F]/30 transition-colors">
                         <CardContent className="p-6">
                             <div className="flex items-center gap-4">
                                 <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center", stat.bg)}>
@@ -65,11 +65,11 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
             <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm overflow-hidden">
                 <CardContent className="p-8">
                     <div className="flex justify-between items-center mb-8">
-                        <h3 className="text-xl font-bold">In-hive Temperature Trend</h3>
+                        <h3 className="text-xl font-bold text-[#1B9157]">In-hive Temperature Trend</h3>
                         <div className="flex items-center gap-2">
-                            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-800/30">
-                                <div className="w-2 h-2 rounded-full bg-orange-500" />
-                                <span className="text-xs font-bold text-orange-700 dark:text-orange-400 uppercase tracking-tighter">Inner Cover</span>
+                            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F4D03F]/10 border border-[#F4D03F]/30">
+                                <div className="w-2 h-2 rounded-full bg-[#F4D03F]" />
+                                <span className="text-xs font-bold text-[#1A1A1A] dark:text-[#F4D03F] uppercase tracking-tighter">Inner Cover</span>
                             </div>
                             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-50 dark:bg-gray-800/50">
                                 <div className="w-2 h-2 rounded-full bg-gray-400" />
@@ -83,8 +83,8 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
                             <AreaChart data={data}>
                                 <defs>
                                     <linearGradient id="colorTemp" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#f97316" stopOpacity={0.1} />
-                                        <stop offset="95%" stopColor="#f97316" stopOpacity={0} />
+                                        <stop offset="5%" stopColor="#F4D03F" stopOpacity={0.1} />
+                                        <stop offset="95%" stopColor="#F4D03F" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" opacity={0.5} />
@@ -108,7 +108,7 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
                                 <Area
                                     type="monotone"
                                     dataKey="temp"
-                                    stroke="#f97316"
+                                    stroke="#F4D03F"
                                     strokeWidth={4}
                                     fillOpacity={1}
                                     fill="url(#colorTemp)"
@@ -129,7 +129,7 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
                                 <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#9CA3AF' }} dy={10} />
                                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#9CA3AF' }} dx={-10} />
                                 <Tooltip contentStyle={{ borderRadius: '12px', border: 'none' }} />
-                                <Line type="monotone" dataKey="hum" stroke="#3b82f6" strokeWidth={3} dot={{ r: 4, fill: '#3b82f6', strokeWidth: 0 }} />
+                                <Line type="monotone" dataKey="hum" stroke="#1B9157" strokeWidth={3} dot={{ r: 4, fill: '#1B9157', strokeWidth: 0 }} />
                             </LineChart>
                         </ResponsiveContainer>
                     </div>
@@ -144,7 +144,7 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
                                 <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#9CA3AF' }} dy={10} />
                                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#9CA3AF' }} dx={-10} />
                                 <Tooltip contentStyle={{ borderRadius: '12px', border: 'none' }} />
-                                <Area type="monotone" dataKey="weight" stroke="#10b981" strokeWidth={3} fill="#10b981" fillOpacity={0.05} />
+                                <Area type="monotone" dataKey="weight" stroke="#1B9157" strokeWidth={3} fill="#1B9157" fillOpacity={0.05} />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>

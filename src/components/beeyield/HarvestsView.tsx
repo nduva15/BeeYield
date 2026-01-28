@@ -141,8 +141,8 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                             {/* Traceability Section */}
                             <div className="animate-in slide-in-from-bottom-2 duration-500 delay-100">
                                 <div className="flex items-center gap-2 mb-4 mt-2">
-                                    <Hexagon className="w-4 h-4 text-amber-500 fill-amber-500" />
-                                    <span className="text-xs font-bold text-amber-600 uppercase tracking-widest">BeeYield HoneyChain™</span>
+                                    <Hexagon className="w-4 h-4 text-[#F4D03F] fill-[#F4D03F]" />
+                                    <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-widest">BeeYield HoneyChain™</span>
                                     <div className="h-px bg-amber-200 flex-1 opacity-50"></div>
                                 </div>
 
@@ -210,7 +210,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                                         </div>
                                     </div>
 
-                                    <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30 rounded-xl p-4 flex items-center justify-between">
+                                    <div className="bg-[#F4D03F]/5 dark:bg-[#F4D03F]/10 border border-[#F4D03F]/20 dark:border-amber-900/30 rounded-xl p-4 flex items-center justify-between">
                                         <div className="flex items-center gap-3">
                                             <div className={cn("w-8 h-8 rounded-full flex items-center justify-center transition-colors", sealOnHoneyChain ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-400")}>
                                                 <ShieldCheck className="w-5 h-5" />
@@ -220,7 +220,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                                                 <p className="text-[10px] text-gray-500">Immutable traceability record</p>
                                             </div>
                                         </div>
-                                        <Switch checked={sealOnHoneyChain} onCheckedChange={setSealOnHoneyChain} className="data-[state=checked]:bg-amber-500" />
+                                        <Switch checked={sealOnHoneyChain} onCheckedChange={setSealOnHoneyChain} className="data-[state=checked]:bg-[#F4D03F]/50" />
                                     </div>
                                 </div>
                             </div>
@@ -230,7 +230,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                         <div className="flex items-center justify-end gap-4 pt-4">
                             <button
                                 onClick={() => setIsAddingHarvest(false)}
-                                className="text-amber-700 font-medium text-sm hover:underline"
+                                className="text-[#D4AF37] font-medium text-sm hover:underline"
                             >
                                 Go back
                             </button>
@@ -244,9 +244,9 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                     </div>
                     {/* Progress Bar Bottom */}
                     <div className="flex items-center gap-1 px-4 pb-4">
-                        <div className="h-2 w-2 rounded-full bg-amber-400/30"></div>
-                        <div className="h-2 flex-1 rounded-full bg-amber-400"></div>
-                        <div className="h-2 w-2 rounded-full bg-amber-400/30"></div>
+                        <div className="h-2 w-2 rounded-full bg-[#F4D03F]/30"></div>
+                        <div className="h-2 flex-1 rounded-full bg-[#F4D03F]"></div>
+                        <div className="h-2 w-2 rounded-full bg-[#F4D03F]/30"></div>
                     </div>
                 </Card>
             </div>
@@ -305,12 +305,12 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                                                 <div className="flex items-center gap-3">
                                                     <span className={cn(
                                                         "w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold",
-                                                        index === 0 ? "bg-green-100 text-green-700" : "bg-amber-50 text-amber-600"
+                                                        index === 0 ? "bg-green-100 text-green-700" : "bg-[#F4D03F]/5 text-[#D4AF37]"
                                                     )}>
                                                         #{index + 1}
                                                     </span>
                                                     <div className="flex flex-col">
-                                                        <span className="group-hover:text-amber-600 transition-colors">{harvest.apiary}</span>
+                                                        <span className="group-hover:text-[#D4AF37] transition-colors">{harvest.apiary}</span>
                                                         <span className="text-[10px] text-gray-400 font-mono">{harvest.batch}</span>
                                                     </div>
                                                 </div>
@@ -356,7 +356,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                     </div>
                     <Button
                         onClick={() => setIsAddingHarvest(true)}
-                        className="bg-[#E5B02E] hover:bg-[#D4A025] text-white rounded-full px-6 h-11 font-bold shadow-lg shadow-amber-200/50 dark:shadow-none transition-all hover:scale-105"
+                        className="bg-[#F4D03F] hover:bg-[#D4AF37] text-white rounded-full px-6 h-11 font-bold shadow-lg shadow-[#F4D03F]/50 dark:shadow-none transition-all hover:scale-105"
                     >
                         <Plus className="w-5 h-5 mr-2" />
                         Add harvest
@@ -367,7 +367,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                     {/* Location Filter */}
                     <div className="p-6 rounded-[1.5rem] border border-gray-100 dark:border-gray-800">
                         <div className="flex items-center gap-2 mb-4">
-                            <div className="w-2 h-2 rounded-full bg-amber-400"></div>
+                            <div className="w-2 h-2 rounded-full bg-[#F4D03F]"></div>
                             <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">LOCATION</span>
                         </div>
                         <div className="space-y-3">
@@ -394,7 +394,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                     {/* Period Filter */}
                     <div className="p-6 rounded-[1.5rem] border border-gray-100 dark:border-gray-800">
                         <div className="flex items-center gap-2 mb-4">
-                            <div className="w-2 h-2 rounded-full bg-amber-400"></div>
+                            <div className="w-2 h-2 rounded-full bg-[#F4D03F]"></div>
                             <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">PERIOD</span>
                         </div>
                         <div className="space-y-3">
@@ -422,7 +422,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                     {/* Quick Year Filter */}
                     <div className="p-6 rounded-[1.5rem] border border-gray-100 dark:border-gray-800 flex flex-col justify-between">
                         <div className="flex items-center gap-2 mb-4">
-                            <div className="w-2 h-2 rounded-full bg-amber-400"></div>
+                            <div className="w-2 h-2 rounded-full bg-[#F4D03F]"></div>
                             <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">QUICK YEAR</span>
                         </div>
 
@@ -438,7 +438,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                                     <DropdownMenuItem
                                         key={year}
                                         onClick={() => setQuickYear(year.toString())}
-                                        className="py-3 font-bold text-gray-700 dark:text-gray-300 cursor-pointer focus:bg-amber-50 dark:focus:bg-amber-900/10"
+                                        className="py-3 font-bold text-gray-700 dark:text-gray-300 cursor-pointer focus:bg-[#F4D03F]/5 dark:focus:bg-amber-900/10"
                                     >
                                         Year {year}
                                     </DropdownMenuItem>
@@ -459,7 +459,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                     {selectedHarvest && (
                         <div className="relative">
                             {/* Accent Header */}
-                            <div className="h-24 bg-gradient-to-r from-amber-400 to-amber-600 p-8 flex items-end justify-between">
+                            <div className="h-24 bg-gradient-to-r from-[#F4D03F] to-[#D4AF37] p-8 flex items-end justify-between">
                                 <Hexagon className="absolute -top-6 -left-6 w-32 h-32 text-white/10 fill-white/10 rotate-12" />
                                 <div className="relative z-10">
                                     <p className="text-[10px] font-black text-white/60 uppercase tracking-widest mb-1">HoneyChain™ Traceability Record</p>
