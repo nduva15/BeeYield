@@ -1,0 +1,17 @@
+Could not find platform independent libraries <prefix>
+Traceback (most recent call last):
+  File "C:\Users\aggym\Downloads\Honey\backend\debug_start.py", line 10, in <module>
+    import main
+  File "C:\Users\aggym\Downloads\Honey\backend\main.py", line 10, in <module>
+    from app.api.api_v1.api import api_router
+  File "C:\Users\aggym\Downloads\Honey\backend\app\api\api_v1\api.py", line 5, in <module>
+    from app.api.api_v1.endpoints import (
+    ...<3 lines>...
+    )
+  File "C:\Users\aggym\Downloads\Honey\backend\app\api\api_v1\endpoints\company.py", line 7, in <module>
+    from app.schemas import company as schemas
+  File "C:\Users\aggym\Downloads\Honey\backend\app\schemas\__init__.py", line 2, in <module>
+    from . import blog, careers, company, contact, forms, jobs, media, services, shop, traceability
+  File "C:\Users\aggym\Downloads\Honey\backend\app\schemas\contact.py", line 2, in <module>
+    from typing import Optional, dict
+ImportError: cannot import name 'dict' from 'typing' (C:\Users\aggym\AppData\Local\Programs\Python\Python313\Lib\typing.py). Did you mean: 'Dict'?

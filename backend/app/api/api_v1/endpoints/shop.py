@@ -110,3 +110,144 @@ def get_user_orders(
     filters = {"user_id": user_id}
     orders = shop_service.get_user_orders(user_id=user_id)
     return orders
+
+# ==========================================
+#  NEW ENDPOINTS
+# ==========================================
+
+# --- Wallet ---
+@router.get("/wallet", response_model=schemas.Wallet)
+def get_wallet(current_user: dict = Depends(security.get_current_user)):
+    user_id = current_user.get("sub")
+    return shop_service.get_user_wallet(user_id)
+
+@router.get("/wallet/transactions", response_model=list[schemas.WalletTransaction])
+def get_transactions(current_user: dict = Depends(security.get_current_user)):
+    user_id = current_user.get("sub")
+    return shop_service.get_wallet_transactions(user_id)
+
+@router.post("/wallet/topup")
+def top_up_wallet(
+    amount: float, 
+    reference: str = "Self-Topup",
+    current_user: dict = Depends(security.get_current_user)
+):
+    user_id = current_user.get("sub")
+    return shop_service.top_up_wallet(user_id, amount, reference)
+
+# --- Wishlist ---
+@router.get("/wishlist", response_model=list[schemas.WishlistItem])
+def get_wishlist(current_user: dict = Depends(security.get_current_user)):
+    user_id = current_user.get("sub")
+    return shop_service.get_user_wishlist(user_id)
+
+@router.post("/wishlist/{product_id}")
+def toggle_wishlist(
+    product_id: str,
+    current_user: dict = Depends(security.get_current_user)
+):
+    user_id = current_user.get("sub")
+    return shop_service.toggle_wishlist_item(user_id, product_id)
+
+# --- Addresses ---
+@router.get("/addresses", response_model=list[schemas.Address])
+def get_addresses(current_user: dict = Depends(security.get_current_user)):
+    user_id = current_user.get("sub")
+    return shop_service.get_user_addresses(user_id)
+
+@router.post("/addresses", response_model=schemas.Address)
+def add_address(
+    address_in: schemas.AddressCreate,
+    current_user: dict = Depends(security.get_current_user)
+):
+    user_id = current_user.get("sub")
+    return shop_service.add_user_address(user_id, address_in.dict())
+
+@router.delete("/addresses/{address_id}")
+def delete_address(
+    address_id: str,
+    current_user: dict = Depends(security.get_current_user)
+):
+    user_id = current_user.get("sub")
+    shop_service.delete_user_address(user_id, address_id)
+    return {"status": "success"}
+
+# --- Tracking ---
+@router.get("/orders/{order_id}/tracking", response_model=schemas.TrackingInfo)
+def track_order(
+    order_id: str,
+    current_user: dict = Depends(security.get_current_user)
+):
+    user_id = current_user.get("sub")
+    orders = shop_service.get_user_orders(user_id)
+    if not any(str(o["id"]) == str(order_id) for o in orders):
+         raise HTTPException(status_code=403, detail="Order not found or access denied")
+
+    info = shop_service.get_order_tracking(order_id)
+    if not info:
+        raise HTTPException(status_code=404, detail="Tracking info not found")
+    return info
+
+# --- Suggestions ---
+@router.get("/suggestions", response_model=list[schemas.Product])
+def get_suggestions(current_user: dict = Depends(security.get_current_user)):
+    """
+    Get personalized suggestions.
+    For MVP, we shuffle products or pick 'Featured'.
+    """
+    all_products = shop_service.get_products()
+    # Simple Shuffle for variety
+    import random
+    random.shuffle(all_products)
+    return all_products[:4]
+
+# --- Payment Methods ---
+@router.get("/payment-methods", response_model=list[schemas.PaymentMethod])
+def get_payment_methods(current_user: dict = Depends(security.get_current_user)):
+    user_id = current_user.get("sub")
+    return shop_service.get_user_payment_methods(user_id)
+
+@router.post("/payment-methods", response_model=schemas.PaymentMethod)
+def add_payment_method(
+    method_in: schemas.PaymentMethodCreate,
+    current_user: dict = Depends(security.get_current_user)
+):
+    user_id = current_user.get("sub")
+    return shop_service.add_user_payment_method(user_id, method_in.dict())
+
+@router.delete("/payment-methods/{method_id}")
+def delete_payment_method(
+    method_id: str,
+    current_user: dict = Depends(security.get_current_user)
+):
+    user_id = current_user.get("sub")
+    shop_service.delete_user_payment_method(user_id, method_id)
+    return {"status": "success"}
+
+# --- Invoice ---
+@router.get("/orders/{order_id}/invoice")
+def download_invoice(
+    order_id: str,
+    current_user: dict = Depends(security.get_current_user)
+):
+    """Download PDF Invoice"""
+    from fastapi.responses import StreamingResponse
+    
+    # Security check
+    user_id = current_user.get("sub")
+    orders = shop_service.get_user_orders(user_id)
+    if not any(str(o["id"]) == str(order_id) for o in orders):
+         raise HTTPException(status_code=403, detail="Order not found")
+         
+    try:
+        pdf_buffer = shop_service.generate_invoice_pdf(order_id)
+        return StreamingResponse(
+            pdf_buffer, 
+            media_type="application/pdf",
+            headers={"Content-Disposition": f"attachment; filename=Invoice-{order_id}.pdf"}
+        )
+    except Exception as e:
+        print(f"Invoice Error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to generate invoice")
+
+

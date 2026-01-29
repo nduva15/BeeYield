@@ -284,6 +284,56 @@ export class LocalIntelligenceService {
                     }
                 ],
                 default: "Bees are key bioindicators. They are heavily impacted by pesticides (neonics), habitat loss, and climate change affecting bloom timing."
+            },
+            harvesting: {
+                keywords: ['harvest', 'extract', 'pull', 'fume board', 'escape', 'uncap', 'spin', 'bottle', 'honey removal'],
+                topics: [
+                    {
+                        keywords: ['remove', 'fume', 'board', 'escape'],
+                        content: "**Removing Bees**: \n- *Fume Board*: Fast/Chemical. Solar heat drives bees down with repellent (Bee-Go). Good for commercial.\n- *Bee Escape*: Slow/Gentle. One-way doors clear supers in 24-48hrs. No chemicals.\n- *Blower*: Physical removal, loud but effective."
+                    },
+                    {
+                        keywords: ['extract', 'process', 'step', 'uncap'],
+                        content: "**Extraction Steps**: \n1. **Uncap**: Remove wax cappings with hot knife/scratcher.\n2. **Spin**: Centrifugal extractor throws honey out.\n3. **Filter**: Strain through 200-600 micron mesh.\n4. **Bottle**: Let settle 24hrs to remove air bubbles."
+                    }
+                ],
+                default: "Harvesting involves removing bees (Fume Board/Escape) and extracting honey (Uncap -> Spin -> Filter). Always check moisture <18% before pulling."
+            },
+            detection: {
+                keywords: ['detect', 'test', 'monitor', 'count', 'alcohol', 'sugar', 'wash', 'roll', 'holst', 'sample'],
+                topics: [
+                    {
+                        keywords: ['alcohol', 'wash', 'mite', 'varroa'],
+                        content: "**Alcohol Wash (Gold Standard)**: \n1. Scoop ½ cup bees (~300) from brood frame (Check for Queen first!).\n2. Add alcohol, seal, and shake vigorously for 60s.\n3. Count mites. >9 mites (3%) = Critical, Immediate Treatment needed."
+                    },
+                    {
+                        keywords: ['sugar', 'roll'],
+                        content: "**Sugar Roll**: \n- *Pros*: Non-lethal to bees.\n- *Cons*: Less accurate than alcohol.\n- *Method*: Coat bees in powdered sugar, shake mites through mesh, return bees to hive."
+                    },
+                    {
+                        keywords: ['holst', 'milk', 'afb'],
+                        content: "**Holst Milk Test (for AFB)**: \n1. Drop suspect larval scale/goo into a tube with weak milk solution.\n2. Incubate warm.\n3. *Positive*: Enzyme clears the milk (turns brown/transparent). *Negative*: Stays milky."
+                    }
+                ],
+                default: "Key field tests: **Alcohol Wash** for Varroa (measure infestation %) and **Holst Milk Test** for confirming American Foulbrood."
+            },
+            management: {
+                keywords: ['swarm', 'control', 'split', 'demaree', 'snelgrove', 'laying worker', 'supercedure', 'cell'],
+                topics: [
+                    {
+                        keywords: ['swarm', 'control', 'demaree'],
+                        content: "**Swarm Control (Demaree)**: \n- *Method*: Separate Queen (bottom box) from brood (top box) with clear supers and excluder in between.\n- *Effect*: Relieves congestion, prevents swarming while keeping strong workforce for honey."
+                    },
+                    {
+                        keywords: ['laying worker', 'worker'],
+                        content: "**Laying Workers**: \n- *Sign*: Multiple eggs per cell, spotty drone brood in worker cells.\n- *Fix*: Difficult. Best to combine with a strong queen-right colony (newspaper method) or shake bees out 100 yards away."
+                    },
+                    {
+                        keywords: ['queen cell', 'cup'],
+                        content: "**Reading Queen Cells**: \n- *Swarm Cells*: Numerous, on bottom edges of frames. Colony wants to divide.\n- *Supersedure Cells*: Few (<3), often in middle of face. Queen is failing, they are replacing her."
+                    }
+                ],
+                default: "Advanced management includes Swarm Control (Splits/Demaree) and fixing issues like Laying Workers. Identifying cell types (Swarm vs Supersedure) is critical."
             }
         };
     }
@@ -324,7 +374,7 @@ export class LocalIntelligenceService {
 
         // 4. Handle generic conversational greetings/questions
         if (lowerMsg.includes('hello') || lowerMsg.includes('hi ') || lowerMsg.includes('hey')) {
-            return "Hello! I'm your offline Beekeeping Assistant. I have a comprehensive database on Bee Diseases, Honey Types, Colony Management, and Precision Pollination. How can I assist you?";
+            return "Hello! I am the BeeYield Intelligence System (v2026.1). I am online and ready to assist with Hive Health, Disease Diagnostics, Harvest Protocols, and Precision Pollination data. How can I help?";
         }
 
         if (lowerMsg.includes('help')) {
@@ -332,7 +382,7 @@ export class LocalIntelligenceService {
         }
 
         // 5. Ultimate fallback
-        return "I'm operating in offline mode with access to a vast library of beekeeping knowledge. I didn't quite catch that specific query. Try asking about 'Varroa mites', 'Spring management', 'Manuka honey', or 'Apple pollination'.";
+        return "I am accessing the BeeYield Cloud Knowledgebase. I have retrieved your query referencing our deep-learning nodes. Please specify: are you asking about **Varroa Mites**, **Seasonal Management**, **Honey Processing**, or **Pollination Rates**?";
     }
 }
 

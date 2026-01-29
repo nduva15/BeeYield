@@ -145,16 +145,6 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
             <div className="bg-[#1B9157]/5 dark:bg-[#1B9157]/10 p-8 rounded-[2.5rem] border border-[#1B9157]/10 -mx-2 md:-mx-4 shadow-sm">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                     <h3 className="text-xl font-bold text-[#1B9157]">Export columns</h3>
-                    <div className="flex items-center gap-2">
-                        {/* Search Bar matching screenshot approximately */}
-                        <div className="relative">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1B9157]/50" />
-                            <Input
-                                placeholder="Search apiaries, beehives"
-                                className="pl-11 h-12 w-[320px] bg-white dark:bg-[#141414] border-gray-200 dark:border-gray-800 shadow-sm rounded-full text-sm focus:ring-[#F4D03F]/20 focus:border-[#F4D03F]/50 transition-all"
-                            />
-                        </div>
-                    </div>
                 </div>
 
                 <Reorder.Group axis="y" values={columns} onReorder={setColumns} className="space-y-3">

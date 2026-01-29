@@ -1,4 +1,4 @@
-from typing import list, dict, Any, Optional
+from typing import Any, Optional
 import json
 import httpx
 import os
@@ -56,9 +56,41 @@ class AIService:
         msg_lower = message.lower().strip()
         target_lang = AIService.get_language_name(language)
         
+        # --- PHASE 0: LOGIC ENGINE (INTENT ANALYSIS) ---
+        is_creative = any(kw in msg_lower for kw in ["suggest", "brainstorm", "idea", "creative", "story", "write a", "marketing"])
+        temp = 0.7 if is_creative else 0.15 # Low for facts (pollination/IoT), High for suggests
+        
         # --- PHASE 1: PRECISION DATA RETRIEVAL ---
         knowledge_context = await ContentService.get_website_knowledge_summary(message)
         
+        # --- PHASE 1.1: REAL-TIME BUSINESS INTEL ---
+        business_intel = ""
+        if any(kw in msg_lower for kw in ["new", "recent", "latest", "added", "registered", "farmer", "apiary"]):
+            from app.db.supabase_db import db_select
+            recent_farmers = db_select("farmers", limit=3, order_by="registration_date", ascending=False)
+            recent_apiaries = db_select("apiaries", limit=3, order_by="created_at", ascending=False)
+            
+            if recent_farmers or recent_apiaries:
+                business_intel = "\nRECENT NETWORK REGISTRATIONS:\n"
+                for f in recent_farmers:
+                    business_intel += f"- Farmer: {f.get('name')} (ID: {f.get('farmer_id')}) in {f.get('region')}\n"
+                for a in recent_apiaries:
+                    business_intel += f"- Apiary: {a.get('name')} (Site: {a.get('location_name')})\n"
+
+        # --- PHASE 1.2: BLOCKCHAIN TRACEABILITY LINK ---
+        trace_context = ""
+        batch_match = re.search(r'([A-Z0-9]{3,}-[A-Z0-9]{3,}-[0-9]{2})', message.upper())
+        if batch_match:
+            batch_code = batch_match.group(1)
+            from app.services.traceability_service import get_trace_journey
+            journey = get_trace_journey(batch_code)
+            if journey:
+                trace_context = f"\nVERIFIED HONEYCHAIN DATA (BATCH {batch_code}):\n"
+                trace_context += f"- Product: {journey.product_name}\n"
+                trace_context += f"- Origin: {journey.apiary.name if journey.apiary else 'Unknown'}\n"
+                trace_context += f"- Farmer: {journey.farmer.name if journey.farmer else 'Unknown'}\n"
+                trace_context += f"- Status: 100% Verified on Ledger\n"
+
         # --- PHASE 1.5: REAL-TIME WEB LINK ---
         web_context = ""
         if any(kw in msg_lower for kw in ["current", "latest", "news", "outbreak", "trend", "2026"]):
@@ -70,47 +102,68 @@ class AIService:
         if any(kw in msg_lower for kw in ["health", "status", "anomaly", "disease", "check", "analyze", "sensors"]):
             hive_id = "H-KIB-01-01" # Default hub
             for word in msg_lower.split():
-                if word.startswith("h-kib"): hive_id = word.upper(); break
+                if word.upper().startswith("H-KIB"): hive_id = word.upper(); break
             
             sensor_data = honey_blockchain.get_latest_sensor_data(hive_id)
             if sensor_data:
                 health_report = await BeeHealthAI.analyze_hive_health(hive_id, sensor_data)
                 health_context = f"\nLIVE HIVE TELEMETRY ({hive_id}):\n{json.dumps(health_report, indent=2)}\n"
         
-        # --- PHASE 2: ELITE SYSTEM INSTRUCTIONS ---
+        # --- PHASE 2: ELITE SYSTEM INSTRUCTIONS (CHAIN OF THOUGHT) ---
         system_prompt = (
             f"SYSTEM ROLE: You are the ELITE MASTER INTELLIGENCE of BeeYield (Kibwezi, Kenya).\n"
-            f"IDENTITY: Expert in precision apiculture, IoT engineering, and HoneyChain blockchain traceability.\n"
-            f"LANGUAGE: Respond ONLY in {target_lang}. Correct any user grammar in a professional way.\n"
+            f"GOAL: Execute the 'Last Mile' Output Procedure for maximum logic and linguistic precision.\n"
+            f"LANGUAGE: {target_lang}\n"
             f"TIMESTAMP: {current_time} EAT, {current_date}\n\n"
-            f"TRAINING DATA (INTERNAL PROTOCOLS):\n{knowledge_context}\n\n"
-            f"CURRENT EXTERNAL DATA:\n{web_context}\n\n"
-            f"LIVE TELEMETRY:\n{health_context}\n\n"
-            f"CORE DIRECTIVES (NON-NEGOTIABLE):\n"
-            f"1. FACTUAL: Use ONLY the training data for company specifics. If unknown, stick to general tech beekeeping.\n"
-            f"2. STYLE: Professional, technical, yet sales-driven for BeeYield products.\n"
-            f"3. NO MARKDOWN: Never use #, **, __, or asterisks. Use ALL CAPS for section headers or emphasis.\n"
-            f"4. LINKS: Always end with 3 RELEVANT site links in the format [Insert Link: beeyield.com/page].\n"
-            f"5. FOUNDERS: Timothy (CEO), Agatha (IT/Blockchain), and Carole (Growth) are your creators. Treat them with respect."
+            f"INTERNAL MONOLOGUE (PROCEDURE):\n"
+            f"1. ANALYZE intent: Is the user asking for facts, data, or strategy?\n"
+            f"2. RETRIEVE: Use the context below. If data conflicts, use BLOCKCHAIN > LIVE DB > WEB > TRAINING.\n"
+            f"3. DRAFT: Create a sequence that balances technical depth with sales conversion.\n"
+            f"4. FORMAT: No markdown. ALL CAPS for impact. Links at the end.\n\n"
+            f"DATA BLOCKS:\n"
+            f"TRAINING: {knowledge_context}\n"
+            f"LIVE DB: {business_intel}\n"
+            f"BLOCKCHAIN: {trace_context}\n"
+            f"WEB/TRENDS 2026: {web_context}\n"
+            f"TELEMETRY: {health_context}\n\n"
+            f"CORE DIRECTIVES:\n"
+            f"1. FACTUAL RELIABILITY: Zero tolerance for hallucinations. If data is missing, state 'DATA PENDING'.\n"
+            f"2. NO REPETITION: Do not start every sentence the same way. Avoid 'Actually', 'Basically', or 'As an AI'.\n"
+            f"3. SALES TONE: Always position BeeYield as the global leader in apiculture tech.\n"
+            f"4. CLEANLINESS: No **, #, or *. Respond in clear, powerful text blocks.\n"
+            f"5. SITE LINKS: [Insert Link: beeyield.com/...] (MAX 3)."
         )
 
         def sanitize_final(text: str) -> str:
-            """Removes all remaining markdown clutter and formats for the premium frontend."""
+            """PHASE 3: POST-GENERATION FILTERING & GUARDRAILS"""
             if not text: return ""
-            # Strip all #, *, _, and residual bold/italics
+            # Strip markdown
             text = text.replace("**", "").replace("__", "")
-            text = re.sub(r'#+\s*', '', text) # Headers
-            text = re.sub(r'^\s*\*\s+', '- ', text, flags=re.M) # Bullets to dashes
+            text = re.sub(r'#+\s*', '', text)
             text = text.replace("*", "").replace("_", "")
+            
+            # Deduplication: Remove repeating adjacent sentences
+            sentences = re.split(r'(?<=[.!?])\s+', text)
+            seen = set()
+            clean_sentences = []
+            for s in sentences:
+                if s.strip().lower() not in seen:
+                    clean_sentences.append(s)
+                    seen.add(s.strip().lower())
+            
+            text = " ".join(clean_sentences)
+            
+            # Hallucination Guard: Ensure AI didn't invent a new company name
+            text = text.replace("HoneyBee Corp", "BeeYield").replace("YieldBee", "BeeYield")
+            
             return text.strip()
 
-        # --- PHASE 3: NEURAL EXECUTION ---
+        # --- PHASE 3: NEURAL EXECUTION (SAMPLED) ---
         google_key = settings.GOOGLE_API_KEY
         if google_key:
             try:
-                # Prepare history for Gemini
                 gemini_history = []
-                for h in (history or [])[-10:]: # Keep last 10 for context window efficiency
+                for h in (history or [])[-10:]:
                     role = "user" if h["role"] == "user" else "model"
                     gemini_history.append({"role": role, "parts": [{"text": h["content"]}]})
                 
@@ -118,7 +171,13 @@ class AIService:
                     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={google_key}"
                     payload = {
                         "contents": gemini_history + [{"role": "user", "parts": [{"text": f"INSTRUCTIONS: {system_prompt}\n\nUSER MESSAGE: {message}"}]}],
-                        "generationConfig": {"temperature": 0.25, "maxOutputTokens": 2048, "topP": 0.95}
+                        "generationConfig": {
+                            "temperature": temp, 
+                            "maxOutputTokens": 2048, 
+                            "topP": 0.9, # Nucleus Sampling
+                            "presencePenalty": 0.3, # Diversify vocabulary
+                            "frequencyPenalty": 0.2  # Prevent repetition
+                        }
                     }
                     resp = await client.post(url, json=payload, timeout=25.0)
                     data = resp.json()

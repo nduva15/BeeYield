@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from typing import list, dict, Any
+from typing import Any
 from app.db.clickhouse_db import (
     get_analytics_summary,
     get_page_views_chart,

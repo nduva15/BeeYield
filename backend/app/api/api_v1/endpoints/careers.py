@@ -2,7 +2,7 @@
 Careers Endpoints - Connected to Supabase
 """
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form, BackgroundTasks
-from typing import list, Optional
+from typing import Optional
 from datetime import date
 from app.schemas import careers as schemas
 from app.db.supabase_db import db_select, db_insert, get_supabase

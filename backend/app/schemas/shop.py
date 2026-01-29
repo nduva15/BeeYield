@@ -61,3 +61,79 @@ class Order(OrderCreate):
     status: str
     total_kes: float
     created_at: datetime
+
+# --- Address ---
+class AddressBase(BaseModel):
+    name: str = "Home"
+    email: Optional[str] = None
+    phone: str
+    street: str
+    apartment: Optional[str] = None
+    building: Optional[str] = None
+    floor: Optional[str] = None
+    city: str
+    county: str
+    postal_code: Optional[str] = None
+    is_default: bool = False
+
+class AddressCreate(AddressBase):
+    pass
+
+class Address(AddressBase):
+    id: str
+    user_id: str
+
+# --- Payment Methods ---
+class PaymentMethodCreate(BaseModel):
+    type: str = "card" # card, mpesa
+    provider: str = "Visa"
+    last4: str
+    expiry_month: Optional[int] = None
+    expiry_year: Optional[int] = None
+    card_holder_name: Optional[str] = None
+    is_default: bool = False
+
+class PaymentMethod(PaymentMethodCreate):
+    id: str
+    user_id: str
+    created_at: datetime
+
+# --- Wallet ---
+
+class WalletTransaction(BaseModel):
+    id: str
+    type: str
+    amount: float
+    description: str
+    reference_id: Optional[str] = None
+    created_at: datetime
+
+class Wallet(BaseModel):
+    user_id: str
+    balance: float
+    currency: str
+    updated_at: datetime
+
+# --- Wishlist ---
+class WishlistItem(BaseModel):
+    id: str
+    product_id: str
+    created_at: datetime
+    # Optional expanded product data
+    product_name: Optional[str] = None
+    product_image: Optional[str] = None
+    product_price: Optional[float] = None
+
+# --- Tracking ---
+class TrackingEvent(BaseModel):
+    status: str
+    location: Optional[str] = None
+    description: str
+    created_at: datetime
+
+class TrackingInfo(BaseModel):
+    order_id: str
+    current_status: str
+    estimated_delivery: Optional[str] = None
+    events: list[TrackingEvent]
+

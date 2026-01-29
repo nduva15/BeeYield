@@ -61,10 +61,13 @@ const HeroSection = () => {
 
       <div className="container mx-auto px-4 sm:px-6 relative">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-          {/* Left Content */}
           <div className="relative z-10 text-center lg:text-left lg:pl-16 xl:pl-24">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-neutral-900 mb-6 tracking-tighter leading-none">
+              Premium Raw <span className="text-amber-600 italic">Honey</span> <br />
+              Direct from <span className="text-green-700">Kibwezi</span>
+            </h1>
             <p className="text-sm md:text-base text-neutral-600 mb-4 max-w-md mx-auto lg:mx-0">
-              Discover the purest, most delicious honey straight from hive to your plate. Our honey is carefully harvested to preserve its rich flavor, natural nutrients, and health benefits.
+              Discover the purest, most delicious honey straight from our apiaries in Kibwezi to your plate. Our honey is carefully harvested to preserve its rich flavor, natural nutrients, and health benefits.
             </p>
 
             {/* Stats badges - horizontal */}
@@ -297,10 +300,9 @@ const AboutSection = () => {
             </div>
           </div>
 
-          {/* Text content */}
           <div>
-            <h2 className="text-3xl md:text-4xl font-black text-neutral-900 mb-6">
-              The <span className="text-green-700">Buzzz</span> about our Honey !
+            <h2 className="text-3xl md:text-4xl font-black text-neutral-900 mb-6 uppercase tracking-tighter">
+              The Most Trusted <span className="text-green-700 italic">Honey</span> in Makueni County
             </h2>
             <p className="text-neutral-600 leading-relaxed mb-4 text-sm md:text-base">
               BeeYield was founded with a singular vision: to revolutionize beekeeping through technology and radical transparency. Our journey began in the pristine landscapes of Kenya, where we saw the need for a more sustainable approach. Today, we are proud to lead with our <strong>50/50 Harvest Promise</strong>—ensuring that for every drop we take, enough is left for the bees to thrive and pollinate our future.

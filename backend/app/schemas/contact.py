@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from typing import Optional, dict
+from typing import Optional, Dict
 
 class ContactSubmissionCreate(BaseModel):
     inquiry_type: str # grower, beekeeper, general

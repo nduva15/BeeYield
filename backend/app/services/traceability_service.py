@@ -1,6 +1,6 @@
 from datetime import datetime
 import uuid
-from typing import dict, Any, list, Optional
+from typing import Any, Optional
 
 from app.blockchain.honey_chain import honey_blockchain, BlockType
 from app.db.supabase_db import db_select, db_insert, db_get_by_id

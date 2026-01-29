@@ -192,6 +192,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
 
         // AI Assistant View
         "ai_hub_intelligence": "BeeYield AI HUB INTELLIGENCE",
+        "ai_assistant_title": "BeeYield AI",
         "ai_hub_status": "Secure IoT Monitoring & Analysis | Neural Connectivity Active",
         "new_chat": "New Chat",
         "chats_label": "Chats",
@@ -440,6 +441,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
 
         // AI Assistant View
         "ai_hub_intelligence": "BeeYield AI HUB INTELLIGENCE",
+        "ai_assistant_title": "BeeYield AI",
         "ai_hub_status": "Surveillance & Analyse IoT Sécurisée | Connectivité Neurale Active",
         "new_chat": "Nouv. Chat",
         "chats_label": "Conversations",

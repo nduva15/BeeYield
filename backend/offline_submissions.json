@@ -33,5 +33,34 @@
       "subject": "DISEASES: Varroa Mite",
       "status": "new"
     }
+  },
+  {
+    "timestamp": "2026-01-29T15:39:11.196311",
+    "type": "contact_submission",
+    "data": {
+      "inquiry_type": "grower",
+      "first_name": "Timothy MATHUVA NDUVA",
+      "last_name": "Timothy MATHUVA NDUVA",
+      "email": "timothynduva349@gmail.com",
+      "phone": "+254742004187",
+      "city": "Kenya, Nairobi",
+      "state": "K ",
+      "country": "Kenya",
+      "topic": "Pollination Services",
+      "farm_name": "KN",
+      "crop_type": "Maize",
+      "acres": 8,
+      "name": "Timothy MATHUVA NDUVA Timothy MATHUVA NDUVA",
+      "subject": "GROWER: Pollination Services",
+      "status": "new"
+    }
+  },
+  {
+    "timestamp": "2026-01-29T15:39:16.214916",
+    "type": "newsletter_subscription",
+    "data": {
+      "email": "timothy.mathuva@strathmore.edu",
+      "source": "footer"
+    }
   }
 ]

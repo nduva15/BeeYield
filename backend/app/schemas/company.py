@@ -2,7 +2,7 @@
 Company Schemas - About, Story, Team, Stats, Partners, FAQs
 """
 from pydantic import BaseModel
-from typing import Optional, list
+from typing import Optional
 from datetime import datetime
 
 

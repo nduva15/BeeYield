@@ -3,7 +3,7 @@ Merkle Tree Implementation for BeeYield Blockchain
 Provides data integrity verification for honey traceability records
 """
 import hashlib
-from typing import list, Optional
+from typing import Optional
 
 
 class MerkleNode:

@@ -111,7 +111,12 @@ def extract_structured_chunks(content: str, source_name: str) -> List[Dict[str, 
 
 async def fetch_db_intel(client: httpx.AsyncClient):
     extra_chunks = []
-    tables = ["products", "blog_posts", "job_listings", "team_members", "company_stats", "faqs"]
+    # Expanded tables include business, community AND traceability data
+    tables = [
+        "products", "blog_posts", "job_listings", "team_members", 
+        "company_stats", "faqs", "farmers", "apiaries", "hives", "harvests",
+        "honey_batches", "pollination_requests"
+    ]
     for table in tables:
         try:
             url = f"{SUPABASE_URL}/rest/v1/{table}?select=*"
@@ -121,14 +126,27 @@ async def fetch_db_intel(client: httpx.AsyncClient):
             if resp.status_code == 200:
                 data = resp.json()
                 for entry in data:
-                    v_list = [f"{str(v)}" for k, v in entry.items() if v and k not in ['id', 'created_at', 'images', 'image', 'icon']]
+                    # Create a rich narrative for each record
+                    v_list = []
+                    for k, v in entry.items():
+                        if v and k not in ['id', 'created_at', 'images', 'image', 'icon', 'blockchain_hash', 'id_number']:
+                            # Format key-value pairs nicely
+                            key_label = k.replace('_', ' ').title()
+                            v_list.append(f"{key_label}: {str(v)}")
+                    
                     narrative = ". ".join(v_list)
+                    
+                    # Determine source label
+                    source_label = f"BEE_DB_{table.upper()}"
+                    subtopic = entry.get("name") or entry.get("title") or entry.get("question") or entry.get("farmer_id") or entry.get("apiary_id") or "BeeYield Record"
+                    
                     extra_chunks.append({
-                        "source": f"BEE_DB_{table.upper()}",
-                        "subtopic": entry.get("name") or entry.get("title") or entry.get("question") or "BeeYield Record",
-                        "content": narrative
+                        "source": source_label,
+                        "subtopic": subtopic,
+                        "content": f"{source_label} - {subtopic}:\n{narrative}"
                     })
-        except: pass
+        except Exception as e:
+            print(f"Error fetching {table}: {e}")
     return extra_chunks
 
 async def sync_all():

@@ -205,6 +205,17 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
     const FormattedMessage: React.FC<{ content: string, isUser: boolean }> = ({ content, isUser }) => {
         if (isUser) return <p className="text-sm leading-relaxed whitespace-pre-wrap">{content}</p>;
 
+        // Handle bold pattern **text**
+        const processBold = (text: string) => {
+            const boldParts = text.split(/(\*\*[^*]+\*\*)/g);
+            return boldParts.map((part, i) => {
+                if (part.startsWith('**') && part.endsWith('**')) {
+                    return <strong key={i} className="font-black text-foreground">{part.slice(2, -2)}</strong>;
+                }
+                return part;
+            });
+        };
+
         const parts = content.split(/(\[Insert Link: beeyield\.com\/[a-zA-Z0-9\-\/]+\])/g);
 
         return (
@@ -225,7 +236,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                             </a>
                         );
                     }
-                    return <span key={i}>{part}</span>;
+                    return <span key={i}>{processBold(part)}</span>;
                 })}
             </div>
         );

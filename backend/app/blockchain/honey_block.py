@@ -5,7 +5,7 @@ Specialized block implementation for honey traceability with rich metadata
 from datetime import datetime
 import json
 import hashlib
-from typing import Any, dict, Optional, list
+from typing import Any, Optional
 from enum import Enum
 from .merkle_tree import MerkleTree
 
