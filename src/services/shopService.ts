@@ -670,6 +670,7 @@ export const mockOrders = [
     }
 ];
 
+
 export const getUserOrders = async (email: string): Promise<any[]> => {
     try {
         const { data: { session } } = await (supabase ? supabase.auth.getSession() : Promise.resolve({ data: { session: null } }));
@@ -677,11 +678,89 @@ export const getUserOrders = async (email: string): Promise<any[]> => {
         if (session) headers.Authorization = `Bearer ${session.access_token}`;
 
         const orders = await apiGet<any[]>('/shop/orders', { email }, { headers });
-        return Array.isArray(orders) && orders.length > 0 ? orders : mockOrders;
+        // Handle backend total_kes vs total_amount mismatch if any
+        return (Array.isArray(orders) && orders.length > 0 ? orders : mockOrders).map(o => ({
+            ...o,
+            total_amount: o.total_kes || o.total_amount
+        }));
     } catch (error) {
         console.error("Error fetching user orders via API, using fallbacks:", error);
         return mockOrders;
     }
 };
+
+// --- NEW SERVICES ---
+
+const getAuthHeaders = async (): Promise<Record<string, string>> => {
+    const { data: { session } } = await (supabase ? supabase.auth.getSession() : Promise.resolve({ data: { session: null } }));
+    return session ? { Authorization: `Bearer ${session.access_token}` } : {};
+};
+
+// Address Services
+export const getAddresses = async () => {
+    const headers = await getAuthHeaders();
+    return await apiGet<any[]>('/shop/addresses', {}, { headers });
+};
+
+export const addAddress = async (address: any) => {
+    const headers = await getAuthHeaders();
+    return await apiPost<any>('/shop/addresses', address, { headers });
+};
+
+export const deleteAddress = async (addressId: string) => {
+    const headers = await getAuthHeaders();
+    // Use apiPost or apiDelete if available. Assuming apiPost for now if apiDelete isn't standard in their helper
+    // Actually our helper has apiDelete.
+    const { apiDelete } = await import("./api");
+    return await apiDelete<any>(`/shop/addresses/${addressId}`, { headers });
+};
+
+// Payment Method Services
+export const getPaymentMethods = async () => {
+    const headers = await getAuthHeaders();
+    return await apiGet<any[]>('/shop/payment-methods', {}, { headers });
+};
+
+export const addPaymentMethod = async (paymentMethod: any) => {
+    const headers = await getAuthHeaders();
+    return await apiPost<any>('/shop/payment-methods', paymentMethod, { headers });
+};
+
+export const deletePaymentMethod = async (paymentId: string) => {
+    const headers = await getAuthHeaders();
+    const { apiDelete } = await import("./api");
+    return await apiDelete<any>(`/shop/payment-methods/${paymentId}`, { headers });
+};
+
+// Tracking Services
+export const getOrderTracking = async (orderId: string) => {
+    const headers = await getAuthHeaders();
+    return await apiGet<any>(`/shop/orders/${orderId}/tracking`, {}, { headers });
+};
+
+// Invoice Services
+export const downloadInvoice = async (orderId: string, orderNumber: string) => {
+    const session = await (supabase ? supabase.auth.getSession() : Promise.resolve({ data: { session: null } }));
+    const token = session.data.session?.access_token;
+
+    const { API_V1_URL } = await import("./api");
+    const response = await fetch(`${API_V1_URL}/shop/orders/${orderId}/invoice`, {
+        headers: token ? {
+            Authorization: `Bearer ${token}`
+        } : {}
+    });
+
+    if (!response.ok) throw new Error("Failed to download invoice");
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Invoice-${orderNumber || orderId}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+};
+
 
 

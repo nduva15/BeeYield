@@ -2,7 +2,7 @@
 Blog/CMS Endpoints
 """
 from fastapi import APIRouter, HTTPException, Query
-from typing import list, Optional
+from typing import Optional
 from app.schemas import blog as schemas
 from app.db.supabase_db import db_select, db_insert, db_update, db_get_by_id
 from datetime import datetime

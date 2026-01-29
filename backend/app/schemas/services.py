@@ -2,7 +2,7 @@
 Services Schemas - Pollination, Learning, ESG
 """
 from pydantic import BaseModel
-from typing import Optional, list
+from typing import Optional
 from datetime import datetime
 
 

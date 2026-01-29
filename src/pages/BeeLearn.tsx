@@ -266,7 +266,7 @@ const BeeLearn = () => {
                 BeeYield Learn Platform
               </Badge>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-neutral-900 mb-6 leading-[1.1] tracking-tight">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-neutral-900 mb-6 leading-[1.1] tracking-tight">
                 Master the Art of{" "}
                 <span className="text-green-700 italic">Sustainable Beekeeping</span>
               </h1>

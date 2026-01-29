@@ -46,7 +46,7 @@ const CropsWePollinate = () => {
               <Badge className="bg-green-100 text-green-900 border-green-200 rounded-full px-4 py-1.5 text-sm font-bold">
                 Precision Agriculture
               </Badge>
-              <h1 className="text-4xl font-black tracking-tighter md:text-5xl lg:text-6xl xl:text-7xl leading-tight text-neutral-900">
+              <h1 className="text-4xl font-black tracking-tighter md:text-5xl lg:text-6xl leading-tight text-neutral-900">
                 Get Data-Driven <br />
                 <span className="text-green-700 italic">Crop Pollination</span>
               </h1>

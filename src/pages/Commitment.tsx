@@ -88,7 +88,7 @@ const CommitmentPage = () => {
             Sustainable Development Goals
           </Badge>
 
-          <h1 className="mb-8 text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[1.1]">
+          <h1 className="mb-8 text-4xl md:text-6xl font-black tracking-tight leading-[1.1]">
             Our Commitment <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-amber-600">
               To The Future

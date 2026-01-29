@@ -582,7 +582,7 @@ const Traceability = () => {
                     <div className="inline-block rounded-3xl bg-green-100 p-6 shadow-sm border border-green-200">
                       <Shield className="h-12 w-12 text-green-700" />
                     </div>
-                    <h2 className="text-5xl md:text-8xl font-black tracking-tighter leading-none text-neutral-900">Trust in <br /> Every <span className="text-green-700 italic">Drop</span></h2>
+                    <h2 className="text-4xl md:text-6xl font-black tracking-tighter leading-none text-neutral-900">Trust in <br /> Every <span className="text-green-700 italic">Drop</span></h2>
                   </div>
 
                   <div className="grid lg:grid-cols-2 gap-16 items-center text-left">

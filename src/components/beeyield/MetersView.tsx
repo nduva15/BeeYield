@@ -13,6 +13,7 @@ import MetersAlarms from './MetersAlarms';
 import MetersPayments from './MetersPayments';
 import MetersReports from './MetersReports';
 import MetersSettings from './MetersSettings';
+import MetersMeasurements from './MetersMeasurements';
 
 // Usage trend data
 const usageTrendData = [
@@ -103,6 +104,15 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
     }
     if (activeSubTab === 'meters-settings') {
         return <MetersSettings />;
+    }
+    if ([
+        'meters-charts',
+        'meters-consumption',
+        'meters-comparisons',
+        'meters-import',
+        'meters-measurements'
+    ].includes(activeSubTab)) {
+        return <MetersMeasurements onTabChange={onTabChange} activeSubTab={activeSubTab} />;
     }
 
     // Default Dashboard Logic

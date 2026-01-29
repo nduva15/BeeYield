@@ -2,7 +2,7 @@
 BeeYield Honey Blockchain - Complete Traceability Chain
 A custom blockchain implementation for tracking honey from hive to jar
 """
-from typing import list, dict, Any, Optional
+from typing import Any, Optional
 from datetime import datetime, timedelta
 import json
 import threading

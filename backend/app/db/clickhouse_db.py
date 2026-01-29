@@ -4,7 +4,7 @@ Stores: Page views, traceability scans, order analytics, IoT sensor data
 """
 import clickhouse_connect
 from datetime import datetime
-from typing import Optional, list, dict, Any
+from typing import Optional, Any
 from app.core.config import settings
 
 

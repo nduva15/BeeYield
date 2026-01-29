@@ -3,7 +3,7 @@ Supabase Database Connection for BeeYield
 Primary database for all transactional data
 """
 from supabase import create_client, Client
-from typing import Optional, list, dict, Any
+from typing import Optional, Any
 from app.core.config import settings
 
 # ... (existing imports)
@@ -74,7 +74,7 @@ def get_supabase_admin() -> Optional[Client]:
 
 def db_insert(table: str, data: dict[str, Any]) -> dict[str, Any]:
     """Insert a record into a table"""
-    supabase = get_supabase()
+    supabase = get_supabase_admin() or get_supabase()
     if supabase:
         try:
             result = supabase.table(table).insert(data).execute()
@@ -93,7 +93,7 @@ def db_select(
     ascending: bool = True
 ) -> list[dict[str, Any]]:
     """Select records from a table"""
-    supabase = get_supabase()
+    supabase = get_supabase_admin() or get_supabase()
     if supabase:
         try:
             query = supabase.table(table).select(columns)
@@ -116,7 +116,7 @@ def db_select(
 
 def db_update(table: str, data: dict[str, Any], filters: dict[str, Any]) -> dict[str, Any]:
     """Update records in a table"""
-    supabase = get_supabase()
+    supabase = get_supabase_admin() or get_supabase()
     if supabase:
         try:
             query = supabase.table(table).update(data)
@@ -131,7 +131,7 @@ def db_update(table: str, data: dict[str, Any], filters: dict[str, Any]) -> dict
 
 def db_delete(table: str, filters: dict[str, Any]) -> dict[str, Any]:
     """Delete records from a table"""
-    supabase = get_supabase()
+    supabase = get_supabase_admin() or get_supabase()
     if supabase:
         try:
             query = supabase.table(table).delete()
@@ -146,7 +146,7 @@ def db_delete(table: str, filters: dict[str, Any]) -> dict[str, Any]:
 
 def db_upsert(table: str, data: dict[str, Any], on_conflict: str = "id") -> dict[str, Any]:
     """Upsert (insert or update) a record"""
-    supabase = get_supabase()
+    supabase = get_supabase_admin() or get_supabase()
     if supabase:
         try:
             result = supabase.table(table).upsert(data, on_conflict=on_conflict).execute()
@@ -158,7 +158,7 @@ def db_upsert(table: str, data: dict[str, Any], on_conflict: str = "id") -> dict
 
 def db_get_by_id(table: str, id: str, id_column: str = "id") -> Optional[dict[str, Any]]:
     """Get a single record by ID"""
-    supabase = get_supabase()
+    supabase = get_supabase_admin() or get_supabase()
     if supabase:
         try:
             result = supabase.table(table).select("*").eq(id_column, id).single().execute()

@@ -22,11 +22,11 @@ export const Route = createRootRoute({
         meta: [
             { charSet: 'utf-8' },
             { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-            { title: 'BeeYield - Your Partner in Pollination' },
-            { name: 'description', content: 'BeeYield - Precision pollination services, sustainable beekeeping, and traceable honey from Africa and the World.' },
-            { name: 'keywords', content: 'pollination, beekeeping, honey, sustainable agriculture, precision pollination, Kenya, Africa' },
-            { property: 'og:title', content: 'BeeYield - Your Partner in Pollination' },
-            { property: 'og:description', content: 'Precision pollination services, sustainable beekeeping, and traceable honey. Your Partner in Pollination across Africa and the World.' },
+            { title: 'BeeYield | Precision Pollination & Honey Traceability in Makueni & Kibwezi' },
+            { name: 'description', content: 'BeeYield provides precision pollination and sustainable beekeeping services in Kibwezi, Makueni County. Maximize your farm yield with IoT-enabled hive monitoring and traceable honey production.' },
+            { name: 'keywords', content: 'precision pollination Makueni, beekeeping Kibwezi, honey traceability Kenya, IoT hive monitoring, pollination services Africa, BeeYield contact, bee farming Makueni' },
+            { property: 'og:title', content: 'BeeYield | Precision Pollination & Honey Traceability in Makueni' },
+            { property: 'og:description', content: 'Maximize crop yields with precision pollination. Sustainable beekeeping and traceable honey from Kibwezi to the world.' },
             { property: 'og:type', content: 'website' },
             { property: 'og:image', content: 'https://beeyield.com/logo.png' },
             { name: 'twitter:card', content: 'summary_large_image' },
@@ -55,6 +55,49 @@ function RootComponent() {
             j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
           })(window,document,'script','dataLayer','GTM-KF284247');`
+                }} />
+                {/* Structured Data / Schema.org */}
+                <script type="application/ld+json" dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@graph": [
+                            {
+                                "@type": "Organization",
+                                "@id": "https://beeyield.com/#organization",
+                                "name": "BeeYield",
+                                "url": "https://beeyield.com",
+                                "logo": "https://beeyield.com/logo.png",
+                                "sameAs": [
+                                    "https://facebook.com/beeyield",
+                                    "https://instagram.com/beeyield",
+                                    "https://linkedin.com/company/beeyield"
+                                ]
+                            },
+                            {
+                                "@type": "LocalBusiness",
+                                "@id": "https://beeyield.com/#localbusiness",
+                                "name": "BeeYield Kibwezi",
+                                "image": "https://beeyield.com/logo.png",
+                                "address": {
+                                    "@type": "PostalAddress",
+                                    "streetAddress": "Off Mombasa Road",
+                                    "addressLocality": "Kibwezi",
+                                    "addressRegion": "Makueni County",
+                                    "addressCountry": "Kenya"
+                                },
+                                "geo": {
+                                    "@type": "GeoCoordinates",
+                                    "latitude": -2.41,
+                                    "longitude": 37.97
+                                },
+                                "url": "https://beeyield.com",
+                                "telephone": "+254700000000",
+                                "priceRange": "$$",
+                                "servesCuisine": "Honey",
+                                "description": "Precision pollination services and sustainable raw honey traceability in Kibwezi and Makueni."
+                            }
+                        ]
+                    })
                 }} />
             </head>
             <body>

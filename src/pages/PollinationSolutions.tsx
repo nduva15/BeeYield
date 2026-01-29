@@ -16,7 +16,7 @@ const PollinationSolutions = () => {
           <Badge className="mb-6 bg-primary/10 text-primary border-primary/20">
             End-to-End Visibility
           </Badge>
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight text-foreground">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight text-foreground">
             Pollination Solutions
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground font-light leading-relaxed max-w-2xl mx-auto mb-10">

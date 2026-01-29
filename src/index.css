@@ -138,7 +138,7 @@ All colors MUST be HSL.
     line-height: 1.5;
   }
 
-  /* Consistent heading sizes */
+  /* Consistent heading sizes - Standardized to Match 'IoT-Enabled Monitoring' style */
   h1,
   h2,
   h3,
@@ -146,32 +146,42 @@ All colors MUST be HSL.
   h5,
   h6 {
     font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    font-weight: 600;
-    line-height: 1.2;
+    font-weight: 900;
+    /* font-black */
+    letter-spacing: -0.025em;
+    /* tracking-tight */
+    line-height: 1.1;
+    @apply uppercase;
   }
 
   h1 {
-    font-size: 2.25rem;
+    font-size: 1.5rem;
+    /* text-2xl - As requested: same size as IoT title */
   }
 
   h2 {
-    font-size: 1.875rem;
+    font-size: 1.25rem;
+    /* text-xl */
   }
 
   h3 {
-    font-size: 1.5rem;
+    font-size: 1.125rem;
+    /* text-lg */
   }
 
   h4 {
-    font-size: 1.25rem;
+    font-size: 1rem;
+    /* text-base */
   }
 
   h5 {
-    font-size: 1.125rem;
+    font-size: 0.875rem;
+    /* text-sm */
   }
 
   h6 {
-    font-size: 1rem;
+    font-size: 0.75rem;
+    /* text-xs */
   }
 
   /* Consistent paragraph and text */
@@ -206,7 +216,7 @@ All colors MUST be HSL.
 
   /* Responsive text sizes for headings */
   .hero-title {
-    @apply text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl;
+    @apply text-3xl sm:text-4xl md:text-5xl lg:text-6xl;
     @apply leading-tight tracking-tight;
   }
 

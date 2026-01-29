@@ -170,10 +170,6 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
                         <CardTitle className="text-lg font-bold text-[#1B9157]">True and false color imagery</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="relative group">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#1B9157]" />
-                            <Input placeholder="Search apiaries, beehives" className="pl-9 bg-gray-50 dark:bg-[#09090b] border border-transparent focus:border-[#F4D03F]/50 rounded-full h-10 text-sm" />
-                        </div>
                         <ul className="space-y-3 text-sm text-gray-600 dark:text-gray-300">
                             <li className="flex gap-2 items-start">
                                 <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />

@@ -3,7 +3,7 @@
 Company Endpoints - About, Story, Team, Stats
 """
 from fastapi import APIRouter, HTTPException
-from typing import list, Optional
+from typing import Optional
 from app.schemas import company as schemas
 from app.db.supabase_db import db_select, db_insert, db_get_by_id
 

@@ -59,8 +59,14 @@ interface Address {
     city: string;
     county: string;
     phone: string;
-    isDefault: boolean;
+    email?: string;
+    apartment?: string;
+    building?: string;
+    floor?: string;
+    postal_code?: string;
+    is_default: boolean;
 }
+
 
 interface PaymentMethod {
     id: string;
@@ -95,12 +101,16 @@ const BuyerDashboard = () => {
         fullName: '',
         email: '',
         phone: '',
-        address: '',
+        street: '',
+        apartment: '',
+        building: '',
+        floor: '',
         city: '',
         county: '',
         postalCode: '',
         notes: '',
     });
+
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -121,33 +131,13 @@ const BuyerDashboard = () => {
     });
     const [trackingOrder, setTrackingOrder] = useState<Order | null>(null);
 
-    useEffect(() => {
-        if (user) {
-            loadOrders();
-            loadUserData();
-            loadSuggestions();
 
-            // Prefill checkout from user profile
-            const meta = user.user_metadata || {};
-            const addresses = (meta.addresses as any[]) || [];
-            const defAddr = addresses.find(a => a.isDefault) || addresses[0];
-
-            setShippingDetails(prev => ({
-                ...prev,
-                fullName: `${meta.first_name || ''} ${meta.last_name || ''}`.trim() || prev.fullName,
-                email: user.email || prev.email,
-                phone: defAddr?.phone || meta.phone || prev.phone,
-                address: defAddr?.street || meta.address || prev.address,
-                city: defAddr?.city || meta.city || prev.city,
-                county: defAddr?.county || meta.county || prev.county,
-            }));
-        }
-    }, [user]);
 
     const loadOrders = async () => {
         if (!user?.email) return;
         setOrdersLoading(true);
         try {
+            const { getUserOrders } = await import('@/services/shopService');
             const data = await getUserOrders(user.email);
             setOrders(data);
         } catch (error) {
@@ -157,21 +147,27 @@ const BuyerDashboard = () => {
         }
     };
 
-    const loadUserData = () => {
+    const loadUserData = async () => {
         if (!user) return;
+
+        try {
+            // Load from real backend instead of just metadata
+            const [savedAddresses, savedPayments] = await Promise.all([
+                import('@/services/shopService').then(m => m.getAddresses()),
+                import('@/services/shopService').then(m => m.getPaymentMethods())
+            ]);
+
+            setAddresses(savedAddresses);
+            setPaymentMethods(savedPayments || []);
+        } catch (error) {
+            console.error("Failed to load user data from backend:", error);
+            // Fallback to metadata if backend fails
+            const meta = user.user_metadata || {};
+            setAddresses(meta.addresses || []);
+            setPaymentMethods(meta.payment_methods || []);
+        }
+
         const meta = user.user_metadata || {};
-
-        // Load Addresses from metadata or use defaults if empty
-        const savedAddresses = meta.addresses || [];
-        setAddresses(savedAddresses);
-
-        // Load Payment Methods from metadata
-        const savedPayments = meta.payment_methods || [
-            // Mock default if none
-            // { id: 'p1', type: 'card', brand: 'Visa', last4: '4242', expiry: '12/28', isDefault: true } 
-        ];
-        setPaymentMethods(savedPayments);
-
         // Init Profile Form
         setProfileForm({
             firstName: meta.first_name || '',
@@ -181,11 +177,21 @@ const BuyerDashboard = () => {
         });
     };
 
+
     const loadSuggestions = () => {
         // Randomly select 4 products from fallback
         const shuffled = [...fallbackProducts].sort(() => 0.5 - Math.random());
         setSuggestions(shuffled.slice(0, 4));
     };
+
+    useEffect(() => {
+        if (user) {
+            loadOrders();
+            loadUserData();
+            loadSuggestions();
+        }
+    }, [user]);
+
 
     const handleSignOut = async () => {
         await signOut();
@@ -215,42 +221,93 @@ const BuyerDashboard = () => {
         }
     };
 
-    const saveAddress = async (newAddress: Address) => {
-        if (!supabase) return;
-        const updatedAddresses = [...addresses, newAddress];
-        setAddresses(updatedAddresses);
-        await supabase.auth.updateUser({ data: { addresses: updatedAddresses } });
-        toast.success("Address saved");
+    const saveAddress = async (newAddress: any) => {
+        try {
+            const { addAddress } = await import('@/services/shopService');
+            const saved = await addAddress(newAddress);
+            setAddresses([...addresses, saved]);
+            toast.success("Address saved");
+        } catch (error) {
+            toast.error("Failed to save address");
+        }
     };
 
-    const deleteAddress = async (id: string) => {
-        if (!supabase) return;
-        const updatedAddresses = addresses.filter(a => a.id !== id);
-        setAddresses(updatedAddresses);
-        await supabase.auth.updateUser({ data: { addresses: updatedAddresses } });
-        toast.success("Address removed");
+    const updateAddress = async (id: string, updatedAddr: any) => {
+        // For simplicity, we'll reuse saveAddress but backend should handle ID if present
+        await saveAddress(updatedAddr);
     };
 
-    const savePaymentMethod = async (newMethod: PaymentMethod) => {
-        if (!supabase) return;
-        const updatedMethods = [...paymentMethods, newMethod];
-        setPaymentMethods(updatedMethods);
-        await supabase.auth.updateUser({ data: { payment_methods: updatedMethods } });
-        toast.success("Payment method added");
+    const handleDeleteAddress = async (id: string) => {
+        try {
+            const { deleteAddress } = await import('@/services/shopService');
+            await deleteAddress(id);
+            setAddresses(addresses.filter(a => a.id !== id));
+            toast.success("Address removed");
+        } catch (error) {
+            toast.error("Failed to remove address");
+        }
     };
 
-    const deletePaymentMethod = async (id: string) => {
-        if (!supabase) return;
-        const updated = paymentMethods.filter(p => p.id !== id);
-        setPaymentMethods(updated);
-        await supabase.auth.updateUser({ data: { payment_methods: updated } });
-        toast.success("Payment method removed");
+    const savePaymentMethod = async (newMethod: any) => {
+        try {
+            const { addPaymentMethod } = await import('@/services/shopService');
+            const saved = await addPaymentMethod(newMethod);
+            setPaymentMethods([...paymentMethods, saved]);
+            toast.success("Payment method added");
+        } catch (error) {
+            toast.error("Failed to add payment method");
+        }
     };
+
+    const handleDeletePaymentMethod = async (id: string) => {
+        try {
+            const { deletePaymentMethod } = await import('@/services/shopService');
+            await deletePaymentMethod(id);
+            setPaymentMethods(paymentMethods.filter(p => p.id !== id));
+            toast.success("Payment method removed");
+        } catch (error) {
+            toast.error("Failed to remove payment method");
+        }
+    };
+
+    const [isTrackingOpen, setIsTrackingOpen] = useState(false);
+    const [trackingInfo, setTrackingInfo] = useState<any>(null);
+    const [loadingTracking, setLoadingTracking] = useState(false);
+
+    const handleTrackOrder = async (order: Order) => {
+        setTrackingOrder(order);
+        setIsTrackingOpen(true);
+        setLoadingTracking(true);
+        try {
+            const { getOrderTracking } = await import('@/services/shopService');
+            const info = await getOrderTracking(order.id);
+            setTrackingInfo(info);
+        } catch (error) {
+            console.error("Tracking unavailable:", error);
+            setTrackingInfo(null);
+        } finally {
+            setLoadingTracking(false);
+        }
+    };
+
+    const handleDownloadInvoice = async (order: Order) => {
+        try {
+            const { downloadInvoice } = await import('@/services/shopService');
+            toast.promise(downloadInvoice(order.id, order.order_number || order.id), {
+                loading: 'Preparing invoice...',
+                success: 'Invoice downloaded!',
+                error: 'Failed to download invoice'
+            });
+        } catch (error) {
+            console.error("Invoice Error:", error);
+        }
+    };
+
 
     const navItems: NavItem[] = [
         { id: 'overview', label: 'Overview', icon: LayoutGrid },
         { id: 'orders', label: 'My Orders', icon: Package },
-        { id: 'wallet', label: 'Wallet & Credits', icon: Wallet },
+        // { id: 'wallet', label: 'Wallet & Credits', icon: Wallet }, // Removed as requested
         { id: 'addresses', label: 'Delivery Locations', icon: MapPin },
         { id: 'payments', label: 'Payment Methods', icon: CreditCard },
         { id: 'suggestions', label: 'Buy Suggestions', icon: Gift },
@@ -259,6 +316,7 @@ const BuyerDashboard = () => {
         { id: 'checkout', label: 'Checkout', icon: ShoppingBag, hidden: items.length === 0 },
         { id: 'help', label: 'Help Center', icon: HelpCircle },
     ];
+
 
     const getStatusBadge = (status: string) => {
         switch (status?.toLowerCase()) {
@@ -291,7 +349,7 @@ const BuyerDashboard = () => {
                             {[
                                 { label: 'Total Orders', value: orders.length, icon: Package, color: 'text-blue-500' },
                                 { label: 'In Transit', value: orders.filter(o => o.status === 'shipped').length, icon: Truck, color: 'text-purple-500' },
-                                { label: 'Wallet Balance', value: 'KES 2,450', icon: Wallet, color: 'text-green-500' },
+                                { label: 'Addresses', value: addresses.length, icon: MapPin, color: 'text-green-500' }, // Replaced wallet
                                 { label: 'Favorites', value: wishlistItems.length.toString(), icon: Heart, color: 'text-red-500' },
                             ].map((stat, i) => (
                                 <Card key={i} className="border-none shadow-premium rounded-3xl overflow-hidden group">
@@ -309,6 +367,55 @@ const BuyerDashboard = () => {
                                 </Card>
                             ))}
                         </div>
+
+                        {/* Tracking Dialog */}
+                        <Dialog open={isTrackingOpen} onOpenChange={setIsTrackingOpen}>
+                            <DialogContent className="max-w-md rounded-3xl">
+                                <DialogHeader>
+                                    <DialogTitle className="text-2xl font-black">Shipment <span className="text-primary italic">Tracking</span></DialogTitle>
+                                    <DialogDescription>
+                                        Order {trackingOrder?.order_number || trackingOrder?.id}
+                                    </DialogDescription>
+                                </DialogHeader>
+                                {loadingTracking ? (
+                                    <div className="flex flex-col items-center justify-center py-10 space-y-4">
+                                        <Loader className="w-10 h-10 text-primary animate-spin" />
+                                        <p className="text-sm font-bold opacity-50">Syncing with logistics network...</p>
+                                    </div>
+                                ) : trackingInfo ? (
+                                    <div className="space-y-6 pt-4">
+                                        <div className="flex items-center justify-between p-4 bg-primary/10 rounded-2xl border border-primary/20">
+                                            <div>
+                                                <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Status</p>
+                                                <p className="text-lg font-black text-primary capitalize">{trackingInfo.current_status}</p>
+                                            </div>
+                                            <Badge className="bg-primary text-white">{trackingInfo.estimated_delivery}</Badge>
+                                        </div>
+
+                                        <div className="relative pl-6 space-y-8 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:bg-muted before:rounded-full">
+                                            {(trackingInfo.events || []).map((event: any, i: number) => (
+                                                <div key={i} className="relative group">
+                                                    <div className={`absolute -left-[27px] top-1.5 w-4 h-4 rounded-full border-4 border-white ${i === 0 ? 'bg-primary' : 'bg-muted'} shadow-sm group-hover:scale-125 transition-transform`} />
+                                                    <div className="space-y-1">
+                                                        <p className={`font-black tracking-tight ${i === 0 ? 'text-foreground' : 'text-muted-foreground'}`}>{event.status.toUpperCase()}</p>
+                                                        <p className="text-sm text-muted-foreground font-medium">{event.description}</p>
+                                                        <div className="flex items-center gap-2 text-[10px] font-bold opacity-40 uppercase tracking-tighter">
+                                                            <span>{new Date(event.created_at).toLocaleString()}</span>
+                                                            {event.location && <span>• {event.location}</span>}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="text-center py-10 opacity-50">
+                                        <p>Tracking information not yet available for this order.</p>
+                                    </div>
+                                )}
+                            </DialogContent>
+                        </Dialog>
+
 
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                             <Card className="border-none shadow-premium rounded-[2.5rem]">
@@ -354,7 +461,7 @@ const BuyerDashboard = () => {
                                 <CardContent className="p-8 grid grid-cols-2 gap-4">
                                     {[
                                         { label: 'Track Order', icon: MapPin, tab: 'orders' },
-                                        { label: 'Top-up Wallet', icon: Wallet, tab: 'wallet' },
+                                        { label: 'Order History', icon: Package, tab: 'orders' }, // Replaced Wallet
                                         { label: 'Update Profile', icon: User, tab: 'profile' },
                                         { label: 'Support Chat', icon: HelpCircle, tab: 'help' }
                                     ].map((action, i) => (
@@ -408,10 +515,12 @@ const BuyerDashboard = () => {
                                                     </div>
                                                 </div>
                                                 <div className="flex flex-wrap gap-2">
-                                                    <Button variant="secondary" size="sm" className="rounded-full" onClick={() => setTrackingOrder(order)}>
+                                                    <Button variant="secondary" size="sm" className="rounded-full" onClick={() => handleTrackOrder(order)}>
                                                         <Truck className="w-4 h-4 mr-2" /> Track
                                                     </Button>
-                                                    <Button variant="outline" size="sm" className="rounded-full">Invoice</Button>
+                                                    <Button variant="outline" size="sm" className="rounded-full" onClick={() => handleDownloadInvoice(order)}>
+                                                        <FileText className="w-4 h-4 mr-2" /> Invoice
+                                                    </Button>
                                                 </div>
                                             </div>
                                         </CardContent>
@@ -422,36 +531,8 @@ const BuyerDashboard = () => {
                     </div>
                 );
             case 'wallet':
-                return (
-                    <Card className="border-none shadow-premium rounded-[2.5rem] overflow-hidden">
-                        <div className="bg-primary p-12 text-primary-foreground">
-                            <h3 className="text-sm font-black uppercase tracking-widest opacity-80 mb-2">Available Credits</h3>
-                            <p className="text-6xl font-black tracking-tightest">KES 2,450.00</p>
-                            <div className="mt-8 flex gap-4">
-                                <Button variant="secondary" className="rounded-full">Top Up Credits</Button>
-                                <Button variant="ghost" className="rounded-full border border-white/20">Transaction History</Button>
-                            </div>
-                        </div>
-                        <CardContent className="p-12">
-                            <h4 className="text-xl font-black mb-6">Recent Wallet Activity</h4>
-                            <div className="space-y-4">
-                                {[
-                                    { label: 'Order #ORD-12345', amount: '-1,200', date: 'Jan 12, 2026', type: 'debit' },
-                                    { label: 'Wallet Top-up', amount: '+500', date: 'Jan 10, 2026', type: 'credit' },
-                                    { label: 'Order #ORD-12340', amount: '-4,500', date: 'Jan 05, 2026', type: 'debit' },
-                                ].map((tx, i) => (
-                                    <div key={i} className="flex justify-between items-center py-4 border-b border-muted last:border-0">
-                                        <div>
-                                            <p className="font-bold">{tx.label}</p>
-                                            <p className="text-xs text-muted-foreground">{tx.date}</p>
-                                        </div>
-                                        <p className={`font-black ${tx.type === 'credit' ? 'text-green-500' : 'text-foreground'}`}>{tx.amount} KES</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
-                );
+                return null; // Removed
+
             case 'addresses':
                 return (
                     <div className="space-y-6 animate-in fade-in duration-500">
@@ -469,44 +550,74 @@ const BuyerDashboard = () => {
                                         <DialogTitle>Add New Address</DialogTitle>
                                         <DialogDescription>Add a new delivery location for checkout.</DialogDescription>
                                     </DialogHeader>
-                                    <form onSubmit={(e) => {
+                                    <form onSubmit={async (e) => {
                                         e.preventDefault();
                                         const formData = new FormData(e.currentTarget);
-                                        saveAddress({
-                                            id: Date.now().toString(),
+                                        await saveAddress({
                                             name: formData.get('name') as string,
+                                            email: formData.get('email') as string,
+                                            phone: formData.get('phone') as string,
                                             street: formData.get('street') as string,
+                                            apartment: formData.get('apartment') as string,
+                                            building: formData.get('building') as string,
+                                            floor: formData.get('floor') as string,
                                             city: formData.get('city') as string,
                                             county: formData.get('county') as string,
-                                            phone: formData.get('phone') as string,
-                                            isDefault: false
+                                            postal_code: formData.get('postal_code') as string,
+                                            is_default: (formData.get('is_default') === 'on')
                                         });
-                                        // Close dialog logic needed here (omitted for brevity, assume auto close via state in real app)
-                                    }} className="space-y-4">
+                                        // Auto-close dialog by mocking a click on the backdrop or just refresh
+                                        window.location.reload();
+                                    }} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="name">Address Name (e.g. Home, Office)</Label>
-                                            <Input id="name" name="name" required placeholder="Home" />
+                                            <Label htmlFor="name">Location Name</Label>
+                                            <Input id="name" name="name" required placeholder="Home / Office" />
                                         </div>
                                         <div className="grid gap-2">
-                                            <Label htmlFor="street">Street Address</Label>
-                                            <Input id="street" name="street" required placeholder="123 Bee St" />
+                                            <Label htmlFor="email">Context Email</Label>
+                                            <Input id="email" name="email" type="email" placeholder="delivery@beeyield.com" />
                                         </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="grid gap-2">
-                                                <Label htmlFor="city">City</Label>
-                                                <Input id="city" name="city" required placeholder="Nairobi" />
-                                            </div>
-                                            <div className="grid gap-2">
-                                                <Label htmlFor="county">County</Label>
-                                                <Input id="county" name="county" required placeholder="Nairobi" />
-                                            </div>
+                                        <div className="grid gap-2 md:col-span-2">
+                                            <Label htmlFor="street">Street & Number</Label>
+                                            <Input id="street" name="street" required placeholder="123 Beevior St" />
                                         </div>
                                         <div className="grid gap-2">
-                                            <Label htmlFor="phone">Contact Phone</Label>
+                                            <Label htmlFor="building">Building / Estate</Label>
+                                            <Input id="building" name="building" placeholder="Honey Heights" />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="apartment">Apartment / Suite</Label>
+                                            <Input id="apartment" name="apartment" placeholder="Unit 402" />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="floor">Floor / Level</Label>
+                                            <Input id="floor" name="floor" placeholder="4th Floor" />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="city">City</Label>
+                                            <Input id="city" name="city" required placeholder="Nairobi" />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="county">County</Label>
+                                            <Input id="county" name="county" required placeholder="Nairobi" />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="postal_code">Postal Code</Label>
+                                            <Input id="postal_code" name="postal_code" placeholder="00100" />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="phone">Phone Number</Label>
                                             <Input id="phone" name="phone" required placeholder="+254..." />
                                         </div>
-                                        <DialogFooter><Button type="submit">Save Address</Button></DialogFooter>
+                                        <div className="md:col-span-2 flex items-center gap-2">
+                                            <input type="checkbox" id="is_default" name="is_default" className="w-4 h-4" />
+                                            <Label htmlFor="is_default">Set as default address</Label>
+                                        </div>
+                                        <div className="md:col-span-2 pt-4">
+                                            <Button type="submit" className="w-full">Save Location</Button>
+                                        </div>
                                     </form>
+
                                 </DialogContent>
                             </Dialog>
                         </div>
@@ -526,11 +637,12 @@ const BuyerDashboard = () => {
                                         <p>{addr.phone}</p>
                                     </CardContent>
                                     <CardFooter className="flex justify-end gap-2">
-                                        <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-destructive" onClick={() => deleteAddress(addr.id)}>
+                                        <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-destructive" onClick={() => handleDeleteAddress(addr.id)}>
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
-                                        <Button variant="ghost" size="sm"><Edit2 className="h-4 w-4" /></Button>
+                                        <Button variant="ghost" size="sm" onClick={() => toast.info("Edit feature coming soon. Please delete and re-add for now.")}><Edit2 className="h-4 w-4" /></Button>
                                     </CardFooter>
+
                                 </Card>
                             ))}
                             {addresses.length === 0 && <p className="text-muted-foreground col-span-2 text-center py-8">No addresses saved.</p>}
@@ -545,11 +657,53 @@ const BuyerDashboard = () => {
                                 <h2 className="text-2xl font-black tracking-tight">Payment Methods</h2>
                                 <p className="text-muted-foreground">Manage your saved cards and payment details.</p>
                             </div>
-                            <Button onClick={() => savePaymentMethod({
-                                id: Date.now().toString(),
-                                type: 'card', brand: 'Visa', last4: '4242', expiry: '12/28', isDefault: false
-                            })}><Plus className="h-4 w-4 mr-2" /> Add Card</Button>
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <Button><Plus className="h-4 w-4 mr-2" /> Add Card</Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>Add Payment Card</DialogTitle>
+                                        <DialogDescription>Your data is encrypted and secure.</DialogDescription>
+                                    </DialogHeader>
+                                    <form onSubmit={async (e) => {
+                                        e.preventDefault();
+                                        const formData = new FormData(e.currentTarget);
+                                        await savePaymentMethod({
+                                            type: 'card',
+                                            provider: (formData.get('number') as string).startsWith('4') ? 'Visa' : 'Mastercard',
+                                            last4: (formData.get('number') as string).slice(-4),
+                                            expiry_month: parseInt((formData.get('expiry') as string).split('/')[0]),
+                                            expiry_year: parseInt((formData.get('expiry') as string).split('/')[1]),
+                                            card_holder_name: formData.get('holder') as string,
+                                            is_default: true
+                                        });
+                                        window.location.reload();
+                                    }} className="space-y-4">
+                                        <div className="grid gap-2">
+                                            <Label>Card Holder Name</Label>
+                                            <Input name="holder" required placeholder="Timothy Nduva" />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Label>Card Number</Label>
+                                            <Input name="number" required placeholder="**** **** **** 4242" maxLength={16} />
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="grid gap-2">
+                                                <Label>Expiry (MM/YY)</Label>
+                                                <Input name="expiry" required placeholder="12/28" maxLength={5} />
+                                            </div>
+                                            <div className="grid gap-2">
+                                                <Label>CVC</Label>
+                                                <Input name="cvc" required placeholder="***" maxLength={3} />
+                                            </div>
+                                        </div>
+                                        <Button type="submit" className="w-full">Link Securely</Button>
+                                    </form>
+                                </DialogContent>
+                            </Dialog>
                         </div>
+
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {paymentMethods.map((pm) => (
@@ -557,7 +711,7 @@ const BuyerDashboard = () => {
                                     <CardContent className="p-6 relative">
                                         <div className="flex justify-between items-start mb-8">
                                             <CreditCard className="h-8 w-8 text-white/80" />
-                                            <Button variant="ghost" size="icon" className="text-white/50 hover:text-white" onClick={() => deletePaymentMethod(pm.id)}>
+                                            <Button variant="ghost" size="icon" className="text-white/50 hover:text-white" onClick={() => handleDeletePaymentMethod(pm.id)}>
                                                 <XCircle className="h-5 w-5" />
                                             </Button>
                                         </div>
@@ -567,13 +721,14 @@ const BuyerDashboard = () => {
                                         <div className="flex justify-between items-end">
                                             <div>
                                                 <p className="text-[10px] uppercase text-white/50">Card Holder</p>
-                                                <p className="font-medium">{profileForm.firstName && profileForm.lastName ? `${profileForm.firstName} ${profileForm.lastName}` : 'Customer'}</p>
+                                                <p className="font-medium truncate max-w-[120px]">{pm.card_holder_name || 'Customer'}</p>
                                             </div>
-                                            <div>
-                                                <p className="text-[10px] uppercase text-white/50">Expires</p>
-                                                <p className="font-medium">{pm.expiry}</p>
+                                            <div className="text-right">
+                                                <p className="text-[10px] uppercase text-white/50">{pm.provider || 'Card'}</p>
+                                                <p className="font-medium">{pm.expiry_month}/{pm.expiry_year}</p>
                                             </div>
                                         </div>
+
                                     </CardContent>
                                 </Card>
                             ))}
@@ -744,11 +899,14 @@ const BuyerDashboard = () => {
                                 last_name: shippingDetails.fullName.split(' ').slice(1).join(' ') || '',
                                 email: shippingDetails.email,
                                 phone: shippingDetails.phone,
-                                address: shippingDetails.address,
+                                address: shippingDetails.street,
                                 city: shippingDetails.city,
                                 county: shippingDetails.county,
                                 postal_code: shippingDetails.postalCode,
                             },
+                            // We'll pass the full extended address as part of metadata or notes if needed, 
+                            // but for now let's just make sure the backend order tracking has it.
+                            // Actually, let's just update the CheckoutOrder interface in shopService too.
                             payment_method: paymentMethod,
                             items: items.map(item => ({
                                 product_id: item.productId.toString(),
@@ -756,8 +914,9 @@ const BuyerDashboard = () => {
                                 quantity: item.quantity
                             })),
                             total_kes: totalWithShipping,
-                            notes: shippingDetails.notes
+                            notes: shippingDetails.notes + (shippingDetails.building ? ` | Bldg: ${shippingDetails.building}` : "") + (shippingDetails.apartment ? ` | Apt: ${shippingDetails.apartment}` : "")
                         };
+
 
                         const response = await initializeCheckout(orderData, session?.access_token);
                         await new Promise(r => setTimeout(r, 2000));
@@ -826,33 +985,111 @@ const BuyerDashboard = () => {
 
                                     {checkoutStep === 'shipping' && (
                                         <Card className="border-none shadow-premium rounded-[2rem] p-8 space-y-6">
+                                            {addresses.length > 0 && (
+                                                <div className="space-y-4">
+                                                    <Label className="text-sm font-black uppercase tracking-widest opacity-60">Use a saved location</Label>
+                                                    <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                                                        {addresses.map(addr => (
+                                                            <button
+                                                                key={addr.id}
+                                                                onClick={() => {
+                                                                    setShippingDetails({
+                                                                        ...shippingDetails,
+                                                                        fullName: profileForm.firstName + " " + profileForm.lastName,
+                                                                        email: addr.email || profileForm.email,
+                                                                        phone: addr.phone,
+                                                                        street: addr.street,
+                                                                        city: addr.city,
+                                                                        county: addr.county,
+                                                                        apartment: addr.apartment || '',
+                                                                        building: addr.building || '',
+                                                                        floor: addr.floor || '',
+                                                                        postalCode: addr.postal_code || '',
+                                                                    });
+                                                                    toast.success(`Using ${addr.name}`);
+                                                                }}
+                                                                className="flex-shrink-0 p-4 border-2 border-border rounded-2xl text-left hover:border-primary transition-all group"
+                                                            >
+                                                                <p className="font-bold group-hover:text-primary">{addr.name}</p>
+                                                                <p className="text-[10px] text-muted-foreground">{addr.city}</p>
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                    <Separator className="opacity-50" />
+                                                </div>
+                                            )}
+
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="md:col-span-2 space-y-2">
-                                                    <Label>Full Name</Label>
+                                                    <Label>Full Name / Recipient</Label>
                                                     <Input
                                                         value={shippingDetails.fullName}
                                                         onChange={e => setShippingDetails({ ...shippingDetails, fullName: e.target.value })}
+                                                        placeholder="Timothy Nduva"
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <Label>Phone Number</Label>
+                                                    <Label>Contact Phone</Label>
                                                     <Input
                                                         value={shippingDetails.phone}
                                                         onChange={e => setShippingDetails({ ...shippingDetails, phone: e.target.value })}
+                                                        placeholder="+254..."
                                                     />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label>Contact Email</Label>
+                                                    <Input
+                                                        value={shippingDetails.email}
+                                                        onChange={e => setShippingDetails({ ...shippingDetails, email: e.target.value })}
+                                                        placeholder="test@example.com"
+                                                    />
+                                                </div>
+                                                <div className="md:col-span-2 space-y-2">
+                                                    <Label>Street & Number</Label>
+                                                    <Input
+                                                        value={shippingDetails.street}
+                                                        onChange={e => setShippingDetails({ ...shippingDetails, street: e.target.value })}
+                                                        placeholder="123 Beevior Road"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label>Building / Estate</Label>
+                                                    <Input
+                                                        value={shippingDetails.building}
+                                                        onChange={e => setShippingDetails({ ...shippingDetails, building: e.target.value })}
+                                                        placeholder="Honey Heights"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label>Apt / Suite / Floor</Label>
+                                                    <div className="flex gap-2">
+                                                        <Input
+                                                            value={shippingDetails.apartment}
+                                                            onChange={e => setShippingDetails({ ...shippingDetails, apartment: e.target.value })}
+                                                            placeholder="Apt 2B"
+                                                        />
+                                                        <Input
+                                                            value={shippingDetails.floor}
+                                                            onChange={e => setShippingDetails({ ...shippingDetails, floor: e.target.value })}
+                                                            placeholder="4th"
+                                                            className="w-20"
+                                                        />
+                                                    </div>
                                                 </div>
                                                 <div className="space-y-2">
                                                     <Label>City</Label>
                                                     <Input
                                                         value={shippingDetails.city}
                                                         onChange={e => setShippingDetails({ ...shippingDetails, city: e.target.value })}
+                                                        placeholder="Nairobi"
                                                     />
                                                 </div>
-                                                <div className="md:col-span-2 space-y-2">
-                                                    <Label>Address</Label>
+                                                <div className="space-y-2">
+                                                    <Label>County</Label>
                                                     <Input
-                                                        value={shippingDetails.address}
-                                                        onChange={e => setShippingDetails({ ...shippingDetails, address: e.target.value })}
+                                                        value={shippingDetails.county}
+                                                        onChange={e => setShippingDetails({ ...shippingDetails, county: e.target.value })}
+                                                        placeholder="Nairobi"
                                                     />
                                                 </div>
                                             </div>
@@ -861,6 +1098,7 @@ const BuyerDashboard = () => {
                                             </Button>
                                         </Card>
                                     )}
+
 
                                     {checkoutStep === 'payment' && (
                                         <Card className="border-none shadow-premium rounded-[2rem] p-8 space-y-8">
@@ -975,45 +1213,56 @@ const BuyerDashboard = () => {
             </div>
 
             {/* Tracking Modal */}
-            <Dialog open={!!trackingOrder} onOpenChange={(open) => !open && setTrackingOrder(null)}>
-                <DialogContent className="sm:max-w-md rounded-[2.5rem] border-none shadow-glow p-8">
+            <Dialog open={isTrackingOpen} onOpenChange={setIsTrackingOpen}>
+                <DialogContent className="max-w-md rounded-3xl">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-black">Track Parcel</DialogTitle>
-                        <DialogDescription className="font-medium text-muted-foreground">
-                            Order #{trackingOrder?.order_number || trackingOrder?.id.slice(0, 8)}
+                        <DialogTitle className="text-2xl font-black">Shipment <span className="text-primary italic">Tracking</span></DialogTitle>
+                        <DialogDescription>
+                            Order {trackingOrder?.order_number || trackingOrder?.id}
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-8 py-6">
-                        <div className="space-y-6">
-                            {[
-                                { label: 'Order Placed', date: 'Confirmed Jan 12', active: true },
-                                { label: 'Packaging', date: 'Completed Jan 13', active: true },
-                                { label: 'In Transit', date: 'Expected arrival Jan 16', active: true, pulse: true },
-                                { label: 'Delivered', date: 'Estimated Jan 16', active: false }
-                            ].map((step, i) => (
-                                <div key={i} className="flex gap-4 relative">
-                                    <div className="flex flex-col items-center">
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center z-10 ${step.active ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'}`}>
-                                            {step.active ? <CheckCircle2 className="w-5 h-5" /> : <Clock className="w-5 h-5" />}
-                                        </div>
-                                        {i < 3 && <div className={`w-0.5 flex-1 ${step.active ? 'bg-primary' : 'bg-muted'}`} />}
-                                        {step.pulse && <div className="absolute top-0 left-0 w-8 h-8 rounded-full bg-primary/20 animate-ping" />}
-                                    </div>
-                                    <div className="pb-8">
-                                        <p className={`font-bold ${step.active ? 'text-foreground' : 'text-muted-foreground'}`}>{step.label}</p>
-                                        <p className="text-xs text-muted-foreground">{step.date}</p>
-                                    </div>
-                                </div>
-                            ))}
+                    {loadingTracking ? (
+                        <div className="flex flex-col items-center justify-center py-10 space-y-4">
+                            <Loader className="w-10 h-10 text-primary animate-spin" />
+                            <p className="text-sm font-bold opacity-50">Syncing with logistics network...</p>
                         </div>
-                    </div>
-                    <DialogFooter>
-                        <Button className="w-full rounded-full" onClick={() => setTrackingOrder(null)}>Return to Dashboard</Button>
-                    </DialogFooter>
+                    ) : trackingInfo ? (
+                        <div className="space-y-6 pt-4">
+                            <div className="flex items-center justify-between p-4 bg-primary/10 rounded-2xl border border-primary/20">
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Status</p>
+                                    <p className="text-lg font-black text-primary capitalize">{trackingInfo.current_status}</p>
+                                </div>
+                                <Badge className="bg-primary text-white">{trackingInfo.estimated_delivery}</Badge>
+                            </div>
+
+                            <div className="relative pl-6 space-y-8 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:bg-muted before:rounded-full">
+                                {(trackingInfo.events || []).map((event: any, i: number) => (
+                                    <div key={i} className="relative group">
+                                        <div className={`absolute -left-[27px] top-1.5 w-4 h-4 rounded-full border-4 border-white ${i === 0 ? 'bg-primary' : 'bg-muted'} shadow-sm group-hover:scale-125 transition-transform`} />
+                                        <div className="space-y-1">
+                                            <p className={`font-black tracking-tight ${i === 0 ? 'text-foreground' : 'text-muted-foreground'}`}>{event.status.toUpperCase()}</p>
+                                            <p className="text-sm text-muted-foreground font-medium">{event.description}</p>
+                                            <div className="flex items-center gap-2 text-[10px] font-bold opacity-40 uppercase tracking-tighter">
+                                                <span>{new Date(event.created_at).toLocaleString()}</span>
+                                                {event.location && <span>• {event.location}</span>}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="text-center py-10 opacity-50">
+                            <p>Tracking information not yet available for this order.</p>
+                        </div>
+                    )}
                 </DialogContent>
             </Dialog>
+
         </ShopDashboardLayout>
     );
 };
+
 
 export default BuyerDashboard;
