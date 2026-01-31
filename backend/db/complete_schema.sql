@@ -129,7 +129,8 @@ CREATE TABLE IF NOT EXISTS hives (
     status TEXT DEFAULT 'ACTIVE', -- ACTIVE, INACTIVE, DAMAGED
     last_inspection DATE,
     blockchain_hash TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now())
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now()),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now())
 );
 
 -- Harvests Table
@@ -166,11 +167,39 @@ CREATE TABLE IF NOT EXISTS processing_records (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now())
 );
 
--- Batches Table (Final packaged product)
-CREATE TABLE IF NOT EXISTS batches (
+-- Honey Batches (The main traceability record used by Admin Dashboard)
+CREATE TABLE IF NOT EXISTS honey_batches (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    batch_code TEXT NOT NULL UNIQUE, -- This is what customers scan
-    processing_id UUID REFERENCES processing_records(id),
+    batch_code TEXT NOT NULL UNIQUE,
+    honey_type TEXT,
+    harvest_date DATE,
+    packaged_date DATE,
+    quantity_kg DECIMAL(10, 2),
+    processing_method TEXT,
+    farmer_name TEXT,
+    farmer_phone TEXT,
+    beekeeper_name TEXT,
+    beekeeper_id TEXT,
+    apiary_name TEXT,
+    location_county TEXT,
+    location_region TEXT,
+    latitude FLOAT,
+    longitude FLOAT,
+    quality_grade TEXT DEFAULT 'A',
+    certifications TEXT[] DEFAULT '{}',
+    moisture_content FLOAT,
+    color_grade TEXT,
+    status TEXT DEFAULT 'verified',
+    block_hash TEXT,
+    blockchain_hash TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now()),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now())
+);
+
+-- Packaged Batches (Final packaged product for inventory/shop)
+CREATE TABLE IF NOT EXISTS packaged_batches (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    batch_code TEXT NOT NULL UNIQUE, -- Links to honey_batches.batch_code
     product_id UUID REFERENCES products(id),
     packaging_date DATE,
     expiry_date DATE,
@@ -179,6 +208,22 @@ CREATE TABLE IF NOT EXISTS batches (
     blockchain_hash TEXT,
     qr_code_url TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now())
+);
+
+-- Blockchain Records Table
+CREATE TABLE IF NOT EXISTS blockchain_records (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    block_index INTEGER NOT NULL,
+    prev_hash TEXT, -- Renamed from previous_hash to match some patterns, but seed uses previous_hash
+    previous_hash TEXT, 
+    current_hash TEXT NOT NULL,
+    timestamp TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now()),
+    record_type TEXT NOT NULL,
+    record_id UUID,
+    data JSONB,
+    blockchain_hash TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now()),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now())
 );
 
 -- ============================================

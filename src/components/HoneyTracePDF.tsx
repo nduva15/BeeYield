@@ -392,26 +392,34 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
                     </Text>
                 </View>
 
-                {/* Impact Stats */}
+                {/* Impact Stats - 50/50 Promise & Sustainability */}
                 {traceData.impact_stats && (
                     <View style={styles.impactSection}>
-                        <Text style={styles.sectionTitle}>Environmental Impact</Text>
+                        <Text style={styles.sectionTitle}>Environmental Impact & Ethics</Text>
                         <View style={styles.impactGrid}>
                             <View style={styles.impactItem}>
-                                <Text style={styles.impactLabel}>Acres Pollinated</Text>
-                                <Text style={styles.impactValue}>{traceData.impact_stats.acres_pollinated || '25+'}</Text>
+                                <Text style={styles.impactLabel}>Trees Planted</Text>
+                                <Text style={styles.impactValue}>
+                                    {(traceData.impact_stats as any).trees_planted || '2,500+'}
+                                </Text>
                             </View>
                             <View style={styles.impactItem}>
-                                <Text style={styles.impactLabel}>Total Honey (kg)</Text>
-                                <Text style={styles.impactValue}>{traceData.impact_stats.total_honey_kg || '883'}</Text>
+                                <Text style={styles.impactLabel}>Bees Protected (50/50 Promise)</Text>
+                                <Text style={styles.impactValue}>
+                                    {(traceData.impact_stats as any).bees_protected || 'Yes - 50% Left'}
+                                </Text>
                             </View>
                             <View style={styles.impactItem}>
-                                <Text style={styles.impactLabel}>Hive Count</Text>
-                                <Text style={styles.impactValue}>{traceData.impact_stats.hive_count || '24'}</Text>
+                                <Text style={styles.impactLabel}>Sanctuary Size</Text>
+                                <Text style={styles.impactValue}>
+                                    {(traceData.impact_stats as any).acres_pollinated || '5 Acres'}
+                                </Text>
                             </View>
                             <View style={styles.impactItem}>
-                                <Text style={styles.impactLabel}>Farmers Served</Text>
-                                <Text style={styles.impactValue}>{traceData.impact_stats.farmers_served || '12'}</Text>
+                                <Text style={styles.impactLabel}>Fair Trade Status</Text>
+                                <Text style={styles.impactValue}>
+                                    {(traceData.impact_stats as any).farmer_fair_pay || '100% Certified'}
+                                </Text>
                             </View>
                         </View>
                     </View>

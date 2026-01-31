@@ -723,11 +723,18 @@ def generate_invoice_pdf(order_id: str) -> str:
     width, height = letter
     
     # 1. Header & Logo
-    logo_path = os.path.join(os.getcwd(), "..", "public", "logo.png")
+
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    # path from backend/app/services/shop_service.py to public/logo.png
+    # Services -> App -> Backend -> Root -> Public
+    logo_path = os.path.join(current_dir, "..", "..", "..", "public", "logo.png")
+    logo_path = os.path.normpath(logo_path)
+    
     if os.path.exists(logo_path):
         c.drawImage(logo_path, 50, height - 70, width=50, height=50, mask='auto', preserveAspectRatio=True)
     else:
         # Fallback to text logo
+        print(f"Warning: Logo not found at {logo_path}")
         c.setFont("Helvetica-Bold", 24)
         c.setFillColor(colors.orange) # BeeYield Theme
         c.drawString(50, height - 50, "BeeYield")

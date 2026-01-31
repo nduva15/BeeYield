@@ -1,7 +1,8 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
-import { Thermometer, Droplets, Weight, CloudRain, Filter, Download, Calendar } from 'lucide-react';
+import { Thermometer, Droplets, Weight, CloudRain, Filter, Download, Calendar, Activity, ShieldAlert, FileText, Zap } from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -10,16 +11,8 @@ interface MeasurementDataViewProps {
 }
 
 const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }) => {
-    // Mock chart data
-    const data = [
-        { time: '00:00', temp: 32, hum: 45, weight: 40 },
-        { time: '04:00', temp: 31, hum: 48, weight: 40.1 },
-        { time: '08:00', temp: 33, hum: 42, weight: 40.5 },
-        { time: '12:00', temp: 35, hum: 38, weight: 41.2 },
-        { time: '16:00', temp: 34, hum: 40, weight: 41.8 },
-        { time: '20:00', temp: 32, hum: 44, weight: 42.1 },
-        { time: '23:59', temp: 31, hum: 46, weight: 42.3 },
-    ];
+    // Data for charts - Empty by default, should be populated from props or API
+    const data: any[] = [];
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-12">
@@ -29,11 +22,14 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
                     <p className="text-gray-500 dark:text-gray-400 mt-1">Historical and real-time sensor analytics.</p>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" className="rounded-xl border-[#F4D03F]/20 hover:border-[#F4D03F] gap-2 font-bold h-11 px-5 shadow-sm">
-                        <Download className="w-4 h-4" /> Export CSV
+                    <Button variant="outline" className="rounded-xl border-slate-200 dark:border-white/10 hover:border-[#1B9157] gap-2 font-bold h-11 px-5 shadow-sm">
+                        <FileText className="w-4 h-4 text-[#1B9157]" /> Export PDF
                     </Button>
-                    <Button className="bg-[#F4D03F] hover:bg-[#e0be36] text-[#1A1A1A] rounded-xl gap-2 font-bold h-11 px-6 shadow-lg shadow-yellow-500/20 border-none">
-                        <Calendar className="w-4 h-4" /> Last 7 Days
+                    <Button variant="outline" className="rounded-xl border-slate-200 dark:border-white/10 hover:border-[#F4D03F] gap-2 font-bold h-11 px-5 shadow-sm">
+                        <Download className="w-4 h-4 text-[#F4D03F]" /> Export CSV
+                    </Button>
+                    <Button className="bg-[#1B9157] hover:bg-[#167d4a] text-white rounded-xl gap-2 font-bold h-11 px-6 shadow-lg shadow-green-500/10 border-none">
+                        <Calendar className="w-4 h-4" /> Last 24 Hours
                     </Button>
                 </div>
             </div>
@@ -42,9 +38,9 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {[
                     { label: 'Avg temperature', value: '33.2°C', icon: Thermometer, color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-900/20' },
-                    { label: 'Avg humidity', value: '43.5%', icon: Droplets, color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/10 dark:bg-[#1B9157]/20' },
-                    { label: 'Total weight gain', value: '+2.3kg', icon: Weight, color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/10 dark:bg-[#1B9157]/20' },
-                    { label: 'Weather impact', value: 'Low', icon: CloudRain, color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-900/20' },
+                    { label: 'Avg humidity', value: '43.5%', icon: Droplets, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
+                    { label: 'Colony Stress', value: 'Low', icon: Zap, color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/10 dark:bg-[#1B9157]/20' },
+                    { label: 'Disease Risk', value: 'Safe', icon: ShieldAlert, color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/10 dark:bg-[#1B9157]/20' },
                 ].map((stat) => (
                     <Card key={stat.label} className="rounded-3xl border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm hover:border-[#F4D03F]/30 transition-colors">
                         <CardContent className="p-6">
@@ -137,15 +133,24 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
                 </Card>
 
                 <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm p-8">
-                    <h3 className="text-xl font-bold mb-6">Hive Weight (kg)</h3>
+                    <div className="flex justify-between items-center mb-6">
+                        <h3 className="text-xl font-bold">Acoustic Health (Hz)</h3>
+                        <Badge className="bg-[#1B9157]/10 text-[#1B9157] border-none font-black text-[10px] uppercase">Queen Present</Badge>
+                    </div>
                     <div className="h-[250px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={data}>
+                                <defs>
+                                    <linearGradient id="colorAcoustics" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#1B9157" stopOpacity={0.1} />
+                                        <stop offset="95%" stopColor="#1B9157" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" opacity={0.5} />
                                 <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#9CA3AF' }} dy={10} />
                                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#9CA3AF' }} dx={-10} />
                                 <Tooltip contentStyle={{ borderRadius: '12px', border: 'none' }} />
-                                <Area type="monotone" dataKey="weight" stroke="#1B9157" strokeWidth={3} fill="#1B9157" fillOpacity={0.05} />
+                                <Area type="monotone" dataKey="acoustics" stroke="#1B9157" strokeWidth={3} fill="url(#colorAcoustics)" fillOpacity={1} />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>

@@ -1,10 +1,127 @@
-import { Database, TrendingUp, Check, Heart, Sprout, Globe, Wind, Sun, ArrowRight, Quote, Users, Droplets, TreePine, Bug, Package, MapPin, Shield, Leaf, Cpu, Code } from "lucide-react";
+import { useState } from "react";
+import { Database, TrendingUp, Check, Heart, Sprout, Globe, Wind, Sun, ArrowRight, Quote, Users, Droplets, TreePine, Bug, Package, MapPin, Shield, Leaf, Cpu, Code, Loader2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
+import { jsPDF } from "jspdf";
+
+import { toast } from "sonner";
+import BEEYIELD_LOGO from "@/assets/Logo.png";
 
 const ESG = () => {
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownloadReport = () => {
+    setDownloading(true);
+    setTimeout(() => {
+      try {
+        const doc = new jsPDF();
+        const pageWidth = doc.internal.pageSize.getWidth();
+
+        // Add logo
+        try {
+          doc.addImage(BEEYIELD_LOGO, 'PNG', 14, 10, 30, 30);
+        } catch (e) {
+          console.warn('Could not load logo for PDF');
+        }
+
+        // Header
+        doc.setFontSize(24);
+        doc.setTextColor(245, 158, 11);
+        doc.text('BeeYield', 50, 25);
+
+        doc.setFontSize(10);
+        doc.setTextColor(107, 114, 128);
+        doc.text('Corporate Social Responsibility Report 2024', 50, 32);
+        doc.text('Kibwezi, Makueni County, Kenya', 50, 38);
+
+        // Title
+        doc.setFontSize(22);
+        doc.setTextColor(31, 41, 55);
+        doc.text('Our ESG Commitment', 14, 55);
+
+        doc.setDrawColor(245, 158, 11);
+        doc.setLineWidth(0.5);
+        doc.line(14, 60, pageWidth - 14, 60);
+
+        let yPos = 75;
+
+        // Intro
+        doc.setFontSize(12);
+        doc.setTextColor(75, 85, 99);
+        const introText = "Environmental, Social, and Governance practices are the foundation of BeeYield. From the semi-arid lands of Kibwezi, we're proving that sustainable beekeeping can transform communities and ecosystems.";
+        const introLines = doc.splitTextToSize(introText, pageWidth - 28);
+        doc.text(introLines, 14, yPos);
+        yPos += introLines.length * 7 + 10;
+
+        // Impact Stats
+        doc.setFontSize(16);
+        doc.setTextColor(31, 41, 55);
+        doc.text('2024 Impact Highlights', 14, yPos);
+        yPos += 10;
+
+        doc.setFillColor(249, 250, 251);
+        doc.rect(14, yPos - 5, pageWidth - 28, 55, 'F');
+
+        doc.setFontSize(11);
+        doc.setTextColor(75, 85, 99);
+
+        const stats = [
+          "Partner Beekeepers: 20+ (Local farmers trained)",
+          "Acres Pollinated: 25 (Precision coverage)",
+          "Trees Planted: 2,500+ (Ecosystem restoration)",
+          "Active Colonies: 184 (Managed hives)",
+          "Honey Produced: 883kg (Pure traceable honey)",
+          "Bees Protected: 2M+ (Pollinators thriving)"
+        ];
+
+        stats.forEach(stat => {
+          doc.text(`• ${stat}`, 20, yPos + 5);
+          yPos += 8;
+        });
+        yPos += 15;
+
+        // Pillars
+        doc.setFontSize(16);
+        doc.setTextColor(31, 41, 55);
+        doc.text('Our 6 ESG Pillars', 14, yPos);
+        yPos += 10;
+
+        doc.setFontSize(12);
+        doc.setTextColor(107, 114, 128); // Gray
+
+        const pillars = [
+          "1. Bee Disease Prevention - <15% colony loss rate",
+          "2. The 50/50 Harvest Promise - Ethical beekeeping",
+          "3. HoneyChain™ Traceability - 100% verified journey",
+          "4. Sustainable AgriTech - IoT & AI optimization",
+          "5. Sustainable Farming - Zero chemical pesticides",
+          "6. Women-Led Tech Leadership - 66% women founders"
+        ];
+
+        pillars.forEach(pillar => {
+          doc.text(pillar, 14, yPos);
+          yPos += 8;
+        });
+
+        // Footer
+        doc.setFontSize(9);
+        doc.setTextColor(156, 163, 175);
+        doc.text('BeeYield ESG Report - www.beeyield.com', pageWidth / 2, 280, { align: 'center' });
+        doc.text('Champions for Saving Bees | 50% Ethical Harvest Promise', pageWidth / 2, 286, { align: 'center' });
+
+        doc.save('BeeYield_ESG_Report_2024.pdf');
+        toast.success("Report downloaded successfully");
+      } catch (err) {
+        console.error("PDF generation failed", err);
+        toast.error("Failed to generate report");
+      } finally {
+        setDownloading(false);
+      }
+    }, 1000);
+  };
+
   const impactStats = [
     { value: "20+", label: "Partner Beekeepers", icon: Users, description: "Local farmers trained & earning" },
     { value: "25", label: "Acres Pollinated", icon: MapPin, description: "Precision pollination coverage" },
@@ -120,9 +237,18 @@ const ESG = () => {
             </p>
 
             <div className="flex flex-wrap justify-center gap-4">
-              <Button size="lg" className="gap-2">
-                Download 2024 Report
-                <ArrowRight className="w-4 h-4" />
+              <Button size="lg" className="gap-2" onClick={handleDownloadReport} disabled={downloading}>
+                {downloading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Generating PDF...
+                  </>
+                ) : (
+                  <>
+                    Download 2024 Report
+                    <Download className="w-4 h-4" />
+                  </>
+                )}
               </Button>
               <Button size="lg" variant="outline" asChild>
                 <Link to="/commitment">View SDG Alignment</Link>
@@ -394,7 +520,7 @@ const ESG = () => {
                 <Link to="/contact">Contact Us</Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <Link to="/pollination-services">Explore Pollination Services</Link>
+                <Link to="/learn">Start Learning</Link>
               </Button>
             </div>
           </div>

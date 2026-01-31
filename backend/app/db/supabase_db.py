@@ -31,17 +31,21 @@ def get_supabase() -> Optional[Client]:
             url = settings.SUPABASE_URL
             key = settings.SUPABASE_KEY
             if url and key:
-                _supabase_client = create_client(url, key)
+                # Create client with timeout options
+                _supabase_client = create_client(url, key, options={
+                    "postgrest_client_timeout": 10,  # 10 second timeout
+                    "storage_client_timeout": 10,
+                })
                 print(f"OK: Connected to Supabase: {url}")
-                # Optional: Test the key immediately
-                # _supabase_client.table("products").select("id").limit(1).execute()
             else:
-                print("WARNING: Supabase credentials not configured")
+                print("WARNING: Supabase credentials not configured - using mock data")
         except Exception as e:
             if "401" in str(e) or "Unauthorized" in str(e) or "Invalid API key" in str(e):
                 print(f"CRITICAL ERROR: Supabase API Key is INVALID (401 Unauthorized). Check your SUPABASE_KEY in .env")
+            elif "timeout" in str(e).lower() or "timed out" in str(e).lower():
+                print(f"WARNING: Supabase connection timed out - using mock data: {e}")
             else:
-                print(f"ERROR: Supabase connection failed: {e}")
+                print(f"WARNING: Supabase connection failed - using mock data: {e}")
             _supabase_client = None
     
     return _supabase_client
@@ -109,8 +113,13 @@ def db_select(
             result = query.execute()
             return result.data or []
         except Exception as e:
-            print(f"DB Select Error: {e}")
+            error_msg = str(e).lower()
+            if "timeout" in error_msg or "timed out" in error_msg:
+                print(f"DB Select Timeout for {table}: Connection timed out, using fallback data")
+            else:
+                print(f"DB Select Error for {table}: {e}")
             return []
+    print(f"DB Select: No database connection, returning empty for {table}")
     return []
 
 

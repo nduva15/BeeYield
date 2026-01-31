@@ -55,23 +55,8 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
         files: null as FileList | null,
     });
 
-    // Mock data
-    const [supportRequests, setSupportRequests] = useState<SupportRequest[]>([
-        {
-            id: 'REQ-8291',
-            title: 'Honey Press sensor calibration',
-            status: 'in_progress',
-            date: '1/12/2026',
-            category: 'technical'
-        },
-        {
-            id: 'REQ-7120',
-            title: 'Apiary Map not loading',
-            status: 'resolved',
-            date: '1/10/2026',
-            category: 'app'
-        }
-    ]);
+    // Support requests - Empty by default, should be populated from API
+    const [supportRequests, setSupportRequests] = useState<SupportRequest[]>([]);
 
     const stats = {
         total: supportRequests.length,

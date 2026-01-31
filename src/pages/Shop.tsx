@@ -30,7 +30,7 @@ import {
   Globe,
   Activity
 } from "lucide-react";
-import { Product, fallbackProducts } from "@/services/shopService";
+import { Product, getProducts } from "@/services/shopService";
 import { toast } from "sonner";
 import { BrandedProductImage } from "@/components/BrandedProductImage";
 
@@ -42,24 +42,30 @@ const Shop = ({ initialProducts = [] }: ShopProps) => {
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
   // Initialize with SSR data!
   const [activeProducts, setActiveProducts] = useState<Product[]>(initialProducts);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(initialProducts.length === 0);
   const { addToCart, openCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
-  // No useEffect for fetching anymore! SSR handles it.
+  // Fetch products client-side if initialProducts is empty (no SSR data)
+  useEffect(() => {
+    const fetchProducts = async () => {
+      if (initialProducts.length === 0) {
+        setIsLoading(true);
+        try {
+          const data = await getProducts();
+          setActiveProducts(data);
+        } catch (error) {
+          console.error("Failed to fetch products:", error);
+          toast.error("Failed to load products");
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+    fetchProducts();
+  }, [initialProducts.length]);
 
-  // Hardcoded rich fallbacks if backend is empty or for initial dev
-
-
-  // Combine live products with fallbacks for missing categories
   const products = [...activeProducts];
-  const fetchedCategories = new Set(activeProducts.map(p => p.category));
-
-  fallbackProducts.forEach(fallback => {
-    if (!fetchedCategories.has(fallback.category)) {
-      products.push(fallback);
-    }
-  });
 
   const handleAddToCart = (product: Product) => {
     const selectedSize = selectedSizes[product.id] || (product.variants && product.variants.length > 0 ? product.variants[0].size : "");
@@ -75,9 +81,10 @@ const Shop = ({ initialProducts = [] }: ShopProps) => {
     const variantIndex = variant ? product.variants.indexOf(variant) : -1;
 
     // Structure: [0: Lifestyle, 1: 250g, 2: 500g, 3: 1kg]
-    const image = (variantIndex !== -1 && product.images[variantIndex + 1])
-      ? product.images[variantIndex + 1]
-      : product.images[0] || "/placeholder.svg";
+    const images = product.images || [];
+    const image = (variantIndex !== -1 && images[variantIndex + 1])
+      ? images[variantIndex + 1]
+      : (images[0] || "/placeholder.svg");
 
     addToCart({
       productId: product.id,
@@ -224,12 +231,13 @@ const Shop = ({ initialProducts = [] }: ShopProps) => {
                       >
                         <BrandedProductImage
                           src={(() => {
-                            const selectedSize = selectedSizes[product.id] || product.variants[0].size;
-                            const variantIndex = product.variants.findIndex(v => v.size === selectedSize);
+                            const selectedSize = selectedSizes[product.id] || (product.variants && product.variants.length > 0 ? product.variants[0].size : "");
+                            const variantIndex = product.variants ? product.variants.findIndex(v => v.size === selectedSize) : -1;
+                            const images = product.images || [];
                             // Structure: [0: Lifestyle, 1: 250g, 2: 500g, 3: 1kg]
-                            return (variantIndex !== -1 && product.images[variantIndex + 1])
-                              ? product.images[variantIndex + 1]
-                              : product.images[0];
+                            return (variantIndex !== -1 && images[variantIndex + 1])
+                              ? images[variantIndex + 1]
+                              : (images[0] || "/placeholder.svg");
                           })()}
                           alt={product.name}
                           category={product.category}
@@ -242,13 +250,15 @@ const Shop = ({ initialProducts = [] }: ShopProps) => {
                           onClick={(e) => {
                             e.stopPropagation(); // Prevent card click if any
                             const selectedSize = selectedSizes[product.id] || (product.variants && product.variants.length > 0 ? product.variants[0].size : "");
-                            const variantIndex = product.variants.findIndex(v => v.size === selectedSize);
-                            const variant = variantIndex !== -1 ? product.variants[variantIndex] : (product.variants[0] || null);
+                            const variants = product.variants || [];
+                            const variantIndex = variants.findIndex(v => v.size === selectedSize);
+                            const variant = variantIndex !== -1 ? variants[variantIndex] : (variants[0] || null);
 
                             // Structure: [0: Lifestyle, 1: 250g, 2: 500g, 3: 1kg]
-                            const image = (variantIndex !== -1 && product.images[variantIndex + 1])
-                              ? product.images[variantIndex + 1]
-                              : product.images[0] || "/placeholder.svg";
+                            const images = product.images || [];
+                            const image = (variantIndex !== -1 && images[variantIndex + 1])
+                              ? images[variantIndex + 1]
+                              : (images[0] || "/placeholder.svg");
 
                             toggleWishlist({
                               id: product.id,

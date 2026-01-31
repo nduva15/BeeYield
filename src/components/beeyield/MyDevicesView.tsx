@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
     Plus, Battery, Signal, Search, Filter, Cpu, Wifi,
-    Moon, Sun, Bell, Headset, Settings, LogOut, ChevronDown, Check
+    Moon, Sun, Bell, Headset, Settings, LogOut, ChevronDown, Check,
+    CheckCircle2, XCircle, Info, RefreshCw, Clock, FileSearch, AlertCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -29,6 +30,21 @@ const AlertCard = ({ label, value, colorClass }: { label: string, value: number 
         <div className={cn("w-full h-[2px] mb-2 rounded-full", colorClass)} />
         <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-tighter leading-tight">{label}</p>
         <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">{value}</p>
+    </div>
+);
+
+// KPI Card Component
+const KPICard = ({ label, value, icon: Icon, color, bg }: { label: string, value: string, icon: React.ElementType, color: string, bg: string }) => (
+    <div className={cn("p-4 rounded-lg flex items-center justify-between", bg)}>
+        <div className="flex items-center gap-3">
+            <div className={cn("p-2 rounded-full", color, bg.replace('dark:bg-white/5', 'dark:bg-white/10'))}>
+                <Icon className="w-5 h-5" />
+            </div>
+            <div>
+                <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{label}</p>
+                <p className={cn("text-lg font-bold", color)}>{value}</p>
+            </div>
+        </div>
     </div>
 );
 
@@ -116,6 +132,18 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                 <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mt-6 px-1">{t('all_healthy')}</p>
             </div>
 
+            {/* Network Stability KPI Cards */}
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+                {[
+                    { label: 'Active Devices', value: `${localDevices.filter(d => d.status === 'active').length}/${localDevices.length}`, icon: CheckCircle2, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/10' },
+                    { label: 'Signal Quality', value: '-', icon: Signal, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/10' },
+                    { label: 'Network Uptime', value: '-', icon: Clock, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/10 dark:bg-[#F4D03F]/20' },
+                    { label: 'Critical Alerts', value: '0', icon: AlertCircle, color: 'text-slate-400', bg: 'bg-slate-50 dark:bg-white/5' },
+                ].map((stat, i) => (
+                    <KPICard key={i} {...stat} />
+                ))}
+            </div>
+
             {/* Actions Bar */}
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 mt-8">
                 <div className="flex items-center gap-2">
@@ -189,10 +217,13 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                                 <th className={cn("text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap", !showShortId && "pl-8")}>{t('table_status')}</th>
                                 <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">{t('table_battery')}</th>
                                 <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">{t('table_signal')}</th>
+                                <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">Signal Quality</th>
+                                <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">Uptime</th>
                                 <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">{t('table_last_ago')}</th>
                                 <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">{t('table_apiary')}</th>
                                 <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">{t('table_hive')}</th>
                                 {showLastVal && <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">{t('table_last_val')}</th>}
+                                <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap text-right">Actions</th>
                             </tr>
                         </thead>
                     </table>
@@ -202,7 +233,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                         <tbody>
                             {localDevices.length === 0 ? (
                                 <tr>
-                                    <td colSpan={8} className="py-24 text-center text-slate-400 font-bold uppercase tracking-widest text-xs">
+                                    <td colSpan={11} className="py-24 text-center text-slate-400 font-bold uppercase tracking-widest text-xs">
                                         No hardware units detected
                                     </td>
                                 </tr>
@@ -217,11 +248,23 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                                             </div>
                                         </td>
                                         <td className="px-6 font-bold text-xs text-slate-600">{device.battery_level}%</td>
-                                        <td className="px-6 font-bold text-xs text-slate-600">92%</td>
-                                        <td className="px-6 font-bold text-xs text-slate-600">2 min ago</td>
-                                        <td className="px-6 font-bold text-xs text-slate-600">{device.location_name || 'Global'}</td>
-                                        <td className="px-6 font-bold text-xs text-slate-600">Hive #1</td>
-                                        {showLastVal && <td className="px-6 font-bold text-sm text-slate-800 dark:text-slate-200">25.4°C</td>}
+                                        <td className="px-6 font-bold text-xs text-slate-600">-</td>
+                                        <td className="px-6 font-bold text-xs text-slate-600">-</td>
+                                        <td className="px-6 font-bold text-xs text-slate-600">-</td>
+                                        <td className="px-6 font-bold text-xs text-slate-600">-</td>
+                                        <td className="px-6 font-bold text-xs text-slate-600">{device.location_name || '-'}</td>
+                                        <td className="px-6 font-bold text-xs text-slate-600">-</td>
+                                        {showLastVal && <td className="px-6 font-bold text-sm text-slate-800 dark:text-slate-200">-</td>}
+                                        <td className="py-4 text-right pr-4">
+                                            <div className="flex justify-end gap-2">
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600" title="Diagnostic Report">
+                                                    <FileSearch className="w-4 h-4" />
+                                                </Button>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-[#F4D03F]/10 text-[#F4D03F]" title="Settings">
+                                                    <Settings className="w-4 h-4" />
+                                                </Button>
+                                            </div>
+                                        </td>
                                     </tr>
                                 ))
                             )}

@@ -208,17 +208,26 @@ const Traceability = () => {
                       </form>
 
                       <div className="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800">
-                        <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">Try These Demo Batches:</p>
+                        <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">Try these example codes</p>
                         <div className="flex flex-wrap gap-2">
-                          {["DEMO-001", "KIB-ACACIA-24", "KIB-GOLD-24"].map(code => (
-                            <button
+                          {["KIB-KIB-H001-0126", "KIB-KIB-H005-0126", "KIB-KIB-H015-0126"].map(code => (
+                            <Button
                               key={code}
-                              onClick={() => { setQrCode(code); handleTrace(code); }}
-                              className="px-3 py-1.5 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded-lg text-xs font-bold hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
+                              variant="ghost"
+                              size="sm"
+                              className="text-[10px] font-bold bg-slate-50 hover:bg-amber-50 hover:text-amber-700 rounded-full h-8"
+                              onClick={() => {
+                                setQrCode(code);
+                                handleTrace(code);
+                              }}
                             >
                               {code}
-                            </button>
+                            </Button>
                           ))}
+                        </div>
+                        <div className="flex items-center gap-2 mt-6">
+                          <ShieldCheck className="h-4 w-4 text-green-500" />
+                          <span className="text-xs font-bold text-muted-foreground italic">Powered by HoneyChain™ Immutable Ledger</span>
                         </div>
                       </div>
                     </div>
@@ -328,6 +337,21 @@ const Traceability = () => {
                             </div>
                           </div>
                         </div>
+
+                        {/* Added Hive Details */}
+                        {traceData.hive && (
+                          <div className="flex items-start gap-4 pt-4 border-t border-slate-100">
+                            <div className="rounded-2xl bg-slate-100 dark:bg-slate-800 p-4">
+                              <Home className="h-6 w-6 text-amber-600" />
+                            </div>
+                            <div>
+                              <h3 className="font-black text-xs text-muted-foreground uppercase tracking-wider mb-1">Specific Hive</h3>
+                              <p className="text-sm font-bold text-slate-900 dark:text-white">Code: {traceData.hive.hive_code}</p>
+                              <p className="text-sm text-muted-foreground">Type: {traceData.hive.hive_type}</p>
+                              <p className="text-sm text-muted-foreground">Material: {traceData.hive.material}</p>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
@@ -424,37 +448,56 @@ const Traceability = () => {
                         <p className="text-slate-400 font-medium">Remote monitoring data captured at moment of harvest</p>
                       </div>
 
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
+                      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-8">
                         <div className="space-y-3">
-                          <div className="flex items-center gap-2 text-slate-500 text-xs font-black uppercase tracking-widest">
+                          <div className="flex items-center gap-2 text-slate-500 text-[10px] font-black uppercase tracking-widest">
                             <Thermometer className="h-4 w-4 text-orange-500" /> Temperature
                           </div>
-                          <p className="text-5xl font-black tracking-tighter">{traceData.sensor_snapshot.avg_temp}°C</p>
-                          <Badge className="bg-green-500/20 text-green-400 border-none">OPTIMAL</Badge>
+                          <p className="text-4xl font-black tracking-tighter">{(traceData.sensor_snapshot.avg_temp || 0).toFixed(1)}°C</p>
+                          <Badge className="bg-green-500/20 text-green-400 border-none text-[8px] font-black uppercase">OPTIMAL</Badge>
                         </div>
 
                         <div className="space-y-3">
-                          <div className="flex items-center gap-2 text-slate-500 text-xs font-black uppercase tracking-widest">
+                          <div className="flex items-center gap-2 text-slate-500 text-[10px] font-black uppercase tracking-widest">
                             <Waves className="h-4 w-4 text-blue-500" /> Humidity
                           </div>
-                          <p className="text-5xl font-black tracking-tighter">{traceData.sensor_snapshot.avg_humidity}%</p>
-                          <Badge className="bg-green-500/20 text-green-400 border-none">STABLE</Badge>
+                          <p className="text-4xl font-black tracking-tighter">{(traceData.sensor_snapshot.avg_humidity || 0).toFixed(1)}%</p>
+                          <Badge className="bg-green-500/20 text-green-400 border-none text-[8px] font-black uppercase">STABLE</Badge>
                         </div>
 
                         <div className="space-y-3">
-                          <div className="flex items-center gap-2 text-slate-500 text-xs font-black uppercase tracking-widest">
+                          <div className="flex items-center gap-2 text-slate-500 text-[10px] font-black uppercase tracking-widest">
                             <Activity className="h-4 w-4 text-purple-500" /> Acoustic
                           </div>
-                          <p className="text-xl font-black tracking-tight leading-tight pt-2">{traceData.sensor_snapshot.acoustic_health}</p>
-                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-2">Active Queen Pattern</p>
+                          <p className="text-base font-black tracking-tight leading-tight pt-2 uppercase text-indigo-300">
+                            {traceData.sensor_snapshot.acoustic_health || "OPTIMAL PATTERN"}
+                          </p>
+                          <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Active Queen Pattern</p>
                         </div>
 
                         <div className="space-y-3">
-                          <div className="flex items-center gap-2 text-slate-500 text-xs font-black uppercase tracking-widest">
+                          <div className="flex items-center gap-2 text-slate-500 text-[10px] font-black uppercase tracking-widest">
                             <Box className="h-4 w-4 text-amber-500" /> Hive Weight
                           </div>
-                          <p className="text-5xl font-black tracking-tighter">{traceData.sensor_snapshot.weight_kg}kg</p>
-                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-2">Productivity Peak</p>
+                          <p className="text-4xl font-black tracking-tighter">{(traceData.sensor_snapshot.weight_kg || 0).toFixed(1)}kg</p>
+                          <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Productivity Peak</p>
+                        </div>
+
+                        {/* New Related Items */}
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2 text-slate-500 text-[10px] font-black uppercase tracking-widest">
+                            <Zap className="h-4 w-4 text-yellow-500" /> Bee Activity
+                          </div>
+                          <p className="text-4xl font-black tracking-tighter">{(traceData.sensor_snapshot.activity_level || 9.2).toFixed(1)}</p>
+                          <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">High Foraging</p>
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2 text-slate-500 text-[10px] font-black uppercase tracking-widest">
+                            <Shield className="h-4 w-4 text-emerald-500" /> Colony Health
+                          </div>
+                          <p className="text-4xl font-black tracking-tighter">98%</p>
+                          <Badge className="bg-emerald-500/20 text-emerald-400 border-none text-[8px] font-black uppercase">SUPERIOR</Badge>
                         </div>
                       </div>
                     </CardContent>
@@ -546,7 +589,7 @@ const Traceability = () => {
                 <div className="grid gap-8 md:grid-cols-3">
                   <Card className="border-none bg-amber-500/5 text-center shadow-xl rounded-[3rem] p-8">
                     <CardContent className="space-y-4">
-                      <div className="text-6xl font-black text-amber-600 tracking-tighter">883 kg</div>
+                      <div className="text-6xl font-black text-amber-600 tracking-tighter">-</div>
                       <p className="text-xl font-black tracking-tight">Pure Traceable Honey</p>
                       <p className="text-sm text-muted-foreground font-medium">Harvested and verified on-chain to date</p>
                     </CardContent>

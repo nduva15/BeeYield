@@ -466,24 +466,6 @@ def get_admin_stats(current_admin: dict = Depends(check_admin_role)):
         return {"error": str(e)}
 
 
-# --- Bulk Seeding (Admin Only) ---
-
-@router.post("/seed/shop")
-def seed_shop(current_admin: dict = Depends(check_admin_role)):
-    """Seed default shop content. Requires admin."""
-    # In a real app, this might trigger a specific service
-    # For now, let's just return a placeholder or implement logic if simple
-    return {"status": "success", "message": "Shop seed triggered"}
-
-@router.post("/seed/traceability")
-def seed_traceability(current_admin: dict = Depends(check_admin_role)):
-    """Seed default traceability data. Requires admin."""
-    return {"status": "success", "message": "Traceability seed triggered"}
-
-@router.post("/seed/apiary-hives")
-def seed_apiaries(current_admin: dict = Depends(check_admin_role)):
-    """Seed default apiary and hive records. Requires admin."""
-    return {"status": "success", "message": "Apiary seed triggered"}
 
 
 # --- Traceability (Honey Chain) ---
@@ -505,21 +487,18 @@ def get_batches_db(current_admin: dict = Depends(check_admin_role)):
     """
     data = []
     try:
+        # Standardize on honey_batches
         data = db_select("honey_batches", order_by="created_at", ascending=False)
-        if not data:
-            data = db_select("hney-batches", order_by="created_at", ascending=False)
-        if not data:
-            data = db_select("batches", order_by="created_at", ascending=False)
-        if not data:
-            data = db_select("harvests", order_by="created_at", ascending=False)
     except Exception as e:
         print(f"DB Batch Fetch Error: {e}")
 
     if not data or len(data) == 0:
+        # Fallback to blockchain search only if DB is truly empty
         from app.blockchain.honey_chain import honey_blockchain
         blockchain_batches = honey_blockchain.search_by_type(honey_blockchain.BlockType.BATCH_CREATION)
         if blockchain_batches:
             data = [b["data"] for b in blockchain_batches]
+            # Map alternate naming
             for item in data:
                 if 'quantity_kg' not in item and 'total_quantity_kg' in item:
                     item['quantity_kg'] = item['total_quantity_kg']
@@ -527,21 +506,25 @@ def get_batches_db(current_admin: dict = Depends(check_admin_role)):
     return data
 
 @router.put("/batches/{batch_id}", response_model=dict[str, Any])
-def update_batch(
-    batch_id: str, 
+def update_batch_admin(
+    batch_id: str,
     batch_in: dict[str, Any],
     current_admin: dict = Depends(check_admin_role)
 ):
     """
-    Update a batch in DB. Requires admin.
+    Update a batch record.
     """
-    return db_update("honey_batches", batch_in, {"id": batch_id})
+    res = db_update("honey_batches", batch_in, {"id": batch_id})
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=f"Failed to update batch: {res.get('error')}")
+    return res.get("data")[0] if res.get("data") else batch_in
 
 @router.delete("/batches/{batch_id}")
 def delete_batch(
     batch_id: str,
     current_admin: dict = Depends(check_admin_role)
 ):
+    """Delete a batch. Note: Blockchain records are technically immutable."""
     return db_delete("honey_batches", {"id": batch_id})
 
 # --- Farmers ---
@@ -563,17 +546,6 @@ def get_all_farmers(current_admin: dict = Depends(check_admin_role)):
         if blockchain_farmers:
             data = [b["data"] for b in blockchain_farmers]
 
-    if not data or len(data) == 0:
-        team = db_select("team_members", order_by="created_at", ascending=False)
-        if team:
-            for member in team:
-                if "Timothy" in member.get("name", "") or "beekeeper" in member.get("role", "").lower():
-                    data.append({
-                        "id": member.get("id"), "name": member.get("name"), "role": member.get("role"),
-                        "region": member.get("department", "Kibwezi"), "certification_status": "CERTIFIED",
-                        "experience_years": 15 if "Timothy" in member.get("name", "") else 5, "status": "active"
-                    })
-    
     return data
 
 @router.post("/farmers", response_model=dict[str, Any])
@@ -660,3 +632,24 @@ def create_hive_admin(
     current_admin: dict = Depends(check_admin_role)
 ):
     return traceability_service.register_hive(hive_in)
+
+# --- Database Cleanup (Danger Zone) ---
+
+@router.delete("/danger/clear-traceability")
+def clear_all_traceability(current_admin: dict = Depends(check_admin_role)):
+    """Wipe all traceability data from DB. Use with caution!"""
+    email = current_admin.get('email', '').lower()
+    is_super = current_admin.get('role') == 'super_admin' or email in ['timothy.mathuva@strathmore.edu', 'timothynduva349@gmail.com']
+    
+    if not is_super:
+        raise HTTPException(status_code=403, detail="Super-admin privileges required for this action.")
+        
+    try:
+        # Order matters for foreign keys
+        db_delete("hives", {})
+        db_delete("apiaries", {})
+        db_delete("farmers", {})
+        db_delete("honey_batches", {})
+        return {"success": True, "message": "All traceability records purged from database."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

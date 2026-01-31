@@ -20,7 +20,7 @@ export const BrandedProductImage: React.FC<BrandedProductImageProps> = ({
     // Check if we should overlay the branding
     // We overlay it for all honey products except the ones that are already master branded
     const isHoney = category === "honey";
-    const isMasterBranded = src.includes("beeyield_honey");
+    const isMasterBranded = (src || "").includes("beeyield_honey");
 
     return (
         <div className={`relative overflow-hidden group ${className}`}>

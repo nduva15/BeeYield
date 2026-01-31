@@ -1,0 +1,11 @@
+--- Farmers ---
+ID: 8d15d26d-2388-48a0-887a-38931c7049f8 | Name: Timothy Nduva | FarmerID: F-NDUVA-001 | Created: 2026-01-31T15:25:17.928845+00:00
+
+--- Apiaries ---
+ID: 535a3b4c-1cc0-490a-a694-29971bbe2661 | Name: Kibwezi Main Apiary | Code: KIB-001 | FarmerID: 8d15d26d-2388-48a0-887a-38931c7049f8
+
+--- Batches ---
+ID: 3561617e-89b1-47f9-8323-b46d22b5ba87 | Code: KIB-JAN2026-001 | Created: 2026-01-31T15:25:24.139585+00:00
+
+--- Honey Batches ---
+ID: 76d29957-288b-426b-ae5c-ccea36ee03f0 | Code: KIB-JAN2026-001 | Created: 2026-01-31T15:25:24.333479+00:00

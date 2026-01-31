@@ -27,7 +27,10 @@ import {
     Layers,
     ChevronDown,
     LayoutGrid,
-    List
+    List,
+    AlertCircle,
+    FileText,
+    Waves
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -565,6 +568,27 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                             />
                         </div>
 
+                        <div className="grid grid-cols-2 md:grid-cols-2 gap-3 mt-3">
+                            <SensorCard
+                                label="Vibration Index"
+                                value="2.4"
+                                unit="m/s²"
+                                icon={Zap}
+                                color="bg-[#F4D03F]"
+                                trend="stable"
+                                trendValue="Optimal"
+                            />
+                            <SensorCard
+                                label="Queen Pheromone"
+                                value="High"
+                                unit=""
+                                icon={ShieldCheck}
+                                color="bg-[#1B9157]"
+                                trend="up"
+                                trendValue="Strong"
+                            />
+                        </div>
+
                         {selectedHive && (
                             <motion.div
                                 initial={{ opacity: 0, height: 0 }}
@@ -711,6 +735,34 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
 
             {/* Bottom Stats */}
             <div className="mt-6 bg-slate-50/50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/10 p-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex bg-white dark:bg-[#111111] rounded-2xl border border-gray-100 dark:border-white/5 p-4 items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-900/10 flex items-center justify-center">
+                                <AlertCircle className="w-5 h-5 text-red-500" />
+                            </div>
+                            <div>
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Pesticide Detection</p>
+                                <p className="text-sm font-bold text-green-600">NONE DETECTED</p>
+                            </div>
+                        </div>
+                        <Badge className="bg-green-500/20 text-green-600 border-none text-[8px] font-black uppercase">SAFE ZONE</Badge>
+                    </div>
+
+                    <div className="flex bg-white dark:bg-[#111111] rounded-2xl border border-gray-100 dark:border-white/5 p-4 items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center">
+                                <Activity className="w-5 h-5 text-[#F4D03F]" />
+                            </div>
+                            <div>
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Colony Varroa Pressure</p>
+                                <p className="text-sm font-bold text-slate-800 dark:text-white">LOW (1.2%)</p>
+                            </div>
+                        </div>
+                        <Badge className="bg-[#F4D03F]/20 text-[#9a7f1e] border-none text-[8px] font-black uppercase">MONITORING</Badge>
+                    </div>
+                </div>
+
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-[#1B9157]/10 flex items-center justify-center">
@@ -740,12 +792,12 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center">
-                            <Zap className="w-5 h-5 text-[#F4D03F]" />
-                        </div>
-                        <div>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">FPA Required</p>
-                            <p className="text-xl font-bold text-[#c7a42a]">{results.totalFPARequired}</p>
+                        <div className="p-1 px-3 bg-slate-900 rounded-xl flex items-center gap-2 cursor-pointer hover:bg-slate-800 transition-colors w-full">
+                            <FileText className="w-4 h-4 text-[#F4D03F]" />
+                            <div className="flex flex-col">
+                                <span className="text-[8px] font-black text-white/50 uppercase tracking-widest">Full Report</span>
+                                <span className="text-[10px] font-bold text-[#F4D03F]">DOWNLOAD PDF</span>
+                            </div>
                         </div>
                     </div>
                 </div>

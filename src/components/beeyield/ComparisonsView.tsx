@@ -9,15 +9,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-// Mock data for the comparison chart
-const comparisonData = [
-    { week: 'Week 1', mainMeter: 120, apartment12: 90 },
-    { week: 'Week 2', mainMeter: 130, apartment12: 95 },
-    { week: 'Week 3', mainMeter: 140, apartment12: 110 },
-    { week: 'Week 4', mainMeter: 150, apartment12: 115 },
-    { week: 'Week 5', mainMeter: 170, apartment12: 140 },
-    { week: 'Week 6', mainMeter: 165, apartment12: 150 },
-];
+const comparisonData: any[] = [];
 
 const ComparisonsView: React.FC = () => {
     const [selectedComparisonTab, setSelectedComparisonTab] = useState<'apt12' | 'apt24' | 'main'>('main');

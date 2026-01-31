@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Grid3X3, StickyNote, CheckSquare, Box, MapPin, Loader2, FileSpreadsheet } from 'lucide-react';
+import { Plus, Grid3X3, StickyNote, CheckSquare, Box, MapPin, Loader2, FileSpreadsheet, ChevronDown, Activity, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Badge } from "@/components/ui/badge";
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
 
@@ -96,9 +97,58 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
             {/* Main Content Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Left Side - Loading Data Card */}
-                <Card className="rounded-2xl border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm min-h-[200px] border-t-4 border-t-[#F4D03F]">
-                    <CardContent className="p-6 flex items-center justify-start h-full">
-                        <span className="text-gray-400 dark:text-gray-500 italic text-sm">No hives available</span>
+                <Card className="rounded-2xl border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm min-h-[400px] border-t-4 border-t-[#1B9157] overflow-hidden">
+                    <CardContent className="p-0 flex flex-col h-full">
+                        <div className="p-6 border-b border-gray-50 dark:border-white/5 bg-gray-50/50 dark:bg-white/5">
+                            <h3 className="text-[10px] font-black text-[#1B9157] uppercase tracking-widest mb-1">CONNECTED HARDWARE NODES</h3>
+                            <div className="flex items-center gap-2">
+                                <div className="flex h-2 w-2 relative">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                </div>
+                                <span className="text-[9px] font-bold text-green-600 uppercase">Live Syncing</span>
+                            </div>
+                        </div>
+                        <div className="flex-1 overflow-y-auto max-h-[350px]">
+                            <table className="w-full text-left">
+                                <thead className="bg-gray-50 dark:bg-white/5 sticky top-0 z-10">
+                                    <tr>
+                                        <th className="px-6 py-3 text-[9px] font-black text-gray-400 uppercase tracking-widest">Hive ID</th>
+                                        <th className="px-6 py-3 text-[9px] font-black text-gray-400 uppercase tracking-widest">Status</th>
+                                        <th className="px-6 py-3 text-[9px] font-black text-gray-400 uppercase tracking-widest">Efficiency</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50 dark:divide-white/5">
+                                    {[
+                                        { id: 'BY-H001', status: 'Optimal', perf: '98%' },
+                                        { id: 'BY-H002', status: 'Active', perf: '85%' },
+                                        { id: 'BY-H003', status: 'Maintenance', perf: '72%' },
+                                        { id: 'BY-H004', status: 'Optimal', perf: '96%' },
+                                        { id: 'BY-H005', status: 'Active', perf: '91%' },
+                                        { id: 'BY-H006', status: 'Optimal', perf: '99%' },
+                                    ].map((h, i) => (
+                                        <tr key={i} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                                            <td className="px-6 py-4 text-xs font-bold text-slate-700 dark:text-slate-300 font-mono">{h.id}</td>
+                                            <td className="px-6 py-4">
+                                                <Badge className={cn(
+                                                    "text-[8px] font-black uppercase border-none",
+                                                    h.status === 'Optimal' ? "bg-green-500/20 text-green-600" :
+                                                        h.status === 'Active' ? "bg-blue-500/20 text-blue-600" : "bg-yellow-500/20 text-yellow-600"
+                                                )}>
+                                                    {h.status}
+                                                </Badge>
+                                            </td>
+                                            <td className="px-6 py-4 text-xs font-black text-slate-900 dark:text-white">{h.perf}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="p-4 bg-gray-50 dark:bg-white/5 border-t border-gray-100 dark:border-white/5">
+                            <Button variant="ghost" className="w-full text-[10px] font-black text-[#1B9157] uppercase tracking-widest hover:bg-[#1B9157]/5">
+                                View Network Topology <ChevronDown className="w-3 h-3 ml-2" />
+                            </Button>
+                        </div>
                     </CardContent>
                 </Card>
 
@@ -106,14 +156,31 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                 <Card className="rounded-2xl border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm border-t-4 border-t-[#F4D03F]">
                     <CardContent className="p-6 space-y-5">
                         {/* Card Header */}
-                        <div>
-                            <h3 className="text-[10px] font-bold text-[#1B9157] dark:text-[#F4D03F] uppercase tracking-[0.15em] mb-1">MY PLACES</h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">Choose a place from the list below to browse its hives.</p>
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <h3 className="text-[10px] font-bold text-[#1B9157] dark:text-[#F4D03F] uppercase tracking-[0.15em] mb-1">NETWORK OVERVIEW</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">Total active coverage: <span className="font-bold text-slate-900 dark:text-white">1,240 Acres</span></p>
+                            </div>
+                            <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-900/10 flex items-center justify-center">
+                                <Zap className="w-5 h-5 text-orange-500" />
+                            </div>
+                        </div>
+
+                        {/* Quick Stats Grid */}
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
+                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Signal Health</p>
+                                <p className="text-lg font-black text-slate-800 dark:text-white">99.2%</p>
+                            </div>
+                            <div className="p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
+                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Battery Avg</p>
+                                <p className="text-lg font-black text-slate-800 dark:text-white">84%</p>
+                            </div>
                         </div>
 
                         {/* Place Selector */}
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">My Places</label>
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Region / Apiary</label>
                             <Select value={selectedPlace} onValueChange={setSelectedPlace}>
                                 <SelectTrigger className="w-full rounded-xl border-gray-200 dark:border-gray-700 h-11 bg-white dark:bg-[#1e1e1e] focus:ring-[#F4D03F]/20 focus:border-[#F4D03F]/50">
                                     <div className="flex items-center gap-2">
@@ -122,8 +189,9 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                     </div>
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="my-places">My Places</SelectItem>
-                                    <SelectItem value="none" disabled>No places available</SelectItem>
+                                    <SelectItem value="my-places">Kibwezi East</SelectItem>
+                                    <SelectItem value="mbuinzau">Mbuinzau Range</SelectItem>
+                                    <SelectItem value="makindu">Makindu Valley</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -134,27 +202,15 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                 className="bg-[#F4D03F] hover:bg-[#e0be36] text-[#1A1A1A] rounded-full px-5 h-10 font-bold text-sm shadow-none border-none"
                                 onClick={() => onTabChange('assistant')}
                             >
-                                AI ASSISTANT
-                            </Button>
-                            <Button
-                                variant="outline"
-                                className="rounded-full px-5 h-10 font-bold text-sm border-[#1B9157]/20 text-[#1B9157] hover:bg-[#1B9157]/5 hover:border-[#1B9157]/40"
-                            >
-                                Report
+                                <Activity className="w-3 h-3 mr-2" /> AI AUDIT
                             </Button>
                             <Button
                                 className="bg-[#1B9157] hover:bg-[#167d4a] text-white rounded-full px-5 h-10 font-bold text-sm shadow-none border-none"
                                 onClick={handleExportExcel}
                                 disabled={isExporting}
                             >
-                                {isExporting ? (
-                                    <>
-                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                        Exporting...
-                                    </>
-                                ) : (
-                                    'Export Excel'
-                                )}
+                                {isExporting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <FileSpreadsheet className="w-4 h-4 mr-2" />}
+                                EXPORT REPORT
                             </Button>
                         </div>
                     </CardContent>
