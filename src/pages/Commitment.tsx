@@ -180,9 +180,9 @@ const CommitmentPage = () => {
             </p>
 
             <div className="flex flex-wrap justify-center gap-4 relative z-10">
-              <Link to="/pollination-services">
+              <Link to="/learn">
                 <Button size="lg" className="h-14 px-10 rounded-full font-bold text-base bg-primary hover:bg-primary/90">
-                  Join Our Network <ArrowRight className="ml-2 h-4 w-4" />
+                  Start Learning <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
               <Link to="/contact">

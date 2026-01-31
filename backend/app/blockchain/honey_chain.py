@@ -590,7 +590,7 @@ class HoneyBlockchain:
             return self.chain[index].to_dict()
         return None
     
-    def search_by_record_id(self, record_id: str) -> Optional[dict[str, Any]]:
+    def search_by_record_id(self, record_id: str, block_type: Optional[BlockType] = None) -> Optional[dict[str, Any]]:
         """
         Search for a block by its record ID or entity-specific IDs.
         Searches for: record_id, farmer_id, apiary_id, hive_id, harvest_id, 
@@ -601,10 +601,14 @@ class HoneyBlockchain:
             
         id_fields = [
             "record_id", "farmer_id", "apiary_id", "hive_id", 
-            "harvest_id", "processing_id", "batch_id"
+            "harvest_id", "processing_id", "batch_id", "id"
         ]
         
         for block in self.chain:
+            # If block_type is specified, skip blocks of other types
+            if block_type and block.block_type != block_type:
+                continue
+                
             for field in id_fields:
                 if block.data.get(field) == record_id:
                     return block.to_dict()
@@ -667,7 +671,7 @@ class HoneyBlockchain:
         # Follow the chain to find linked entities
         # Look for harvest_id in batch, then get hive_id, apiary_id, farmer_id from harvest
         harvest_id = batch_data.get("harvest_id")
-        harvest_block = self.search_by_record_id(harvest_id) if harvest_id else None
+        harvest_block = self.search_by_record_id(harvest_id, BlockType.HARVEST_RECORD) if harvest_id else None
         
         harvest_data = harvest_block.get("data", {}) if harvest_block else {}
         

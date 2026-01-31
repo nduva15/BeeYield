@@ -1,11 +1,8 @@
-"""
-Vercel Serverless Function Entry Point for BeeYield API
-This file serves as the entry point for all API requests on Vercel.
-"""
 import sys
 import os
 
 # Add backend directory to Python path for imports
+# On Vercel, the directory structure is preserved relative to the root
 backend_path = os.path.join(os.path.dirname(__file__), "..", "backend")
 sys.path.insert(0, backend_path)
 
@@ -19,12 +16,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 # Import the app components
-from app.core.config import settings
-from app.api.api_v1.api import api_router
+# Note: Use try/except to handle import errors gracefully during deployment initialization
+try:
+    from app.core.config import settings
+    from app.api.api_v1.api import api_router
+    PROJECT_NAME = settings.PROJECT_NAME
+except ImportError as e:
+    print(f"Import error: {e}")
+    PROJECT_NAME = "BeeYield API"
 
 # Create FastAPI app for Vercel
 app = FastAPI(
-    title=settings.PROJECT_NAME,
+    title=PROJECT_NAME,
     description="BeeYield API - Honey Traceability and E-commerce Platform",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
@@ -34,38 +37,31 @@ app = FastAPI(
 # CORS Configuration  
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:3000",
-        "http://localhost:8080",
-        "https://beeyield.com",
-        "https://www.beeyield.com",
-        "https://beeyield.vercel.app",
-    ],
+    allow_origins=["*"], # Tighten this in production if needed
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # Include API routes with /api/v1 prefix
-app.include_router(api_router, prefix="/api/v1")
+try:
+    from app.api.api_v1.api import api_router
+    app.include_router(api_router, prefix="/api/v1")
+except Exception as e:
+    print(f"Error including router: {e}")
 
 @app.get("/api")
 @app.get("/api/")
 def api_root():
-    """
-    API root endpoint
-    """
     return {
         "message": "BeeYield API",
-        "version": "1.0.0",
+        "version": "1.1.0",
         "status": "online",
         "docs": "/api/docs"
     }
 
 @app.get("/api/health")
 def health():
-    """Health check"""
     return {"status": "ok", "message": "BeeYield API is running on Vercel"}
 
 # Handle OPTIONS requests for CORS

@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "C:\Users\aggym\Downloads\Honey\backend\app\services\traceability_service.py", line 166, in get_trace_journey
+    hive = schemas.Hive(
+        hive_id=h_data.get('hive_id'),
+    ...<8 lines>...
+        material=h_data.get('material', 'Wood')
+    )
+  File "C:\Users\aggym\Downloads\Honey\backend\venv\Lib\site-packages\pydantic\main.py", line 250, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 1 validation error for Hive
+bee_type
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.12/v/string_type
+
+1 validation error for Hive
+bee_type
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.12/v/string_type

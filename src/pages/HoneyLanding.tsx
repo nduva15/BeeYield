@@ -34,7 +34,7 @@ import {
   ChevronRight,
   Mail,
 } from "lucide-react";
-import { getProducts, Product, fallbackProducts } from "@/services/shopService";
+import { getProducts, Product } from "@/services/shopService";
 import { toast } from "sonner";
 import { BrandedProductImage } from "@/components/BrandedProductImage";
 import { submitNewsletterSubscription } from "@/services/contactService";
@@ -759,12 +759,9 @@ const HoneyLanding = () => {
         const data = await getProducts();
         if (data && data.length > 0) {
           setActiveProducts(data);
-        } else {
-          setActiveProducts(fallbackProducts);
         }
       } catch (error) {
         console.error("Failed to fetch products:", error);
-        setActiveProducts(fallbackProducts);
       } finally {
         setIsLoading(false);
       }
@@ -772,25 +769,18 @@ const HoneyLanding = () => {
     fetchProducts();
   }, []);
 
-  // Combine live products with fallbacks, prioritizing our curated fallbacks for the Honey Landing page
-  const products = [...fallbackProducts];
-  const fallbackIds = new Set(fallbackProducts.map(p => p.id));
-
-  // Add live products that aren't already represented by our curated fallbacks
-  activeProducts.forEach(live => {
-    if (!fallbackIds.has(live.id)) {
-      products.push(live);
-    }
-  });
+  // Use live products directly
+  const products = [...activeProducts];
 
   const handleAddToCart = (product: Product) => {
-    const selectedSize = selectedSizes[product.id] || product.variants[0].size;
-    const variantIndex = product.variants.findIndex((v) => v.size === selectedSize);
-    const variant = product.variants[variantIndex] || product.variants[0];
+    const selectedSize = selectedSizes[product.id] || (product.variants && product.variants.length > 0 ? product.variants[0].size : "");
+    const variantIndex = product.variants ? product.variants.findIndex((v) => v.size === selectedSize) : -1;
+    const variant = (product.variants && variantIndex !== -1) ? product.variants[variantIndex] : (product.variants?.[0] || null);
+    const images = product.images || [];
     // Structure: [0: Lifestyle, 1: 250g, 2: 500g, 3: 1kg]
-    const image = (variantIndex !== -1 && product.images[variantIndex + 1])
-      ? product.images[variantIndex + 1]
-      : product.images[0];
+    const image = (variantIndex !== -1 && images[variantIndex + 1])
+      ? images[variantIndex + 1]
+      : (images[0] || "/placeholder.svg");
 
     addToCart({
       productId: product.id,

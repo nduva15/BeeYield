@@ -133,7 +133,7 @@ const BeeYieldDashboard: React.FC = () => {
         return readings.some(r => r.device_id === d.id && (now.getTime() - new Date(r.timestamp).getTime() < oneDay * 7));
     }).length;
 
-    // Attention Needed Stats (Mock logic for demonstration)
+    // Attention Needed Stats
     const noMeasurement5Days = devices.filter(d => {
         const hasRecent = readings.some(r => r.device_id === d.id && (now.getTime() - new Date(r.timestamp).getTime() < oneDay * 5));
         return !hasRecent;

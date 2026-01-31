@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "C:\Users\aggym\Downloads\Honey\backend\rebuild_real_traceability_v5.py", line 187, in seed
+    supabase.table("harvests").insert(harv_data).execute()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\aggym\Downloads\Honey\backend\venv\Lib\site-packages\postgrest\_sync\request_builder.py", line 53, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': "Could not find the 'harvester_name' column of 'harvests' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}

@@ -31,8 +31,13 @@ import {
     Droplets,
     Palette,
     Factory,
-    ChevronDown
+    ChevronDown,
+    Activity,
+    Zap,
+    Thermometer,
+    Waves
 } from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 
 import Logo from '@/assets/Logo.png';
@@ -58,15 +63,8 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
     const [colorGrade, setColorGrade] = useState('');
     const [sealOnHoneyChain, setSealOnHoneyChain] = useState(true);
 
-    // Mock Data based on HoneyChain - updated with year mapping
-    const [allHarvests, setAllHarvests] = useState([
-        { id: 1, apiary: 'Rogulski', families: 4, totalKg: 27.52, perFamily: 6.88, change: '+0.72 kg', batch: 'BY-2024-1182', type: 'Multiflora', verified: true, moisture: 17.5, color: 'White', year: '2024' },
-        { id: 2, apiary: 'Caesar', families: 9, totalKg: 52.60, perFamily: 5.84, change: '-0.32 kg', batch: 'BY-2024-2291', type: 'Acacia', verified: true, moisture: 16.2, color: 'Extra Light Amber', year: '2024' },
-        { id: 3, apiary: 'North Orchard', families: 12, totalKg: 85.20, perFamily: 7.10, change: '+1.20 kg', batch: 'BY-2025-4421', type: 'Forest', verified: true, moisture: 18.1, color: 'Dark Amber', year: '2025' },
-        { id: 4, apiary: 'Rogulski', families: 5, totalKg: 38.45, perFamily: 7.69, change: '+0.81 kg', batch: 'BY-2025-3310', type: 'Acacia', verified: true, moisture: 16.8, color: 'White', year: '2025' },
-        { id: 5, apiary: 'Main Valley', families: 15, totalKg: 112.30, perFamily: 7.48, change: '+0.55 kg', batch: 'BY-2026-9901', type: 'Rapeseed', verified: true, moisture: 17.2, color: 'Extra White', year: '2026' },
-        { id: 6, apiary: 'Rogulski', families: 6, totalKg: 42.10, perFamily: 7.02, change: '-0.15 kg', batch: 'BY-2026-7782', type: 'Multiflora', verified: true, moisture: 17.8, color: 'White', year: '2026' },
-    ]);
+    // Harvest data - Empty by default, should be populated from API
+    const [allHarvests, setAllHarvests] = useState<any[]>([]);
 
     const filteredHarvests = allHarvests.filter(h => h.year === (quickYear || '2026'));
 
@@ -271,8 +269,35 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                         </div>
                     </div>
 
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-full">
-                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wide">WE ARE PREPARING MORE INSIGHTS FOR THIS SECTION.</span>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
+                        <div className="p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Avg Moisture</p>
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-xl font-black text-slate-800 dark:text-white">0.0</span>
+                                <span className="text-[10px] font-bold text-gray-400">%</span>
+                            </div>
+                        </div>
+                        <div className="p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Premium Yield</p>
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-xl font-black text-slate-800 dark:text-white">0.0</span>
+                                <span className="text-[10px] font-bold text-gray-400">%</span>
+                            </div>
+                        </div>
+                        <div className="p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Organic Status</p>
+                            <div className="flex items-center gap-2">
+                                <ShieldCheck className="w-3 h-3 text-green-500" />
+                                <span className="text-sm font-black text-green-600 uppercase">ACTIVE</span>
+                            </div>
+                        </div>
+                        <div className="p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">HoneyChain Seals</p>
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-xl font-black text-slate-800 dark:text-white">0</span>
+                                <span className="text-[10px] font-bold text-[#F4D03F]">VALID</span>
+                            </div>
+                        </div>
                     </div>
 
                     <div className="mt-8 overflow-x-auto">

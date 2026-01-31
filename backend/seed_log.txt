@@ -1,0 +1,620 @@
+--- 1. Cleaning Up ---
+[OK] Deleted blockchain file at C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+[OK] Cleared Supabase table: blockchain_records
+[OK] Cleared Supabase table: honey_batches
+[WARN] Could not clear packaged_batches: {'message': "Could not find the table 'public.packaged_batches' in the schema cache", 'code': 'PGRST205', 'hint': "Perhaps you meant the table 'public.honey_batches'", 'details': None}
+[OK] Cleared Supabase table: batches
+[OK] Cleared Supabase table: processing_records
+[OK] Cleared Supabase table: harvests
+[OK] Cleared Supabase table: flower_sources
+[OK] Cleared Supabase table: colonies
+[OK] Cleared Supabase table: hives
+[OK] Cleared Supabase table: apiaries
+[OK] Cleared Supabase table: farmers
+
+--- 2. Initializing New HoneyChain ---
+INFO: No existing blockchain found at C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+BEE: Initializing HoneyChain Bootstrap...
+Block mined! Nonce: 125, Hash: 00eeb20eee59d4620b349302c5017780c3ad747e64365142753c0db19c3c84d4
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 332, Hash: 00e5ae6039ac121d038b50b39806c46a1a670f0cc41777d7970b362947339b76
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 123, Hash: 00625e02761086a7ce6fd421652893741221b6843d4ef717f6532ee2031b15e4
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 41, Hash: 007115b74d380dfa8438b3d59a91f06cc4276d1b94effd2541b8ce347517a7e2
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 175, Hash: 00231f5f2ee778085505fb4bca194d583882466a7d6ce476203b1cf82053a1e5
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 203, Hash: 00db8dce86a59167a3b7c64e79573d683eb6f7d7c0562da885572861f7323d8d
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 65, Hash: 00b4ae4767eed47168e7bc204f9da84709853775651d80fbd262766b2a4a074f
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 102, Hash: 005b8f4120f93197391bd930e0fbfe9d87264a324945e217a05e6c56b8a4b7da
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+
+--- 3. Seeding Timothy Nduva ---
+Block mined! Nonce: 117, Hash: 005e2c0c3bf37fa8770acd197e2f67e153790368ab1a68eb2aa507f084c779e5
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [OK] Inserted into farmers
+
+--- 4. Seeding Kibwezi Main Apiary ---
+Block mined! Nonce: 192, Hash: 0023f600cb57d863322765aee322a74f6346d7ce6cd1f41ec45436301b3529a2
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [OK] Inserted into apiaries
+
+--- 5. Seeding 184 Hives ---
+Block mined! Nonce: 109, Hash: 00d6c28744c2a1432e35dd1cb351e464c6865769ac6fed1f4bbe32d16e6e712a
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 323, Hash: 00dee6d6ead1914dc64fe263b52dac6d327abd6ea7830a250fa18042a54d2b78
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 80, Hash: 00dc7ae9c32424dc45ea32c698961aca0136dd83b7a657b01ae85297dc07a37f
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 299, Hash: 005975dd93c5b7c68f24cf486776b95cdbe40e9590b290af25b0521c2a181a6e
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 534, Hash: 0094093e3dd3a7c294fa134020b493b5da2fc8f0725a736cfaa3c794fddd7a3e
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 294, Hash: 00b56da9f700793613dc67fc59574e44363d68a01eae7ff7ec4e567f8a320c86
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 33, Hash: 009ab52b5c41e43fae804357ab69558ca80cb6047097e9c5699e5914eb09ed69
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 12, Hash: 0041a651f6c1f83266bd71910c16cb76a89622f80960792bc21173e8419a6b82
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 342, Hash: 007df4e5cd1fdaa59df28e93946d339bfde41c4298ee8b2be6f20ffb914000b5
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 57, Hash: 00e8bab17372111e9a77856aec00f71c040bfcd6ac3b86c185b9aa6a6aaa567c
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 67, Hash: 0006aca18fecf4794e240c8d21d1f613c2654d361d60e37eb41859cc098e0f39
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 207, Hash: 008813e41e60cbd090be041b5194b4a5a99e89a7255698dde7f0761b7b5db403
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 77, Hash: 00a799b3588ae1cefa7f892d036a90d004b5943c9eac1a09be19356ee2be944e
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 694, Hash: 005a3ee2b1bd23c7a8e723ef5d917b4484d1cf5caa84dcd69e19bb997e54bf11
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 88, Hash: 005f7a91cb1aee2d7fa0b43b3268ae660a21c688c5319ed53dd69a3a2cd14e4f
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 177, Hash: 009f8f89cf290aeff980f47b4796795981a19e025dc29c5975f5d6a1132754a4
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 392, Hash: 00bfdb72abc2e2cf3f6513794fbd5bf79f5ffa82a991f4d99ef724d70774e482
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 78, Hash: 00a33cc92d03224b22b44f09760a886d1d2591f9d1e8482a146dc842ff62d431
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 112, Hash: 002102552b0ad66a65f12aea422a95a758750cbba6c46121fd78529a7fceb6a8
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 779, Hash: 003efe70b42095be1571b5eed8b89050c022df8c03c92403b02358aa6d2b0f2a
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 5, Hash: 006c5539aa83c7f5d9cf35b25443e0a10db3a75436e57a7d886e6f803d7991a4
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 66, Hash: 00b1baefd0af18a1bd76ef6b3fbf95f8e3047bf0af1bf52795ff26b9cb288ab3
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 4, Hash: 00f709c51bdf031edb2d9759757ff406976582fae67c8db70cd53ec12075d516
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 311, Hash: 0032415ca7889bdd4f4ed8ecbc90ae475e20c4d881cc8cf65141616dbb3c3bc0
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 387, Hash: 0000029053fe80e1159509b5cb1623ed20a9b9766155e1c776d3e80489f1886c
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 37, Hash: 005006ff88616869d73868827c938d6e6b9e6f0ad0fa5522e1cd6ecd073d96f4
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 285, Hash: 0050900f5b6dd045a81125adf9e9b4a4f228241bb3b52ab0285862a77e45e194
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 267, Hash: 00ef302b122b63e3dcfa315e45fcbb98e4065ea413a1fd347f69c214c29bf53e
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 119, Hash: 0079b057f463234267e2a6cb937525aad624c42bc4538097304f2e98a6a36c50
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 617, Hash: 0035cd8d2cc4030c17aab94cece87c2098c87a9939688b49c3d2d36e38dc263b
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 130, Hash: 0010165bebc8e901842de36bc7a15029c2edd024923dd8243e35f51a39c47a75
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 46, Hash: 00b922e11d86581302d3fa4ec2b9d77ee264014e3f652c314b36308773059321
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 526, Hash: 00e3217dbbbf4bd271c81f5e0bae08030db6f39cc8b6525c202821c15831e167
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 455, Hash: 002a68ac5288e7952f1ddafed53201187ddade30d7f0f6b7e4cd9e495889f2b7
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 104, Hash: 00cdbae49eb7ae35be4eae1164d590856db873eec17a20200e8b8e3d36c1de9d
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 296, Hash: 005f67af969d2fff78017bf8c5e978439ded0e5f278a4e72bfbcffcc8ef6e85a
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 108, Hash: 00b103ba14b7bc9e57495020f5eb2f8eab65117008e24bfa0895b09d3c5713b9
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 400, Hash: 00d1437b62041ce6bb4926ea951caa3cc9a598d9931917a8fefef5d9c6dc26db
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 35, Hash: 0094c68d450ef1915679ac02d044b0dd4a5a58b4791aceece30f159762f51e74
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 316, Hash: 00c995b4494fef7cad0191c2573b95f7f735c48d5e6ce0e5c12c13a111a463e3
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 46, Hash: 00c75cf62b0f6646cc5bb941df53b0ef9fa9e55a4a8db384d1b4d373f5823c0e
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 172, Hash: 00c6f4ac5d3d58f39219bed4b20fbfe078a6f429d4aca1c34c593b01c65c3012
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 81, Hash: 00658e0fe3b36a58a9d7e26d34f999fb9b14e2c6468317fc447a3cc07774e026
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 140, Hash: 00b27f33d867f1c63d0dda7d309bf8cfa41c5cb635b4d42297a97cab5f2bde1b
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 256, Hash: 008a01979de6ad34181724bee3dfa1d45e86f3d4e808f595e0d063e316106796
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 222, Hash: 00f39a0bf4ed57e89406ba8ddc466f5659ab4773f28540af5bcc5c121285da99
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 155, Hash: 00fd4310f5a357f7b4a4bc3252924b7abd854b7e218261bb3efb9f0896ce040f
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 437, Hash: 00a288853ffa2c6e4ad766ac1ce3698cf16e0105d36dfeaa1b9f4a9fbb6163cd
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 313, Hash: 00031fa365628cd514ad9b2a5464e2991d290eb59418eb1aa1c0d9f999abc54a
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 403, Hash: 003307f72c1201fa8642b11d5025b20c84d1057240b2b336096ea00007e05eb8
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ Inserting hives 1 to 50...
+ [OK] Inserted into hives
+Block mined! Nonce: 242, Hash: 0000867c98af51caec8b8481a886569008bf65f073b9f84617640feffdaaf883
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 72, Hash: 00069c1a22f089084f10c676114aeb30bf118519672d3f5a7c2aef981aa568c4
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 249, Hash: 007164d28b0adcfd0da3561d71170b58e7b49bcd5f3c483974e400d8b420d0d8
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 55, Hash: 00f5ac0620eb3f434d3e579f60e208cf117fea45995203d77b060a8f405bd9d6
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 78, Hash: 0030271145eb6346a3525a75da2ab48533754964ea7c13eb1c610383e22aa162
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 6, Hash: 006453ab2dbfb73709574b7dad5d58b85a7e55d511445adda2b4e31d0d54baeb
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 123, Hash: 004ccfe436780e9d1985b016dfb6bf3925c1c331b681f748085a7c723b110fe8
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 63, Hash: 00dcb9e3b4afe7f990a089dcffc0aa0e6748ea4c9850689d6d0066be5b6970f2
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 201, Hash: 0020aacb37949c6f6fcba6ab765b55178dbd15d916209fec64959f1f5fcc477a
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 646, Hash: 00e431b667a8b58e533f467274463763b0e8a8355deff0795d9e04e4c6962f20
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 356, Hash: 00ebf404482c2e5f8da9ba23fdac6abee50542311f30ec38fa5f80bb86d033fb
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 290, Hash: 00c38817ef6977148a1773f0f65984254f4bca435a3e61c617ceabb1d6b4c10b
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 122, Hash: 00ca02fc8ef2832f5c33fb0da3487facdd6caef8db6e6ee2a2f3d364ee5b8ca5
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 202, Hash: 00c909e6033cf4c5d1be8f9c34ab5f01916a554384d7df64e7df822e5d61606a
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 135, Hash: 00a0c432e0797f7b6aff2d36abb77ba9a1c02d6b4f73466643a86fadac0c2300
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 346, Hash: 00e029714b0dca5c7e23dc42a812126eb862404ef5dbf7d2dfa8988c4b181a13
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 401, Hash: 0068bdf9fd2a9035e4a16c1885d69c27857a11696c7436acfb49b8a861ef2da6
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 187, Hash: 001d76c3d5ef04f6099c89b5004353c9f90bdbca206d63de1a55fcde7ad461e2
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 156, Hash: 0046fbb4884cf09167f74af1687b9447d25c45770273d6ae7a31bff64c3584d4
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 197, Hash: 00d8393a1d28d6c09436e371aa422146de4324f368441cec407be6d984578132
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 141, Hash: 00549bb3105c4e64b718653343d78ca356db8573f77d01d81ed737bcf73ae6c0
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 82, Hash: 009cb939b0db178c10d4b30ffa9934f113d49b46122750f4c60d2d2d7d18329f
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 110, Hash: 009a542b0a635fa6a9444cb21a4b1524aa723cf6a9d8e9b94245b92a8847af69
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 85, Hash: 007e05272f37c51a7f24d27f5fe5a866502c34e3658fec41171f6f49e2816992
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 559, Hash: 0022947868a3a880778684ca2f30c2189b418c2c72facad9a559b6bf6c4662d9
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 67, Hash: 007e9cea04580863357c78f7e595eeef00a03975179771b167f1c2284315804f
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 37, Hash: 0029ca7b19928396b169aa1e63ff848335668be5d51c66eb66023556ce9e0ee0
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 45, Hash: 00bd45e666bbf6fa57a442515ff6e1f45e1acfbfef232195a7c4e74f184e7f8f
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 209, Hash: 00deea5a9c11f50cd38ab48b515359676101b80150d603131ad55b1caeafd884
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 412, Hash: 008207c74a2f6713e0d3681326145068ab0d94c30a87ef00120c9b2e1bdab64a
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 28, Hash: 0074f4e87f59f9e36713e861dd89801e087267998e465e45c9a005aeed5e388c
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 62, Hash: 0073e7a711e473aa020021aa08562a6cc918fe46720e22a45a650297e874b69e
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 37, Hash: 004f461d3da751f44fc6a60d9503f3ea4365c4e331545dca4125d9c4d92cc7c0
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 371, Hash: 00ba1064ccdce08a6fae4faef69935a723e998cea28b8adbfb94616493be7199
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 273, Hash: 0022233b5330cc83a085c1b5acdedff939a622024dcb16b7e945960817a0954e
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 282, Hash: 00371d25df30ad5b0bd9f8a82bb333b3312ac218a8bddb46bbad91554de77dd9
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 203, Hash: 004ff577e0c670587d2ac7ebd69f6b04368e41cecb18ca830516cb54971949df
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 87, Hash: 000cfd9e17d7516827ba4d0f4a085fa419a3e8be81a4baaa11f6c32aea5109c7
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 236, Hash: 007c55890d3e44c04c0e0039195790da5373fa79692bf3849ed3d6ff32eccb1d
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 154, Hash: 00d1d461b235cb06ee781c9484d683dd357513d13a0a6bcf60153543d6d2c79f
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 170, Hash: 00ebc6ed67353174d66e7805e39c86166ee1d9e22947a798426e397ecdb0c279
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 285, Hash: 000de78a988aeded2eeed39229d3886a900db8de09a3d92287d2494cf12c6972
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 43, Hash: 00ba4d1a79779462beb26981ae1852adeeacd1a373cbd208efbbb920dc23db5e
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 339, Hash: 003395a0ca12b4982c9e4ed1eefaf559be6aaaafd401dd99e814063ce51e7691
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 164, Hash: 0008caf74a00a6cf6fd2177dca049513f14fba251c4a11d1ef611e37fb70cedc
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 155, Hash: 004e41679d22c0a62f0a50aa4b9e311e527b1f34e21ad8d595a8b50b317850f8
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 260, Hash: 007cb63abd2fcc93c2ec1666fc82c1add793815d48dac91244ec13bda44eaf05
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 538, Hash: 00ef28bbca03793df972a0a8d1920633ca6b09db7cfe054f965c09818a4fe3d9
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 665, Hash: 000b257813ded709850b8ef5fb48edb9666f8d52aa0cafe779a7951d5cf53306
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 169, Hash: 00784a3c990a35b2c35371ea49e9481ed8ba11ac854d14b13d55d6e3c2dc3196
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ Inserting hives 51 to 100...
+ [OK] Inserted into hives
+Block mined! Nonce: 262, Hash: 008b45d48d7885f92e41d7ce6a86d352fcb44f8ee6f18e8fdb739cd4b226ce62
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 844, Hash: 0021b307e40ef510d4ff2c854b0389c9ab593d58e4031cd9b9bd1ff1fb7f15f0
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 97, Hash: 003f580c36fe88edee096ec62d45d5e267737f126e28dd5c1cf236a580b7d6b9
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 83, Hash: 00bd5a97f471138dcbe69fd043a538ad0ddc38796cbf485742d2ad6207cc9382
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 404, Hash: 0080822df2296e1df1f9716765e949230426264a9ed785f6e064b10373d43906
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 175, Hash: 000d8835850e7c0fbd17350a152afac0bb76e2a42b7165ed87283cc8a4f0b17b
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 138, Hash: 00caa4604943ba092b59194d388c4c056801e2aaa3b4c35080ae542302e6f7b5
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 29, Hash: 00ba5c22437d056be28961211d3abc95a50699392b2e87443539c4d3b77f5aa2
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 247, Hash: 0097d618bb159db19baddac0bc2427c9efa72ac0a026bf5116863b034c03482a
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 475, Hash: 000b005a99574e0042daa7398fc66882207d48167d69e876a265652543f7c908
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 486, Hash: 00ad949515cb4fa6e090a40916069db4c785f97f2f19c296495c2e2f1f53440f
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 139, Hash: 0061cb6256b768d54a9db00083e0f84421d10e62fa05acef706dee117f7d3b49
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 296, Hash: 00567c7faf3b06642b1633980304e077a99f4a94297a324d88e45cdb893591ba
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 254, Hash: 0009cce04523508c3f672434c29ac8e20de900a56b1493071c79b9e88408ab9a
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 68, Hash: 00bbc16e6a1d70df734bc15185bbaf2b45b06d326a4e40791d3413d585daa54c
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 2, Hash: 000ebbd635a2acd2835f9920992efa8b5722ac74a8e3abb3cb8ed83921dee226
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 207, Hash: 004e5a6aabd7533c70a35d17520c91f4b508c5ea46d19f4f7a06329b45cc2b7f
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 51, Hash: 000fbf6981a3bfeb865ed6413d1298e10fa2eb921788e7ac977a390db7f77bce
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 435, Hash: 004924eae8113530268227bd247a351dd0ef17287ae6b0fd9c7705df6b1fdc93
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 140, Hash: 00dd7302d450e3940a49d97d79d9d3103b81a5de80ccd26cf0a6c6a9dd171ce3
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 5, Hash: 00b1ea9f7743eabf739614cb20e4163a33b674c9bc69aefc3ef7c8abdb7131e4
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 301, Hash: 009f76f6fa149ea9e68998231f90bba3c6e63e823cc3ba9253bafbb8540d2333
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 61, Hash: 0097bceab7149d217928908f81ba868d06d77473b5ee74a6c0572aeab6282c85
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 304, Hash: 00c33c73dbc003a26473d1971a9fef7df9b7608d3855f448ce83060fe1e0df14
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 328, Hash: 002149b5751bc7f8a00179ad224ecd00082ea63d063037f9e4c7e2ab8cea75ab
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 15, Hash: 009f15b814e46971257cb47eb0babce82b55e8d194c9e84f4a7b1ee5bd01bcc9
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 43, Hash: 00616a7a2746f3ef609cee9696ea2ab62beef83ea5c4bf13641785166bc46908
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 575, Hash: 00b509f54afd96c32b5022855d5f0ac056d03a4c440485f8b52f06fec7f7beff
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 104, Hash: 005c005cefa03c7fe5b545a0943381715f30eeb39a751b4087f9c7bbf479853d
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 209, Hash: 00d7d5f81ea91b972f9fcc4b3515b7de9f4fdfe47988f9f41e5d812683425323
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 36, Hash: 000312c904bc9a05e6239b6183457c571e5932f3d8878675867f3a9427546424
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 35, Hash: 000263ea764735c5b754270e2c63f26b34d4b28fb30ba3bd02d88ccec3d79d75
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 696, Hash: 00669bb78e23b9268f946cbd1ff654474ef4ae14e598e5193fe620dad45ad2bb
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 611, Hash: 00443aeb2f6bd7895999f437539464037146b710e498c87564a6fed1a363e94b
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 30, Hash: 007b7e9a8e38f625580714888e3c31036f9a985c2aa834c7b25e9bea4532d21d
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 33, Hash: 00f55485bb7a2859d3541a8d7fc18cc834898941746d1cb5a3906a1cafa6a427
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 178, Hash: 00a649bfe41bc39d721da24d394c24314e0ac5b66dd9f8cfb2c32abf4ddccf3d
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 158, Hash: 000617c19b2f97a2965ae14d9ab89f2ba5096677b439ba772b96b0bc6992a905
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 921, Hash: 000529cb28c9f7893d3d81d7916ff57089cee8dcdf40a98bab96f1500fba376f
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 20, Hash: 00ca1fce59483127d5677106511e630f4fff210a141158a73121f992c130145b
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 31, Hash: 00db6a10c99ea318cd961601596854f82f53d33e3d2b40248dfbcce0d670694d
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 94, Hash: 0046a405ec7db56701e4d03f99f5566e384ed5ada28b175463ba9f7e30fa9296
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 1430, Hash: 00ddfa949cc1781f2ba2781c265af76eac9c1bd948df793a4d5edacc289fc182
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 125, Hash: 001002d8b16aa93f9bab25299a6e8b309337f5cb8f0c6504ae133f79e227a2e1
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 219, Hash: 0016b3b0314a19dcca3bdacee6b743df9670e552d5d2a169952cd34873cdde02
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 118, Hash: 0017569b2690e75d8ce88dd68dca2aac2f49f429326d078a106ae4884a59b847
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 113, Hash: 0048e81b8733a8b9ef0eed1c7bbce92e9a3e67ec534a8ad5abc1ef7bed4da978
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 118, Hash: 00b124eebf29e6a8b6ebc60615ebefdcff3e29a77a94d095cc0be03263669a0e
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 525, Hash: 007a104d2e74c74e6caf37e557a20010ed1c4e084ab553c1160cf699ef45441d
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 1, Hash: 0000dfd928312e2db2ce8a2ee202a2b63e249408937d59820b22dd9437b29fa3
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ Inserting hives 101 to 150...
+ [OK] Inserted into hives
+Block mined! Nonce: 90, Hash: 00e3552b3b7f2474c14350cdb13b2ca88f3246af1184b0743ca86eb55474c2db
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 20, Hash: 004c89fc52b9cb2a91d59aefdd00458697ff5f9b54893a4a496f5c92fa4cc7d8
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 373, Hash: 00af2651e3314572cf7f09dd65c87fbd33db7a26bd6904c1d22d29b374c0cb7b
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 93, Hash: 007129d0975d58d7a9690660b7e73c934e4075a2d45f43581a3bdfaa849b8fd2
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 128, Hash: 00fbb917954b97ce3f90076ad5c65699cb889fe03ced8744735534b3f509fe48
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 433, Hash: 0043ca4e313603ab120416dc1e8e8d0e16d9bfbdf3f22f7aa2bfc81eeecdf36e
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 268, Hash: 00cbdf0548050670126b6d94051805fef42c04c52ee890023c392b9c48488b41
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 433, Hash: 00c29cbe532f94f325537da1b34ef95bb5b9a607f6d9e35eca376a33bc1700dc
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 163, Hash: 0024248ead474842ca59c2365eee0a72f5795efd1e7baefe9ee1575465529099
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 347, Hash: 0067c346075c14aa70a46b1f489cfa6212e95713de43b57a53352324b95e7cac
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 601, Hash: 00e39466028d53476a8c70ca5376fcf674847d88da607a98945ee39a17d5f6f9
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 72, Hash: 000191294bec825dd2aa409cbb8dfdc5fe0dba3bcd81eea8ed5d071fdc22b656
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 227, Hash: 005d0bb944e5b17cc1fd01afbfe3d5b05674ae34c8661b1d1b6cb87f9fa6c765
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 196, Hash: 00229b15db0c20a1ccafba179027ef79711b97cace8b969162d4fe568ed572ba
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 261, Hash: 00a120d3cfc3d1dd514b0059408acbc9a6cbd2fae02619d56852b98e047accae
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 64, Hash: 0021d0f12ffbed50008d05efccc9120e54d04bc8c44483239e7e5e295beaa82c
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 726, Hash: 00046b8f3f0ac246fc5a27be758a8ff981035d377edd3b144698e2462fd58de2
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 381, Hash: 002510af02142dafcaa796f50b7ba35f896cd5d3af05b8638fc6f12b6daae418
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 126, Hash: 007d1d16c42723960b582e1ff9a4d2b272607ab977a0bddafcf9fdbda8e9e903
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 112, Hash: 0009186ce84400f302f23a3435d097b63f78c23a64b00b7a3347c8dd12c76d47
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 40, Hash: 00127e3374cbf527e1bcc62985a1016c0754797cbfcd713dda290b83ab5498c4
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 231, Hash: 00068e55e8c294a56fa0d5abaac5e2ec5795491f85735ca147e10781fb07dc2c
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 103, Hash: 00a6e953e21d17614a6668b03f2d3be4a592d60b96fb0a87501eaba9d51e81b7
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 1, Hash: 005a6b6c1cce610be394342d59a9363fc192c0cbed28e619e88ea67a1bcdef74
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 75, Hash: 00f656e0e6285953ac2bea832d6380a790620399421b829f6797cec598374349
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 34, Hash: 00324db31180d708fd0f13588b4ff7c17a02150daa04e2f82500b9b111af1368
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 367, Hash: 00d016ef829ce7e41de8e8467de6ae1de7036d2048d8c2c93112512951b75fe2
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 790, Hash: 000768357e08231be329b130e608aeb7166e9e3f931383baaa1944acfc052fbc
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 632, Hash: 00a87fbf68a9d05114c0fbabbce52a15442047afbb78318a14f9cac543983885
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 124, Hash: 00d91e9ee60d9779c776c63c119e03c4f7ab7d5f559c28e09f27b7cab57f99c4
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 289, Hash: 00812fc29a93e9442b47bfb6d732a054210ea0aef19850c734d8dd1777525fc8
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 345, Hash: 002dd218cc82c81569aec8e20a6cf2fdd0d944e093c864cb931fcf4279302b02
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 22, Hash: 00612b3d9fa71fa3d0d51ef1118bc73156fa8ca1b069527455854a639b0cfcb3
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 319, Hash: 00131fa6291690988f45b1c2747ff141620c642cdf3c4d86ff40ef3b64476aa0
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [OK] Inserted into hives
+[OK] Hives completed.
+
+--- 6. Seeding Granular Batches for 15 Hives ---
+Block mined! Nonce: 849, Hash: 009500f57937b4490ddfd0f6cec110993ad0cc2485ba57a70d7e7c817c2d91a0
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 232, Hash: 008bdfe94b1ea82eea8e512c565350053e49fc43626cab4d6e87121ed6ac4e49
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [OK] Inserted into harvests
+Block mined! Nonce: 76, Hash: 00585d65d1b9af202c4b595eb2f055857f9ab8bb868c7186ace93a3ee75b7a28
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into processing_records: {'message': "Could not find the 'quality_grade' column of 'processing_records' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+Block mined! Nonce: 219, Hash: 00d41b9037195e8dbfd0417655bf728a4546cd02e49c02a67a306efa3a1976d9
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into batches: {'message': 'insert or update on table "batches" violates foreign key constraint "batches_processing_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (processing_id)=(1807d519-c52b-42ba-b50c-cf7eeac3dd64) is not present in table "processing_records".'}
+ [OK] Inserted into honey_batches
+ [OK] Created Batch: KIB-KIB-H001-0126
+Block mined! Nonce: 24, Hash: 0043724223251b2dfb28c9f7ce45412a0dd4643d4d6c17281485a127f1a19241
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 271, Hash: 00c05d3fc6583325a333ffbc7610a700d24015d6f4502dc37bc8b1d1c785fed4
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [OK] Inserted into harvests
+Block mined! Nonce: 409, Hash: 00a051bff78d4b83e5513924e96d23737d26fde55f43d5346f1cd9731c391c2b
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into processing_records: {'message': "Could not find the 'quality_grade' column of 'processing_records' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+Block mined! Nonce: 37, Hash: 006c47d6e56a485e165e8e216eb369d91aab771ca3ced3063e78b6644eb61850
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into batches: {'message': 'insert or update on table "batches" violates foreign key constraint "batches_processing_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (processing_id)=(31d66681-adc6-4393-8e80-40d7befb0f7f) is not present in table "processing_records".'}
+ [OK] Inserted into honey_batches
+ [OK] Created Batch: KIB-KIB-H002-0126
+Block mined! Nonce: 582, Hash: 00ddfb6153d1f71b383620e1cacb9a5db7422dfcb93ee0573849405b08bb70ca
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 33, Hash: 00f7674f15260bb5f96ea113bf0a4304f8f995d008625f954e379f1bef828d2d
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [OK] Inserted into harvests
+Block mined! Nonce: 279, Hash: 0004c0dcd9f44b00b66110025b1c407752e3efe8258febccbaa7fa5f39fe8a51
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into processing_records: {'message': "Could not find the 'quality_grade' column of 'processing_records' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+Block mined! Nonce: 27, Hash: 009109c792db5b00b79b2f22ddb86357ea6292ddea646aef9d03499805f32bc0
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into batches: {'message': 'insert or update on table "batches" violates foreign key constraint "batches_processing_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (processing_id)=(6ca8087f-ca7c-4fa4-85e7-b10f3741a84f) is not present in table "processing_records".'}
+ [OK] Inserted into honey_batches
+ [OK] Created Batch: KIB-KIB-H003-0126
+Block mined! Nonce: 1101, Hash: 0017b18cd2aaa85f5d3363af697744d62dfd542f4130548bd02f496682ffb5b3
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 101, Hash: 0036392c94c18a48eac775e95b1390ca428d16a021d314e59663c0f7d22772a6
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [OK] Inserted into harvests
+Block mined! Nonce: 114, Hash: 0079d46678b1f17ae506f99f2e6bbfb21e96548df956e9620962d59a0dd6b1c4
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into processing_records: {'message': "Could not find the 'quality_grade' column of 'processing_records' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+Block mined! Nonce: 25, Hash: 00b4f7f0a462728de5ae7e9b32c49d9039d40b8dd96fffd8b5390210776dfb02
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into batches: {'message': 'insert or update on table "batches" violates foreign key constraint "batches_processing_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (processing_id)=(34629e1e-3e46-49a4-a3bd-c35d4f03c1b1) is not present in table "processing_records".'}
+ [OK] Inserted into honey_batches
+ [OK] Created Batch: KIB-KIB-H004-0126
+Block mined! Nonce: 88, Hash: 00ee930e93e439d50a9bfa36cc36ebee1402dd2720164d314063401d0b7d71e8
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 48, Hash: 000fdb2223d1f025e43af559577a106b7f6e100ba555a48c22b5a8df513af02d
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [OK] Inserted into harvests
+Block mined! Nonce: 276, Hash: 00a5aabbb9e6c4c3a12f4441a474eb7d15c15ecd93e838b0737ad8877ec256f8
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into processing_records: {'message': "Could not find the 'quality_grade' column of 'processing_records' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+Block mined! Nonce: 52, Hash: 00f8f77e3f73694a3a0ddb1bb5a7d965b93ba550f7693812b5ba609b36568917
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into batches: {'message': 'insert or update on table "batches" violates foreign key constraint "batches_processing_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (processing_id)=(56c98b98-9734-4dc4-a1d6-da26388ca65e) is not present in table "processing_records".'}
+ [OK] Inserted into honey_batches
+ [OK] Created Batch: KIB-KIB-H005-0126
+Block mined! Nonce: 59, Hash: 001e63cb5e5069fa06bafcb042c376075836f2fc8cd34fc521a7705f9447b582
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 145, Hash: 00e0ac723ae708215f8e6e830b74b7c0c37438efb7f65bcd294b05c3374532b0
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [OK] Inserted into harvests
+Block mined! Nonce: 986, Hash: 00e30ff19736b6b4c09a53f67de62851bce8c0e50fcc048c2ec0c94112752ff9
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into processing_records: {'message': "Could not find the 'quality_grade' column of 'processing_records' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+Block mined! Nonce: 104, Hash: 00501de7f417497a42dd3417bbdbd9fee03b0432613240172162fdb814a4a6e5
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into batches: {'message': 'insert or update on table "batches" violates foreign key constraint "batches_processing_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (processing_id)=(836f9cbd-0309-43dd-9317-f11444701fcf) is not present in table "processing_records".'}
+ [OK] Inserted into honey_batches
+ [OK] Created Batch: KIB-KIB-H006-0126
+Block mined! Nonce: 4, Hash: 005735a6ef1e83593af45e815f281600444f4956525c6a4cb4fea32798488657
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 28, Hash: 008f7dcdf70da6cffe32af54e86fce416d58c712ca939253aa04f99125d8ffef
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [OK] Inserted into harvests
+Block mined! Nonce: 139, Hash: 008179e51d250e8f5c9ea567b351c85aef2d05c17c75133a811a5295951c2d28
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into processing_records: {'message': "Could not find the 'quality_grade' column of 'processing_records' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+Block mined! Nonce: 62, Hash: 00e38f07f03b25851af59e4de11d63a562d2645d2458c10a76768e0ec5ec16fe
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into batches: {'message': 'insert or update on table "batches" violates foreign key constraint "batches_processing_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (processing_id)=(44449e7c-6a4e-489d-b680-b7a35d92a6d7) is not present in table "processing_records".'}
+ [OK] Inserted into honey_batches
+ [OK] Created Batch: KIB-KIB-H007-0126
+Block mined! Nonce: 82, Hash: 0040e4057eeff22271c2e8d4ee60e0d570d427821375465383dbad8fa1dc3299
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 123, Hash: 009eb4f66b75beb1c1c26a6c9cf763da96e2da553762f7890f1a86c295a3aa71
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [OK] Inserted into harvests
+Block mined! Nonce: 131, Hash: 00cd35eef5b59f1c80206f36e63ff8c886dd03ed404765344f6bb9425c02bf03
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into processing_records: {'message': "Could not find the 'quality_grade' column of 'processing_records' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+Block mined! Nonce: 670, Hash: 00ba1ca10c121672aaf77101017fd4b2da52d958142b06e72271931d9c0beeaa
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into batches: {'message': 'insert or update on table "batches" violates foreign key constraint "batches_processing_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (processing_id)=(eaf468b8-4b30-4952-8770-fe26b4b51d24) is not present in table "processing_records".'}
+ [OK] Inserted into honey_batches
+ [OK] Created Batch: KIB-KIB-H008-0126
+Block mined! Nonce: 83, Hash: 007c42a33c32cbe94aec9437868b47a6b68a4bd7f0ae4682f273b7bfc9bc8232
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 261, Hash: 0038e9e9d243c7fce0a1435cc423798e89429bac605303115710d0ab3d947367
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [OK] Inserted into harvests
+Block mined! Nonce: 686, Hash: 00b7d7e888b9024cf8914e65e48008638291058bf4e7cd1e53f3453b2d16f733
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into processing_records: {'message': "Could not find the 'quality_grade' column of 'processing_records' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+Block mined! Nonce: 523, Hash: 000a761f11a45c8419deafb030c5b968b2373b12f50f5830f379fc7ca955f757
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into batches: {'message': 'insert or update on table "batches" violates foreign key constraint "batches_processing_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (processing_id)=(67e904b4-6b0d-4c63-b19d-6f7eb950934a) is not present in table "processing_records".'}
+ [OK] Inserted into honey_batches
+ [OK] Created Batch: KIB-KIB-H009-0126
+Block mined! Nonce: 234, Hash: 00a42b748ba686aa7398208c99891722dc5bc849bc20b486e255679a39434927
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 475, Hash: 00fc02cd9d64054b8630699cb948f052530bcb9416c1605fa7b7eae6a79ebbcd
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [OK] Inserted into harvests
+Block mined! Nonce: 140, Hash: 00fa7fa960a25f271b84b3a25b4ac4c10e6a1bdbfb8a043a7eeddc22bafe3620
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into processing_records: {'message': "Could not find the 'quality_grade' column of 'processing_records' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+Block mined! Nonce: 318, Hash: 00b9a01e369559f9279838357eb9243fe72e62046c90b7d52ceff28663b068ea
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into batches: {'message': 'insert or update on table "batches" violates foreign key constraint "batches_processing_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (processing_id)=(232a22a1-8685-4ee2-a59a-d3c39cb19185) is not present in table "processing_records".'}
+ [OK] Inserted into honey_batches
+ [OK] Created Batch: KIB-KIB-H010-0126
+Block mined! Nonce: 583, Hash: 00839be6a14d6e710d56359b731337d90ac978ca3f2fef697e14e1444d987429
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 380, Hash: 0098d9f10e69a507c51ccd2839294ceece0ca86e041160034711d303bede9ca9
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [OK] Inserted into harvests
+Block mined! Nonce: 523, Hash: 003242ed7548192c19dde902792e05dd5b97768fbebdcdb364ee5c9382fb57c0
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into processing_records: {'message': "Could not find the 'quality_grade' column of 'processing_records' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+Block mined! Nonce: 60, Hash: 00983577f55663252261abbf55a66428fc32763a57197098b692640e09d0679d
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into batches: {'message': 'insert or update on table "batches" violates foreign key constraint "batches_processing_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (processing_id)=(1e15a844-c883-41cd-bd4b-0101991dd3d6) is not present in table "processing_records".'}
+ [OK] Inserted into honey_batches
+ [OK] Created Batch: KIB-KIB-H011-0126
+Block mined! Nonce: 14, Hash: 000d36d282b6b968a21df44e1d0a0209ff5f622f10d3da5046166e924e378956
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 68, Hash: 000d20199f39584445b80ee5f0764d91c11817fb2c6e0f55bebdc2dfa1a4f5cd
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [OK] Inserted into harvests
+Block mined! Nonce: 53, Hash: 00951cba9de2583173a738165b2541926bd09619fb238e0a8a99a9d48b990cb0
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into processing_records: {'message': "Could not find the 'quality_grade' column of 'processing_records' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+Block mined! Nonce: 297, Hash: 00ce727c696e833900ef82d106130073900858a6a9bee7496940337c228ccfed
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into batches: {'message': 'insert or update on table "batches" violates foreign key constraint "batches_processing_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (processing_id)=(ebcb94a9-2825-4357-80f9-1c883b32c420) is not present in table "processing_records".'}
+ [OK] Inserted into honey_batches
+ [OK] Created Batch: KIB-KIB-H012-0126
+Block mined! Nonce: 83, Hash: 0066004aebc2b4c476bdd7d9549fbf6a355d69e26b8ba6b87d432c83bb872d78
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 93, Hash: 001241e44d658f431315c3e67867b2b27d8ca55ff0aa02139bf148b9e502f7cb
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [OK] Inserted into harvests
+Block mined! Nonce: 460, Hash: 0080329bf155d5f34eab0a51bdffa7974963a9caa127c2f4ef90492b48aeed7d
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into processing_records: {'message': "Could not find the 'quality_grade' column of 'processing_records' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+Block mined! Nonce: 45, Hash: 00b1b9c94ac70698bc1f6ef950691c75081e75936b7efc2a15ba12c1b10b4686
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into batches: {'message': 'insert or update on table "batches" violates foreign key constraint "batches_processing_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (processing_id)=(e0274a99-0bdb-4030-9eed-96aacc4b7ffb) is not present in table "processing_records".'}
+ [OK] Inserted into honey_batches
+ [OK] Created Batch: KIB-KIB-H013-0126
+Block mined! Nonce: 278, Hash: 00952144cb41cc531622930abdf0e641fb7e59d963a52cbff6710ad38c39e5ac
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 846, Hash: 00288759a8f1c8389cc08f2fd90e78607e3fc6060659f8aa0439d1684b68f18e
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [OK] Inserted into harvests
+Block mined! Nonce: 391, Hash: 002d6c4571a1706ba2df3961bec887875847ce38ab4f05f949962e5823474585
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into processing_records: {'message': "Could not find the 'quality_grade' column of 'processing_records' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+Block mined! Nonce: 137, Hash: 00bb73b1514166b494b3da5ac5da61544236c0d596e9423b85b7c5e647710bbd
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into batches: {'message': 'insert or update on table "batches" violates foreign key constraint "batches_processing_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (processing_id)=(eed68115-fa19-46c2-af2a-5bfc4868326f) is not present in table "processing_records".'}
+ [OK] Inserted into honey_batches
+ [OK] Created Batch: KIB-KIB-H014-0126
+Block mined! Nonce: 213, Hash: 005d9d1912830755d2e7b2805065379c82bd415249a1e92445e500205bb08d6a
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+Block mined! Nonce: 134, Hash: 00dd2eb215f394f27773de7115ce57eb73bdc1a305f31c919b9c77a624d77fb3
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [OK] Inserted into harvests
+Block mined! Nonce: 71, Hash: 00d1bf59b3beecd09d86a5e4030dbcc2b114e0536556ca8219309368f984dfe8
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into processing_records: {'message': "Could not find the 'quality_grade' column of 'processing_records' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+Block mined! Nonce: 704, Hash: 00c4c264b38c99888306dc6bb04a39456b56c227cde003ec7340093dfe428a42
+BLOCKCHAIN saved to C:\Users\aggym\Downloads\Honey\backend\app\blockchain\traceability_chain.json
+ [WARN] Failed to insert into batches: {'message': 'insert or update on table "batches" violates foreign key constraint "batches_processing_id_fkey"', 'code': '23503', 'hint': None, 'details': 'Key (processing_id)=(b99325c0-bfb3-43db-a7f3-dba7f7cb058e) is not present in table "processing_records".'}
+ [OK] Inserted into honey_batches
+ [OK] Created Batch: KIB-KIB-H015-0126
+
+[OK] SEEDING COMPLETE

@@ -5,24 +5,12 @@ import { Badge } from '@/components/ui/badge';
 
 const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTabChange }) => {
     // Mock Data to match screenshot
-    const timestamp = "2026-01-15T21:48:31.170Z"; // Using a static one or current date
-    const lastLoginTimestamp = "2026-01-14T...:..:.."; // Partial mock
+    const timestamp = "-";
+    const lastLoginTimestamp = "-";
 
-    const topEndpoints = [
-        { path: '/api/apiaries', count: 10 },
-        { path: '/api/identity/me', count: 5 },
-        { path: '/api/chat/conversation', count: 5 },
-        { path: '/api/user-request/paged', count: 3 },
-        { path: '/api/tasks', count: 2 },
-        { path: '/api/data/measurements/last', count: 2 },
-    ];
+    const topEndpoints: any[] = [];
 
-    const apis = [
-        { name: 'Copernicus API', checkPath: '/api/health', lastCheck: '2026-01-15T21:48:27.658Z' },
-        { name: 'Main BeeYield API', checkPath: '/api/identity/me', lastCheck: '2026-01-15T21:48:28.351Z' },
-        { name: 'Patient API', checkPath: '/health', lastCheck: '2026-01-15T21:48:29.885Z' },
-        { name: 'Accounting API', checkPath: '/health', lastCheck: '2026-01-15T21:48:31.170Z' },
-    ];
+    const apis: any[] = [];
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-10">
@@ -53,7 +41,7 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
                         {/* The screenshot shows a very faint second line, I'll add it for completeness but faint */}
                         <div className="flex justify-between items-center text-sm">
                             <span className="text-gray-500 dark:text-gray-400">Last login (this browser)</span>
-                            <span className="font-mono font-medium text-gray-900 dark:text-white">2026-01-14T21:48:31.170Z</span>
+                            <span className="font-mono font-medium text-gray-900 dark:text-white">-</span>
                         </div>
                     </div>
                 </CardContent>
@@ -79,7 +67,7 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
                     <div className="space-y-2">
                         <div className="flex justify-between items-center text-sm">
                             <span className="text-gray-500 dark:text-gray-400">Total calls</span>
-                            <span className="font-bold text-gray-900 dark:text-white">32</span>
+                            <span className="font-bold text-gray-900 dark:text-white">0</span>
                         </div>
                         <div className="flex justify-between items-center text-sm">
                             <span className="text-gray-500 dark:text-gray-400">Limit</span>

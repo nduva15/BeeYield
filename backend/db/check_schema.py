@@ -26,8 +26,10 @@ def check_schema():
             spec = response.json()
             definitions = spec.get('definitions', {})
             print("--- Existing Tables in Supabase ---")
+            target_tables = ['hives', 'farmers', 'apiaries', 'harvests', 'processing_records', 'honey_batches', 'batches']
             for table in definitions.keys():
-                print(f"- {table}")
+                if table in target_tables:
+                    print(f"- {table}")
                 # Print columns
                 properties = definitions[table].get('properties', {})
                 cols = ", ".join(properties.keys())

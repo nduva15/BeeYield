@@ -202,28 +202,30 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
                         </div>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                        <ul className="space-y-3 text-sm text-gray-600 dark:text-gray-300">
-                            <li className="flex gap-2 items-start">
-                                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />
-                                <span>NDRE - nitrogen stress.</span>
-                            </li>
-                            <li className="flex gap-2 items-start">
-                                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />
-                                <span>EVI - biomass signal.</span>
-                            </li>
-                            <li className="flex gap-2 items-start">
-                                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />
-                                <span>MSAVI - early vegetation.</span>
-                            </li>
-                            <li className="flex gap-2 items-start">
-                                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />
-                                <span>Moisture index - drough signal.</span>
-                            </li>
-                            <li className="flex gap-2 items-start">
-                                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />
-                                <span>Yield proxy (AI).</span>
-                            </li>
-                        </ul>
+                        <li className="flex gap-2 items-start">
+                            <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#1B9157] shrink-0" />
+                            <span className="font-bold text-[#1B9157]">Nectar Flow Index: -/10</span>
+                        </li>
+                        <li className="flex gap-2 items-start">
+                            <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#1B9157] shrink-0" />
+                            <span className="font-bold text-[#1B9157]">Pollen Diversity: -</span>
+                        </li>
+                        <li className="flex gap-2 items-start">
+                            <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />
+                            <span>NDRE - nitrogen stress.</span>
+                        </li>
+                        <li className="flex gap-2 items-start">
+                            <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />
+                            <span>EVI - biomass signal.</span>
+                        </li>
+                        <li className="flex gap-2 items-start">
+                            <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />
+                            <span>Moisture index - drough signal.</span>
+                        </li>
+                        <li className="flex gap-2 items-start">
+                            <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />
+                            <span>Yield proxy (AI).</span>
+                        </li>
                     </CardContent>
                 </Card>
             </div>
@@ -317,16 +319,27 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white">Story of the field</h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400">Click a field to see the season narrative.</p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Button variant="outline" className="h-20 rounded-[1.5rem] bg-gray-50 hover:bg-white dark:bg-[#141414] dark:hover:bg-[#1c1c1c] border-gray-200 dark:border-[#1e1e1e] text-left justify-start px-8 font-bold text-[#1B9157] dark:text-[#F4D03F] shadow-sm hover:shadow-md hover:border-[#F4D03F]/50 transition-all text-base">
-                        Animated seasonal map.
-                    </Button>
-                    <Button variant="outline" className="h-20 rounded-[1.5rem] bg-gray-50 hover:bg-white dark:bg-[#141414] dark:hover:bg-[#1c1c1c] border-gray-200 dark:border-[#1e1e1e] text-left justify-start px-8 font-bold text-[#1B9157] dark:text-[#F4D03F] shadow-sm hover:shadow-md hover:border-[#F4D03F]/50 transition-all text-base">
-                        Year-over-year comparison.
-                    </Button>
-                    <Button variant="outline" className="h-20 rounded-[1.5rem] bg-gray-50 hover:bg-white dark:bg-[#141414] dark:hover:bg-[#1c1c1c] border-gray-200 dark:border-[#1e1e1e] text-left justify-start px-8 font-bold text-[#1B9157] dark:text-[#F4D03F] shadow-sm hover:shadow-md hover:border-[#F4D03F]/50 transition-all text-base">
-                        Timeline of operations and anomalies.
-                    </Button>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <Card className="p-4 rounded-2xl border-none bg-[#1B9157]/5 dark:bg-[#1B9157]/10 flex flex-col justify-between h-28 border-l-4 border-l-[#1B9157]">
+                        <p className="text-[10px] font-black text-[#1B9157] uppercase tracking-widest">Weather Resilience</p>
+                        <p className="text-2xl font-black text-slate-800 dark:text-white mt-1">- %</p>
+                        <Badge className="w-fit bg-gray-500/20 text-gray-600 border-none text-[8px] font-black">PENDING</Badge>
+                    </Card>
+                    <Card className="p-4 rounded-2xl border-none bg-[#F4D03F]/5 dark:bg-[#F4D03F]/10 flex flex-col justify-between h-28 border-l-4 border-l-[#F4D03F]">
+                        <p className="text-[10px] font-black text-[#7a6820] dark:text-[#F4D03F] uppercase tracking-widest">Crop-Sync Delay</p>
+                        <p className="text-2xl font-black text-slate-800 dark:text-white mt-1">-<span className="text-xs"> Days</span></p>
+                        <Badge className="w-fit bg-gray-500/20 text-gray-600 border-none text-[8px] font-black">CALCULATING</Badge>
+                    </Card>
+                    <Card className="p-4 rounded-2xl border-none bg-blue-50 dark:bg-blue-900/10 flex flex-col justify-between h-28 border-l-4 border-l-blue-500">
+                        <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Moisture Saturation</p>
+                        <p className="text-2xl font-black text-slate-800 dark:text-white mt-1">- %</p>
+                        <Badge className="w-fit bg-gray-500/20 text-gray-600 border-none text-[8px] font-black">INITIALIZING</Badge>
+                    </Card>
+                    <Card className="p-4 rounded-2xl border-none bg-indigo-50 dark:bg-indigo-900/10 flex flex-col justify-between h-28 border-l-4 border-l-indigo-500">
+                        <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">Carbon Impact</p>
+                        <p className="text-2xl font-black text-slate-800 dark:text-white mt-1">-<span className="text-xs"> tCO2e</span></p>
+                        <Badge className="w-fit bg-gray-500/20 text-gray-600 border-none text-[8px] font-black">COLLECTING</Badge>
+                    </Card>
                 </div>
             </div>
         </div>

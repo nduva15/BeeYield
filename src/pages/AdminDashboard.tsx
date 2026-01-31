@@ -385,63 +385,6 @@ const AdminDashboard: React.FC = () => {
         setIsBatchModalOpen(true);
     };
 
-    const handleSeedContent = async () => {
-        // Confirmation is key to prevent accidental duplicates if checking logic fails
-        if (!confirm("This will populate the database with default shop products. Continue?")) return;
-
-        setIsLoading(true);
-        try {
-            // @ts-ignore - Valid method added to service
-            await adminService.seedShopContent();
-            toast.success("Shop content synced successfully");
-            await loadAllData();
-        } catch (error) {
-            console.error(error);
-            toast.error("Failed to sync shop content");
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleSeedTraceability = async () => {
-        if (!confirm("This will seed default Farmer (Timothy) and 3 Honey Batches. Continue?")) return;
-        setIsLoading(true);
-        try {
-            // @ts-ignore
-            const result = await adminService.seedTraceabilityData();
-            if (result.success) {
-                toast.success(`Seeded successfully! Added ${result.batchCount} batches.`);
-                await loadAllData();
-            } else {
-                toast.error("Failed to seed data. " + (result.error || ""));
-            }
-        } catch (error) {
-            console.error(error);
-            toast.error("Failed executing seed.");
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleSeedApiaries = async () => {
-        if (!confirm("This will seed default Apiaries and Hives for Timothy Nduva. Continue?")) return;
-        setIsLoading(true);
-        try {
-            // @ts-ignore
-            const result = await adminService.seedApiaryHiveData();
-            if (result.success) {
-                toast.success(`Seeded successfully! Added ${result.apiaryCount} apiaries and ${result.hiveCount} hives.`);
-                await loadAllData();
-            } else {
-                toast.error("Failed to seed data. " + (result.error || ""));
-            }
-        } catch (error) {
-            console.error(error);
-            toast.error("Failed executing seed.");
-        } finally {
-            setIsLoading(false);
-        }
-    };
 
     const handleCreateStockMovement = async () => {
         try {
@@ -856,13 +799,13 @@ const AdminDashboard: React.FC = () => {
                                             <CreditCard className="w-6 h-6 text-amber-600" />
                                         </div>
                                         <div>
-                                            <p className="text-xs text-muted-foreground uppercase tracking-wide">TOTAL TRANSACTIONS</p>
-                                            <p className="text-sm font-medium text-amber-600">4,501 <span className="text-green-500 text-xs">↑5%</span></p>
+                                            <p className="text-xs text-muted-foreground uppercase tracking-wide">TOTAL ORDERS</p>
+                                            <p className="text-sm font-medium text-amber-600">{(dashboardStats as any).total_orders || orders.length}</p>
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <p className="text-[10px] text-muted-foreground uppercase tracking-wide">CANCELLED ORDERS</p>
-                                        <p className="text-xs text-muted-foreground">256 <span className="text-red-500">-0.15%</span></p>
+                                        <p className="text-[10px] text-muted-foreground uppercase tracking-wide">PENDING ORDERS</p>
+                                        <p className="text-xs text-muted-foreground">{dashboardStats.pendingOrders}</p>
                                     </div>
                                 </Card>
 
@@ -878,7 +821,7 @@ const AdminDashboard: React.FC = () => {
                                             <span className="text-muted-foreground">Sales growth this month</span>
                                         </div>
                                     </div>
-                                    <p className="text-xs text-muted-foreground mt-2">Active locations: 6</p>
+                                    <p className="text-xs text-muted-foreground mt-2">Active Apiaries: {dashboardStats.totalApiaries}</p>
                                 </Card>
 
                                 <div className="flex gap-3">
@@ -893,7 +836,7 @@ const AdminDashboard: React.FC = () => {
                                 </div>
 
                                 <Button onClick={loadAllData} className="w-full rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-medium">
-                                    <RefreshCw className="w-4 h-4 mr-2" /> Download Reports
+                                    <RefreshCw className="w-4 h-4 mr-2" /> Refresh Dashboard
                                 </Button>
                             </div>
 
@@ -932,20 +875,20 @@ const AdminDashboard: React.FC = () => {
                                         </ResponsiveContainer>
                                     </div>
 
-                                    {/* Top Active Pages */}
                                     <div className="space-y-2">
-                                        <p className="text-xs font-medium text-muted-foreground">Top Active Pages</p>
-                                        {[
-                                            { page: '/shop/honey', views: 472 },
-                                            { page: '/traceability', views: 284 },
-                                            { page: '/profile_review/879', views: 63 },
-                                            { page: '/profile_review/24557', views: 35 },
-                                        ].map((p, i) => (
-                                            <div key={i} className="flex justify-between text-xs">
-                                                <span className="text-muted-foreground truncate">{p.page}</span>
-                                                <span className="font-medium">{p.views}</span>
-                                            </div>
-                                        ))}
+                                        <p className="text-xs font-medium text-muted-foreground">System Health</p>
+                                        <div className="flex justify-between text-xs">
+                                            <span className="text-muted-foreground">Apiaries Connected</span>
+                                            <span className="font-medium text-green-500">{dashboardStats.totalApiaries}</span>
+                                        </div>
+                                        <div className="flex justify-between text-xs">
+                                            <span className="text-muted-foreground">Active Hives</span>
+                                            <span className="font-medium text-amber-500">{dashboardStats.totalHives}</span>
+                                        </div>
+                                        <div className="flex justify-between text-xs">
+                                            <span className="text-muted-foreground">Batches Indexed</span>
+                                            <span className="font-medium text-blue-500">{dashboardStats.totalHoneyKg} kg</span>
+                                        </div>
                                     </div>
                                     <Button variant="link" className="text-amber-600 text-xs p-0 h-auto mt-2">
                                         Real-Time Report →
@@ -989,19 +932,20 @@ const AdminDashboard: React.FC = () => {
 
                                     {/* Legend */}
                                     <div className="space-y-2">
-                                        {[
-                                            { label: '17 - 30 Years', color: 'bg-amber-500', mode: 'Light Mode' },
-                                            { label: '31 - 50 %', color: 'bg-green-500', mode: 'Dark Mode' },
-                                            { label: '> 55 Years old', color: 'bg-gray-400', mode: '' },
-                                        ].map((item, i) => (
-                                            <div key={i} className="flex items-center justify-between text-xs">
-                                                <div className="flex items-center gap-2">
-                                                    <div className={`w-2 h-2 rounded-full ${item.color}`}></div>
-                                                    <span className="text-muted-foreground">{item.label}</span>
-                                                </div>
-                                                {item.mode && <span className="text-muted-foreground">{item.mode}</span>}
+                                        <div className="flex items-center justify-between text-xs">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full bg-amber-500"></div>
+                                                <span className="text-muted-foreground">Verified Farmers</span>
                                             </div>
-                                        ))}
+                                            <span className="font-medium">{dashboardStats.totalFarmers}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between text-xs">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                                                <span className="text-muted-foreground">Subscribers</span>
+                                            </div>
+                                            <span className="font-medium">{subscribers.length}</span>
+                                        </div>
                                     </div>
                                 </Card>
                             </div>
@@ -1044,43 +988,40 @@ const AdminDashboard: React.FC = () => {
                                         {/* Map Background Pattern */}
                                         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:16px_16px]"></div>
 
-                                        {/* Map Markers */}
-                                        <div className="absolute top-1/3 left-1/4 transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer">
-                                            <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center animate-ping absolute"></div>
-                                            <div className="relative w-8 h-8">
-                                                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-2 h-1 bg-black/20 rounded-full blur-[2px]"></div>
-                                                <div className="w-8 h-8 bg-blue-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white font-bold text-xs transform transition-transform group-hover:-translate-y-1">
-                                                    3
-                                                </div>
-                                            </div>
-                                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white px-2 py-1 rounded shadow-lg text-[10px] font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                                                Tangerang
-                                            </div>
-                                        </div>
+                                        {/* Dynamic Map Markers */}
+                                        {apiaries.slice(0, 10).map((apiary, idx) => {
+                                            // Simple pseudo-random positioning if no lat/long, or use real if available
+                                            // Focusing on Kenya region
+                                            const left = apiary.longitude ? ((apiary.longitude - 34) / 8) * 100 : (20 + (idx * 15) % 60);
+                                            const top = apiary.latitude ? ((1 - (apiary.latitude + 4) / 10)) * 100 : (30 + (idx * 20) % 50);
 
-                                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer">
-                                            <div className="relative w-8 h-8">
-                                                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-2 h-1 bg-black/20 rounded-full blur-[2px]"></div>
-                                                <div className="w-8 h-8 bg-blue-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white font-bold text-xs transform transition-transform group-hover:-translate-y-1">
-                                                    8
+                                            return (
+                                                <div
+                                                    key={apiary.id}
+                                                    className="absolute group cursor-pointer"
+                                                    style={{
+                                                        left: `${Math.max(5, Math.min(95, left))}%`,
+                                                        top: `${Math.max(5, Math.min(95, top))}%`,
+                                                        transform: 'translate(-50%, -50%)'
+                                                    }}
+                                                >
+                                                    <div className="w-6 h-6 bg-amber-500/20 rounded-full flex items-center justify-center animate-pulse absolute"></div>
+                                                    <div className="relative w-6 h-6">
+                                                        <div className="w-6 h-6 bg-amber-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white font-bold text-[10px]">
+                                                            {idx + 1}
+                                                        </div>
+                                                    </div>
+                                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 bg-white px-2 py-0.5 rounded shadow-lg text-[10px] font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-50">
+                                                        {apiary.name}
+                                                    </div>
                                                 </div>
+                                            );
+                                        })}
+                                        {apiaries.length === 0 && (
+                                            <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm font-medium">
+                                                No apiaries localized on network
                                             </div>
-                                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white px-2 py-1 rounded shadow-lg text-[10px] font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                                                Jakarta
-                                            </div>
-                                        </div>
-
-                                        <div className="absolute top-2/3 right-1/4 transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer">
-                                            <div className="relative w-8 h-8">
-                                                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-2 h-1 bg-black/20 rounded-full blur-[2px]"></div>
-                                                <div className="w-8 h-8 bg-blue-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white font-bold text-xs transform transition-transform group-hover:-translate-y-1">
-                                                    2
-                                                </div>
-                                            </div>
-                                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white px-2 py-1 rounded shadow-lg text-[10px] font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                                                Bekasi
-                                            </div>
-                                        </div>
+                                        )}
 
                                         {/* Watermark */}
                                         <div className="absolute bottom-1 left-2 text-[10px] text-gray-400 font-sans">Google</div>
@@ -1094,25 +1035,11 @@ const AdminDashboard: React.FC = () => {
                                     <h3 className="text-lg font-bold mb-6">Weekly Best Sellers</h3>
 
                                     <div className="space-y-6 flex-1">
-                                        {[
-                                            { name: 'Angelina Jolie', date: '25 October 2024', sales: '120 Sales', img: 'https://i.pravatar.cc/150?u=a042581f4e29026024d' },
-                                            { name: 'John Travolta', date: '17 April 2024', sales: '137 Sales', img: 'https://i.pravatar.cc/150?u=a042581f4e29026704d' },
-                                            { name: 'Brad Pitt', date: '11 June 2024', sales: '132 Sales', img: 'https://i.pravatar.cc/150?u=a04258114e29026302d' },
-                                            { name: 'Angelina Jolie', date: '5 October 2024', sales: '137 Sales', img: 'https://i.pravatar.cc/150?u=a042581f4e29026024d' },
-                                        ].map((seller, i) => (
-                                            <div key={i} className="flex items-center gap-4">
-                                                <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-100 shadow-sm flex-shrink-0">
-                                                    <img src={seller.img} alt={seller.name} className="w-full h-full object-cover" />
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-bold truncate">{seller.name}</p>
-                                                    <p className="text-[11px] text-muted-foreground">{seller.date}</p>
-                                                </div>
-                                                <div className="bg-lime-400 text-lime-950 text-[10px] font-bold px-2 py-1 rounded-md shadow-sm">
-                                                    {seller.sales}
-                                                </div>
-                                            </div>
-                                        ))}
+                                        <div className="flex flex-col items-center justify-center h-full text-center py-8">
+                                            <TrendingUp className="w-12 h-12 text-muted-foreground/30 mb-4" />
+                                            <p className="text-sm font-medium text-muted-foreground">Sales analysis pending</p>
+                                            <p className="text-[10px] text-muted-foreground/60">Best seller metrics will appear after order threshold is met.</p>
+                                        </div>
                                     </div>
 
                                     <Button variant="secondary" className="w-full mt-4 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium h-9 rounded-xl">
@@ -1123,54 +1050,32 @@ const AdminDashboard: React.FC = () => {
                         </div>
 
                         {/* Row 3: Promotional Banners */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Banner 1 - Transact Safely */}
-                            <Card className="bg-blue-600 rounded-2xl p-6 text-white relative overflow-hidden flex flex-col justify-center h-48">
-                                <div className="relative z-10 max-w-xs">
-                                    <h3 className="text-lg font-bold mb-1 leading-tight">Transact safely with Lender's Fund Account (RDL)</h3>
-                                    <p className="text-blue-100 text-xs mb-4">Apply now, quick registration</p>
-                                    <Button size="sm" className="bg-white text-blue-600 hover:bg-blue-50 rounded-lg font-bold text-xs h-8 px-4">
-                                        Start Now
-                                    </Button>
-                                </div>
-                                {/* Decorative illustration - simple SVG shapes to mimic the people illustration */}
-                                <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                                    <div className="relative w-32 h-32">
-                                        {/* Abstract person shapes */}
-                                        <div className="absolute top-0 right-4 w-12 h-12 bg-blue-400 rounded-full opacity-60"></div>
-                                        <div className="absolute bottom-4 right-8 w-16 h-24 bg-blue-500 rounded-t-full rounded-bl-full opacity-80"></div>
-                                        <div className="absolute bottom-0 right-0 w-8 h-16 bg-blue-700/50 rounded-t-full"></div>
-                                        <Users className="absolute top-8 right-8 w-16 h-16 text-blue-200 opacity-50" />
-                                    </div>
-                                </div>
-                            </Card>
+                        {/* Activity Overview Summary */}
+                        <Card className="bg-amber-600 rounded-2xl p-6 text-white relative overflow-hidden flex flex-col justify-center h-48">
+                            <div className="relative z-10 max-w-xs">
+                                <h3 className="text-lg font-bold mb-1 leading-tight">Farmer Network Expansion</h3>
+                                <p className="text-amber-100 text-xs mb-4">Monitor and support our master beekeepers.</p>
+                                <Button onClick={() => setActiveTab('farmers')} size="sm" className="bg-white text-amber-600 hover:bg-amber-50 rounded-lg font-bold text-xs h-8 px-4">
+                                    Manage Farmers
+                                </Button>
+                            </div>
+                            <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                                <Users className="w-24 h-24 text-amber-400/30" />
+                            </div>
+                        </Card>
 
-                            {/* Banner 2 - Invite Friends */}
-                            <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl p-6 relative overflow-hidden flex items-center justify-between h-48">
-                                <div className="relative z-10 max-w-[60%]">
-                                    <h3 className="text-lg font-bold mb-2 text-foreground">Invite friends to get FREE bonuses!</h3>
-                                    <p className="text-muted-foreground text-xs mb-4">Get KES 100,000 voucher by inviting your friends to fund #BecomeMember</p>
-                                    <div className="flex items-center gap-2">
-                                        <div className="bg-gray-100 dark:bg-muted rounded-lg px-3 py-1.5 text-[10px] font-mono flex-1 text-gray-500 truncate border border-gray-200">
-                                            https://beeyield.io/ref...
-                                        </div>
-                                        <Button size="icon" variant="ghost" className="rounded-lg h-7 w-7 text-gray-400 hover:text-gray-600">
-                                            <Share2 className="w-4 h-4" />
-                                        </Button>
-                                    </div>
-                                </div>
-                                {/* Phone Mockup Illustration */}
-                                <div className="absolute right-6 top-1/2 transform -translate-y-1/2 w-28 h-40 bg-slate-800 rounded-[1.5rem] border-4 border-slate-700 shadow-xl rotate-12 flex items-center justify-center overflow-hidden">
-                                    {/* Screen */}
-                                    <div className="w-full h-full bg-white relative flex flex-col items-center justify-center">
-                                        <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white mb-2">
-                                            <CheckCircle2 className="w-6 h-6" />
-                                        </div>
-                                        <div className="w-12 h-1.5 bg-gray-200 rounded-full"></div>
-                                    </div>
-                                </div>
-                            </Card>
-                        </div>
+                        <Card className="bg-indigo-600 rounded-2xl p-6 text-white relative overflow-hidden flex flex-col justify-center h-48">
+                            <div className="relative z-10 max-w-xs">
+                                <h3 className="text-lg font-bold mb-1 leading-tight">Traceability Ledger</h3>
+                                <p className="text-indigo-100 text-xs mb-4">View immutable honey production records.</p>
+                                <Button onClick={() => setActiveTab('batches')} size="sm" className="bg-white text-indigo-600 hover:bg-indigo-50 rounded-lg font-bold text-xs h-8 px-4">
+                                    View Ledger
+                                </Button>
+                            </div>
+                            <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                                <Database className="w-24 h-24 text-indigo-400/30" />
+                            </div>
+                        </Card>
 
                         {/* Row 4: Weekly Top Products Table */}
                         <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl shadow-sm overflow-hidden">
@@ -1238,48 +1143,11 @@ const AdminDashboard: React.FC = () => {
                                             </TableCell>
                                         </TableRow>
                                     )) : (
-                                        // Specific placebo data to match screenshot if no products exist
-                                        [
-                                            { name: 'Nike Tanjun', category: 'Sport & Outdoor', stock: 220, active: true },
-                                            { name: 'Samsung Galaxy S23 Ultra', category: 'Smartphone & Tablet', stock: 50, active: false },
-                                            { name: 'Apple Macbook Pro 13', category: 'PC & Laptop', stock: 90, active: true },
-                                            { name: 'Nikon Z6', category: 'Photography', stock: 50, active: false }
-                                        ].map((item, i) => (
-                                            <TableRow key={i} className="hover:bg-muted/10 border-b border-gray-100 dark:border-border/50">
-                                                <TableCell className="py-3">
-                                                    <div className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden border border-gray-200">
-                                                        {/* Placeholders matching screenshot vibes */}
-                                                        <img src={`https://source.unsplash.com/random/100x100?${item.category.split(' ')[0]}`} alt={item.name} className="w-full h-full object-cover opacity-80" />
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <p className="font-bold text-sm text-foreground">{item.name}</p>
-                                                    <p className="text-[11px] text-muted-foreground">{item.category}</p>
-                                                </TableCell>
-                                                <TableCell className="text-right font-bold text-sm">{item.stock}</TableCell>
-                                                <TableCell>
-                                                    <span className={cn(
-                                                        "px-2 py-0.5 rounded text-[10px] font-bold border flex items-center w-fit gap-1",
-                                                        item.active
-                                                            ? "text-green-600 border-green-200 bg-green-50"
-                                                            : "text-red-500 border-red-200 bg-red-50"
-                                                    )}>
-                                                        {item.active ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
-                                                        {item.active ? 'Active' : 'Inactive'}
-                                                    </span>
-                                                </TableCell>
-                                                <TableCell className="text-right">
-                                                    <div className="flex items-center justify-end gap-3">
-                                                        <button className="text-gray-400 hover:text-amber-500 flex items-center gap-1 text-[11px] font-medium transition-colors">
-                                                            <Edit className="w-3.5 h-3.5" /> Edit
-                                                        </button>
-                                                        <button className="text-gray-400 hover:text-red-500 flex items-center gap-1 text-[11px] font-medium transition-colors">
-                                                            <Trash2 className="w-3.5 h-3.5" /> Delete
-                                                        </button>
-                                                    </div>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))
+                                        <TableRow>
+                                            <TableCell colSpan={5} className="text-center py-20 text-muted-foreground font-medium">
+                                                No product inventory synchronized.
+                                            </TableCell>
+                                        </TableRow>
                                     )}
                                 </TableBody>
                             </Table>
@@ -1365,18 +1233,10 @@ const AdminDashboard: React.FC = () => {
                                     })}
                                 </div>
 
-                                {/* Schedule Items */}
-                                <div className="space-y-2 border-t border-gray-100 dark:border-border pt-3">
-                                    <div className="flex items-center gap-3 text-xs">
-                                        <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
-                                        <span className="text-muted-foreground">UX/UX Workshop</span>
-                                        <span className="ml-auto text-muted-foreground">28%</span>
-                                    </div>
-                                    <div className="flex items-center gap-3 text-xs">
-                                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                        <span className="text-muted-foreground">Hive Development Sprint</span>
-                                        <span className="ml-auto text-muted-foreground">18%</span>
-                                    </div>
+                                {/* Schedule Items Placeholder */}
+                                <div className="flex flex-col items-center justify-center h-48 text-center bg-muted/20 rounded-xl">
+                                    <Clock className="w-8 h-8 text-muted-foreground/30 mb-2" />
+                                    <p className="text-xs font-medium text-muted-foreground">No upcoming inspections</p>
                                 </div>
                             </Card>
 
@@ -1388,23 +1248,33 @@ const AdminDashboard: React.FC = () => {
                                 </div>
 
                                 <div className="space-y-4">
-                                    {[
-                                        { name: 'New Farmer Added', time: '09:04 PM', action: 'Has joined the team', color: 'bg-green-500' },
-                                        { name: 'Honey Batch Minted', time: '12:30 PM', action: 'Added 3 new batches', color: 'bg-amber-500' },
-                                        { name: 'Order Completed', time: 'Yesterday', action: 'KES 12,500 delivered', color: 'bg-blue-500' },
-                                        { name: 'Kevin from Kitui', time: '07:15 PM', action: 'Has changed Apiary location', color: 'bg-purple-500' },
-                                    ].map((activity, i) => (
-                                        <div key={i} className="flex items-start gap-3">
-                                            <div className={`w-8 h-8 rounded-full ${activity.color} flex items-center justify-center text-white text-xs font-bold`}>
-                                                {activity.name.charAt(0)}
+                                    {orders.slice(0, 4).map((order, i) => (
+                                        <div key={order.id || i} className="flex items-start gap-3">
+                                            <div className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-white text-xs font-bold">
+                                                O
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium truncate">{activity.name}</p>
-                                                <p className="text-[10px] text-muted-foreground">{activity.action}</p>
+                                                <p className="text-sm font-medium truncate">Order {order.order_number || order.id.slice(0, 8)}</p>
+                                                <p className="text-[10px] text-muted-foreground">Status: {order.status}</p>
                                             </div>
-                                            <span className="text-[10px] text-muted-foreground whitespace-nowrap">{activity.time}</span>
+                                            <span className="text-[10px] text-muted-foreground whitespace-nowrap">{new Date(order.created_at).toLocaleDateString()}</span>
                                         </div>
                                     ))}
+                                    {batches.slice(0, 2).map((batch, i) => (
+                                        <div key={batch.id || i} className="flex items-start gap-3">
+                                            <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                                                B
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-medium truncate">Batch {batch.batch_code}</p>
+                                                <p className="text-[10px] text-muted-foreground">{batch.honey_type}</p>
+                                            </div>
+                                            <span className="text-[10px] text-muted-foreground whitespace-nowrap">{new Date(batch.created_at || Date.now()).toLocaleDateString()}</span>
+                                        </div>
+                                    ))}
+                                    {orders.length === 0 && batches.length === 0 && (
+                                        <p className="text-xs text-muted-foreground text-center py-10">No recent network activity</p>
+                                    )}
                                 </div>
                             </Card>
 
@@ -1445,15 +1315,7 @@ const AdminDashboard: React.FC = () => {
                             </Card>
                         </div>
 
-                        {/* Quick Actions */}
-                        <div className="flex gap-4">
-                            <Button onClick={handleSeedTraceability} variant="outline" className="rounded-2xl border-dashed border-amber-400 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-500/10">
-                                <Database className="w-4 h-4 mr-2" /> Seed Demo Batches
-                            </Button>
-                            <Button onClick={handleSeedApiaries} variant="outline" className="rounded-2xl border-dashed border-green-400 text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10">
-                                <MapPin className="w-4 h-4 mr-2" /> Seed Apiaries & Hives
-                            </Button>
-                        </div>
+                        {/* Quick Actions Removed */}
                     </TabsContent>
 
                     {/* --- ORDERS TAB --- */}
@@ -1605,11 +1467,6 @@ const AdminDashboard: React.FC = () => {
                                 <p className="text-muted-foreground font-medium">Manage and deploy products to the digital storefront.</p>
                             </div>
                             <div className="flex gap-2">
-                                {products.length === 0 && (
-                                    <Button onClick={handleSeedContent} variant="outline" className="rounded-xl px-6 py-6 border-dashed border-primary/30 font-black uppercase tracking-widest text-xs h-auto hover:bg-primary/5">
-                                        <RefreshCw className="mr-2 h-4 w-4" /> Sync Default Content
-                                    </Button>
-                                )}
                                 <Button onClick={() => { setEditingProduct(null); setIsProductModalOpen(true); }} className="rounded-xl px-6 py-6 shadow-glow hover:scale-105 transition-all bg-primary font-black uppercase tracking-widest text-xs h-auto">
                                     <Plus className="mr-2 h-5 w-5" /> Add New Asset
                                 </Button>
@@ -1816,10 +1673,7 @@ const AdminDashboard: React.FC = () => {
                                     <CardDescription>Immutable blockchain ledger of authenticated batches.</CardDescription>
                                 </div>
                                 <div className="flex gap-2">
-                                    <Button onClick={handleSeedTraceability} className="rounded-xl font-black uppercase tracking-widest text-xs py-5 bg-blue-500 hover:bg-blue-600 text-white border-none px-6 shadow-glow transition-all active:scale-95">
-                                        <Database className="mr-2 h-4 w-4" /> Seed Demo
-                                    </Button>
-                                    <Button onClick={() => setIsBatchModalOpen(true)} className="rounded-xl font-black uppercase tracking-widest text-xs py-5 bg-honey hover:bg-honey-dark text-black border-none px-6 shadow-glow transition-all active:scale-95">
+                                    <Button onClick={() => setIsBatchModalOpen(true)} className="rounded-xl font-black uppercase tracking-widest text-[10px] py-5 bg-honey hover:bg-honey-dark text-black border-none px-6 shadow-glow transition-all active:scale-95">
                                         <Plus className="mr-2 h-4 w-4" /> Mint Block
                                     </Button>
                                 </div>

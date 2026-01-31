@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { getUserOrders, fallbackProducts, Product } from '@/services/shopService';
+import { getUserOrders, getProducts, Product } from '@/services/shopService';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -178,10 +178,16 @@ const BuyerDashboard = () => {
     };
 
 
-    const loadSuggestions = () => {
-        // Randomly select 4 products from fallback
-        const shuffled = [...fallbackProducts].sort(() => 0.5 - Math.random());
-        setSuggestions(shuffled.slice(0, 4));
+    const loadSuggestions = async () => {
+        try {
+            const products = await getProducts();
+            // Randomly select 4 products from real inventory
+            const shuffled = [...products].sort(() => 0.5 - Math.random());
+            setSuggestions(shuffled.slice(0, 4));
+        } catch (error) {
+            console.error("Failed to load suggestions:", error);
+            setSuggestions([]);
+        }
     };
 
     useEffect(() => {

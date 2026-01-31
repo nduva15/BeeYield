@@ -15,24 +15,9 @@ const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
     const analyticsTabs = ['Monthly overview', 'Per entity profitability', 'Per category', 'VAT summary', 'Cost vs Usage'];
 
     // Data for each tab
-    const monthlyOverviewData = [
-        { month: '2025-08', revenue: 0, costs: 0, net: 0 },
-        { month: '2025-09', revenue: 0, costs: 0, net: 0 },
-        { month: '2025-10', revenue: 0, costs: 0, net: 0 },
-        { month: '2025-11', revenue: 0, costs: 0, net: 0 },
-        { month: '2025-12', revenue: 0, costs: 0, net: 0 },
-        { month: '2026-01', revenue: 0, costs: 0, net: 0 },
-    ];
+    const monthlyOverviewData: any[] = [];
 
-    const entityProfitabilityData = [
-        { type: 'Apiary', revenue: 0, costs: 0, net: 0 },
-        { type: 'Hive', revenue: 0, costs: 0, net: 0 },
-        { type: 'Meter', revenue: 0, costs: 0, net: 0 },
-        { type: 'Medical facility', revenue: 0, costs: 0, net: 0 },
-        { type: 'Patient', revenue: 0, costs: 0, net: 0 },
-        { type: 'Project', revenue: 0, costs: 0, net: 0 },
-        { type: 'Other', revenue: 0, costs: 0, net: 0 },
-    ];
+    const entityProfitabilityData: any[] = [];
 
     const categoryData: { category: string; total: number }[] = [];
 
@@ -43,14 +28,7 @@ const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
         vatRate: 16, // Kenya VAT rate
     };
 
-    const costVsUsageData = [
-        { period: '2025-08', costs: 0, usage: 0 },
-        { period: '2025-09', costs: 0, usage: 0 },
-        { period: '2025-10', costs: 0, usage: 0 },
-        { period: '2025-11', costs: 0, usage: 0 },
-        { period: '2025-12', costs: 0, usage: 0 },
-        { period: '2026-01', costs: 0, usage: 0 },
-    ];
+    const costVsUsageData: any[] = [];
 
     // Export CSV functionality
     const handleExportCSV = () => {
@@ -324,24 +302,9 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
         { title: 'Outstanding documents', value: '0', subtitle: 'Draft, issued, overdue' },
     ];
 
-    const revenueVsCosts = [
-        { month: '2025-08', revenue: `0 ${currency}`, costs: `0 ${currency}` },
-        { month: '2025-09', revenue: `0 ${currency}`, costs: `0 ${currency}` },
-        { month: '2025-10', revenue: `0 ${currency}`, costs: `0 ${currency}` },
-        { month: '2025-11', revenue: `0 ${currency}`, costs: `0 ${currency}` },
-        { month: '2025-12', revenue: `0 ${currency}`, costs: `0 ${currency}` },
-        { month: '2026-01', revenue: `0 ${currency}`, costs: `0 ${currency}` },
-    ];
+    const revenueVsCosts: any[] = [];
 
-    const profitByEntityType = [
-        { type: 'Apiary', value: `0 ${currency}` },
-        { type: 'Hive', value: `0 ${currency}` },
-        { type: 'Meter', value: `0 ${currency}` },
-        { type: 'Medical facility', value: `0 ${currency}` },
-        { type: 'Patient', value: `0 ${currency}` },
-        { type: 'Project', value: `0 ${currency}` },
-        { type: 'Other', value: `0 ${currency}` },
-    ];
+    const profitByEntityType: any[] = [];
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500 pb-12">
