@@ -1,8 +1,8 @@
-try:
-    import dns_fix
-    dns_fix.patch_dns()
-except ImportError:
-    print("Could not load DNS patch")
+# try:
+#     import dns_fix
+#     dns_fix.patch_dns()
+# except ImportError:
+#     print("Could not load DNS patch")
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -51,9 +51,13 @@ def read_root():
     from app.db.supabase_db import get_supabase
     from app.db.clickhouse_db import ClickHouseService
     
+    print("DEBUG: Checking Supabase status...")
     supabase_status = "connected" if get_supabase() is not None else "not configured"
+    
+    print("DEBUG: Checking ClickHouse status...")
     clickhouse_status = "connected" if ClickHouseService.get_client() is not None else "not configured"
     
+    print("DEBUG: Root endpoint request complete.")
     return {
         "message": f"Welcome to {settings.PROJECT_NAME} API",
         "docs": "/docs",

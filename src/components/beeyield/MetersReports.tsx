@@ -39,9 +39,9 @@ const MetersReports: React.FC = () => {
                     alertsResolved: 12,
                 },
                 breakdown: [
-                    { region: 'Building A', hives: 65, production: '1,240 m3', health: '98%' },
-                    { region: 'Building B', hives: 58, production: '980 m3', health: '96%' },
-                    { region: 'Building C', hives: 61, production: '1,622 m3', health: '97%' },
+                    { region: 'Kibwezi Main Area A', hives: 65, production: '1,240 m3', health: '98%' },
+                    { region: 'Kibwezi Main Area B', hives: 58, production: '980 m3', health: '96%' },
+                    { region: 'Kibwezi Main Area C', hives: 61, production: '1,622 m3', health: '97%' },
                 ]
             };
         } else if (reportName === 'Anomalies report') {
@@ -158,7 +158,7 @@ const MetersReports: React.FC = () => {
 
                 doc.setFontSize(14);
                 doc.setTextColor(31, 41, 55);
-                doc.text('Regional Breakdown', 14, yPos);
+                doc.text('Kibwezi Main Area Breakdown', 14, yPos);
                 yPos += 10;
 
                 // Table header
@@ -166,7 +166,7 @@ const MetersReports: React.FC = () => {
                 doc.rect(14, yPos - 5, pageWidth - 28, 10, 'F');
                 doc.setFontSize(10);
                 doc.setTextColor(75, 85, 99);
-                doc.text('Region', 16, yPos);
+                doc.text('Apiary Area', 16, yPos);
                 doc.text('Hives', 70, yPos);
                 doc.text('Production', 100, yPos);
                 doc.text('Health', 150, yPos);
@@ -203,7 +203,7 @@ const MetersReports: React.FC = () => {
                 doc.setFillColor(249, 250, 251);
                 doc.rect(14, yPos - 5, pageWidth - 28, 10, 'F');
                 doc.setFontSize(10);
-                doc.text('Hive', 16, yPos);
+                doc.text('Meter / Hive', 16, yPos);
                 doc.text('Type', 50, yPos);
                 doc.text('Severity', 110, yPos);
                 doc.text('Date', 140, yPos);

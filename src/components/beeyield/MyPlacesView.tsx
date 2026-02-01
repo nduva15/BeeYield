@@ -25,6 +25,7 @@ interface MyPlacesViewProps {
 
 const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
     const [isAddingPlace, setIsAddingPlace] = useState(false);
+    const [editingApiary, setEditingApiary] = useState<Apiary | null>(null);
     const [isFabExpanded, setIsFabExpanded] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -35,8 +36,10 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
         name: '',
         type: 'permanent',
         location_name: '',
+        region: '',
         forage_type: '',
         expected_hives: 0,
+        size_acres: 0,
         notes: '',
     });
 
@@ -59,18 +62,47 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
         }
 
         setIsSaving(true);
-        const { data, error } = await beeyieldService.createApiary(formData);
-        setIsSaving(false);
+        if (editingApiary) {
+            const { data, error } = await beeyieldService.updateApiary(editingApiary.id, formData);
+            setIsSaving(false);
 
-        if (data && !error) {
-            setApiaries([data, ...apiaries]);
-            setIsAddingPlace(false);
-            setFormData({ name: '', type: 'permanent', location_name: '', forage_type: '', expected_hives: 0, notes: '' });
+            if (data && !error) {
+                setApiaries(apiaries.map(a => a.id === editingApiary.id ? data : a));
+                setIsAddingPlace(false);
+                setEditingApiary(null);
+                setFormData({ name: '', type: 'permanent', location_name: '', region: '', forage_type: '', expected_hives: 0, size_acres: 0, notes: '' });
+            }
+        } else {
+            const { data, error } = await beeyieldService.createApiary(formData);
+            setIsSaving(false);
+
+            if (data && !error) {
+                setApiaries([data, ...apiaries]);
+                setIsAddingPlace(false);
+                setFormData({ name: '', type: 'permanent', location_name: '', region: '', forage_type: '', expected_hives: 0, size_acres: 0, notes: '' });
+            }
         }
+    };
+
+    // Handle Edit click
+    const handleEdit = (apiary: Apiary) => {
+        setEditingApiary(apiary);
+        setFormData({
+            name: apiary.name,
+            type: apiary.type || 'permanent',
+            location_name: apiary.location_name || '',
+            region: apiary.region || '',
+            forage_type: apiary.forage_type || '',
+            expected_hives: apiary.expected_hives || 0,
+            size_acres: apiary.size_acres || 0,
+            notes: apiary.notes || '',
+        });
+        setIsAddingPlace(true);
     };
 
     // Handle delete
     const handleDelete = async (id: string) => {
+        if (!confirm('Are you sure you want to delete this apiary?')) return;
         const { error } = await beeyieldService.deleteApiary(id);
         if (!error) {
             setApiaries(apiaries.filter(a => a.id !== id));
@@ -80,11 +112,23 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
     if (isAddingPlace) {
         return (
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 pb-20">
-                {/* Header for Form */}
-                <div className="mb-8 px-2">
+                <div className="mb-8 px-2 flex items-center justify-between">
                     <h1 className="text-3xl font-bold text-[#1e293b] dark:text-white tracking-tight">
-                        Add Place
+                        {editingApiary ? 'Edit Place' : 'Add Place'}
                     </h1>
+                    {editingApiary && (
+                        <Button
+                            variant="ghost"
+                            onClick={() => {
+                                setIsAddingPlace(false);
+                                setEditingApiary(null);
+                                setFormData({ name: '', type: 'permanent', location_name: '', region: '', forage_type: '', expected_hives: 0, size_acres: 0, notes: '' });
+                            }}
+                            className="text-slate-500"
+                        >
+                            Cancel Edit
+                        </Button>
+                    )}
                 </div>
 
                 <Card className="border-none shadow-sm bg-white dark:bg-[#1e1e1e] rounded-[2rem] overflow-hidden max-w-4xl mx-2">
@@ -135,6 +179,21 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                         className="h-14 rounded-2xl border-slate-100 dark:border-slate-800 text-base bg-slate-50/50 dark:bg-slate-900/50"
                                     />
                                 </div>
+
+                                <div className="space-y-3">
+                                    <Label htmlFor="acres" className="text-sm font-[800] text-slate-500 uppercase tracking-widest">
+                                        Apiary Size (Acres)
+                                    </Label>
+                                    <Input
+                                        id="acres"
+                                        type="number"
+                                        step="0.01"
+                                        value={formData.size_acres || ''}
+                                        onChange={(e) => setFormData({ ...formData, size_acres: parseFloat(e.target.value) || 0 })}
+                                        placeholder="0.00"
+                                        className="h-14 rounded-2xl border-slate-100 dark:border-slate-800 text-base bg-slate-50/50 dark:bg-slate-900/50"
+                                    />
+                                </div>
                             </div>
 
                             {/* Right Column */}
@@ -153,6 +212,19 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                             className="h-14 pl-12 rounded-2xl border-slate-100 dark:border-slate-800 text-base bg-slate-50/50 dark:bg-slate-900/50"
                                         />
                                     </div>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <Label htmlFor="region" className="text-sm font-[800] text-slate-500 uppercase tracking-widest">
+                                        Region / County
+                                    </Label>
+                                    <Input
+                                        id="region"
+                                        value={formData.region || ''}
+                                        onChange={(e) => setFormData({ ...formData, region: e.target.value })}
+                                        placeholder="e.g. Makueni"
+                                        className="h-14 rounded-2xl border-slate-100 dark:border-slate-800 text-base bg-slate-50/50 dark:bg-slate-900/50"
+                                    />
                                 </div>
 
                                 <div className="space-y-3">
@@ -198,7 +270,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                 className="h-14 px-10 rounded-2xl font-[900] bg-[#F4D03F] hover:bg-[#D4AF37] text-white shadow-xl shadow-[#F4D03F]/40 dark:shadow-none tracking-widest uppercase text-xs"
                             >
                                 {isSaving ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
-                                Deploy Apiary
+                                {editingApiary ? 'Save Changes' : 'Deploy Apiary'}
                             </Button>
                         </div>
                     </CardContent>
@@ -212,7 +284,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
 
             {/* Section Heading - Exact Font Weight and Size from Image */}
             <div className="mb-8 px-2">
-                <h1 className="text-3xl font-bold text-[#1e293b] dark:text-white tracking-tight">
+                <h1 className="text-3xl font-bold text-[#1e293b] dark:text-white tracking-tight uppercase">
                     My Places
                 </h1>
             </div>
@@ -249,17 +321,30 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                         </div>
                                         <div>
                                             <h3 className="font-bold text-lg text-slate-900 dark:text-white">{apiary.name}</h3>
-                                            <p className="text-sm text-slate-500">{apiary.location_name || 'No location set'}</p>
+                                            <p className="text-sm text-slate-500">
+                                                {apiary.location_name || 'No location set'}
+                                                {apiary.region ? ` • ${apiary.region}` : ''}
+                                            </p>
                                         </div>
                                     </div>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => handleDelete(apiary.id)}
-                                        className="opacity-0 group-hover:opacity-100 transition-opacity text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </Button>
+                                    <div className="flex items-center gap-1">
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => handleEdit(apiary)}
+                                            className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-xl"
+                                        >
+                                            <Edit className="w-4 h-4" />
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => handleDelete(apiary.id)}
+                                            className="opacity-0 group-hover:opacity-100 transition-opacity text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </Button>
+                                    </div>
                                 </div>
 
                                 <div className="flex items-center gap-3 mb-4">
@@ -276,14 +361,28 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                     )}
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div className="grid grid-cols-2 gap-y-4 gap-x-6 text-sm">
                                     <div>
-                                        <p className="text-slate-400 text-xs uppercase font-bold tracking-wider">Expected Hives</p>
-                                        <p className="font-bold text-slate-900 dark:text-white">{apiary.expected_hives || 0}</p>
+                                        <p className="text-slate-400 text-[10px] uppercase font-bold tracking-widest mb-1">Total Hives</p>
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-[#F4D03F]"></div>
+                                            <p className="font-black text-slate-800 dark:text-white text-base">{apiary.hive_count || 0}</p>
+                                        </div>
                                     </div>
                                     <div>
-                                        <p className="text-slate-400 text-xs uppercase font-bold tracking-wider">Forage</p>
-                                        <p className="font-bold text-slate-900 dark:text-white">{apiary.forage_type || '-'}</p>
+                                        <p className="text-slate-400 text-[10px] uppercase font-bold tracking-widest mb-1">Acreage</p>
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-green-400"></div>
+                                            <p className="font-black text-slate-800 dark:text-white text-base">{apiary.size_acres || '0.00'} <span className="text-[10px] font-bold opacity-50">ACRES</span></p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p className="text-slate-400 text-[10px] uppercase font-bold tracking-widest mb-1">Expected</p>
+                                        <p className="font-bold text-slate-700 dark:text-slate-300">{apiary.expected_hives || 0}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-slate-400 text-[10px] uppercase font-bold tracking-widest mb-1">Forage</p>
+                                        <p className="font-bold text-slate-700 dark:text-slate-300 line-clamp-1">{apiary.forage_type || 'N/A'}</p>
                                     </div>
                                 </div>
 
@@ -319,6 +418,8 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                 exit={{ opacity: 0, scale: 0.5, y: 20 }}
                                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
                                 onClick={() => {
+                                    setEditingApiary(null);
+                                    setFormData({ name: '', type: 'permanent', location_name: '', region: '', forage_type: '', expected_hives: 0, size_acres: 0, notes: '' });
                                     setIsAddingPlace(true);
                                     setIsFabExpanded(false);
                                 }}

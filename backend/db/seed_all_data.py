@@ -221,7 +221,7 @@ def seed_traceability():
     apiaries = [
         # Timothy's Apiary
         {
-            "apiary_id": str(uuid.uuid4()), "apiary_code": "KIB-01", "name": "Kibwezi Savannah Apiary",
+            "apiary_id": str(uuid.uuid4()), "apiary_code": "KIB-01", "name": "Kibwezi Main",
             "farmer_id": f_map["F-MAT-001"], "environment_type": "Savannah Wooded", 
             "flora_types": ["Acacia Tortilis", "Citrus", "Wildflowers"], "location_name": "Kibwezi",
             "latitude": -2.41, "longitude": 37.97, "region": "Eastern", "county": "Makueni",
@@ -285,7 +285,7 @@ def seed_cms():
     print("\n--- Seeding CMS (Stats, Milestones, Team, Blog) ---")
     stats = [
         {"stat_key": "active_colonies", "stat_value": "184", "stat_label": "Active Hives", "icon": "Hexagon", "display_order": 1},
-        {"stat_key": "acres_pollinated", "stat_value": "25+", "stat_label": "Acres Pollinated", "icon": "Sprout", "display_order": 2},
+        {"stat_key": "acres_pollinated", "stat_value": "5", "stat_label": "Acres Pollinated", "icon": "Sprout", "display_order": 2},
         {"stat_key": "apiary_size", "stat_value": "5", "stat_label": "Acre Apiary", "icon": "MapPin", "display_order": 3},
         {"stat_key": "trees_planted", "stat_value": "2,500+", "stat_label": "Trees Planted", "icon": "TreePine", "display_order": 4}
     ]

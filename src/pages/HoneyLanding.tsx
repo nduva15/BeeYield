@@ -1,24 +1,3 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useCart } from "@/contexts/CartContext";
-import { useWishlist } from "@/contexts/WishlistContext";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   ShoppingCart,
   Leaf,
@@ -33,11 +12,165 @@ import {
   Award,
   ChevronRight,
   Mail,
+  Zap
 } from "lucide-react";
-import { getProducts, Product } from "@/services/shopService";
 import { toast } from "sonner";
 import { BrandedProductImage } from "@/components/BrandedProductImage";
 import { submitNewsletterSubscription } from "@/services/contactService";
+import SEO from "@/components/SEO";
+
+// Reusing same product types and data from Shop.tsx for consistency
+interface ProductVariant {
+  id: string;
+  size: string;
+  price_kes: number;
+  stock_quantity: number;
+  is_available: boolean;
+}
+
+interface Product {
+  id: string;
+  name: string;
+  description: string;
+  category: 'honey' | 'hardware' | 'merch' | 'education';
+  badge: string | null;
+  images: string[];
+  rating: number;
+  review_count: number;
+  is_active: boolean;
+  variants: ProductVariant[];
+}
+
+const STATIC_PRODUCTS: Product[] = [
+  {
+    id: "h1",
+    name: "BeeYield Premium Acacia",
+    description: "Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.",
+    category: "honey",
+    badge: "Bestseller",
+    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
+    rating: 4.9,
+    review_count: 245,
+    is_active: true,
+    variants: [
+      { id: "vh1-1", size: "250g", price_kes: 250, stock_quantity: 100, is_available: true },
+      { id: "vh1-2", size: "500g", price_kes: 500, stock_quantity: 75, is_available: true },
+      { id: "vh1-3", size: "1kg", price_kes: 1000, stock_quantity: 50, is_available: true }
+    ]
+  },
+  {
+    id: "h2",
+    name: "Wildflower Blossom Honey",
+    description: "A complex, multi-floral honey with aromatic notes from Makueni's diverse flora. Perfect for daily wellness and gourmet pairings.",
+    category: "honey",
+    badge: "Premium",
+    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
+    rating: 5.0,
+    review_count: 182,
+    is_active: true,
+    variants: [
+      { id: "vh2-1", size: "250g", price_kes: 250, stock_quantity: 80, is_available: true },
+      { id: "vh2-2", size: "500g", price_kes: 500, stock_quantity: 60, is_available: true },
+      { id: "vh2-3", size: "1kg", price_kes: 1000, stock_quantity: 30, is_available: true }
+    ]
+  },
+  {
+    id: "h3",
+    name: "Kibwezi Forest Honey",
+    description: "Bold, dark, and rich in minerals. This forest honey is harvested from deep within the protected Kibwezi groundwater forest.",
+    category: "honey",
+    badge: "Rare",
+    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
+    rating: 4.8,
+    review_count: 96,
+    is_active: true,
+    variants: [
+      { id: "vh3-1", size: "250g", price_kes: 250, stock_quantity: 40, is_available: true },
+      { id: "vh3-2", size: "500g", price_kes: 500, stock_quantity: 30, is_available: true },
+      { id: "vh3-3", size: "1kg", price_kes: 1000, stock_quantity: 20, is_available: true }
+    ]
+  },
+  {
+    id: "h4",
+    name: "Desert Thorn Honey",
+    description: "Exquisite honey from the arid regions. Intense floral notes with a hint of spice. Highly sought after for its unique properties.",
+    category: "honey",
+    badge: "Limited Edition",
+    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
+    rating: 4.9,
+    review_count: 54,
+    is_active: true,
+    variants: [
+      { id: "vh4-1", size: "250g", price_kes: 250, stock_quantity: 30, is_available: true },
+      { id: "vh4-2", size: "500g", price_kes: 500, stock_quantity: 25, is_available: true },
+      { id: "vh4-3", size: "1kg", price_kes: 1000, stock_quantity: 15, is_available: true }
+    ]
+  },
+  {
+    id: "h5",
+    name: "Raw Honeycomb Chunk",
+    description: "The purest form of honey. A generous slab of fresh honeycomb submerged in our premium liquid honey. Entirely edible and delicious.",
+    category: "honey",
+    badge: "100% Raw",
+    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
+    rating: 5.0,
+    review_count: 312,
+    is_active: true,
+    variants: [
+      { id: "vh5-1", size: "250g", price_kes: 250, stock_quantity: 30, is_available: true },
+      { id: "vh5-2", size: "500g", price_kes: 500, stock_quantity: 20, is_available: true },
+      { id: "vh5-3", size: "1kg", price_kes: 1000, stock_quantity: 10, is_available: true }
+    ]
+  },
+  {
+    id: "h6",
+    name: "Lavender Infused Honey",
+    description: "Our premium acacia honey gently infused with organic lavender blossoms. Calming, floral, and perfect for evening tea.",
+    category: "honey",
+    badge: "New Arrival",
+    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
+    rating: 4.7,
+    review_count: 42,
+    is_active: true,
+    variants: [
+      { id: "vh6-1", size: "250g", price_kes: 250, stock_quantity: 50, is_available: true },
+      { id: "vh6-2", size: "500g", price_kes: 500, stock_quantity: 30, is_available: true },
+      { id: "vh6-3", size: "1kg", price_kes: 1000, stock_quantity: 15, is_available: true }
+    ]
+  },
+  {
+    id: "h7",
+    name: "Ginger & Lemon Honey",
+    description: "A powerful immune-boosting blend of raw honey, organic ginger root, and zesty lemon. Great for soothing throats and boosting energy.",
+    category: "honey",
+    badge: "Wellness",
+    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
+    rating: 4.8,
+    review_count: 128,
+    is_active: true,
+    variants: [
+      { id: "vh7-1", size: "250g", price_kes: 250, stock_quantity: 40, is_available: true },
+      { id: "vh7-2", size: "500g", price_kes: 500, stock_quantity: 60, is_available: true },
+      { id: "vh7-3", size: "1kg", price_kes: 1000, stock_quantity: 25, is_available: true }
+    ]
+  },
+  {
+    id: "h8",
+    name: "Signature Reserve (Aged)",
+    description: "Our most exclusive honey, aged for 12 months to develop deep, molasses-like complexity. A true connoisseur's choice.",
+    category: "honey",
+    badge: "Gold Label",
+    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
+    rating: 5.0,
+    review_count: 15,
+    is_active: true,
+    variants: [
+      { id: "vh8-1", size: "250g", price_kes: 250, stock_quantity: 10, is_available: true },
+      { id: "vh8-2", size: "500g", price_kes: 500, stock_quantity: 10, is_available: true },
+      { id: "vh8-3", size: "1kg", price_kes: 1000, stock_quantity: 5, is_available: true }
+    ]
+  }
+];
 
 // Hero Section matching reference design
 const HeroSection = () => {
@@ -130,15 +263,13 @@ const HeroSection = () => {
 
 // Featured Products Section - 3 cards like reference
 const FeaturedProductsSection = ({
-  products,
   handleAddToCart,
   formatPrice,
 }: {
-  products: Product[];
   handleAddToCart: (product: Product) => void;
   formatPrice: (price: number) => string;
 }) => {
-  const honeyProducts = products.filter((p) => p.category === "honey").slice(0, 3);
+  const honeyProducts = STATIC_PRODUCTS.slice(0, 3);
   const { toggleWishlist, isInWishlist } = useWishlist();
 
   return (
@@ -152,7 +283,7 @@ const FeaturedProductsSection = ({
             >
               {/* Product Image */}
               <BrandedProductImage
-                src={product.images[0]}
+                src={product.images[1]} // Using 250g Jar image (index 1)
                 alt={product.name}
                 category="honey"
                 className="h-48"
@@ -160,7 +291,7 @@ const FeaturedProductsSection = ({
 
               <CardContent className="p-5">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-bold text-neutral-900">{product.name.split(" ").slice(0, 2).join(" ")}</h3>
+                  <h3 className="font-bold text-neutral-900">{product.name}</h3>
                   <span className="text-lg font-black text-amber-600">{formatPrice(product.variants[0].price_kes)}</span>
                 </div>
                 <p className="text-xs text-neutral-500 mb-4 line-clamp-2">{product.description}</p>
@@ -180,10 +311,10 @@ const FeaturedProductsSection = ({
                         name: product.name,
                         description: product.description,
                         price: product.variants[0].price_kes,
-                        image: product.images[1] || product.images[0], // Use 250g jar if available, or lifestyle
+                        image: product.images[1],
                         category: product.category,
                         badge: product.badge,
-                        inStock: product.variants.some(v => v.stock_quantity > 0 && v.is_available)
+                        inStock: true
                       });
                     }}
                     className={`p-2 rounded-full transition-colors ${isInWishlist(product.id) ? "bg-amber-100 text-amber-500" : "hover:bg-neutral-100 text-neutral-400"
@@ -579,19 +710,17 @@ const NewsletterSection = () => {
 
 // All Products Grid - All 8 honey products
 const AllProductsSection = ({
-  products,
   selectedSizes,
   setSelectedSizes,
   handleAddToCart,
   formatPrice,
 }: {
-  products: Product[];
   selectedSizes: Record<string, string>;
   setSelectedSizes: React.Dispatch<React.SetStateAction<Record<string, string>>>;
   handleAddToCart: (product: Product) => void;
   formatPrice: (price: number) => string;
 }) => {
-  const honeyProducts = products.filter((p) => p.category === "honey");
+  const honeyProducts = STATIC_PRODUCTS;
   const navigate = useNavigate();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
@@ -747,36 +876,13 @@ const AllProductsSection = ({
 // Main HoneyLanding Component
 const HoneyLanding = () => {
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
-  const [activeProducts, setActiveProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const { addToCart } = useCart();
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setIsLoading(true);
-      try {
-        const data = await getProducts();
-        setActiveProducts(data || []);
-      } catch (error) {
-        console.error("Failed to fetch products:", error);
-        setActiveProducts([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchProducts();
-  }, []);
-
-  const products = activeProducts;
 
   const handleAddToCart = (product: Product) => {
     const selectedSize = selectedSizes[product.id] || product.variants[0].size;
     const variantIndex = product.variants.findIndex((v) => v.size === selectedSize);
     const variant = product.variants[variantIndex] || product.variants[0];
-    // Structure: [0: Lifestyle, 1: 250g, 2: 500g, 3: 1kg]
-    const image = (variantIndex !== -1 && product.images[variantIndex + 1])
-      ? product.images[variantIndex + 1]
-      : product.images[0];
+    const image = product.images[variantIndex + 1] || product.images[1];
 
     addToCart({
       productId: product.id,
@@ -786,7 +892,7 @@ const HoneyLanding = () => {
       size: selectedSize,
       price: variant.price_kes,
       quantity: 1,
-      category: product.category as 'honey' | 'merch' | 'education' | 'hardware',
+      category: product.category,
       badge: product.badge,
       image: image,
     });
@@ -796,37 +902,85 @@ const HoneyLanding = () => {
 
   const formatPrice = (price: number) => `KES ${price.toLocaleString()}`;
 
+  const faqs_structured = [
+    {
+      q: "How can I verify the authenticity of my honey?",
+      a: "Every jar of BeeYield honey features a unique HoneyChain™ QR code. By scanning it, you can access the 'Digital Birth Certificate' showing exact hive location and harvest date."
+    },
+    {
+      q: "Where is BeeYield honey harvested?",
+      a: "Our honey is harvested from the pristine northern plains and protected forest areas in Kibwezi, Makueni County, Kenya."
+    },
+    {
+      q: "Is BeeYield honey raw and unfiltered?",
+      a: "Yes! Our honey is 100% raw and gravity-filtered, preserving all natural pollen and enzymes."
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-white">
+      <SEO
+        title="Premium Traceable Honey from Kibwezi"
+        description="Shop 100% raw, traceable honey from Kibwezi. Powered by HoneyChain™ technology and the 50/50 Harvest Promise. Supporting sustainable pollination in Kenya."
+        keywords="honey, raw honey, Kibwezi honey, traceable honey, HoneyChain, beekeeping Kenya, sustainable honey, Acacia honey"
+      />
+
+      {/* Structured Data for AEO / SEO */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": faqs_structured.map(faq => ({
+            "@type": "Question",
+            "name": faq.q,
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": faq.a
+            }
+          }))
+        })}
+      </script>
+
       <HeroSection />
 
-      {isLoading ? (
-        <div className="flex flex-col items-center justify-center py-24 space-y-4">
-          <Loader2 className="h-12 w-12 animate-spin text-amber-500 opacity-50" />
-          <p className="text-neutral-500 font-medium">Loading products...</p>
+      <div className="py-8 bg-amber-50">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
+            <div className="flex items-center gap-3">
+              <ShieldCheck className="h-6 w-6 text-green-700" />
+              <span className="font-black uppercase tracking-tighter text-sm">100% Lab Tested</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Zap className="h-6 w-6 text-green-700" />
+              <span className="font-black uppercase tracking-tighter text-sm">Direct from Hive</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Leaf className="h-6 w-6 text-green-700" />
+              <span className="font-black uppercase tracking-tighter text-sm">Sustainable Harvest</span>
+            </div>
+          </div>
         </div>
-      ) : (
-        <>
-          <FeaturedProductsSection
-            products={products}
-            handleAddToCart={handleAddToCart}
-            formatPrice={formatPrice}
-          />
-          <TestimonialSection />
-          <AboutSection />
-          <FeaturesSection />
-          <AllProductsSection
-            products={products}
-            selectedSizes={selectedSizes}
-            setSelectedSizes={setSelectedSizes}
-            handleAddToCart={handleAddToCart}
-            formatPrice={formatPrice}
-          />
-          <FlashSaleSection />
-          <FAQSection />
-          <NewsletterSection />
-        </>
-      )}
+      </div>
+
+      <FeaturedProductsSection
+        handleAddToCart={handleAddToCart}
+        formatPrice={formatPrice}
+      />
+
+      <TestimonialSection />
+      <AboutSection />
+      <FeaturesSection />
+
+      <AllProductsSection
+        selectedSizes={selectedSizes}
+        setSelectedSizes={setSelectedSizes}
+        handleAddToCart={handleAddToCart}
+        formatPrice={formatPrice}
+      />
+
+      <FlashSaleSection />
+      <FAQSection />
+      <NewsletterSection />
     </div>
   );
 };

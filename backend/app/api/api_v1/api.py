@@ -6,13 +6,22 @@ from app.api.api_v1.endpoints import (
     company, auth, traceability, contact, 
     forms, shop, blog, careers, media, 
     services, jobs, analytics, notes, admin, iot, ai,
-    admin_extended, meters
+    admin_extended, meters, beeyield, pollination, inspections
 )
 
 api_router = APIRouter()
 
 # Meters endpoint
 api_router.include_router(meters.router, prefix="/meters", tags=["Meters"])
+
+# BeeYield Dashboard (User-specific data)
+api_router.include_router(beeyield.router, prefix="/beeyield", tags=["BeeYield Dashboard"])
+
+# Precision Pollination endpoint
+api_router.include_router(pollination.router, prefix="/pollination", tags=["Precision Pollination"])
+
+# Inspections endpoint
+api_router.include_router(inspections.router, prefix="/inspections", tags=["Inspections"])
 
 # AI Assistant endpoint
 api_router.include_router(ai.router, prefix="/ai", tags=["AI"])
@@ -68,18 +77,18 @@ def get_impact_stats():
     if stats:
         return {
             "total_honey_kg": next((s["stat_value"] for s in stats if s["stat_key"] == "honey_produced"), "50,000+"),
-            "hive_count": next((s["stat_value"] for s in stats if s["stat_key"] == "hives_managed"), "2,500+"),
+            "hive_count": next((s["stat_value"] for s in stats if s["stat_key"] == "hives_managed"), "184"),
             "beekeepers": next((s["stat_value"] for s in stats if s["stat_key"] == "beekeepers_trained"), "500+"),
             "farmers_served": next((s["stat_value"] for s in stats if s["stat_key"] == "farmers_supported"), "1,200+"),
-            "acres_pollinated": next((s["stat_value"] for s in stats if s["stat_key"] == "acres_pollinated"), "25,000+")
+            "acres_pollinated": next((s["stat_value"] for s in stats if s["stat_key"] == "acres_pollinated"), "5")
         }
     
     return {
         "total_honey_kg": "50,000+",
-        "hive_count": "2,500+",
+        "hive_count": "184",
         "beekeepers": "500+",
         "farmers_served": "1,200+",
-        "acres_pollinated": "25,000+"
+        "acres_pollinated": "5"
     }
 
 
@@ -108,6 +117,7 @@ def api_root():
             "jobs": "/api/v1/jobs",
             "contact": "/api/v1/contact",
             "notes": "/api/v1/notes",
+            "inspections": "/api/v1/inspections",
             "stats": "/api/v1/stats/impact"
         },
         "docs": "/docs"

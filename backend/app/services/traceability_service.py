@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 import uuid
 from typing import Any, Optional
 
@@ -28,6 +28,8 @@ def register_farmer(farmer_in: schemas.FarmerCreate) -> dict[str, Any]:
 def register_apiary(apiary_in: schemas.ApiaryCreate) -> dict[str, Any]:
     """Register an apiary"""
     data = apiary_in.dict()
+    if isinstance(data.get('established_date'), date):
+        data['established_date'] = data['established_date'].isoformat()
     data['apiary_id'] = str(uuid.uuid4())
     
     block = honey_blockchain.register_apiary(data)
@@ -39,6 +41,8 @@ def register_apiary(apiary_in: schemas.ApiaryCreate) -> dict[str, Any]:
 def register_hive(hive_in: schemas.HiveCreate) -> dict[str, Any]:
     """Register a hive"""
     data = hive_in.dict()
+    if isinstance(data.get('installation_date'), date):
+        data['installation_date'] = data['installation_date'].isoformat()
     data['hive_id'] = str(uuid.uuid4())
     data['status'] = 'ACTIVE'
     
@@ -64,38 +68,123 @@ def record_sensor_data(sensor_in: schemas.HiveSensorData) -> dict[str, Any]:
     }
 
 def record_harvest(harvest_in: schemas.HarvestCreate) -> dict[str, Any]:
-    """Record a harvest"""
+    """Record a harvest in both Blockchain and Database"""
     data = harvest_in.dict()
-    data['harvest_id'] = str(uuid.uuid4())
+    data['id'] = str(uuid.uuid4()) if not data.get('id') else data.get('id')
+    data['harvest_id'] = data['id']
     data['harvest_code'] = honey_blockchain.crypto.generate_unique_id()[:8].upper()
-    data['harvest_date'] = data['harvest_date'].isoformat()
     
+    if isinstance(data.get('harvest_date'), date):
+        data['harvest_date'] = data['harvest_date'].isoformat()
+    
+    # Set defaults for missing fields if necessary
+    if not data.get('extraction_method'):
+        data['extraction_method'] = 'Cold Extraction'
+    
+    # 1. Blockchain Seal
     block = honey_blockchain.record_harvest(data)
     data['blockchain_hash'] = block.hash
-    data['quality_score'] = block.data.get("sustainability_score")
+    data['quality_score'] = block.data.get("sustainability_score", 85)
     
-    db_insert("harvests", data)
+    # 2. Database Record
+    res = db_insert("harvests", data)
+    if not res.get("success"):
+        print(f"ERROR: Harvest DB insertion failed: {res.get('error')}")
+    
     return data
 
 def create_batch(batch_data: dict[str, Any]) -> dict[str, Any]:
-    """Create a final product batch"""
-    # Ensure ID
-    if not batch_data.get('id'):
-        batch_data['id'] = str(uuid.uuid4())
-    
-    # 1. Blockchain
+    """Create a final product batch and sync with DB"""
+    # 1. Blockchain Seal
     block = honey_blockchain.create_batch(batch_data)
     final_data = block.data
-    final_data['block_hash'] = block.hash
+    final_data['blockchain_hash'] = block.hash
     
-    # 2. DB (Source of Truth for Admin Dashboard)
-    res = db_insert("honey_batches", final_data)
+    # 2. Enrich for DB (Match honey_batches schema)
+    # Get Harvest details
+    harvest_id = batch_data.get('harvest_id')
+    harvest = db_get_by_id("harvests", harvest_id) if harvest_id else None
+    
+    # Get Farmer & Apiary details
+    farmer_id = batch_data.get('farmer_id') or (harvest.get('farmer_id') if harvest else None)
+    farmer = db_get_by_id("farmers", farmer_id) if farmer_id else None
+    
+    apiary_id = batch_data.get('apiary_id') or (harvest.get('apiary_id') if harvest else None)
+    apiary = db_get_by_id("apiaries", apiary_id) if apiary_id else None
+    
+    db_record = {
+        "id": batch_data.get('id', str(uuid.uuid4())),
+        "batch_code": final_data.get('batch_code'),
+        "honey_type": batch_data.get('honey_type', harvest.get('honey_type') if harvest else 'Multifloral'),
+        "harvest_date": harvest.get('harvest_date') if harvest else datetime.now().date().isoformat(),
+        "packaged_date": datetime.now().date().isoformat(),
+        "quantity_kg": batch_data.get('total_quantity_kg', batch_data.get('quantity_kg', 0)),
+        "processing_method": batch_data.get('processing_method', 'Cold Extraction'),
+        "farmer_name": farmer.get('name') if farmer else 'Timothy Nduva',
+        "beekeeper_name": farmer.get('name') if farmer else 'Timothy Nduva',
+        "beekeeper_id": farmer_id,
+        "apiary_name": apiary.get('name') if apiary else 'Kibwezi Apiary',
+        "location_county": apiary.get('county') if apiary else 'Makueni',
+        "location_region": apiary.get('region') if apiary else 'Eastern',
+        "latitude": apiary.get('latitude') if apiary else -2.41,
+        "longitude": apiary.get('longitude') if apiary else 37.97,
+        "quality_grade": batch_data.get('quality_grade', 'Premium'),
+        "status": "verified",
+        "blockchain_hash": block.hash,
+        "block_hash": block.hash
+    }
+    
+    # 3. Synchronize with Database
+    # Try honey_batches first (the master record)
+    res = db_insert("honey_batches", db_record)
     if not res.get("success"):
-        raise Exception(f"Database insertion failed for honey_batches: {res.get('error')}")
+        # Fallback to batches if honey_batches is missing
+        db_insert("batches", db_record)
     
     return final_data
 
 # --- Read Operations (Traceability Journey) ---
+
+def get_all_harvests(limit: int = 100) -> list[dict[str, Any]]:
+    """
+    Get all harvests with full joining (Hive -> Apiary, Farmer)
+    """
+    # Use nested select syntax for PostgREST
+    # We join hive (and its apiary) and farmer
+    columns = "*,hive:hives(*,apiary:apiaries(*)),farmer:farmers(*)"
+    
+    data = db_select("harvests", columns=columns, order_by="harvest_date", ascending=False, limit=limit)
+    
+    # Process data to match frontend expectations
+    processed = []
+    for h in data:
+        # Flatten apiary for easier access if needed by frontend
+        # The frontend checks harvest.apiary OR harvest.hive.apiary
+        # We'll ensure hive.apiary is present
+        
+        # Ensure honey_type and other new fields have defaults if missing in older data
+        if not h.get('honey_type'): h['honey_type'] = 'Multifloral'
+        if not h.get('color_grade'): h['color_grade'] = 'Amber'
+        if h.get('is_verified') is None: h['is_verified'] = False
+        
+        # Add apiary to root if available in hive
+        if h.get('hive') and h['hive'].get('apiary'):
+            h['apiary'] = h['hive']['apiary']
+            
+        processed.append(h)
+        
+    return processed
+
+
+def get_all_apiaries(limit: int = 100) -> list[dict[str, Any]]:
+    """Get all apiaries with joined farmer data"""
+    return db_select("apiaries", columns="*,farmer:farmers(*)", order_by="created_at", ascending=False, limit=limit)
+
+
+def get_all_hives(limit: int = 100) -> list[dict[str, Any]]:
+    """Get all hives with joined apiary and farmer data"""
+    return db_select("hives", columns="*,apiary:apiaries(*),farmer:farmers(*)", order_by="created_at", ascending=False, limit=limit)
+
 
 def get_trace_journey(batch_code: str) -> Optional[schemas.TraceResponse]:
     """

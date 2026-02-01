@@ -171,9 +171,9 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
     const { t } = useLanguage();
 
     // Configuration
-    const [hiveCount, setHiveCount] = useState<number>(24); // Will be updated by real data count
+    const [hiveCount, setHiveCount] = useState<number>(184); // Will be updated by real data count
     const [selectedCrop, setSelectedCrop] = useState<string>("Sunflower");
-    const [acreage, setAcreage] = useState<number>(20);
+    const [acreage, setAcreage] = useState<number>(5);
     const [avgFrames, setAvgFrames] = useState<number>(8);
     const [isLoading, setIsLoading] = useState(true);
     const [usingRealData, setUsingRealData] = useState(false);
@@ -188,59 +188,137 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
     const [activityLogs, setActivityLogs] = useState<{ id: number, time: string, action: string, type: 'info' | 'warning' | 'success', hive: string }[]>([]);
 
     useEffect(() => {
-        const fetchRealHives = async () => {
+        const fetchRealData = async () => {
             setIsLoading(true);
             try {
-                const realHives = await beeyieldService.getHives();
-                if (realHives && realHives.length > 0) {
+                // Fetch contracts, sensor data and logs in parallel
+                const [contracts, sensorData, logs] = await Promise.all([
+                    beeyieldService.getPollinationContracts(),
+                    beeyieldService.getHiveSensorData(),
+                    beeyieldService.getPollinationActivityLogs()
+                ]);
+
+                // 1. Setup Contracts Data
+                if (contracts && contracts.length > 0) {
+                    const activeContract = contracts.find(c => c.status === 'active') || contracts[0];
+                    if (activeContract) {
+                        setSelectedCrop(activeContract.crop_type);
+                        setAcreage(activeContract.farm_size_acres);
+                        setHiveCount(activeContract.hive_count_required);
+                    }
+                }
+
+                // 2. Setup Activity Logs
+                if (logs && logs.length > 0) {
+                    const mappedLogs = logs.map(l => ({
+                        id: l.id,
+                        time: new Date(l.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                        action: l.activity_description,
+                        type: l.severity as 'info' | 'warning' | 'success',
+                        hive: l.hive_id || 'N/A'
+                    }));
+                    setActivityLogs(mappedLogs);
+                }
+
+                // 3. Setup Hive/Sensor Data
+                if (sensorData && sensorData.length > 0) {
                     setUsingRealData(true);
-                    setHiveCount(realHives.length);
-                    // Map real hive data to the view's data structure
-                    const mappedHives: HiveData[] = realHives.map((h, i) => {
+
+                    const mappedHives: HiveData[] = sensorData.map((h: any, i: number) => {
                         const row = Math.floor(i / 10);
                         const col = i % 10;
-                        // Simulate sensor data if missing, using the real latest_temp if available
-                        const temp = h.latest_temp || (33.5 + Math.random() * 3);
-                        const humidity = h.latest_humidity || (55 + Math.random() * 20);
-                        const status = (temp < 32 || temp > 38) ? 'critical' : (temp < 33 || temp > 36) ? 'warning' : 'healthy';
 
                         return {
                             id: h.hive_code,
                             name: h.hive_code,
                             location: {
-                                lat: h.apiary?.latitude || (-1.2921 + (row * 0.0005)),
-                                lng: h.apiary?.longitude || (36.8219 + (col * 0.0008))
+                                lat: h.location?.lat || (-1.2921 + (row * 0.0005)),
+                                lng: h.location?.lng || (36.8219 + (col * 0.0008))
                             },
                             x: 5 + (col * 9) + Math.random() * 3,
                             y: 10 + (row * 15) + Math.random() * 5,
-                            status: status,
+                            status: h.status.toLowerCase(),
                             sensors: {
-                                acoustics: { value: 235 + Math.random() * 30, trend: 'stable', trendValue: 'Stable' },
-                                temperature: { value: parseFloat(temp.toFixed(1)), trend: 'stable', trendValue: 'Stable' },
-                                humidity: { value: Math.round(humidity), trend: 'stable', trendValue: 'Stable' },
-                                flightActivity: { value: 32 + Math.random() * 10, trend: 'up', trendValue: '+5%' }
+                                acoustics: {
+                                    value: h.sensors.acoustics.value,
+                                    trend: h.sensors.acoustics.trend,
+                                    trendValue: h.sensors.acoustics.trendValue
+                                },
+                                temperature: {
+                                    value: h.sensors.temperature.value,
+                                    trend: h.sensors.temperature.trend,
+                                    trendValue: h.sensors.temperature.trendValue
+                                },
+                                humidity: {
+                                    value: h.sensors.humidity.value,
+                                    trend: h.sensors.humidity.trend,
+                                    trendValue: h.sensors.humidity.trendValue
+                                },
+                                flightActivity: {
+                                    value: h.sensors.flight_activity.value,
+                                    trend: h.sensors.flight_activity.trend,
+                                    trendValue: h.sensors.flight_activity.trendValue
+                                }
                             },
-                            framesOfBees: h.frame_count || 8,
-                            queenStatus: 'present', // Default to present for now
-                            lastSync: 'Just now'
+                            framesOfBees: h.frames_of_bees,
+                            queenStatus: h.queen_status as any,
+                            lastSync: h.last_sync
                         };
                     });
+
                     setHives(mappedHives);
+                    setHiveCount(mappedHives.length);
                 } else {
-                    console.log("No real hives found, using fallback data.");
-                    setUsingRealData(false);
-                    setHives(generateFallbackHives(hiveCount));
+                    // Fallback to legacy getHives if table missing but hives exist
+                    const realHives = await beeyieldService.getHives();
+                    if (realHives && realHives.length > 0) {
+                        setUsingRealData(true);
+                        setHiveCount(realHives.length);
+                        const mappedHives: HiveData[] = realHives.map((h, i) => {
+                            const row = Math.floor(i / 10);
+                            const col = i % 10;
+                            const temp = h.latest_temp || (33.5 + Math.random() * 3);
+                            const humidity = h.latest_humidity || (55 + Math.random() * 20);
+                            const status = (temp < 32 || temp > 38) ? 'critical' : (temp < 33 || temp > 36) ? 'warning' : 'healthy';
+
+                            return {
+                                id: h.hive_code,
+                                name: h.hive_code,
+                                location: {
+                                    lat: h.apiary?.latitude || (-1.2921 + (row * 0.0005)),
+                                    lng: h.apiary?.longitude || (36.8219 + (col * 0.0008))
+                                },
+                                x: 5 + (col * 9) + Math.random() * 3,
+                                y: 10 + (row * 15) + Math.random() * 5,
+                                status: status,
+                                sensors: {
+                                    acoustics: { value: 235 + Math.random() * 30, trend: 'stable', trendValue: 'Stable' },
+                                    temperature: { value: parseFloat(temp.toFixed(1)), trend: 'stable', trendValue: 'Stable' },
+                                    humidity: { value: Math.round(humidity), trend: 'stable', trendValue: 'Stable' },
+                                    flightActivity: { value: 32 + Math.random() * 10, trend: 'up', trendValue: '+5%' }
+                                },
+                                framesOfBees: h.frame_count || 8,
+                                queenStatus: 'present',
+                                lastSync: 'Just now'
+                            };
+                        });
+                        setHives(mappedHives);
+                    } else {
+                        console.log("No real pollination data found, using fallback simulation.");
+                        setUsingRealData(false);
+                        setHives(generateFallbackHives(hiveCount));
+                    }
                 }
             } catch (error) {
-                console.error("Error fetching real hives:", error);
-                toast.error("Failed to load hive data. Using simulation mode.");
+                console.error("Error fetching pollination data:", error);
+                toast.error("Failed to load real data. Using simulation mode.");
                 setHives(generateFallbackHives(hiveCount));
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchRealHives();
+        fetchRealData();
     }, []); // Only fetch on mount
 
     const selectedHive = selectedHiveId === 'aggregate' ? null : hives.find(h => h.id === selectedHiveId);
@@ -442,6 +520,39 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                             className="w-full h-10 mt-5 rounded-lg bg-[#F4D03F] hover:bg-[#e0be36] text-black font-bold uppercase tracking-wider text-xs shadow-md shadow-[#F4D03F]/20"
                         >
                             <Bot className="w-4 h-4 mr-2" /> Ask BeeYield AI
+                        </Button>
+
+                        <Button
+                            onClick={async () => {
+                                try {
+                                    const now = new Date();
+                                    const nextMonth = new Date();
+                                    nextMonth.setMonth(now.getMonth() + 1);
+
+                                    const contractData = {
+                                        crop_type: selectedCrop,
+                                        farm_location: "Kibwezi Main Apiary Area",
+                                        farm_size_acres: acreage,
+                                        contract_start_date: now.toISOString().split('T')[0],
+                                        contract_end_date: nextMonth.toISOString().split('T')[0],
+                                        hive_count_required: results.hivesNeeded,
+                                        target_fpa: results.targetFPA,
+                                        notes: `Requested via Pollination Calculator. Colony strength: ${avgFrames} frames.`
+                                    };
+
+                                    const res = await beeyieldService.createPollinationContract(contractData);
+                                    if (res && !res.error) {
+                                        toast.success("Pollination request submitted successfully!");
+                                    } else {
+                                        toast.error("Failed to create contract. " + (res?.error || ""));
+                                    }
+                                } catch (err) {
+                                    toast.error("Error submitting request.");
+                                }
+                            }}
+                            className="w-full h-10 mt-2 rounded-lg bg-[#1B9157] hover:bg-[#157a48] text-white font-bold uppercase tracking-wider text-xs shadow-md shadow-[#1B9157]/20"
+                        >
+                            <FileText className="w-4 h-4 mr-2" /> Request Pollination
                         </Button>
                     </div>
 
