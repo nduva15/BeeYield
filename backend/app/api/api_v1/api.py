@@ -5,10 +5,14 @@ from fastapi import APIRouter
 from app.api.api_v1.endpoints import (
     company, auth, traceability, contact, 
     forms, shop, blog, careers, media, 
-    services, jobs, analytics, notes, admin, iot, ai
+    services, jobs, analytics, notes, admin, iot, ai,
+    admin_extended, meters
 )
 
 api_router = APIRouter()
+
+# Meters endpoint
+api_router.include_router(meters.router, prefix="/meters", tags=["Meters"])
 
 # AI Assistant endpoint
 api_router.include_router(ai.router, prefix="/ai", tags=["AI"])
@@ -47,6 +51,9 @@ api_router.include_router(notes.router, prefix="/notes", tags=["Notes"])
 
 # Admin
 api_router.include_router(admin.router, prefix="/admin", tags=["Admin"])
+
+# Admin Extended (Activity Logs, Documents, Payments, Tracing History)
+api_router.include_router(admin_extended.router, prefix="/admin", tags=["Admin Extended"])
 
 # Stats endpoint at root level
 @api_router.get("/stats/impact")

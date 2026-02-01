@@ -33,6 +33,13 @@ import AdminLayout from '@/components/admin/AdminLayout';
 import AdminMetricCard from '@/components/admin/AdminMetricCard';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
+import { ActivityLogTab } from '@/components/admin/tabs/ActivityLogTab';
+import { TracingHistoryTab } from '@/components/admin/tabs/TracingHistoryTab';
+import { DocumentsRegistryTab } from '@/components/admin/tabs/DocumentsRegistryTab';
+import { PaymentsTab } from '@/components/admin/tabs/PaymentsTab';
+import { AccountsTab } from '@/components/admin/tabs/AccountsTab';
+import { InvoicesTab } from '@/components/admin/tabs/InvoicesTab';
+
 const AdminDashboard: React.FC = () => {
     const { user, loading: authLoading } = useAuth();
     const navigate = useNavigate();
@@ -291,6 +298,15 @@ const AdminDashboard: React.FC = () => {
         if (confirm("Are you sure you want to delete this product?")) {
             try {
                 await adminService.deleteProduct(id);
+
+                // Log product deletion
+                adminService.logActivity({
+                    activity_type: 'inventory',
+                    action: 'deleted',
+                    entity_type: 'product',
+                    entity_reference: id
+                }).catch(() => { });
+
                 toast.success("Product deleted");
                 loadAllData();
             } catch (error) {
@@ -316,9 +332,29 @@ const AdminDashboard: React.FC = () => {
         try {
             if (editingBatchId) {
                 await adminService.updateBatch(editingBatchId, batchForm);
+
+                // Log batch update
+                adminService.logActivity({
+                    activity_type: 'traceability',
+                    action: 'updated',
+                    entity_type: 'batch',
+                    entity_reference: editingBatchId,
+                    metadata: { honey_type: batchForm.honey_type }
+                }).catch(() => { });
+
                 toast.success("Batch record updated");
             } else {
                 await adminService.createBatch(batchForm);
+
+                // Log batch creation
+                adminService.logActivity({
+                    activity_type: 'traceability',
+                    action: 'created',
+                    entity_type: 'batch',
+                    entity_reference: batchForm.apiary_name,
+                    metadata: { honey_type: batchForm.honey_type }
+                }).catch(() => { });
+
                 toast.success("Batch created on Blockchain");
             }
             setIsBatchModalOpen(false);
@@ -349,6 +385,15 @@ const AdminDashboard: React.FC = () => {
         if (confirm("Permanently remove this batch from the ledger? (Note: Blockchain records are technically immutable, this removes it from the UI/metadata)")) {
             try {
                 await adminService.deleteBatch(id);
+
+                // Log batch deletion
+                adminService.logActivity({
+                    activity_type: 'traceability',
+                    action: 'deleted',
+                    entity_type: 'batch',
+                    entity_reference: id
+                }).catch(() => { });
+
                 toast.success("Batch entry removed");
                 loadAllData();
             } catch (error) {
@@ -401,6 +446,16 @@ const AdminDashboard: React.FC = () => {
     const handleUpdateOrderStatus = async (orderId: string, newStatus: string) => {
         try {
             await adminService.updateOrderStatus(orderId, newStatus);
+
+            // Log order status update
+            adminService.logActivity({
+                activity_type: 'commerce',
+                action: 'updated',
+                entity_type: 'order_status',
+                entity_reference: orderId,
+                metadata: { new_status: newStatus }
+            }).catch(() => { });
+
             toast.success(`Order status updated to ${newStatus}`);
             loadAllData();
         } catch (error) {
@@ -479,6 +534,16 @@ const AdminDashboard: React.FC = () => {
     const handleUpdateUserRole = async (userId: string, newRole: string) => {
         try {
             await adminService.updateUserRole(userId, newRole);
+
+            // Log user role update
+            adminService.logActivity({
+                activity_type: 'account',
+                action: 'updated',
+                entity_type: 'user_role',
+                entity_reference: userId,
+                metadata: { new_role: newRole }
+            }).catch(() => { });
+
             toast.success(`User role updated to ${newRole}`);
             loadAllData();
         } catch (error) {
@@ -490,6 +555,15 @@ const AdminDashboard: React.FC = () => {
         if (confirm("Permanently delete this user? This cannot be undone.")) {
             try {
                 await adminService.deleteUser(userId);
+
+                // Log user deletion
+                adminService.logActivity({
+                    activity_type: 'account',
+                    action: 'deleted',
+                    entity_type: 'user',
+                    entity_reference: userId
+                }).catch(() => { });
+
                 toast.success("User deleted successfully");
                 loadAllData();
             } catch (error) {
@@ -520,9 +594,27 @@ const AdminDashboard: React.FC = () => {
             if (editingUser) {
                 const { password, ...updateData } = userForm;
                 await adminService.updateUser(editingUser.id, updateData);
+
+                // Log user update
+                adminService.logActivity({
+                    activity_type: 'account',
+                    action: 'updated',
+                    entity_type: 'user',
+                    entity_reference: editingUser.id
+                }).catch(() => { });
+
                 toast.success("User updated successfully");
             } else {
                 await adminService.createUser(userForm);
+
+                // Log user creation
+                adminService.logActivity({
+                    activity_type: 'account',
+                    action: 'created',
+                    entity_type: 'user',
+                    entity_reference: userForm.email
+                }).catch(() => { });
+
                 toast.success("New operator authenticated");
             }
             setIsUserModalOpen(false);
@@ -538,9 +630,29 @@ const AdminDashboard: React.FC = () => {
         try {
             if (editingFarmer) {
                 await adminService.updateFarmer(editingFarmer.id, farmerForm);
+
+                // Log farmer update
+                adminService.logActivity({
+                    activity_type: 'directory',
+                    action: 'updated',
+                    entity_type: 'farmer',
+                    entity_reference: editingFarmer.id,
+                    metadata: { name: farmerForm.name }
+                }).catch(() => { });
+
                 toast.success("Farmer profile recalibrated");
             } else {
                 await adminService.createFarmer(farmerForm);
+
+                // Log farmer creation
+                adminService.logActivity({
+                    activity_type: 'directory',
+                    action: 'created',
+                    entity_type: 'farmer',
+                    entity_reference: farmerForm.id_number,
+                    metadata: { name: farmerForm.name }
+                }).catch(() => { });
+
                 toast.success("Farmer registration protocol complete");
             }
             setIsFarmerModalOpen(false);
@@ -579,6 +691,15 @@ const AdminDashboard: React.FC = () => {
         if (confirm("Permanently remove this farmer record?")) {
             try {
                 await adminService.deleteFarmer(id);
+
+                // Log farmer deletion
+                adminService.logActivity({
+                    activity_type: 'directory',
+                    action: 'deleted',
+                    entity_type: 'farmer',
+                    entity_reference: id
+                }).catch(() => { });
+
                 toast.success("Farmer record removed");
                 loadAllData();
             } catch (error) {
@@ -591,9 +712,28 @@ const AdminDashboard: React.FC = () => {
         try {
             if (editingApiary) {
                 await adminService.updateApiary(editingApiary.id, apiaryForm);
+
+                // Log apiary update
+                adminService.logActivity({
+                    activity_type: 'directory',
+                    action: 'updated',
+                    entity_type: 'apiary',
+                    entity_reference: editingApiary.id,
+                    metadata: { name: apiaryForm.name }
+                }).catch(() => { });
+
                 toast.success("Apiary updated");
             } else {
                 await adminService.createApiary(apiaryForm);
+
+                // Log apiary creation
+                adminService.logActivity({
+                    activity_type: 'directory',
+                    action: 'created',
+                    entity_type: 'apiary',
+                    entity_reference: apiaryForm.name
+                }).catch(() => { });
+
                 toast.success("Apiary registered");
             }
             setIsApiaryModalOpen(false);
@@ -627,6 +767,15 @@ const AdminDashboard: React.FC = () => {
         if (confirm("Delete this apiary and all associated records?")) {
             try {
                 await adminService.deleteApiary(id);
+
+                // Log apiary deletion
+                adminService.logActivity({
+                    activity_type: 'directory',
+                    action: 'deleted',
+                    entity_type: 'apiary',
+                    entity_reference: id
+                }).catch(() => { });
+
                 toast.success("Apiary removed");
                 loadAllData();
             } catch (error) {
@@ -639,9 +788,28 @@ const AdminDashboard: React.FC = () => {
         try {
             if (editingHive) {
                 await adminService.updateHive(editingHive.id, hiveForm);
+
+                // Log hive update
+                adminService.logActivity({
+                    activity_type: 'directory',
+                    action: 'updated',
+                    entity_type: 'hive',
+                    entity_reference: editingHive.id,
+                    metadata: { hive_code: hiveForm.hive_code }
+                }).catch(() => { });
+
                 toast.success("Hive record updated");
             } else {
                 await adminService.createHive(hiveForm);
+
+                // Log hive creation
+                adminService.logActivity({
+                    activity_type: 'directory',
+                    action: 'created',
+                    entity_type: 'hive',
+                    entity_reference: hiveForm.hive_code
+                }).catch(() => { });
+
                 toast.success("New hive registered");
             }
             setIsHiveModalOpen(false);
@@ -674,6 +842,15 @@ const AdminDashboard: React.FC = () => {
         if (confirm("Permanently decommission this hive?")) {
             try {
                 await adminService.deleteHive(id);
+
+                // Log hive deletion
+                adminService.logActivity({
+                    activity_type: 'directory',
+                    action: 'deleted',
+                    entity_type: 'hive',
+                    entity_reference: id
+                }).catch(() => { });
+
                 toast.success("Hive decommissioned");
                 loadAllData();
             } catch (error) {
@@ -717,16 +894,50 @@ const AdminDashboard: React.FC = () => {
     const { signOut } = useAuth();
 
     const navItems = [
-        { id: 'overview', label: 'Overview', icon: LayoutDashboard },
-        { id: 'orders', label: 'Orders', icon: Package },
-        { id: 'products', label: 'Shop', icon: ShoppingBag },
-        { id: 'batches', label: 'Traceability', icon: Database },
-        { id: 'farmers', label: 'Farmers', icon: Users },
-        { id: 'apiaries', label: 'Apiaries', icon: MapPin },
-        { id: 'hives', label: 'Hives', icon: Leaf },
-        { id: 'pollination', label: 'Pollination', icon: Bug },
-        { id: 'contact', label: 'Contact', icon: MessageSquare },
-        { id: 'newsletter', label: 'Newsletter', icon: Mail },
+        {
+            id: 'dashboard',
+            label: 'Dashboard',
+            icon: LayoutDashboard,
+            children: [
+                { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+                { id: 'activity', label: 'Activity Log', icon: History },
+                { id: 'tracing', label: 'Tracing History', icon: Search },
+            ]
+        },
+        {
+            id: 'commerce',
+            label: 'Commerce',
+            icon: ShoppingBag,
+            children: [
+                { id: 'orders', label: 'Orders', icon: Package },
+                { id: 'invoices', label: 'Invoices', icon: FileText },
+                { id: 'payments', label: 'Payments', icon: CreditCard },
+                { id: 'products', label: 'Shop', icon: ShoppingBag },
+            ]
+        },
+        {
+            id: 'directory',
+            label: 'Directory',
+            icon: Database,
+            children: [
+                { id: 'farmers', label: 'Farmers', icon: Users },
+                { id: 'apiaries', label: 'Apiaries', icon: MapPin },
+                { id: 'hives', label: 'Hives', icon: Leaf },
+                { id: 'accounts', label: 'User Accounts', icon: Users },
+            ]
+        },
+        {
+            id: 'content',
+            label: 'Content',
+            icon: MessageSquare,
+            children: [
+                { id: 'pollination', label: 'Pollination', icon: Bug },
+                { id: 'contact', label: 'Contact', icon: MessageSquare },
+                { id: 'newsletter', label: 'Newsletter', icon: Mail },
+                { id: 'documents', label: 'Documents', icon: FileText },
+            ]
+        },
+        { id: 'batches', label: 'Trace Data', icon: Database },
         ...(isSuperAdmin ? [{ id: 'team', label: 'Team', icon: Shield }] : [])
     ];
 
@@ -2990,6 +3201,31 @@ const AdminDashboard: React.FC = () => {
                                 </Table>
                             </CardContent>
                         </Card>
+                    </TabsContent>
+
+                    {/* --- NEW EXTENDED TABS --- */}
+                    <TabsContent value="activity">
+                        <ActivityLogTab />
+                    </TabsContent>
+
+                    <TabsContent value="tracing">
+                        <TracingHistoryTab />
+                    </TabsContent>
+
+                    <TabsContent value="documents">
+                        <DocumentsRegistryTab />
+                    </TabsContent>
+
+                    <TabsContent value="payments">
+                        <PaymentsTab />
+                    </TabsContent>
+
+                    <TabsContent value="accounts">
+                        <AccountsTab />
+                    </TabsContent>
+
+                    <TabsContent value="invoices">
+                        <InvoicesTab />
                     </TabsContent>
                 </Tabs>
             </div>

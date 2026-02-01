@@ -1,7 +1,7 @@
 """
 BeeYield COMPLETE Database Seed Script (V4)
 Synchronized with latest schema and high-quality content.
-Populates ALL tables for a production-like demonstration.
+Populates ONLY Honey products for a clean shop display.
 """
 import os
 import sys
@@ -68,13 +68,11 @@ def filter_data(table_name, data):
         filtered = [{k: v for k, v in item.items() if k in valid_cols} for item in data]
         if filtered and len(filtered[0]) < len(data[0]):
              dropped = set(data[0].keys()) - set(filtered[0].keys())
-             # print(f"   [DEBUG] Dropped columns for {table_name}: {dropped}")
         return filtered
     
     filtered = {k: v for k, v in data.items() if k in valid_cols}
     if len(filtered) < len(data):
         dropped = set(data.keys()) - set(filtered.keys())
-        # print(f"   [DEBUG] Dropped columns for {table_name}: {dropped}")
     return filtered
 
 def clear_tables():
@@ -94,178 +92,99 @@ def clear_tables():
             print(f"   - Clearing {table}...")
             supabase.table(table).delete().neq("id", "00000000-0000-0000-0000-000000000000").execute()
         except Exception as e:
-            # print(f"   ⚠️ Could not clear {table}: {e}")
+            # print(f"   --> Could not clear {table}: {e}")
             pass
 
 def seed_products():
-    print("\n--- Seeding Products ---")
-    products = [
+    print("\n--- Seeding Products (8 Honey Items Only) ---")
+    
+    # 1. HONEY - 8 Items, all branded, all with 250g pricing option
+    honey_products = [
         {
-            "name": "Organic Acacia Honey", 
-            "description": "Our signature light and floral honey, crystal clear for your morning tea.", 
-            "category": "honey", 
-            "badge": "Bestseller", 
-            "images": ["https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=800"], 
-            "rating": 4.9, 
-            "review_count": 128
+            "name": "BeeYield Premium Acacia",
+            "description": "Pure, light, and delicate Acacia honey harvested from the pristine northern plains.",
+            "category": "honey", "badge": "Bestseller", "rating": 4.9, "review_count": 245, "is_active": True,
+            "images": ["/images/products/beeyield_honey_500g.png"],
+            "variants": [
+                {"size": "250g", "price_kes": 450, "stock_quantity": 100},
+                {"size": "500g", "price_kes": 850, "stock_quantity": 75},
+                {"size": "1kg", "price_kes": 1500, "stock_quantity": 50}
+            ]
         },
         {
-            "name": "Wild Forest Multi-floral", 
-            "description": "Dark, complex honey harvested from the indigenous forests of Mt. Kenya.", 
-            "category": "honey", 
-            "badge": "Award Winning", 
-            "images": ["https://images.unsplash.com/photo-1558449028-b53a39d100fc?w=800"], 
-            "rating": 4.8, 
-            "review_count": 94
+            "name": "Wildflower Blossom Honey",
+            "description": "A complex, multi-floral honey with aromatic notes from Makueni's diverse flora.",
+            "category": "honey", "badge": "Premium", "rating": 5.0, "review_count": 182, "is_active": True,
+            "images": ["/images/products/beeyield_honey_500g.png"],
+            "variants": [
+                {"size": "250g", "price_kes": 450, "stock_quantity": 80},
+                {"size": "500g", "price_kes": 850, "stock_quantity": 60}
+            ]
         },
         {
-            "name": "Royal Reserve Manuka-Style",
-            "description": "Ultra-premium, high-activity honey with verified medicinal properties.",
-            "category": "honey",
-            "badge": "Premium",
-            "images": ["https://images.unsplash.com/photo-1471943311424-646960669fbc?w=800"], 
-            "rating": 5.0,
-            "review_count": 42
+            "name": "Kibwezi Forest Honey",
+            "description": "Bold, dark, and rich in minerals. Harvested from deep within the protected Kibwezi groundwater forest.",
+            "category": "honey", "badge": "Rare", "rating": 4.8, "review_count": 96, "is_active": True,
+            "images": ["/images/products/beeyield_honey_500g.png"],
+            "variants": [
+                {"size": "250g", "price_kes": 450, "stock_quantity": 40},
+                {"size": "500g", "price_kes": 850, "stock_quantity": 30}
+            ]
         },
         {
-            "name": "BeeYield Tech Tee", 
-            "description": "Breathable, eco-friendly cotton t-shirt for the modern beekeeper.", 
-            "category": "merch", 
-            "badge": "Staff Pick", 
-            "images": ["https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800"], 
-            "rating": 4.7, 
-            "review_count": 32
+            "name": "Desert Thorn Honey",
+            "description": "Exquisite honey from the arid regions. Intense floral notes with a hint of spice.",
+            "category": "honey", "badge": "Limited Edition", "rating": 4.9, "review_count": 54, "is_active": True,
+            "images": ["/images/products/beeyield_honey_500g.png"],
+            "variants": [
+                {"size": "250g", "price_kes": 450, "stock_quantity": 25},
+                {"size": "500g", "price_kes": 850, "stock_quantity": 15}
+            ]
         },
         {
-            "name": "Save the Bees Hoodie",
-            "description": "Premium heavyweight hoodie with our conservation message. Warm, stylish, and sustainable.",
-            "category": "merch",
-            "badge": "Limited Edition",
-            "images": ["https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=800"],
-            "rating": 4.9,
-            "review_count": 45
+            "name": "Raw Honeycomb Chunk",
+            "description": "The purest form of honey. A generous slab of fresh honeycomb submerged in our premium liquid honey.",
+            "category": "honey", "badge": "100% Raw", "rating": 5.0, "review_count": 312, "is_active": True,
+            "images": ["/images/products/beeyield_honey_500g.png"],
+            "variants": [
+                {"size": "250g", "price_kes": 600, "stock_quantity": 20} # Slightly customized pricing for chunk
+            ]
         },
         {
-            "name": "Stainless Steel Smoker",
-            "description": "Professional-grade smoker with heat shield and leather bellows. Essential for every beekeeper.",
-            "category": "merch",
-            "badge": "Essential",
-            "images": ["https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=800"],
-            "rating": 4.8,
-            "review_count": 92
+            "name": "Lavender Infused Honey",
+            "description": "Our premium acacia honey gently infused with organic lavender blossoms.",
+            "category": "honey", "badge": "New Arrival", "rating": 4.7, "review_count": 42, "is_active": True,
+            "images": ["/images/products/beeyield_honey_250g.png"],
+            "variants": [
+                {"size": "250g", "price_kes": 450, "stock_quantity": 50}
+            ]
         },
         {
-            "name": "Pro-Grip Hive Tool",
-            "description": "Heavy-duty J-hook hive tool made from hardened spring steel. Perfect for prying frames.",
-            "category": "merch",
-            "badge": "Top Rated",
-            "images": ["https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=800"],
-            "rating": 4.9,
-            "review_count": 115
+            "name": "Ginger & Lemon Honey",
+            "description": "A powerful immune-boosting blend of raw honey, organic ginger root, and zesty lemon.",
+            "category": "honey", "badge": "Wellness", "rating": 4.8, "review_count": 128, "is_active": True,
+            "images": ["/images/products/beeyield_honey_500g.png"],
+            "variants": [
+                {"size": "250g", "price_kes": 450, "stock_quantity": 60},
+                {"size": "500g", "price_kes": 850, "stock_quantity": 40}
+            ]
         },
         {
-            "name": "BeeYield Branded Cap",
-            "description": "Adjustable, breathable cotton cap with embroidered BeeYield logo.",
-            "category": "merch",
-            "badge": "New Arrival",
-            "images": ["https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=800"],
-            "rating": 4.6,
-            "review_count": 28
-        },
-        {
-            "name": "Beekeeping for Beginners", 
-            "description": "A comprehensive digital course covering everything from first hive to first harvest.", 
-            "category": "education", 
-            "badge": "Best Seller", 
-            "images": ["https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800"], 
-            "rating": 4.9, 
-            "review_count": 215
-        },
-        {
-            "name": "Intermediate Hive Management",
-            "description": "Advanced course on splits, pest management, and maximizing honey production.",
-            "category": "education",
-            "badge": "Advanced",
-            "images": ["https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800"], 
-            "rating": 4.8, 
-            "review_count": 64
-        },
-        {
-            "name": "Pollination Economics Masterclass",
-            "description": "Learn how to monetize your pollination services and calculate ROI for commercial fruit growers.",
-            "category": "education",
-            "badge": "Enterprise",
-            "images": ["https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800"], 
-            "rating": 5.0, 
-            "review_count": 31
-        },
-        {
-            "name": "Queen Rearing & Breeding",
-            "description": "A deep dive into the specialized art of raising high-quality African honeybee queens.",
-            "category": "education",
-            "badge": "Expert Level",
-            "images": ["https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800"], 
-            "rating": 4.9, 
-            "review_count": 18
-        },
-        {
-            "name": "BeeHealth Management",
-            "description": "Identify, treat, and prevent common honeybee diseases and pests in tropical climates.",
-            "category": "education",
-            "badge": "Technical",
-            "images": ["https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=800"], 
-            "rating": 4.7, 
-            "review_count": 42
-        },
-        {
-            "name": "ApiSense Sentinel Node",
-            "description": "IoT hive monitor with acoustic disease detection and gas sensing (VOCs/CO2).",
-            "category": "hardware",
-            "badge": "New Technology",
-            "images": ["/images/products/apisense_node.png"], 
-            "rating": 5.0, 
-            "review_count": 12
-        },
-        {
-            "name": "Intelligent Hive Scale",
-            "description": "Precision weight, temperature, and humidity monitoring with 4G connectivity.",
-            "category": "hardware",
-            "badge": "Best Value",
-            "images": ["/images/products/hive_scale.png"], 
-            "rating": 4.8, 
-            "review_count": 24
-        },
-        {
-            "name": "Savannah Blossom Gold Honey",
-            "description": "Distinctive golden honey with rich floral notes, harvested at sunset in the African savannah.",
-            "category": "honey",
-            "badge": "Limited Edition",
-            "images": ["/images/products/savannah_blossom_honey.png"],
-            "rating": 4.9,
-            "review_count": 15
-        },
-        {
-            "name": "BeeYield Canvas Tote Bag",
-            "description": "Eco-friendly canvas tote perfect for farmers markets. Durable and stylish.",
-            "category": "merch",
-            "badge": "New Arrival",
-            "images": ["/images/products/beeyield_tote_bag.png"],
-            "rating": 4.8,
-            "review_count": 8
-        },
-        {
-            "name": "Solar Hive Monitor",
-            "description": "Self-sustaining solar powered hive monitor for remote locations. Never worry about batteries again.",
-            "category": "hardware",
-            "badge": "Eco-Choice",
-            "images": ["/images/products/solar_hive_monitor.png"],
-            "rating": 5.0,
-            "review_count": 5
+            "name": "Signature Reserve (Aged)",
+            "description": "Our most exclusive honey, aged for 12 months to develop deep, molasses-like complexity.",
+            "category": "honey", "badge": "Gold Label", "rating": 5.0, "review_count": 15, "is_active": True,
+            "images": ["/images/products/beeyield_honey_500g.png"],
+            "variants": [
+                {"size": "250g", "price_kes": 650, "stock_quantity": 10}, # Premium pricing
+                {"size": "500g", "price_kes": 1200, "stock_quantity": 5}
+            ]
         }
     ]
+
+    all_products = honey_products
     
-    for p_data in products:
-        # Filter data to match actual schema
+    for p_data in all_products:
+        variants = p_data.pop("variants")
         cleaned_p_data = filter_data("products", p_data)
         
         # Check if 'images' was dropped
@@ -275,21 +194,12 @@ def seed_products():
         res = supabase.table("products").insert(cleaned_p_data).execute()
         if res.data:
             p_id = res.data[0]["id"]
-            if p_data["category"] == "honey":
-                v_data = [
-                    {"product_id": p_id, "size": "250g", "price_kes": 450, "stock_quantity": 100},
-                    {"product_id": p_id, "size": "500g", "price_kes": 850, "stock_quantity": 75},
-                    {"product_id": p_id, "size": "1kg", "price_kes": 1500, "stock_quantity": 40}
-                ]
-            elif p_data["category"] == "merch":
-                v_data = [{"product_id": p_id, "size": s, "price_kes": 2200, "stock_quantity": 20} for s in ["S", "M", "L", "XL"]]
-            elif p_data["category"] == "education":
-                v_data = [{"product_id": p_id, "size": "Digital Course", "price_kes": 3500, "stock_quantity": 9999}]
-            else: # hardware
-                v_data = [{"product_id": p_id, "size": "Unit", "price_kes": 15000, "stock_quantity": 50}]
             
-            # Filter variant data
-            cleaned_v_data = filter_data("product_variants", v_data)
+            # Prepare variants
+            for v in variants:
+                v["product_id"] = p_id
+            
+            cleaned_v_data = filter_data("product_variants", variants)
             supabase.table("product_variants").insert(cleaned_v_data).execute()
             print(f"   [OK] {p_data['name']}")
 

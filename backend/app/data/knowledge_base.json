@@ -1,8 +1,8 @@
 {
   "metadata": {
     "version": "6.0.0-ELITE",
-    "last_sync": "Sat Jan 31 20:14:22 2026",
-    "total_nodes": 400
+    "last_sync": "Sun Feb  1 05:00:40 2026",
+    "total_nodes": 366
   },
   "dna": {
     "company": "BeeYield",
@@ -154,12 +154,12 @@
     {
       "source": "BuyerDashboard.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Go to Login Dashboard. Continue as Guest. Shipment. Tracking. Syncing with logistics network.... Status. Tracking information not yet available for this order.. Home / Office. delivery@beeyield.com. 123 Beevior St. Honey Heights. Unit 402. 4th Floor. Nairobi. Nairobi. Timothy Nduva. Timothy Nduva. test@example.com. 123 Beevior Road. Honey Heights. Apt 2B. Nairobi. Nairobi. bg-yellow-500/10 text-yellow-600 border-yellow-200. bg-blue-500/10 text-blue-600 border-blue-200. bg-purple-500/10 text-purple-600 border-purple-200. bg-green-500/10 text-green-600 border-green-200. bg-red-500/10 text-red-600 border-red-200. bg-muted text-foreground border-none. Edit feature coming soon. Please delete and re-add for now.. rounded-xl border border-border. Questions about delivery or returns. Trouble with the BeeYield platform. s just make sure the backend order tracking has it. // Actually, let. bg-muted/50 rounded-3xl p-6 inline-block mb-10 border border-border/50."
+      "content": "Go to Login Dashboard. Continue as Guest. Shipment. Tracking. Syncing with logistics network.... Status. Tracking information not yet available for this order.. Home / Office. delivery@beeyield.com. 123 Beevior St. Honey Heights. Unit 402. 4th Floor. Nairobi. Nairobi. Timothy Nduva. Timothy Nduva. test@example.com. 123 Beevior Road. Honey Heights. Apt 2B. Nairobi. Nairobi. bg-yellow-500/10 text-yellow-600 border-yellow-200. bg-blue-500/10 text-blue-600 border-blue-200. bg-purple-500/10 text-purple-600 border-purple-200. bg-green-500/10 text-green-600 border-green-200. bg-red-500/10 text-red-600 border-red-200. bg-muted text-foreground border-none. Edit feature coming soon. Please delete and re-add for now.. rounded-xl border border-border. Questions about delivery or returns. Trouble with the BeeYield platform. bg-muted/50 rounded-3xl p-6 inline-block mb-10 border border-border/50. text-xs font-black uppercase tracking-widest text-muted-foreground mb-1."
     },
     {
       "source": "BuyerDashboard.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "text-xs font-black uppercase tracking-widest text-muted-foreground mb-1. text-3xl font-black text-primary. bg-primary text-white shadow-sm. bg-primary text-white shadow-sm. w-full rounded-full h-12 text-lg font-bold. w-full h-12 text-lg font-bold rounded-xl shadow-glow."
+      "content": "text-3xl font-black text-primary. bg-primary text-white shadow-sm. bg-primary text-white shadow-sm. w-full rounded-full h-12 text-lg font-bold. w-full h-12 text-lg font-bold rounded-xl shadow-glow."
     },
     {
       "source": "Careers.tsx",
@@ -174,12 +174,12 @@
     {
       "source": "Checkout.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Your Cart is Empty. Discover our premium honey and sustainable beekeeping products. Start Shopping. Order Confirmed! \ud83c\udf89. Order Number. Continue Shopping. Track Your Order. Checkout. Check your Wishlist below! \ud83d\udc47. 20% OFF. Remove. Product. Stock Status. Action. In Stock. Out of Stock. Add To Cart. Shipping Information. Full Name. Phone Number. Address. County. Payment Method. M-Pesa. Pay via mobile money. Bank Card. Credit or Debit card. Back to Cart. Processing.... Coupons. Your Order. Delivery. Delivery. Pick Up. Nairobi. Mombasa. Kisumu. Service Fee. Coupon Discount. Use Store Credits. Total Payable. PROCEED TO CHECKOUT. Your payment is secured with banking-grade encryption. Sign in to Checkout. Create an account or sign in to complete your order. Sign In. Create Account. John Doe. john@example.com. 123 Bee Street, Building A. Nairobi. Nairobi County. Special delivery instructions.... Coupon code. bg-muted/50 rounded-3xl p-6 inline-block mb-10 border border-border/50."
+      "content": "Your Cart is Empty. Discover our premium honey and sustainable beekeeping products. Start Shopping. Order Confirmed! \ud83c\udf89. Order Number. Continue Shopping. Track Your Order. Checkout. Check your Wishlist below! \ud83d\udc47. 20% OFF. Remove. Product. Stock Status. Action. In Stock. Out of Stock. Add To Cart. Payment Method. M-Pesa. Pay securely via your mobile phone. M-Pesa Phone Number. Bank Card. Visa, Mastercard, or AMEX. Cardholder Name. Card Number. Expiry Date. Continue to Delivery. Delivery Information. Full Name. Phone Number. Address. County. Review Order. Final Confirmation. Everything is ready! Click below to complete your payment of. Order Summary. Processing.... Shipment Status. Payment Confirmed. Preparing Shipment. Our team is packing your items with care. Out for Delivery. Get Receipt Instantly. Transaction Receipt. Print Receipt. Return to Shop. Thank you for supporting sustainable beekeeping in Kenya!. Coupons. Your Order. Delivery. Delivery. Pick Up. Nairobi. Mombasa. Kisumu."
     },
     {
       "source": "Checkout.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "text-xs font-black uppercase tracking-widest text-muted-foreground mb-1. text-3xl font-black text-primary. border-green-200 text-green-700 bg-green-50. border-red-200 text-red-700 bg-red-50. flex items-center gap-2 cursor-pointer. flex items-center gap-2 cursor-pointer. bg-primary text-white border-primary. flex items-center gap-2 cursor-pointer text-sm."
+      "content": "Service Fee. Coupon Discount. Total Payable. PROCEED TO CHECKOUT. Your payment is secured with banking-grade encryption. Sign in to Checkout. Create an account or sign in to complete your order. Sign In. Create Account. 07XX XXX XXX. Name on card. XXXX XXXX XXXX XXXX. John Doe. john@example.com. 123 Bee Street, Building A. Nairobi. Nairobi County. Special delivery instructions.... Coupon code. bg-muted/50 rounded-3xl p-6 inline-block mb-10 border border-border/50. text-xs font-black uppercase tracking-widest text-muted-foreground mb-1. text-3xl font-black text-primary. border-green-200 text-green-700 bg-green-50. border-red-200 text-red-700 bg-red-50. flex items-center gap-2 cursor-pointer. flex items-center gap-2 cursor-pointer. bg-primary text-white border-primary."
     },
     {
       "source": "Commitment.tsx",
@@ -299,7 +299,7 @@
     {
       "source": "HoneyLanding.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Premium Raw. Direct from. Kibwezi. Discover the purest, most delicious honey straight from our apiaries in Kibwezi to your plate. Our honey is carefully harvested to preserve its rich flavor, natural nutrients, and health benefits.. Planted. Harvest. Promise. Watch Video. Satisfied Clients. Professional Farmers. Acres Pollinated. What people are. saying. Promise. The Most Trusted. in Makueni County. 50/50 Harvest Promise. \u2014ensuring that for every drop we take, enough is left for the bees to thrive and pollinate our future.. With over. 2,500 trees planted. and a growing network of tech-enabled apiaries, our impact goes beyond just honey. Every jar you hold is powered by. HoneyChain\u2122 Traceability. , allowing you to trace your honey back to the very hive it came from, meeting the beekeeper and seeing the digital seal of authenticity.. Flash Sale. 20% Off. on your first HoneyChain\u2122 order!. Minutes. Seconds. Claim Discount Now. Join the Hive!."
+      "content": "Premium Raw. Direct from. Kibwezi. Discover the purest, most delicious honey straight from our apiaries in Kibwezi to your plate. Our honey is carefully harvested to preserve its rich flavor, natural nutrients, and health benefits.. Planted. Harvest. Promise. Explore the Honey Collection. Satisfied Clients. Professional Farmers. Acres Pollinated. Buy Now. What people are. saying. Promise. The Most Trusted. in Makueni County. 50/50 Harvest Promise. \u2014ensuring that for every drop we take, enough is left for the bees to thrive and pollinate our future.. With over. 2,500 trees planted. and a growing network of tech-enabled apiaries, our impact goes beyond just honey. Every jar you hold is powered by. HoneyChain\u2122 Traceability. , allowing you to trace your honey back to the very hive it came from, meeting the beekeeper and seeing the digital seal of authenticity.. Flash Sale. 20% Off. on your first HoneyChain\u2122 order!. Minutes. Seconds. Claim Discount Now. Join the Hive!."
     },
     {
       "source": "HoneyLanding.tsx",
@@ -469,12 +469,42 @@
     {
       "source": "Shop.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "The Future of Apiculture Is Here. Harvest the. Precision.. From our award-winning traceable honey to cutting-edge IoT hive sensors, everything in our shop supports the mission of sustainable pollination in Kenya.. Fast Delivery Nationwide. Secure Transactions. Order By. Featured Status. Economic to Premium. Premium to Economic. Technical Rating. Synchronizing Hive Inventory.... Add to Cart. Bring Professional Grade. Pollination Tech. To Your Farm.. Request Consultation. Try BeeYield in your apiary. BeeYield is constantly evolving. We invite you to take part in the international testing of our system \u2013 together, we can advance technology that protects bees worldwide.. Join the Program. Global Partners. Farmers. ApiSense. Intelligent Hives. Sort by. Add to wishlist. Pure, traceable honey from Kibwezi. Sustainable gear for beekeepers. absolute top-0 right-0 w-1/2 h-full bg-primary/5 rounded-l-full blur-3xl opacity-50."
+      "content": "The Future of Apiculture Is Here. Harvest the. Precision.. From our award-winning traceable honey to cutting-edge IoT hive sensors, everything in our shop supports the mission of sustainable pollination in Kenya.. Fast Delivery Nationwide. Secure Transactions. Scroll to explore the range. Order By. Featured Status. Economic to Premium. Premium to Economic. Technical Rating. Add to Cart. Bring Professional Grade. Pollination Tech. To Your Farm.. Request Consultation. Try BeeYield in your apiary. BeeYield is constantly evolving. We invite you to take part in the international testing of our system \u2013 together, we can advance technology that protects bees worldwide.. Join the Program. Global Partners. Farmers. ApiSense. Intelligent Hives. Sort by. Add to wishlist. Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.. /images/products/beeyield_honey_500g.png. /images/products/beeyield_honey_250g.png."
     },
     {
       "source": "Shop.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "absolute bottom-0 left-0 w-1/3 h-1/2 bg-accent/10 rounded-r-full blur-3xl opacity-30. h-auto p-1 bg-muted/30 border border-border/50 rounded-2xl self-start. bg-primary text-primary-foreground shadow-primary/25. text-2xl font-black mb-8 text-muted-foreground uppercase tracking-widest. flex items-center gap-3 px-6 py-4 bg-muted/30 rounded-2xl border border-border/50. h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center."
+      "content": "/images/products/beeyield_honey_500g.png. /images/products/beeyield_honey_1kg.png. A complex, multi-floral honey with aromatic notes from Makueni. /images/products/beeyield_honey_500g.png. /images/products/beeyield_honey_250g.png. /images/products/beeyield_honey_500g.png. /images/products/beeyield_honey_1kg.png. Bold, dark, and rich in minerals. This forest honey is harvested from deep within the protected Kibwezi groundwater forest.. /images/products/beeyield_honey_500g.png. /images/products/beeyield_honey_250g.png. /images/products/beeyield_honey_500g.png. /images/products/beeyield_honey_1kg.png. Exquisite honey from the arid regions. Intense floral notes with a hint of spice. Highly sought after for its unique properties.. /images/products/beeyield_honey_500g.png. /images/products/beeyield_honey_250g.png. /images/products/beeyield_honey_500g.png. /images/products/beeyield_honey_1kg.png. The purest form of honey."
+    },
+    {
+      "source": "Shop.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "A generous slab of fresh honeycomb submerged in our premium liquid honey. Entirely edible and delicious.. /images/products/beeyield_honey_500g.png. /images/products/beeyield_honey_250g.png. /images/products/beeyield_honey_500g.png. /images/products/beeyield_honey_1kg.png. Our premium acacia honey gently infused with organic lavender blossoms. Calming, floral, and perfect for evening tea.. /images/products/beeyield_honey_500g.png. /images/products/beeyield_honey_250g.png. /images/products/beeyield_honey_500g.png. /images/products/beeyield_honey_1kg.png. A powerful immune-boosting blend of raw honey, organic ginger root, and zesty lemon. Great for soothing throats and boosting energy.. /images/products/beeyield_honey_500g.png. /images/products/beeyield_honey_250g.png. /images/products/beeyield_honey_500g.png. /images/products/beeyield_honey_1kg.png. Our most exclusive honey, aged for 12 months to develop deep, molasses-like complexity. A true connoisseur."
+    },
+    {
+      "source": "Shop.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "/images/products/beeyield_honey_500g.png. /images/products/beeyield_honey_250g.png. /images/products/beeyield_honey_500g.png. /images/products/beeyield_honey_1kg.png. The ultimate IoT solution for beekeepers. Tracks weight, temperature, humidity, and acoustics using advanced solar-powered sensors.. /images/products/solar_hive_monitor.png. Internal temperature probe for brood nest monitoring. Helps prevent swarming and detect colony loss early.. Monitor in-hive humidity levels to prevent fungal diseases and ensure optimal brood rearing conditions.. AI-powered sound analysis that detects swarming behavior and queen absence before they become visible problems.. /images/products/solar_hive_monitor.png. Discreet anti-theft tracking for your valuable colonies. Feature geofencing and motion alerts via LoRaWAN.. /images/products/solar_hive_monitor.png. Ultra-thin sensor that fits between frames to monitor the precise climate of your brood nest.. /images/products/hive_temp_sensor.png."
+    },
+    {
+      "source": "Shop.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Industrial grade gateway to connect up to 500 sensors across your whole farm farm. Range up to 15km.. /images/products/solar_hive_monitor.png. Monitor nectar flow and honey production remotely. Capable of measuring up to 150kg with 10g precision.. /images/products/solar_hive_monitor.png. Heavyweight organic cotton hoodie with embroidered BeeYield logo. Stylish, warm, and built to last.. /images/products/beeyield_hoodie.png. Classic ventilated trucker cap with embroidered logo. Perfect for sunny days in the apiary.. Eco-friendly heavy canvas tote. Features stunning botanical bee artwork.. /images/products/beeyield_tote_bag.png. Soft, breathable 100% organic cotton. A minimalist design that makes a statement.. A high-fire ceramic mug in matte charcoal. Ergonomic design for that perfect morning coffee.. /images/products/beeyield_tote_bag.png. Limited edition enamel pins featuring different bee species. Perfect for your jacket.. /images/products/beeyield_cap.png."
+    },
+    {
+      "source": "Shop.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "Support solitary bees in your garden with this sustainably sourced bamboo bee hotel.. /images/products/beeyield_tote_bag.png. A curated blend of 25 native wildflower species designed to provide forage for bees.. /images/products/beeyield_tote_bag.png. Our comprehensive entry-level handbook covering everything from hive setup to your first honey harvest.. /images/products/beekeeping_guide.png. PRECISION POLLINATION HANDBOOK. Advanced techniques for using data to optimize crop yields. Essential for commercial farmers and professional beekeepers.. /images/products/beekeeping_guide.png. Video course with 12 hours of expert instruction on queen breeding, grafting, and colony management.. /images/products/beekeeping_guide.png. Complete guide to extraction, filtering, bottling, and quality certification for commercial honey production.. /images/products/beekeeping_guide.png. Learn to set up, calibrate, and interpret data from BeeYield sensors. Includes troubleshooting guides.."
+    },
+    {
+      "source": "Shop.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "/images/products/beekeeping_guide.png. Identify and treat common bee diseases and pests in East Africa. Includes natural and chemical treatment options.. /images/products/beekeeping_guide.png. Transform your hobby into a profitable venture. Covers pricing, marketing, regulations, and scaling operations.. /images/products/beekeeping_guide.png. All educational materials in one package! Includes all guides, courses, and lifetime updates.. /images/products/beekeeping_guide.png. Pure, traceable honey from Kibwezi. Sustainable gear for beekeepers. absolute top-0 right-0 w-1/2 h-full bg-primary/20 rounded-l-full blur-3xl opacity-50. absolute bottom-0 left-0 w-1/3 h-1/2 bg-accent/20 rounded-r-full blur-3xl opacity-30. h-auto p-1 bg-muted/30 border border-border/50 rounded-2xl self-start overflow-x-auto max-w-full. bg-primary text-primary-foreground shadow-primary/25. text-2xl font-black mb-8 text-muted-foreground uppercase tracking-widest."
+    },
+    {
+      "source": "Shop.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "flex items-center gap-3 px-6 py-4 bg-muted/30 rounded-2xl border border-border/50. h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center."
     },
     {
       "source": "Team.tsx",
@@ -562,6 +592,36 @@
       "content": "BeeYield. Control Panel. Admin Utility. Terminate Session. Admin Protocol v4.0.2. , activeGroup ?. , activeGroup ?. w-4 h-4 transition-transform duration-500. p-6 bg-gray-50/30 border-t border-gray-100 mt-auto"
     },
     {
+      "source": "AccountsTab.tsx",
+      "subtopic": "Key Facts",
+      "content": "Total Accounts. Active Users. Customers. Farmers. User Account Registry. Directory of all registered profiles. Email / Identity. Status. Registered"
+    },
+    {
+      "source": "ActivityLogTab.tsx",
+      "subtopic": "Key Facts",
+      "content": "Total Activities. System Activity Log. Real-time audit trail of all actions across the platform. All Activities. Traceability Scans. Payments. Invoices. Documents. Exports. Accounts. Last 7 Days. Last 30 Days. Last 3 Months. No activities found for the selected period.. Action. Entity. Details. Filter Type. Time Period. flex flex-row items-center justify-between space-y-0 pb-2"
+    },
+    {
+      "source": "DocumentsRegistryTab.tsx",
+      "subtopic": "Key Facts",
+      "content": "Total Generated. PDF Reports. Excel Exports. Total Downloads. Generated Documents Registry. Archive of all PDFs, invoices, and Excel exports. Document Name. Category. Generated At. Actions. Download"
+    },
+    {
+      "source": "InvoicesTab.tsx",
+      "subtopic": "Key Facts",
+      "content": "Total Invoiced. Paid Amount. Outstanding. Invoices Registry. Management of all customer invoices. Invoice #. Order Link. Customer. Status. Actions. bg-green-100 text-green-800 border-green-200. bg-yellow-100 text-yellow-800 border-yellow-200. bg-red-100 text-red-800 border-red-200. bg-gray-100 text-gray-800 border-gray-200"
+    },
+    {
+      "source": "PaymentsTab.tsx",
+      "subtopic": "Key Facts",
+      "content": "Total Revenue. Transactions. M-Pesa Volume. Card Volume. Payment Transactions. All incoming and outgoing payments. Order #. Customer. Method. Amount. Status. M-Pesa. bg-green-100 text-green-800 border-green-200. bg-yellow-100 text-yellow-800 border-yellow-200. bg-red-100 text-red-800 border-red-200. bg-gray-100 text-gray-800 border-gray-200"
+    },
+    {
+      "source": "TracingHistoryTab.tsx",
+      "subtopic": "Key Facts",
+      "content": "Total Traces. QR Scans. Direct product scans. Unique Batches. Products looked up. Authenticated. Logged-in users. Tracing History. Log of all batch traceability lookups. Last 7 Days. Last 30 Days. Last 3 Months. Batch Code. Product Info. Source. User / Device. Authenticated. Period"
+    },
+    {
       "source": "ForgotPasswordForm.tsx",
       "subtopic": "Key Facts",
       "content": "Check your inbox. . Click the link in the email to reset your password.. Try a different email. Back to login. Forgot your password?. Email Address. Sending reset link.... Back to login. you@example.com"
@@ -604,7 +664,7 @@
     {
       "source": "BeeYieldHivesView.tsx",
       "subtopic": "Key Facts",
-      "content": "BeeYield. CONNECTED HARDWARE NODES. Live Syncing. Hive ID. Status. Efficiency. View Network Topology. NETWORK OVERVIEW. 1,240 Acres. Signal Health. Battery Avg. Region / Apiary. Kibwezi East. Mbuinzau Range. Makindu Valley. AI AUDIT. ADD NOTES. Select a place. bg-green-500/20 text-green-600. bg-yellow-500/20 text-yellow-600. , showFab ?. opacity-0 translate-y-4 pointer-events-none. , showFab ?"
+      "content": "BeeYield. CONNECTED HARDWARE NODES. Live Syncing. Hive ID. Status. Efficiency. No connected hardware nodes found.. View Network Topology. NETWORK OVERVIEW. Signal Health. Battery Avg. Region / Apiary. All Locations. AI AUDIT. ADD NOTES. Select a place. bg-green-500/20 text-green-600. , showFab ?. opacity-0 translate-y-4 pointer-events-none. , showFab ?"
     },
     {
       "source": "BillingView.tsx",
@@ -649,7 +709,7 @@
     {
       "source": "BuyBeeYieldHubView.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "GSM/Satellite and Bluetooth connectivity strength. Precise location tracking and movement alerts. Barometric pressure for weather forecasting. Solar intensity and forage time monitoring. Anti-tamper and vibration detection. 3-axis orientation to detect hive tilting or falls. Impact detection and movement analysis. Entrance gate monitoring and magnetic disturbances. Carbon dioxide concentration within the hive hive. Volatile Organic Compounds for health diagnostics. Particulate matter monitoring in the apiary vicinity. Air quality monitoring for pollutants affecting bees. Real-time rainfall intensity and duration tracking. Anemometer data for flight safety alerts. Solar radiation intensity monitoring. Precise light intensity for biological clock correlation. Atmospheric visibility for foraging conditions. text-xs font-bold text-gray-400 uppercase tracking-wider."
+      "content": "GSM/Satellite and Bluetooth connectivity strength. Precise location tracking and movement alerts. Barometric pressure for weather forecasting. Solar intensity and forage time monitoring. Anti-tamper and vibration detection. 3-axis orientation to detect hive tilting or falls. Impact detection and movement analysis. Entrance gate monitoring and magnetic disturbances. Carbon dioxide concentration within the hive hive. Volatile Organic Compounds for health diagnostics. Particulate matter monitoring in the apiary vicinity. Air quality monitoring for pollutants affecting bees. Real-time rainfall intensity and duration tracking. Anemometer data for flight safety alerts. Solar radiation intensity monitoring. Precise light intensity for biological clock correlation. Atmospheric visibility for foraging conditions."
     },
     {
       "source": "ChartsView.tsx",
@@ -682,9 +742,14 @@
       "content": "First steps. Start here to set up your apiaries, devices, and measurements.. QUICK LINKS. Add apiaries and hives. My devices. Measurement data. Support Center. BeeHUB Agro Intelligence. Settings. flex justify-between items-start"
     },
     {
+      "source": "FlightMapView.tsx",
+      "subtopic": "Key Facts",
+      "content": "Flight Map. Real-time bee activity and forage path tracking.. Active Hives. Forage Zones. PRECISION TRACKING ACTIVE. Flight Stats. Active Bees/m\u00b2. Avg Trip Duration. 12.4 min. Forage Range. 2.4 km. Activity Heatmap"
+    },
+    {
       "source": "HarvestsView.tsx",
       "subtopic": "Key Facts",
-      "content": "Add harvest. Harvest date. BeeYield HoneyChain\u2122. Batch Code. Acacia. Multi-flower. Forest. Rapeseed. Moisture %. Color Grade. Water White. Extra White. Extra Light Amber. Light Amber. Dark Amber. Seal on HoneyChain\u2122. Immutable traceability record. Go back. Harvests. PRODUCTIVITY OVERVIEW. Avg Moisture. Premium Yield. Organic Status. ACTIVE. HoneyChain Seals. Apiary / Batch. Productive families. Total harvests. kg per family. Change. HoneyChain\u2122 Verification. Verified. Filters. Fine-tune the harvest analytics using the filters below.. Add harvest. LOCATION. No places available. No hives available. PERIOD. QUICK YEAR. Select a year to quickly load its harvest data.. HoneyChain\u2122 Traceability Record. Total Harvest. Honey Type. Moisture Level. Color Grade. Productive Families. HoneyChain Verified. This record has been sealed and secured via IoT node.. Close Record. Select type. e.g. 17.5. MY PLACES. fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+      "content": "Add harvest. Harvest date. BeeYield HoneyChain\u2122. Batch Code. Acacia. Multi-flower. Forest. Rapeseed. Moisture %. Color Grade. Water White. Extra White. Extra Light Amber. Light Amber. Dark Amber. Seal on HoneyChain\u2122. Immutable traceability record. Go back. Harvests. PRODUCTIVITY OVERVIEW. Avg Moisture. Total Yield. Organic Status. HoneyChain Seals. Hive / Batch. Farmer. Quantity. Honey Type. HoneyChain\u2122. Actions. Verified. Filters. Fine-tune the harvest analytics using the filters below.. Add harvest. LOCATION. All Apiaries. All Hives. PERIOD. QUICK YEAR. Select a year to quickly load its harvest data.. HoneyChain\u2122 Traceability Record. Total Harvest. Honey Type. Moisture Level. Color Grade. Productive Families. HoneyChain Verified. This record has been sealed and secured via IoT node.. Close Record. Select type. e.g. 17.5. Select Apiary. Select Hive"
     },
     {
       "source": "HealthGuideView.tsx",
@@ -709,7 +774,7 @@
     {
       "source": "InspectionsView.tsx",
       "subtopic": "Key Facts",
-      "content": "Back to inspections. No places available. No hives available. Inspections. State of colony. Was there...?. Capped brood. Larvae. Brood arrangement on the frames. Activity of bees. Weather. Weight. The queen cells. Possible illness. Private note. Inspections. No places available. No hives available. MY PLACES. Queen cells comment. Diagnosis. Treatment. Add your private note here.... MY PLACES. flex items-center gap-2 cursor-pointer. flex items-center gap-2 cursor-pointer. flex items-center gap-2 cursor-pointer"
+      "content": "Back to inspections. All Places. No hives available. Inspections. State of colony. Was there...?. Capped brood. Larvae. Brood arrangement on the frames. Activity of bees. Weather. Weight. The queen cells. Possible illness. Private note. Saving.... Inspections. Select Apiary. Select Hive. Queen cells comment. Diagnosis. Treatment. Add your private note here.... MY PLACES. flex items-center gap-2 cursor-pointer. flex items-center gap-2 cursor-pointer. flex items-center gap-2 cursor-pointer"
     },
     {
       "source": "MeasurementDataView.tsx",
@@ -719,7 +784,17 @@
     {
       "source": "MetersAlarms.tsx",
       "subtopic": "Key Facts",
-      "content": "Alarms & events. Top notifications from last 48h. View all notifications. Response history. Quick view of response time and status. Timeline alarm. Responses. Service ticket. Response time 2h. Closed. Admin follow-up. In progress. Pending. text-red-600 border-red-200 bg-red-50. text-red-600 border-red-200 bg-red-50"
+      "content": "Alarms & events. Real-time system notifications. No active alarms found.. Assign ticket. Archive. Statistics. Event distribution by severity. Workflow Status. All Critical Resolved. Excellent response time in last 24h.. Run Diagnostic. text-red-600 border-red-200 bg-red-50. text-amber-600 border-amber-200 bg-amber-50. text-blue-600 border-blue-200 bg-blue-50. w-8 h-8 animate-spin text-gray-300. p-12 text-center text-gray-400"
+    },
+    {
+      "source": "MetersListBase.tsx",
+      "subtopic": "Key Facts",
+      "content": "Synchronizing meter data.... Meter list. Configure serial number and location details. Add meter. Configuration. Save Meter. Managed Buildings. Building. All buildings. All units. Status. Warning. Search. No matching meters found. Data Export. Serial Number. Building. Unit / Office. Search by meter ID or address.... text-blue-500 fill-blue-500 bg-blue-50. text-orange-500 fill-orange-500 bg-orange-50. text-yellow-500 fill-yellow-500 bg-yellow-50. text-gray-500 fill-gray-500 bg-gray-50. h-8 rounded-xl text-xs font-bold gap-2. h-8 rounded-xl text-xs font-bold gap-2"
+    },
+    {
+      "source": "MetersListView.tsx",
+      "subtopic": "Key Facts",
+      "content": "Meter list \u00b7. Add meter. Buildings. Overview of addresses with meter counts. Collapse. Expand. Open building. Show on map. Apartments. Apartment list with assigned meters. Collapse. Expand. Medium. Building. All buildings. Apartment. All apartments. Status. All statuses. Reading level. All levels. Search. Export list. Download filtered meters with selected columns. Collapse. Expand. Columns. Available Formats. Export PDF. Export XLS. * All reports are generated based on current filter results. Meter Type. Address. Apartment. Meter Number. Last Reading. Status. Actions. Details. Measurements. Report. Settings. Meter ID / address.... ul. Jana Pawla II 43 \u00b7 Lodz Srodmiescie. ul. Dabrowskiego 55 Kalisz - Polnoc. ul. Kosciuszki 4 \u00b7 Kalisz Centrum. rounded-lg h-9 w-9 transition-all. rounded-lg h-9 w-9 transition-all. rounded-lg h-9 w-9 transition-all"
     },
     {
       "source": "MetersMeasurements.tsx",
@@ -729,7 +804,7 @@
     {
       "source": "MetersPayments.tsx",
       "subtopic": "Key Facts",
-      "content": "Payments & settlements. Consumption summary. Export to billing system. Prepare a data package for settlements.. Choose export columns and their order.. Export. Sample billing rates. Assign rates per medium for settlements.. Medium. Energy. Add rate. Export columns. Next step. Invoices. Recurring generation. Online payments. Gateway integrations. e.g. 7.20. // Just making them look like the screenshot which is one unified card with dividers? // Actually screenshot looks like 3 distinct blocks inside the card or just 3 columns. // Let. p-6 flex items-center justify-between"
+      "content": "Payments & settlements. Consumption summary. Export to billing system. Prepare a data package for settlements.. Choose export columns and their order.. Export. Sample billing rates. Assign rates per medium for settlements.. No billing rates configured.. Active. Medium. Energy. Description. Add rate. Export columns order. Comment..."
     },
     {
       "source": "MetersReports.tsx",
@@ -744,7 +819,7 @@
     {
       "source": "MetersView.tsx",
       "subtopic": "Key Facts",
-      "content": "Meters. Water usage. 12.4 m3 / 384 m3. Heat usage. 8.9 GJ. Electricity. WARNING. 214 kWh. Active alarms. Usage trend. Hourly. MEDIUM. Recent events. AI assistant for meters. Sample questions for administrators. Suggested questions. Open AI Assistant. Ask about meters, billing, anomalies.... How to settle heat costs in a multi-unit building?. Overlay module or built-in module meters?. Mechanical or ultrasonic heat meter?. How to detect a water leak quickly?. Hi! I can help with meter operations and billing.. Ask about certification, settlement rules, or anomalies.. How long does meter certification take?. Certification usually takes 5-7 years depending on meter type.. ll analyze the meter data and get back to you shortly.. space-y-6 animate-in fade-in duration-500 pb-12. flex items-start justify-between"
+      "content": "Syncing utility data.... Meters Overview. Current total consumption. Events. Total events in history. Usage trend. Recent events. View all. Meters Expert AI. How many water meters have alerts?. How to settle heat costs in a multi-unit building?. How to detect a water leak quickly?. Which meters have the highest usage today?. Hi! I can help with meter operations and billing.. active devices in the system.. text-xs font-normal text-gray-400. flex items-start justify-between"
     },
     {
       "source": "MetricCard.tsx",
@@ -764,7 +839,7 @@
     {
       "source": "MyPlacesView.tsx",
       "subtopic": "Key Facts",
-      "content": "Add Place. Apiary Name. Apiary Type. Permanent. Migratory. Breeding. Quarantine. Expected Hives. Location / Coordinates. Primary Forage. Discard. Deploy Apiary. My Places. e.g. Nanyuki North Field. Select type. Search location.... e.g. Acacia, Sunflowers. Add any special instructions or observations.... animate-in fade-in slide-in-from-bottom-2 duration-500 pb-20. , isFabExpanded ?"
+      "content": "Add Place. Apiary Name. Apiary Type. Permanent. Migratory. Breeding. Quarantine. Expected Hives. Location / Coordinates. Primary Forage. Discard. My Places. Expected Hives. Forage. e.g. Nanyuki North Field. Select type. Search location.... e.g. Acacia, Sunflowers. Add any special instructions or observations.... , isFabExpanded ?"
     },
     {
       "source": "MyRequestsView.tsx",
@@ -779,7 +854,7 @@
     {
       "source": "PrecisionPollinationView.tsx",
       "subtopic": "Key Facts",
-      "content": "72 || baseVPM. 37 || baseVPM. Pollination Calculator. BeeYield AI. Connected. Based on recent acoustic patterns, relocating Hive 4 closer to the central crop area could improve pollination coverage by. Ask BeeYield AI. Hive Fleet. Live Feed. Pesticide Detection. NONE DETECTED. SAFE ZONE. Colony Varroa Pressure. MONITORING. Foraging Efficiency. Yield Projection. Active Hives. Full Report. DOWNLOAD PDF. Target FPA. Active Hives. Warnings. Critical. Coverage. Colony Acoustics. Brood Temperature. Nest Humidity. Flight Activity. Vibration Index. Queen Pheromone. precision_pollination_subtitle"
+      "content": "72 || baseVPM. 37 || baseVPM. Pollination Calculator. BeeYield AI. Connected. Based on recent acoustic patterns, relocating Hive 4 closer to the central crop area could improve pollination coverage by. Ask BeeYield AI. Hive Fleet. Loading Hives.... Live Feed. Pesticide Detection. NONE DETECTED. SAFE ZONE. Colony Varroa Pressure. MONITORING. Foraging Efficiency. Yield Projection. Active Hives. Full Report. DOWNLOAD PDF. Target FPA. Active Hives. Warnings. Critical. Coverage. Colony Acoustics. Brood Temperature. Nest Humidity. Flight Activity. Vibration Index. Queen Pheromone. precision_pollination_subtitle"
     },
     {
       "source": "RemainingViews.tsx",
@@ -804,7 +879,7 @@
     {
       "source": "SettingsView.tsx",
       "subtopic": "Key Facts",
-      "content": "Enter new email. Weather data and meteo stations. Care and records in veterinary mode. Please enter a valid email address. Database connection not available. Confirmation email sent to both addresses!"
+      "content": "Enter new email. Min 6 characters. Repeat new password. Weather data and meteo stations. Care and records in veterinary mode. Please enter a valid email address. Database connection not available. Confirmation email sent to both addresses!"
     },
     {
       "source": "SoundAnalysisView.tsx",
@@ -815,6 +890,11 @@
       "source": "SupportCenterView.tsx",
       "subtopic": "Key Facts",
       "content": "Total Requests. Last Request. In Progress. Resolved. Contact Support. info@beeyield.com. PHONE / WHATSAPP. SERVICE ADDRESS. BeeYield. Kibwezi, Kenya. Attach the. printed service form. to your shipment.. Manuals. Print service form. Add request online. Add Request. Submit a new support ticket. We usually respond within 24 hours.. Category *. Virgin. Email*. Cancel. No requests found. Category. Status. Select. Filter requests..."
+    },
+    {
+      "source": "VarroaView.tsx",
+      "subtopic": "Key Facts",
+      "content": "Varroa Monitoring. AI-powered acoustic analysis for varroa mite detection.. Run Diagnosis. High Infestation Alert. Hive H-004 shows a 5.2% infestation rate. Treatment recommended within 48 hours.. Treatment Guide. Mite Infestation Rate. Historic Trend. Infestation levels over the last 30 days.. Recommended Actions. Oxalic Acid Treatment. Scheduled for next maintenance window.. Drone Brood Removal. Effective biological control method.. Formic Pro Application. Recommended for High infestation levels."
     },
     {
       "source": "ShopDashboardHeader.tsx",
@@ -1022,101 +1102,6 @@
       "content": ", React.ComponentPropsWithoutRef"
     },
     {
-      "source": "BEE_BIOLOGY_CATALOG",
-      "subtopic": "Compound Eyes",
-      "content": "BEE_BIOLOGY_CATALOG - Compound Eyes:\n\ntopic: Visual System (Compound Eyes),         \ndescription: Bees have two large compound eyes that dominate the head.,         \ndetails: Each eye is composed of thousands of individual lenses called ommatidia. These lenses allow bees to detect motion with incredible precision and see ultraviolet light, which helps them identify nectar-rich flowers.,         \nimportance: Critical for navigation, foraging, and predator avoidance.,         \ntechnicalNotes: BeeYield's 'UV-FlowerView' cameras simulate bee vision to help farmers identify which crops are most attractive to pollinators in real-time."
-    },
-    {
-      "source": "BEE_BIOLOGY_CATALOG",
-      "subtopic": "Ocelli",
-      "content": "BEE_BIOLOGY_CATALOG - Ocelli:\n\ntopic: Simple Eyes (Ocelli),         \ndescription: Three small simple eyes located in a triangle on the top of the head.,         \ndetails: These eyes do not form images but are highly sensitive to light intensity. They help bees maintain stability during flight by detecting the horizon and solar position even on cloudy days.,         \nimportance: Navigation and flight stability.,         \ntechnicalNotes: Arranged in a triangle called the ocellar triangle; connects directly to the brain for rapid processing."
-    },
-    {
-      "source": "BEE_BIOLOGY_CATALOG",
-      "subtopic": "Proboscis",
-      "content": "BEE_BIOLOGY_CATALOG - Proboscis:\n\ntopic: Feeding Apparatus (Proboscis),         \ndescription: The elongated sucking mouthpart used for ingesting liquids.,         \ndetails: It acts like a straw to suck up nectar, water, and honey. When not in use, it is folded back under the head. It consists of the glossa (tongue), labial palps, and galeae.,         \nimportance: Nectar collection and food exchange (trophallaxis).,         \ntechnicalNotes: Length varies by \nspecies: A. m. caucasia has the longest tongue among mellifera subspecies (up to 7.2mm)."
-    },
-    {
-      "source": "BEE_BIOLOGY_CATALOG",
-      "subtopic": "Antennae",
-      "content": "BEE_BIOLOGY_CATALOG - Antennae:\n\ntopic: Sensory Hub (Antennae),         \ndescription: The primary sensory organs for smell, touch, and communication.,         \ndetails: Covered in thousands of sensory receptors (sensilla) that detect pheromones, carbon dioxide, humidity, and vibrations. They are also used for touch-based communication within the hive.,         \nimportance: Pheromone detection and social coordination.,         \ntechnicalNotes: BeeYield's 'E-Antenna' sensors detect CO2 and humidity fluctuations at the same sensitivity level as a live bee, allowing for sub-second health alerts."
-    },
-    {
-      "source": "BEE_BIOLOGY_CATALOG",
-      "subtopic": "Stinger",
-      "content": "BEE_BIOLOGY_CATALOG - Stinger:\n\ntopic: Defense Mechanism (Stinger),         \ndescription: A modified ovipositor used for defense.,         \ndetails: Worker bees have barbed stingers that remain in mammal skin, causing the bee to die after stinging. Queens have smooth stingers used primarily for killing rival queens. Drones have no stinger.,         \nimportance: Colony protection.,         \ntechnicalNotes: Venom (apitoxin) contains melittin, apamin, and phospholipase A2. The stinger has its own ganglion to continue pumping venom after detachment."
-    },
-    {
-      "source": "BEE_BIOLOGY_CATALOG",
-      "subtopic": "Wax Glands",
-      "content": "BEE_BIOLOGY_CATALOG - Wax Glands:\n\ntopic: Hive Construction (Wax Glands),         \ndescription: Abdominal glands that secrete liquid wax.,         \ndetails: Four pairs of glands located on the underside of the worker bee's abdomen. Liquid wax hardens into small flakes when exposed to air. Bees must consume ~8 lbs of honey to produce 1 lb of wax.,         \nimportance: Building honeycomb and capping cells.,         \ntechnicalNotes: Most active in bees 12-18 days old; activity decreases as they transition to foraging."
-    },
-    {
-      "source": "BEE_BIOLOGY_CATALOG",
-      "subtopic": "Nasonov Gland",
-      "content": "BEE_BIOLOGY_CATALOG - Nasonov Gland:\n\ntopic: Orientation Pheromones (Nasonov Gland),         \ndescription: A gland located on the back of the abdomen used to emit orientation pheromones.,         \ndetails: Bees 'fan' their wings with their abdomen raised to release the scent. It smells like lemon/lemongrass and guides lost bees or swarms back to the entrance.,         \nimportance: Navigation and swarm cohesion.,         \ntechnicalNotes: BeeYield's AI detects the specific acoustic 'whir' of Nasonov fanning, alerting beekeepers to potential orientation issues or incoming swarms."
-    },
-    {
-      "source": "BEE_BIOLOGY_CATALOG",
-      "subtopic": "Pollen Baskets (Corbiculae)",
-      "content": "BEE_BIOLOGY_CATALOG - Pollen Baskets (Corbiculae):\n\ntopic: Foraging Tools (Pollen Baskets),         \ndescription: Specialized structures on the hind legs for carrying pollen.,         \ndetails: Workers use stiff hairs (the pollen comb) to brush pollen into a concave area on the tibia. They moisten the pollen with nectar to make it stick as a 'pollen load'.,         \nimportance: Protein collection for brood rearing.,         \ntechnicalNotes: Only found in female worker bees; absent in queens and drones."
-    },
-    {
-      "source": "BEE_BIOLOGY_CATALOG",
-      "subtopic": "Castes: Worker",
-      "content": "BEE_BIOLOGY_CATALOG - Castes: Worker:\n\ntopic: Social \nStructure: Worker Bee,         \ndescription: Infertile females that perform all hive tasks.,         \ndetails: Tasks change with age (polyethism): cleaning, nursing, wax building, guarding, and finally foraging. They live 6 weeks in summer, or up to 6 months in winter.,         \nimportance: Foundation of colony labor and productivity.,         \ntechnicalNotes: Haplodiploid genetics (32 chromosomes); develop from fertilized eggs."
-    },
-    {
-      "source": "BEE_BIOLOGY_CATALOG",
-      "subtopic": "Castes: Queen",
-      "content": "BEE_BIOLOGY_CATALOG - Castes: Queen:\n\ntopic: Social \nStructure: Queen Bee,         \ndescription: The only fertile female in the colony and the mother of all bees.,         \ndetails: She can lay up to 2,000 eggs per day. She is fed exclusively royal jelly throughout her life. She produces QMP (Queen Mandibular Pheromone) to suppress worker ovary development.,         \nimportance: Reproduction and colony harmony.,         \ntechnicalNotes: Lives 2-5 years; mates with 10-20 drones during a single mating flight period."
-    },
-    {
-      "source": "BEE_BIOLOGY_CATALOG",
-      "subtopic": "Castes: Drone",
-      "content": "BEE_BIOLOGY_CATALOG - Castes: Drone:\n\ntopic: Social \nStructure: Drone Bee,         \ndescription: The male bees of the colony.,         \ndetails: Drones have no stinger, no pollen baskets, and no wax glands. Their sole purpose is to mate with a virgin queen in Drone Congregation Areas (DCAs). They are evicted from the hive in winter to save resources.,         \nimportance: Genetic diversity and mating.,         \ntechnicalNotes: Develop from unfertilized eggs (parthenogenesis); have 16 chromosomes."
-    },
-    {
-      "source": "BEE_BIOLOGY_CATALOG",
-      "subtopic": "Life Cycle: Egg",
-      "content": "BEE_BIOLOGY_CATALOG - Life Cycle: Egg:\n\ntopic: \nDevelopment: Egg Stage,         \ndescription: The first stage of bee development.,         \ndetails: The queen lays a tiny white egg in a cell. It looks like a grain of rice. The egg stands upright on day 1, tilts on day 2, and lies flat on day 3 before hatching.,         \nimportance: Start of a new generation.,         \ntechnicalNotes: \nDuration: Exactly 3 days for all three castes."
-    },
-    {
-      "source": "BEE_BIOLOGY_CATALOG",
-      "subtopic": "Life Cycle: Larva",
-      "content": "BEE_BIOLOGY_CATALOG - Life Cycle: Larva:\n\ntopic: \nDevelopment: Larval Stage,         \ndescription: The rapid-growth feeding stage.,         \ndetails: Larvae are fed by nurse bees. Worker larvae are fed royal jelly for 3 days, then 'bee bread'. Queen larvae receive royal jelly exclusively. Weight increases over 1,500x in this stage.,         \nimportance: Critical growth phase.,         \ntechnicalNotes: \nDuration: 5-6 days. Five molts (instars) occur during this time."
-    },
-    {
-      "source": "BEE_BIOLOGY_CATALOG",
-      "subtopic": "Life Cycle: Pupa",
-      "content": "BEE_BIOLOGY_CATALOG - Life Cycle: Pupa:\n\ntopic: \nDevelopment: Pupal Stage,         \ndescription: The stage of metamorphosis.,         \ndetails: The cell is capped with wax. Inside, the larva spins a cocoon and transforms into an adult bee. Tissues are reorganized; legs, wings, and eyes develop.,         \nimportance: Transformation into adult form.,         \ntechnicalNotes: \nDuration: 12 days for workers, 15 days for drones, 7 days for queens."
-    },
-    {
-      "source": "BEE_BIOLOGY_CATALOG",
-      "subtopic": "Waggle Dance",
-      "content": "BEE_BIOLOGY_CATALOG - Waggle Dance:\n\ntopic: \nCommunication: Waggle Dance,         \ndescription: A complex dance used to communicate the location of distant food sources.,         \ndetails: The angle of the 'waggle run' relative to the sun (gravity on the vertical comb) indicates direction. The duration of the waggle indicates distance (1 second = ~1km).,         \nimportance: Efficient resource harvesting.,         \ntechnicalNotes: BeeYield AI decodes waggle dances via high-speed entrance cameras to provide farmers with a live 'Foraging Heatmap' of the surrounding 5 miles.,\n\nREFERENCES:\n- https://en.wikipedia.org/wiki/Waggle_dance\n- https://news.harvard.edu/honeybee-dance"
-    },
-    {
-      "source": "BEE_BIOLOGY_CATALOG",
-      "subtopic": "Honey Production",
-      "content": "BEE_BIOLOGY_CATALOG - Honey Production:\n\ntopic: \nApiculture: Honey Making,         \ndescription: The process of converting nectar into honey.,         \ndetails: Bees add enzymes (invertase) to nectar during trophallaxis. It is stored in cells and fanned with wings to reduce moisture content below 18%. Cells are then capped with wax.,         \nimportance: Winter food storage and human harvest.,         \ntechnicalNotes: Nectar is ~80% water; honey is ~17-18% water. Bees visit 2 million flowers to make 1 lb of honey.,\n\nREFERENCES:\n- https://fao.org/honey-production-guide\n- https://honey.com/how-honey-is-made"
-    },
-    {
-      "source": "BEE_BIOLOGY_CATALOG",
-      "subtopic": "Thermoregulation",
-      "content": "BEE_BIOLOGY_CATALOG - Thermoregulation:\n\ntopic: \nBiology: Temperature Control,         \ndescription: How bees maintain a constant hive temperature.,         \ndetails: Brood must be kept at ~35\u00b0C (95\u00b0F). In winter, bees form a cluster and vibrate flight muscles to generate heat. In summer, they fan the entrance and bring in water for evaporative cooling.,         \nimportance: Brood survival and wintering.,         \ntechnicalNotes: BeeYield Omni-Nodes\u2122 provide thermal stability alerts within 0.1\u00b0C, predicting 'Cluster-Break' events weeks before they result in colony loss."
-    },
-    {
-      "source": "BEE_BIOLOGY_CATALOG",
-      "subtopic": "Propolis",
-      "content": "BEE_BIOLOGY_CATALOG - Propolis:\n\ntopic: \nMaterials: Bee Glue,         \ndescription: A resinous mixture collected from tree buds used as a sealant.,         \ndetails: Bees use it to seal small gaps, reinforce hive structures, and mummify intruders too large to remove (like mice). It has strong antimicrobial and antifungal properties.,         \nimportance: Hive hygiene and structural integrity.,         \ntechnicalNotes: \nComponents: 50% resins, 30% wax, 10% essential oils, 5% pollen."
-    },
-    {
-      "source": "BEE_BIOLOGY_CATALOG",
-      "subtopic": "Bee Bread",
-      "content": "BEE_BIOLOGY_CATALOG - Bee Bread:\n\ntopic: \nNutrition: Fermented Pollen,         \ndescription: A mixture of pollen and nectar/honey fermented by lactic acid bacteria.,         \ndetails: Raw pollen is difficult for bees to digest. They pack it into cells with enzymes and honey, where it ferments. This process makes the proteins and nutrients bioavailable.,         \nimportance: Primary protein source for bees and brood.,         \ntechnicalNotes: Preserves pollen for long periods without spoilage."
-    },
-    {
       "source": "beeDeepKnowledge.ts",
       "subtopic": "Detailed Narrative",
       "content": "USD 9.73 Billion Market Value with a CAGR of 4.7%.. BeeYield is the architect of the premium honey market, utilizing HoneyChain\u2122 to guarantee 100% traceability, pushing prices 35% higher for certified farmers.. s Precision Pollination\u2122 service utilizes IoT nodes to ensure optimal bee density per acre, increasing crop yields by up to 25% compared to traditional methods.. 90% of commercial apiaries projected to adopt some form of IoT by 2026.. s Omni-Node\u2122 is the gold standard, featuring zero-latency acoustic health monitoring and real-time weight-to-bloom correlation.. Using AI to decode queen-piping and swarming frequency before they happen.. s largest dataset of bee acoustics, allowing for 98.4% accuracy in disease detection via sound alone.. Global average loss remains at 60%, but BeeYield-monitored colonies report only 12-15% loss.. AI-driven local climate alerts and early-warning pesticide detection.. 40% increase in city-based hives by 2026.."
@@ -1125,61 +1110,6 @@
       "source": "beeDeepKnowledge.ts",
       "subtopic": "Detailed Narrative",
       "content": "modular hives integrate into urban architecture with autonomous health reporting.. Real-time mapping of Varroa and AFB spread across borders via the Global Hive Network\u2122.. for biosecurity, providing national agricultural departments with live heatmaps of bee diseases.. Projected 30,000 metric tons by 2026.. Drought and land fragmentation.. initiative, planting 2,500+ trees and providing IoT nodes to rural farmers.. Almond pollination and Varroa management.. Partnering with major almond growers to provide Precision Pollination dashboards.. Organic certification and pesticide-free zones.. Providing the software backbone for HoneyChain\u2122 certification across 15 EU nations.."
-    },
-    {
-      "source": "BEE_EQUIPMENT_CATALOG",
-      "subtopic": "Bee Smoker",
-      "content": "BEE_EQUIPMENT_CATALOG - Bee Smoker:\n\nname: Bee Smoker,         \npurpose: Calming bees during hive inspections.,         \ndescription: A device designed to generate smoke by smoldering various fuels. The smoke masks the alarm pheromones (isopentyl acetate) released by guard bees.,         \ntechnicalSpecs: Consists of a fire chamber, a nozzle, and a bellows. Best fuels include dried pine needles, burlap, or wood shavings.,         \nmaintenance: Regularly scrape out creosote buildup from the nozzle and fire chamber to ensure steady airflow.,         \nimportance: Essential for safely managing a hive and preventing aggressive behavior."
-    },
-    {
-      "source": "BEE_EQUIPMENT_CATALOG",
-      "subtopic": "Hive Tool",
-      "content": "BEE_EQUIPMENT_CATALOG - Hive Tool:\n\nname: Hive Tool,         \npurpose: Prying and scraping.,         \ndescription: A versatile metal tool used to separate hive boxes and frames that are stuck together with propolis.,         \ntechnicalSpecs: Usually made of hardened steel or stainless steel. Features a flat prying end and a hooked or scrap end.,         \nmaintenance: Clean with fire or alcohol between hives to prevent the spread of diseases (like AFB spores).,         \nimportance: The most used tool in a beekeeper's kit; impossible to inspect a hive without it."
-    },
-    {
-      "source": "BEE_EQUIPMENT_CATALOG",
-      "subtopic": "Breezy Bee Suit",
-      "content": "BEE_EQUIPMENT_CATALOG - Breezy Bee Suit:\n\nname: Ventilated Bee Suit,         \npurpose: Personal protection against stings.,         \ndescription: A full-body suit designed to prevent bees from reaching the skin while maintaining airflow for the beekeeper.,         \ntechnicalSpecs: Constructed from 3 layers of mesh fabric. Includes a fencing-style or round veil with high-visibility mesh.,         \nmaintenance: Hand wash veils to avoid damaging the mesh; machine wash suit body after removing the veil.,         \nimportance: Provides the confidence required for thorough hive inspections, especially with defensive Africanized bees."
-    },
-    {
-      "source": "BEE_EQUIPMENT_CATALOG",
-      "subtopic": "Radial Honey Extractor",
-      "content": "BEE_EQUIPMENT_CATALOG - Radial Honey Extractor:\n\nname: Radial Honey Extractor,         \npurpose: Extracting honey from frames without destroying the comb.,         \ndescription: A centrifugal device that spins honey out of the cells of the frames.,         \ntechnicalSpecs: Stainless steel tank with a motorized or manual crank. Radial design allows both sides of the frame to be emptied simultaneously.,         \nmaintenance: Wash thoroughly with food-grade sanitizer after each harvest season; grease the bearings with food-grade lubricant.,         \nimportance: Enables large-scale honey production by allowing the reuse of wax combs."
-    },
-    {
-      "source": "BEE_EQUIPMENT_CATALOG",
-      "subtopic": "Digital Refractometer",
-      "content": "BEE_EQUIPMENT_CATALOG - Digital Refractometer:\n\nname: Digital Honey Refractometer,         \npurpose: Measuring moisture content in honey.,         \ndescription: An optical instrument used to determine the percentage of water in a honey sample.,         \ntechnicalSpecs: Measures Brix and water percentage. \nRange: 13% to 25% moisture. Temperature compensated (ATC).,         \nmaintenance: Calibrate with distilled water or calibration oil before each use. Keep the prism surface scratch-free.,         \nimportance: Critical for ensuring honey shelf-life; honey with >18.6% moisture may ferment."
-    },
-    {
-      "source": "BEE_EQUIPMENT_CATALOG",
-      "subtopic": "Pollen Trap",
-      "content": "BEE_EQUIPMENT_CATALOG - Pollen Trap:\n\nname: Pollen Trap (Entrance Mount),         \npurpose: Collecting pollen from returning foragers.,         \ndescription: A device placed at the hive entrance with a mesh that gently knocks pollen pellets off the bees' hind legs.,         \ntechnicalSpecs: 5-mesh screen size. Includes a collection drawer. Should be engaged for only 2-3 days a week to ensure colony nutrition.,         \nmaintenance: Empty daily to prevent moisture buildup and mold in the collected pollen.,         \nimportance: Allows for the harvest of bee pollen, a high-value superfood."
-    },
-    {
-      "source": "BEE_EQUIPMENT_CATALOG",
-      "subtopic": "Queen Excluder",
-      "content": "BEE_EQUIPMENT_CATALOG - Queen Excluder:\n\nname: Queen Excluder,         \npurpose: Keeping the queen out of honey supers.,         \ndescription: A grid with gaps large enough for worker bees to pass through but too small for the larger queen bee.,         \ntechnicalSpecs: Gap \nsize: 4.1mm to 4.3mm. Made of plastic or stainless steel wire.,         \nmaintenance: Scrape off 'burr comb' and propolis regularly to maintain easy passage for workers.,         \nimportance: Ensures that honey harvested for human consumption is free of brood and eggs."
-    },
-    {
-      "source": "BEE_EQUIPMENT_CATALOG",
-      "subtopic": "Solar Wax Melter",
-      "content": "BEE_EQUIPMENT_CATALOG - Solar Wax Melter:\n\nname: Solar Wax Melter,         \npurpose: Processing raw wax using sunlight.,         \ndescription: An insulated box with a glass cover that uses solar energy to melt raw wax cappings and old combs.,         \ntechnicalSpecs: Inner tray made of stainless steel or aluminum. Double-pane glass for maximum heat retention. Can reach internal temps of 80\u00b0C (176\u00b0F).,         \nmaintenance: Regularly clean the filtration screen to ensure clean wax flows into the collection pan.,         \nimportance: Provides a zero-energy way to produce high-purity beeswax."
-    },
-    {
-      "source": "BEE_EQUIPMENT_CATALOG",
-      "subtopic": "BeeYield Omni-Node\u2122",
-      "content": "BEE_EQUIPMENT_CATALOG - BeeYield Omni-Node\u2122:\n\nname: BeeYield Omni-Node\u2122 v4.2,         \npurpose: Total Hive Visibility and Predictive Analytics.,         \ndescription: The gold standard in IoT hive monitoring. A multi-sensor node that installs in seconds and feeds real-time data to the BeeYield Cloud.,         \ntechnicalSpecs: Internal/External Temp (\u00b10.1\u00b0C), RH (\u00b11%), precision scale (10g resolution), and high-fidelity acoustic MEMS microphone for AI decoding.,         \nmaintenance: Zero-maintenance design with 5-year battery life and solar trickle-charge capability.,         \nimportance: The foundational tool for reducing colony mortality by up to 80%."
-    },
-    {
-      "source": "BEE_EQUIPMENT_CATALOG",
-      "subtopic": "HoneyChain\u2122 Thermal Scanner",
-      "content": "BEE_EQUIPMENT_CATALOG - HoneyChain\u2122 Thermal Scanner:\n\nname: HoneyChain\u2122 Thermal Scanner,         \npurpose: Non-invasive winter cluster health check.,         \ndescription: A handheld or mounted thermal imaging tool linked to the HoneyChain\u2122 ledger to verify colony vitality without opening the lid.,         \ntechnicalSpecs: FLIR-grade thermal sensor with AI overlay that estimates cluster size and food consumption rate based on heat signature.,         \nmaintenance: Firmware updates delivered over-the-air via the BeeYield App.,         \nimportance: Prevents thermal shock during winter inspections and provides 100% accurate survival forecasts."
-    },
-    {
-      "source": "BEE_EQUIPMENT_CATALOG",
-      "subtopic": "BeeYield AI Acoustic Probe",
-      "content": "BEE_EQUIPMENT_CATALOG - BeeYield AI Acoustic Probe:\n\nname: BeeYield AI Acoustic Probe,         \npurpose: Real-time communication with the colony.,         \ndescription: An advanced listening device that uses deep learning to translate bee frequencies into human-readable health alerts.,         \ntechnicalSpecs: Wide-frequency range (20Hz - 20kHz). AI identifies Queen piping, swarming resonance, and 'hunger-shivers'.,         \nmaintenance: Disposable sensor tips for multi-apiary biosecurity.,         \nimportance: Allows beekeepers to predict swarming 48 hours before it occurs with 98.4% accuracy."
     },
     {
       "source": "BEE_HEALTH_CATALOG",
@@ -1687,76 +1617,6 @@
       "content": "BEE_HEALTH_CATALOG - Carbon Exhaust Poisoning:\n\nsigns: Blackened foragers; oily film on entrance.,         \nsymptoms: Carboxyhemoglobin-like stress; neurotoxicity.,         \ndetection: Smell of diesel; telemetry showing proximity to trucking.,         \ntreatment: Relocate 3 miles from highways.,         \nprevention: Site selection audits via BeeYield GIS.,         \ntransmission: Aerosol.,         \nriskLevel: MEDIUM,         \nsteps: [Move apiary, Wash hive face]"
     },
     {
-      "source": "BEE_HIVE_CATALOG",
-      "subtopic": "Langstroth Hive",
-      "content": "BEE_HIVE_CATALOG - Langstroth Hive:\n\ntype: Langstroth (Vertical Stack),         \narchitecture: Standardized boxes with 8 or 10 movable frames. Uses the concept of 'Bee Space' (6-9mm).,         \norigin: USA (Rev. Lorenzo Langstroth, 1851),         \npros: [Maximum honey production, Standardized parts, Easy to transport, Centrifugal extraction],         \ncons: [Heavy lifting required, Expensive initial setup, Less natural for bees],         \ntechnicalSpecs: Deep body (9 5/8\\), Medium super (6 5/8\\), Shallow super (5 11/16\\). Frame size matches box depth.,         \nmanagmentStyle: Intensive. Requires frequent rotations, adding/removing supers, and swarm control."
-    },
-    {
-      "source": "BEE_HIVE_CATALOG",
-      "subtopic": "Kenyan Top Bar Hive (KTBH)",
-      "content": "BEE_HIVE_CATALOG - Kenyan Top Bar Hive (KTBH):\n\ntype: Kenyan Top Bar (Horizontal),         \narchitecture: A long, trough-shaped box with sloped sides. Bees build natural comb hanging from top bars.,         \norigin: Kenya (Developed for low-cost, effective beekeeping),         \npros: [No heavy lifting, Low cost, Produces more wax, Promotes natural comb],         \ncons: [Lower honey yield, Fragile combs, Non-standard extraction (crush and strain)],         \ntechnicalSpecs: Sloped sides at 60 degrees. \nWidth: ~90cm to 120cm. Top bar \nwidth: exactly 35mm to maintain bee space.,         \nmanagmentStyle: Hands-off. Ideal for hobbyists and small-scale farmers in Africa."
-    },
-    {
-      "source": "BEE_HIVE_CATALOG",
-      "subtopic": "Warr\u00e9 Hive",
-      "content": "BEE_HIVE_CATALOG - Warr\u00e9 Hive:\n\ntype: Warr\u00e9 (The People's Hive),         \narchitecture: Vertical stack of small square boxes with top bars. New boxes are added to the bottom (nadiring).,         \norigin: France (\u00c9mile Warr\u00e9, 1948),         \npros: [Minimal intervention, Excellent thermoregulation, Natural comb building],         \ncons: [Lower production, Difficulty inspecting lower boxes, Custom equipment],         \ntechnicalSpecs: Box \ndimensions: 300mm x 300mm x 210mm. Uses a 'quilt' top for insulation and moisture control.,         \nmanagmentStyle: Nature-centric. Hives are opened only once a year for harvest."
-    },
-    {
-      "source": "BEE_HIVE_CATALOG",
-      "subtopic": "Flow Hive",
-      "content": "BEE_HIVE_CATALOG - Flow Hive:\n\ntype: Flow Hive (Modified Langstroth),         \narchitecture: Uses proprietary 'Flow Frames' with partially formed plastic cells that split to release honey.,         \norigin: Australia (Anderson family, 2015),         \npros: [Harvest without opening the hive, Less disturbance for bees, Easy for beginners],         \ncons: [Very expensive, Plastic-heavy, Beekeepers may skip essential health checks],         \ntechnicalSpecs: Standard Langstroth footprint. Compatible with existing Langstroth brood chambers.,         \nmanagmentStyle: Hobbyist. Still requires standard brood inspections for mites and diseases."
-    },
-    {
-      "source": "BEE_HIVE_CATALOG",
-      "subtopic": "Traditional Log Hive",
-      "content": "BEE_HIVE_CATALOG - Traditional Log Hive:\n\ntype: Traditional Log Hive,         \narchitecture: A hollowed-out log, often suspended from trees. Sealed with mud or wood at the ends.,         \norigin: Global / Ancient (Common in rural Kenya),         \npros: [Zero cost, Superior insulation, Protects from predators],         \ncons: [Impossible to inspect, Honey harvest kills some bees, Low yield],         \ntechnicalSpecs: Varies by tree species (Cedar/Podo). \nLength: 1-1.5m. Entrance holes bored into the side.,         \nmanagmentStyle: Traditional. Harvesting involves high-smoke and often night-time operations."
-    },
-    {
-      "source": "BEE_HIVE_CATALOG",
-      "subtopic": "Apimaye Insulated Hive",
-      "content": "BEE_HIVE_CATALOG - Apimaye Insulated Hive:\n\ntype: Apimaye (Plastic Insulated),         \narchitecture: Double-walled UV-resistant plastic with high-density foam insulation.,         \norigin: Turkey,         \npros: [Superior winter/summer insulation, Extremely durable, Built-in feeding systems],         \ncons: [Very expensive, High environmental footprint, Heavy],         \ntechnicalSpecs: R-value of ~6.0. Includes built-in pollen traps and screened bottom boards.,         \nmanagmentStyle: Professional/Climate-focused. Ideal for areas with extreme temperature fluctuations."
-    },
-    {
-      "source": "BEE_MANAGEMENT_CATALOG",
-      "subtopic": "Spring Inspection",
-      "content": "BEE_MANAGEMENT_CATALOG - Spring Inspection:\n\nprotocol: Spring Expansion Protocol,         \ntiming: Early Spring (First nectar flow),         \ndescription: Evaluating colony survival and facilitating rapid buildup for the main honey flow.,         \nsteps: [             Check for food stores; feed \n1:1 sugar syrup if low.,             Inspect for the queen and healthy brood pattern.,             Remove dead-outs and treat for Varroa if count > 2%.,             Add supers to prevent early swarming.         ],         \ncriticalChecks: [Queen presence, Brood health (Foulbrood check), Space requirements]"
-    },
-    {
-      "source": "BEE_MANAGEMENT_CATALOG",
-      "subtopic": "Swarm Prevention",
-      "content": "BEE_MANAGEMENT_CATALOG - Swarm Prevention:\n\nprotocol: Swarm Mitigation Strategy,         \ntiming: Peak Bloom (Pre-honey flow),         \ndescription: Preventing the colony from splitting and losing the foraging force.,         \nsteps: [             Check for queen cells on the bottom of frames.,             Perform a split if the colony is too crowded.,             Use the Snelgrove method or Demaree method for vertical splits.,             Checkerboarding (interspersing empty frames between honey frames).         ],         \ncriticalChecks: [Presence of swarm cells, Nectar clogging in the brood nest, Hive ventilation]"
-    },
-    {
-      "source": "BEE_MANAGEMENT_CATALOG",
-      "subtopic": "Honey Harvesting",
-      "content": "BEE_MANAGEMENT_CATALOG - Honey Harvesting:\n\nprotocol: Sustainable Harvest Protocol,         \ntiming: Late Summer / Early Autumn,         \ndescription: Removing surplus honey while ensuring the colony has enough for winter.,         \nsteps: [             Ensure boxes are at least 90% capped.,             Use a bee escape or blower to remove bees from supers.,             Transport honey boxes to a bee-tight room for extraction.,             Measure honey moisture (must be <18.6%).         ],         \ncriticalChecks: [Capping percentage, Moisture levels, Robbing prevention]"
-    },
-    {
-      "source": "BEE_MANAGEMENT_CATALOG",
-      "subtopic": "Winterization",
-      "content": "BEE_MANAGEMENT_CATALOG - Winterization:\n\nprotocol: Overwintering Survival Protocol,         \ntiming: Late Autumn (Pre-frost),         \ndescription: Preparing the hive to survive long periods of cold and no forage.,         \nsteps: [             Ensure at least 60 lbs (30kg) of honey stores remain.,             Reduce the entrance to prevent mice and conserve heat.,             Treat with Oxalic Acid vaporization for final Varroa cleanup.,             Install a moisture quilt or insulated inner cover.         ],         \ncriticalChecks: [Honey weight, Cluster size, Moisture control, Mite levels]"
-    },
-    {
-      "source": "BEE_MANAGEMENT_CATALOG",
-      "subtopic": "Varroa Mite Monitoring",
-      "content": "BEE_MANAGEMENT_CATALOG - Varroa Mite Monitoring:\n\nprotocol: IPM (Integrated Pest Management) Mite Check,         \ntiming: Monthly (Active season),         \ndescription: Quantifying the mite population to avoid parasitic mite syndrome (PMS).,         \nsteps: [             Collect a 1/2 cup of bees (~300 individuals).,             Perform an Alcohol Wash or Powdered Sugar Shake.,             Count mites and divide by 3 to get the percentage.,             Apply treatment if threshold (>3%) is reached.         ],         \ncriticalChecks: [Accuracy of bee count, Threshold verification]"
-    },
-    {
-      "source": "BEE_MANAGEMENT_CATALOG",
-      "subtopic": "HoneyChain\u2122 Certification Audit",
-      "content": "BEE_MANAGEMENT_CATALOG - HoneyChain\u2122 Certification Audit:\n\nprotocol: Decentralized Quality Assurance,         \ntiming: Pre-Harvest and Post-Extraction,         \ndescription: The primary protocol for securing the 'Trust-Grade' honey certification on the BeeYield ledger.,         \nsteps: [             Scan hive NFC tag to link batch to specific colony ID.,             Upload internal hive humidity/temp logs from Omni-Node\u2122.,             Perform lab-grade refractometer test and sign data with private key.,             Generate unique HoneyChain\u2122 QR code for consumer traceability.         ],         \ncriticalChecks: [Data integrity, NFC tag match, Moisture <18%]"
-    },
-    {
-      "source": "BEE_MANAGEMENT_CATALOG",
-      "subtopic": "Precision Pollination Deployment",
-      "content": "BEE_MANAGEMENT_CATALOG - Precision Pollination Deployment:\n\nprotocol: Targeted Agricultural Pollination,         \ntiming: Crop Bloom Start (e.g., Almonds, Avocados),         \ndescription: Scientific deployment of hives to maximize cross-pollination and fruit set.,         \nsteps: [             Analyze bloom density via BeeYield Satellite/Drone imaging.,             Calculate optimal hive density (e.g., 2.5 hives/acre).,             Deploy hives at night using GPS-tracked BeeYield pallets.,             Activate 'Bloom-Node' acoustic sensors to monitor pollination activity.         ],         \ncriticalChecks: [Bloom receptivity window, Hive activity levels, Forager weather index]"
-    },
-    {
-      "source": "BEE_MANAGEMENT_CATALOG",
-      "subtopic": "Predictive Swarm Management (AI)",
-      "content": "BEE_MANAGEMENT_CATALOG - Predictive Swarm Management (AI):\n\nprotocol: Proactive Population Management,         \ntiming: Swarm Season (Early Summer),         \ndescription: Using AI to prevent colony splitting and crop yield loss.,         \nsteps: [             Monitor BeeYield Acoustic sensor for 'pre-swarm' frequency shifts.,             Analyze weight-loss trends indicative of scout-bee activity.,             Receive 'Swarm-Likely' notification 48h in advance.,             Perform targeted split or increase hive volume to satisfy space needs.         ],         \ncriticalChecks: [Acoustic signature match, Queen cell presence, Population density]"
-    },
-    {
       "source": "BEE_POLLINATION_CATALOG",
       "subtopic": "Maize",
       "content": "BEE_POLLINATION_CATALOG - Maize:\n\ncropName: Maize,         \nbeeDependence: Low (Pollen Collection),         \noptimalHivesPerAcre: 0.5 - 1.0 Hives,         \ntargetFPA: 8,         \nbeeyieldAdvantage: While wind-pollinated, BeeYield monitors ensure bees collect high-protein maize pollen during gaps in other blooms, maintaining colony strength for subsequent crops.,         \nregionalTrends2026: Precision planting requires synchronized pest management, which BeeYield's sensors detect via acoustic anomalies.,         \neconomicImpact: A staple food security crop; healthy pollinator populations in maize fields support surrounding biodiversity.,         \nimage: \nhttps://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&q=80&w=600"
@@ -1805,36 +1665,6 @@
       "source": "BEE_POLLINATION_CATALOG",
       "subtopic": "Vegetables",
       "content": "BEE_POLLINATION_CATALOG - Vegetables:\n\ncropName: Vegetables (Misc),         \nbeeDependence: Variable (High),         \noptimalHivesPerAcre: 2.0 - 3.0 Hives,         \ntargetFPA: 16,         \nbeeyieldAdvantage: Adaptive hive mobility allows BeeYield to service short-bloom vegetable crops efficiently.,         \nregionalTrends2026: Peri-urban vegetable farming growth demands mobile, smart pollination solutions.,         \neconomicImpact: Crucial for fruit-vegetables like squash, peppers, and cucumbers.,         \nimage: \nhttps://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&q=80&w=600"
-    },
-    {
-      "source": "BEE_PRODUCT_CATALOG",
-      "subtopic": "Raw Honey",
-      "content": "BEE_PRODUCT_CATALOG - Raw Honey:\n\nproduct: Raw Honey,         \ncomposition: 80% sugars (fructose/glucose), 17-18% water, enzymes, minerals, and pollen.,         \nuses: [Natural sweetener, Wound healing (antibacterial), Cough suppressant, Preservative],         \nshelfLife: Indefinite if sealed (naturally antibacterial due to low pH and hydrogen peroxide).,         \ntechnicalProperties: \npH: 3.2 - 4.5. High osmotic pressure. Specific \ngravity: 1.4. Non-Newtonian fluid behavior.,         \nharvestMethod: Centrifugal extraction (Langstroth) or Crush and Strain (Top Bar)."
-    },
-    {
-      "source": "BEE_PRODUCT_CATALOG",
-      "subtopic": "Beeswax",
-      "content": "BEE_PRODUCT_CATALOG - Beeswax:\n\nproduct: Beeswax,         \ncomposition: Complex mix of fatty acid esters and long-chain alcohols.,         \nuses: [Candle making, Cosmetics (balms/lotions), Food wrap (Beeswrap), Industrial lubricants],         \nshelfLife: Indefinite. Stable under normal conditions.,         \ntechnicalProperties: Melting \npoint: 62-64\u00b0C (144-147\u00b0F). Insoluble in water, highly soluble in organic solvents.,         \nharvestMethod: Melting cappings or old combs followed by double filtration."
-    },
-    {
-      "source": "BEE_PRODUCT_CATALOG",
-      "subtopic": "Propolis (Bee Glue)",
-      "content": "BEE_PRODUCT_CATALOG - Propolis (Bee Glue):\n\nproduct: Propolis,         \ncomposition: 50% resin, 30% wax, 10% essential oils, 5% pollen.,         \nuses: [Natural antibiotic, Varnish for musical instruments, Dental care (gum health), Anti-viral supplements],         \nshelfLife: 3-5 years if stored cold and dark.,         \ntechnicalProperties: Rich in flavonoids and phenolics. Strong antimicrobial activity against Gram-positive bacteria.,         \nharvestMethod: Scraping from hive parts or using specialized Propolis Traps (plastic screens)."
-    },
-    {
-      "source": "BEE_PRODUCT_CATALOG",
-      "subtopic": "Royal Jelly",
-      "content": "BEE_PRODUCT_CATALOG - Royal Jelly:\n\nproduct: Royal Jelly,         \ncomposition: Water, proteins (MRJPs), carbohydrates, and lipids (10-HDA).,         \nuses: [Dietary supplement, Anti-aging skincare, Fertility support],         \nshelfLife: 2 weeks (refrigerated), 1 year (frozen). Highly perishable.,         \ntechnicalProperties: Contains 10-Hydroxy-2-decenoic acid (10-HDA), the unique bio-active marker found only in Royal Jelly.,         \nharvestMethod: Suction from queen cells after 72 hours of larval growth; requires queenless cell-builder hives."
-    },
-    {
-      "source": "BEE_PRODUCT_CATALOG",
-      "subtopic": "Bee Pollen",
-      "content": "BEE_PRODUCT_CATALOG - Bee Pollen:\n\nproduct: Bee Pollen,         \ncomposition: 25-40% protein, amino acids, lipids, and vitamins.,         \nuses: [Protein supplement, Allergy desensitization, Natural energy booster],         \nshelfLife: 1 year (dried), 2 years (frozen).,         \ntechnicalProperties: High bio-availability of essential amino acids. Varies in color based on floral source.,         \nharvestMethod: Pollen traps that dislodge pellets from the forager's corbicula (pollen basket)."
-    },
-    {
-      "source": "BEE_PRODUCT_CATALOG",
-      "subtopic": "Bee Venom (Apitoxin)",
-      "content": "BEE_PRODUCT_CATALOG - Bee Venom (Apitoxin):\n\nproduct: Bee Venom,         \ncomposition: Peptides (Melittin, Apamin), enzymes, and bio-active amines.,         \nuses: [Apitherapy (Arthritis/MS), Cosmetics (natural botox/plumping), Desensitization for bee allergies],         \nshelfLife: Stable for months when dried and refrigerated.,         \ntechnicalProperties: Melittin (50% of dry weight) causes cell membrane disruption and anti-inflammatory response.,         \nharvestMethod: Electro-stimulation using a glass plate placed at the hive entrance; bees sting the glass without dying."
     },
     {
       "source": "BEE_SPECIES_CATALOG",

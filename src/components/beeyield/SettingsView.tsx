@@ -43,7 +43,11 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
     const { showGuides, setShowGuides } = useSettings();
     const [uploading, setUploading] = useState(false);
     const [emailUpdating, setEmailUpdating] = useState(false);
+    const [passwordUpdating, setPasswordUpdating] = useState(false);
+    const [deletingAccount, setDeletingAccount] = useState(false);
     const [newEmail, setNewEmail] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
     // State for modules
     const [modules, setModules] = useState([
@@ -129,6 +133,62 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
             toast.error(error.message || "Error updating email");
         } finally {
             setEmailUpdating(false);
+        }
+    };
+
+    const handlePasswordUpdate = async () => {
+        if (!newPassword || newPassword.length < 6) {
+            toast.error("Password must be at least 6 characters long");
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            toast.error("Passwords do not match");
+            return;
+        }
+
+        try {
+            setPasswordUpdating(true);
+            if (!supabase) {
+                toast.error("Database connection not available");
+                return;
+            }
+
+            const { error } = await supabase.auth.updateUser({ password: newPassword });
+
+            if (error) {
+                throw error;
+            }
+
+            toast.success("Password updated successfully!");
+            setNewPassword('');
+            setConfirmPassword('');
+        } catch (error: any) {
+            console.error('Error updating password:', error);
+            toast.error(error.message || "Error updating password");
+        } finally {
+            setPasswordUpdating(false);
+        }
+    };
+
+    const handleDeleteAccount = async () => {
+        if (!confirm("Are you absolutely sure you want to delete your account? This action cannot be undone.")) {
+            return;
+        }
+
+        try {
+            setDeletingAccount(true);
+            if (!supabase) {
+                toast.error("Database connection not available");
+                return;
+            }
+
+            toast.error("For security reasons, account deletion must be handled by an administrator. Please contact support@beeyield.com");
+        } catch (error: any) {
+            console.error('Error deleting account:', error);
+            toast.error(error.message || "Error deleting account");
+        } finally {
+            setDeletingAccount(false);
         }
     };
 
@@ -426,13 +486,38 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                 <CardTitle className="text-2xl font-black">{t('change_password')}</CardTitle>
                                 <p className="text-sm text-gray-400 font-medium pt-2">{t('change_password_desc')}</p>
                             </CardHeader>
-                            <CardContent className="p-10 pt-0">
-                                <div className="flex justify-end">
+                            <CardContent className="p-10 pt-0 space-y-4">
+                                <div className="relative group">
+                                    <Label htmlFor="new-password" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10 pointer-events-none">{t('new_password')}</Label>
+                                    <Input
+                                        id="new-password"
+                                        type="password"
+                                        placeholder="Min 6 characters"
+                                        value={newPassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        className="pt-8 pb-3 px-4 rounded-2xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-[4.5rem] shadow-none font-bold group-hover:border-amber-500/30 focus:border-amber-500 transition-all outline-none focus-visible:ring-0"
+                                    />
+                                </div>
+                                <div className="relative group">
+                                    <Label htmlFor="confirm-password" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10 pointer-events-none">{t('confirm_password')}</Label>
+                                    <Input
+                                        id="confirm-password"
+                                        type="password"
+                                        placeholder="Repeat new password"
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        className="pt-8 pb-3 px-4 rounded-2xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-[4.5rem] shadow-none font-bold group-hover:border-amber-500/30 focus:border-amber-500 transition-all outline-none focus-visible:ring-0"
+                                    />
+                                </div>
+                                <div className="flex justify-end pt-2">
                                     <motion.button
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
-                                        className="bg-transparent border-2 border-gray-200 dark:border-gray-800 text-gray-500 hover:border-gray-400 hover:text-gray-900 dark:hover:text-white rounded-2xl px-10 py-3 font-bold text-sm transition-all"
+                                        className="bg-gray-900 dark:bg-white text-white dark:text-black rounded-2xl px-10 py-3 font-bold text-sm transition-all disabled:opacity-50"
+                                        onClick={handlePasswordUpdate}
+                                        disabled={passwordUpdating || !newPassword || !confirmPassword}
                                     >
+                                        {passwordUpdating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                                         {t('change_password')}
                                     </motion.button>
                                 </div>
@@ -452,8 +537,11 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     <motion.button
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
-                                        className="bg-red-50 dark:bg-red-900/10 border-2 border-red-100 dark:border-red-900/20 text-red-500 hover:bg-red-500 hover:text-white rounded-2xl px-10 py-3 font-bold text-sm transition-all shadow-none"
+                                        className="bg-red-50 dark:bg-red-900/10 border-2 border-red-100 dark:border-red-900/20 text-red-500 hover:bg-red-500 hover:text-white rounded-2xl px-10 py-3 font-bold text-sm transition-all shadow-none disabled:opacity-50"
+                                        onClick={handleDeleteAccount}
+                                        disabled={deletingAccount}
                                     >
+                                        {deletingAccount ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                                         {t('delete_my_account')}
                                     </motion.button>
                                 </div>

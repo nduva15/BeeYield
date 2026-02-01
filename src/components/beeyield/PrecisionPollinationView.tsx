@@ -30,12 +30,15 @@ import {
     List,
     AlertCircle,
     FileText,
-    Waves
+    Waves,
+    Loader2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { beePollinationData } from '@/data/beePollinationData';
 import { cn } from '@/lib/utils';
+import { beeyieldService } from '@/services/beeyieldService';
+import { toast } from 'sonner';
 
 interface PrecisionPollinationViewProps {
     onTabChange: (tab: string) => void;
@@ -60,8 +63,8 @@ interface HiveData {
     lastSync: string;
 }
 
-// --- Generate realistic hive data for pollination contract ---
-const generateHives = (hiveCount: number): HiveData[] => {
+// --- Generate realistic hive data for fallback ---
+const generateFallbackHives = (hiveCount: number): HiveData[] => {
     const hives: HiveData[] = [];
     const baseLat = -1.2921;
     const baseLng = 36.8219;
@@ -168,13 +171,15 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
     const { t } = useLanguage();
 
     // Configuration
-    const [hiveCount, setHiveCount] = useState<number>(24);
+    const [hiveCount, setHiveCount] = useState<number>(24); // Will be updated by real data count
     const [selectedCrop, setSelectedCrop] = useState<string>("Sunflower");
     const [acreage, setAcreage] = useState<number>(20);
     const [avgFrames, setAvgFrames] = useState<number>(8);
+    const [isLoading, setIsLoading] = useState(true);
+    const [usingRealData, setUsingRealData] = useState(false);
 
     // Hives State
-    const [hives, setHives] = useState<HiveData[]>(() => generateHives(hiveCount));
+    const [hives, setHives] = useState<HiveData[]>([]);
     const [selectedHiveId, setSelectedHiveId] = useState<string | 'aggregate'>('aggregate');
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [isHiveSelectorOpen, setIsHiveSelectorOpen] = useState(false);
@@ -183,13 +188,65 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
     const [activityLogs, setActivityLogs] = useState<{ id: number, time: string, action: string, type: 'info' | 'warning' | 'success', hive: string }[]>([]);
 
     useEffect(() => {
-        setHives(generateHives(hiveCount));
-        setSelectedHiveId('aggregate');
-    }, [hiveCount]);
+        const fetchRealHives = async () => {
+            setIsLoading(true);
+            try {
+                const realHives = await beeyieldService.getHives();
+                if (realHives && realHives.length > 0) {
+                    setUsingRealData(true);
+                    setHiveCount(realHives.length);
+                    // Map real hive data to the view's data structure
+                    const mappedHives: HiveData[] = realHives.map((h, i) => {
+                        const row = Math.floor(i / 10);
+                        const col = i % 10;
+                        // Simulate sensor data if missing, using the real latest_temp if available
+                        const temp = h.latest_temp || (33.5 + Math.random() * 3);
+                        const humidity = h.latest_humidity || (55 + Math.random() * 20);
+                        const status = (temp < 32 || temp > 38) ? 'critical' : (temp < 33 || temp > 36) ? 'warning' : 'healthy';
+
+                        return {
+                            id: h.hive_code,
+                            name: h.hive_code,
+                            location: {
+                                lat: h.apiary?.latitude || (-1.2921 + (row * 0.0005)),
+                                lng: h.apiary?.longitude || (36.8219 + (col * 0.0008))
+                            },
+                            x: 5 + (col * 9) + Math.random() * 3,
+                            y: 10 + (row * 15) + Math.random() * 5,
+                            status: status,
+                            sensors: {
+                                acoustics: { value: 235 + Math.random() * 30, trend: 'stable', trendValue: 'Stable' },
+                                temperature: { value: parseFloat(temp.toFixed(1)), trend: 'stable', trendValue: 'Stable' },
+                                humidity: { value: Math.round(humidity), trend: 'stable', trendValue: 'Stable' },
+                                flightActivity: { value: 32 + Math.random() * 10, trend: 'up', trendValue: '+5%' }
+                            },
+                            framesOfBees: h.frame_count || 8,
+                            queenStatus: 'present', // Default to present for now
+                            lastSync: 'Just now'
+                        };
+                    });
+                    setHives(mappedHives);
+                } else {
+                    console.log("No real hives found, using fallback data.");
+                    setUsingRealData(false);
+                    setHives(generateFallbackHives(hiveCount));
+                }
+            } catch (error) {
+                console.error("Error fetching real hives:", error);
+                toast.error("Failed to load hive data. Using simulation mode.");
+                setHives(generateFallbackHives(hiveCount));
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchRealHives();
+    }, []); // Only fetch on mount
 
     const selectedHive = selectedHiveId === 'aggregate' ? null : hives.find(h => h.id === selectedHiveId);
 
     const aggregateSensors = useMemo(() => {
+        if (hives.length === 0) return { acoustics: 0, temperature: 0, humidity: 0, flightActivity: 0 };
         const avgAcoustics = Math.round(hives.reduce((sum, h) => sum + h.sensors.acoustics.value, 0) / hives.length);
         const avgTemp = parseFloat((hives.reduce((sum, h) => sum + h.sensors.temperature.value, 0) / hives.length).toFixed(1));
         const avgHumidity = Math.round(hives.reduce((sum, h) => sum + h.sensors.humidity.value, 0) / hives.length);
@@ -648,25 +705,32 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                                 style={{ backgroundImage: 'radial-gradient(circle, #F4D03F 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
                             <div className="absolute inset-0 bg-gradient-to-br from-[#1B9157]/10 via-transparent to-[#F4D03F]/5" />
 
-                            {hives.map((hive) => (
-                                <motion.div
-                                    key={hive.id}
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    className="absolute cursor-pointer group/node z-10"
-                                    style={{ left: `${hive.x}%`, top: `${hive.y}%` }}
-                                    onClick={() => setSelectedHiveId(hive.id)}
-                                >
-                                    <div className={cn(
-                                        "w-2.5 h-2.5 rounded-full border border-white shadow-lg transition-transform hover:scale-150",
-                                        getStatusColor(hive.status),
-                                        selectedHiveId === hive.id && "ring-2 ring-[#F4D03F] ring-offset-1 ring-offset-slate-900 scale-125"
-                                    )} />
-                                    <div className="absolute bottom-5 left-1/2 -translate-x-1/2 px-2 py-1 bg-black/90 text-white rounded border border-white/10 opacity-0 group-hover/node:opacity-100 transition-opacity z-50 whitespace-nowrap pointer-events-none">
-                                        <div className="text-[9px] font-bold">{hive.id} • {hive.sensors.flightActivity.value} VPM</div>
-                                    </div>
-                                </motion.div>
-                            ))}
+                            {isLoading ? (
+                                <div className="absolute inset-0 flex items-center justify-center bg-slate-900/50 z-20">
+                                    <Loader2 className="w-8 h-8 text-[#F4D03F] animate-spin" />
+                                    <span className="ml-2 text-white font-bold text-xs uppercase">Loading Hives...</span>
+                                </div>
+                            ) : (
+                                hives.map((hive) => (
+                                    <motion.div
+                                        key={hive.id}
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        className="absolute cursor-pointer group/node z-10"
+                                        style={{ left: `${hive.x}%`, top: `${hive.y}%` }}
+                                        onClick={() => setSelectedHiveId(hive.id)}
+                                    >
+                                        <div className={cn(
+                                            "w-2.5 h-2.5 rounded-full border border-white shadow-lg transition-transform hover:scale-150",
+                                            getStatusColor(hive.status),
+                                            selectedHiveId === hive.id && "ring-2 ring-[#F4D03F] ring-offset-1 ring-offset-slate-900 scale-125"
+                                        )} />
+                                        <div className="absolute bottom-5 left-1/2 -translate-x-1/2 px-2 py-1 bg-black/90 text-white rounded border border-white/10 opacity-0 group-hover/node:opacity-100 transition-opacity z-50 whitespace-nowrap pointer-events-none">
+                                            <div className="text-[9px] font-bold">{hive.id} • {hive.sensors.flightActivity.value.toFixed(1)} VPM</div>
+                                        </div>
+                                    </motion.div>
+                                ))
+                            )}
 
                             <div className="absolute bottom-3 left-3 flex items-center gap-2 text-[10px] text-white/50 font-bold">
                                 <Layers className="w-3 h-3" />

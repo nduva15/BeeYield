@@ -1,151 +1,174 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-    Bell, Clock, Activity
+    Bell, Clock, Activity, Loader2, AlertTriangle, CheckCircle2
 } from 'lucide-react';
+import { meterService, MeterEvent, Meter, Building } from '@/services/meterService';
+import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 const MetersAlarms: React.FC = () => {
-    const alarms = [
-        {
-            id: 1,
-            title: 'Long-lasting leak',
-            location: 'Building A - Frame 2',
-            time: 'Today 08:12',
-            priority: 'High',
-            type: 'ALERT',
-            notified: 'SMS + Email',
-            priorityColor: 'text-red-600 border-red-200 bg-red-50',
-            typeColor: 'bg-red-100 text-red-700'
-        },
-        {
-            id: 2,
-            title: 'Sudden use of spike',
-            location: 'Building C - Premises 12',
-            time: 'Yesterday 18:05',
-            priority: 'Medium',
-            type: 'WARNING',
-            notified: 'Email',
-            priorityColor: 'text-[#F4D03F] border-[#F4D03F]/20 bg-[#F4D03F]/5',
-            typeColor: 'bg-[#F4D03F]/20 text-[#D4AF37]'
-        },
-        {
-            id: 3,
-            title: 'No growth',
-            location: 'Building B - basement',
-            time: 'Yesterday 9:40 PM',
-            priority: 'Medium',
-            type: 'WARNING',
-            notified: 'SMS',
-            priorityColor: 'text-[#F4D03F] border-[#F4D03F]/20 bg-[#F4D03F]/5',
-            typeColor: 'bg-[#F4D03F]/20 text-[#D4AF37]'
-        },
-        {
-            id: 4,
-            title: 'No communication',
-            location: 'Building D - garage',
-            time: 'Yesterday 13:22',
-            priority: 'High',
-            type: 'ALERT',
-            notified: 'Push',
-            priorityColor: 'text-red-600 border-red-200 bg-red-50',
-            typeColor: 'bg-red-100 text-red-700'
-        },
-    ];
+    const [events, setEvents] = useState<MeterEvent[]>([]);
+    const [meters, setMeters] = useState<Meter[]>([]);
+    const [buildings, setBuildings] = useState<Building[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadAlarms = async () => {
+            setLoading(true);
+            try {
+                const [eventData, meterData, buildingData] = await Promise.all([
+                    meterService.getEvents(),
+                    meterService.getMeters(),
+                    meterService.getBuildings()
+                ]);
+                setEvents(eventData);
+                setMeters(meterData);
+                setBuildings(buildingData);
+            } catch (error) {
+                console.error('Failed to load alarms', error);
+                toast.error('Failed to load alarm events');
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadAlarms();
+    }, []);
+
+    const getMeterInfo = (meterId: string) => {
+        const meter = meters.find(m => m.id === meterId);
+        if (!meter) return 'Unknown Meter';
+        const building = buildings.find(b => b.id === meter.building_id);
+        return `${meter.meter_number} - ${building?.name || 'Unknown Building'}`;
+    };
+
+    const getSeverityStyles = (severity: string) => {
+        switch (severity.toUpperCase()) {
+            case 'CRITICAL':
+            case 'ALERT':
+                return 'text-red-600 border-red-200 bg-red-50';
+            case 'WARNING':
+                return 'text-amber-600 border-amber-200 bg-amber-50';
+            default:
+                return 'text-blue-600 border-blue-200 bg-blue-50';
+        }
+    };
+
+    const getBadgeStyles = (severity: string) => {
+        switch (severity.toUpperCase()) {
+            case 'CRITICAL':
+            case 'ALERT':
+                return 'bg-red-100 text-red-700';
+            case 'WARNING':
+                return 'bg-amber-100 text-amber-700';
+            default:
+                return 'bg-blue-100 text-blue-700';
+        }
+    };
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-10">
-
-
             <h1 className="text-[2.5rem] font-bold text-[#1B9157] dark:text-[#F4D03F] tracking-tight">Alarms & events</h1>
 
             {/* Top Notifications Section */}
             <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm overflow-hidden border-t-4 border-t-[#F4D03F]">
                 <CardHeader className="pb-4">
-                    <div className="flex items-center gap-2 mb-4">
+                    <div className="flex items-center gap-2 mb-2">
                         <Bell className="w-5 h-5 text-[#1B9157] dark:text-[#F4D03F]" fill="currentColor" />
-                        <CardTitle className="text-lg font-bold text-[#1B9157] dark:text-[#F4D03F]">Top notifications from last 48h</CardTitle>
+                        <CardTitle className="text-lg font-bold text-[#1B9157] dark:text-[#F4D03F]">Real-time system notifications</CardTitle>
                     </div>
                 </CardHeader>
                 <CardContent className="p-0">
                     <div className="divide-y divide-gray-100 dark:divide-gray-800">
-                        {alarms.map((alarm) => (
-                            <div key={alarm.id} className="p-6 flex flex-col md:flex-row md:items-center justify-between hover:bg-[#F4D03F]/5 dark:hover:bg-[#F4D03F]/10 transition-all cursor-pointer group">
-                                <div className="space-y-1 mb-4 md:mb-0">
-                                    <h4 className="font-bold text-gray-900 dark:text-gray-100 group-hover:text-[#1B9157] dark:group-hover:text-[#F4D03F] transition-colors">{alarm.title}</h4>
-                                    <p className="text-sm text-gray-500">{alarm.location} • {alarm.time}</p>
-                                </div>
-                                <div className="flex items-center gap-6">
-                                    <div className="flex gap-3">
-                                        <Badge variant="outline" className={`px-3 py-1 font-bold ${alarm.priorityColor}`}>
-                                            {alarm.priority}
-                                        </Badge>
-                                        <Badge className={`px-3 py-1 font-bold items-center gap-1.5 ${alarm.typeColor} hover:${alarm.typeColor} border-none shadow-none`}>
-                                            <div className={`w-1.5 h-1.5 rounded-full ${alarm.type === 'ALERT' ? 'bg-red-500' : 'bg-[#F4D03F]'}`}></div>
-                                            {alarm.type}
-                                        </Badge>
+                        {loading ? (
+                            <div className="p-12 flex justify-center"><Loader2 className="w-8 h-8 animate-spin text-gray-300" /></div>
+                        ) : events.length === 0 ? (
+                            <div className="p-12 text-center text-gray-400">No active alarms found.</div>
+                        ) : (
+                            events.map((event) => (
+                                <div key={event.id} className="p-6 flex flex-col md:flex-row md:items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-900/40 transition-all cursor-default">
+                                    <div className="space-y-1 mb-4 md:mb-0">
+                                        <div className="flex items-center gap-2">
+                                            {event.is_resolved ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <AlertTriangle className="w-4 h-4 text-red-500" />}
+                                            <h4 className="font-bold text-gray-900 dark:text-gray-100 uppercase tracking-tight">{event.event_type}</h4>
+                                        </div>
+                                        <p className="text-sm text-gray-500">{event.message || event.reason}</p>
+                                        <p className="text-[10px] text-gray-400 font-medium">{getMeterInfo(event.meter_id)} • {new Date(event.timestamp).toLocaleString()}</p>
                                     </div>
-                                    <span className="text-xs text-gray-400 font-medium whitespace-nowrap hidden md:inline-block">Notified: {alarm.notified}</span>
+                                    <div className="flex items-center gap-6">
+                                        <div className="flex gap-3">
+                                            <Badge variant="outline" className={cn("px-3 py-1 font-bold", getSeverityStyles(event.severity))}>
+                                                {event.severity}
+                                            </Badge>
+                                            <Badge className={cn("px-3 py-1 font-bold items-center gap-1.5 border-none shadow-none", getBadgeStyles(event.severity))}>
+                                                <div className={cn("w-1.5 h-1.5 rounded-full", event.is_resolved ? "bg-green-500" : "bg-red-500")}></div>
+                                                {event.is_resolved ? 'RESOLVED' : 'ACTIVE'}
+                                            </Badge>
+                                        </div>
+                                        <Button variant="ghost" size="sm" className="hidden md:flex text-xs font-bold text-[#1B9157]">Assign ticket</Button>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                        {/* Generate Alarm Report Placeholder Row */}
+                            ))
+                        )}
                         <div className="p-4 bg-gray-50/50 dark:bg-gray-900/20 text-center">
                             <span className="text-xs font-bold text-[#1B9157] hover:text-[#1B9157]/80 uppercase tracking-widest cursor-pointer transition-colors">
-                                View all notifications
+                                Archive
                             </span>
                         </div>
                     </div>
                 </CardContent>
             </Card>
 
-            {/* Bottom Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Response History Chart */}
-                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm border-t-2 border-t-[#1B9157]/10">
+                {/* Stats Card */}
+                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm">
                     <CardHeader>
-                        <CardTitle className="text-lg font-bold text-[#1B9157]">Response history</CardTitle>
-                        <CardDescription>Quick view of response time and status</CardDescription>
+                        <CardTitle className="text-lg font-bold text-[#1B9157]">Statistics</CardTitle>
+                        <CardDescription>Event distribution by severity</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="h-[250px] w-full border border-dashed border-[#F4D03F]/30 dark:border-[#F4D03F]/10 rounded-xl flex items-center justify-center bg-[#F4D03F]/5">
-                            <span className="text-[#7a6820] dark:text-[#F4D03F] font-bold">Timeline alarm</span>
+                        <div className="space-y-4">
+                            {['Critical', 'Warning', 'Info'].map(s => {
+                                const count = events.filter(e => e.severity.toLowerCase() === s.toLowerCase()).length;
+                                const total = events.length || 1;
+                                const pct = (count / total) * 100;
+                                return (
+                                    <div key={s} className="space-y-1.5">
+                                        <div className="flex justify-between text-xs font-bold">
+                                            <span>{s}</span>
+                                            <span>{count}</span>
+                                        </div>
+                                        <div className="h-2 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                            <div
+                                                className={cn("h-full transition-all duration-1000",
+                                                    s === 'Critical' ? "bg-red-500" : s === 'Warning' ? "bg-amber-500" : "bg-blue-500"
+                                                )}
+                                                style={{ width: `${pct}%` }}
+                                            />
+                                        </div>
+                                    </div>
+                                )
+                            })}
                         </div>
                     </CardContent>
                 </Card>
 
-                {/* Responses List */}
-                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm h-full border-t-2 border-t-[#1B9157]/10">
+                {/* Info Card */}
+                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm">
                     <CardHeader>
-                        <CardTitle className="text-lg font-bold text-[#1B9157]">Responses</CardTitle>
+                        <CardTitle className="text-lg font-bold text-[#1B9157]">Workflow Status</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="flex items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-gray-800 hover:shadow-sm transition-shadow hover:border-[#1B9157]/30">
-                            <div className="space-y-1">
-                                <h4 className="font-bold text-gray-900 dark:text-white">Service ticket</h4>
-                                <div className="flex items-center gap-2 text-sm text-[#1B9157]">
-                                    <Clock className="w-3.5 h-3.5" />
-                                    Response time 2h
-                                </div>
+                        <div className="p-4 rounded-xl bg-green-50/50 border border-green-100 flex items-center justify-between">
+                            <div>
+                                <h4 className="text-xs font-bold text-green-700">All Critical Resolved</h4>
+                                <p className="text-[10px] text-green-600 mt-1">Excellent response time in last 24h.</p>
                             </div>
-                            <Badge variant="outline" className="text-[#1B9157] border-[#1B9157]/20 bg-[#1B9157]/5 px-3 py-1 font-bold">
-                                Closed
-                            </Badge>
+                            <CheckCircle2 className="w-5 h-5 text-green-500" />
                         </div>
-
-                        <div className="flex items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-gray-800 hover:shadow-sm transition-shadow hover:border-[#F4D03F]/30">
-                            <div className="space-y-1">
-                                <h4 className="font-bold text-gray-900 dark:text-white">Admin follow-up</h4>
-                                <div className="flex items-center gap-2 text-sm text-[#7a6820] dark:text-[#F4D03F]">
-                                    <Activity className="w-3.5 h-3.5" />
-                                    In progress
-                                </div>
-                            </div>
-                            <Badge variant="outline" className="text-[#7a6820] dark:text-[#F4D03F] border-[#F4D03F]/20 bg-[#F4D03F]/5 px-3 py-1 font-bold">
-                                Pending
-                            </Badge>
-                        </div>
+                        <Button className="w-full h-11 rounded-xl bg-gray-900 text-white font-bold text-xs">Run Diagnostic</Button>
                     </CardContent>
                 </Card>
             </div>

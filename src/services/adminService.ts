@@ -83,6 +83,72 @@ export interface FarmerInput {
     status?: string;
 }
 
+export interface ActivityLog {
+    id: string;
+    activity_type: string;
+    action: string;
+    entity_type: string;
+    entity_id?: string;
+    entity_reference?: string;
+    user_email?: string;
+    user_name?: string;
+    created_at: string;
+    metadata?: any;
+}
+
+export interface DocumentLog {
+    id: string;
+    document_type: string;
+    document_name: string;
+    file_format: string;
+    category: string;
+    related_entity_reference?: string;
+    download_count: number;
+    created_at: string;
+}
+
+export interface TracingHistory {
+    id: string;
+    batch_code: string;
+    honey_type?: string;
+    farmer_name?: string;
+    trace_source: string;
+    device_type?: string;
+    is_authenticated: boolean;
+    created_at: string;
+}
+
+export interface PaymentTransaction {
+    id: string;
+    order_number?: string;
+    payment_method: string;
+    amount_kes: number;
+    status: string;
+    created_at: string;
+    customer_email?: string;
+}
+
+export interface AccountRecord {
+    id: string;
+    email: string;
+    first_name?: string;
+    last_name?: string;
+    account_type: string;
+    verification_status: string;
+    is_active: boolean;
+    created_at: string;
+}
+
+export interface InvoiceRecord {
+    id: string;
+    invoice_number: string;
+    order_number?: string;
+    customer_email?: string;
+    total_kes: number;
+    status: string;
+    created_at: string;
+}
+
 export const adminService = {
     // ============== SEEDING ==============
     // Seeding via Supabase directly (Frontend logic)
@@ -733,5 +799,84 @@ export const adminService = {
             if (sbError) throw sbError;
             return data;
         }
+    },
+
+    // ============== EXTENDED DASHBOARD ==============
+
+    getActivityLogs: async (filters: any = {}) => {
+        const queryParams = new URLSearchParams(filters).toString();
+        return await apiGet<ActivityLog[]>(`/admin/activity-logs?${queryParams}`);
+    },
+
+    getActivityStats: async (days: number = 7) => {
+        return await apiGet<any>(`/admin/activity-logs/stats?days=${days}`);
+    },
+
+    getGeneratedDocuments: async (filters: any = {}) => {
+        const queryParams = new URLSearchParams(filters).toString();
+        return await apiGet<DocumentLog[]>(`/admin/documents?${queryParams}`);
+    },
+
+    getDocumentStats: async (days: number = 30) => {
+        return await apiGet<any>(`/admin/documents/stats?days=${days}`);
+    },
+
+    getTracingHistory: async (filters: any = {}) => {
+        const queryParams = new URLSearchParams(filters).toString();
+        return await apiGet<TracingHistory[]>(`/admin/tracing-history?${queryParams}`);
+    },
+
+    getTracingStats: async (days: number = 30) => {
+        return await apiGet<any>(`/admin/tracing-history/stats?days=${days}`);
+    },
+
+    getPaymentTransactions: async (filters: any = {}) => {
+        const queryParams = new URLSearchParams(filters).toString();
+        return await apiGet<PaymentTransaction[]>(`/admin/payments?${queryParams}`);
+    },
+
+    getPaymentStats: async (days: number = 30) => {
+        return await apiGet<any>(`/admin/payments/stats?days=${days}`);
+    },
+
+    getAccountRegistry: async (filters: any = {}) => {
+        const queryParams = new URLSearchParams(filters).toString();
+        return await apiGet<AccountRecord[]>(`/admin/accounts?${queryParams}`);
+    },
+
+    getAccountStats: async (days: number = 30) => {
+        return await apiGet<any>(`/admin/accounts/stats?days=${days}`);
+    },
+
+    getInvoiceRegistry: async (filters: any = {}) => {
+        const queryParams = new URLSearchParams(filters).toString();
+        return await apiGet<InvoiceRecord[]>(`/admin/invoices?${queryParams}`);
+    },
+
+    getInvoiceStats: async (days: number = 30) => {
+        return await apiGet<any>(`/admin/invoices/stats?days=${days}`);
+    },
+
+    getExtendedDashboardStats: async (days: number = 7) => {
+        return await apiGet<any>(`/admin/dashboard-extended?days=${days}`);
+    },
+
+    // ============== LOGGING METHODS ==============
+
+    logActivity: async (activity: any) => {
+        return await apiPost<any>('/admin/activity-logs', activity);
+    },
+
+    logDocument: async (doc: any) => {
+        return await apiPost<any>('/admin/documents', doc);
+    },
+
+    logTrace: async (trace: any) => {
+        // This is a public endpoint on the backend
+        return await apiPost<any>('/admin/tracing-history', trace);
+    },
+
+    logPayment: async (payment: any) => {
+        return await apiPost<any>('/admin/payments', payment);
     }
 };

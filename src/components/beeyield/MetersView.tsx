@@ -1,21 +1,27 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import {
     Droplet, Flame, Zap, AlertTriangle, TrendingUp, Send,
-    Bot, ChevronDown, MessageCircle, ThermometerSun
+    Bot, ChevronDown, MessageCircle, ThermometerSun, Loader2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { meterService, Meter, MeterEvent, Building } from '@/services/meterService';
 import MetersAlarms from './MetersAlarms';
 import MetersPayments from './MetersPayments';
 import MetersReports from './MetersReports';
 import MetersSettings from './MetersSettings';
 import MetersMeasurements from './MetersMeasurements';
+import MetersListWater from './MetersListWater';
+import MetersListHeat from './MetersListHeat';
+import MetersListEnergy from './MetersListEnergy';
+import MetersListOther from './MetersListOther';
+import { toast } from 'sonner';
 
-// Usage trend data
+// Usage trend data (Keep as sample for now until we have time-series API)
 const usageTrendData = [
     { day: 'Day 1', value: 125 },
     { day: 'Day 3', value: 165 },
@@ -26,57 +32,12 @@ const usageTrendData = [
     { day: 'Day 13', value: 195 },
 ];
 
-// Recent events data
-const recentEvents = [
-    {
-        id: 1,
-        type: 'Leak',
-        severity: 'ALERT',
-        location: 'Budynek A - staba 2',
-        reason: 'Why?: Sudden spike in short time',
-        time: '08:12'
-    },
-    {
-        id: 2,
-        type: 'No growth',
-        severity: 'WARNING',
-        location: 'Budynek B - piwnica',
-        reason: 'Why?: No pulses for 12h',
-        time: 'Wczoraj 21:40'
-    },
-    {
-        id: 3,
-        type: 'Tamper attempt',
-        severity: 'ALERT',
-        location: 'Budynek C - lokal 12',
-        reason: 'Why?: Magnetic field event',
-        time: 'Wczoraj 16:05'
-    },
-    {
-        id: 4,
-        type: 'No communication',
-        severity: 'WARNING',
-        location: 'Budynek D - winda',
-        reason: 'Why?: No readings for last 6h',
-        time: 'Wczoraj 13:22'
-    },
-    {
-        id: 5,
-        type: 'Pressure drop',
-        severity: 'WARNING',
-        location: 'Budynek A - hydrofornia',
-        reason: 'Why?: Pressure drop in the zone',
-        time: 'Wczoraj 11:10'
-    },
-];
-
-// Suggested AI questions
 const suggestedQuestions = [
     'How long does meter certification take?',
     'How to settle heat costs in a multi-unit building?',
-    'Overlay module or built-in module meters?',
-    'Mechanical or ultrasonic heat meter?',
     'How to detect a water leak quickly?',
+    'Which meters have the highest usage today?',
+    'Show me all active alerts.',
 ];
 
 interface MetersViewProps {
@@ -85,26 +46,52 @@ interface MetersViewProps {
 }
 
 const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'meters-dashboard' }) => {
-    // ... (keep state logic if needed, or move it inside the default dashboard view)
-    // Actually, I should probably split the Dashboard content into its own component or just render it inline if subTab is default.
-    // For simplicity, I will render the new components if the tab matches, otherwise function as before.
+    // Data States
+    const [meters, setMeters] = useState<Meter[]>([]);
+    const [events, setEvents] = useState<MeterEvent[]>([]);
+    const [buildings, setBuildings] = useState<Building[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    // Import these dynamically or assume they are available if I was rewriting whole file, but here I am using replace.
-    // I need to add imports at top, but I can't do that easily with a single contiguous block unless I replace the whole file or use multi_replace.
-    // I'll assume I can just switch on activeSubTab here.
+    // UI States
+    const [usagePeriod, setUsagePeriod] = useState<'Daily' | 'Hourly'>('Daily');
+    const [usageFilter, setUsageFilter] = useState<'Water' | 'Heat' | 'Energy' | 'Other'>('Water');
+    const [aiMessage, setAiMessage] = useState('');
+    const [chatMessages, setChatMessages] = useState([
+        { role: 'assistant', content: 'Hi! I can help with meter operations and billing.' },
+    ]);
 
-    if (activeSubTab === 'meters-alarms') {
-        return <MetersAlarms />;
-    }
-    if (activeSubTab === 'meters-payments') {
-        return <MetersPayments onTabChange={onTabChange} />;
-    }
-    if (activeSubTab === 'meters-reports') {
-        return <MetersReports />;
-    }
-    if (activeSubTab === 'meters-settings') {
-        return <MetersSettings />;
-    }
+    useEffect(() => {
+        const loadDashboardData = async () => {
+            if (activeSubTab !== 'meters-dashboard') return;
+            setLoading(true);
+            try {
+                const [mData, eData, bData] = await Promise.all([
+                    meterService.getMeters(),
+                    meterService.getEvents(),
+                    meterService.getBuildings()
+                ]);
+                setMeters(mData);
+                setEvents(eData);
+                setBuildings(bData);
+            } catch (error) {
+                console.error('Failed to load meter dashboard', error);
+                toast.error('Failed to load dashboard data');
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadDashboardData();
+    }, [activeSubTab]);
+
+    if (activeSubTab === 'meters-alarms') return <MetersAlarms />;
+    if (activeSubTab === 'meters-payments') return <MetersPayments onTabChange={onTabChange} />;
+    if (activeSubTab === 'meters-reports') return <MetersReports />;
+    if (activeSubTab === 'meters-settings') return <MetersSettings />;
+    if (activeSubTab === 'meters-water' || activeSubTab === 'meters-list') return <MetersListWater onTabChange={onTabChange} />;
+    if (activeSubTab === 'meters-heat') return <MetersListHeat onTabChange={onTabChange} />;
+    if (activeSubTab === 'meters-energy') return <MetersListEnergy onTabChange={onTabChange} />;
+    if (activeSubTab === 'meters-other') return <MetersListOther onTabChange={onTabChange} />;
+
     if ([
         'meters-charts',
         'meters-consumption',
@@ -115,107 +102,75 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
         return <MetersMeasurements onTabChange={onTabChange} activeSubTab={activeSubTab} />;
     }
 
-    // Default Dashboard Logic
-    const [usagePeriod, setUsagePeriod] = useState<'Daily' | 'Hourly'>('Daily');
-    const [usageFilter, setUsageFilter] = useState<'Water' | 'Heat' | 'Energy' | 'Other'>('Water');
-    const [aiMessage, setAiMessage] = useState('');
-    const [chatMessages, setChatMessages] = useState([
-        { role: 'assistant', content: 'Hi! I can help with meter operations and billing.' },
-        { role: 'assistant', content: 'Ask about certification, settlement rules, or anomalies.' },
-        { role: 'user', content: 'How long does meter certification take?' },
-        { role: 'assistant', content: 'Certification usually takes 5-7 years depending on meter type.' },
-    ]);
+    // Dashboard Calculations
+    const getUsageByMedium = (medium: string) => {
+        const mediumMeters = meters.filter(m => m.meter_type === medium);
+        const total = mediumMeters.reduce((acc, current) => acc + (current.last_reading_value || 0), 0);
+        const unit = mediumMeters[0]?.last_reading_unit || (medium === 'Energy' ? 'kWh' : medium === 'Heat' ? 'GJ' : 'm3');
+        return { total: total.toFixed(1), unit };
+    };
+
+    const activeAlarmsCount = events.filter(e => !e.is_resolved).length;
 
     const handleSendMessage = () => {
         if (aiMessage.trim()) {
             setChatMessages([...chatMessages, { role: 'user', content: aiMessage }]);
             setAiMessage('');
-            // Simulate AI response
             setTimeout(() => {
                 setChatMessages(prev => [...prev, {
                     role: 'assistant',
-                    content: 'Thank you for your question. I\'ll analyze the meter data and get back to you shortly.'
+                    content: 'I am analyzing the real-time meter data. Currently, I see ' + meters.length + ' active devices in the system.'
                 }]);
             }, 1000);
         }
     };
 
+    if (loading && activeSubTab === 'meters-dashboard') {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+                <Loader2 className="w-10 h-10 animate-spin text-[#1B9157]" />
+                <p className="text-gray-500 font-medium font-mono text-xs">Syncing utility data...</p>
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-6 animate-in fade-in duration-500 pb-12">
-            {/* Title */}
-            <h1 className="text-[2.5rem] font-bold text-[#1B9157] dark:text-[#F4D03F] tracking-tight">Meters</h1>
+            <h1 className="text-[2.5rem] font-bold text-[#1B9157] dark:text-[#F4D03F] tracking-tight">Meters Overview</h1>
 
             {/* Usage Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Water Usage Card */}
-                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm p-5 border-t-4 border-t-[#F4D03F]">
-                    <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-[#1B9157]/10 flex items-center justify-center">
-                                <Droplet className="w-5 h-5 text-[#1B9157]" />
-                            </div>
-                            <div>
-                                <p className="text-xs text-gray-500 font-medium">Water usage</p>
-                                <p className="text-[10px] text-gray-400">(today / month)</p>
-                            </div>
-                        </div>
-                        <Badge className="bg-[#1B9157]/10 text-[#1B9157] border-0 text-[10px] font-bold px-2">
-                            <span className="w-1.5 h-1.5 bg-[#1B9157] rounded-full mr-1"></span>
-                            OK
-                        </Badge>
-                    </div>
-                    <div className="mt-4">
-                        <p className="text-xl font-black text-gray-900 dark:text-white">12.4 m3 / 384 m3</p>
-                        <p className="text-xs text-[#1B9157] font-medium mt-1">+21%</p>
-                    </div>
-                </Card>
+                {['Water', 'Heat', 'Energy'].map(medium => {
+                    const { total, unit } = getUsageByMedium(medium);
+                    const Icon = medium === 'Water' ? Droplet : medium === 'Heat' ? ThermometerSun : Zap;
+                    const alertCount = meters.filter(m => m.meter_type === medium && m.has_alarm).length;
 
-                {/* Heat Usage Card */}
-                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm p-5 border-t-4 border-t-[#F4D03F]">
-                    <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-950/30 flex items-center justify-center">
-                                <ThermometerSun className="w-5 h-5 text-orange-500" />
+                    return (
+                        <Card key={medium} className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm p-5 border-t-4 border-t-[#F4D03F]">
+                            <div className="flex items-start justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center",
+                                        medium === 'Water' ? "bg-blue-50" : medium === 'Heat' ? "bg-orange-50" : "bg-yellow-50")}>
+                                        <Icon className={cn("w-5 h-5",
+                                            medium === 'Water' ? "text-blue-500" : medium === 'Heat' ? "text-orange-500" : "text-yellow-500")} />
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">{medium}</p>
+                                    </div>
+                                </div>
+                                <Badge className={cn("border-0 text-[10px] font-bold px-2",
+                                    alertCount > 0 ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700")}>
+                                    {alertCount > 0 ? 'ALERTS' : 'STABLE'}
+                                </Badge>
                             </div>
-                            <div>
-                                <p className="text-xs text-gray-500 font-medium">Heat usage</p>
+                            <div className="mt-4">
+                                <p className="text-xl font-black text-gray-900 dark:text-white">{total} <span className="text-xs font-normal text-gray-400">{unit}</span></p>
+                                <p className="text-[10px] text-gray-400 mt-1 uppercase font-bold tracking-tighter">Current total consumption</p>
                             </div>
-                        </div>
-                        <Badge className="bg-[#1B9157]/10 text-[#1B9157] border-0 text-[10px] font-bold px-2">
-                            <span className="w-1.5 h-1.5 bg-[#1B9157] rounded-full mr-1"></span>
-                            OK
-                        </Badge>
-                    </div>
-                    <div className="mt-4">
-                        <p className="text-xl font-black text-gray-900 dark:text-white">8.9 GJ</p>
-                        <p className="text-xs text-[#1B9157] font-medium mt-1">+0.4%</p>
-                    </div>
-                </Card>
+                        </Card>
+                    );
+                })}
 
-                {/* Electricity Usage Card */}
-                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm p-5 border-t-4 border-t-[#F4D03F]">
-                    <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-yellow-50 dark:bg-yellow-950/30 flex items-center justify-center">
-                                <Zap className="w-5 h-5 text-[#F4D03F]" />
-                            </div>
-                            <div>
-                                <p className="text-xs text-gray-500 font-medium">Electricity</p>
-                                <p className="text-[10px] text-gray-400">usage</p>
-                            </div>
-                        </div>
-                        <Badge className="bg-amber-100 text-amber-700 border-0 text-[10px] font-bold px-2">
-                            <span className="w-1.5 h-1.5 bg-amber-500 rounded-full mr-1"></span>
-                            WARNING
-                        </Badge>
-                    </div>
-                    <div className="mt-4">
-                        <p className="text-xl font-black text-gray-900 dark:text-white">214 kWh</p>
-                        <p className="text-xs text-[#1B9157] font-medium mt-1">+4.8%</p>
-                    </div>
-                </Card>
-
-                {/* Active Alarms Card */}
                 <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm p-5 border-t-4 border-t-[#F4D03F]">
                     <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
@@ -223,24 +178,23 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                 <AlertTriangle className="w-5 h-5 text-red-500" />
                             </div>
                             <div>
-                                <p className="text-xs text-gray-500 font-medium">Active alarms</p>
+                                <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">Events</p>
                             </div>
                         </div>
-                        <Badge className="bg-red-100 text-red-700 border-0 text-[10px] font-bold px-2">
-                            <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-1"></span>
-                            ALERT
+                        <Badge className={cn("border-0 text-[10px] font-bold px-2",
+                            activeAlarmsCount > 0 ? "bg-red-500 text-white" : "bg-green-100 text-green-700")}>
+                            {activeAlarmsCount} ACTIVE
                         </Badge>
                     </div>
                     <div className="mt-4">
-                        <p className="text-xl font-black text-gray-900 dark:text-white">3</p>
-                        <p className="text-xs text-gray-400 font-medium mt-1">1 new</p>
+                        <p className="text-xl font-black text-gray-900 dark:text-white">{events.length}</p>
+                        <p className="text-[10px] text-gray-400 mt-1 uppercase font-bold tracking-tighter">Total events in history</p>
                     </div>
                 </Card>
             </div>
 
             {/* Main Content Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Usage Trend Chart */}
                 <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm overflow-hidden">
                     <CardHeader className="p-6 pb-4">
                         <div className="flex items-center justify-between">
@@ -249,58 +203,16 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                 <CardTitle className="text-lg font-bold">Usage trend</CardTitle>
                             </div>
                         </div>
-
-                        {/* Period Toggle */}
                         <div className="flex gap-2 mt-4">
-                            <Button
-                                variant={usagePeriod === 'Daily' ? 'default' : 'outline'}
-                                size="sm"
-                                className={cn(
-                                    "rounded-lg h-8 px-4 text-xs font-medium",
-                                    usagePeriod === 'Daily'
-                                        ? "bg-[#1B9157] text-white hover:bg-[#167d4a]"
-                                        : "border-gray-200 dark:border-gray-700 hover:bg-[#1B9157]/5 hover:border-[#1B9157]/30"
-                                )}
-                                onClick={() => setUsagePeriod('Daily')}
-                            >
-                                Daily
-                            </Button>
-                            <Button
-                                variant={usagePeriod === 'Hourly' ? 'default' : 'outline'}
-                                size="sm"
-                                className={cn(
-                                    "rounded-lg h-8 px-4 text-xs font-medium",
-                                    usagePeriod === 'Hourly'
-                                        ? "bg-[#1B9157] text-white hover:bg-[#167d4a]"
-                                        : "border-gray-200 dark:border-gray-700 hover:bg-[#1B9157]/5 hover:border-[#1B9157]/30"
-                                )}
-                                onClick={() => setUsagePeriod('Hourly')}
-                            >
-                                Hourly
-                            </Button>
-                        </div>
-
-                        {/* Resource Filter */}
-                        <div className="flex items-center gap-4 mt-4">
-                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">MEDIUM</span>
-                            <div className="flex gap-2">
-                                {(['Water', 'Heat', 'Energy', 'Other'] as const).map((filter) => (
-                                    <Button
-                                        key={filter}
-                                        variant={usageFilter === filter ? 'default' : 'outline'}
-                                        size="sm"
-                                        className={cn(
-                                            "rounded-lg h-7 px-3 text-xs font-medium",
-                                            usageFilter === filter
-                                                ? "bg-[#1B9157] text-white hover:bg-[#167d4a]"
-                                                : "border-gray-200 dark:border-gray-700 text-gray-500 hover:bg-[#1B9157]/5 hover:border-[#1B9157]/30"
-                                        )}
-                                        onClick={() => setUsageFilter(filter)}
-                                    >
-                                        {filter}
-                                    </Button>
-                                ))}
-                            </div>
+                            {['Water', 'Heat', 'Energy'].map(m => (
+                                <Button
+                                    key={m}
+                                    variant={usageFilter === m ? 'default' : 'outline'}
+                                    size="sm"
+                                    className="h-8 rounded-xl text-xs"
+                                    onClick={() => setUsageFilter(m as any)}
+                                >{m}</Button>
+                            ))}
                         </div>
                     </CardHeader>
                     <CardContent className="p-6 pt-0">
@@ -309,82 +221,39 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                 <AreaChart data={usageTrendData}>
                                     <defs>
                                         <linearGradient id="colorUsage" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#F4D03F" stopOpacity={0.2} />
-                                            <stop offset="95%" stopColor="#F4D03F" stopOpacity={0} />
+                                            <stop offset="5%" stopColor="#1B9157" stopOpacity={0.2} />
+                                            <stop offset="95%" stopColor="#1B9157" stopOpacity={0} />
                                         </linearGradient>
                                     </defs>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                                    <XAxis
-                                        dataKey="day"
-                                        axisLine={false}
-                                        tickLine={false}
-                                        tick={{ fill: '#9ca3af', fontSize: 10, fontWeight: 600 }}
-                                        dy={10}
-                                    />
-                                    <YAxis
-                                        axisLine={false}
-                                        tickLine={false}
-                                        tick={{ fill: '#9ca3af', fontSize: 10, fontWeight: 600 }}
-                                        domain={[120, 220]}
-                                        ticks={[120, 140, 160, 180, 200, 220]}
-                                    />
-                                    <Tooltip
-                                        contentStyle={{
-                                            borderRadius: '12px',
-                                            border: '1px solid #e5e7eb',
-                                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-                                            fontWeight: 600
-                                        }}
-                                    />
-                                    <Area
-                                        type="monotone"
-                                        dataKey="value"
-                                        stroke="#F4D03F"
-                                        strokeWidth={3}
-                                        fillOpacity={1}
-                                        fill="url(#colorUsage)"
-                                    />
+                                    <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 10 }} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 10 }} />
+                                    <Tooltip contentStyle={{ borderRadius: '12px' }} />
+                                    <Area type="monotone" dataKey="value" stroke="#1B9157" fillOpacity={1} fill="url(#colorUsage)" strokeWidth={3} />
                                 </AreaChart>
                             </ResponsiveContainer>
                         </div>
                     </CardContent>
                 </Card>
 
-                {/* Recent Events */}
                 <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm overflow-hidden border-t-2 border-[#1B9157]/10">
-                    <CardHeader className="p-6 pb-4">
+                    <CardHeader className="p-6 pb-4 flex flex-row items-center justify-between">
                         <CardTitle className="text-lg font-bold text-[#1B9157]">Recent events</CardTitle>
+                        <Button variant="ghost" size="sm" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest" onClick={() => onTabChange('meters-alarms')}>View all</Button>
                     </CardHeader>
                     <CardContent className="p-6 pt-0 max-h-[380px] overflow-y-auto custom-scrollbar">
                         <div className="space-y-4">
-                            {recentEvents.map((event) => (
+                            {events.slice(0, 5).map((event) => (
                                 <div key={event.id} className="flex items-start justify-between gap-4 pb-4 border-b border-gray-100 dark:border-gray-800 last:border-0 last:pb-0">
                                     <div className="flex items-start gap-3">
-                                        <div className={cn(
-                                            "w-2 h-2 rounded-full mt-2",
-                                            event.severity === 'ALERT' ? "bg-red-500" : "bg-[#F4D03F]"
-                                        )} />
+                                        <div className={cn("w-2 h-2 rounded-full mt-1.5",
+                                            event.severity === 'CRITICAL' || event.severity === 'ALERT' ? "bg-red-500" : "bg-amber-500")} />
                                         <div>
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-sm font-semibold text-gray-900 dark:text-white">{event.type}</span>
-                                                <Badge className={cn(
-                                                    "text-[10px] font-bold px-2 border-0",
-                                                    event.severity === 'ALERT'
-                                                        ? "bg-red-100 text-red-700"
-                                                        : "bg-[#F4D03F]/10 text-[#7a6820]"
-                                                )}>
-                                                    <span className={cn(
-                                                        "w-1.5 h-1.5 rounded-full mr-1",
-                                                        event.severity === 'ALERT' ? "bg-red-500" : "bg-[#F4D03F]"
-                                                    )}></span>
-                                                    {event.severity}
-                                                </Badge>
-                                            </div>
-                                            <p className="text-xs text-gray-500 mt-1">{event.location}</p>
-                                            <p className="text-[11px] text-gray-400 mt-0.5">{event.reason}</p>
+                                            <span className="text-sm font-bold block">{event.event_type}</span>
+                                            <p className="text-[11px] text-gray-500 line-clamp-1">{event.message || event.reason}</p>
                                         </div>
                                     </div>
-                                    <span className="text-xs text-gray-400 font-medium whitespace-nowrap">{event.time}</span>
+                                    <span className="text-[10px] text-gray-400 font-mono">{new Date(event.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                 </div>
                             ))}
                         </div>
@@ -392,76 +261,35 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                 </Card>
             </div>
 
-            {/* AI Assistant Section */}
-            <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm overflow-hidden border-t-4 border-t-[#F4D03F]">
+            {/* AI Assistant Card */}
+            <Card className="rounded-3xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm overflow-hidden border-t-4 border-t-[#F4D03F]">
                 <CardHeader className="p-6 pb-4">
                     <div className="flex items-center gap-2">
                         <Bot className="w-5 h-5 text-[#1B9157]" />
-                        <CardTitle className="text-lg font-bold text-[#1B9157]">AI assistant for meters</CardTitle>
+                        <CardTitle className="text-lg font-bold text-[#1B9157]">Meters Expert AI</CardTitle>
                     </div>
-                    <p className="text-xs text-gray-400 mt-1">Sample questions for administrators</p>
                 </CardHeader>
                 <CardContent className="p-6 pt-0">
-                    {/* Chat Messages */}
-                    <div className="space-y-3 mb-4">
+                    <div className="space-y-3 mb-6">
                         {chatMessages.map((msg, idx) => (
-                            <div
-                                key={idx}
-                                className={cn(
-                                    "py-3 px-4 rounded-2xl max-w-[80%]",
-                                    msg.role === 'assistant'
-                                        ? "bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
-                                        : "bg-[#F4D03F]/10 text-gray-700 dark:text-gray-300 ml-auto border border-[#F4D03F]/20"
-                                )}
-                            >
-                                <p className="text-sm">{msg.content}</p>
+                            <div key={idx} className={cn("py-3 px-4 rounded-2xl max-w-[85%] text-sm",
+                                msg.role === 'assistant' ? "bg-gray-50 dark:bg-gray-800" : "bg-[#F4D03F]/10 border border-[#F4D03F]/20 ml-auto")}>
+                                {msg.content}
                             </div>
                         ))}
                     </div>
-
-                    {/* Input Area */}
-                    <div className="flex gap-3 items-center">
+                    <div className="flex gap-2">
                         <Input
-                            placeholder="Ask about meters, billing, anomalies..."
+                            placeholder="How many water meters have alerts?"
                             value={aiMessage}
-                            onChange={(e) => setAiMessage(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                            className="flex-1 rounded-xl h-11 border-gray-200 dark:border-gray-700 focus:border-[#F4D03F]/50 focus:ring-[#F4D03F]/20"
+                            onChange={e => setAiMessage(e.target.value)}
+                            onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
+                            className="h-12 rounded-xl border-gray-100"
                         />
-                        <Button
-                            onClick={handleSendMessage}
-                            className="bg-[#F4D03F] hover:bg-[#e0be36] text-[#1A1A1A] font-bold rounded-xl h-11 px-6 shadow-sm shadow-yellow-500/10"
-                        >
-                            Send
+                        <Button onClick={handleSendMessage} className="h-12 w-12 rounded-xl bg-[#F4D03F] hover:bg-yellow-500 text-black shadow-sm flex items-center justify-center p-0">
+                            <Send className="w-5 h-5" />
                         </Button>
                     </div>
-
-                    {/* Suggested Questions */}
-                    <div className="mt-4">
-                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-3">Suggested questions</p>
-                        <div className="flex flex-wrap gap-2">
-                            {suggestedQuestions.map((question, idx) => (
-                                <Button
-                                    key={idx}
-                                    variant="outline"
-                                    size="sm"
-                                    className="rounded-full h-8 px-3 text-xs font-medium border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-[#F4D03F]/5 hover:border-[#F4D03F]/30"
-                                    onClick={() => setAiMessage(question)}
-                                >
-                                    {question}
-                                </Button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Open AI Assistant Link */}
-                    <Button
-                        variant="link"
-                        className="text-[#1B9157] font-bold hover:text-[#1B9157]/80 px-0 mt-4 text-sm"
-                        onClick={() => onTabChange('assistant')}
-                    >
-                        Open AI Assistant
-                    </Button>
                 </CardContent>
             </Card>
         </div>

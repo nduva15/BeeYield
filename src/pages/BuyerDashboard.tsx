@@ -27,10 +27,11 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import { initializeCheckout, CheckoutOrder } from '@/services/shopService';
-import { useCart } from '@/contexts/CartContext';
+import { useCart, CartContextType } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
 import ShopDashboardLayout from '@/components/shop/ShopDashboardLayout';
 import { ShopNavItem as NavItem } from '@/components/shop/ShopDashboardSidebar';
+import { adminService } from '@/services/adminService';
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 
@@ -49,7 +50,7 @@ interface Order {
         county?: string;
         phone?: string;
     };
-    items?: any[];
+    items?: Record<string, unknown>[];
 }
 
 interface Address {
@@ -84,7 +85,7 @@ const BuyerDashboard = () => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [ordersLoading, setOrdersLoading] = useState(false);
     const [activeTab, setActiveTab] = useState('overview');
-    const { items, getTotalItems, getTotalPrice, clearCart, addToCart: addToCartFromContext } = useCart();
+    const { items, getTotalItems, getTotalPrice, clearCart, addToCart: addToCartFromContext } = useCart() as CartContextType;
     const { items: wishlistItems, removeFromWishlist, isInWishlist } = useWishlist();
 
     const handleLogout = async () => {
@@ -180,9 +181,8 @@ const BuyerDashboard = () => {
 
     const loadSuggestions = async () => {
         try {
-            const products = await getProducts();
-            // Randomly select 4 products from real inventory
-            const shuffled = [...products].sort(() => 0.5 - Math.random());
+            const data = await getProducts();
+            const shuffled = [...(data || [])].sort(() => 0.5 - Math.random());
             setSuggestions(shuffled.slice(0, 4));
         } catch (error) {
             console.error("Failed to load suggestions:", error);
@@ -220,14 +220,25 @@ const BuyerDashboard = () => {
             });
 
             if (error) throw error;
+
+            // Log account update
+            adminService.logActivity({
+                activity_type: 'account',
+                action: 'updated',
+                entity_type: 'user_profile',
+                entity_reference: user.email || 'unknown',
+                metadata: { fields: ['first_name', 'last_name', 'phone'] }
+            }).catch(() => { });
+
             toast.success("Profile updated successfully");
             setIsEditingProfile(false);
-        } catch (error: any) {
-            toast.error("Failed to update profile", { description: error.message });
+        } catch (error: unknown) {
+            const err = error as { message: string };
+            toast.error("Failed to update profile", { description: err.message });
         }
     };
 
-    const saveAddress = async (newAddress: any) => {
+    const saveAddress = async (newAddress: unknown) => {
         try {
             const { addAddress } = await import('@/services/shopService');
             const saved = await addAddress(newAddress);
@@ -238,7 +249,7 @@ const BuyerDashboard = () => {
         }
     };
 
-    const updateAddress = async (id: string, updatedAddr: any) => {
+    const updateAddress = async (id: string, updatedAddr: unknown) => {
         // For simplicity, we'll reuse saveAddress but backend should handle ID if present
         await saveAddress(updatedAddr);
     };
@@ -254,7 +265,7 @@ const BuyerDashboard = () => {
         }
     };
 
-    const savePaymentMethod = async (newMethod: any) => {
+    const savePaymentMethod = async (newMethod: unknown) => {
         try {
             const { addPaymentMethod } = await import('@/services/shopService');
             const saved = await addPaymentMethod(newMethod);
@@ -277,7 +288,11 @@ const BuyerDashboard = () => {
     };
 
     const [isTrackingOpen, setIsTrackingOpen] = useState(false);
-    const [trackingInfo, setTrackingInfo] = useState<any>(null);
+    const [trackingInfo, setTrackingInfo] = useState<{
+        current_status: string;
+        estimated_delivery: string;
+        events: { status: string; description: string; created_at: string; location?: string }[];
+    } | null>(null);
     const [loadingTracking, setLoadingTracking] = useState(false);
 
     const handleTrackOrder = async (order: Order) => {
@@ -299,6 +314,24 @@ const BuyerDashboard = () => {
     const handleDownloadInvoice = async (order: Order) => {
         try {
             const { downloadInvoice } = await import('@/services/shopService');
+
+            // Log invoice download
+            adminService.logActivity({
+                activity_type: 'document',
+                action: 'downloaded',
+                entity_type: 'invoice',
+                entity_reference: order.order_number || order.id,
+                metadata: { order_id: order.id }
+            }).catch(() => { });
+
+            adminService.logDocument({
+                document_type: 'invoice',
+                document_name: `Invoice_${order.order_number || order.id}.pdf`,
+                file_format: 'PDF',
+                category: 'Billing',
+                related_entity_reference: order.id
+            }).catch(() => { });
+
             toast.promise(downloadInvoice(order.id, order.order_number || order.id), {
                 loading: 'Preparing invoice...',
                 success: 'Invoice downloaded!',
@@ -399,7 +432,7 @@ const BuyerDashboard = () => {
                                         </div>
 
                                         <div className="relative pl-6 space-y-8 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:bg-muted before:rounded-full">
-                                            {(trackingInfo.events || []).map((event: any, i: number) => (
+                                            {(trackingInfo.events || []).map((event, i: number) => (
                                                 <div key={i} className="relative group">
                                                     <div className={`absolute -left-[27px] top-1.5 w-4 h-4 rounded-full border-4 border-white ${i === 0 ? 'bg-primary' : 'bg-muted'} shadow-sm group-hover:scale-125 transition-transform`} />
                                                     <div className="space-y-1">
@@ -893,8 +926,9 @@ const BuyerDashboard = () => {
                     </div>
                 );
             case 'checkout':
-                const shippingCost = getTotalPrice() >= 5000 ? 0 : 350;
-                const totalWithShipping = getTotalPrice() + shippingCost;
+                const totalPrice: number = getTotalPrice();
+                const checkoutShippingCost: number = totalPrice >= 5000 ? 0 : 350;
+                const checkoutTotalWithShipping: number = totalPrice + checkoutShippingCost;
 
                 const processDashboardPayment = async () => {
                     setIsProcessing(true);
@@ -910,16 +944,13 @@ const BuyerDashboard = () => {
                                 county: shippingDetails.county,
                                 postal_code: shippingDetails.postalCode,
                             },
-                            // We'll pass the full extended address as part of metadata or notes if needed, 
-                            // but for now let's just make sure the backend order tracking has it.
-                            // Actually, let's just update the CheckoutOrder interface in shopService too.
                             payment_method: paymentMethod,
                             items: items.map(item => ({
                                 product_id: item.productId.toString(),
                                 variant_id: item.variantId,
                                 quantity: item.quantity
                             })),
-                            total_kes: totalWithShipping,
+                            total_kes: checkoutTotalWithShipping,
                             notes: shippingDetails.notes + (shippingDetails.building ? ` | Bldg: ${shippingDetails.building}` : "") + (shippingDetails.apartment ? ` | Apt: ${shippingDetails.apartment}` : "")
                         };
 
@@ -1108,7 +1139,7 @@ const BuyerDashboard = () => {
 
                                     {checkoutStep === 'payment' && (
                                         <Card className="border-none shadow-premium rounded-[2rem] p-8 space-y-8">
-                                            <RadioGroup value={paymentMethod} onValueChange={v => setPaymentMethod(v as any)} className="grid gap-4">
+                                            <RadioGroup value={paymentMethod} onValueChange={v => setPaymentMethod(v as 'mpesa' | 'card')} className="grid gap-4">
                                                 <div className={`p-6 rounded-3xl border-2 transition-all cursor-pointer flex items-center justify-between ${paymentMethod === 'mpesa' ? 'border-primary bg-primary/5' : 'border-border'}`} onClick={() => setPaymentMethod('mpesa')}>
                                                     <div className="flex items-center gap-4">
                                                         <div className="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center">
@@ -1129,7 +1160,7 @@ const BuyerDashboard = () => {
                                                 </div>
                                             </RadioGroup>
                                             <Button onClick={processDashboardPayment} disabled={isProcessing} className="w-full rounded-full h-14 text-xl font-black">
-                                                {isProcessing ? <Loader className="animate-spin mr-2" /> : `Pay KES ${totalWithShipping.toLocaleString()}`}
+                                                {isProcessing ? <Loader className="animate-spin mr-2" /> : `Pay KES ${checkoutTotalWithShipping.toLocaleString()}`}
                                             </Button>
                                         </Card>
                                     )}
@@ -1148,11 +1179,11 @@ const BuyerDashboard = () => {
                                             <Separator className="bg-border/50" />
                                             <div className="flex justify-between">
                                                 <span className="text-muted-foreground">Shipping</span>
-                                                <span className="font-bold">{shippingCost === 0 ? 'FREE' : `KES ${shippingCost}`}</span>
+                                                <span className="font-bold">{checkoutShippingCost === 0 ? 'FREE' : `KES ${checkoutShippingCost}`}</span>
                                             </div>
                                             <div className="flex justify-between text-xl font-black pt-4 border-t border-border">
                                                 <span>Total</span>
-                                                <span className="text-primary">KES {totalWithShipping.toLocaleString()}</span>
+                                                <span className="text-primary">KES {checkoutTotalWithShipping.toLocaleString()}</span>
                                             </div>
                                         </div>
                                     </Card>
@@ -1243,7 +1274,7 @@ const BuyerDashboard = () => {
                             </div>
 
                             <div className="relative pl-6 space-y-8 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:bg-muted before:rounded-full">
-                                {(trackingInfo.events || []).map((event: any, i: number) => (
+                                {(trackingInfo.events || []).map((event: { status: string; description: string; created_at: string; location?: string }, i: number) => (
                                     <div key={i} className="relative group">
                                         <div className={`absolute -left-[27px] top-1.5 w-4 h-4 rounded-full border-4 border-white ${i === 0 ? 'bg-primary' : 'bg-muted'} shadow-sm group-hover:scale-125 transition-transform`} />
                                         <div className="space-y-1">

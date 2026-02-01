@@ -28,54 +28,54 @@ const MetersReports: React.FC = () => {
 
         if (reportName === 'Monthly report') {
             return {
-                title: 'Monthly Hive Performance Report',
+                title: 'Monthly Utility Consumption Report',
                 period: `${now.toLocaleString('default', { month: 'long' })} ${now.getFullYear()}`,
                 summary: {
-                    totalHives: 184,
-                    activeHives: 178,
-                    avgTemperature: '34.5°C',
-                    avgHumidity: '62%',
-                    totalHoneyProduction: '883 kg',
+                    totalMeters: 184,
+                    activeMeters: 178,
+                    avgUsageWater: '4.5 m3',
+                    avgUsageEnergy: '210 kWh',
+                    totalConsumption: '3,842 m3 / 12,483 kWh',
                     alertsResolved: 12,
                 },
                 breakdown: [
-                    { region: 'Kibwezi East', hives: 65, production: '312 kg', health: '98%' },
-                    { region: 'Mbuinzau', hives: 58, production: '285 kg', health: '96%' },
-                    { region: 'Makindu', hives: 61, production: '286 kg', health: '97%' },
+                    { region: 'Building A', hives: 65, production: '1,240 m3', health: '98%' },
+                    { region: 'Building B', hives: 58, production: '980 m3', health: '96%' },
+                    { region: 'Building C', hives: 61, production: '1,622 m3', health: '97%' },
                 ]
             };
         } else if (reportName === 'Anomalies report') {
             return {
-                title: 'Anomalies & Alerts Report',
+                title: 'Utility Anomalies & Alerts Report',
                 period: dateStr,
                 anomalies: [
-                    { hive: 'BY-H003', type: 'Temperature Spike', severity: 'Medium', date: '2026-01-28', resolved: true },
-                    { hive: 'BY-H015', type: 'Weight Drop', severity: 'Low', date: '2026-01-25', resolved: true },
-                    { hive: 'BY-H022', type: 'Humidity Alert', severity: 'Low', date: '2026-01-20', resolved: true },
+                    { hive: 'WAT-001', type: 'Leak Detected', severity: 'Critical', date: '2026-01-28', resolved: true },
+                    { hive: 'ENE-015', type: 'High Load', severity: 'Medium', date: '2026-01-25', resolved: true },
+                    { hive: 'HEA-022', type: 'No Signal', severity: 'Low', date: '2026-01-20', resolved: true },
                 ],
                 stats: {
                     totalAlerts: 3,
                     resolved: 3,
                     pending: 0,
-                    avgResolutionTime: '4.2 hours'
+                    avgResolutionTime: '2.5 hours'
                 }
             };
         } else {
             return {
-                title: 'Cost Analysis Report',
+                title: 'Utility Cost Analysis Report',
                 period: `${now.toLocaleString('default', { month: 'long' })} ${now.getFullYear()}`,
                 costs: {
-                    monitoring: 'KES 15,000',
-                    maintenance: 'KES 8,500',
-                    logistics: 'KES 12,000',
-                    total: 'KES 35,500',
+                    monitoring: 'KES 5,000',
+                    taxes: 'KES 2,500',
+                    logistics: 'KES 1,000',
+                    total: 'KES 8,500',
                 },
                 revenue: {
-                    honeysSales: 'KES 265,800',
-                    pollinationServices: 'KES 85,000',
-                    total: 'KES 350,800',
+                    honeysSales: 'KES 45,000',
+                    pollinationServices: 'KES 12,000',
+                    total: 'KES 57,000',
                 },
-                netProfit: 'KES 315,300'
+                netProfit: 'KES 48,500'
             };
         }
     };
