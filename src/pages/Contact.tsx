@@ -7,6 +7,7 @@ import {
   Mail, Phone, MapPin, ChevronDown,
   Sprout, Bug, MessageSquare, Stethoscope
 } from "lucide-react";
+import { adminService } from "@/services/adminService";
 
 const Contact = () => {
   const { toast } = useToast();
@@ -80,6 +81,15 @@ const Contact = () => {
       };
 
       await submitContactForm(submissionData);
+
+      // Log activity
+      adminService.logActivity({
+        activity_type: 'contact',
+        action: 'submitted',
+        entity_type: 'inquiry',
+        entity_reference: formData.email,
+        metadata: { inquiry_type: activeTab, topic: formData.topic }
+      }).catch(() => { });
 
       toast({
         title: "Inquiry Received!",

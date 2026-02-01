@@ -1,0 +1,531 @@
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
+    Search, Plus, Download, ChevronDown, ChevronUp,
+    Droplet, Flame, Zap, Layers, MapPin, Building2,
+    Home, FileText, Settings, Activity, List,
+    MoreHorizontal, Filter, SlidersHorizontal, Eye,
+    ArrowUpDown, FileInput, CheckCircle2, AlertTriangle,
+    XCircle, Clock, BarChart3, Info, Bell
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import FirstStepsBanner from './FirstStepsBanner';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
+import { toast } from 'sonner';
+import { adminService } from '@/services/adminService';
+
+interface MetersListViewProps {
+    type: 'water' | 'heat' | 'energy' | 'other';
+    onTabChange: (tab: string) => void;
+}
+
+const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) => {
+    const [isBuildingsOpen, setIsBuildingsOpen] = useState(true);
+    const [isApartmentsOpen, setIsApartmentsOpen] = useState(true);
+    const [isExportOpen, setIsExportOpen] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const title = type.charAt(0).toUpperCase() + type.slice(1);
+    const Icon = type === 'water' ? Droplet : type === 'heat' ? Flame : type === 'energy' ? Zap : Layers;
+
+    // Theme colors based on type
+    const colors = {
+        water: { primary: '#2563EB', bg: 'bg-blue-100', text: 'text-blue-700', border: 'border-blue-200' },
+        heat: { primary: '#F97316', bg: 'bg-orange-100', text: 'text-orange-700', border: 'border-orange-200' },
+        energy: { primary: '#F4D03F', bg: 'bg-[#F4D03F]/20', text: 'text-[#8a7300]', border: 'border-[#F4D03F]/30' },
+        other: { primary: '#8B5CF6', bg: 'bg-purple-100', text: 'text-purple-700', border: 'border-purple-200' }
+    }[type];
+
+    const buildings = [
+        { name: 'Lipowa 12', address: 'ul. Lipowa 12 · Lodz - Widzew', meters: 1, apartments: 1, coords: '51.7516, 19.4572' },
+        { name: 'Jana Pawla II 43', address: 'ul. Jana Pawla II 43 · Lodz Srodmiescie', meters: 1, apartments: 0, coords: '51.7618, 19.4561' },
+        { name: 'Dabrowskiego 55', address: 'ul. Dabrowskiego 55 Kalisz - Polnoc', meters: 2, apartments: 0, coords: '51.7643, 18.0915' },
+        { name: 'Zwirki 3', address: 'ul. Zwirki 3 · Lodz - Gorna', meters: 2, apartments: 2, coords: '51.7533, 19.4726' },
+        { name: 'Kosciuszki 4', address: 'ul. Kosciuszki 4 · Kalisz Centrum', meters: 2, apartments: 3, coords: '51.7606, 18.0910' },
+        { name: 'Zielona 5', address: 'ul. Zielona 5 · Lodz Polesie', meters: 1, apartments: 3, coords: '51.7658, 19.4454' },
+        { name: 'Wspolna 10', address: 'ul. Wspolna 10 · Lodz Widzew', meters: 1, apartments: 3, coords: '51.7560, 19.4732' },
+    ];
+
+    const apartments = [
+        { id: 1, name: 'ul. Lipowa 12 - Apartment 12', location: 'Lodz - Widzew', meters: 1 },
+        { id: 2, name: 'ul. Zwirki 3 - Apartment 21', location: 'Lodz - Gorna', meters: 1 },
+        { id: 3, name: 'ul. Zwirki 3 - Apartment 22', location: 'Lodz - Gorna', meters: 1 },
+        { id: 4, name: 'ul. Kosciuszki 4 - Apartment 3', location: 'Kalisz - Centrum', meters: 1 },
+        { id: 5, name: 'ul. Kosciuszki 4 - Apartment 4', location: 'Kalisz - Centrum', meters: 1 },
+    ];
+
+    const meters = [
+        {
+            id: '1',
+            serial: type === 'energy' ? 'ENE-11104' : type === 'water' ? 'WAT-00221' : 'HEA-9901',
+            code: '(E-EM-PL-2025)',
+            building: 'ul. Zielona 5',
+            location: 'Lodz - Polesie',
+            apartment: '1',
+            medium: title,
+            status: 'ALERT',
+            alarm: true,
+            readings: 'Wczoraj 23:11 - 214 kWh'
+        },
+        {
+            id: '2',
+            serial: type === 'energy' ? 'ENE-07001' : type === 'water' ? 'WAT-01110' : 'HEA-8821',
+            code: '(E-EM-PL-3101)',
+            building: 'ul. Kosciuszki 4',
+            location: 'Kalisz - Centrum',
+            apartment: '2',
+            medium: title,
+            status: 'OK',
+            alarm: false,
+            readings: 'Dzisiaj 08:13 - 178 kWh'
+        },
+        {
+            id: '3',
+            serial: type === 'energy' ? 'ENE-07002' : type === 'water' ? 'WAT-01111' : 'HEA-5542',
+            code: '(E-EM-PL-3102)',
+            building: 'ul. Kosciuszki 4',
+            location: 'Kalisz - Centrum',
+            apartment: '4',
+            medium: title,
+            status: 'ALERT',
+            alarm: true,
+            readings: 'Wczoraj 22:10 - 585 kWh'
+        },
+    ];
+
+    const [columns, setColumns] = useState([
+        { id: 'serial', label: 'Meter number', checked: true },
+        { id: 'medium', label: 'Medium', checked: true },
+        { id: 'building', label: 'Building address', checked: true },
+        { id: 'apartment', label: 'Apartment', checked: true },
+        { id: 'status', label: 'Status', checked: true },
+        { id: 'readings', label: 'Last reading', checked: true },
+        { id: 'alarm', label: 'Alarm', checked: true },
+    ]);
+
+    const toggleColumn = (id: string) => {
+        setColumns(cols => cols.map(c => c.id === id ? { ...c, checked: !c.checked } : c));
+    };
+
+    const exportToPDF = () => {
+        const doc = new jsPDF();
+
+        // Header
+        doc.setFontSize(22);
+        doc.setTextColor(colors.primary === '#F4D03F' ? '#D4AF37' : colors.primary); // Darker yellow for text if energy
+        doc.text(`BeeYield ${title} Meter Report`, 14, 20);
+
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 28);
+        doc.text(`Total items: ${meters.length}`, 14, 33);
+
+        const tableHeaders = columns.filter(c => c.checked).map(c => c.label);
+        const tableData = meters.map(m => {
+            const row: any[] = [];
+            if (columns.find(c => c.id === 'serial')?.checked) row.push(m.serial);
+            if (columns.find(c => c.id === 'medium')?.checked) row.push(m.medium);
+            if (columns.find(c => c.id === 'building')?.checked) row.push(m.building);
+            if (columns.find(c => c.id === 'apartment')?.checked) row.push(m.apartment);
+            if (columns.find(c => c.id === 'status')?.checked) row.push(m.status);
+            if (columns.find(c => c.id === 'readings')?.checked) row.push(m.readings);
+            if (columns.find(c => c.id === 'alarm')?.checked) row.push(m.alarm ? 'YES' : 'NO');
+            return row;
+        });
+
+        autoTable(doc, {
+            head: [tableHeaders],
+            body: tableData,
+            startY: 40,
+            styles: { fontSize: 8, cellPadding: 3 },
+            headStyles: {
+                fillColor: colors.primary === '#F4D03F' ? [212, 175, 55] : colors.primary,
+                textColor: [255, 255, 255],
+                fontStyle: 'bold'
+            },
+            alternateRowStyles: { fillColor: [250, 250, 250] },
+        });
+
+        doc.save(`BeeYield_${title}_Report_${new Date().toISOString().split('T')[0]}.pdf`);
+
+        // Log export activity
+        adminService.logActivity({
+            activity_type: 'export',
+            action: 'generated',
+            entity_type: 'meter_report',
+            entity_reference: `${title} Report`,
+            metadata: { format: 'pdf', meter_type: type, count: meters.length }
+        }).catch(() => { });
+
+        adminService.logDocument({
+            document_type: 'report',
+            document_name: `BeeYield_${title}_Report.pdf`,
+            file_format: 'PDF',
+            category: 'System Report',
+            related_entity_reference: type
+        }).catch(() => { });
+
+        toast.success(`${title} PDF report generated successfully`);
+    };
+
+    const exportToXLS = () => {
+        const dataToExport = meters.map(m => {
+            const obj: any = {};
+            columns.filter(c => c.checked).forEach(col => {
+                if (col.id === 'serial') obj[col.label] = m.serial;
+                if (col.id === 'medium') obj[col.label] = m.medium;
+                if (col.id === 'building') obj[col.label] = m.building;
+                if (col.id === 'apartment') obj[col.label] = m.apartment;
+                if (col.id === 'status') obj[col.label] = m.status;
+                if (col.id === 'readings') obj[col.label] = m.readings;
+                if (col.id === 'alarm') obj[col.label] = m.alarm ? 'YES' : 'NO';
+            });
+            return obj;
+        });
+
+        const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Meters");
+
+        // Add some basic styling or just export
+        XLSX.writeFile(workbook, `BeeYield_${title}_Data_${new Date().toISOString().split('T')[0]}.xlsx`);
+
+        // Log export activity
+        adminService.logActivity({
+            activity_type: 'export',
+            action: 'downloaded',
+            entity_type: 'meter_data',
+            entity_reference: `${title} Data`,
+            metadata: { format: 'xlsx', meter_type: type, count: meters.length }
+        }).catch(() => { });
+
+        toast.success(`${title} Excel data exported successfully`);
+    };
+
+    return (
+        <div className="space-y-6 animate-in fade-in duration-500 pb-12">
+
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <h1 className="text-[2.5rem] font-bold text-[#091E42] dark:text-white tracking-tight">
+                    Meter list · <span style={{ color: colors.primary }}>{title}</span>
+                </h1>
+                <div className="flex gap-2">
+                    <Button className="bg-[#1B9157] hover:bg-[#167d4a] text-white rounded-xl h-11 px-6 font-bold shadow-sm">
+                        <Plus className="w-4 h-4 mr-2" /> Add meter
+                    </Button>
+                </div>
+            </div>
+
+            {/* Buildings Collapsible */}
+            <Collapsible open={isBuildingsOpen} onOpenChange={setIsBuildingsOpen} className="w-full">
+                <Card className="rounded-[2rem] border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden bg-white dark:bg-[#09090b]">
+                    <div className="p-6 flex items-center justify-between border-b border-gray-50 dark:border-gray-800/50">
+                        <div>
+                            <h2 className="text-xl font-bold flex items-center gap-2">
+                                <Building2 className="w-5 h-5 text-gray-400" />
+                                Buildings
+                            </h2>
+                            <p className="text-xs text-slate-400 mt-0.5">Overview of addresses with meter counts</p>
+                        </div>
+                        <CollapsibleTrigger asChild>
+                            <Button variant="ghost" size="sm" className="text-gray-400 font-bold uppercase tracking-widest text-[10px] hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-full">
+                                {isBuildingsOpen ? <><ChevronUp className="w-4 h-4 mr-1" /> Collapse</> : <><ChevronDown className="w-4 h-4 mr-1" /> Expand</>}
+                            </Button>
+                        </CollapsibleTrigger>
+                    </div>
+                    <CollapsibleContent>
+                        <CardContent className="p-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                                {buildings.map((building, i) => (
+                                    <div key={i} className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow group">
+                                        <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-1">{building.name}</h4>
+                                        <p className="text-[10px] text-gray-500 leading-tight mb-3 min-h-[2.5em]">{building.address}</p>
+
+                                        <div className="flex gap-2 mb-3">
+                                            <Badge variant="secondary" className="bg-gray-50 dark:bg-zinc-800 text-gray-600 dark:text-gray-300 text-[9px] px-1.5 h-5 font-medium border-0 rounded-md">
+                                                Meters: {building.meters}
+                                            </Badge>
+                                            <Badge variant="secondary" className="bg-gray-50 dark:bg-zinc-800 text-gray-600 dark:text-gray-300 text-[9px] px-1.5 h-5 font-medium border-0 rounded-md">
+                                                Apartments: {building.apartments}
+                                            </Badge>
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <p className="text-[9px] text-gray-400 font-mono">Coordinates: {building.coords}</p>
+                                            <button className="text-[10px] text-[#2563EB] font-bold hover:underline block text-left">Open building</button>
+                                            <button className="text-[10px] text-gray-400 font-bold hover:text-gray-600 block text-left">Show on map</button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </CollapsibleContent>
+                </Card>
+            </Collapsible>
+
+            {/* Apartments Collapsible */}
+            <Collapsible open={isApartmentsOpen} onOpenChange={setIsApartmentsOpen} className="w-full">
+                <Card className="rounded-[2rem] border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden bg-white dark:bg-[#09090b]">
+                    <div className="p-6 flex items-center justify-between border-b border-gray-50 dark:border-gray-800/50">
+                        <div>
+                            <h2 className="text-xl font-bold flex items-center gap-2">
+                                <Home className="w-5 h-5 text-gray-400" />
+                                Apartments
+                            </h2>
+                            <p className="text-xs text-slate-400 mt-0.5">Apartment list with assigned meters</p>
+                        </div>
+                        <CollapsibleTrigger asChild>
+                            <Button variant="ghost" size="sm" className="text-gray-400 font-bold uppercase tracking-widest text-[10px] hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-full">
+                                {isApartmentsOpen ? <><ChevronUp className="w-4 h-4 mr-1" /> Collapse</> : <><ChevronDown className="w-4 h-4 mr-1" /> Expand</>}
+                            </Button>
+                        </CollapsibleTrigger>
+                    </div>
+                    <CollapsibleContent>
+                        <CardContent className="p-0">
+                            <div className="divide-y divide-gray-50 dark:divide-gray-800">
+                                {apartments.map((apt) => (
+                                    <div key={apt.id} className="p-4 flex items-center justify-between hover:bg-gray-50/50 dark:hover:bg-zinc-900/50 transition-colors">
+                                        <div>
+                                            <h4 className="text-sm font-bold text-gray-900 dark:text-white">{apt.name}</h4>
+                                            <p className="text-xs text-gray-400 mt-0.5">{apt.location}</p>
+                                        </div>
+                                        <Badge variant="secondary" className="bg-gray-50 dark:bg-zinc-800 text-gray-500 dark:text-gray-400 text-[10px] px-2 py-0.5 border-0 font-medium">
+                                            Meters: {apt.meters}
+                                        </Badge>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </CollapsibleContent>
+                </Card>
+            </Collapsible>
+
+            {/* Filters */}
+            <Card className="rounded-[1.5rem] border-gray-100 dark:border-gray-800 shadow-sm bg-white dark:bg-[#09090b] p-5">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                    <div className="space-y-1.5">
+                        <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Medium</label>
+                        <div className="flex gap-2 p-1 bg-gray-50 dark:bg-zinc-900 rounded-xl">
+                            <Button variant="ghost" size="icon" className={cn("rounded-lg h-9 w-9 transition-all", type === 'heat' && "bg-white shadow-sm dark:bg-zinc-800")} onClick={() => onTabChange('meters-heat')}>
+                                <Flame className={cn("w-4 h-4", type === 'heat' ? "text-orange-500" : "text-gray-400")} />
+                            </Button>
+                            <Button variant="ghost" size="icon" className={cn("rounded-lg h-9 w-9 transition-all", type === 'water' && "bg-white shadow-sm dark:bg-zinc-800")} onClick={() => onTabChange('meters-water')}>
+                                <Droplet className={cn("w-4 h-4", type === 'water' ? "text-blue-500" : "text-gray-400")} />
+                            </Button>
+                            <Button variant="ghost" size="icon" className={cn("rounded-lg h-9 w-9 transition-all", type === 'energy' && "bg-white shadow-sm dark:bg-zinc-800")} onClick={() => onTabChange('meters-energy')}>
+                                <Zap className={cn("w-4 h-4", type === 'energy' ? "text-yellow-500" : "text-gray-400")} />
+                            </Button>
+                        </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Building</label>
+                        <div className="relative">
+                            <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                            <select className="w-full h-9 pl-9 pr-4 bg-gray-50 dark:bg-zinc-900 border-none rounded-xl text-[11px] font-medium appearance-none cursor-pointer">
+                                <option>All buildings</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Apartment</label>
+                        <div className="relative">
+                            <Home className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                            <select className="w-full h-9 pl-9 pr-4 bg-gray-50 dark:bg-zinc-900 border-none rounded-xl text-[11px] font-medium appearance-none cursor-pointer">
+                                <option>All apartments</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Status</label>
+                        <div className="relative">
+                            <Activity className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                            <select className="w-full h-9 pl-9 pr-4 bg-gray-50 dark:bg-zinc-900 border-none rounded-xl text-[11px] font-medium appearance-none cursor-pointer">
+                                <option>All statuses</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Reading level</label>
+                        <div className="relative">
+                            <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                            <select className="w-full h-9 pl-9 pr-4 bg-gray-50 dark:bg-zinc-900 border-none rounded-xl text-[11px] font-medium appearance-none cursor-pointer">
+                                <option>All levels</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Search</label>
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                            <Input
+                                placeholder="Meter ID / address..."
+                                className="h-9 pl-9 bg-gray-50 dark:bg-zinc-900 border-none rounded-xl text-[11px]"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </Card>
+
+            {/* Export Collapsible */}
+            <Collapsible open={isExportOpen} onOpenChange={setIsExportOpen} className="w-full">
+                <Card className="rounded-[2rem] border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden bg-white dark:bg-[#09090b]">
+                    <div className="p-6 flex items-center justify-between border-b border-gray-50 dark:border-gray-800/50">
+                        <div>
+                            <h2 className="text-xl font-bold flex items-center gap-2">
+                                <FileText className="w-5 h-5 text-gray-400" />
+                                Export list
+                            </h2>
+                            <p className="text-xs text-slate-400 mt-0.5">Download filtered meters with selected columns</p>
+                        </div>
+                        <CollapsibleTrigger asChild>
+                            <Button variant="ghost" size="sm" className="text-gray-400 font-bold uppercase tracking-widest text-[10px] hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-full">
+                                {isExportOpen ? <><ChevronUp className="w-4 h-4 mr-1" /> Collapse</> : <><ChevronDown className="w-4 h-4 mr-1" /> Expand</>}
+                            </Button>
+                        </CollapsibleTrigger>
+                    </div>
+                    <CollapsibleContent>
+                        <CardContent className="p-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                                <div>
+                                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Columns</h4>
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-4 gap-x-2">
+                                        {columns.map(col => (
+                                            <div key={col.id} className="flex items-center space-x-2">
+                                                <Checkbox
+                                                    id={col.id}
+                                                    checked={col.checked}
+                                                    onCheckedChange={() => toggleColumn(col.id)}
+                                                    className="data-[state=checked]:bg-[#1B9157] data-[state=checked]:border-[#1B9157]"
+                                                />
+                                                <label htmlFor={col.id} className="text-xs font-semibold text-gray-700 dark:text-gray-300 leading-none cursor-pointer">
+                                                    {col.label}
+                                                </label>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="space-y-6">
+                                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Available Formats</h4>
+                                    <div className="flex flex-wrap gap-4">
+                                        <Button onClick={exportToPDF} className="bg-[#091E42] hover:bg-[#1a2b4a] text-white rounded-xl h-12 flex-1 min-w-[150px] font-bold">
+                                            <FileText className="w-4 h-4 mr-2" /> Export PDF
+                                        </Button>
+                                        <Button onClick={exportToXLS} variant="outline" className="border-gray-200 dark:border-gray-800 rounded-xl h-12 flex-1 min-w-[150px] font-bold hover:bg-gray-50 dark:hover:bg-zinc-900">
+                                            <Layers className="w-4 h-4 mr-2 text-[#1B9157]" /> Export XLS
+                                        </Button>
+                                    </div>
+                                    <p className="text-[10px] text-slate-400 text-center">* All reports are generated based on current filter results</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </CollapsibleContent>
+                </Card>
+            </Collapsible>
+
+            {/* Meters Table */}
+            <Card className="rounded-[2rem] border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden bg-white dark:bg-[#09090b]">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                        <thead>
+                            <tr className="border-b border-gray-50 dark:border-gray-800">
+                                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Meter Type</th>
+                                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Address</th>
+                                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Apartment</th>
+                                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Meter Number</th>
+                                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Last Reading</th>
+                                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Status</th>
+                                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Alarm</th>
+                                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">
+                            {meters.map((meter) => (
+                                <tr key={meter.id} className="hover:bg-gray-50/30 dark:hover:bg-zinc-900/30 transition-colors group">
+                                    <td className="px-6 py-4">
+                                        <Badge variant="outline" className={cn(
+                                            "border-0 rounded-lg gap-1.5 pl-1 pr-2 py-1 text-[10px] font-bold uppercase",
+                                            colors.bg, colors.text
+                                        )}>
+                                            <Icon className="w-3.5 h-3.5" /> {title}
+                                        </Badge>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <p className="text-xs font-bold text-gray-900 dark:text-white">{meter.building}</p>
+                                        <p className="text-[10px] text-gray-400 mt-0.5">{meter.location}</p>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <p className="text-xs font-medium text-gray-600 dark:text-gray-300">{meter.apartment}</p>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <p className="text-xs font-mono text-gray-700 dark:text-gray-200">{meter.serial}</p>
+                                        <p className="text-[9px] font-mono text-gray-400 mt-0.5">{meter.code}</p>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <p className="text-xs font-bold">{meter.readings}</p>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <Badge className={cn(
+                                            "border-0 text-[10px] font-bold px-2 rounded-full",
+                                            meter.status === 'OK' ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                                        )}>
+                                            <span className={cn(
+                                                "w-1.5 h-1.5 rounded-full mr-1",
+                                                meter.status === 'OK' ? "bg-green-500" : "bg-red-500"
+                                            )}></span>
+                                            {meter.status}
+                                        </Badge>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        {meter.alarm ? (
+                                            <AlertTriangle className="w-4 h-4 text-red-500" />
+                                        ) : (
+                                            <span className="text-gray-200 uppercase font-black text-[10px]">NO</span>
+                                        )}
+                                    </td>
+                                    <td className="px-6 py-4 text-right">
+                                        <div className="flex items-center justify-end gap-3">
+                                            <button className="flex items-center gap-1.5 text-[10px] font-bold text-gray-500 hover:text-[#1B9157] transition-colors">
+                                                <Info className="w-3.5 h-3.5" /> Details
+                                            </button>
+                                            <button className="flex items-center gap-1.5 text-[10px] font-bold text-gray-500 hover:text-[#1B9157] transition-colors">
+                                                <BarChart3 className="w-3.5 h-3.5" /> Measurements
+                                            </button>
+                                        </div>
+                                        <div className="flex items-center justify-end gap-3 mt-2">
+                                            <button className="flex items-center gap-1.5 text-[10px] font-bold text-gray-500 hover:text-[#1B9157] transition-colors">
+                                                <FileText className="w-3.5 h-3.5" /> Report
+                                            </button>
+                                            <button className="flex items-center gap-1.5 text-[10px] font-bold text-gray-500 hover:text-[#1B9157] transition-colors">
+                                                <Settings className="w-3.5 h-3.5" /> Settings
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </Card>
+        </div>
+    );
+};
+
+export default MetersListView;

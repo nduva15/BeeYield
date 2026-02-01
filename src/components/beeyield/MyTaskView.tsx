@@ -38,21 +38,13 @@ import { supabase } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { beeyieldService, Apiary, Hive, Task } from '@/services/beeyieldService';
 
 interface MyTaskViewProps {
     onTabChange: (tab: string) => void;
 }
 
-interface Apiary {
-    id: string;
-    name: string;
-}
 
-interface Hive {
-    id: string;
-    hive_code: string;
-    apiary_id: string;
-}
 
 const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
     const { t } = useLanguage();
@@ -76,6 +68,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
     // Data States
     const [apiaries, setApiaries] = useState<Apiary[]>([]);
     const [hives, setHives] = useState<Hive[]>([]);
+    const [tasks, setTasks] = useState<Task[]>([]);
 
     // Clock UI State
     const [isClockMinutes, setIsClockMinutes] = useState(false);
@@ -83,23 +76,24 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
     useEffect(() => {
-        const fetchData = async () => {
-            if (!supabase) return;
+        const fetchAllData = async () => {
             try {
-                const [apiariesRes, hivesRes] = await Promise.all([
-                    supabase.from('apiaries').select('id, name'),
-                    supabase.from('hives').select('id, hive_code, apiary_id')
+                const [apiariesData, hivesData, tasksData] = await Promise.all([
+                    beeyieldService.getApiaries(),
+                    beeyieldService.getHives(),
+                    beeyieldService.getTasks()
                 ]);
 
-                if (apiariesRes.data) setApiaries(apiariesRes.data);
-                if (hivesRes.data) setHives(hivesRes.data as Hive[]);
+                setApiaries(apiariesData);
+                setHives(hivesData);
+                setTasks(tasksData);
             } catch (error) {
                 console.error("Error fetching data", error);
                 toast.error(t('error_load_apiary'));
             }
         };
 
-        fetchData();
+        fetchAllData();
     }, []);
 
     const generateCalendarDays = () => {
@@ -123,11 +117,31 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
         setIsSaving(true);
 
         try {
-            // Placeholder: simulate network request
-            await new Promise(resolve => setTimeout(resolve, 800));
+            // Construct timestamp
+            const [hours, minutes] = taskTime.split(':').map(Number);
+            const due = new Date(taskDate);
+            due.setHours(hours, minutes);
+
+            const { error } = await beeyieldService.createTask({
+                title,
+                description,
+                status: 'pending',
+                priority,
+                category,
+                due_date: due.toISOString(),
+                apiary_id: selectedApiary?.id,
+                hive_id: selectedHive?.id,
+                is_completed: false
+            });
+
+            if (error) throw error;
 
             toast.success(t('task_saved_success'));
             setIsAddingTask(false);
+
+            // Refresh tasks
+            const latestTasks = await beeyieldService.getTasks();
+            setTasks(latestTasks);
 
             // Reset form
             setTitle("");
@@ -135,7 +149,11 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
             setTaskTime("00:00");
             setSelectedApiary(null);
             setSelectedHive(null);
+            setPriority("medium");
+            setCategory("General");
+            setDescription("");
         } catch (error) {
+            console.error(error);
             toast.error(t('task_saved_error'));
         } finally {
             setIsSaving(false);
@@ -603,10 +621,39 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
                                                         </span>
                                                     </div>
                                                     <div className="space-y-2">
-                                                        {/* Placeholder for tasks in this week */}
-                                                        <div className="p-4 bg-slate-50 dark:bg-black/20 rounded-lg text-center">
-                                                            <span className="text-slate-400 text-sm font-medium">{t('no_tasks_week')}</span>
-                                                        </div>
+                                                        {tasks
+                                                            .filter(t => {
+                                                                if (!t.due_date) return false;
+                                                                const d = new Date(t.due_date);
+                                                                return d >= monday && d <= sunday;
+                                                            })
+                                                            .map(task => (
+                                                                <div key={task.id} className="p-4 bg-slate-50 dark:bg-black/20 rounded-lg flex items-center justify-between group hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer">
+                                                                    <div className="flex items-center gap-3">
+                                                                        <div className={cn(
+                                                                            "w-2 h-2 rounded-full",
+                                                                            task.priority === 'high' ? "bg-red-500" : task.priority === 'medium' ? "bg-[#F4D03F]" : "bg-[#1B9157]"
+                                                                        )} />
+                                                                        <div>
+                                                                            <h4 className="font-bold text-slate-700 dark:text-slate-200 text-sm">{task.title}</h4>
+                                                                            <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                                                                                {task.category} • {format(new Date(task.due_date!), 'h:mm a')}
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                    {task.hive && (
+                                                                        <span className="text-[10px] font-mono bg-white dark:bg-black px-2 py-1 rounded border border-slate-100 dark:border-gray-800 text-slate-500">
+                                                                            {task.hive.hive_code}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            ))
+                                                        }
+                                                        {tasks.filter(t => t.due_date && new Date(t.due_date) >= monday && new Date(t.due_date) <= sunday).length === 0 && (
+                                                            <div className="p-4 bg-slate-50 dark:bg-black/20 rounded-lg text-center">
+                                                                <span className="text-slate-400 text-sm font-medium">{t('no_tasks_week')}</span>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             );

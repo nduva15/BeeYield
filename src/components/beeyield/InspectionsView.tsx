@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Plus, ArrowLeft, Grid3X3, Box, Search, Sun, Cloud, CloudRain, Snowflake, Wind } from 'lucide-react';
+import { Plus, ArrowLeft, Grid3X3, Box, Search, Sun, Cloud, CloudRain, Snowflake, Wind, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
+import { beeyieldService, Apiary, Hive } from '@/services/beeyieldService';
 
 interface InspectionsViewProps {
     onTabChange: (tab: string) => void;
@@ -18,6 +19,26 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
     const [isAddingInspection, setIsAddingInspection] = useState(false);
     const [selectedPlace, setSelectedPlace] = useState('');
     const [selectedHive, setSelectedHive] = useState('');
+
+    const [apiaries, setApiaries] = useState<Apiary[]>([]);
+    const [hives, setHives] = useState<Hive[]>([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [apiariesData, hivesData] = await Promise.all([
+                    beeyieldService.getApiaries(),
+                    beeyieldService.getHives()
+                ]);
+                setApiaries(apiariesData);
+                setHives(hivesData);
+            } catch (error) {
+                console.error("Error loading data", error);
+                toast.error("Failed to load apiaries and hives");
+            }
+        };
+        fetchData();
+    }, []);
 
     // State of colony
     const [colonyState, setColonyState] = useState('weak');
@@ -55,47 +76,49 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
     const [time, setTime] = useState('10:00');
 
-    const handleSave = () => {
-        // Here you would save the inspection data
-        const newInspection = {
-            selectedPlace,
-            selectedHive,
-            colonyState,
-            hasQueen,
-            hasCappedBrood,
-            hasEggs,
-            hasLarvae,
-            broodArrangement,
-            beeActivity,
-            weather,
-            weightCategory,
-            weightKg,
-            hasQueenCells,
-            queenCellsComment,
-            hasPossibleIllness,
-            diagnosis,
-            treatment,
-            privateNote,
-            date,
-            time
-        };
+    const [isSaving, setIsSaving] = useState(false);
 
-        console.log('Saving inspection...', newInspection);
+    const handleSave = async () => {
+        setIsSaving(true);
+        try {
+            const { error } = await beeyieldService.createInspection({
+                apiary_id: selectedPlace === 'all_places' ? undefined : selectedPlace,
+                hive_id: selectedHive === 'all_hives' ? undefined : selectedHive,
+                colony_state: colonyState,
+                has_queen: hasQueen,
+                has_capped_brood: hasCappedBrood,
+                has_eggs: hasEggs,
+                has_larvae: hasLarvae,
+                brood_arrangement: broodArrangement,
+                bee_activity: beeActivity,
+                weather: weather,
+                weight_category: weightCategory,
+                weight_kg: weightKg ? parseFloat(weightKg) : undefined,
+                has_queen_cells: hasQueenCells,
+                queen_cells_comment: queenCellsComment,
+                has_possible_illness: hasPossibleIllness,
+                diagnosis: diagnosis,
+                treatment: treatment,
+                private_note: privateNote,
+                inspection_date: date,
+                inspection_time: time
+            });
 
-        // Show success toast (assuming import needed, added below if not present)
-        // Since we can't easily add import at top with this tool without multiple chunks,
-        // we'll rely on the existing imports or add one if missing.
-        // InspectionsView didn't have toast imported in the snippet I saw earlier (Step 72).
-        // I need to add the import.
+            if (error) throw error;
 
-        setIsAddingInspection(false);
+            setIsAddingInspection(false);
+            toast.success("Inspection saved successfully");
+        } catch (error) {
+            console.error('Error saving inspection:', error);
+            toast.error("Failed to save inspection");
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     if (isAddingInspection) {
         return (
             <div className="space-y-6 animate-in fade-in duration-500 pb-12">
-
-
                 {/* Back Button */}
                 <button
                     onClick={() => setIsAddingInspection(false)}
@@ -120,108 +143,119 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
 
                             {/* Right Side - Form Fields */}
                             <div className="space-y-6">
-                                {/* MY PLACES Dropdown */}
-                                <div className="space-y-2">
-                                    <Select value={selectedPlace} onValueChange={setSelectedPlace}>
-                                        <SelectTrigger className="w-full max-w-xs rounded-xl border-gray-200 dark:border-gray-700 h-11 bg-white dark:bg-[#1e1e1e]">
-                                            <div className="flex items-center gap-2">
-                                                <Grid3X3 className="w-4 h-4 text-[#F4D03F]" />
-                                                <SelectValue placeholder="MY PLACES" />
-                                            </div>
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="none" disabled>No places available</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
+                                <div className="space-y-6">
+                                    {/* MY PLACES Dropdown */}
+                                    <div className="space-y-2">
+                                        <Select value={selectedPlace} onValueChange={setSelectedPlace}>
+                                            <SelectTrigger className="w-full max-w-xs rounded-xl border-gray-200 dark:border-gray-700 h-11 bg-white dark:bg-[#1e1e1e]">
+                                                <div className="flex items-center gap-2">
+                                                    <Grid3X3 className="w-4 h-4 text-[#F4D03F]" />
+                                                    <SelectValue placeholder="Select Apiary" />
+                                                </div>
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="all_places">All Places</SelectItem>
+                                                {apiaries.map(apiary => (
+                                                    <SelectItem key={apiary.id} value={apiary.id}>{apiary.name}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
 
-                                {/* HIVE Dropdown */}
-                                <div className="space-y-2">
-                                    <Select value={selectedHive} onValueChange={setSelectedHive}>
-                                        <SelectTrigger className="w-full max-w-xs rounded-xl border-gray-200 dark:border-gray-700 h-11 bg-white dark:bg-[#1e1e1e]">
-                                            <div className="flex items-center gap-2">
-                                                <Box className="w-4 h-4 text-[#1B9157]" />
-                                                <SelectValue placeholder="HIVE" />
-                                            </div>
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="none" disabled>No hives available</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
+                                    {/* HIVE Dropdown */}
+                                    <div className="space-y-2">
+                                        <Select value={selectedHive} onValueChange={setSelectedHive}>
+                                            <SelectTrigger className="w-full max-w-xs rounded-xl border-gray-200 dark:border-gray-700 h-11 bg-white dark:bg-[#1e1e1e]">
+                                                <div className="flex items-center gap-2">
+                                                    <Box className="w-4 h-4 text-[#1B9157]" />
+                                                    <SelectValue placeholder="Select Hive" />
+                                                </div>
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {hives
+                                                    .filter(h => selectedPlace === 'all_places' || !selectedPlace || h.apiary_id === selectedPlace)
+                                                    .map(hive => (
+                                                        <SelectItem key={hive.id} value={hive.id}>{hive.hive_code}</SelectItem>
+                                                    ))
+                                                }
+                                                {hives.length === 0 && <SelectItem value="none" disabled>No hives available</SelectItem>}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
 
-                                {/* Inspections Section */}
-                                <div className="grid grid-cols-2 gap-8">
-                                    {/* State of colony */}
+                                    {/* Inspections Section */}
+                                    <div className="grid grid-cols-2 gap-8">
+                                        {/* State of colony */}
+                                        <div className="space-y-3">
+                                            <h4 className="font-semibold text-gray-800 dark:text-white">Inspections</h4>
+                                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">State of colony</p>
+                                            <div className="space-y-2">
+                                                {['weak', 'medium', 'strong'].map((state) => (
+                                                    <label key={state} className="flex items-center gap-2 cursor-pointer">
+                                                        <input
+                                                            type="radio"
+                                                            name="colonyState"
+                                                            checked={colonyState === state}
+                                                            onChange={() => setColonyState(state)}
+                                                            className="w-4 h-4 text-[#1B9157] border-gray-300 focus:ring-[#1B9157]"
+                                                        />
+                                                        <span className={cn(
+                                                            "text-sm capitalize",
+                                                            colonyState === state ? "text-[#1B9157] font-medium" : "text-gray-600 dark:text-gray-400"
+                                                        )}>
+                                                            {state.charAt(0).toUpperCase() + state.slice(1)}
+                                                        </span>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Was there...? */}
+                                        <div className="space-y-3">
+                                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Was there...?</p>
+                                            <div className="space-y-2">
+                                                <label className="flex items-center gap-2 cursor-pointer">
+                                                    <Switch checked={hasQueen} onCheckedChange={setHasQueen} className="data-[state=checked]:bg-[#1B9157]" />
+                                                    <span className={cn("text-sm", hasQueen ? "text-[#1B9157] font-medium" : "text-gray-600 dark:text-gray-400")}>Queen</span>
+                                                </label>
+                                                <label className="flex items-center gap-2 cursor-pointer">
+                                                    <Switch checked={hasCappedBrood} onCheckedChange={setHasCappedBrood} className="data-[state=checked]:bg-[#1B9157]" />
+                                                    <span className={cn("text-sm", hasCappedBrood ? "text-[#1B9157] font-medium" : "text-gray-600 dark:text-gray-400")}>Capped brood</span>
+                                                </label>
+                                                <label className="flex items-center gap-2 cursor-pointer">
+                                                    <Switch checked={hasEggs} onCheckedChange={setHasEggs} className="data-[state=checked]:bg-[#1B9157]" />
+                                                    <span className={cn("text-sm", hasEggs ? "text-[#1B9157] font-medium" : "text-gray-600 dark:text-gray-400")}>Eggs</span>
+                                                </label>
+                                                <label className="flex items-center gap-2 cursor-pointer">
+                                                    <Switch checked={hasLarvae} onCheckedChange={setHasLarvae} className="data-[state=checked]:bg-[#1B9157]" />
+                                                    <span className={cn("text-sm", hasLarvae ? "text-[#1B9157] font-medium" : "text-gray-600 dark:text-gray-400")}>Larvae</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Brood arrangement on the frames */}
                                     <div className="space-y-3">
-                                        <h4 className="font-semibold text-gray-800 dark:text-white">Inspections</h4>
-                                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">State of colony</p>
-                                        <div className="space-y-2">
-                                            {['weak', 'medium', 'strong'].map((state) => (
-                                                <label key={state} className="flex items-center gap-2 cursor-pointer">
+                                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Brood arrangement on the frames</p>
+                                        <div className="flex gap-4">
+                                            {['poor', 'rough', 'solid'].map((arrangement) => (
+                                                <label key={arrangement} className="flex items-center gap-2 cursor-pointer">
                                                     <input
                                                         type="radio"
-                                                        name="colonyState"
-                                                        checked={colonyState === state}
-                                                        onChange={() => setColonyState(state)}
+                                                        name="broodArrangement"
+                                                        checked={broodArrangement === arrangement}
+                                                        onChange={() => setBroodArrangement(arrangement)}
                                                         className="w-4 h-4 text-[#1B9157] border-gray-300 focus:ring-[#1B9157]"
                                                     />
                                                     <span className={cn(
                                                         "text-sm capitalize",
-                                                        colonyState === state ? "text-[#1B9157] font-medium" : "text-gray-600 dark:text-gray-400"
+                                                        broodArrangement === arrangement ? "text-[#1B9157] font-medium" : "text-gray-600 dark:text-gray-400"
                                                     )}>
-                                                        {state.charAt(0).toUpperCase() + state.slice(1)}
+                                                        {arrangement.charAt(0).toUpperCase() + arrangement.slice(1)}
                                                     </span>
                                                 </label>
                                             ))}
                                         </div>
-                                    </div>
-
-                                    {/* Was there...? */}
-                                    <div className="space-y-3">
-                                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Was there...?</p>
-                                        <div className="space-y-2">
-                                            <label className="flex items-center gap-2 cursor-pointer">
-                                                <Switch checked={hasQueen} onCheckedChange={setHasQueen} className="data-[state=checked]:bg-[#1B9157]" />
-                                                <span className={cn("text-sm", hasQueen ? "text-[#1B9157] font-medium" : "text-gray-600 dark:text-gray-400")}>Queen</span>
-                                            </label>
-                                            <label className="flex items-center gap-2 cursor-pointer">
-                                                <Switch checked={hasCappedBrood} onCheckedChange={setHasCappedBrood} className="data-[state=checked]:bg-[#1B9157]" />
-                                                <span className={cn("text-sm", hasCappedBrood ? "text-[#1B9157] font-medium" : "text-gray-600 dark:text-gray-400")}>Capped brood</span>
-                                            </label>
-                                            <label className="flex items-center gap-2 cursor-pointer">
-                                                <Switch checked={hasEggs} onCheckedChange={setHasEggs} className="data-[state=checked]:bg-[#1B9157]" />
-                                                <span className={cn("text-sm", hasEggs ? "text-[#1B9157] font-medium" : "text-gray-600 dark:text-gray-400")}>Eggs</span>
-                                            </label>
-                                            <label className="flex items-center gap-2 cursor-pointer">
-                                                <Switch checked={hasLarvae} onCheckedChange={setHasLarvae} className="data-[state=checked]:bg-[#1B9157]" />
-                                                <span className={cn("text-sm", hasLarvae ? "text-[#1B9157] font-medium" : "text-gray-600 dark:text-gray-400")}>Larvae</span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Brood arrangement on the frames */}
-                                <div className="space-y-3">
-                                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Brood arrangement on the frames</p>
-                                    <div className="flex gap-4">
-                                        {['poor', 'rough', 'solid'].map((arrangement) => (
-                                            <label key={arrangement} className="flex items-center gap-2 cursor-pointer">
-                                                <input
-                                                    type="radio"
-                                                    name="broodArrangement"
-                                                    checked={broodArrangement === arrangement}
-                                                    onChange={() => setBroodArrangement(arrangement)}
-                                                    className="w-4 h-4 text-[#1B9157] border-gray-300 focus:ring-[#1B9157]"
-                                                />
-                                                <span className={cn(
-                                                    "text-sm capitalize",
-                                                    broodArrangement === arrangement ? "text-[#1B9157] font-medium" : "text-gray-600 dark:text-gray-400"
-                                                )}>
-                                                    {arrangement.charAt(0).toUpperCase() + arrangement.slice(1)}
-                                                </span>
-                                            </label>
-                                        ))}
                                     </div>
                                 </div>
                             </div>
@@ -402,9 +436,15 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                         <div className="flex justify-center mt-8">
                             <Button
                                 onClick={handleSave}
+                                disabled={isSaving}
                                 className="bg-[#1B9157] hover:bg-[#167d4a] text-white rounded-xl px-12 h-12 font-bold shadow-lg shadow-green-500/10"
                             >
-                                Save
+                                {isSaving ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Saving...
+                                    </>
+                                ) : 'Save'}
                             </Button>
                         </div>
                     </CardContent>
@@ -415,8 +455,6 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-12 relative">
-
-
             {/* Page Title */}
             <div className="flex justify-between items-center">
                 <h1 className="text-[2.5rem] font-bold text-[#1B9157] dark:text-[#F4D03F] tracking-tight">Inspections</h1>
@@ -433,7 +471,12 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                         </div>
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="none" disabled>No places available</SelectItem>
+                        <SelectItem value="all_places" disabled={apiaries.length === 0}>
+                            {apiaries.length === 0 ? "No places available" : "All Places"}
+                        </SelectItem>
+                        {apiaries.map(apiary => (
+                            <SelectItem key={apiary.id} value={apiary.id}>{apiary.name}</SelectItem>
+                        ))}
                     </SelectContent>
                 </Select>
 
@@ -446,7 +489,15 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                         </div>
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="none" disabled>No hives available</SelectItem>
+                        <SelectItem value="all_hives" disabled={hives.length === 0}>
+                            {hives.length === 0 ? "No hives available" : "All Hives"}
+                        </SelectItem>
+                        {hives
+                            .filter(h => selectedPlace === 'all_places' || !selectedPlace || h.apiary_id === selectedPlace)
+                            .map(hive => (
+                                <SelectItem key={hive.id} value={hive.id}>{hive.hive_code}</SelectItem>
+                            ))
+                        }
                     </SelectContent>
                 </Select>
             </div>

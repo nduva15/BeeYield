@@ -690,20 +690,29 @@ BEGIN
         AND table_type = 'BASE TABLE'
         AND table_name NOT IN ('orders', 'order_items', 'contact_submissions', 'pollination_requests', 'newsletter_subscriptions', 'job_applications', 'user_profiles')
     LOOP
+        EXECUTE format('DROP POLICY IF EXISTS "Public read for %I" ON %I', tbl_name, tbl_name);
         EXECUTE format('CREATE POLICY "Public read for %I" ON %I FOR SELECT USING (true);', tbl_name, tbl_name);
     END LOOP;
 END $$;
 
 -- Specific policies for user-generated data
+DROP POLICY IF EXISTS "Users can view own profile" ON user_profiles;
 CREATE POLICY "Users can view own profile" ON user_profiles FOR SELECT USING (auth.uid() = id);
+DROP POLICY IF EXISTS "Users can update own profile" ON user_profiles;
 CREATE POLICY "Users can update own profile" ON user_profiles FOR UPDATE USING (auth.uid() = id);
 
 -- Write policies for public forms
+DROP POLICY IF EXISTS "Public can submit contact" ON contact_submissions;
 CREATE POLICY "Public can submit contact" ON contact_submissions FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Public can submit pollination requests" ON pollination_requests;
 CREATE POLICY "Public can submit pollination requests" ON pollination_requests FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Public can subscribe to newsletter" ON newsletter_subscriptions;
 CREATE POLICY "Public can subscribe to newsletter" ON newsletter_subscriptions FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Public can apply for jobs" ON job_applications;
 CREATE POLICY "Public can apply for jobs" ON job_applications FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Public can create orders" ON orders;
 CREATE POLICY "Public can create orders" ON orders FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Public can add items to orders" ON order_items;
 CREATE POLICY "Public can add items to orders" ON order_items FOR INSERT WITH CHECK (true);
 
 -- ============================================

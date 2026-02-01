@@ -54,6 +54,8 @@ import HarvestsView from '@/components/beeyield/HarvestsView';
 import ImageAnalysisView from '@/components/beeyield/ImageAnalysisView';
 import SoundAnalysisView from '@/components/beeyield/SoundAnalysisView';
 import HealthGuideView from '@/components/beeyield/HealthGuideView';
+import FlightMapView from '@/components/beeyield/FlightMapView';
+import VarroaView from '@/components/beeyield/VarroaView';
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 
@@ -251,6 +253,10 @@ const BeeYieldDashboard: React.FC = () => {
                 return <InspectionsView onTabChange={handleTabChange} />;
             case 'harvests':
                 return <HarvestsView onTabChange={handleTabChange} />;
+            case 'flight-map':
+                return <FlightMapView />;
+            case 'varroa':
+                return <VarroaView />;
             case 'global-hive-network':
                 return <GlobalHiveNetwork />;
             case 'data':

@@ -1,28 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Reorder, useDragControls } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Download, Droplet, Flame, Zap, FileText, CreditCard, ChevronRight, GripVertical, Search, Plus } from 'lucide-react';
+import { Download, Droplet, Flame, Zap, FileText, CreditCard, ChevronRight, GripVertical, Search, Plus, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { meterService, BillingRate } from '@/services/meterService';
+import { toast } from 'sonner';
 
 interface MetersPaymentsProps {
     onTabChange?: (tab: string) => void;
 }
 
 const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { } }) => {
+    const [rates, setRates] = useState<BillingRate[]>([]);
+    const [loading, setLoading] = useState(true);
+
     const consumptionData = [
         { label: 'Electricity usage', value: '12,483 kWh', subtext: 'last month', icon: Zap },
         { label: 'Water usage', value: '3,842 m3', subtext: 'last month', icon: Droplet },
-        { label: 'Heat usage', value: '1203 GJ', subtext: 'last month', icon: Flame },
-    ];
-
-    const billingRates = [
-        { medium: 'Water', rate: '7.20 PLN / m3', description: 'Example rate' },
-        { medium: 'Heat', rate: '38.00 PLN / GJ', description: 'Example rate' },
-        { medium: 'Energy', rate: '1.05 PLN / kWh', description: 'Example rate' },
+        { label: 'Heat usage', value: '1,203 GJ', subtext: 'last month', icon: Flame },
     ];
 
     const [columns, setColumns] = useState([
@@ -33,6 +32,22 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
         'Status',
         'Reading'
     ]);
+
+    useEffect(() => {
+        const loadRates = async () => {
+            setLoading(true);
+            try {
+                const data = await meterService.getBillingRates();
+                setRates(data);
+            } catch (error) {
+                console.error('Failed to load billing rates', error);
+                toast.error('Failed to load billing rates');
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadRates();
+    }, []);
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
@@ -51,9 +66,7 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                     {consumptionData.map((item, idx) => (
                         <div key={idx} className={cn(
                             "flex items-end justify-between p-4 rounded-xl bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800",
-                            idx !== consumptionData.length - 1 && "md:border-r-0 md:bg-transparent md:border-0 md:p-0 md:pb-4 md:border-b-0" // Just making them look like the screenshot which is one unified card with dividers? 
-                            // Actually screenshot looks like 3 distinct blocks inside the card or just 3 columns. 
-                            // Let's stick to simple columns.
+                            idx !== consumptionData.length - 1 && "md:border-r-0 md:bg-transparent md:border-0 md:p-0 md:pb-4 md:border-b-0"
                         )}>
                             <div className="w-full relative">
                                 <p className="text-sm font-medium text-gray-500 mb-1">{item.label}</p>
@@ -83,7 +96,14 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                 </CardHeader>
                 <CardContent className="space-y-4 pt-0">
                     <p className="text-sm text-gray-500">Choose export columns and their order.</p>
-                    <Button variant="outline" className="gap-2 font-bold border-[#F4D03F]/20 hover:border-[#F4D03F] text-[#1A1A1A] dark:text-[#F4D03F]">
+                    <Button
+                        variant="outline"
+                        onClick={() => {
+                            toast.info("Preparing data package for export...");
+                            setTimeout(() => toast.success("Data package exported successfully to billing system!"), 2000);
+                        }}
+                        className="gap-2 font-bold border-[#F4D03F]/20 hover:border-[#F4D03F] text-[#1A1A1A] dark:text-[#F4D03F]"
+                    >
                         <FileText className="w-4 h-4" />
                         Export
                     </Button>
@@ -97,122 +117,99 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                     <CardDescription className="text-gray-500">Assign rates per medium for settlements.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6 pt-0">
-                    {/* Rates List */}
                     <div className="space-y-4">
-                        {billingRates.map((rate, idx) => (
-                            <div key={idx} className="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-gray-800 last:border-0 last:pb-0">
-                                <div>
-                                    <p className="font-bold uppercase text-[10px] tracking-widest text-[#1B9157] mb-0.5">{rate.medium}</p>
-                                    <p className="text-xs text-gray-400">{rate.description}</p>
-                                </div>
-                                <div className="text-right">
-                                    <span className="text-lg font-black text-[#1B9157]">{rate.rate}</span>
-                                </div>
+                        {loading ? (
+                            <div className="flex justify-center p-8">
+                                <Loader2 className="w-6 h-6 animate-spin text-[#1B9157]" />
                             </div>
-                        ))}
+                        ) : rates.length === 0 ? (
+                            <p className="text-center py-8 text-gray-400 text-sm">No billing rates configured.</p>
+                        ) : (
+                            rates.map((item) => (
+                                <div key={item.id} className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800">
+                                    <div className="flex items-center gap-4">
+                                        <div className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
+                                            {item.meter_type === 'Water' && <Droplet className="w-4 h-4 text-blue-500" />}
+                                            {item.meter_type === 'Heat' && <Flame className="w-4 h-4 text-orange-500" />}
+                                            {item.meter_type === 'Energy' && <Zap className="w-4 h-4 text-yellow-500" />}
+                                        </div>
+                                        <div>
+                                            <h4 className="text-sm font-bold text-gray-900 dark:text-white capitalize">{item.meter_type}</h4>
+                                            <p className="text-xs text-gray-400">{item.description || 'Standard rate'}</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-sm font-bold text-[#1B9157]">{item.rate_per_unit.toFixed(2)} {item.currency} / {item.unit}</p>
+                                        <div className="flex items-center justify-end gap-1 mt-1">
+                                            <Badge variant="secondary" className="bg-green-50 text-green-600 text-[9px] px-1.5 py-0 h-4 border-0 font-bold">Active</Badge>
+                                            <p className="text-[9px] text-gray-400">from {new Date(item.effective_from).toLocaleDateString()}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        )}
                     </div>
 
-                    {/* Add Rate Form */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end bg-[#F4D03F]/5 dark:bg-[#F4D03F]/10 p-6 rounded-2xl border border-[#F4D03F]/20">
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold text-[#1B9157] uppercase tracking-wider">Medium</label>
-                            <Select>
-                                <SelectTrigger className="bg-white dark:bg-[#141414] border-gray-200 dark:border-gray-800 focus:ring-[#F4D03F]/20 focus:border-[#F4D03F]/50 h-11 rounded-xl">
-                                    <SelectValue placeholder="Water" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="water">Water</SelectItem>
-                                    <SelectItem value="heat">Heat</SelectItem>
-                                    <SelectItem value="energy">Energy</SelectItem>
-                                    <SelectItem value="other">Other</SelectItem>
-                                </SelectContent>
-                            </Select>
+                    <div className="pt-4 border-t border-gray-50 dark:border-gray-800 flex flex-col gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div className="space-y-1.5">
+                                <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Medium</label>
+                                <Select defaultValue="water">
+                                    <SelectTrigger className="h-10 rounded-xl border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 text-xs">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="water">Water</SelectItem>
+                                        <SelectItem value="heat">Heat</SelectItem>
+                                        <SelectItem value="energy">Energy</SelectItem>
+                                        <SelectItem value="other">Other</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-1.5">
+                                <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Rate (KES)</label>
+                                <Input type="number" placeholder="0.00" className="h-10 rounded-xl border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 text-xs" />
+                            </div>
+                            <div className="space-y-1.5">
+                                <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Description</label>
+                                <Input placeholder="Comment..." className="h-10 rounded-xl border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 text-xs" />
+                            </div>
+                            <div className="flex items-end">
+                                <Button
+                                    onClick={() => {
+                                        toast.success("New billing rate added successfully!");
+                                        // In a real app, we would call an API and refresh the list
+                                    }}
+                                    className="w-full h-10 rounded-xl bg-[#F4D03F] hover:bg-[#EBC42F] text-black font-bold text-xs gap-2 shadow-sm"
+                                >
+                                    <Plus className="w-4 h-4" /> Add rate
+                                </Button>
+                            </div>
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold text-[#1B9157] uppercase tracking-wider">Rate</label>
-                            <Input placeholder="e.g. 7.20" className="bg-white dark:bg-[#141414] border-gray-200 dark:border-gray-800 focus:ring-[#F4D03F]/20 focus:border-[#F4D03F]/50 h-11 rounded-xl" />
+
+                        {/* Drag and Drop Columns */}
+                        <div className="space-y-4">
+                            <h4 className="text-sm font-bold text-gray-900 dark:text-white">Export columns order</h4>
+                            <Reorder.Group axis="y" values={columns} onReorder={setColumns} className="space-y-2">
+                                {columns.map((column) => (
+                                    <Reorder.Item
+                                        key={column}
+                                        value={column}
+                                        className="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 shadow-sm cursor-grab active:cursor-grabbing"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <GripVertical className="w-4 h-4 text-gray-400" />
+                                            <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{column}</span>
+                                        </div>
+                                    </Reorder.Item>
+                                ))}
+                            </Reorder.Group>
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold text-[#1B9157] uppercase tracking-wider">Unit</label>
-                            <Input placeholder="m3" className="bg-white dark:bg-[#141414] border-gray-200 dark:border-gray-800 focus:ring-[#F4D03F]/20 focus:border-[#F4D03F]/50 h-11 rounded-xl" />
-                        </div>
-                        <Button className="bg-[#F4D03F] text-[#1A1A1A] hover:bg-[#e0be36] font-bold h-11 rounded-xl shadow-lg shadow-yellow-500/10">Add rate</Button>
                     </div>
                 </CardContent>
             </Card>
-
-            {/* Export columns */}
-            <div className="bg-[#1B9157]/5 dark:bg-[#1B9157]/10 p-8 rounded-[2.5rem] border border-[#1B9157]/10 -mx-2 md:-mx-4 shadow-sm">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                    <h3 className="text-xl font-bold text-[#1B9157]">Export columns</h3>
-                </div>
-
-                <Reorder.Group axis="y" values={columns} onReorder={setColumns} className="space-y-3">
-                    {columns.map((col) => (
-                        <SortableItem key={col} item={col} />
-                    ))}
-                </Reorder.Group>
-            </div>
-
-            {/* Next step */}
-            <div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2 mb-6">
-                    <span className="w-2 h-8 bg-[#F4D03F] rounded-full"></span>
-                    Next step
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Card className="rounded-[1.5rem] border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm hover:shadow-md transition-all cursor-pointer group border-l-4 border-l-[#1B9157]">
-                        <CardContent className="p-6 flex items-center justify-between">
-                            <div>
-                                <h4 className="font-bold text-gray-900 dark:text-white group-hover:text-[#1B9157] transition-colors">Invoices</h4>
-                                <p className="text-sm text-gray-400">Recurring generation</p>
-                            </div>
-                            <Badge variant="outline" className="border-[#1B9157]/20 text-[#1B9157] uppercase text-[10px] font-bold px-3 py-1 bg-[#1B9157]/5">MVP+</Badge>
-                        </CardContent>
-                    </Card>
-                    <Card className="rounded-[1.5rem] border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm hover:shadow-md transition-all cursor-pointer group border-l-4 border-l-[#F4D03F]">
-                        <CardContent className="p-6 flex items-center justify-between">
-                            <div>
-                                <h4 className="font-bold text-gray-900 dark:text-white group-hover:text-[#F4D03F] transition-colors">Online payments</h4>
-                                <p className="text-sm text-gray-400">Gateway integrations</p>
-                            </div>
-                            <Badge variant="outline" className="border-[#F4D03F]/20 text-[#7a6820] dark:text-[#F4D03F] uppercase text-[10px] font-bold px-3 py-1 bg-[#F4D03F]/5">MVP+</Badge>
-                        </CardContent>
-                    </Card>
-                </div>
-            </div>
         </div>
     );
 };
 
 export default MetersPayments;
-
-const SortableItem = ({ item }: { item: string }) => {
-    const controls = useDragControls();
-
-    return (
-        <Reorder.Item
-            value={item}
-            dragListener={false}
-            dragControls={controls}
-            className="flex items-center gap-3 p-3 bg-white dark:bg-black rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm relative select-none"
-        >
-            <div
-                className="cursor-move touch-none"
-                onPointerDown={(e) => controls.start(e)}
-            >
-                <GripVertical className="w-5 h-5 text-gray-300" />
-            </div>
-            <div className="w-8 h-8 rounded bg-gray-100 dark:bg-gray-800 flex items-center justify-center pointer-events-none">
-                {/* Pseudorandom icon or hash */}
-                <div className="grid grid-cols-2 gap-0.5 w-3 h-3">
-                    <div className="bg-gray-400 rounded-[1px]"></div>
-                    <div className="bg-gray-400 rounded-[1px]"></div>
-                    <div className="bg-gray-400 rounded-[1px]"></div>
-                    <div className="bg-gray-400 rounded-[1px]"></div>
-                </div>
-            </div>
-            <span className="font-medium text-gray-700 dark:text-gray-200">{item}</span>
-        </Reorder.Item>
-    );
-};

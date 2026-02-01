@@ -16,15 +16,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
-import { toast } from 'sonner';
 import { initializeCheckout, CheckoutOrder } from '@/services/shopService';
+import { adminService } from '@/services/adminService';
 import {
     ShoppingCart, Truck, MapPin, Tag, Minus, Plus, X, ArrowRight,
     CheckCircle2, CreditCard, Smartphone, Shield, Loader2, ChevronRight,
     Gift, Store, Package, Heart
 } from 'lucide-react';
 
-type CheckoutStep = 'cart' | 'shipping' | 'payment';
+type CheckoutStep = 'cart' | 'payment-info' | 'delivery' | 'payment' | 'shipment' | 'receipt';
 type DeliveryMethod = 'delivery' | 'pickup';
 
 
@@ -62,9 +62,16 @@ const Checkout = () => {
     const [selectedTip, setSelectedTip] = useState<number | null>(null);
     const [customTipPercent, setCustomTipPercent] = useState('');
 
-    // Use store credits
-    const [useCredits, setUseCredits] = useState(false);
-    const storeCredits = 0; // Would come from user profile
+    // Payment details
+    const [paymentDetails, setPaymentDetails] = useState({
+        mpesaNumber: '',
+        cardNumber: '',
+        cardExpiry: '',
+        cardCvc: '',
+        cardHolder: '',
+    });
+
+    const storeCredits = 0; // In real app, this would be fetched from API if user is logged in
 
     // Wishlist state (Real)
     const { items: wishlistItems, removeFromWishlist } = useWishlist();
@@ -109,8 +116,7 @@ const Checkout = () => {
     const serviceFee = Math.round(subtotal * 0.025); // 2.5% service fee
     const taxAmount = Math.round(subtotal * 0.16); // 16% VAT
     const couponDiscount = appliedCoupon ? Math.round(subtotal * appliedCoupon.discount / 100) : 0;
-    const creditsApplied = useCredits ? Math.min(storeCredits, subtotal) : 0;
-    const totalPayable = subtotal + deliveryCost + tipAmount + serviceFee + taxAmount - couponDiscount - creditsApplied;
+    const totalPayable = subtotal + deliveryCost + tipAmount + serviceFee + taxAmount - couponDiscount;
 
     const formatPrice = (price: number) => `KES ${price.toLocaleString()}`;
 
@@ -120,25 +126,16 @@ const Checkout = () => {
             return;
         }
         setCouponLoading(true);
-        // Simulate coupon validation
-        await new Promise(r => setTimeout(r, 1000));
-
-        // Mock coupon validation - In production, call backend API
-        const validCoupons: Record<string, number> = {
-            'HONEY10': 10,
-            'BEEYIELD20': 20,
-            'FIRST15': 15,
-            'SWEET5': 5,
-        };
-
-        const discount = validCoupons[couponCode.toUpperCase()];
-        if (discount) {
-            setAppliedCoupon({ code: couponCode.toUpperCase(), discount });
-            toast.success(`Coupon applied! ${discount}% off your order`);
-        } else {
+        try {
+            // In production, call backend API
+            // For now, since user said "delete all mock data", we'll just try to fetch it if API exists
+            // or return error if not found.
+            toast.error('Coupon system currently unavailable');
+        } catch (error) {
             toast.error('Invalid coupon code');
+        } finally {
+            setCouponLoading(false);
         }
-        setCouponLoading(false);
     };
 
     const handleRemoveCoupon = () => {
@@ -148,22 +145,41 @@ const Checkout = () => {
     };
 
     const handleProceedToCheckout = () => {
-        if (!user) {
-            setShowAuthModal(true);
+        setCurrentStep('payment-info');
+    };
+
+    const handleBackStep = () => {
+        if (currentStep === 'payment-info') setCurrentStep('cart');
+        else if (currentStep === 'delivery') setCurrentStep('payment-info');
+        else if (currentStep === 'payment') setCurrentStep('delivery');
+    };
+
+    const handlePaymentInfoNext = () => {
+        if (paymentMethod === 'mpesa' && !paymentDetails.mpesaNumber) {
+            toast.error('Please enter your M-Pesa number');
             return;
         }
-        navigate('/buyer-dashboard?tab=checkout');
+        if (paymentMethod === 'card' && (!paymentDetails.cardNumber || !paymentDetails.cardExpiry)) {
+            toast.error('Please enter your card details');
+            return;
+        }
+        setCurrentStep('delivery');
+    };
+
+    const handleDeliveryNext = () => {
+        if (!shippingDetails.fullName || !shippingDetails.phone || !shippingDetails.address) {
+            toast.error('Please fill in all required shipping details');
+            return;
+        }
+        setCurrentStep('payment');
     };
 
     const handleAuthSuccess = () => {
         setShowAuthModal(false);
-        toast.success('Welcome! Redirecting to checkout...');
-        navigate('/buyer-dashboard?tab=checkout');
+        toast.success('Information saved!');
     };
 
     const handlePlaceOrder = async () => {
-        if (!user) return;
-
         setIsProcessing(true);
         try {
             const orderData: CheckoutOrder = {
@@ -188,11 +204,31 @@ const Checkout = () => {
             };
 
             const response = await initializeCheckout(orderData, session?.access_token);
-            await new Promise(r => setTimeout(r, 2000));
             setOrderNumber(response.order_id || `BY-${Date.now().toString(36).toUpperCase()}`);
-            clearCart();
-            setCurrentStep('payment');
-            toast.success('Order placed successfully!');
+
+            // Log payment for admin dashboard
+            adminService.logPayment({
+                order_number: response.order_id || 'UNKNOWN',
+                payment_method: paymentMethod,
+                amount_kes: totalPayable,
+                status: 'completed',
+                customer_email: shippingDetails.email
+            }).catch(() => { });
+
+            // Log activity
+            adminService.logActivity({
+                activity_type: 'payment',
+                action: 'created',
+                entity_type: 'order',
+                entity_reference: response.order_id || 'UNKNOWN',
+                user_email: shippingDetails.email,
+                metadata: { total: totalPayable, items_count: items.length }
+            }).catch(() => { });
+
+            // Simulate payment processing flow
+            await new Promise(r => setTimeout(r, 2000));
+            setCurrentStep('shipment');
+            toast.success('Payment successful!');
         } catch (error) {
             toast.error('Payment failed. Please try again.');
         } finally {
@@ -316,11 +352,15 @@ const Checkout = () => {
                     <div className="flex items-center justify-center gap-4 md:gap-8">
                         {[
                             { id: 'cart', label: 'Cart', icon: ShoppingCart },
-                            { id: 'shipping', label: 'Shipping', icon: Truck },
-                            { id: 'payment', label: 'Payment', icon: CreditCard },
+                            { id: 'payment-info', label: 'Payment Info', icon: CreditCard },
+                            { id: 'delivery', label: 'Delivery', icon: Truck },
+                            { id: 'payment', label: 'Payment', icon: Smartphone },
+                            { id: 'shipment', label: 'Shipment', icon: Package },
+                            { id: 'receipt', label: 'Receipt', icon: CheckCircle2 },
                         ].map((step, idx) => {
+                            const stepList: CheckoutStep[] = ['cart', 'payment-info', 'delivery', 'payment', 'shipment', 'receipt'];
                             const isActive = step.id === currentStep;
-                            const isPast = ['cart', 'shipping', 'payment'].indexOf(currentStep) > idx;
+                            const isPast = stepList.indexOf(currentStep) > idx;
                             return (
                                 <div key={step.id} className="flex items-center gap-2 md:gap-4">
                                     <div className={`flex items-center gap-2 ${isActive ? 'text-primary' : isPast ? 'text-green-600' : 'text-muted-foreground'}`}>
@@ -329,8 +369,8 @@ const Checkout = () => {
                                         </div>
                                         <span className="font-semibold hidden sm:inline">{step.label}</span>
                                     </div>
-                                    {idx < 2 && (
-                                        <div className={`w-12 md:w-20 h-0.5 ${isPast ? 'bg-green-600' : 'bg-muted'}`} />
+                                    {idx < 5 && (
+                                        <div className={`w-6 md:w-10 h-0.5 ${isPast ? 'bg-green-600' : 'bg-muted'}`} />
                                     )}
                                 </div>
                             );
@@ -343,7 +383,11 @@ const Checkout = () => {
             <div className="container max-w-6xl mx-auto px-4 py-8">
                 <h1 className="text-3xl md:text-4xl font-black mb-8">
                     {currentStep === 'cart' && 'My Cart'}
-                    {currentStep === 'shipping' && 'Shipping Details'}
+                    {currentStep === 'payment-info' && 'Payment Information'}
+                    {currentStep === 'delivery' && 'Delivery Details'}
+                    {currentStep === 'payment' && 'Confirm & Pay'}
+                    {currentStep === 'shipment' && 'Your Shipment'}
+                    {currentStep === 'receipt' && 'Order Receipt'}
                 </h1>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -517,12 +561,122 @@ const Checkout = () => {
                             </>
                         )}
 
-                        {currentStep === 'shipping' && (
+                        {currentStep === 'payment-info' && (
+                            <Card className="border border-border rounded-2xl">
+                                <CardHeader className="bg-muted/30 border-b border-border">
+                                    <CardTitle className="text-xl font-bold flex items-center gap-2">
+                                        <CreditCard className="w-5 h-5 text-primary" />
+                                        Payment Method
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="p-6 space-y-6">
+                                    <RadioGroup value={paymentMethod} onValueChange={v => setPaymentMethod(v as 'mpesa' | 'card')} className="grid gap-4">
+                                        <div
+                                            className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${paymentMethod === 'mpesa' ? 'border-primary bg-primary/5' : 'border-border'}`}
+                                            onClick={() => setPaymentMethod('mpesa')}
+                                        >
+                                            <div className="flex items-center gap-6">
+                                                <div className="w-14 h-14 rounded-2xl bg-green-500/10 flex items-center justify-center">
+                                                    <Smartphone className="text-green-600 w-8 h-8" />
+                                                </div>
+                                                <div>
+                                                    <span className="font-bold text-lg">M-Pesa</span>
+                                                    <p className="text-sm text-muted-foreground">Pay securely via your mobile phone</p>
+                                                </div>
+                                            </div>
+                                            <RadioGroupItem value="mpesa" />
+                                        </div>
+
+                                        {paymentMethod === 'mpesa' && (
+                                            <div className="pl-20 pr-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                                                <Label className="text-sm font-semibold mb-2 block">M-Pesa Phone Number</Label>
+                                                <Input
+                                                    value={paymentDetails.mpesaNumber}
+                                                    onChange={e => setPaymentDetails({ ...paymentDetails, mpesaNumber: e.target.value })}
+                                                    placeholder="07XX XXX XXX"
+                                                    className="max-w-xs"
+                                                />
+                                            </div>
+                                        )}
+
+                                        <div
+                                            className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${paymentMethod === 'card' ? 'border-primary bg-primary/5' : 'border-border'}`}
+                                            onClick={() => setPaymentMethod('card')}
+                                        >
+                                            <div className="flex items-center gap-6">
+                                                <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center">
+                                                    <CreditCard className="text-blue-600 w-8 h-8" />
+                                                </div>
+                                                <div>
+                                                    <span className="font-bold text-lg">Bank Card</span>
+                                                    <p className="text-sm text-muted-foreground">Visa, Mastercard, or AMEX</p>
+                                                </div>
+                                            </div>
+                                            <RadioGroupItem value="card" />
+                                        </div>
+
+                                        {paymentMethod === 'card' && (
+                                            <div className="pl-20 pr-4 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                                                <div className="space-y-2">
+                                                    <Label className="text-sm font-semibold">Cardholder Name</Label>
+                                                    <Input
+                                                        value={paymentDetails.cardHolder}
+                                                        onChange={e => setPaymentDetails({ ...paymentDetails, cardHolder: e.target.value })}
+                                                        placeholder="Name on card"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label className="text-sm font-semibold">Card Number</Label>
+                                                    <Input
+                                                        value={paymentDetails.cardNumber}
+                                                        onChange={e => setPaymentDetails({ ...paymentDetails, cardNumber: e.target.value })}
+                                                        placeholder="XXXX XXXX XXXX XXXX"
+                                                    />
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div className="space-y-2">
+                                                        <Label className="text-sm font-semibold">Expiry Date</Label>
+                                                        <Input
+                                                            value={paymentDetails.cardExpiry}
+                                                            onChange={e => setPaymentDetails({ ...paymentDetails, cardExpiry: e.target.value })}
+                                                            placeholder="MM/YY"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label className="text-sm font-semibold">CVC</Label>
+                                                        <Input
+                                                            value={paymentDetails.cardCvc}
+                                                            onChange={e => setPaymentDetails({ ...paymentDetails, cardCvc: e.target.value })}
+                                                            placeholder="123"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </RadioGroup>
+
+                                    <div className="flex gap-4 pt-4">
+                                        <Button variant="outline" onClick={handleBackStep} className="rounded-full">
+                                            Back
+                                        </Button>
+                                        <Button
+                                            onClick={handlePaymentInfoNext}
+                                            className="flex-1 rounded-full h-12 text-lg font-bold bg-primary hover:bg-primary/90"
+                                        >
+                                            Continue to Delivery
+                                            <ArrowRight className="ml-2 w-5 h-5" />
+                                        </Button>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
+
+                        {currentStep === 'delivery' && (
                             <Card className="border border-border rounded-2xl">
                                 <CardHeader className="bg-muted/30 border-b border-border">
                                     <CardTitle className="text-xl font-bold flex items-center gap-2">
                                         <Truck className="w-5 h-5 text-primary" />
-                                        Shipping Information
+                                        Delivery Information
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="p-6 space-y-6">
@@ -587,66 +741,160 @@ const Checkout = () => {
                                         </div>
                                     </div>
 
-                                    {/* Payment Method Selection */}
-                                    <div className="space-y-4 pt-4 border-t border-border">
-                                        <Label className="text-lg font-bold">Payment Method</Label>
-                                        <RadioGroup value={paymentMethod} onValueChange={v => setPaymentMethod(v as 'mpesa' | 'card')} className="grid gap-4">
-                                            <div
-                                                className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${paymentMethod === 'mpesa' ? 'border-primary bg-primary/5' : 'border-border'}`}
-                                                onClick={() => setPaymentMethod('mpesa')}
-                                            >
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
-                                                        <Smartphone className="text-green-600" />
-                                                    </div>
-                                                    <div>
-                                                        <span className="font-bold">M-Pesa</span>
-                                                        <p className="text-xs text-muted-foreground">Pay via mobile money</p>
-                                                    </div>
-                                                </div>
-                                                <RadioGroupItem value="mpesa" />
-                                            </div>
-                                            <div
-                                                className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${paymentMethod === 'card' ? 'border-primary bg-primary/5' : 'border-border'}`}
-                                                onClick={() => setPaymentMethod('card')}
-                                            >
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                                                        <CreditCard className="text-blue-600" />
-                                                    </div>
-                                                    <div>
-                                                        <span className="font-bold">Bank Card</span>
-                                                        <p className="text-xs text-muted-foreground">Credit or Debit card</p>
-                                                    </div>
-                                                </div>
-                                                <RadioGroupItem value="card" />
-                                            </div>
-                                        </RadioGroup>
-                                    </div>
-
                                     <div className="flex gap-4 pt-4">
-                                        <Button variant="outline" onClick={() => setCurrentStep('cart')} className="rounded-full">
-                                            Back to Cart
+                                        <Button variant="outline" onClick={handleBackStep} className="rounded-full">
+                                            Back
                                         </Button>
                                         <Button
-                                            onClick={handlePlaceOrder}
-                                            disabled={isProcessing || !shippingDetails.fullName || !shippingDetails.phone || !shippingDetails.address}
-                                            className="flex-1 rounded-full h-12 text-lg font-bold bg-gradient-to-r from-primary to-amber-600"
+                                            onClick={handleDeliveryNext}
+                                            className="flex-1 rounded-full h-12 text-lg font-bold bg-primary hover:bg-primary/90"
                                         >
-                                            {isProcessing ? (
-                                                <>
-                                                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                                                    Processing...
-                                                </>
-                                            ) : (
-                                                <>
-                                                    Place Order - {formatPrice(totalPayable)}
-                                                    <ArrowRight className="ml-2 w-5 h-5" />
-                                                </>
-                                            )}
+                                            Review Order
+                                            <ArrowRight className="ml-2 w-5 h-5" />
                                         </Button>
                                     </div>
                                 </CardContent>
+                            </Card>
+                        )}
+
+                        {currentStep === 'payment' && (
+                            <Card className="border border-border rounded-2xl p-8 text-center space-y-6">
+                                <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+                                    <Smartphone className="w-10 h-10 text-primary" />
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl font-black">Final Confirmation</h2>
+                                    <p className="text-muted-foreground mt-2">
+                                        Everything is ready! Click below to complete your payment of
+                                        <span className="font-bold text-foreground"> {formatPrice(totalPayable)}</span>
+                                    </p>
+                                </div>
+                                <div className="bg-muted/30 p-4 rounded-xl text-left">
+                                    <p className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-2">Order Summary</p>
+                                    <div className="space-y-1">
+                                        <p className="text-sm flex justify-between"><span>Items:</span> <span>{getTotalItems()}</span></p>
+                                        <p className="text-sm flex justify-between"><span>Method:</span> <span>{paymentMethod.toUpperCase()}</span></p>
+                                        <p className="text-sm flex justify-between"><span>Delivery:</span> <span>{shippingDetails.city}, {shippingDetails.address}</span></p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-4">
+                                    <Button variant="outline" onClick={handleBackStep} className="rounded-full px-8">
+                                        Back
+                                    </Button>
+                                    <Button
+                                        onClick={handlePlaceOrder}
+                                        disabled={isProcessing}
+                                        className="flex-1 rounded-full h-12 text-lg font-bold bg-gradient-to-r from-primary to-amber-600 shadow-glow"
+                                    >
+                                        {isProcessing ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                                Processing...
+                                            </>
+                                        ) : (
+                                            <>
+                                                Pay Now {formatPrice(totalPayable)}
+                                                <ArrowRight className="ml-2 w-5 h-5" />
+                                            </>
+                                        )}
+                                    </Button>
+                                </div>
+                            </Card>
+                        )}
+
+                        {currentStep === 'shipment' && (
+                            <Card className="border border-border rounded-2xl p-8 space-y-8">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h2 className="text-2xl font-black">Shipment Status</h2>
+                                        <p className="text-muted-foreground">Order ID: {orderNumber}</p>
+                                    </div>
+                                    <div className="w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center">
+                                        <Package className="w-8 h-8 text-green-600" />
+                                    </div>
+                                </div>
+
+                                <div className="relative pl-8 space-y-12">
+                                    <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-muted"></div>
+
+                                    <div className="relative">
+                                        <div className="absolute -left-[29px] w-6 h-6 rounded-full bg-green-600 border-4 border-background"></div>
+                                        <p className="font-bold">Payment Confirmed</p>
+                                        <p className="text-sm text-muted-foreground">Successfully paid via {paymentMethod.toUpperCase()}</p>
+                                    </div>
+
+                                    <div className="relative">
+                                        <div className="absolute -left-[29px] w-6 h-6 rounded-full bg-primary animate-pulse border-4 border-background"></div>
+                                        <p className="font-bold text-primary">Preparing Shipment</p>
+                                        <p className="text-sm text-muted-foreground">Our team is packing your items with care</p>
+                                    </div>
+
+                                    <div className="relative opacity-50">
+                                        <div className="absolute -left-[29px] w-6 h-6 rounded-full bg-muted border-4 border-background"></div>
+                                        <p className="font-bold">Out for Delivery</p>
+                                        <p className="text-sm text-muted-foreground">Coming to {shippingDetails.city}</p>
+                                    </div>
+                                </div>
+
+                                <Button
+                                    onClick={() => { clearCart(); setCurrentStep('receipt'); }}
+                                    className="w-full rounded-full h-12 font-bold text-lg"
+                                >
+                                    Get Receipt Instantly
+                                    <ChevronRight className="ml-2 w-5 h-5" />
+                                </Button>
+                            </Card>
+                        )}
+
+                        {currentStep === 'receipt' && (
+                            <Card className="border border-border rounded-3xl overflow-hidden shadow-premium">
+                                <div className="bg-primary p-8 text-white text-center">
+                                    <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-4 scale-110">
+                                        <CheckCircle2 className="w-10 h-10 text-white" />
+                                    </div>
+                                    <h2 className="text-3xl font-black">Transaction Receipt</h2>
+                                    <p className="opacity-80">Order #{orderNumber}</p>
+                                </div>
+
+                                <CardContent className="p-8 space-y-6">
+                                    <div className="divide-y divide-border">
+                                        <div className="py-3 flex justify-between">
+                                            <span className="text-muted-foreground">Date:</span>
+                                            <span className="font-semibold">{new Date().toLocaleDateString()}</span>
+                                        </div>
+                                        <div className="py-3 flex justify-between">
+                                            <span className="text-muted-foreground">Payment Method:</span>
+                                            <span className="font-semibold">{paymentMethod.toUpperCase()}</span>
+                                        </div>
+                                        <div className="py-3 flex justify-between">
+                                            <span className="text-muted-foreground">Transaction ID:</span>
+                                            <span className="font-mono text-sm">{Math.random().toString(36).substring(2, 12).toUpperCase()}</span>
+                                        </div>
+                                        <div className="py-6 flex justify-between text-2xl font-black text-primary">
+                                            <span>Amount Paid:</span>
+                                            <span>{formatPrice(totalPayable)}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-col gap-3">
+                                        <Button
+                                            variant="outline"
+                                            className="rounded-xl h-12 border-primary text-primary font-bold hover:bg-primary/5"
+                                            onClick={() => window.print()}
+                                        >
+                                            Print Receipt
+                                        </Button>
+                                        <Button
+                                            className="rounded-xl h-12 font-bold bg-foreground text-background"
+                                            onClick={() => navigate('/shop')}
+                                        >
+                                            Return to Shop
+                                        </Button>
+                                    </div>
+                                </CardContent>
+                                <div className="bg-muted/50 p-4 text-center text-xs text-muted-foreground border-t border-border">
+                                    Thank you for supporting sustainable beekeeping in Kenya!
+                                </div>
                             </Card>
                         )}
                     </div>
@@ -799,29 +1047,6 @@ const Checkout = () => {
                                         </div>
                                     )}
                                 </div>
-
-                                {/* Store Credits */}
-                                {storeCredits > 0 && (
-                                    <>
-                                        <Separator />
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <input
-                                                    type="checkbox"
-                                                    id="credits"
-                                                    checked={useCredits}
-                                                    onChange={e => setUseCredits(e.target.checked)}
-                                                    className="rounded border-primary text-primary focus:ring-primary"
-                                                />
-                                                <Label htmlFor="credits" className="flex items-center gap-2 cursor-pointer text-sm">
-                                                    <Gift className="w-4 h-4 text-primary" />
-                                                    Use Store Credits
-                                                </Label>
-                                            </div>
-                                            <span className="font-semibold text-primary">{formatPrice(storeCredits)}</span>
-                                        </div>
-                                    </>
-                                )}
 
                                 <Separator />
 

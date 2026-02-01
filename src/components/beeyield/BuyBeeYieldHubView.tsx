@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import heroImage from '@/assets/beeyield_hub_hero.png';
+import { toast } from 'sonner';
 
 interface BuyBeeYieldHubViewProps {
     onTabChange: (tab: string) => void;
@@ -122,10 +123,17 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                             </div>
 
                             <div className="flex flex-wrap gap-4">
-                                <Button className="bg-[#1B9157] hover:bg-[#146c43] text-white rounded-2xl px-10 h-16 text-lg font-bold shadow-xl shadow-green-500/20">
+                                <Button
+                                    onClick={() => onTabChange('requests')}
+                                    className="bg-[#1B9157] hover:bg-[#146c43] text-white rounded-2xl px-10 h-16 text-lg font-bold shadow-xl shadow-green-500/20"
+                                >
                                     Start a conversation
                                 </Button>
-                                <Button variant="outline" className="rounded-2xl px-10 h-16 text-lg font-bold border-gray-200 dark:border-gray-800">
+                                <Button
+                                    variant="outline"
+                                    onClick={() => toast.info("Development tools coming soon to global hive network.")}
+                                    className="rounded-2xl px-10 h-16 text-lg font-bold border-gray-200 dark:border-gray-800"
+                                >
                                     View development tools
                                 </Button>
                             </div>
@@ -202,7 +210,11 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                                     {item.description}
                                 </p>
                             </div>
-                            <Button variant="ghost" className="p-0 h-auto font-bold text-[#1B9157] hover:text-[#146c43] w-fit gap-2">
+                            <Button
+                                variant="ghost"
+                                onClick={() => toast.success("Redirecting to product documentation...")}
+                                className="p-0 h-auto font-bold text-[#1B9157] hover:text-[#146c43] w-fit gap-2"
+                            >
                                 Discover more <ArrowRight className="w-4 h-4" />
                             </Button>
                         </Card>
@@ -263,10 +275,17 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                         <p className="text-blue-200/60 font-medium">Advanced power management for IoT platforms</p>
                     </div>
                     <div className="flex gap-4">
-                        <Button className="bg-[#1B9157] hover:bg-[#146c43] text-white rounded-2xl px-8 h-14 font-bold border-none">
+                        <Button
+                            onClick={() => toast.info("Device configuration panel will be available in next update.")}
+                            className="bg-[#1B9157] hover:bg-[#146c43] text-white rounded-2xl px-8 h-14 font-bold border-none"
+                        >
                             Configuration & Maintenance
                         </Button>
-                        <Button variant="outline" className="bg-white hover:bg-gray-100 text-[#0F172A] border-none rounded-2xl px-10 h-14 font-bold">
+                        <Button
+                            variant="outline"
+                            onClick={() => onTabChange('support')}
+                            className="bg-white hover:bg-gray-100 text-[#0F172A] border-none rounded-2xl px-10 h-14 font-bold"
+                        >
                             Consultants
                         </Button>
                     </div>

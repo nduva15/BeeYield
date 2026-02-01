@@ -19,11 +19,7 @@ class EmailService:
         Send an email using SMTP or log to console if not configured.
         """
         if not self.enabled:
-            print(f"--- [MOCK EMAIL SERVICE] ---")
-            print(f"TO: {to_email}")
-            print(f"SUBJECT: {subject}")
-            print(f"CONTENT: {html_content[:100]}...")
-            print(f"----------------------------")
+            # Service not enabled, do not send or mock
             return
         
         try:

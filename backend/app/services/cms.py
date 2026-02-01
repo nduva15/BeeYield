@@ -1,27 +1,24 @@
 from typing import List, Optional
 from datetime import datetime
 
+from app.db.supabase_db import db_select, db_insert
+
 def get_all_posts(category: Optional[str] = None):
-    # Mock CMS
-    return [
-       {
-          "id": "post-1",
-          "title": "The Importance of Bees",
-          "slug": "importance-of-bees",
-          "excerpt": "Why bees matter...",
-          "content": "Full article content...",
-          "category": "Conservation",
-          "featured_image": "/img/blog1.jpg",
-          "tags": ["bees", "nature"],
-          "author_id": "auth-1",
-          "status": "published",
-          "read_time_minutes": 5,
-          "published_at": datetime.now(),
-          "created_at": datetime.now()
-       }
-    ]
+    """Fetch all blog posts from Supabase"""
+    filters = {"status": "published"}
+    if category:
+        filters["category"] = category
+    
+    return db_select("blog_posts", filters=filters, order_by="published_at", ascending=False)
 
 def create_post(post_data: dict):
-    # Mock save
-    post_data['id'] = "new-post-id"
-    return post_data
+    """Create a new blog post in Supabase"""
+    if 'created_at' not in post_data:
+        post_data['created_at'] = datetime.now().isoformat()
+    if 'updated_at' not in post_data:
+        post_data['updated_at'] = datetime.now().isoformat()
+        
+    result = db_insert("blog_posts", post_data)
+    if result.get("success") and result.get("data"):
+        return result["data"][0]
+    return result

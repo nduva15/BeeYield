@@ -15,6 +15,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import TIMOTHY_PHOTO from '@/assets/timothy-nduva.png';
 import PLACEHOLDER_SVG from '@/assets/placeholder.svg';
 import { traceBatch, TraceResponse, TraceJourneyStep } from "@/services/traceabilityService";
+import { adminService } from "@/services/adminService";
 
 const Traceability = () => {
   const [qrCode, setQrCode] = useState("");
@@ -40,6 +41,16 @@ const Traceability = () => {
       }
 
       setTraceData(data);
+
+      // Log traceability scan for admin dashboard
+      adminService.logTrace({
+        batch_code: code,
+        honey_type: data.batch?.honey_type || 'Unknown Honey',
+        farmer_name: data.farmer?.name || 'Unknown Farmer',
+        trace_source: 'website_scan',
+        is_authenticated: true
+      }).catch(err => console.error("Failed to log trace:", err));
+
       toast({
         title: "Chain Verified!",
         description: `Full journey data retrieved for batch ${code}`,
@@ -275,6 +286,15 @@ const Traceability = () => {
                       <Button
                         className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-black px-8 py-6 rounded-2xl shadow-xl hover:shadow-amber-500/30 transition-all flex items-center gap-3 text-lg"
                         disabled={loading}
+                        onClick={() => {
+                          adminService.logActivity({
+                            activity_type: 'document',
+                            action: 'downloaded',
+                            entity_type: 'traceability_certificate',
+                            entity_reference: traceData.batch_code,
+                            metadata: { batch_code: traceData.batch_code }
+                          }).catch(() => { });
+                        }}
                       >
                         {loading ? (
                           <>
@@ -488,7 +508,7 @@ const Traceability = () => {
                           <div className="flex items-center gap-2 text-slate-500 text-[10px] font-black uppercase tracking-widest">
                             <Zap className="h-4 w-4 text-yellow-500" /> Bee Activity
                           </div>
-                          <p className="text-4xl font-black tracking-tighter">{(traceData.sensor_snapshot.activity_level || 9.2).toFixed(1)}</p>
+                          <p className="text-4xl font-black tracking-tighter">{(Number(traceData.sensor_snapshot.activity_level) || 9.2).toFixed(1)}</p>
                           <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">High Foraging</p>
                         </div>
 

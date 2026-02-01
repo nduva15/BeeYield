@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,8 +37,11 @@ import {
     Thermometer,
     Waves
 } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import { beeyieldService, Harvest, HarvestCreateInput, Apiary, Hive } from '@/services/beeyieldService';
+import { Loader2, Trash2 } from 'lucide-react';
 
 import Logo from '@/assets/Logo.png';
 
@@ -49,11 +52,13 @@ interface HarvestsViewProps {
 const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
     const [isAddingHarvest, setIsAddingHarvest] = useState(false);
     const [date, setDate] = useState<Date>(new Date());
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
 
     // Filter states
     const [selectedPlace, setSelectedPlace] = useState<string>('');
     const [selectedHive, setSelectedHive] = useState<string>('');
-    const [quickYear, setQuickYear] = useState<string>('');
+    const [quickYear, setQuickYear] = useState<string>('2026');
 
     // Form states
     const [amount, setAmount] = useState('');
@@ -63,40 +68,74 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
     const [colorGrade, setColorGrade] = useState('');
     const [sealOnHoneyChain, setSealOnHoneyChain] = useState(true);
 
-    // Harvest data - Empty by default, should be populated from API
-    const [allHarvests, setAllHarvests] = useState<any[]>([]);
+    // Live data from Supabase
+    const [allHarvests, setAllHarvests] = useState<Harvest[]>([]);
+    const [apiaries, setApiaries] = useState<Apiary[]>([]);
+    const [hives, setHives] = useState<Hive[]>([]);
 
-    const filteredHarvests = allHarvests.filter(h => h.year === (quickYear || '2026'));
+    const filteredHarvests = allHarvests.filter(h => {
+        const harvestYear = new Date(h.harvest_date).getFullYear().toString();
+        return harvestYear === (quickYear || '2026');
+    });
 
-    const [selectedHarvest, setSelectedHarvest] = useState<any>(null);
+    const [selectedHarvest, setSelectedHarvest] = useState<Harvest | null>(null);
 
-    const handleSave = () => {
-        // Create new harvest object
-        const newHarvest = {
-            id: allHarvests.length + 1,
-            apiary: 'New Harvest', // Placeholder
-            families: 0,
-            totalKg: parseFloat(amount) || 0,
-            perFamily: 0,
-            change: '+0.00 kg',
-            batch: batchCode,
-            type: honeyType || 'Unknown',
-            verified: sealOnHoneyChain,
-            moisture: parseFloat(moisture) || 17.0,
-            color: colorGrade || 'White',
-            year: quickYear || '2026'
+    // Fetch data on mount
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true);
+            const [harvestsData, apiariesData, hivesData] = await Promise.all([
+                beeyieldService.getHarvests(),
+                beeyieldService.getApiaries(),
+                beeyieldService.getHives()
+            ]);
+            setAllHarvests(harvestsData);
+            setApiaries(apiariesData);
+            setHives(hivesData);
+            setIsLoading(false);
+        };
+        fetchData();
+    }, []);
+
+    const handleSave = async () => {
+        if (!amount || parseFloat(amount) <= 0) {
+            toast.error('Please enter a valid harvest amount');
+            return;
+        }
+
+        setIsSaving(true);
+        const harvestInput: HarvestCreateInput = {
+            hive_id: selectedHive || undefined,
+            harvest_date: date.toISOString().split('T')[0],
+            quantity_kg: parseFloat(amount),
+            quantity_left_for_bees_kg: parseFloat(amount), // 50/50 rule
+            honey_type: honeyType || 'Wildflower',
+            batch_code: batchCode,
+            moisture_content_percent: parseFloat(moisture) || 17.5,
+            color_grade: colorGrade || 'Light Amber',
+            is_verified: sealOnHoneyChain,
         };
 
-        setAllHarvests([newHarvest, ...allHarvests]);
-        setIsAddingHarvest(false);
+        const { data, error } = await beeyieldService.createHarvest(harvestInput);
+        setIsSaving(false);
 
-        // Reset form
-        setAmount('');
-        setBatchCode(`BY-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`);
+        if (data && !error) {
+            setAllHarvests([data, ...allHarvests]);
+            setIsAddingHarvest(false);
+            // Reset form
+            setAmount('');
+            setBatchCode(`BY-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`);
+            setHoneyType('');
+            setMoisture('');
+            setColorGrade('');
+        }
+    };
 
-        toast.success("Harvest added successfully", {
-            description: `Batch ${batchCode} sealed on HoneyChain™`
-        });
+    const handleDelete = async (id: string) => {
+        const { error } = await beeyieldService.deleteHarvest(id);
+        if (!error) {
+            setAllHarvests(allHarvests.filter(h => h.id !== id));
+        }
     };
 
     if (isAddingHarvest) {
@@ -270,104 +309,188 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
-                        <div className="p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
-                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Avg Moisture</p>
-                            <div className="flex items-baseline gap-1">
-                                <span className="text-xl font-black text-slate-800 dark:text-white">0.0</span>
-                                <span className="text-[10px] font-bold text-gray-400">%</span>
-                            </div>
-                        </div>
-                        <div className="p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
-                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Premium Yield</p>
-                            <div className="flex items-baseline gap-1">
-                                <span className="text-xl font-black text-slate-800 dark:text-white">0.0</span>
-                                <span className="text-[10px] font-bold text-gray-400">%</span>
-                            </div>
-                        </div>
-                        <div className="p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
-                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Organic Status</p>
-                            <div className="flex items-center gap-2">
-                                <ShieldCheck className="w-3 h-3 text-green-500" />
-                                <span className="text-sm font-black text-green-600 uppercase">ACTIVE</span>
-                            </div>
-                        </div>
-                        <div className="p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
-                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">HoneyChain Seals</p>
-                            <div className="flex items-baseline gap-1">
-                                <span className="text-xl font-black text-slate-800 dark:text-white">0</span>
-                                <span className="text-[10px] font-bold text-[#F4D03F]">VALID</span>
-                            </div>
-                        </div>
+                        {(() => {
+                            const moistureSum = filteredHarvests.reduce((sum, h) => sum + (h.moisture_content_percent || 0), 0);
+                            const avgMoisture = filteredHarvests.length > 0 ? (moistureSum / filteredHarvests.length).toFixed(1) : '0.0';
+
+                            const totalYield = filteredHarvests.reduce((sum, h) => sum + (h.quantity_kg || 0), 0).toFixed(1);
+
+                            const verifiedCount = filteredHarvests.filter(h => h.is_verified).length;
+
+                            const organicStatus = filteredHarvests.length > 0 ? 'ACTIVE' : 'PENDING';
+
+                            return (
+                                <>
+                                    <div className="p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
+                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Avg Moisture</p>
+                                        <div className="flex items-baseline gap-1">
+                                            <span className="text-xl font-black text-slate-800 dark:text-white">{avgMoisture}</span>
+                                            <span className="text-[10px] font-bold text-gray-400">%</span>
+                                        </div>
+                                    </div>
+                                    <div className="p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
+                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Yield</p>
+                                        <div className="flex items-baseline gap-1">
+                                            <span className="text-xl font-black text-slate-800 dark:text-white">{totalYield}</span>
+                                            <span className="text-[10px] font-bold text-gray-400">kg</span>
+                                        </div>
+                                    </div>
+                                    <div className="p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
+                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Organic Status</p>
+                                        <div className="flex items-center gap-2">
+                                            <ShieldCheck className={cn("w-3 h-3", organicStatus === 'ACTIVE' ? "text-green-500" : "text-yellow-500")} />
+                                            <span className={cn("text-sm font-black uppercase", organicStatus === 'ACTIVE' ? "text-green-600" : "text-yellow-600")}>{organicStatus}</span>
+                                        </div>
+                                    </div>
+                                    <div className="p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
+                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">HoneyChain Seals</p>
+                                        <div className="flex items-baseline gap-1">
+                                            <span className="text-xl font-black text-slate-800 dark:text-white">{verifiedCount}</span>
+                                            <span className="text-[10px] font-bold text-[#F4D03F]">VALID</span>
+                                        </div>
+                                    </div>
+                                </>
+                            );
+                        })()}
+                    </div>
+
+                    {/* Harvest Chart */}
+                    <div className="h-[200px] mt-8 w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={(() => {
+                                const chartData = Array.from({ length: 12 }, (_, i) => ({
+                                    name: new Date(0, i).toLocaleString('default', { month: 'short' }),
+                                    total: 0
+                                }));
+                                filteredHarvests.forEach(h => {
+                                    const month = new Date(h.harvest_date).getMonth();
+                                    chartData[month].total += (h.quantity_kg || 0);
+                                });
+                                return chartData;
+                            })()}>
+                                <XAxis
+                                    dataKey="name"
+                                    axisLine={false}
+                                    tickLine={false}
+                                    tick={{ fontSize: 10, fill: '#9ca3af' }}
+                                />
+                                <Tooltip
+                                    cursor={{ fill: 'transparent' }}
+                                    content={({ active, payload }) => {
+                                        if (active && payload && payload.length) {
+                                            return (
+                                                <div className="bg-white dark:bg-[#1a1a1a] p-2 border border-gray-100 dark:border-gray-800 rounded-lg shadow-lg">
+                                                    <p className="text-xs font-bold text-gray-500 mb-1">{payload[0].payload.name}</p>
+                                                    <p className="text-sm font-black text-[#F4D03F]">{payload[0].value} kg</p>
+                                                </div>
+                                            );
+                                        }
+                                        return null;
+                                    }}
+                                />
+                                <Bar
+                                    dataKey="total"
+                                    fill="#F4D03F"
+                                    radius={[4, 4, 0, 0]}
+                                    maxBarSize={40}
+                                />
+                            </BarChart>
+                        </ResponsiveContainer>
                     </div>
 
                     <div className="mt-8 overflow-x-auto">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="border-b border-gray-100 dark:border-gray-800">
-                                    <th className="text-left py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Apiary / Batch</th>
-                                    <th className="text-right py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Productive families</th>
-                                    <th className="text-right py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total harvests</th>
-                                    <th className="text-right py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">kg per family</th>
-                                    <th className="text-right py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Change</th>
-                                    <th className="text-center py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">HoneyChain™ Verification</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredHarvests.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={6} className="py-20 text-center text-gray-400 font-bold uppercase tracking-widest text-xs">
-                                            No harvest records for {quickYear || '2026'}
-                                        </td>
+                        {isLoading ? (
+                            <div className="flex items-center justify-center py-20">
+                                <Loader2 className="w-8 h-8 animate-spin text-[#F4D03F]" />
+                            </div>
+                        ) : (
+                            <table className="w-full">
+                                <thead>
+                                    <tr className="border-b border-gray-100 dark:border-gray-800">
+                                        <th className="text-left py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Hive / Batch</th>
+                                        <th className="text-left py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Farmer</th>
+                                        <th className="text-right py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Quantity</th>
+                                        <th className="text-right py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Honey Type</th>
+                                        <th className="text-right py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
+                                        <th className="text-center py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">HoneyChain™</th>
+                                        <th className="text-center py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                                     </tr>
-                                ) : (
-                                    filteredHarvests.map((harvest, index) => (
-                                        <tr
-                                            key={harvest.id}
-                                            onClick={() => setSelectedHarvest(harvest)}
-                                            className="group hover:bg-gray-50 dark:hover:bg-amber-900/10 transition-all cursor-pointer border-b border-gray-50 dark:border-gray-800/50"
-                                        >
-                                            <td className="py-4 font-medium text-gray-900 dark:text-white">
-                                                <div className="flex items-center gap-3">
-                                                    <span className={cn(
-                                                        "w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold",
-                                                        index === 0 ? "bg-green-100 text-green-700" : "bg-[#F4D03F]/5 text-[#D4AF37]"
-                                                    )}>
-                                                        #{index + 1}
-                                                    </span>
-                                                    <div className="flex flex-col">
-                                                        <span className="group-hover:text-[#D4AF37] transition-colors">{harvest.apiary}</span>
-                                                        <span className="text-[10px] text-gray-400 font-mono">{harvest.batch}</span>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="py-4 text-right text-gray-600 dark:text-gray-400">{harvest.families}</td>
-                                            <td className="py-4 text-right font-medium text-gray-900 dark:text-white">{harvest.totalKg} kg</td>
-                                            <td className="py-4 text-right text-gray-600 dark:text-gray-400">{harvest.perFamily} kg</td>
-                                            <td className="py-4 text-right">
-                                                <span className={cn(
-                                                    "text-xs font-bold",
-                                                    harvest.change.startsWith('+') ? "text-green-600" : harvest.change.startsWith('-') ? "text-red-500" : "text-gray-500"
-                                                )}>
-                                                    {harvest.change}
-                                                </span>
-                                            </td>
-                                            <td className="py-4">
-                                                <div className="flex justify-center">
-                                                    {harvest.verified ? (
-                                                        <div className="flex items-center gap-1.5 px-3 py-1 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/30 rounded-full">
-                                                            <ShieldCheck className="w-3 h-3 text-green-600" />
-                                                            <span className="text-[10px] font-bold text-green-700 dark:text-green-400 uppercase tracking-wide">Verified</span>
-                                                        </div>
-                                                    ) : (
-                                                        <span className="text-xs text-gray-400">-</span>
-                                                    )}
-                                                </div>
+                                </thead>
+                                <tbody>
+                                    {filteredHarvests.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={7} className="py-20 text-center text-gray-400 font-bold uppercase tracking-widest text-xs">
+                                                No harvest records for {quickYear || '2026'}
                                             </td>
                                         </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
+                                    ) : (
+                                        filteredHarvests.map((harvest, index) => (
+                                            <tr
+                                                key={harvest.id}
+                                                onClick={() => setSelectedHarvest(harvest)}
+                                                className="group hover:bg-gray-50 dark:hover:bg-amber-900/10 transition-all cursor-pointer border-b border-gray-50 dark:border-gray-800/50"
+                                            >
+                                                <td className="py-4 font-medium text-gray-900 dark:text-white">
+                                                    <div className="flex items-center gap-3">
+                                                        <span className={cn(
+                                                            "w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold",
+                                                            index === 0 ? "bg-green-100 text-green-700" : "bg-[#F4D03F]/5 text-[#D4AF37]"
+                                                        )}>
+                                                            #{index + 1}
+                                                        </span>
+                                                        <div className="flex flex-col">
+                                                            <span className="group-hover:text-[#D4AF37] transition-colors">
+                                                                {harvest.hive?.hive_code || 'Unknown Hive'}
+                                                            </span>
+                                                            <span className="text-[10px] text-gray-400 font-mono">{harvest.batch_code || '-'}</span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className="py-4 text-gray-600 dark:text-gray-400">
+                                                    {harvest.farmer?.name || '-'}
+                                                </td>
+                                                <td className="py-4 text-right font-medium text-gray-900 dark:text-white">
+                                                    {harvest.quantity_kg} kg
+                                                </td>
+                                                <td className="py-4 text-right text-gray-600 dark:text-gray-400">
+                                                    {harvest.honey_type || 'Wildflower'}
+                                                </td>
+                                                <td className="py-4 text-right text-gray-600 dark:text-gray-400">
+                                                    {new Date(harvest.harvest_date).toLocaleDateString()}
+                                                </td>
+                                                <td className="py-4">
+                                                    <div className="flex justify-center">
+                                                        {harvest.is_verified ? (
+                                                            <div className="flex items-center gap-1.5 px-3 py-1 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/30 rounded-full">
+                                                                <ShieldCheck className="w-3 h-3 text-green-600" />
+                                                                <span className="text-[10px] font-bold text-green-700 dark:text-green-400 uppercase tracking-wide">Verified</span>
+                                                            </div>
+                                                        ) : (
+                                                            <span className="text-xs text-gray-400">-</span>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                                <td className="py-4">
+                                                    <div className="flex justify-center">
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleDelete(harvest.id);
+                                                            }}
+                                                            className="opacity-0 group-hover:opacity-100 transition-opacity text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </Button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        )}
                     </div>
                 </CardContent>
             </Card>
@@ -398,19 +521,25 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                         <div className="space-y-3">
                             <Select value={selectedPlace} onValueChange={setSelectedPlace}>
                                 <SelectTrigger className="w-full h-12 rounded-2xl border-gray-200 bg-white dark:bg-[#1e1e1e] dark:border-gray-700">
-                                    <SelectValue placeholder="MY PLACES" />
+                                    <SelectValue placeholder="Select Apiary" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="none" disabled>No places available</SelectItem>
+                                    <SelectItem value="">All Apiaries</SelectItem>
+                                    {apiaries.map(apiary => (
+                                        <SelectItem key={apiary.id} value={apiary.id}>{apiary.name}</SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
 
                             <Select value={selectedHive} onValueChange={setSelectedHive}>
                                 <SelectTrigger className="w-full h-12 rounded-2xl border-gray-200 bg-white dark:bg-[#1e1e1e] dark:border-gray-700">
-                                    <SelectValue placeholder="HIVE" />
+                                    <SelectValue placeholder="Select Hive" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="none" disabled>No hives available</SelectItem>
+                                    <SelectItem value="">All Hives</SelectItem>
+                                    {hives.map(hive => (
+                                        <SelectItem key={hive.id} value={hive.id}>{hive.hive_code}</SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>

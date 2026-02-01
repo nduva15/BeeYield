@@ -8,335 +8,8 @@ from app.db.supabase_db import db_select, db_insert, db_get_by_id, db_update
 from app.schemas import shop as schemas
 
 
-# Mock products for fallback when DB is empty
-MOCK_PRODUCTS = [
-    {
-        "id": "honey-1",
-        "name": "Acacia Honey",
-        "description": "Light, golden honey with a delicate floral taste. Perfect for tea and breakfast.",
-        "category": "honey",
-        "badge": "Bestseller",
-        "images": ["/images/products/acacia_honey_jar.png"],
-        "rating": 4.9,
-        "review_count": 128,
-        "is_active": True,
-        "variants": [
-            {"id": "v1", "size": "250g", "price_kes": 450, "stock_quantity": 100, "is_available": True},
-            {"id": "v2", "size": "500g", "price_kes": 850, "stock_quantity": 75, "is_available": True},
-            {"id": "v3", "size": "1kg", "price_kes": 1500, "stock_quantity": 50, "is_available": True}
-        ]
-    },
-    {
-        "id": "honey-2",
-        "name": "Forest Honey",
-        "description": "Rich, dark honey from Mount Kenya forests. Bold flavor with earthy notes.",
-        "category": "honey",
-        "badge": "Premium",
-        "images": ["/images/products/wild_forest_honey.png"],
-        "rating": 4.8,
-        "review_count": 89,
-        "is_active": True,
-        "variants": [
-            {"id": "v4", "size": "250g", "price_kes": 550, "stock_quantity": 80, "is_available": True},
-            {"id": "v5", "size": "500g", "price_kes": 1000, "stock_quantity": 60, "is_available": True},
-            {"id": "v6", "size": "1kg", "price_kes": 1800, "stock_quantity": 40, "is_available": True}
-        ]
-    },
-    {
-        "id": "honey-3",
-        "name": "Wildflower Honey",
-        "description": "Multi-floral honey from the Rift Valley. Complex, balanced sweetness.",
-        "category": "honey",
-        "badge": None,
-        "images": ["/images/products/honey_jar_premium.png"],
-        "rating": 4.7,
-        "review_count": 156,
-        "is_active": True,
-        "variants": [
-            {"id": "v7", "size": "250g", "price_kes": 400, "stock_quantity": 120, "is_available": True},
-            {"id": "v8", "size": "500g", "price_kes": 750, "stock_quantity": 90, "is_available": True},
-            {"id": "v9", "size": "1kg", "price_kes": 1400, "stock_quantity": 60, "is_available": True}
-        ]
-    },
-    {
-        "id": "honey-4",
-        "name": "Savannah Honey",
-        "description": "Light amber honey with citrus undertones. Great for baking.",
-        "category": "honey",
-        "badge": "New",
-        "images": ["/images/products/honey_jar_premium.png"],
-        "rating": 4.6,
-        "review_count": 34,
-        "is_active": True,
-        "variants": [
-            {"id": "v10", "size": "250g", "price_kes": 420, "stock_quantity": 100, "is_available": True},
-            {"id": "v11", "size": "500g", "price_kes": 780, "stock_quantity": 80, "is_available": True},
-            {"id": "v12", "size": "1kg", "price_kes": 1450, "stock_quantity": 55, "is_available": True}
-        ]
-    },
-    {
-        "id": "merch-1",
-        "name": "BeeYield Classic T-Shirt",
-        "description": "100% organic cotton t-shirt with embroidered logo. Comfortable everyday wear.",
-        "category": "merch",
-        "badge": "Bestseller",
-        "images": ["https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800"],
-        "rating": 4.8,
-        "review_count": 67,
-        "is_active": True,
-        "variants": [
-            {"id": "v13", "size": "S", "price_kes": 1500, "stock_quantity": 30, "is_available": True},
-            {"id": "v14", "size": "M", "price_kes": 1500, "stock_quantity": 50, "is_available": True},
-            {"id": "v15", "size": "L", "price_kes": 1500, "stock_quantity": 50, "is_available": True},
-            {"id": "v16", "size": "XL", "price_kes": 1500, "stock_quantity": 30, "is_available": True}
-        ]
-    },
-    {
-        "id": "merch-2",
-        "name": "Save the Bees Hoodie",
-        "description": "Premium heavyweight hoodie with our conservation message. Warm, stylish, and sustainable.",
-        "category": "merch",
-        "badge": "Limited Edition",
-        "images": ["https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=800"],
-        "rating": 4.9,
-        "review_count": 45,
-        "is_active": True,
-        "variants": [
-            {"id": "v17", "size": "S", "price_kes": 3800, "stock_quantity": 20, "is_available": True},
-            {"id": "v18", "size": "M", "price_kes": 3800, "stock_quantity": 35, "is_available": True},
-            {"id": "v19", "size": "L", "price_kes": 3800, "stock_quantity": 35, "is_available": True},
-            {"id": "v20", "size": "XL", "price_kes": 3800, "stock_quantity": 20, "is_available": True}
-        ]
-    },
-    {
-        "id": "merch-4",
-        "name": "Stainless Steel Smoker",
-        "description": "Professional-grade smoker with heat shield and leather bellows. Essential for every beekeeper.",
-        "category": "merch",
-        "badge": "Essential",
-        "images": ["https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=800"],
-        "rating": 4.8,
-        "review_count": 92,
-        "is_active": True,
-        "variants": [
-            {"id": "v25", "size": "Standard", "price_kes": 4500, "stock_quantity": 40, "is_available": True}
-        ]
-    },
-    {
-        "id": "merch-5",
-        "name": "Pro-Grip Hive Tool",
-        "description": "Heavy-duty J-hook hive tool made from hardened spring steel. Perfect for prying frames.",
-        "category": "merch",
-        "badge": "Top Rated",
-        "images": ["https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=800"],
-        "rating": 4.9,
-        "review_count": 115,
-        "is_active": True,
-        "variants": [
-            {"id": "v26", "size": "Standard", "price_kes": 1200, "stock_quantity": 150, "is_available": True}
-        ]
-    },
-    {
-        "id": "merch-6",
-        "name": "BeeYield Branded Cap",
-        "description": "Adjustable, breathable cotton cap with embroidered BeeYield logo.",
-        "category": "merch",
-        "badge": "New Arrival",
-        "images": ["https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=800"],
-        "rating": 4.6,
-        "review_count": 28,
-        "is_active": True,
-        "variants": [
-            {"id": "v27", "size": "One Size", "price_kes": 1500, "stock_quantity": 100, "is_available": True}
-        ]
-    },
-    {
-        "id": "edu-1",
-        "name": "Beekeeping Starter Guide",
-        "description": "Comprehensive digital guide for aspiring beekeepers. 50+ pages of expert knowledge covering hive setup, safety, and harvesting.",
-        "category": "education",
-        "badge": "Best Seller",
-        "images": ["https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800"],
-        "rating": 4.9,
-        "review_count": 215,
-        "is_active": True,
-        "variants": [
-            {"id": "v22", "size": "Digital (PDF)", "price_kes": 1500, "stock_quantity": 9999, "is_available": True}
-        ]
-    },
-    {
-        "id": "edu-4",
-        "name": "Intermediate Hive Management",
-        "description": "Advanced course on splits, pest management, and maximizing honey production for semi-commercial apiaries.",
-        "category": "education",
-        "badge": "Advanced",
-        "images": ["https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800"],
-        "rating": 4.8,
-        "review_count": 64,
-        "is_active": True,
-        "variants": [
-            {"id": "v28", "size": "Online Course", "price_kes": 5500, "stock_quantity": 9999, "is_available": True}
-        ]
-    },
-    {
-        "id": "edu-5",
-        "name": "Pollination Economics Masterclass",
-        "description": "Learn how to monetize your pollination services and calculate ROI for commercial fruit growers.",
-        "category": "education",
-        "badge": "Enterprise",
-        "images": ["https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800"],
-        "rating": 5.0,
-        "review_count": 31,
-        "is_active": True,
-        "variants": [
-            {"id": "v29", "size": "Online Course", "price_kes": 7200, "stock_quantity": 9999, "is_available": True}
-        ]
-    },
-    {
-        "id": "edu-6",
-        "name": "Queen Rearing & Breeding",
-        "description": "A deep dive into the specialized art of raising high-quality African honeybee queens using the Doolittle method.",
-        "category": "education",
-        "badge": "Expert Level",
-        "images": ["https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800"],
-        "rating": 4.9,
-        "review_count": 18,
-        "is_active": True,
-        "variants": [
-            {"id": "v30", "size": "Certificate Course", "price_kes": 12500, "stock_quantity": 9999, "is_available": True}
-        ]
-    },
-    {
-        "id": "edu-7",
-        "name": "Bee Health & Disease Management",
-        "description": "Identify, treat, and prevent common honeybee diseases and pests in tropical climates.",
-        "category": "education",
-        "badge": "Technical",
-        "images": ["https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=800"],
-        "rating": 4.7,
-        "review_count": 42,
-        "is_active": True,
-        "variants": [
-            {"id": "v31", "size": "Online Course", "price_kes": 4800, "stock_quantity": 9999, "is_available": True}
-        ]
-    },
-    {
-        "id": "hw-1",
-        "name": "ApiSense Sentinel Node",
-        "description": "IoT hive monitor with acoustic disease detection and gas sensing (VOCs/CO2).",
-        "category": "hardware",
-        "badge": "New Technology",
-        "images": ["/images/products/apisense_node.png"],
-        "rating": 5.0,
-        "review_count": 12,
-        "is_active": True,
-        "variants": [
-            {"id": "v-hw-1", "size": "Unit", "price_kes": 15000, "stock_quantity": 50, "is_available": True}
-        ]
-    },
-    {
-        "id": "hw-2",
-        "name": "Intelligent Hive Scale",
-        "description": "Precision weight, temperature, and humidity monitoring with 4G connectivity.",
-        "category": "hardware",
-        "badge": "Best Value",
-        "images": ["/images/products/hive_scale.png"],
-        "rating": 4.8,
-        "review_count": 24,
-        "is_active": True,
-        "variants": [
-            {"id": "v-hw-2", "size": "Unit", "price_kes": 12500, "stock_quantity": 50, "is_available": True}
-        ]
-    },
-    {
-        "id": "hw-3",
-        "name": "Solar Hive Monitor",
-        "description": "Self-sustaining solar powered hive monitor for remote locations. Never worry about batteries again.",
-        "category": "hardware",
-        "badge": "Eco-Choice",
-        "images": ["/images/products/solar_hive_monitor.png"],
-        "rating": 5.0,
-        "review_count": 5,
-        "is_active": True,
-        "variants": [
-            {"id": "v-hw-3", "size": "Unit", "price_kes": 18000, "stock_quantity": 30, "is_available": True}
-        ]
-    },
-    {
-        "id": "honey-5",
-        "name": "Savannah Blossom Gold Honey",
-        "description": "Distinctive golden honey with rich floral notes, harvested at sunset in the African savannah.",
-        "category": "honey",
-        "badge": "Limited Edition",
-        "images": ["/images/products/savannah_blossom_honey.png"],
-        "rating": 4.9,
-        "review_count": 15,
-        "is_active": True,
-        "variants": [
-            {"id": "v-sav-1", "size": "500g", "price_kes": 950, "stock_quantity": 50, "is_available": True},
-            {"id": "v-sav-2", "size": "1kg", "price_kes": 1800, "stock_quantity": 30, "is_available": True}
-        ]
-    },
-    {
-        "id": "merch-7",
-        "name": "BeeYield Canvas Tote Bag",
-        "description": "Eco-friendly canvas tote perfect for farmers markets. Durable and stylish.",
-        "category": "merch",
-        "badge": "New Arrival",
-        "images": ["/images/products/beeyield_tote_bag.png"],
-        "rating": 4.8,
-        "review_count": 8,
-        "is_active": True,
-        "variants": [
-            {"id": "v-tote-1", "size": "One Size", "price_kes": 1200, "stock_quantity": 100, "is_available": True}
-        ]
-    }
-]
 
-
-# Mock orders for demo/fallback
-MOCK_ORDERS = [
-    {
-        "id": "ord_12345678",
-        "order_number": "BY-4492-XT",
-        "status": "shipped",
-        "total_kes": 12500,
-        "payment_method": "mpesa",
-        "payment_status": "paid",
-        "created_at": datetime.now().isoformat(),
-        "shipping_address": {
-            "name": "Timothy Nduva",
-            "street": "Honey Street 10",
-            "city": "Nairobi",
-            "county": "Nairobi",
-            "phone": "+254700112233"
-        },
-        "items": [
-            {"product_id": "honey-1", "product_name": "Acacia Honey", "variant_size": "1kg", "quantity": 5, "unit_price": 2000, "total_price": 10000},
-            {"product_id": "merch-1", "product_name": "BeeYield Tee", "variant_size": "L", "quantity": 1, "unit_price": 2500, "total_price": 2500}
-        ]
-    },
-    {
-        "id": "ord_87654321",
-        "order_number": "BY-3321-KL",
-        "status": "delivered",
-        "total_kes": 2800,
-        "payment_method": "card",
-        "payment_status": "paid",
-        "created_at": datetime.now().isoformat(),
-        "shipping_address": {
-            "name": "Timothy Nduva",
-            "street": "123 Green Avenue",
-            "city": "Nairobi",
-            "county": "Nairobi",
-            "phone": "+254712345678"
-        },
-        "items": [
-            {"product_id": "merch-1", "product_name": "BeeYield Classic Tee", "quantity": 1, "unit_price": 2500, "total_price": 2500},
-            {"product_id": "honey-4", "product_name": "Pure Acacia Honey (Sample)", "quantity": 1, "unit_price": 300, "total_price": 300}
-        ]
-    }
-]
+# Products and orders now come exclusively from the database.
 
 
 def get_products(category: Optional[str] = None) -> List[Dict[str, Any]]:
@@ -348,10 +21,7 @@ def get_products(category: Optional[str] = None) -> List[Dict[str, Any]]:
     products = db_select("products", filters=filters)
     
     if not products:
-        # Return mock data filtered by category
-        if category:
-            return [p for p in MOCK_PRODUCTS if p["category"] == category]
-        return MOCK_PRODUCTS
+        return []
     
     # Fetch variants for each product
     for product in products:
@@ -370,10 +40,6 @@ def get_product_by_id(product_id: str) -> Optional[Dict[str, Any]]:
     product = db_get_by_id("products", product_id)
     
     if not product:
-        # Check mock data
-        for p in MOCK_PRODUCTS:
-            if p["id"] == product_id:
-                return p
         return None
     
     product["variants"] = db_select("product_variants", filters={"product_id": product_id})
@@ -476,10 +142,6 @@ def get_order(order_id: str) -> Optional[Dict[str, Any]]:
     """Get order with items"""
     order = db_get_by_id("orders", order_id)
     if not order:
-        # Check mock orders
-        for mo in MOCK_ORDERS:
-            if mo["id"] == order_id:
-                return mo
         return None
         
     if order:
@@ -493,7 +155,7 @@ def get_user_orders(user_id: str) -> List[Dict[str, Any]]:
     
     # If no orders in DB, return mock orders for demo
     if not orders:
-        return MOCK_ORDERS
+        return []
         
     # Sort by created_at descending
     return sorted(orders, key=lambda x: x.get('created_at', ''), reverse=True)
@@ -535,7 +197,6 @@ def get_user_wallet(user_id: str) -> Dict[str, Any]:
     if res.get("success"):
         return new_wallet
     
-    # Fallback for dev/demo if DB table missing
     return new_wallet
 
 def get_wallet_transactions(user_id: str) -> List[Dict[str, Any]]:

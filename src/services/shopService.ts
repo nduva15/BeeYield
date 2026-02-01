@@ -25,11 +25,9 @@ export interface Product {
     variants: ProductVariant[];
 }
 
-// Products are fetched from the API. Local constants are removed to ensure real data usage.
-
 export const getProducts = async (category_name?: string): Promise<Product[]> => {
     try {
-        const params: any = {};
+        const params: Record<string, string> = {};
         if (category_name) params.category = category_name;
 
         const products = await apiGet<Product[]>('/shop/products', params);
@@ -75,7 +73,7 @@ export interface CheckoutResponse {
     order_number: string;
     status: string;
     message: string;
-    payment_info?: any;
+    payment_info?: unknown;
 }
 
 export const initializeCheckout = async (orderData: CheckoutOrder, accessToken?: string): Promise<CheckoutResponse> => {
@@ -95,24 +93,19 @@ export const initializeCheckout = async (orderData: CheckoutOrder, accessToken?:
     }
 };
 
-
-// Orders are fetched from the API.
-
-
-export const getUserOrders = async (email: string): Promise<any[]> => {
+export const getUserOrders = async (email: string): Promise<Record<string, unknown>[]> => {
     try {
         const { data: { session } } = await (supabase ? supabase.auth.getSession() : Promise.resolve({ data: { session: null } }));
         const headers: Record<string, string> = {};
         if (session) headers.Authorization = `Bearer ${session.access_token}`;
 
-        const orders = await apiGet<any[]>('/shop/orders', { email }, { headers });
-        // Handle backend total_kes vs total_amount mismatch if any
-        return (Array.isArray(orders) ? orders : []).map(o => ({
+        const orders = await apiGet<unknown[]>('/shop/orders', { email }, { headers });
+        return Array.isArray(orders) ? (orders as Record<string, unknown>[]).map(o => ({
             ...o,
-            total_amount: o.total_kes || o.total_amount
-        }));
+            total_amount: (o.total_kes as number) || (o.total_amount as number)
+        })) : [];
     } catch (error) {
-        console.error("Error fetching user orders via API, using fallbacks:", error);
+        console.error("Error fetching user orders via API:", error);
         return [];
     }
 };
@@ -127,43 +120,41 @@ const getAuthHeaders = async (): Promise<Record<string, string>> => {
 // Address Services
 export const getAddresses = async () => {
     const headers = await getAuthHeaders();
-    return await apiGet<any[]>('/shop/addresses', {}, { headers });
+    return await apiGet<unknown[]>('/shop/addresses', {}, { headers });
 };
 
-export const addAddress = async (address: any) => {
+export const addAddress = async (address: unknown) => {
     const headers = await getAuthHeaders();
-    return await apiPost<any>('/shop/addresses', address, { headers });
+    return await apiPost<unknown>('/shop/addresses', address, { headers });
 };
 
 export const deleteAddress = async (addressId: string) => {
     const headers = await getAuthHeaders();
-    // Use apiPost or apiDelete if available. Assuming apiPost for now if apiDelete isn't standard in their helper
-    // Actually our helper has apiDelete.
     const { apiDelete } = await import("./api");
-    return await apiDelete<any>(`/shop/addresses/${addressId}`, { headers });
+    return await apiDelete<unknown>(`/shop/addresses/${addressId}`, { headers });
 };
 
 // Payment Method Services
 export const getPaymentMethods = async () => {
     const headers = await getAuthHeaders();
-    return await apiGet<any[]>('/shop/payment-methods', {}, { headers });
+    return await apiGet<unknown[]>('/shop/payment-methods', {}, { headers });
 };
 
-export const addPaymentMethod = async (paymentMethod: any) => {
+export const addPaymentMethod = async (paymentMethod: unknown) => {
     const headers = await getAuthHeaders();
-    return await apiPost<any>('/shop/payment-methods', paymentMethod, { headers });
+    return await apiPost<unknown>('/shop/payment-methods', paymentMethod, { headers });
 };
 
 export const deletePaymentMethod = async (paymentId: string) => {
     const headers = await getAuthHeaders();
     const { apiDelete } = await import("./api");
-    return await apiDelete<any>(`/shop/payment-methods/${paymentId}`, { headers });
+    return await apiDelete<unknown>(`/shop/payment-methods/${paymentId}`, { headers });
 };
 
 // Tracking Services
 export const getOrderTracking = async (orderId: string) => {
     const headers = await getAuthHeaders();
-    return await apiGet<any>(`/shop/orders/${orderId}/tracking`, {}, { headers });
+    return await apiGet<unknown>(`/shop/orders/${orderId}/tracking`, {}, { headers });
 };
 
 // Invoice Services

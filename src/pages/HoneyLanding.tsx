@@ -86,11 +86,11 @@ const HeroSection = () => {
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
               <Button
                 size="lg"
-                className="bg-green-700 hover:bg-green-800 text-white font-bold rounded-full px-8 h-12 shadow-lg shadow-green-900/10"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-black rounded-full px-8 h-12 shadow-lg shadow-primary/10 uppercase tracking-widest text-xs"
                 onClick={() => navigate("/shop")}
               >
-                <Play className="mr-2 h-4 w-4 fill-white" />
-                Watch Video
+                Explore the Honey Collection
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
           </div>
@@ -167,11 +167,10 @@ const FeaturedProductsSection = ({
                 <div className="flex items-center justify-between">
                   <Button
                     size="sm"
-                    variant="outline"
-                    className="rounded-full text-xs font-semibold"
+                    className="rounded-full text-xs font-black bg-primary text-primary-foreground hover:bg-primary/90 uppercase tracking-widest px-6"
                     onClick={() => handleAddToCart(product)}
                   >
-                    Buy
+                    Buy Now
                   </Button>
                   <button
                     onClick={(e) => {
@@ -420,7 +419,7 @@ const FlashSaleSection = () => {
 
             <Button
               size="lg"
-              className="bg-green-700 hover:bg-green-800 text-white font-bold rounded-full px-10 h-14 shadow-xl shadow-green-900/10"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground font-black rounded-full px-10 h-14 shadow-xl shadow-primary/10 uppercase tracking-widest text-xs"
               onClick={() => navigate("/shop")}
             >
               Claim Discount Now
@@ -713,7 +712,7 @@ const AllProductsSection = ({
                     </span>
                     <Button
                       size="sm"
-                      className="bg-neutral-900 hover:bg-amber-600 text-white rounded-lg px-4 h-9 text-xs font-bold"
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg px-4 h-9 text-[10px] font-black uppercase tracking-widest"
                       onClick={() => handleAddToCart(product)}
                     >
                       <ShoppingCart className="h-3.5 w-3.5 mr-1.5" />
@@ -757,11 +756,10 @@ const HoneyLanding = () => {
       setIsLoading(true);
       try {
         const data = await getProducts();
-        if (data && data.length > 0) {
-          setActiveProducts(data);
-        }
+        setActiveProducts(data || []);
       } catch (error) {
         console.error("Failed to fetch products:", error);
+        setActiveProducts([]);
       } finally {
         setIsLoading(false);
       }
@@ -769,18 +767,16 @@ const HoneyLanding = () => {
     fetchProducts();
   }, []);
 
-  // Use live products directly
-  const products = [...activeProducts];
+  const products = activeProducts;
 
   const handleAddToCart = (product: Product) => {
-    const selectedSize = selectedSizes[product.id] || (product.variants && product.variants.length > 0 ? product.variants[0].size : "");
-    const variantIndex = product.variants ? product.variants.findIndex((v) => v.size === selectedSize) : -1;
-    const variant = (product.variants && variantIndex !== -1) ? product.variants[variantIndex] : (product.variants?.[0] || null);
-    const images = product.images || [];
+    const selectedSize = selectedSizes[product.id] || product.variants[0].size;
+    const variantIndex = product.variants.findIndex((v) => v.size === selectedSize);
+    const variant = product.variants[variantIndex] || product.variants[0];
     // Structure: [0: Lifestyle, 1: 250g, 2: 500g, 3: 1kg]
-    const image = (variantIndex !== -1 && images[variantIndex + 1])
-      ? images[variantIndex + 1]
-      : (images[0] || "/placeholder.svg");
+    const image = (variantIndex !== -1 && product.images[variantIndex + 1])
+      ? product.images[variantIndex + 1]
+      : product.images[0];
 
     addToCart({
       productId: product.id,

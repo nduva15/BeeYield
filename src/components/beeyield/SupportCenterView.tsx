@@ -223,6 +223,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                     <div className="flex flex-col gap-3 lg:items-end justify-center min-w-[200px]">
                         <Button
                             variant="outline"
+                            onClick={() => toast.info("Manuals and documentation are currently being updated.")}
                             className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-white border-gray-200 dark:border-gray-700 rounded-xl px-6 h-12 font-bold w-full justify-center"
                         >
                             Manuals

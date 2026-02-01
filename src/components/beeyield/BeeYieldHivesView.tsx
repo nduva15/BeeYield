@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -7,52 +7,71 @@ import { cn } from '@/lib/utils';
 import { Badge } from "@/components/ui/badge";
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
+import { beeyieldService, Apiary, Hive, IoTDevice } from '@/services/beeyieldService';
 
 interface BeeYieldHivesViewProps {
     onTabChange: (tab: string) => void;
 }
 
 const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) => {
-    const [selectedPlace, setSelectedPlace] = useState('my-places');
+    const [selectedPlace, setSelectedPlace] = useState('all');
     const [showFab, setShowFab] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const [hives, setHives] = useState<Hive[]>([]);
+    const [apiaries, setApiaries] = useState<Apiary[]>([]);
+    const [devices, setDevices] = useState<IoTDevice[]>([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true);
+            try {
+                const [hivesData, apiariesData, devicesData] = await Promise.all([
+                    beeyieldService.getHives(),
+                    beeyieldService.getApiaries(),
+                    beeyieldService.getDevices()
+                ]);
+                setHives(hivesData);
+                setApiaries(apiariesData);
+                setDevices(devicesData);
+            } catch (error) {
+                console.error("Failed to fetch data", error);
+                toast.error("Failed to load BeeYield data");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+    // Calculations
+    const totalCoverageAcres = apiaries.reduce((sum, a) => sum + (a.size_acres || 0), 0);
+
+    const activeDevices = devices.filter(d => d.status === 'active');
+    const avgBattery = activeDevices.length > 0
+        ? Math.round(activeDevices.reduce((sum, d) => sum + d.battery_level, 0) / activeDevices.length)
+        : 0;
+
+    // Simulate signal health (mock calculation or based on ping age)
+    const signalHealth = activeDevices.length > 0 ? 98.5 : 0;
+
 
     const handleExportExcel = async () => {
         setIsExporting(true);
         try {
-            // Sample hive data - in production this would come from your API/database
-            const hiveData = [
-                {
-                    hive_id: 'H001',
-                    location: 'Apiary 1',
-                    queen_age: '1 year',
-                    colony_strength: 'Strong',
-                    last_inspection: '2026-01-15',
-                    honey_production_kg: 12.5,
-                    notes: 'Healthy colony'
-                },
-                {
-                    hive_id: 'H002',
-                    location: 'Apiary 1',
-                    queen_age: '2 years',
-                    colony_strength: 'Medium',
-                    last_inspection: '2026-01-14',
-                    honey_production_kg: 8.2,
-                    notes: 'Needs feeding'
-                },
-                {
-                    hive_id: 'H003',
-                    location: 'Apiary 2',
-                    queen_age: '6 months',
-                    colony_strength: 'Strong',
-                    last_inspection: '2026-01-16',
-                    honey_production_kg: 15.0,
-                    notes: 'Excellent brood pattern'
-                },
-            ];
+            const exportData = hives.map(h => ({
+                hive_id: h.hive_code,
+                apiary: h.apiary?.name || 'Unknown',
+                farmer: h.farmer?.name || 'Unknown',
+                type: h.hive_type,
+                status: h.status,
+                installed: h.installation_date,
+                notes: h.status === 'ACTIVE' ? 'Healthy' : h.status
+            }));
 
             // Create worksheet
-            const ws = XLSX.utils.json_to_sheet(hiveData);
+            const ws = XLSX.utils.json_to_sheet(exportData);
 
             // Set column widths
             ws['!cols'] = [
@@ -119,28 +138,30 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-50 dark:divide-white/5">
-                                    {[
-                                        { id: 'BY-H001', status: 'Optimal', perf: '98%' },
-                                        { id: 'BY-H002', status: 'Active', perf: '85%' },
-                                        { id: 'BY-H003', status: 'Maintenance', perf: '72%' },
-                                        { id: 'BY-H004', status: 'Optimal', perf: '96%' },
-                                        { id: 'BY-H005', status: 'Active', perf: '91%' },
-                                        { id: 'BY-H006', status: 'Optimal', perf: '99%' },
-                                    ].map((h, i) => (
-                                        <tr key={i} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-                                            <td className="px-6 py-4 text-xs font-bold text-slate-700 dark:text-slate-300 font-mono">{h.id}</td>
-                                            <td className="px-6 py-4">
-                                                <Badge className={cn(
-                                                    "text-[8px] font-black uppercase border-none",
-                                                    h.status === 'Optimal' ? "bg-green-500/20 text-green-600" :
-                                                        h.status === 'Active' ? "bg-blue-500/20 text-blue-600" : "bg-yellow-500/20 text-yellow-600"
-                                                )}>
-                                                    {h.status}
-                                                </Badge>
+                                    {devices.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={3} className="py-8 text-center text-xs text-gray-400 font-medium">
+                                                No connected hardware nodes found.
                                             </td>
-                                            <td className="px-6 py-4 text-xs font-black text-slate-900 dark:text-white">{h.perf}</td>
                                         </tr>
-                                    ))}
+                                    ) : (
+                                        devices.map((device, i) => (
+                                            <tr key={device.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                                                <td className="px-6 py-4 text-xs font-bold text-slate-700 dark:text-slate-300 font-mono">{device.device_code}</td>
+                                                <td className="px-6 py-4">
+                                                    <Badge className={cn(
+                                                        "text-[8px] font-black uppercase border-none",
+                                                        device.status === 'active' ? "bg-green-500/20 text-green-600" : "bg-red-500/20 text-red-600"
+                                                    )}>
+                                                        {device.status}
+                                                    </Badge>
+                                                </td>
+                                                <td className="px-6 py-4 text-xs font-black text-slate-900 dark:text-white">
+                                                    {device.battery_level}%
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
                                 </tbody>
                             </table>
                         </div>
@@ -159,7 +180,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                         <div className="flex justify-between items-start">
                             <div>
                                 <h3 className="text-[10px] font-bold text-[#1B9157] dark:text-[#F4D03F] uppercase tracking-[0.15em] mb-1">NETWORK OVERVIEW</h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">Total active coverage: <span className="font-bold text-slate-900 dark:text-white">1,240 Acres</span></p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">Total active coverage: <span className="font-bold text-slate-900 dark:text-white">{totalCoverageAcres.toLocaleString()} Acres</span></p>
                             </div>
                             <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-900/10 flex items-center justify-center">
                                 <Zap className="w-5 h-5 text-orange-500" />
@@ -170,11 +191,11 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                         <div className="grid grid-cols-2 gap-3">
                             <div className="p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
                                 <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Signal Health</p>
-                                <p className="text-lg font-black text-slate-800 dark:text-white">99.2%</p>
+                                <p className="text-lg font-black text-slate-800 dark:text-white">{signalHealth}%</p>
                             </div>
                             <div className="p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
                                 <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Battery Avg</p>
-                                <p className="text-lg font-black text-slate-800 dark:text-white">84%</p>
+                                <p className="text-lg font-black text-slate-800 dark:text-white">{avgBattery}%</p>
                             </div>
                         </div>
 
@@ -189,9 +210,10 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                     </div>
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="my-places">Kibwezi East</SelectItem>
-                                    <SelectItem value="mbuinzau">Mbuinzau Range</SelectItem>
-                                    <SelectItem value="makindu">Makindu Valley</SelectItem>
+                                    <SelectItem value="all">All Locations</SelectItem>
+                                    {apiaries.map(apiary => (
+                                        <SelectItem key={apiary.id} value={apiary.id}>{apiary.name}</SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>

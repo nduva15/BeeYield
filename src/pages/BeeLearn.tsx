@@ -278,7 +278,7 @@ const BeeLearn = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10">
                 <Button
                   size="lg"
-                  className="h-14 px-8 bg-neutral-900 hover:bg-neutral-800 text-white font-bold rounded-xl shadow-lg"
+                  className="h-14 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-black rounded-xl shadow-lg uppercase tracking-widest text-xs"
                   asChild
                 >
                   <a href="#courses">
@@ -517,7 +517,7 @@ const BeeLearn = () => {
                 </div>
               </div>
 
-              <Button size="lg" className="h-14 px-8 bg-green-700 hover:bg-green-800 text-white font-bold rounded-xl">
+              <Button size="lg" className="h-14 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-black rounded-xl uppercase tracking-widest text-xs">
                 Learn More About Our Team
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -681,7 +681,7 @@ const BeeLearn = () => {
                       </div>
                       <Button
                         size="sm"
-                        className="h-10 px-4 rounded-xl gap-1.5 font-bold bg-neutral-900 hover:bg-neutral-800 shadow-lg"
+                        className="h-10 px-4 rounded-xl gap-1.5 font-black bg-primary text-primary-foreground hover:bg-primary/90 uppercase tracking-widest text-[10px]"
                         onClick={() => handleAddToCart(product)}
                       >
                         <ShoppingCart className="h-4 w-4" />
@@ -746,7 +746,7 @@ const BeeLearn = () => {
                   placeholder="Enter your email"
                   className="flex-1 h-14 px-6 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
-                <Button size="lg" className="h-14 px-8 bg-green-700 hover:bg-green-800 text-white font-bold rounded-xl">
+                <Button size="lg" className="h-14 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-black rounded-xl uppercase tracking-widest text-xs">
                   Get All-Access Pass
                 </Button>
               </div>
