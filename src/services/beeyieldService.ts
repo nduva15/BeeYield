@@ -1,11 +1,46 @@
 import { supabase } from '@/lib/supabase';
-import { apiGet } from './api';
+import { apiGet, apiPost, apiPut, apiDelete } from './api';
 import { toast } from 'sonner';
+
+// Memory cache for auth session to avoid redundant calls
+let cachedSession: any = null;
+let lastSessionFetch = 0;
+const SESSION_CACHE_TTL = 30000; // 30 seconds
 
 const getAuthHeaders = async (): Promise<Record<string, string>> => {
     if (!supabase) return {};
-    const { data: { session } } = await supabase.auth.getSession();
-    return session ? { Authorization: `Bearer ${session.access_token}` } : {};
+
+    const now = Date.now();
+    // Cache for 60 seconds for performance
+    if (cachedSession && (now - lastSessionFetch < 60000)) {
+        return { Authorization: `Bearer ${cachedSession.access_token}` };
+    }
+
+    try {
+        // Use a 5s timeout to prevent hanging while allowing for initial cold-start latency
+        const sessionPromise = supabase.auth.getSession();
+        const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Auth timeout')), 5000)
+        );
+
+        const result = await Promise.race([sessionPromise, timeoutPromise]) as any;
+        const session = result?.data?.session;
+
+        if (session) {
+            cachedSession = session;
+            lastSessionFetch = now;
+            return { Authorization: `Bearer ${session.access_token}` };
+        }
+    } catch (error) {
+        console.warn('Auth headers fetch failed, using cache if available:', error);
+    }
+
+    // Return cached session as fallback if auth check fails/times out
+    if (cachedSession) {
+        return { Authorization: `Bearer ${cachedSession.access_token}` };
+    }
+
+    return {};
 };
 
 // Types for BeeYield Dashboard
@@ -105,10 +140,12 @@ export interface ApiaryCreateInput {
     name: string;
     type?: string;
     location_name?: string;
+    region?: string;
     latitude?: number;
     longitude?: number;
     forage_type?: string;
     expected_hives?: number;
+    size_acres?: number;
     notes?: string;
     farmer_id?: string;
 }
@@ -223,33 +260,62 @@ export interface TaskCreateInput {
 }
 
 export interface InspectionCreateInput {
-    hive_id?: string;
-    apiary_id?: string;
-    colony_state?: string;
-    has_queen?: boolean;
-    has_capped_brood?: boolean;
-    has_eggs?: boolean;
-    has_larvae?: boolean;
-    brood_arrangement?: string;
-    bee_activity?: string;
-    weather?: string;
-    weight_category?: string;
-    weight_kg?: number;
-    has_queen_cells?: boolean;
-    queen_cells_comment?: string;
-    has_possible_illness?: boolean;
-    diagnosis?: string;
-    treatment?: string;
-    private_note?: string;
-    inspection_date?: string;
-    inspection_time?: string;
+    hive_id: string;
+    inspector_name?: string;
+    inspection_date: string;
+    findings?: string;
+    actions_taken?: string;
+    health_status?: string;
+    temperament?: string;
+    honey_stores?: number;
+    pollen_stores?: number;
+    brood_pattern?: string;
+    eggs_seen?: boolean;
+    queen_seen?: boolean;
+    queen_cells_seen?: boolean;
+    varroa_mite_count?: number;
+    small_hive_beetles_seen?: number;
+    weather_condition?: string;
+    temperature_celsius?: number;
+    notes?: string;
 }
 
 export interface Inspection extends InspectionCreateInput {
     id: string;
-    user_id?: string;
-    created_at?: string;
-    updated_at?: string;
+    created_at: string;
+    updated_at: string;
+}
+
+// ========== PRECISION POLLINATION TYPES ==========
+export interface PollinationContract {
+    id: string;
+    contract_code: string;
+    crop_type: string;
+    farm_location: string;
+    farm_size_acres: number;
+    contract_start_date: string;
+    contract_end_date: string;
+    hive_count_required: number;
+    hive_count_deployed: number;
+    target_fpa: number;
+    actual_fpa?: number;
+    status: 'pending' | 'active' | 'completed' | 'cancelled';
+    payment_amount?: number;
+    payment_status?: string;
+    notes?: string;
+}
+
+export interface PollinationAnalytics {
+    total_contracts: number;
+    active_contracts: number;
+    total_hives_deployed: number;
+    total_acres_covered: number;
+    average_fpa: number;
+    coverage_health_percent: number;
+    healthy_hives: number;
+    warning_hives: number;
+    critical_hives: number;
+    total_revenue: number;
 }
 
 // Data for BeeYield service is fetched directly from the backend API.
@@ -351,38 +417,17 @@ export const beeyieldService = {
 
     // Get all apiaries for the current user
     async getApiaries(): Promise<Apiary[]> {
-        if (!supabase) {
-            console.warn('Supabase not initialized - returning empty apiaries');
-            return [];
-        }
         try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return [];
+            const headers = await getAuthHeaders();
+            // Get through backend API which handles ownership and sharing
+            const data = await apiGet<any[]>('/beeyield/apiaries?status_filter=active', {}, { headers });
 
-            const { data, error } = await supabase
-                .from('apiaries')
-                .select('*, farmer:farmers(*)')
-                .eq('user_id', user.id)
-                .order('created_at', { ascending: false });
-
-            if (error) {
-                // Handle case where user_id column hasn't been added yet (Migration pending)
-                if (error.code === '42703' || error.message?.includes('column "user_id" does not exist')) {
-                    console.warn('BeeYield Column Check: user_id missing in apiaries. Falling back to global view.');
-                    const { data: fallbackData, error: fallbackError } = await supabase
-                        .from('apiaries')
-                        .select('*, farmer:farmers(*)')
-                        .order('created_at', { ascending: false });
-
-                    if (fallbackError) return [];
-                    return (fallbackData as Apiary[]) || [];
-                }
-
-                console.error('Error fetching apiaries:', error);
-                toast.error('Failed to load apiaries');
-                return [];
-            }
-            return (data as Apiary[]) || [];
+            // Remap fields from backend schema to frontend interface
+            return (data || []).map(a => ({
+                ...a,
+                type: a.apiary_type || a.type || 'permanent',
+                forage_type: a.primary_forage || a.forage_type || ''
+            })) as Apiary[];
         } catch (error) {
             console.error('Error in getApiaries:', error);
             return [];
@@ -390,90 +435,69 @@ export const beeyieldService = {
     },
 
     // Create a new apiary
-    async createApiary(input: ApiaryCreateInput): Promise<{ data: Apiary | null; error: any }> {
-        if (!supabase) return { data: null, error: new Error('Supabase not initialized') };
-
+    async createApiary(input: any): Promise<{ data: Apiary | null; error: any }> {
         try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return { data: null, error: new Error('Not authenticated') };
+            const headers = await getAuthHeaders();
+            // Use the user-centric beeyield endpoint
+            const data = await apiPost<any>('/beeyield/apiaries', {
+                ...input,
+                // These defaults are handled by the backend too, but keeping them here for safety
+                apiary_type: input.type || 'Permanent',
+                primary_forage: input.forage_type || input.primary_forage,
+            }, { headers });
 
-            const { data, error } = await supabase
-                .from('apiaries')
-                .insert({
-                    user_id: user.id,
-                    name: input.name,
-                    type: input.type || 'permanent',
-                    location_name: input.location_name,
-                    latitude: input.latitude,
-                    longitude: input.longitude,
-                    forage_type: input.forage_type,
-                    expected_hives: input.expected_hives || 0,
-                    notes: input.notes,
-                    farmer_id: input.farmer_id,
-                })
-                .select()
-                .single();
-
-            if (error) {
-                console.error('Error creating apiary:', error);
-                toast.error('Failed to create apiary');
-                return { data: null, error };
-            }
+            const remapped = {
+                ...data,
+                type: data.apiary_type || data.type || 'permanent',
+                forage_type: data.primary_forage || data.forage_type || ''
+            };
 
             toast.success('Apiary deployed successfully!');
-            return { data: data as Apiary, error: null };
+            return { data: remapped as Apiary, error: null };
         } catch (error) {
             console.error('Error in createApiary:', error);
+            toast.error('Failed to create apiary');
             return { data: null, error };
         }
     },
 
     // Update an existing apiary
     async updateApiary(id: string, input: Partial<ApiaryCreateInput>): Promise<{ data: Apiary | null; error: any }> {
-        if (!supabase) return { data: null, error: new Error('Supabase not initialized') };
-
         try {
-            const { data, error } = await supabase
-                .from('apiaries')
-                .update(input)
-                .eq('id', id)
-                .select()
-                .single();
+            const headers = await getAuthHeaders();
+            // Map forage_type to primary_forage if needed for backend schema
+            const payload: any = { ...input };
+            if (input.forage_type) payload.primary_forage = input.forage_type;
+            if (input.type) payload.apiary_type = input.type;
 
-            if (error) {
-                console.error('Error updating apiary:', error);
-                toast.error('Failed to update apiary');
-                return { data: null, error };
-            }
+            const data = await apiPut<any>(`/beeyield/apiaries/${id}`, payload, { headers });
+
+            const remapped = {
+                ...data,
+                type: data.apiary_type || data.type || 'permanent',
+                forage_type: data.primary_forage || data.forage_type || ''
+            };
 
             toast.success('Apiary updated!');
-            return { data: data as Apiary, error: null };
+            return { data: remapped as Apiary, error: null };
         } catch (error) {
             console.error('Error in updateApiary:', error);
+            toast.error('Failed to update apiary');
             return { data: null, error };
         }
     },
 
     // Delete an apiary
     async deleteApiary(id: string): Promise<{ error: any }> {
-        if (!supabase) return { error: new Error('Supabase not initialized') };
-
         try {
-            const { error } = await supabase
-                .from('apiaries')
-                .delete()
-                .eq('id', id);
-
-            if (error) {
-                console.error('Error deleting apiary:', error);
-                toast.error('Failed to delete apiary');
-                return { error };
-            }
+            const headers = await getAuthHeaders();
+            await apiDelete(`/beeyield/apiaries/${id}`, { headers });
 
             toast.success('Apiary removed');
             return { error: null };
         } catch (error) {
             console.error('Error in deleteApiary:', error);
+            toast.error('Failed to delete apiary');
             return { error };
         }
     },
@@ -482,38 +506,10 @@ export const beeyieldService = {
 
     // Get all hives for the current user
     async getHives(apiaryId?: string): Promise<Hive[]> {
-        if (!supabase) {
-            console.warn('Supabase not initialized - returning empty hives');
-            return [];
-        }
         try {
-            let query = supabase
-                .from('hives')
-                .select('*, apiary:apiaries(*), farmer:farmers(*)')
-                .order('created_at', { ascending: false });
-
-            if (apiaryId) {
-                query = query.eq('apiary_id', apiaryId);
-            }
-
-            const { data, error } = await query;
-
-            if (error) {
-                // If query failed due to user_id (not present in standard hives table without migration)
-                if (error.code === '42703' || error.message?.includes('column "user_id" does not exist')) {
-                    console.warn('BeeYield Column Check: user_id missing in hives. Fetching all.');
-                    const { data: fallbackData } = await supabase
-                        .from('hives')
-                        .select('*, apiary:apiaries(*), farmer:farmers(*)')
-                        .order('created_at', { ascending: false });
-                    return (fallbackData as unknown as Hive[]) || [];
-                }
-
-                console.error('Error fetching hives:', error);
-                toast.error('Failed to load hives');
-                return [];
-            }
-            return (data as unknown as Hive[]) || [];
+            const headers = await getAuthHeaders();
+            const params: any = apiaryId ? { apiary_id: apiaryId } : {};
+            return await apiGet<Hive[]>('/beeyield/hives', params, { headers });
         } catch (error) {
             console.error('Error in getHives:', error);
             return [];
@@ -522,86 +518,48 @@ export const beeyieldService = {
 
     // Create a new hive
     async createHive(input: HiveCreateInput): Promise<{ data: Hive | null; error: any }> {
-        if (!supabase) return { data: null, error: new Error('Supabase not initialized') };
-
         try {
-            const { data, error } = await supabase
-                .from('hives')
-                .insert({
-                    apiary_id: input.apiary_id,
-                    farmer_id: input.farmer_id,
-                    hive_code: input.hive_code,
-                    hive_type: input.hive_type || 'Langstroth',
-                    bee_type: input.bee_type,
-                    frame_count: input.frame_count || 10,
-                    material: input.material,
-                    status: input.status || 'ACTIVE',
-                    installation_date: input.installation_date,
-                    has_sensors: input.has_sensors || false,
-                })
-                .select()
-                .single();
-
-            if (error) {
-                console.error('Error creating hive:', error);
-                toast.error('Failed to create hive');
-                return { data: null, error };
-            }
+            const headers = await getAuthHeaders();
+            const data = await apiPost<Hive>('/beeyield/hives', {
+                ...input,
+                installation_date: input.installation_date || new Date().toISOString().split('T')[0]
+            }, { headers });
 
             toast.success('Hive added successfully!');
-            return { data: data as unknown as Hive, error: null };
+            return { data, error: null };
         } catch (error) {
             console.error('Error in createHive:', error);
+            toast.error('Failed to create hive');
             return { data: null, error };
         }
     },
 
     // Update an existing hive
     async updateHive(id: string, input: Partial<HiveCreateInput>): Promise<{ data: Hive | null; error: any }> {
-        if (!supabase) return { data: null, error: new Error('Supabase not initialized') };
-
         try {
-            const { data, error } = await supabase
-                .from('hives')
-                .update(input)
-                .eq('id', id)
-                .select()
-                .single();
-
-            if (error) {
-                console.error('Error updating hive:', error);
-                toast.error('Failed to update hive');
-                return { data: null, error };
-            }
+            const headers = await getAuthHeaders();
+            const data = await apiPut<Hive>(`/beeyield/hives/${id}`, input, { headers });
 
             toast.success('Hive updated!');
-            return { data: data as unknown as Hive, error: null };
+            return { data, error: null };
         } catch (error) {
             console.error('Error in updateHive:', error);
+            toast.error('Failed to update hive');
             return { data: null, error };
         }
     },
 
     // Delete a hive
     async deleteHive(id: string): Promise<{ error: any }> {
-        if (!supabase) return { error: new Error('Supabase not initialized') };
-
         try {
-            const { error } = await supabase
-                .from('hives')
-                .delete()
-                .eq('id', id);
-
-            if (error) {
-                console.error('Error deleting hive:', error);
-                toast.error('Failed to delete hive');
-                return { error };
-            }
+            const headers = await getAuthHeaders();
+            await apiDelete(`/beeyield/hives/${id}`, { headers });
 
             toast.success('Hive removed');
             return { error: null };
         } catch (error) {
             console.error('Error in deleteHive:', error);
+            toast.error('Failed to delete hive');
             return { error };
         }
     },
@@ -610,168 +568,85 @@ export const beeyieldService = {
 
     // Get all harvests with FULL linked data (farmer, hive, apiary)
     async getHarvests(filters?: { hive_id?: string; farmer_id?: string; year?: number }): Promise<Harvest[]> {
-        if (!supabase) {
-            console.warn('Supabase not initialized - returning empty harvests');
-            return [];
-        }
         try {
-            // Join hive, farmer, and apiary data for complete traceability
-            let query = supabase
-                .from('harvests')
-                .select(`
-                    *,
-                    hive:hives(*),
-                    farmer:farmers(*)
-                `)
-                .order('harvest_date', { ascending: false });
+            const headers = await getAuthHeaders();
+            // Use backend endpoint which handles complex joins correctly
+            let url = '/traceability/harvests?limit=100';
 
-            if (filters?.hive_id) {
-                query = query.eq('hive_id', filters.hive_id);
-            }
-            if (filters?.farmer_id) {
-                query = query.eq('farmer_id', filters.farmer_id);
-            }
-            if (filters?.year) {
-                const startDate = `${filters.year}-01-01`;
-                const endDate = `${filters.year}-12-31`;
-                query = query.gte('harvest_date', startDate).lte('harvest_date', endDate);
-            }
+            // Note: Filters could be passed as query params here if backend supports them, 
+            // but for now we filter client-side to match the TS logic if needed, 
+            // although the new backend endpoint returns all recent harvests.
 
-            const { data, error } = await query;
+            const harvests = await apiGet<Harvest[]>(url, {}, { headers });
 
-            if (error) {
-                if (error.code === '42703' || error.message?.includes('column "user_id" does not exist')) {
-                    const { data: fallbackData } = await supabase
-                        .from('harvests')
-                        .select(`
-                            *,
-                            hive:hives(*),
-                            farmer:farmers(*)
-                        `)
-                        .order('harvest_date', { ascending: false });
-
-                    return (fallbackData || []).map((h: any) => ({
-                        ...h,
-                        apiary: h.hive?.apiary || null
-                    })) as Harvest[];
-                }
-
-                console.error('Error fetching harvests:', error);
-                toast.error('Failed to load harvests');
-                return [];
+            // Client-side filtering if specific filters requested
+            if (filters) {
+                return harvests.filter(h => {
+                    if (filters.hive_id && h.hive_id !== filters.hive_id) return false;
+                    if (filters.farmer_id && h.farmer_id !== filters.farmer_id) return false;
+                    if (filters.year) {
+                        const hYear = new Date(h.harvest_date).getFullYear();
+                        if (hYear !== filters.year) return false;
+                    }
+                    return true;
+                });
             }
 
-            // Map the data to include apiary from hive relationship
-            const harvests = (data || []).map((h: any) => ({
-                ...h,
-                apiary: h.hive?.apiary || null
-            }));
-
-            return harvests as Harvest[];
+            return harvests;
         } catch (error) {
             console.error('Error in getHarvests:', error);
+            // Return empty array instead of crashing
             return [];
         }
     },
 
     // Create a new harvest (with HoneyChain™ verification)
     async createHarvest(input: HarvestCreateInput): Promise<{ data: Harvest | null; error: any }> {
-        if (!supabase) return { data: null, error: new Error('Supabase not initialized') };
-
         try {
-            // Generate batch code if not provided
-            const batchCode = input.batch_code || `BY-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+            const headers = await getAuthHeaders();
+            const response = await apiPost<any>('/traceability/harvests', {
+                ...input,
+                extraction_method: input.extraction_method || 'Cold Extraction',
+                nectar_source: input.nectar_source || 'Acacia',
+                weather_conditions: input.weather_conditions || 'Sunny'
+            }, { headers });
 
-            const { data, error } = await supabase
-                .from('harvests')
-                .insert({
-                    hive_id: input.hive_id,
-                    farmer_id: input.farmer_id,
-                    harvest_date: input.harvest_date,
-                    quantity_kg: input.quantity_kg,
-                    quantity_left_for_bees_kg: input.quantity_left_for_bees_kg || input.quantity_kg, // Default to 50/50 rule
-                    extraction_method: input.extraction_method || 'Cold Extraction',
-                    nectar_source: input.nectar_source,
-                    weather_conditions: input.weather_conditions,
-                    moisture_content_percent: input.moisture_content_percent || 17.5,
-                    batch_code: batchCode,
-                    honey_type: input.honey_type,
-                    color_grade: input.color_grade,
-                    is_verified: input.is_verified ?? true, // Default to verified
-                })
-                .select(`
-                    *,
-                    hive:hives(*),
-                    farmer:farmers(*)
-                `)
-                .single();
-
-            if (error) {
-                console.error('Error creating harvest:', error);
-                toast.error('Failed to record harvest');
-                return { data: null, error };
-            }
-
+            const batchCode = response.batch_code || input.batch_code;
             toast.success('Harvest recorded!', {
-                description: `Batch ${batchCode} ${input.is_verified !== false ? 'sealed on HoneyChain™' : ''}`
+                description: `Batch ${batchCode} sealed on HoneyChain™`
             });
-            return { data: data as unknown as Harvest, error: null };
+            return { data: response as Harvest, error: null };
         } catch (error) {
             console.error('Error in createHarvest:', error);
+            toast.error('Failed to record harvest');
             return { data: null, error };
         }
     },
 
     // Update an existing harvest
     async updateHarvest(id: string, input: Partial<HarvestCreateInput>): Promise<{ data: Harvest | null; error: any }> {
-        if (!supabase) return { data: null, error: new Error('Supabase not initialized') };
-
         try {
-            const { data, error } = await supabase
-                .from('harvests')
-                .update(input)
-                .eq('id', id)
-                .select(`
-                    *,
-                    hive:hives(*),
-                    farmer:farmers(*)
-                `)
-                .single();
-
-            if (error) {
-                console.error('Error updating harvest:', error);
-                toast.error('Failed to update harvest');
-                return { data: null, error };
-            }
-
+            const headers = await getAuthHeaders();
+            const data = await apiPut<Harvest>(`/traceability/harvests/${id}`, input, { headers });
             toast.success('Harvest updated!');
-            return { data: data as unknown as Harvest, error: null };
+            return { data, error: null };
         } catch (error) {
             console.error('Error in updateHarvest:', error);
+            toast.error('Failed to update harvest');
             return { data: null, error };
         }
     },
 
     // Delete a harvest
     async deleteHarvest(id: string): Promise<{ error: any }> {
-        if (!supabase) return { error: new Error('Supabase not initialized') };
-
         try {
-            const { error } = await supabase
-                .from('harvests')
-                .delete()
-                .eq('id', id);
-
-            if (error) {
-                console.error('Error deleting harvest:', error);
-                toast.error('Failed to delete harvest');
-                return { error };
-            }
-
+            const headers = await getAuthHeaders();
+            await apiDelete(`/beeyield/harvests/${id}`, { headers });
             toast.success('Harvest removed');
             return { error: null };
         } catch (error) {
             console.error('Error in deleteHarvest:', error);
+            toast.error('Failed to delete harvest');
             return { error };
         }
     },
@@ -780,122 +655,192 @@ export const beeyieldService = {
 
     // Get all tasks
     async getTasks(): Promise<Task[]> {
-        if (!supabase) return [];
         try {
-            const { data, error } = await supabase
-                .from('tasks')
-                .select('*, apiary:apiaries(*), hive:hives(*)')
-                .order('due_date', { ascending: true });
-
-            if (error) {
-                if (error.code === '42703' || error.message?.includes('column "user_id" does not exist')) {
-                    const { data: fallbackData } = await supabase
-                        .from('tasks')
-                        .select('*, apiary:apiaries(*), hive:hives(*)')
-                        .order('due_date', { ascending: true });
-                    return fallbackData || [];
-                }
-                console.error('Error fetching tasks:', error);
-                return [];
-            }
-            return data || [];
+            const headers = await getAuthHeaders();
+            return await apiGet<Task[]>('/beeyield/tasks', {}, { headers });
         } catch (error) {
-            console.error('Error in getTasks:', error);
+            console.error('Error fetching tasks:', error);
             return [];
         }
     },
 
     // Create a task
     async createTask(task: TaskCreateInput): Promise<{ data: Task | null; error: any }> {
-        if (!supabase) return { data: null, error: new Error('Supabase not initialized') };
         try {
-            const { data, error } = await supabase
-                .from('tasks')
-                .insert([task])
-                .select()
-                .single();
-
-            if (error) {
-                console.error('Error creating task:', error);
-                toast.error('Failed to create task');
-                return { data: null, error };
-            }
+            const headers = await getAuthHeaders();
+            const data = await apiPost<Task>('/beeyield/tasks', task, { headers });
             toast.success('Task created successfully');
             return { data, error: null };
         } catch (error) {
-            console.error('Error in createTask:', error);
+            console.error('Error creating task:', error);
+            toast.error('Failed to create task');
             return { data: null, error };
         }
     },
 
     // Update a task
     async updateTask(id: string, updates: Partial<TaskCreateInput>): Promise<{ data: Task | null; error: any }> {
-        if (!supabase) return { data: null, error: new Error('Supabase not initialized') };
         try {
-            const { data, error } = await supabase
-                .from('tasks')
-                .update(updates)
-                .eq('id', id)
-                .select()
-                .single();
-
-            if (error) {
-                console.error('Error updating task:', error);
-                toast.error('Failed to update task');
-                return { data: null, error };
-            }
+            const headers = await getAuthHeaders();
+            const data = await apiPut<Task>(`/beeyield/tasks/${id}`, updates, { headers });
             toast.success('Task updated');
             return { data, error: null };
         } catch (error) {
-            console.error('Error in updateTask:', error);
+            console.error('Error updating task:', error);
+            toast.error('Failed to update task');
             return { data: null, error };
         }
     },
 
     // Delete a task
     async deleteTask(id: string): Promise<{ error: any }> {
-        if (!supabase) return { error: new Error('Supabase not initialized') };
         try {
-            const { error } = await supabase
-                .from('tasks')
-                .delete()
-                .eq('id', id);
-
-            if (error) {
-                console.error('Error deleting task:', error);
-                toast.error('Failed to delete task');
-                return { error };
-            }
+            const headers = await getAuthHeaders();
+            await apiDelete(`/beeyield/tasks/${id}`, { headers });
             toast.success('Task deleted');
             return { error: null };
         } catch (error) {
-            console.error('Error in deleteTask:', error);
+            console.error('Error deleting task:', error);
+            toast.error('Failed to delete task');
             return { error };
         }
     },
 
+
+
     // ========== INSPECTION CRUD OPERATIONS ==========
+
+    // Get all inspections
+    async getInspections(hiveId?: string): Promise<Inspection[]> {
+        try {
+            const headers = await getAuthHeaders();
+            const params: any = {};
+            if (hiveId) params.hive_id = hiveId;
+            return await apiGet<Inspection[]>('/beeyield/inspections', params, { headers });
+        } catch (error) {
+            console.error('Error fetching inspections:', error);
+            return [];
+        }
+    },
+
+    // Get inspection by ID
+    async getInspectionById(id: string): Promise<Inspection | null> {
+        try {
+            const headers = await getAuthHeaders();
+            return await apiGet<Inspection>(`/beeyield/inspections/${id}`, {}, { headers });
+        } catch (error) {
+            console.error('Error fetching inspection:', error);
+            return null;
+        }
+    },
 
     // Create an inspection
     async createInspection(inspection: InspectionCreateInput): Promise<{ data: Inspection | null; error: any }> {
-        if (!supabase) return { data: null, error: new Error('Supabase not initialized') };
         try {
-            const { data, error } = await supabase
-                .from('inspections')
-                .insert([inspection])
-                .select()
-                .single();
-
-            if (error) {
-                console.error('Error creating inspection:', error);
-                toast.error('Failed to save inspection');
-                return { data: null, error };
-            }
+            const headers = await getAuthHeaders();
+            const data = await apiPost<Inspection>('/beeyield/inspections', inspection, { headers });
             toast.success('Inspection saved successfully');
             return { data, error: null };
         } catch (error) {
-            console.error('Error in createInspection:', error);
+            console.error('Error creating inspection:', error);
+            toast.error('Failed to save inspection');
             return { data: null, error };
+        }
+    },
+
+    // Update an inspection
+    async updateInspection(id: string, updates: Partial<InspectionCreateInput>): Promise<{ data: Inspection | null; error: any }> {
+        try {
+            const headers = await getAuthHeaders();
+            const data = await apiPut<Inspection>(`/beeyield/inspections/${id}`, updates, { headers });
+            toast.success('Inspection updated successfully');
+            return { data, error: null };
+        } catch (error) {
+            console.error('Error updating inspection:', error);
+            toast.error('Failed to update inspection');
+            return { data: null, error };
+        }
+    },
+
+    // Delete an inspection
+    async deleteInspection(id: string): Promise<{ error: any }> {
+        try {
+            const headers = await getAuthHeaders();
+            await apiDelete(`/beeyield/inspections/${id}`, { headers });
+            toast.success('Inspection deleted');
+            return { error: null };
+        } catch (error) {
+            console.error('Error deleting inspection:', error);
+            toast.error('Failed to delete inspection');
+            return { error };
+        }
+    },
+
+    // ========== PRECISION POLLINATION ==========
+
+    // Calculate pollination needs
+    async calculatePollination(input: { crop_type: string; acreage: number; avg_frames_per_hive: number }): Promise<any> {
+        try {
+            const headers = await getAuthHeaders();
+            return await apiPost<any>('/pollination/calculate', input, { headers });
+        } catch (error) {
+            console.error('Error calculating pollination:', error);
+            return null;
+        }
+    },
+
+    // Create a new pollination contract
+    async createPollinationContract(contract: any): Promise<any> {
+        try {
+            const headers = await getAuthHeaders();
+            return await apiPost<any>('/pollination/contracts', contract, { headers });
+        } catch (error) {
+            console.error('Error creating contract:', error);
+            return { error };
+        }
+    },
+
+    // Get pollination contracts
+    async getPollinationContracts(): Promise<PollinationContract[]> {
+        try {
+            const headers = await getAuthHeaders();
+            return await apiGet<PollinationContract[]>('/pollination/contracts', {}, { headers });
+        } catch (error) {
+            console.error('Error fetching contracts:', error);
+            return [];
+        }
+    },
+
+    // Get pollination analytics
+    async getPollinationAnalytics(): Promise<PollinationAnalytics | null> {
+        try {
+            const headers = await getAuthHeaders();
+            return await apiGet<PollinationAnalytics>('/pollination/analytics', {}, { headers });
+        } catch (error) {
+            console.error('Error fetching analytics:', error);
+            return null;
+        }
+    },
+
+    // Get hive sensor data (real-time)
+    async getHiveSensorData(): Promise<any[]> {
+        try {
+            const headers = await getAuthHeaders();
+            return await apiGet<any[]>('/pollination/hive-sensors', {}, { headers });
+        } catch (error) {
+            console.error('Error fetching hive sensors:', error);
+            return [];
+        }
+    },
+
+    // Get activity logs
+    async getPollinationActivityLogs(): Promise<any[]> {
+        try {
+            const headers = await getAuthHeaders();
+            return await apiGet<any[]>('/pollination/activity-logs', { limit: 20 }, { headers });
+        } catch (error) {
+            console.error('Error fetching activity logs:', error);
+            return [];
         }
     }
 };

@@ -84,21 +84,28 @@ class HiveSensorData(BaseModel):
 
 # --- Harvest ---
 class HarvestCreate(BaseModel):
-    hive_id: str
-    farmer_id: str
+    hive_id: Optional[str] = None
+    farmer_id: Optional[str] = None
+    apiary_id: Optional[str] = None
     harvest_date: date
     quantity_kg: float
-    quantity_left_for_bees_kg: float
-    extraction_method: str
-    nectar_source: str = Field(..., description="Primary nectar source e.g. Acacia, Multi-floral")
-    weather_conditions: str
+    quantity_left_for_bees_kg: Optional[float] = None
+    extraction_method: str = "Cold Extraction"
+    nectar_source: Optional[str] = None
+    weather_conditions: Optional[str] = None
     moisture_content_percent: Optional[float] = None
+    batch_code: Optional[str] = None
+    honey_type: Optional[str] = None
+    color_grade: Optional[str] = None
+    is_verified: bool = True
 
 class Harvest(HarvestCreate):
     harvest_id: str
-    harvest_code: str
+    harvest_code: Optional[str] = None
     quality_score: Optional[int] = None
     blockchain_hash: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
 # --- Traceability Journey Response ---
 class TraceJourneyStep(BaseModel):

@@ -23,7 +23,7 @@ def get_sensor_readings(
     if sensor_type:
         filters["sensor_type"] = sensor_type
         
-    return db_select("sensor_readings", filters=filters, limit=500, order_by="timestamp")
+    return db_select("sensor_readings", filters=filters, limit=500, order_by="timestamp", ascending=False)
 
 def get_client_hives(user_id: str) -> List[Dict[str, Any]]:
     return db_select("client_hives", filters={"user_id": user_id}, order_by="created_at")

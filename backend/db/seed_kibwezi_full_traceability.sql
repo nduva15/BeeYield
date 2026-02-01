@@ -131,14 +131,15 @@ BEGIN
             apiary_id, apiary_code, name, farmer_id,
             environment_type, flora_types, water_source, sun_exposure,
             latitude, longitude, location_name, region, county,
-            hive_count, established_date, is_active, created_at, description
+            hive_count, established_date, is_active, created_at, description, size_acres
         )
         VALUES (
             'A-KIB-001', 'KIB-001', 'Kibwezi Main Apiary', v_farmer_id,
             'Savannah Woodland (Re-forested)', ARRAY['Acacia', 'Baobab', 'Sisal', 'Sunflower', 'Mangoes', 'Indigenous Trees'], 'Seasonal River', 'Full Sun',
             -2.41, 37.97, 'Kibwezi', 'Eastern', 'Makueni',
             184, '2020-01-15', true, NOW(), 
-            '5-acre fenced sanctuary with over 2500 planted trees. Scaled from 4 hives in 2020 to 184 hives today.'
+            '5-acre fenced sanctuary with over 2500 planted trees. Scaled from 4 hives in 2020 to 184 hives today.',
+            5.0
         )
         RETURNING id INTO v_apiary_id;
         RAISE NOTICE 'Created Apiary: Kibwezi Main Apiary';
@@ -146,7 +147,8 @@ BEGIN
         UPDATE apiaries SET 
             hive_count = 184,
             description = '5-acre fenced sanctuary with over 2500 planted trees. Scaled from 4 hives in 2020 to 184 hives today.',
-            flora_types = ARRAY['Acacia', 'Baobab', 'Sisal', 'Sunflower', 'Mangoes', 'Indigenous Trees']
+            flora_types = ARRAY['Acacia', 'Baobab', 'Sisal', 'Sunflower', 'Mangoes', 'Indigenous Trees'],
+            size_acres = 5.0
         WHERE id = v_apiary_id;
         RAISE NOTICE 'Updated Apiary: Kibwezi Main Apiary';
     END IF;

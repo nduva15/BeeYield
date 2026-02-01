@@ -78,7 +78,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
         return harvestYear === (quickYear || '2026');
     });
 
-    const [selectedHarvest, setSelectedHarvest] = useState<Harvest | null>(null);
+    const [editingHarvest, setEditingHarvest] = useState<Harvest | null>(null);
 
     // Fetch data on mount
     useEffect(() => {
@@ -97,6 +97,34 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
         fetchData();
     }, []);
 
+    const resetForm = () => {
+        setAmount('');
+        setBatchCode(`BY-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`);
+        setHoneyType('');
+        setMoisture('');
+        setColorGrade('');
+        setSealOnHoneyChain(true);
+        setDate(new Date());
+        setSelectedHive('');
+        setEditingHarvest(null);
+    };
+
+    const handleEdit = (harvest: Harvest) => {
+        setEditingHarvest(harvest);
+        setAmount(harvest.quantity_kg.toString());
+        setHoneyType(harvest.honey_type || '');
+        setBatchCode(harvest.batch_code || '');
+        setMoisture(harvest.moisture_content_percent?.toString() || '');
+        setColorGrade(harvest.color_grade || '');
+        setSealOnHoneyChain(harvest.is_verified || false);
+        setDate(new Date(harvest.harvest_date));
+        setSelectedHive(harvest.hive_id || '');
+
+        setIsAddingHarvest(true);
+        // Close detail view if open
+        setSelectedHarvest(null);
+    };
+
     const handleSave = async () => {
         if (!amount || parseFloat(amount) <= 0) {
             toast.error('Please enter a valid harvest amount');
@@ -104,8 +132,9 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
         }
 
         setIsSaving(true);
-        const harvestInput: HarvestCreateInput = {
+        const harvestInput: any = {
             hive_id: selectedHive || undefined,
+            apiary_id: hives.find(h => h.id === selectedHive)?.apiary_id, // Ensure apiary_id is linked
             harvest_date: date.toISOString().split('T')[0],
             quantity_kg: parseFloat(amount),
             quantity_left_for_bees_kg: parseFloat(amount), // 50/50 rule
@@ -116,25 +145,45 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
             is_verified: sealOnHoneyChain,
         };
 
-        const { data, error } = await beeyieldService.createHarvest(harvestInput);
-        setIsSaving(false);
+        if (editingHarvest) {
+            const { data, error } = await beeyieldService.updateHarvest(editingHarvest.id, harvestInput);
+            if (data && !error) {
+                setAllHarvests(allHarvests.map(h => h.id === editingHarvest.id ? { ...h, ...data } : h));
+                setIsAddingHarvest(false);
+                resetForm();
+                toast.success('Harvest record updated');
+            }
+        } else {
+            // New harvest requires apiary_id and hive_id logic fallback
+            if (!harvestInput.apiary_id && harvestInput.hive_id) {
+                const linkedHive = hives.find(h => h.id === harvestInput.hive_id);
+                if (linkedHive) harvestInput.apiary_id = linkedHive.apiary_id;
+            }
 
-        if (data && !error) {
-            setAllHarvests([data, ...allHarvests]);
-            setIsAddingHarvest(false);
-            // Reset form
-            setAmount('');
-            setBatchCode(`BY-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`);
-            setHoneyType('');
-            setMoisture('');
-            setColorGrade('');
+            if (!harvestInput.apiary_id && !harvestInput.hive_id) {
+                toast.error('Please select a hive or apiary');
+                setIsSaving(false);
+                return;
+            }
+
+            const { data, error } = await beeyieldService.createHarvest(harvestInput);
+            if (data && !error) {
+                setAllHarvests([data, ...allHarvests]);
+                setIsAddingHarvest(false);
+                resetForm();
+                toast.success('Harvest record created');
+            }
         }
+        setIsSaving(false);
     };
 
     const handleDelete = async (id: string) => {
+        if (!confirm('Are you sure you want to delete this harvest record?')) return;
         const { error } = await beeyieldService.deleteHarvest(id);
         if (!error) {
             setAllHarvests(allHarvests.filter(h => h.id !== id));
+            toast.success('Harvest record deleted');
+            if (selectedHarvest?.id === id) setSelectedHarvest(null);
         }
     };
 
@@ -148,10 +197,25 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                             <div className="w-12 h-12 flex items-center justify-center">
                                 <img src={Logo} alt={String(Logo)} className="w-full h-full object-contain" />
                             </div>
-                            <h2 className="text-2xl font-medium text-gray-800 dark:text-gray-100">Add harvest</h2>
+                            <h2 className="text-2xl font-medium text-gray-800 dark:text-gray-100">{editingHarvest ? 'Edit harvest' : 'Add harvest'}</h2>
                         </div>
 
                         <div className="space-y-6">
+                            {/* Hive Selection for New Harvest */}
+                            <div className="space-y-2">
+                                <Label className="text-gray-600 dark:text-gray-400 font-normal">Source Hive*</Label>
+                                <Select value={selectedHive} onValueChange={setSelectedHive}>
+                                    <SelectTrigger className="h-12 bg-white dark:bg-[#2a2a2a] border-gray-200 dark:border-gray-700 rounded-xl text-lg">
+                                        <SelectValue placeholder="Select Hive" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {hives.map(h => (
+                                            <SelectItem key={h.id} value={h.id}>{h.hive_code} ({apiaries.find(a => a.id === h.apiary_id)?.name})</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
                             {/* Amount Input */}
                             <div className="space-y-2">
                                 <Label className="text-gray-600 dark:text-gray-400 font-normal">Amount [kg]*</Label>
@@ -168,10 +232,13 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                                 <div className="relative">
                                     <Input
                                         value={format(date, 'M/d/yyyy')}
-                                        readOnly
+                                        onChange={(e) => {
+                                            const d = new Date(e.target.value);
+                                            if (!isNaN(d.getTime())) setDate(d);
+                                        }}
+                                        type="date"
                                         className="h-12 bg-white dark:bg-[#2a2a2a] border-gray-200 dark:border-gray-700 rounded-xl text-lg pr-10"
                                     />
-                                    <CalendarIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                                 </div>
                             </div>
 
@@ -266,16 +333,17 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                         {/* Actions */}
                         <div className="flex items-center justify-end gap-4 pt-4">
                             <button
-                                onClick={() => setIsAddingHarvest(false)}
+                                onClick={() => { setIsAddingHarvest(false); resetForm(); }}
                                 className="text-[#D4AF37] font-medium text-sm hover:underline"
                             >
-                                Go back
+                                Cancel
                             </button>
                             <button
                                 onClick={handleSave}
-                                className="text-gray-400 font-medium text-sm hover:text-gray-600"
+                                disabled={isSaving}
+                                className="bg-[#F4D03F] hover:bg-[#D4AF37] text-white rounded-xl px-8 h-12 font-bold shadow-lg transition-all"
                             >
-                                Save
+                                {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : (editingHarvest ? 'Save Changes' : 'Create Record')}
                             </button>
                         </div>
                     </div>
@@ -408,6 +476,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                                 <thead>
                                     <tr className="border-b border-gray-100 dark:border-gray-800">
                                         <th className="text-left py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Hive / Batch</th>
+                                        <th className="text-left py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Apiary</th>
                                         <th className="text-left py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Farmer</th>
                                         <th className="text-right py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Quantity</th>
                                         <th className="text-right py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Honey Type</th>
@@ -446,6 +515,9 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                                                         </div>
                                                     </div>
                                                 </td>
+                                                <td className="py-4 text-gray-600 dark:text-gray-400 font-medium">
+                                                    {harvest.apiary?.name || harvest.hive?.apiary?.name || '-'}
+                                                </td>
                                                 <td className="py-4 text-gray-600 dark:text-gray-400">
                                                     {harvest.farmer?.name || '-'}
                                                 </td>
@@ -471,7 +543,18 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                                                     </div>
                                                 </td>
                                                 <td className="py-4">
-                                                    <div className="flex justify-center">
+                                                    <div className="flex justify-center items-center gap-1">
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleEdit(harvest);
+                                                            }}
+                                                            className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-[#F4D03F] hover:bg-amber-50 rounded-xl"
+                                                        >
+                                                            <Settings className="w-4 h-4" />
+                                                        </Button>
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
@@ -503,7 +586,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                         <p className="text-sm text-gray-500 font-medium">Fine-tune the harvest analytics using the filters below.</p>
                     </div>
                     <Button
-                        onClick={() => setIsAddingHarvest(true)}
+                        onClick={() => { resetForm(); setIsAddingHarvest(true); }}
                         className="bg-[#F4D03F] hover:bg-[#D4AF37] text-white rounded-full px-6 h-11 font-bold shadow-lg shadow-[#F4D03F]/50 dark:shadow-none transition-all hover:scale-105"
                     >
                         <Plus className="w-5 h-5 mr-2" />
@@ -617,10 +700,10 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                                 <Hexagon className="absolute -top-6 -left-6 w-32 h-32 text-white/10 fill-white/10 rotate-12" />
                                 <div className="relative z-10">
                                     <p className="text-[10px] font-black text-white/60 uppercase tracking-widest mb-1">HoneyChain™ Traceability Record</p>
-                                    <h3 className="text-2xl font-black text-white">{selectedHarvest.apiary}</h3>
+                                    <h3 className="text-2xl font-black text-white">{selectedHarvest.apiary?.name || 'Unknown Apiary'}</h3>
                                 </div>
                                 <div className="px-3 py-1 bg-white/20 backdrop-blur-md rounded-lg border border-white/30 text-white text-[10px] font-bold uppercase tracking-wider">
-                                    {selectedHarvest.batch}
+                                    {selectedHarvest.batch_code || 'No Batch'}
                                 </div>
                             </div>
 
@@ -630,7 +713,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                                     <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl border border-gray-100 dark:border-white/5">
                                         <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-2">Total Harvest</p>
                                         <div className="flex items-baseline gap-1">
-                                            <span className="text-2xl font-black text-gray-900 dark:text-white">{selectedHarvest.totalKg}</span>
+                                            <span className="text-2xl font-black text-gray-900 dark:text-white">{selectedHarvest.quantity_kg}</span>
                                             <span className="text-xs font-bold text-gray-400">kg</span>
                                         </div>
                                     </div>
@@ -638,7 +721,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                                         <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-2">Honey Type</p>
                                         <div className="flex items-center gap-2">
                                             <Droplets className="w-4 h-4 text-amber-500" />
-                                            <span className="text-lg font-black text-gray-900 dark:text-white">{selectedHarvest.type}</span>
+                                            <span className="text-lg font-black text-gray-900 dark:text-white">{selectedHarvest.honey_type || 'Wildflower'}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -646,19 +729,19 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-white/5">
                                         <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Moisture Level</span>
-                                        <span className="text-sm font-black text-gray-900 dark:text-white">{selectedHarvest.moisture}%</span>
+                                        <span className="text-sm font-black text-gray-900 dark:text-white">{selectedHarvest.moisture_content_percent}%</span>
                                     </div>
                                     <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-white/5">
                                         <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Color Grade</span>
-                                        <span className="text-sm font-black text-gray-900 dark:text-white">{selectedHarvest.color}</span>
+                                        <span className="text-sm font-black text-gray-900 dark:text-white">{selectedHarvest.color_grade}</span>
                                     </div>
                                     <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-white/5">
-                                        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Productive Families</span>
-                                        <span className="text-sm font-black text-gray-900 dark:text-white">{selectedHarvest.families}</span>
+                                        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Hive Source</span>
+                                        <span className="text-sm font-black text-gray-900 dark:text-white">{selectedHarvest.hive?.hive_code || 'Multi-hive'}</span>
                                     </div>
                                 </div>
 
-                                {selectedHarvest.verified && (
+                                {selectedHarvest.is_verified && (
                                     <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/10 border border-green-100 dark:border-green-900/30 rounded-2xl flex items-center gap-4">
                                         <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
                                             <ShieldCheck className="w-6 h-6 text-green-600" />
@@ -672,12 +755,20 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                             </div>
 
                             <div className="p-8 pt-0">
-                                <Button
-                                    onClick={() => setSelectedHarvest(null)}
-                                    className="w-full h-14 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-2xl font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all"
-                                >
-                                    Close Record
-                                </Button>
+                                <div className="p-8 pt-0 flex gap-4">
+                                    <Button
+                                        onClick={() => handleEdit(selectedHarvest)}
+                                        className="flex-1 h-14 bg-[#FFF8F0] dark:bg-white/5 text-[#D4AF37] dark:text-[#F4D03F] border border-[#F4D03F]/20 rounded-2xl font-black uppercase tracking-widest hover:bg-[#F4D03F]/10 transition-all"
+                                    >
+                                        Edit Record
+                                    </Button>
+                                    <Button
+                                        onClick={() => setSelectedHarvest(null)}
+                                        className="flex-1 h-14 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-2xl font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                    >
+                                        Close
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                     )}

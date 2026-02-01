@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { beeyieldService, Apiary, Hive } from '@/services/beeyieldService';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Wifi, Shield, Zap, Bluetooth as BluetoothIcon, Usb, Grid3X3, Box, Bell, Settings, ChevronDown, Check, X, AlertTriangle, Search, Info } from 'lucide-react';
@@ -197,6 +198,38 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [notificationsOpen, setNotificationsOpen] = useState(false);
 
+    const [apiaries, setApiaries] = useState<Apiary[]>([]);
+    const [hives, setHives] = useState<Hive[]>([]);
+
+    useEffect(() => {
+        const loadInitialData = async () => {
+            const apiariesData = await beeyieldService.getApiaries();
+            setApiaries(apiariesData);
+
+            // If there's only one apiary, select it automatically
+            if (apiariesData.length > 0) {
+                // Find if any apiary has hives already
+                const hivesData = await beeyieldService.getHives();
+                setHives(hivesData);
+            }
+        };
+        loadInitialData();
+    }, []);
+
+    // When place changes, filter hives
+    useEffect(() => {
+        if (selectedPlace && selectedPlace !== 'none') {
+            const filteredHives = hives.filter(h => h.apiary_id === selectedPlace || !h.apiary_id);
+            // If current selected hive is not in new list, reset it
+            if (selectedHive && !filteredHives.find(h => h.id === selectedHive)) {
+                setSelectedHive('');
+            }
+        }
+    }, [selectedPlace, hives]);
+
+    const currentPlace = apiaries.find(a => a.id === selectedPlace);
+    const currentHive = hives.find(h => h.id === selectedHive);
+
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-12">
 
@@ -228,12 +261,17 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                                         <Grid3X3 className="w-4 h-4 text-[#F4D03F]" />
                                         <div className="flex flex-col">
                                             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">MY PLACES</span>
-                                            <span className="text-sm font-medium text-gray-900 dark:text-white">{selectedPlace || 'None'}</span>
+                                            <span className="text-sm font-medium text-gray-900 dark:text-white">
+                                                {currentPlace?.name || (selectedPlace === 'none' ? 'None' : 'Select Apiary')}
+                                            </span>
                                         </div>
                                     </div>
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="none">None</SelectItem>
+                                    {apiaries.map(apiary => (
+                                        <SelectItem key={apiary.id} value={apiary.id}>{apiary.name}</SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>
@@ -246,12 +284,20 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                                         <Box className="w-4 h-4 text-[#F4D03F]" />
                                         <div className="flex flex-col">
                                             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">HIVE</span>
-                                            <span className="text-sm font-medium text-gray-900 dark:text-white">{selectedHive || 'None'}</span>
+                                            <span className="text-sm font-medium text-gray-900 dark:text-white">
+                                                {currentHive?.hive_code || (selectedHive === 'none' ? 'None' : 'Select Hive')}
+                                            </span>
                                         </div>
                                     </div>
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="none">None</SelectItem>
+                                    {hives
+                                        .filter(h => !selectedPlace || selectedPlace === 'none' || h.apiary_id === selectedPlace)
+                                        .map(hive => (
+                                            <SelectItem key={hive.id} value={hive.id}>{hive.hive_code}</SelectItem>
+                                        ))
+                                    }
                                 </SelectContent>
                             </Select>
                         </div>

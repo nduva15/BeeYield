@@ -31,7 +31,7 @@ const ConsumptionView: React.FC = () => {
                         <div className="space-y-1.5">
                             <label className="text-xs text-gray-400 font-medium">Building / apartment</label>
                             <Input
-                                defaultValue="Lipowa 12 · Lodz"
+                                defaultValue="Kibwezi Main Area A"
                                 className="rounded-xl border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] h-10 text-sm font-medium"
                             />
                         </div>

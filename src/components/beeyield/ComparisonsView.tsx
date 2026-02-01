@@ -26,7 +26,7 @@ const ComparisonsView: React.FC = () => {
                         <div className="space-y-2">
                             <label className="text-sm text-gray-500 font-semibold">Building / apartment</label>
                             <Input
-                                defaultValue="Lipowa 12 · Lodz"
+                                defaultValue="Kibwezi Main Area A"
                                 className="rounded-xl border-gray-100 bg-white dark:bg-[#09090b] h-11 font-medium focus:border-[#F4D03F] focus:ring-0 shadow-none text-gray-700"
                             />
                         </div>
@@ -114,7 +114,7 @@ const ComparisonsView: React.FC = () => {
                                             : "bg-white border-gray-100 text-slate-900 border-[#F1F5F9]"
                                     )}
                                 >
-                                    {tab === 'apt12' ? 'Apartment 12' : tab === 'apt24' ? 'Apartment 24' : 'Main meter'}
+                                    {tab === 'apt12' ? 'Hive Area 1' : tab === 'apt24' ? 'Hive Area 2' : 'Main Area'}
                                 </button>
                             ))}
                         </div>
@@ -150,7 +150,7 @@ const ComparisonsView: React.FC = () => {
                                     verticalAlign="bottom"
                                     height={36}
                                     iconType="rect"
-                                    formatter={(value) => <span className="text-[13px] font-bold text-slate-500 ml-1 uppercase tracking-tighter">{value === 'mainMeter' ? 'Main meter' : 'Apartment 12'}</span>}
+                                    formatter={(value) => <span className="text-[13px] font-bold text-slate-500 ml-1 uppercase tracking-tighter">{value === 'mainMeter' ? 'Main Area' : 'Hive Area 1'}</span>}
                                 />
                                 <Line
                                     type="monotone"

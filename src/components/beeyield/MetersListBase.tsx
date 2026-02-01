@@ -217,7 +217,7 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                 <div className="flex items-center justify-between px-2">
                     <div className="flex items-center gap-2">
                         <Building2 className="w-4 h-4 text-gray-400" />
-                        <h3 className="text-sm font-bold text-gray-900 dark:text-white">Managed Buildings</h3>
+                        <h3 className="text-sm font-bold text-gray-900 dark:text-white">Apiary Infrastructure</h3>
                     </div>
                     <Button variant="ghost" size="sm" onClick={() => setBuildingsOpen(!buildingsOpen)} className="text-gray-400 text-xs gap-1">
                         {buildingsOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -243,7 +243,7 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
             <div className="bg-white dark:bg-[#09090b] border border-gray-100 dark:border-gray-800 rounded-3xl p-5 shadow-sm">
                 <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-4">
                     <div className="space-y-1.5">
-                        <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Building</label>
+                        <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Apiary Area</label>
                         <Select value={buildingFilter} onValueChange={setBuildingFilter}>
                             <SelectTrigger className="h-9 rounded-xl text-xs"><SelectValue placeholder="All" /></SelectTrigger>
                             <SelectContent>
@@ -253,7 +253,7 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                         </Select>
                     </div>
                     <div className="space-y-1.5">
-                        <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Unit</label>
+                        <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Hive / Station</label>
                         <Select value={apartmentFilter} onValueChange={setApartmentFilter}>
                             <SelectTrigger className="h-9 rounded-xl text-xs"><SelectValue placeholder="All" /></SelectTrigger>
                             <SelectContent>

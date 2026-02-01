@@ -115,12 +115,7 @@ class AIService:
             f"GOAL: Execute the 'Last Mile' Output Procedure for maximum logic and linguistic precision.\n"
             f"LANGUAGE: {target_lang}\n"
             f"TIMESTAMP: {current_time} EAT, {current_date}\n\n"
-            f"INTERNAL MONOLOGUE (PROCEDURE):\n"
-            f"1. ANALYZE intent: Is the user asking for facts, data, or strategy?\n"
-            f"2. RETRIEVE: Use the context below. If data conflicts, use BLOCKCHAIN > LIVE DB > WEB > TRAINING.\n"
-            f"3. DRAFT: Create a sequence that balances technical depth with sales conversion.\n"
-            f"4. FORMAT: No markdown. ALL CAPS for impact. Links at the end.\n\n"
-            f"DATA BLOCKS:\n"
+            f"DATA ARSENAL:\n"
             f"TRAINING: {knowledge_context}\n"
             f"LIVE DB: {business_intel}\n"
             f"BLOCKCHAIN: {trace_context}\n"
@@ -128,30 +123,16 @@ class AIService:
             f"TELEMETRY: {health_context}\n\n"
             f"CORE DIRECTIVES:\n"
             f"1. FACTUAL RELIABILITY: Zero tolerance for hallucinations. If data is missing, state 'DATA PENDING'.\n"
-            f"2. NO REPETITION: Do not start every sentence the same way. Avoid 'Actually', 'Basically', or 'As an AI'.\n"
-            f"3. SALES TONE: Always position BeeYield as the global leader in apiculture tech.\n"
-            f"4. CLEANLINESS: No **, #, or *. Respond in clear, powerful text blocks.\n"
+            f"2. RICH AESTHETICS: Use **bold** for key metrics and *italics* for emphasis.\n"
+            f"3. SALES TONE: Position BeeYield as the global leader in agricultural tech.\n"
+            f"4. STRUCTURE: Use lists and short paragraphs for readability.\n"
             f"5. SITE LINKS: [Insert Link: beeyield.com/...] (MAX 3)."
         )
 
         def sanitize_final(text: str) -> str:
             """PHASE 3: POST-GENERATION FILTERING & GUARDRAILS"""
             if not text: return ""
-            # Strip markdown
-            text = text.replace("**", "").replace("__", "")
-            text = re.sub(r'#+\s*', '', text)
-            text = text.replace("*", "").replace("_", "")
-            
-            # Deduplication: Remove repeating adjacent sentences
-            sentences = re.split(r'(?<=[.!?])\s+', text)
-            seen = set()
-            clean_sentences = []
-            for s in sentences:
-                if s.strip().lower() not in seen:
-                    clean_sentences.append(s)
-                    seen.add(s.strip().lower())
-            
-            text = " ".join(clean_sentences)
+            # Do NOT strip markdown anymore since the frontend supports it
             
             # Hallucination Guard: Ensure AI didn't invent a new company name
             text = text.replace("HoneyBee Corp", "BeeYield").replace("YieldBee", "BeeYield")

@@ -35,7 +35,7 @@ const ChartsView: React.FC = () => {
                         <div className="space-y-3">
                             <label className="text-[13px] text-slate-400 font-bold">Building / apartment</label>
                             <Input
-                                defaultValue="Lipowa 12 · Lodz"
+                                defaultValue="Kibwezi Main Area A"
                                 className="rounded-xl border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] h-11 text-[13px] font-semibold text-slate-300"
                             />
                         </div>
@@ -153,7 +153,7 @@ const ChartsView: React.FC = () => {
                             <div className="p-5 rounded-3xl border border-gray-50 flex items-center justify-between">
                                 <div className="space-y-1">
                                     <h4 className="text-[15px] font-extrabold text-[#091E42]">Sudden use of spike</h4>
-                                    <p className="text-[13px] text-slate-400 font-medium">Building C · 3 hours</p>
+                                    <p className="text-[13px] text-slate-400 font-medium">Kibwezi Main Area C · 3 hours</p>
                                 </div>
                                 <div className="bg-[#FFF1F2] dark:bg-[#FFF1F210] px-3.5 py-1 rounded-full flex items-center gap-2">
                                     <div className="w-2.5 h-2.5 rounded-full bg-[#E11D48]" />
@@ -164,7 +164,7 @@ const ChartsView: React.FC = () => {
                             <div className="p-5 rounded-3xl border border-gray-50 flex items-center justify-between">
                                 <div className="space-y-1">
                                     <h4 className="text-[15px] font-extrabold text-[#091E42]">Unnatural drop</h4>
-                                    <p className="text-[13px] text-slate-400 font-medium">Building B · 12 hours</p>
+                                    <p className="text-[13px] text-slate-400 font-medium">Kibwezi Main Area B · 12 hours</p>
                                 </div>
                                 <div className="bg-[#FFFBEB] dark:bg-[#FFFBEB10] px-3.5 py-1 rounded-full flex items-center gap-2">
                                     <div className="w-2.5 h-2.5 rounded-full bg-[#D97706]" />

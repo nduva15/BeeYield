@@ -67,6 +67,21 @@ def record_harvest(harvest_in: schemas.HarvestCreate):
     """Record a harvest."""
     return traceability_service.record_harvest(harvest_in)
 
+@router.get("/harvests", response_model=list[dict[str, Any]])
+def get_harvests(limit: int = 100):
+    """Get all harvests with full joined data for dashboard."""
+    return traceability_service.get_all_harvests(limit=limit)
+
+@router.get("/apiaries", response_model=list[dict[str, Any]])
+def get_apiaries(limit: int = 100):
+    """Get all apiaries."""
+    return traceability_service.get_all_apiaries(limit=limit)
+
+@router.get("/hives", response_model=list[dict[str, Any]])
+def get_hives(limit: int = 100):
+    """Get all hives."""
+    return traceability_service.get_all_hives(limit=limit)
+
 @router.post("/batches", response_model=dict[str, Any])
 def create_batch(batch_in: dict[str, Any]):
     """Create a final product batch."""
