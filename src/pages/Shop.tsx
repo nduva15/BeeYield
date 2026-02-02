@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { cn } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { Button } from "@/components/ui/button";
@@ -27,10 +28,12 @@ import {
   Truck,
   Zap,
   Globe,
-  Activity
+  Activity,
+  ShoppingBag
 } from "lucide-react";
 import { toast } from "sonner";
 import { BrandedProductImage } from "@/components/BrandedProductImage";
+import { getProducts } from "@/services/shopService";
 
 // Define local types if not importing from service, or reuse
 interface ProductVariant {
@@ -39,6 +42,7 @@ interface ProductVariant {
   price_kes: number;
   stock_quantity: number;
   is_available: boolean;
+  batch_code?: string; // For honey traceability
 }
 
 interface Product {
@@ -67,9 +71,9 @@ const STATIC_PRODUCTS: Product[] = [
     review_count: 245,
     is_active: true,
     variants: [
-      { id: "vh1-1", size: "250g", price_kes: 250, stock_quantity: 100, is_available: true },
-      { id: "vh1-2", size: "500g", price_kes: 500, stock_quantity: 75, is_available: true },
-      { id: "vh1-3", size: "1kg", price_kes: 1000, stock_quantity: 50, is_available: true }
+      { id: "vh1-1", size: "250g", price_kes: 250, stock_quantity: 100, is_available: true, batch_code: "KIB-ACAC-121-250G" },
+      { id: "vh1-2", size: "500g", price_kes: 500, stock_quantity: 75, is_available: true, batch_code: "KIB-ACAC-111-500G" },
+      { id: "vh1-3", size: "1kg", price_kes: 1000, stock_quantity: 50, is_available: true, batch_code: "KIB-ACAC-101-1KG" }
     ]
   },
   {
@@ -83,9 +87,9 @@ const STATIC_PRODUCTS: Product[] = [
     review_count: 182,
     is_active: true,
     variants: [
-      { id: "vh2-1", size: "250g", price_kes: 250, stock_quantity: 80, is_available: true },
-      { id: "vh2-2", size: "500g", price_kes: 500, stock_quantity: 60, is_available: true },
-      { id: "vh2-3", size: "1kg", price_kes: 1000, stock_quantity: 30, is_available: true }
+      { id: "vh2-1", size: "250g", price_kes: 250, stock_quantity: 80, is_available: true, batch_code: "KIB-WILD-122-250G" },
+      { id: "vh2-2", size: "500g", price_kes: 500, stock_quantity: 60, is_available: true, batch_code: "KIB-WILD-112-500G" },
+      { id: "vh2-3", size: "1kg", price_kes: 1000, stock_quantity: 30, is_available: true, batch_code: "KIB-WILD-102-1KG" }
     ]
   },
   {
@@ -99,9 +103,9 @@ const STATIC_PRODUCTS: Product[] = [
     review_count: 96,
     is_active: true,
     variants: [
-      { id: "vh3-1", size: "250g", price_kes: 250, stock_quantity: 40, is_available: true },
-      { id: "vh3-2", size: "500g", price_kes: 500, stock_quantity: 30, is_available: true },
-      { id: "vh3-3", size: "1kg", price_kes: 1000, stock_quantity: 20, is_available: true }
+      { id: "vh3-1", size: "250g", price_kes: 250, stock_quantity: 40, is_available: true, batch_code: "KIB-FOR-123-250G" },
+      { id: "vh3-2", size: "500g", price_kes: 500, stock_quantity: 30, is_available: true, batch_code: "KIB-FOR-113-500G" },
+      { id: "vh3-3", size: "1kg", price_kes: 1000, stock_quantity: 20, is_available: true, batch_code: "KIB-FOR-103-1KG" }
     ]
   },
   {
@@ -115,9 +119,9 @@ const STATIC_PRODUCTS: Product[] = [
     review_count: 54,
     is_active: true,
     variants: [
-      { id: "vh4-1", size: "250g", price_kes: 250, stock_quantity: 30, is_available: true },
-      { id: "vh4-2", size: "500g", price_kes: 500, stock_quantity: 25, is_available: true },
-      { id: "vh4-3", size: "1kg", price_kes: 1000, stock_quantity: 15, is_available: true }
+      { id: "vh4-1", size: "250g", price_kes: 250, stock_quantity: 30, is_available: true, batch_code: "KIB-THORN-124-250G" },
+      { id: "vh4-2", size: "500g", price_kes: 500, stock_quantity: 25, is_available: true, batch_code: "KIB-THORN-114-500G" },
+      { id: "vh4-3", size: "1kg", price_kes: 1000, stock_quantity: 15, is_available: true, batch_code: "KIB-THORN-104-1KG" }
     ]
   },
   {
@@ -131,9 +135,9 @@ const STATIC_PRODUCTS: Product[] = [
     review_count: 312,
     is_active: true,
     variants: [
-      { id: "vh5-1", size: "250g", price_kes: 250, stock_quantity: 30, is_available: true },
-      { id: "vh5-2", size: "500g", price_kes: 500, stock_quantity: 20, is_available: true },
-      { id: "vh5-3", size: "1kg", price_kes: 1000, stock_quantity: 10, is_available: true }
+      { id: "vh5-1", size: "250g", price_kes: 250, stock_quantity: 30, is_available: true, batch_code: "KIB-COMB-125-250G" },
+      { id: "vh5-2", size: "500g", price_kes: 500, stock_quantity: 20, is_available: true, batch_code: "KIB-COMB-115-500G" },
+      { id: "vh5-3", size: "1kg", price_kes: 1000, stock_quantity: 10, is_available: true, batch_code: "KIB-COMB-105-1KG" }
     ]
   },
   {
@@ -147,9 +151,9 @@ const STATIC_PRODUCTS: Product[] = [
     review_count: 42,
     is_active: true,
     variants: [
-      { id: "vh6-1", size: "250g", price_kes: 250, stock_quantity: 50, is_available: true },
-      { id: "vh6-2", size: "500g", price_kes: 500, stock_quantity: 30, is_available: true },
-      { id: "vh6-3", size: "1kg", price_kes: 1000, stock_quantity: 15, is_available: true }
+      { id: "vh6-1", size: "250g", price_kes: 250, stock_quantity: 50, is_available: true, batch_code: "KIB-LAV-126-250G" },
+      { id: "vh6-2", size: "500g", price_kes: 500, stock_quantity: 30, is_available: true, batch_code: "KIB-LAV-116-500G" },
+      { id: "vh6-3", size: "1kg", price_kes: 1000, stock_quantity: 15, is_available: true, batch_code: "KIB-LAV-106-1KG" }
     ]
   },
   {
@@ -163,9 +167,9 @@ const STATIC_PRODUCTS: Product[] = [
     review_count: 128,
     is_active: true,
     variants: [
-      { id: "vh7-1", size: "250g", price_kes: 250, stock_quantity: 40, is_available: true },
-      { id: "vh7-2", size: "500g", price_kes: 500, stock_quantity: 60, is_available: true },
-      { id: "vh7-3", size: "1kg", price_kes: 1000, stock_quantity: 25, is_available: true }
+      { id: "vh7-1", size: "250g", price_kes: 250, stock_quantity: 40, is_available: true, batch_code: "KIB-GINGER-127-250G" },
+      { id: "vh7-2", size: "500g", price_kes: 500, stock_quantity: 60, is_available: true, batch_code: "KIB-GINGER-117-500G" },
+      { id: "vh7-3", size: "1kg", price_kes: 1000, stock_quantity: 25, is_available: true, batch_code: "KIB-GINGER-107-1KG" }
     ]
   },
   {
@@ -179,122 +183,122 @@ const STATIC_PRODUCTS: Product[] = [
     review_count: 15,
     is_active: true,
     variants: [
-      { id: "vh8-1", size: "250g", price_kes: 250, stock_quantity: 10, is_available: true },
-      { id: "vh8-2", size: "500g", price_kes: 500, stock_quantity: 10, is_available: true },
-      { id: "vh8-3", size: "1kg", price_kes: 1000, stock_quantity: 5, is_available: true }
+      { id: "vh8-1", size: "250g", price_kes: 250, stock_quantity: 10, is_available: true, batch_code: "KIB-SIGN-128-250G" },
+      { id: "vh8-2", size: "500g", price_kes: 500, stock_quantity: 10, is_available: true, batch_code: "KIB-SIGN-118-500G" },
+      { id: "vh8-3", size: "1kg", price_kes: 1000, stock_quantity: 5, is_available: true, batch_code: "KIB-SIGN-108-1KG" }
     ]
   },
-  // --- HARDWARE (8 Items - Precision IoT Sensors) ---
+  // --- HARDWARE (BeeHUB Precision IoT Ecosystem) ---
   {
     id: "hw1",
-    name: "Solar Hive Monitor Pro",
-    description: "The ultimate IoT solution for beekeepers. Tracks weight, temperature, humidity, and acoustics using advanced solar-powered sensors.",
+    name: "BeeHUB Queen - Lora Pro",
+    description: "The primary gateway for your apiary. Manages multiple sensors and transmits data via Satellite or GSM. Includes solar charging capability.",
     category: "hardware",
-    badge: "Cutting Edge",
-    images: ["/images/products/solar_hive_monitor.png"],
+    badge: "Gateway",
+    images: ["/images/products/beeyield_hub_sensor.jpg"],
     rating: 5.0,
-    review_count: 24,
+    review_count: 84,
     is_active: true,
     variants: [
-      { id: "vhw1-1", size: "V3.0 Unit", price_kes: 25000, stock_quantity: 15, is_available: true }
+      { id: "vhw1-1", size: "Unit Only", price_kes: 38500, stock_quantity: 15, is_available: true }
     ]
   },
   {
     id: "hw2",
-    name: "Hive Temp Sensor",
-    description: "Internal temperature probe for brood nest monitoring. Helps prevent swarming and detect colony loss early.",
+    name: "BeeHUB Sense Node",
+    description: "Internal hive monitoring node. Tracks temperature and humidity. Connects wirelessly to the BeeHUB Queen gateway.",
     category: "hardware",
-    badge: null,
-    images: ["/images/products/hive_temp_sensor.png"],
-    rating: 4.6,
-    review_count: 15,
+    badge: "Sensor Node",
+    images: ["/images/products/beehub_temp_humidity.png"],
+    rating: 4.8,
+    review_count: 56,
     is_active: true,
     variants: [
-      { id: "vhw2-1", size: "Pack of 5", price_kes: 4500, stock_quantity: 50, is_available: true }
+      { id: "vhw2-1", size: "Sense V2", price_kes: 12500, stock_quantity: 50, is_available: true }
     ]
   },
   {
     id: "hw3",
-    name: "Hive Humidity Sensor",
-    description: "Monitor in-hive humidity levels to prevent fungal diseases and ensure optimal brood rearing conditions.",
+    name: "Precision Hive Scale",
+    description: "Industrial-grade scale for monitoring nectar flow and honey stores. Highly precise sensors for real-time weight tracking.",
     category: "hardware",
-    badge: null,
-    images: ["/images/products/hive_humidity_sensor.png"],
-    rating: 4.7,
-    review_count: 12,
+    badge: "Production",
+    images: ["/images/products/beehub_hive_scale.png"],
+    rating: 4.9,
+    review_count: 42,
     is_active: true,
     variants: [
-      { id: "vhw3-1", size: "Pack of 5", price_kes: 5000, stock_quantity: 40, is_available: true }
+      { id: "vhw3-1", size: "150kg Max", price_kes: 24500, stock_quantity: 20, is_available: true }
     ]
   },
   {
     id: "hw4",
-    name: "Acoustic Health Sensor",
-    description: "AI-powered sound analysis that detects swarming behavior and queen absence before they become visible problems.",
+    name: "BeeHUB Tracker (GPS)",
+    description: "Anti-theft GPS tracking for your valuable colonies. Features movement alerts and geofencing via the BeeHUB dashboard.",
     category: "hardware",
-    badge: "AI Powered",
-    images: ["/images/products/solar_hive_monitor.png"],
-    rating: 4.9,
-    review_count: 8,
+    badge: "Security",
+    images: ["/images/products/beehub_sim_card.png"],
+    rating: 4.7,
+    review_count: 31,
     is_active: true,
     variants: [
-      { id: "vhw4-1", size: "In-Hive Unit", price_kes: 9500, stock_quantity: 15, is_available: true }
+      { id: "vhw4-1", size: "GPS Unit", price_kes: 8500, stock_quantity: 15, is_available: true }
     ]
   },
   {
     id: "hw5",
-    name: "Smart GPS Hive Tracker",
-    description: "Discreet anti-theft tracking for your valuable colonies. Feature geofencing and motion alerts via LoRaWAN.",
+    name: "Temp & Humidity Probe",
+    description: "High-precision internal probe for monitoring brood nest climate. Essential for early disease detection and swarm prevention.",
     category: "hardware",
-    badge: "Security",
-    images: ["/images/products/solar_hive_monitor.png"],
-    rating: 4.8,
-    review_count: 31,
+    badge: "Accessory",
+    images: ["/images/products/beehub_temp_humidity.png"],
+    rating: 4.6,
+    review_count: 124,
     is_active: true,
     variants: [
-      { id: "vhw5-1", size: "Hidden Unit", price_kes: 5500, stock_quantity: 50, is_available: true }
+      { id: "vhw5-1", size: "Single Probe", price_kes: 4500, stock_quantity: 100, is_available: true }
     ]
   },
   {
     id: "hw6",
-    name: "Digital Brood Probe",
-    description: "Ultra-thin sensor that fits between frames to monitor the precise climate of your brood nest.",
+    name: "BeeHUB Solar Panel",
+    description: "Weatherproof solar energy harvester for BeeHUB Queen and Sense nodes. Ensures 24/7 uptime in remote locations.",
     category: "hardware",
-    badge: "Precision",
-    images: ["/images/products/hive_temp_sensor.png"],
-    rating: 4.6,
-    review_count: 18,
+    badge: "Power",
+    images: ["/images/products/beehub_solar_panel.png"],
+    rating: 4.9,
+    review_count: 28,
     is_active: true,
     variants: [
-      { id: "vhw6-1", size: "Standard", price_kes: 4200, stock_quantity: 40, is_available: true }
+      { id: "vhw6-1", size: "10W Panel", price_kes: 6500, stock_quantity: 40, is_available: true }
     ]
   },
   {
     id: "hw7",
-    name: "Base Station Gateway",
-    description: "Industrial grade gateway to connect up to 500 sensors across your whole farm farm. Range up to 15km.",
+    name: "Acoustic Analysis Module",
+    description: "Microphone sensor for analyzing hive sound signatures to detect queen presence and swarm behavior.",
     category: "hardware",
-    badge: "Infrastructure",
-    images: ["/images/products/solar_hive_monitor.png"],
-    rating: 5.0,
-    review_count: 8,
+    badge: "AI Powered",
+    images: ["/images/products/beehub_sound_sensor.png"],
+    rating: 4.8,
+    review_count: 19,
     is_active: true,
     variants: [
-      { id: "vhw7-1", size: "Gateway Unit", price_kes: 18000, stock_quantity: 5, is_available: true }
+      { id: "vhw7-1", size: "Pro Audio", price_kes: 11000, stock_quantity: 10, is_available: true }
     ]
   },
   {
     id: "hw8",
-    name: "Precision Bluetooth Scale",
-    description: "Monitor nectar flow and honey production remotely. Capable of measuring up to 150kg with 10g precision.",
+    name: "Full BeeHUB Station Kit",
+    description: "A complete starter kit including 1 BeeHUB Queen, 2 Sense nodes, 1 Tracker, and 1 Solar panel for your apiary.",
     category: "hardware",
-    badge: "Essential",
-    images: ["/images/products/solar_hive_monitor.png"],
-    rating: 4.9,
-    review_count: 45,
+    badge: "Best Value",
+    images: ["/images/products/beeyield_hub_sensor.jpg"],
+    rating: 5.0,
+    review_count: 15,
     is_active: true,
     variants: [
-      { id: "vhw8-1", size: "Max 150kg", price_kes: 14000, stock_quantity: 20, is_available: true }
+      { id: "vhw8-1", size: "Station Kit", price_kes: 72000, stock_quantity: 5, is_available: true }
     ]
   },
   // --- MERCH (8 Items - Lifestyle & Gear) ---
@@ -529,8 +533,29 @@ const STATIC_PRODUCTS: Product[] = [
 
 const Shop = () => {
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
-  // Use static products directly
-  const products = STATIC_PRODUCTS;
+  const [products, setProducts] = useState<Product[]>(STATIC_PRODUCTS);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const data = await getProducts();
+        if (data && data.length > 0) {
+          // Map API response to local Product type if necessary
+          const mapped = data.map(p => ({
+            ...p,
+            category: p.category as Product["category"]
+          }));
+          setProducts(mapped);
+        }
+      } catch (err) {
+        console.error("Failed to fetch products:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   // No loading state needed
   const { addToCart } = useCart();
@@ -564,8 +589,8 @@ const Shop = () => {
       ? (product.variants.find((v) => v.size === selectedSize) || product.variants[0])
       : null;
 
-    if (!variant) {
-      toast.error("This product is currently unavailable");
+    if (!variant || !variant.is_available || variant.stock_quantity <= 0) {
+      toast.error("This product is currently out of stock");
       return;
     }
 
@@ -595,6 +620,7 @@ const Shop = () => {
   const formatPrice = (price: number) => {
     return `KES ${price.toLocaleString()}`;
   };
+
 
   const renderStars = (rating: number, count: number) => {
     return (
@@ -705,22 +731,50 @@ const Shop = () => {
                   .map((product) => (
                     <Card
                       key={product.id}
-                      className="group relative overflow-hidden border-none bg-card hover:bg-white/50 transition-all duration-500 shadow-premium hover:shadow-glow hover:shadow-primary/5 rounded-[2.5rem]"
+                      className={cn(
+                        "group relative overflow-hidden border-none transition-all duration-500 shadow-premium hover:shadow-glow hover:shadow-primary/5 rounded-[2.5rem]",
+                        product.category === 'hardware' ? "bg-white" : "bg-card hover:bg-white/50"
+                      )}
                     >
-                      <BrandedProductImage
-                        src={(() => {
-                          const selectedSize = selectedSizes[product.id] || product.variants[0].size;
-                          const variantIndex = product.variants.findIndex(v => v.size === selectedSize);
-                          // Structure: [0: Lifestyle, 1: 250g, 2: 500g, 3: 1kg]
-                          return (variantIndex !== -1 && product.images && product.images[variantIndex + 1])
-                            ? product.images[variantIndex + 1]
-                            : (product.images && product.images[0]) || "/placeholder.svg";
-                        })()}
-                        alt={product.name}
-                        category={product.category}
-                        badge={product.badge}
-                        className="aspect-square bg-muted m-2 rounded-[2rem]"
-                      />
+                      <div className="relative">
+                        <BrandedProductImage
+                          src={(() => {
+                            const selectedSize = selectedSizes[product.id] || product.variants[0].size;
+                            const variantIndex = product.variants.findIndex(v => v.size === selectedSize);
+                            // Structure: [0: Lifestyle, 1: 250g, 2: 500g, 3: 1kg]
+                            return (variantIndex !== -1 && product.images && product.images[variantIndex + 1])
+                              ? product.images[variantIndex + 1]
+                              : (product.images && product.images[0]) || "/placeholder.svg";
+                          })()}
+                          alt={product.name}
+                          category={product.category}
+                          badge={product.badge}
+                          className={cn(
+                            "aspect-square m-2 rounded-[2rem] transition-all duration-700 group-hover:scale-105 group-hover:rotate-1",
+                            product.category === 'hardware' ? "bg-[#F4F8FB] shadow-inner border border-primary/5 p-8" : "bg-muted"
+                          )}
+                        />
+
+                        {product.category === 'honey' && (
+                          <div className="absolute top-8 right-8 z-30 animate-in fade-in zoom-in duration-1000 delay-300">
+                            <Badge className="bg-white/90 backdrop-blur-sm text-primary border-primary/20 shadow-sm hover:bg-white transition-all flex items-center gap-1.5 px-3 py-1.5 rounded-full font-black text-[10px] uppercase tracking-wider">
+                              <ShieldCheck className="h-3.5 w-3.5" />
+                              Blockchain Verified
+                            </Badge>
+                          </div>
+                        )}
+
+                        {product.category === 'hardware' && (
+                          <div className="absolute top-8 right-8 z-30">
+                            <Badge className="bg-primary/10 backdrop-blur-sm text-primary border-primary/20 flex items-center gap-1.5 px-3 py-1.5 rounded-full font-black text-[10px] uppercase tracking-wider">
+                              <Cpu className="h-3.5 w-3.5" />
+                              Pro Grade
+                            </Badge>
+                          </div>
+                        )}
+
+
+                      </div>
 
                       <button
                         aria-label="Add to wishlist"
@@ -759,12 +813,26 @@ const Shop = () => {
                           {renderStars(product.rating, product.review_count)}
                         </div>
 
-                        <h3 className="text-2xl font-black text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-1">
+                        <h3 className="text-2xl font-black text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-1 flex items-center gap-2">
                           {product.name}
+                          {product.category === 'hardware' && <Zap className="h-4 w-4 text-primary fill-primary/20" />}
                         </h3>
-                        <p className="text-sm text-muted-foreground font-medium mb-6 line-clamp-2 leading-relaxed h-10">
+                        <p className="text-sm text-muted-foreground font-medium mb-6 line-clamp-2 leading-relaxed h-10 italic">
                           {product.description}
                         </p>
+
+                        {product.category === 'hardware' && (
+                          <div className="grid grid-cols-2 gap-2 mb-6">
+                            <div className="bg-[#F4F8FB] p-2 rounded-xl border border-primary/5">
+                              <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Performance</p>
+                              <p className="text-[10px] font-black text-slate-700 leading-none">Ultra Precision</p>
+                            </div>
+                            <div className="bg-[#F4F8FB] p-2 rounded-xl border border-primary/5">
+                              <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Connectivity</p>
+                              <p className="text-[10px] font-black text-slate-700 leading-none">LoRaWAN/GSM</p>
+                            </div>
+                          </div>
+                        )}
 
                         <div className="space-y-4">
                           {product.variants.length > 1 ? (
@@ -801,14 +869,31 @@ const Shop = () => {
                                 )}
                               </p>
                             </div>
-                            <Button
-                              className="h-14 px-8 rounded-2xl gap-2 font-black uppercase tracking-widest text-xs transition-all active:scale-95 shadow-lg hover:shadow-primary/20 bg-primary text-primary-foreground hover:bg-primary/90"
-                              onClick={() => handleAddToCart(product)}
-                            >
-                              <ShoppingCart className="h-5 w-5" />
-                              <span className="hidden sm:inline">Add to Cart</span>
-                              <span className="sm:hidden">Add</span>
-                            </Button>
+
+                            <div className="flex flex-col gap-2">
+                              <Button
+                                className={cn(
+                                  "w-full h-12 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all duration-300 shadow-lg px-6",
+                                  (!product.variants.find(v => v.size === (selectedSizes[product.id] || product.variants[0].size))?.is_available || (product.variants.find(v => v.size === (selectedSizes[product.id] || product.variants[0].size))?.stock_quantity ?? 0) <= 0)
+                                    ? "bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700 cursor-not-allowed shadow-none"
+                                    : "bg-primary text-primary-foreground hover:scale-[1.02] active:scale-[0.98] shadow-primary/20"
+                                )}
+                                onClick={() => handleAddToCart(product)}
+                                disabled={!product.variants.find(v => v.size === (selectedSizes[product.id] || product.variants[0].size))?.is_available || (product.variants.find(v => v.size === (selectedSizes[product.id] || product.variants[0].size))?.stock_quantity ?? 0) <= 0}
+                              >
+                                {(!product.variants.find(v => v.size === (selectedSizes[product.id] || product.variants[0].size))?.is_available || (product.variants.find(v => v.size === (selectedSizes[product.id] || product.variants[0].size))?.stock_quantity ?? 0) <= 0) ? (
+                                  <span className="flex items-center gap-2">
+                                    <ShoppingBag className="h-3.5 w-3.5 opacity-50" />
+                                    Sold Out
+                                  </span>
+                                ) : (
+                                  <span className="flex items-center gap-2">
+                                    <ShoppingCart className="h-3.5 w-3.5" />
+                                    Add to Cart
+                                  </span>
+                                )}
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       </CardContent>
@@ -818,10 +903,10 @@ const Shop = () => {
             </TabsContent>
           ))}
         </Tabs>
-      </section >
+      </section>
 
       {/* Tech CTA Section */}
-      < section className="container mx-auto px-4 py-12" >
+      <section className="container mx-auto px-4 py-12">
         <div className="bg-primary rounded-[3rem] p-8 lg:p-16 relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-white/20 transition-all duration-1000" />
 
@@ -854,7 +939,7 @@ const Shop = () => {
             </div>
           </div>
         </div>
-      </section >
+      </section>
 
       {/* Social Proof / Trust */}
       {/* Partners Section */}
@@ -894,7 +979,7 @@ const Shop = () => {
           </div>
         </div>
       </section>
-    </div >
+    </div>
   );
 };
 

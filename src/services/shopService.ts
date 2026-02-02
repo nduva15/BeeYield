@@ -74,6 +74,7 @@ export interface CheckoutResponse {
     status: string;
     message: string;
     payment_info?: unknown;
+    batches?: string[];
 }
 
 export const initializeCheckout = async (orderData: CheckoutOrder, accessToken?: string): Promise<CheckoutResponse> => {
@@ -163,22 +164,34 @@ export const downloadInvoice = async (orderId: string, orderNumber: string) => {
     const token = session.data.session?.access_token;
 
     const { API_V1_URL } = await import("./api");
-    const response = await fetch(`${API_V1_URL}/shop/orders/${orderId}/invoice`, {
-        headers: token ? {
-            Authorization: `Bearer ${token}`
-        } : {}
-    });
+    const downloadUrl = `${API_V1_URL}/shop/orders/${orderId}/invoice`;
+    console.log(`Downloading invoice from: ${downloadUrl}`);
 
-    if (!response.ok) throw new Error("Failed to download invoice");
+    try {
+        const response = await fetch(downloadUrl, {
+            headers: token ? {
+                Authorization: `Bearer ${token}`
+            } : {}
+        });
 
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Invoice-${orderNumber || orderId}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error("Invoice Download Failed:", response.status, response.statusText, errorText);
+            throw new Error(`Failed to download invoice: ${response.status} ${response.statusText}`);
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Invoice-${orderNumber || orderId}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error("Invoice PDF Fetch Error:", error);
+        throw error;
+    }
 };
 
 

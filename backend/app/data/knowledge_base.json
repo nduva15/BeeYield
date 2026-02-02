@@ -1,8 +1,8 @@
 {
   "metadata": {
     "version": "6.0.0-ELITE",
-    "last_sync": "Sun Feb  1 19:05:45 2026",
-    "total_nodes": 370
+    "last_sync": "Sun Feb  1 19:51:38 2026",
+    "total_nodes": 371
   },
   "dna": {
     "company": "BeeYield",
@@ -539,17 +539,22 @@
     {
       "source": "Traceability.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "100% HoneyChain\u2122 Verified. The Journey of. Every Drop. Scan Honey QR. Allow camera access and frame the QR code on your BeeYield jar.. Manual Verification. Enter the unique batch code found on the bottom or side of your honey jar.. Try these example codes. Powered by HoneyChain\u2122 Immutable Ledger. Quick Scan. Use your smartphone camera to instantly verify authenticity and unlock the full story on HoneyChain\u2122.. Launch Scanner. Authenticated on HoneyChain. Generating PDF.... Download Traceability Certificate. Origin Details. Batch Identifier. Apiary Location. Flora Sources. Specific Hive. Master Beekeeper. Certified Master Beekeeper. Our Story. Multi-Award Winner \u2022 50/50 Promise Champion. Photo Gallery. Timothy Nduva at Kibwezi HQ. Live Hive Link. Hive Intelligence. Remote monitoring data captured at moment of harvest. Temperature. OPTIMAL. Humidity. STABLE. Acoustic. Active Queen Pattern. Hive Weight. Productivity Peak. Bee Activity. High Foraging. Colony Health. SUPERIOR."
+      "content": "100% HoneyChain\u2122 Verified. The Journey of. Every Drop. Scan Honey QR. Allow camera access and frame the QR code on your BeeYield jar.. Manual Verification. Enter the unique batch code found on the bottom or side of your honey jar.. Try these example codes. Powered by HoneyChain\u2122 Immutable Ledger. Quick Scan. Use your smartphone camera to instantly verify authenticity and unlock the full story on HoneyChain\u2122.. Launch Scanner. Authenticated on HoneyChain. Generating PDF.... Download Traceability Certificate. Origin Details. Batch Identifier. Harvest Date. Apiary Site. Flora Sources. Pollination Impact. Farmland Restored. Ecosystem Growth. Planted in Kibwezi. The Promise. 50/50 Ethical Harvest. Half for the bees, half for you.. Hive Placement. Optimized for morning sun & flight path. Master Beekeeper. Certified Master Beekeeper. Our Story. Multi-Award Winner \u2022 50/50 Promise Champion. Photo Gallery. Timothy Nduva at Kibwezi HQ. Live Hive Link. Hive Intelligence."
     },
     {
       "source": "Traceability.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "The Honey Journey. Immutable Ledger Records. Champions for. Saving Bees. we only harvest 50% of the honey our bees produce. . The other half? It stays exactly where it belongs\u2014with the bees who made it.. Pure Traceable Honey. Harvested and verified on-chain to date. Ethical Harvest Rate. Half stays with the bees, ensuring survival. Full Transparency. Every drop traceable to source and hive. Trust in. Did you know that up to. 70% of honey. on supermarket shelves may be adulterated?. Our revolutionary traceability system lets you trace every jar back to its source\u2014not just the country or region, but the. exact hive, the beekeeper who cared for it, and the flowers the bees visited. Watch the Story. e.g. KIB-ACACIA-24. BeeYield Traceability Story. Know exactly which hive your honey came from. Meet the guardian who nurtured your honey. Discover the blooms that flavored your jar. Trace the pure water that sustained the colony. GPS coordinates of every harvest."
+      "content": "Remote monitoring data captured at moment of harvest. Temperature. OPTIMAL. Humidity. STABLE. Acoustic. Active Queen Pattern. Hive Weight. Productivity Peak. Bee Activity. High Foraging. Colony Health. SUPERIOR. The Honey Journey. Immutable Ledger Records. BeeYield. Mission. In 2020, Timothy Nduva saw an opportunity in the quiet of rural Kibwezi. With just. 4 beehives on half an acre. , BeeYield was born as a family mission for sustainable pollination.. 184 hives across a thriving 5-acre apiary. Timothy, along with his sisters Agatha and Carole, has transformed a modest venture into a technological edge for beekeeping\u2014leveraging IoT and blockchain to ensure transparency, protect the African honey bee, and restore biodiversity in our native Kenya.. Pure Traceable Honey. Harvested and verified on-chain to date. Ethical Harvest Rate. Half stays with the bees, ensuring survival. Full Transparency. Every drop traceable to source and hive. Trust in. Did you know that up to. 70% of honey."
     },
     {
       "source": "Traceability.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Know when your honey was collected. overflow-hidden rounded-3xl border-4 border-dashed border-amber-500/30. mt-6 text-center text-sm text-muted-foreground font-medium. mt-16 space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-700. flex items-center justify-center gap-4. flex items-center gap-2 px-6 py-2 bg-green-500/10 rounded-full border border-green-500/20 animate-pulse. bg-green-500/5 text-green-600 border-green-500/20. flex items-start gap-4 pt-4 border-t border-slate-100. absolute inset-0 w-full h-full."
+      "content": "on supermarket shelves may be adulterated?. Our revolutionary traceability system lets you trace every jar back to its source\u2014not just the country or region, but the. exact hive, the beekeeper who cared for it, and the flowers the bees visited. Watch the Story. e.g. KIB-ACACIAL-26. BeeYield Traceability Story. Know exactly which hive your honey came from. Meet the guardian who nurtured your honey. Discover the blooms that flavored your jar. Trace the pure water that sustained the colony. GPS coordinates of every harvest. Know when your honey was collected. overflow-hidden rounded-3xl border-4 border-dashed border-amber-500/30. mt-6 text-center text-sm text-muted-foreground font-medium. mt-16 space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-700. flex items-center justify-center gap-4. flex items-center gap-2 px-6 py-2 bg-green-500/10 rounded-full border border-green-500/20 animate-pulse. M5 0 L10 2.5 L10 7.5 L5 10 L0 7.5 L0 2.5 Z."
+    },
+    {
+      "source": "Traceability.tsx",
+      "subtopic": "Detailed Narrative",
+      "content": "mx-auto max-w-4xl text-center space-y-6 mb-16. text-5xl font-black tracking-tighter. text-xl text-muted-foreground font-medium."
     },
     {
       "source": "UpdatePassword.tsx",

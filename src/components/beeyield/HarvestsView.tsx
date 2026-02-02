@@ -59,6 +59,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
     const [selectedPlace, setSelectedPlace] = useState<string>('');
     const [selectedHive, setSelectedHive] = useState<string>('');
     const [quickYear, setQuickYear] = useState<string>('2026');
+    const [selectedHarvest, setSelectedHarvest] = useState<Harvest | null>(null);
 
     // Form states
     const [amount, setAmount] = useState('');
@@ -602,24 +603,24 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                             <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">LOCATION</span>
                         </div>
                         <div className="space-y-3">
-                            <Select value={selectedPlace} onValueChange={setSelectedPlace}>
+                            <Select value={selectedPlace || "all"} onValueChange={(val) => setSelectedPlace(val === "all" ? "" : val)}>
                                 <SelectTrigger className="w-full h-12 rounded-2xl border-gray-200 bg-white dark:bg-[#1e1e1e] dark:border-gray-700">
                                     <SelectValue placeholder="Select Apiary" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="">All Apiaries</SelectItem>
+                                    <SelectItem value="all">All Apiaries</SelectItem>
                                     {apiaries.map(apiary => (
                                         <SelectItem key={apiary.id} value={apiary.id}>{apiary.name}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
 
-                            <Select value={selectedHive} onValueChange={setSelectedHive}>
+                            <Select value={selectedHive || "all"} onValueChange={(val) => setSelectedHive(val === "all" ? "" : val)}>
                                 <SelectTrigger className="w-full h-12 rounded-2xl border-gray-200 bg-white dark:bg-[#1e1e1e] dark:border-gray-700">
                                     <SelectValue placeholder="Select Hive" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="">All Hives</SelectItem>
+                                    <SelectItem value="all">All Hives</SelectItem>
                                     {hives.map(hive => (
                                         <SelectItem key={hive.id} value={hive.id}>{hive.hive_code}</SelectItem>
                                     ))}

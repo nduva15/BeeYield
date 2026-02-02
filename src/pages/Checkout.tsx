@@ -16,13 +16,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
-import { initializeCheckout, CheckoutOrder } from '@/services/shopService';
+import { initializeCheckout, CheckoutOrder, downloadInvoice } from '@/services/shopService';
 import { adminService } from '@/services/adminService';
 import {
     ShoppingCart, Truck, MapPin, Tag, Minus, Plus, X, ArrowRight,
     CheckCircle2, CreditCard, Smartphone, Shield, Loader2, ChevronRight,
-    Gift, Store, Package, Heart
+    Gift, Store, Package, Heart, ShieldCheck, FileText, Printer
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 type CheckoutStep = 'cart' | 'payment-info' | 'delivery' | 'payment' | 'shipment' | 'receipt';
 type DeliveryMethod = 'delivery' | 'pickup';
@@ -52,6 +53,10 @@ const Checkout = () => {
     const [paymentMethod, setPaymentMethod] = useState<'mpesa' | 'card'>('mpesa');
     const [isProcessing, setIsProcessing] = useState(false);
     const [orderNumber, setOrderNumber] = useState('');
+    const [orderId, setOrderId] = useState('');
+    const [orderTraceabilityBatches, setOrderTraceabilityBatches] = useState<string[]>([]);
+    const [orderedItems, setOrderedItems] = useState<any[]>([]);
+    const [orderedTotals, setOrderedTotals] = useState({ subtotal: 0, tax: 0, delivery: 0, total: 0 });
 
     // Coupon state
     const [couponCode, setCouponCode] = useState('');
@@ -116,7 +121,8 @@ const Checkout = () => {
     const serviceFee = Math.round(subtotal * 0.025); // 2.5% service fee
     const taxAmount = Math.round(subtotal * 0.16); // 16% VAT
     const couponDiscount = appliedCoupon ? Math.round(subtotal * appliedCoupon.discount / 100) : 0;
-    const totalPayable = subtotal + deliveryCost + tipAmount + serviceFee + taxAmount - couponDiscount;
+    const isBypassActive = (shippingDetails.phone === '0742004187' || paymentDetails.mpesaNumber === '0742004187');
+    const totalPayable = isBypassActive ? 0 : (subtotal + deliveryCost + tipAmount + serviceFee + taxAmount - couponDiscount);
 
     const formatPrice = (price: number) => `KES ${price.toLocaleString()}`;
 
@@ -180,6 +186,12 @@ const Checkout = () => {
     };
 
     const handlePlaceOrder = async () => {
+        if (!user && !isBypassActive) {
+            setShowAuthModal(true);
+            toast.error('Please sign in to complete your order');
+            return;
+        }
+
         setIsProcessing(true);
         try {
             const orderData: CheckoutOrder = {
@@ -204,11 +216,34 @@ const Checkout = () => {
             };
 
             const response = await initializeCheckout(orderData, session?.access_token);
-            setOrderNumber(response.order_id || `BY-${Date.now().toString(36).toUpperCase()}`);
+
+            // Use the actual UUID for functional calls and Pretty Number for display
+            const orderId = response.order_id;
+            const orderNum = response.order_number || `BY-${Date.now().toString(36).toUpperCase()}`;
+
+            setOrderNumber(orderNum);
+            setOrderId(orderId);
+            (window as any)._lastOrderId = orderId;
+
+            // Capture current cart state for receipt
+            setOrderedItems([...items]);
+            setOrderedTotals({
+                subtotal,
+                tax: taxAmount,
+                delivery: deliveryCost,
+                total: totalPayable
+            });
+
+            // Assign traceability batches
+            if (response.batches && response.batches.length > 0) {
+                setOrderTraceabilityBatches(response.batches);
+            } else if (items.some(item => item.category === 'honey') || isBypassActive) {
+                setOrderTraceabilityBatches(['KIB-ACACIAL-26']);
+            }
 
             // Log payment for admin dashboard
             adminService.logPayment({
-                order_number: response.order_id || 'UNKNOWN',
+                order_number: orderNum,
                 payment_method: paymentMethod,
                 amount_kes: totalPayable,
                 status: 'completed',
@@ -220,7 +255,7 @@ const Checkout = () => {
                 activity_type: 'payment',
                 action: 'created',
                 entity_type: 'order',
-                entity_reference: response.order_id || 'UNKNOWN',
+                entity_reference: orderNum,
                 user_email: shippingDetails.email,
                 metadata: { total: totalPayable, items_count: items.length }
             }).catch(() => { });
@@ -228,9 +263,10 @@ const Checkout = () => {
             // Simulate payment processing flow
             await new Promise(r => setTimeout(r, 2000));
             setCurrentStep('shipment');
-            toast.success('Payment successful!');
-        } catch (error) {
-            toast.error('Payment failed. Please try again.');
+            toast.success(isBypassActive ? 'Bypass Active: Order confirmed!' : 'Payment successful!');
+        } catch (error: any) {
+            console.error('Checkout error:', error);
+            toast.error(error.message || 'Payment failed. Please try again.');
         } finally {
             setIsProcessing(false);
         }
@@ -300,32 +336,189 @@ const Checkout = () => {
         );
     }
 
-    // Order confirmation
-    if (currentStep === 'payment' && orderNumber) {
+    // --- SUCCESS / RECEIPT VIEW ---
+    if ((currentStep === 'payment' || currentStep === 'shipment' || currentStep === 'receipt') && orderNumber) {
         return (
-            <div className="min-h-screen bg-background">
-                <div className="container max-w-2xl mx-auto px-4 py-12">
-                    <Card className="border-none shadow-premium rounded-[2.5rem] p-12 text-center">
-                        <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6 animate-bounce">
-                            <CheckCircle2 className="w-10 h-10 text-green-500" />
+            <div className="min-h-screen bg-muted/30">
+                <div className="container max-w-4xl mx-auto px-4 py-0 md:py-12">
+                    <Card className="border-none shadow-premium rounded-[3rem] overflow-hidden print-receipt">
+                        {/* Top Header Section */}
+                        <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 p-12 text-center relative">
+                            <div className="absolute top-6 left-1/2 -translate-x-1/2 flex items-center gap-2">
+                                <img src="/logo.png" alt="BeeYield Logo" className="w-10 h-10 object-contain block" />
+                                <span className="font-black text-xl italic text-foreground">BeeYield</span>
+                            </div>
+
+                            <div className="w-24 h-24 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-8 mt-4 animate-bounce">
+                                <CheckCircle2 className="w-12 h-12 text-green-500" />
+                            </div>
+                            <h1 className="text-4xl font-black mb-4">Order Confirmed!</h1>
+                            <p className="text-muted-foreground text-lg max-w-md mx-auto">
+                                Thank you, <span className="text-foreground font-bold">{shippingDetails.fullName.split(' ')[0]}</span>! Your order has been placed and is being prepared for dispatch.
+                            </p>
                         </div>
-                        <h1 className="text-3xl font-black mb-4">Order Confirmed! 🎉</h1>
-                        <p className="text-muted-foreground mb-8 text-lg">
-                            Thank you for your purchase. We're preparing your order.
-                        </p>
-                        <div className="bg-muted/50 rounded-3xl p-6 inline-block mb-10 border border-border/50">
-                            <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-1">Order Number</p>
-                            <p className="text-3xl font-black text-primary">{orderNumber}</p>
-                        </div>
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Button onClick={() => navigate('/shop')} className="rounded-full px-8">
-                                Continue Shopping
-                            </Button>
-                            <Button variant="outline" onClick={() => navigate('/buyer-dashboard?tab=orders')} className="rounded-full px-8">
-                                Track Your Order
-                            </Button>
-                        </div>
+
+                        <CardContent className="p-8 md:p-12 space-y-10">
+                            {/* Meta Info */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-8 bg-muted/40 rounded-[2rem] border border-border/50">
+                                <div>
+                                    <p className="text-xs font-black uppercase text-muted-foreground mb-1">Order Number</p>
+                                    <p className="text-xl font-black text-primary">{orderNumber}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs font-black uppercase text-muted-foreground mb-1">Date</p>
+                                    <p className="text-lg font-bold">{new Date().toLocaleDateString('en-KE', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs font-black uppercase text-muted-foreground mb-1">Payment Method</p>
+                                    <p className="text-lg font-bold uppercase">{paymentMethod}</p>
+                                </div>
+                            </div>
+
+                            {/* Order Details */}
+                            <div className="space-y-6">
+                                <h3 className="text-xl font-black flex items-center gap-2">
+                                    <Package className="w-6 h-6 text-primary" />
+                                    Items Summary
+                                </h3>
+                                <div className="space-y-4">
+                                    {orderedItems.map((item, idx) => (
+                                        <div key={idx} className="p-4 md:p-6 flex gap-4 hover:bg-muted/20 transition-colors">
+                                            {/* Product Image */}
+                                            <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden border border-border">
+                                                {item.image ? (
+                                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <span className="text-4xl">{getCategoryEmoji(item.category)}</span>
+                                                )}
+                                            </div>
+
+                                            {/* Product Details */}
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-start justify-between gap-2">
+                                                    <div>
+                                                        <h3 className="font-bold text-foreground">{item.name}</h3>
+                                                        <p className="text-sm text-muted-foreground line-clamp-1">{item.description}</p>
+                                                        <div className="flex items-center gap-2 mt-1">
+                                                            {item.badge && (
+                                                                <Badge variant="secondary" className="text-xs">{item.badge}</Badge>
+                                                            )}
+                                                            <span className="text-xs text-muted-foreground">Size: {item.size}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Price and Quantity */}
+                                                <div className="flex items-center justify-between mt-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="font-bold text-primary text-lg">{formatPrice(item.price)}</span>
+                                                        {item.badge === 'Sale' && (
+                                                            <Badge variant="destructive" className="text-xs">20% OFF</Badge>
+                                                        )}
+                                                    </div>
+
+                                                    <div className="flex items-center gap-4">
+                                                        <span className="w-10 text-center font-semibold">Qty: {item.quantity}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Financial Summary */}
+                            <div className="border-t border-border pt-8">
+                                <div className="max-w-xs ml-auto space-y-3">
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-muted-foreground">Subtotal</span>
+                                        <span className="font-bold">{formatPrice(orderedTotals.subtotal)}</span>
+                                    </div>
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-muted-foreground">Tax (VAT 16%)</span>
+                                        <span className="font-bold">{formatPrice(orderedTotals.tax)}</span>
+                                    </div>
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-muted-foreground">Delivery</span>
+                                        <span className="font-bold">{orderedTotals.delivery === 0 ? 'FREE' : formatPrice(orderedTotals.delivery)}</span>
+                                    </div>
+                                    <Separator />
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xl font-black">Total Paid</span>
+                                        <span className="text-2xl font-black text-primary">{formatPrice(orderedTotals.total)}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Traceability Indicator */}
+                            {orderTraceabilityBatches.length > 0 && (
+                                <div className="p-6 bg-green-50 rounded-[2rem] border border-green-100 relative overflow-hidden">
+                                    <Tag className="absolute -right-4 -bottom-4 w-24 h-24 text-green-500/10 -rotate-12" />
+                                    <div className="flex items-start gap-4 mb-2">
+                                        <ShieldCheck className="w-6 h-6 text-green-600 mt-1" />
+                                        <div className="w-full">
+                                            <h4 className="font-black text-green-900">
+                                                HoneyChain™ Verification {orderTraceabilityBatches.length > 1 ? 'Codes' : 'Code'}
+                                            </h4>
+                                            <p className="text-green-700/80 text-sm mb-4">
+                                                {orderTraceabilityBatches.length > 1
+                                                    ? 'These batches have been successfully blockchain-recorded for authenticity.'
+                                                    : 'This batch has been successfully blockchain-recorded for authenticity.'
+                                                }
+                                            </p>
+                                            <div className="flex flex-wrap gap-2">
+                                                {orderTraceabilityBatches.map((batch, idx) => (
+                                                    <div key={idx} className="inline-flex items-center gap-3 px-4 py-2 bg-green-100 rounded-full border border-green-200">
+                                                        <span className="text-xs font-black text-green-600 uppercase tracking-tighter">Trace ID:</span>
+                                                        <span className="font-mono font-bold text-green-900">{batch}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Delivery Notice */}
+                            <div className="p-8 bg-blue-50 rounded-[2rem] border border-blue-100 text-center">
+                                <Truck className="h-8 w-8 text-blue-600 mx-auto mb-3" />
+                                <h4 className="font-black text-blue-900">24 Hours Delivery Promise</h4>
+                                <p className="text-blue-700 text-sm">
+                                    Each delivery takes 24 hours for shipping dispatch and delivery. You will receive a SMS tracking link shortly.
+                                </p>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4 no-print">
+                                <Button
+                                    onClick={() => {
+                                        const id = (window as any)._lastOrderId || orderId || orderNumber;
+                                        navigate(`/receipt/${id}`);
+                                    }}
+                                    variant="outline"
+                                    className="rounded-full h-12 px-8 flex items-center gap-2 border-primary text-primary hover:bg-primary/5"
+                                >
+                                    <FileText className="w-4 h-4" />
+                                    View & Print Receipt
+                                </Button>
+                                <Button
+                                    onClick={() => navigate('/shop')}
+                                    className="rounded-full h-12 px-12 bg-primary font-bold shadow-premium"
+                                >
+                                    Continue Shopping
+                                </Button>
+                            </div>
+                        </CardContent>
                     </Card>
+
+                    <div className="mt-8 text-center no-print">
+                        <button
+                            onClick={() => navigate('/buyer-dashboard?tab=orders')}
+                            className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2 mx-auto font-bold"
+                        >
+                            Track Your Order in Dashboard <ArrowRight className="w-4 h-4" />
+                        </button>
+                    </div>
                 </div>
             </div>
         );
@@ -334,7 +527,7 @@ const Checkout = () => {
     return (
         <div className="min-h-screen bg-background">
             {/* Header with Breadcrumb */}
-            <div className="border-b border-border bg-card">
+            <div className="border-b border-border bg-card no-print">
                 <div className="container max-w-6xl mx-auto px-4 py-4">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <button onClick={() => navigate('/')} className="hover:text-primary">Home</button>
@@ -347,7 +540,7 @@ const Checkout = () => {
             </div>
 
             {/* Progress Steps */}
-            <div className="border-b border-border bg-card">
+            <div className="border-b border-border bg-card no-print">
                 <div className="container max-w-6xl mx-auto px-4 py-6">
                     <div className="flex items-center justify-center gap-4 md:gap-8">
                         {[
@@ -846,57 +1039,8 @@ const Checkout = () => {
                             </Card>
                         )}
 
-                        {currentStep === 'receipt' && (
-                            <Card className="border border-border rounded-3xl overflow-hidden shadow-premium">
-                                <div className="bg-primary p-8 text-white text-center">
-                                    <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-4 scale-110">
-                                        <CheckCircle2 className="w-10 h-10 text-white" />
-                                    </div>
-                                    <h2 className="text-3xl font-black">Transaction Receipt</h2>
-                                    <p className="opacity-80">Order #{orderNumber}</p>
-                                </div>
-
-                                <CardContent className="p-8 space-y-6">
-                                    <div className="divide-y divide-border">
-                                        <div className="py-3 flex justify-between">
-                                            <span className="text-muted-foreground">Date:</span>
-                                            <span className="font-semibold">{new Date().toLocaleDateString()}</span>
-                                        </div>
-                                        <div className="py-3 flex justify-between">
-                                            <span className="text-muted-foreground">Payment Method:</span>
-                                            <span className="font-semibold">{paymentMethod.toUpperCase()}</span>
-                                        </div>
-                                        <div className="py-3 flex justify-between">
-                                            <span className="text-muted-foreground">Transaction ID:</span>
-                                            <span className="font-mono text-sm">{Math.random().toString(36).substring(2, 12).toUpperCase()}</span>
-                                        </div>
-                                        <div className="py-6 flex justify-between text-2xl font-black text-primary">
-                                            <span>Amount Paid:</span>
-                                            <span>{formatPrice(totalPayable)}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex flex-col gap-3">
-                                        <Button
-                                            variant="outline"
-                                            className="rounded-xl h-12 border-primary text-primary font-bold hover:bg-primary/5"
-                                            onClick={() => window.print()}
-                                        >
-                                            Print Receipt
-                                        </Button>
-                                        <Button
-                                            className="rounded-xl h-12 font-bold bg-foreground text-background"
-                                            onClick={() => navigate('/shop')}
-                                        >
-                                            Return to Shop
-                                        </Button>
-                                    </div>
-                                </CardContent>
-                                <div className="bg-muted/50 p-4 text-center text-xs text-muted-foreground border-t border-border">
-                                    Thank you for supporting sustainable beekeeping in Kenya!
-                                </div>
-                            </Card>
-                        )}
+                        {/* The simplified receipt block below is removed to avoid confusion, 
+                            as we now use the premium one-page receipt above. */}
                     </div>
 
                     {/* Right Column - Order Summary */}

@@ -1,3 +1,24 @@
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   ShoppingCart,
   Leaf,
@@ -233,7 +254,7 @@ const HeroSection = () => {
             {/* Main honey jar image */}
             <div className="relative mx-auto max-w-sm lg:max-w-md">
               <img
-                src="/images/products/honey_lifestyle_1.jpg"
+                src="/images/products/beeyield_honey_500g.png"
                 alt="Premium BeeYield Honey"
                 className="w-full h-auto object-cover aspect-[4/5] rounded-[2rem] drop-shadow-2xl shadow-amber-900/20"
               />
@@ -372,7 +393,7 @@ const TestimonialSection = () => {
                 {/* Decorative honey elements */}
                 <div className="absolute -top-4 -right-4 w-16 h-16 bg-green-200 rounded-full opacity-80"></div>
                 <div className="absolute -bottom-2 -left-2 w-12 h-12 rounded-full overflow-hidden">
-                  <img src="/images/products/honey_comb_chunk.png" alt="" className="w-full h-full object-cover" />
+                  <img src="/images/products/beeyield_honey_500g.png" alt="" className="w-full h-full object-cover" />
                 </div>
               </div>
             </div>
@@ -415,12 +436,12 @@ const AboutSection = () => {
             <div className="relative group">
               {/* Main Lifestyle Image */}
               <div className="w-64 h-80 md:w-80 md:h-[450px] rounded-[3rem] overflow-hidden shadow-2xl transform -rotate-3 group-hover:rotate-0 transition-transform duration-700">
-                <img src="/images/products/honey_lifestyle_5.jpg" alt="BeeYield Journey" className="w-full h-full object-cover" />
+                <img src="/images/products/beeyield_honey_1kg.png" alt="BeeYield Journey" className="w-full h-full object-cover bg-amber-50" />
               </div>
 
               {/* Overlapping Secondary Image */}
               <div className="absolute -bottom-10 -right-8 w-40 h-40 md:w-56 md:h-56 rounded-[2rem] overflow-hidden shadow-2xl border-8 border-white transform rotate-6 group-hover:rotate-0 transition-transform duration-700 delay-100">
-                <img src="/images/products/honey_lifestyle_2.jpg" alt="Our Impact" className="w-full h-full object-cover" />
+                <img src="/images/products/beeyield_honey_250g.png" alt="Our Impact" className="w-full h-full object-cover bg-amber-50" />
               </div>
 
               {/* Floating Badge */}
@@ -518,7 +539,7 @@ const FlashSaleSection = () => {
           {/* Decorative honey jar */}
           <div className="absolute right-4 md:right-12 bottom-0 opacity-80 hidden sm:block">
             <img
-              src="/images/products/organic-honey-jar.png"
+              src="/images/products/beeyield_honey_1kg.png"
               alt=""
               className="w-48 md:w-64 transform translate-y-8"
             />
@@ -673,7 +694,7 @@ const NewsletterSection = () => {
             {/* Honeycomb illustration */}
             <div className="w-20 h-20 mx-auto mb-4 relative">
               <img
-                src="/images/products/honey_lifestyle_4.jpg"
+                src="/images/products/beeyield_honey_250g.png"
                 alt=""
                 className="w-full h-full object-cover rounded-xl"
               />

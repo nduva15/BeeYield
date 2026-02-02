@@ -275,7 +275,12 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                 className="px-6 py-8 bg-white/50 backdrop-blur-sm border-t border-[#E5E5E5]"
             >
                 <div className="flex items-center justify-between mb-6 px-1">
-                    <div className="flex items-center gap-2.5 group">
+                    <motion.div
+                        whileHover={{ scale: 1.02, x: 2 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => onTabChange('server-status')}
+                        className="flex items-center gap-2.5 group cursor-pointer"
+                    >
                         <div className="relative">
                             <div className="w-2.5 h-2.5 rounded-full bg-[#1B9157] shadow-[0_0_12px_rgba(27,145,87,0.4)]" />
                             <div className="absolute inset-0 rounded-full bg-[#1B9157] animate-ping opacity-20" />
@@ -283,7 +288,7 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                         <span className="text-[10px] font-black text-[#1B9157] uppercase tracking-[0.1em] group-hover:tracking-[0.15em] transition-all">
                             {t('system_normal')}
                         </span>
-                    </div>
+                    </motion.div>
                 </div>
 
                 <div className="flex items-center gap-3">

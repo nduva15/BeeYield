@@ -9,34 +9,46 @@ export interface ChatMessage {
     content: string;
 }
 
+export interface AIResponse {
+    response: string;
+    sources?: Array<{ type: string; name: string }>;
+    suggestions?: string[];
+    confidence: number;
+    language: string;
+}
+
 export const aiService = {
-    async chat(message: string, history: ChatMessage[] = [], language: string = 'EN') {
-        console.log('Sending chat request to:', `${API_BASE_URL}/ai/chat`);
+    async chat(message: string, history: ChatMessage[] = [], language: string = 'EN'): Promise<AIResponse> {
+        console.log('Sending chat request to:', `${API_BASE_URL}/assistant/chat`);
         try {
-            const response = await axios.post(`${API_BASE_URL}/ai/chat`, {
+            const response = await axios.post(`${API_BASE_URL}/assistant/chat`, {
                 message,
                 history,
-                language
+                language,
+                include_sources: true
             }, {
-                timeout: 5000,
+                timeout: 30000, // Increased timeout for detailed AI generation
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
-            return response.data.response;
+            return response.data;
         } catch (error: any) {
             console.warn('Backend connection failed, switching to local intelligence.');
-            // Fallback to local intelligence
-            return await localIntelligence.chat(message);
+            const fallback = await localIntelligence.chat(message);
+            return {
+                response: fallback,
+                confidence: 0.7,
+                language: 'EN'
+            };
         }
     },
 
     async getStatus() {
         try {
-            const response = await axios.get(`${API_BASE_URL}/ai/status`, { timeout: 2000 });
+            const response = await axios.get(`${API_BASE_URL}/assistant/status`, { timeout: 2000 });
             return response.data;
         } catch (error) {
-            // Return 'online' to avoid UI error states, assuming local is "online" enough
             return { status: 'online', mode: 'local' };
         }
     }

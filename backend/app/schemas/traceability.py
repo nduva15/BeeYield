@@ -139,6 +139,9 @@ class TraceResponse(BaseModel):
     # Sensor Snapshot (at harvest time or realtime)
     sensor_snapshot: Optional[dict[str, Any]] = None
     
+    # Extra Details
+    extra_metadata: Optional[dict[str, Any]] = None
+    
     # Full Journey
     timeline: list[TraceJourneyStep]
 

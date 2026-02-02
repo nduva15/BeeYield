@@ -6,8 +6,10 @@ from app.api.api_v1.endpoints import (
     company, auth, traceability, contact, 
     forms, shop, blog, careers, media, 
     services, jobs, analytics, notes, admin, iot, ai,
-    admin_extended, meters, beeyield, pollination, inspections
+    admin_extended, meters, beeyield, pollination, inspections,
+    ai_assistant
 )
+
 
 api_router = APIRouter()
 
@@ -23,8 +25,11 @@ api_router.include_router(pollination.router, prefix="/pollination", tags=["Prec
 # Inspections endpoint
 api_router.include_router(inspections.router, prefix="/inspections", tags=["Inspections"])
 
-# AI Assistant endpoint
+# AI Assistant endpoint (legacy)
 api_router.include_router(ai.router, prefix="/ai", tags=["AI"])
+
+# AI Assistant v2 (comprehensive)
+api_router.include_router(ai_assistant.router, prefix="/assistant", tags=["AI Assistant"])
 
 # Analytics endpoint
 api_router.include_router(analytics.router, prefix="/analytics", tags=["Analytics"])

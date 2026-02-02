@@ -1,0 +1,3 @@
+import beehub_queen from '@/assets/beeyield_hub_sensor.jpg';
+import beehub_sense from '/images/products/beehub_temp_sensor.png';
+import beehub_tracker from '/images/products/beehub_hive_scale.png'; // Using scale icon for tracker as it's also a sensor icon from screenshot

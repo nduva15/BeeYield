@@ -195,6 +195,7 @@ const PollinationRequest = () => {
                       <Input
                         id="acres"
                         type="number"
+                        step="any"
                         value={formData.acres}
                         onChange={(e) => handleChange("acres", e.target.value)}
                         placeholder="100"
