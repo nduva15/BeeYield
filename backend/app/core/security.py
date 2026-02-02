@@ -30,7 +30,6 @@ def get_password_hash(password: str) -> str:
 def get_current_user(token: str = Depends(oauth2_scheme)) -> Dict[str, Any]:
     """
     Verify JWT token and return user payload.
-    Specifically designed to work with Supabase JWTs.
     """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -38,20 +37,40 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> Dict[str, Any]:
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        # If we have a Supabase JWT secret, use it to verify the signature.
-        # Otherwise, we might be in development and skip signature verification (CAUTION)
-        # SUPABASE_JWT_SECRET is the signing key used by Supabase Auth
         jwt_secret = settings.SUPABASE_JWT_SECRET or settings.SECRET_KEY
-        
         payload = jwt.decode(
             token, 
             jwt_secret, 
             algorithms=[ALGORITHM],
-            options={"verify_aud": False} # Supabase uses "authenticated" as aud
+            options={"verify_aud": False}
         )
         user_id: str = payload.get("sub")
         if user_id is None:
             raise credentials_exception
         return payload
     except JWTError:
+        if settings.DEBUG:
+            # Fallback for development where SECRET_KEY might not match Supabase secret
+            return jwt.get_unverified_claims(token)
         raise credentials_exception
+
+def get_optional_current_user(token: Optional[str] = Depends(OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login", auto_error=False))) -> Optional[Dict[str, Any]]:
+    """
+    Optional user verification. Returns None instead of raising 401.
+    Falls back to unverified decode in DEBUG mode.
+    """
+    if not token:
+        return None
+    try:
+        jwt_secret = settings.SUPABASE_JWT_SECRET or settings.SECRET_KEY
+        payload = jwt.decode(
+            token, 
+            jwt_secret, 
+            algorithms=[ALGORITHM],
+            options={"verify_aud": False}
+        )
+        return payload
+    except JWTError:
+        if settings.DEBUG:
+            return jwt.get_unverified_claims(token)
+        return None

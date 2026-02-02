@@ -143,6 +143,51 @@ class HiveAssignment(HiveAssignmentBase):
         from_attributes = True
 
 
+class HiveAssignmentUpdate(BaseModel):
+    """Schema for updating a hive assignment"""
+    placement_location: Optional[str] = None
+    placement_coordinates: Optional[Dict[str, float]] = None
+    notes: Optional[str] = None
+
+
+# ========== POLLINATION APIARY SCHEMAS ==========
+
+class PollinationApiaryBase(BaseModel):
+    """Apiary data in pollination context"""
+    name: str
+    location: str
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    total_hives: int = 0
+    available_hives: int = 0
+    notes: Optional[str] = None
+
+
+class PollinationApiaryCreate(PollinationApiaryBase):
+    """Schema for creating a new pollination apiary"""
+    pass
+
+
+class PollinationApiaryUpdate(BaseModel):
+    """Schema for updating a pollination apiary"""
+    name: Optional[str] = None
+    location: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    notes: Optional[str] = None
+
+
+class PollinationApiary(PollinationApiaryBase):
+    """Full pollination apiary with ID and timestamps"""
+    id: str
+    user_id: Optional[str] = None
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    
+    class Config:
+        from_attributes = True
+
+
 # ========== SENSOR DATA SCHEMAS ==========
 
 class HiveSensorData(BaseModel):

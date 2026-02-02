@@ -24,6 +24,7 @@ import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
 import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
 import { useLanguage } from '@/contexts/LanguageContext';
+import UserDebugPanel from '@/components/beeyield/UserDebugPanel';
 
 // View Imports
 import MyDevicesView from '@/components/beeyield/MyDevicesView';
@@ -148,6 +149,7 @@ const BeeYieldDashboard: React.FC = () => {
     // Nav Items matching screenshot precisely
     const navItems: NavItem[] = [
         { id: 'assistant', label: t('nav_ai_assistant'), icon: Bot },
+        { id: 'agro-intelligence', label: t('nav_agro_intelligence'), icon: LayoutGrid },
         { id: 'precision-pollination', label: t('nav_precision_pollination'), icon: Calculator },
         { id: 'places', label: t('nav_my_places'), icon: MapPin },
         {
@@ -400,6 +402,9 @@ const BeeYieldDashboard: React.FC = () => {
             onLogout={handleLogout}
             navItems={navItems}
         >
+            <div className="mb-6">
+                <UserDebugPanel />
+            </div>
             {renderContent()}
         </DashboardLayout>
     );

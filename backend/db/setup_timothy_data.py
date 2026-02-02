@@ -62,7 +62,7 @@ def setup_timothy_data(user_id):
         "phone": "+254 700 000 000",
         "region": "Kibwezi",
         "county": "Makueni",
-        "experience_years": 10,
+        "experience_years": 6,
         "story": "Timothy Nduva is a visionary beekeeper at the forefront of precision pollination in Kenya.",
         "latitude": -2.41,
         "longitude": 37.97,

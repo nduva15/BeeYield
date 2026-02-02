@@ -292,6 +292,7 @@ const Contact = () => {
                       <label className="text-sm font-medium">Acres *</label>
                       <input
                         type="number"
+                        step="any"
                         required={activeTab === "grower"}
                         value={formData.acres}
                         onChange={(e) => handleChange("acres", e.target.value)}

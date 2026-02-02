@@ -7,7 +7,7 @@ let cachedSession: any = null;
 let lastSessionFetch = 0;
 const SESSION_CACHE_TTL = 30000; // 30 seconds
 
-const getAuthHeaders = async (): Promise<Record<string, string>> => {
+export const getAuthHeaders = async (): Promise<Record<string, string>> => {
     if (!supabase) return {};
 
     const now = Date.now();

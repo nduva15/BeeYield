@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import {
     MessageSquare,
     Send,
@@ -11,7 +12,13 @@ import {
     Paperclip,
     Image as ImageIcon,
     Link as LinkIcon,
-    Mic
+    Mic,
+    ShieldCheck,
+    Globe,
+    Database,
+    Cpu,
+    Sparkles,
+    Zap
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Logo from '@/assets/Logo.png';
@@ -38,6 +45,8 @@ interface Message {
     role: 'user' | 'assistant';
     content: string;
     timestamp: string;
+    sources?: Array<{ type: string; name: string }>;
+    suggestions?: string[];
 }
 
 const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialMessage, onInitialMessageConsumed }) => {
@@ -49,8 +58,18 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
     const [messages, setMessages] = useState<Message[]>([]);
     const [inputValue, setInputValue] = useState('');
     const [showWelcome, setShowWelcome] = useState(true);
+    const [systemStatus, setSystemStatus] = useState<{ status: string, capabilities?: string[] }>({ status: 'online' });
     const { language, t } = useLanguage();
     const navigate = useNavigate();
+
+    // Check system health on mount
+    React.useEffect(() => {
+        const checkStatus = async () => {
+            const status = await aiService.getStatus();
+            setSystemStatus(status);
+        };
+        checkStatus();
+    }, []);
 
     // Persist chats to localStorage
     React.useEffect(() => {
@@ -166,19 +185,21 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
         }));
 
         try {
-            const aiResponse = await aiService.chat(inputValue, history, language);
+            const aiData = await aiService.chat(inputValue, history, language);
 
             const aiMessage: Message = {
                 id: (Date.now() + 1).toString(),
                 role: 'assistant',
-                content: aiResponse,
-                timestamp: new Date().toLocaleTimeString()
+                content: aiData.response,
+                timestamp: new Date().toLocaleTimeString(),
+                sources: aiData.sources,
+                suggestions: aiData.suggestions
             };
 
             setMessages(prev => [...prev, aiMessage]);
             setChats(prev => prev.map(c =>
                 c.id === (selectedChat || currentId)
-                    ? { ...c, messages: [...c.messages, aiMessage], preview: aiResponse.substring(0, 50) + '...' }
+                    ? { ...c, messages: [...c.messages, aiMessage], preview: aiData.response.substring(0, 50) + '...' }
                     : c
             ));
         } catch (error) {
@@ -251,21 +272,47 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
             </h1>
 
             {/* Orange Hero Card */}
-            <div className="relative mb-8 overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-[#F4D03F] to-[#D4AF37] p-10 shadow-lg">
-                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
-                    <div className="space-y-4 max-w-2xl">
-                        <h2 className="text-3xl md:text-4xl font-black text-white uppercase tracking-tight">
+            <div className="relative mb-8 overflow-hidden rounded-[3rem] bg-[#0F172A] p-12 shadow-2xl group border border-white/5">
+                {/* Visual Accent Background */}
+                <div className="absolute top-0 right-0 w-1/2 h-full bg-[#F4D03F]/10 rounded-l-full blur-[100px] group-hover:bg-[#F4D03F]/20 transition-all duration-1000" />
+                <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-primary/20 rounded-full blur-[80px]" />
+
+                {/* Neural Pattern Overlay */}
+                <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
+                    <svg className="w-full h-full" viewBox="0 0 100 100">
+                        <pattern id="neural-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                            <circle cx="1" cy="1" r="0.5" fill="white" />
+                            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="white" strokeWidth="0.1" />
+                        </pattern>
+                        <rect width="100%" height="100%" fill="url(#neural-grid)" />
+                    </svg>
+                </div>
+
+                <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-10">
+                    <div className="space-y-6 max-w-2xl">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full">
+                            <Zap className="h-3 w-3 text-primary" />
+                            <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Neural Network v4.2</span>
+                        </div>
+                        <h2 className="text-4xl lg:text-5xl font-black text-white uppercase tracking-tight leading-[1.1]">
                             {t('ai_hub_intelligence')}
                         </h2>
-                        <p className="text-white font-bold opacity-90 uppercase tracking-widest text-xs">
-                            {t('ai_hub_status')}
-                        </p>
-                        <div className="flex flex-wrap gap-2 mt-6">
-                            {topicCategories.map((topic, index) => (
+                        <div className="flex items-center gap-3">
+                            <div className="flex -space-x-2">
+                                {[1, 2, 3].map(i => (
+                                    <div key={i} className="w-8 h-8 rounded-full border-2 border-[#0F172A] bg-primary/20 flex items-center justify-center text-[10px] font-black text-white">AI</div>
+                                ))}
+                            </div>
+                            <p className="text-white font-bold opacity-70 uppercase tracking-widest text-xs">
+                                {t('ai_hub_status')}
+                            </p>
+                        </div>
+                        <div className="flex flex-wrap gap-2 mt-4">
+                            {topicCategories.slice(0, 4).map((topic, index) => (
                                 <button
                                     key={index}
                                     onClick={() => handleTopicClick(topic.label)}
-                                    className="flex items-center gap-2 px-6 py-3 bg-[#0F172A]/80 hover:bg-[#0F172A] text-white text-sm font-bold rounded-full transition-all duration-200 backdrop-blur-sm"
+                                    className="flex items-center gap-2 px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white text-[11px] font-black uppercase tracking-widest rounded-xl transition-all duration-300 backdrop-blur-md"
                                 >
                                     <span>{topic.icon}</span>
                                     <span>{topic.label}</span>
@@ -275,9 +322,9 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                     </div>
                     <Button
                         onClick={handleNewChat}
-                        className="bg-[#0F172A] hover:bg-[#1E293B] text-white rounded-2xl px-8 h-14 font-bold flex items-center gap-2 shadow-xl shrink-0"
+                        className="bg-primary hover:bg-primary/90 text-black rounded-2xl px-10 h-16 font-black text-lg flex items-center gap-3 shadow-[0_0_30px_rgba(244,208,63,0.3)] transition-all hover:scale-[1.02] active:scale-[0.98] shrink-0 uppercase tracking-tight"
                     >
-                        <Plus className="w-5 h-5" />
+                        <Plus className="w-6 h-6 stroke-[3px]" />
                         {t('new_chat')}
                     </Button>
                 </div>
@@ -348,18 +395,38 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                 <div className="lg:col-span-9 bg-white dark:bg-[#141414] rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] overflow-hidden flex flex-col shadow-sm">
                     {/* Chat Header */}
                     {!showWelcome && (
-                        <div className="p-6 border-b border-gray-50 dark:border-[#1e1e1e] flex items-center gap-4 bg-gray-50/50 dark:bg-white/5">
-                            <div className="w-16 h-16 rounded-2xl bg-white dark:bg-[#F4D03F]/20 border-[#F4D03F]/20 dark:border-[#F4D03F]/30 flex items-center justify-center p-3 shadow-md animate-in fade-in zoom-in duration-500">
-                                <img src={Logo} alt="BEEYIELD" className="w-full h-full object-contain" />
+                        <div className="p-8 border-b border-gray-50 dark:border-[#1e1e1e] flex items-center justify-between bg-white dark:bg-white/5 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-8 opacity-5">
+                                <Bot className="h-24 w-24 text-primary" />
                             </div>
-                            <div>
-                                <h3 className="font-black text-xl text-gray-900 dark:text-white uppercase tracking-tighter">
-                                    BeeYield AI
-                                </h3>
-                                <p className="text-[10px] text-amber-500 font-bold uppercase tracking-[0.2em] flex items-center gap-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                                    {t('neural_core_online')}
-                                </p>
+
+                            <div className="flex items-center gap-6 relative z-10">
+                                <div className="w-16 h-16 rounded-[1.25rem] bg-indigo-50 dark:bg-[#F4D03F]/20 border-[#F4D03F]/20 dark:border-[#F4D03F]/30 flex items-center justify-center p-3 shadow-premium animate-in fade-in zoom-in duration-500 relative group">
+                                    <div className="absolute -inset-2 bg-primary/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity animate-pulse" />
+                                    <img src={Logo} alt="BEEYIELD" className="w-full h-full object-contain relative z-10" />
+                                </div>
+                                <div>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <h3 className="font-black text-2xl text-gray-900 dark:text-white uppercase tracking-tighter">
+                                            BeeYield AI
+                                        </h3>
+                                        <Badge className="bg-primary/10 text-primary border-primary/20 text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5">INTERNAL</Badge>
+                                    </div>
+                                    <p className="text-[10px] text-amber-500 font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                                        <span className={cn(
+                                            "w-2 h-2 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)] animate-[pulse-fast_1s_infinite]",
+                                            systemStatus.status === 'healthy' ? "bg-green-500" : "bg-amber-500"
+                                        )} />
+                                        {systemStatus.status === 'healthy' ? t('neural_core_synchronized') : t('neural_core_online')}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="hidden md:flex flex-col items-end">
+                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Neural Load</p>
+                                <div className="h-1.5 w-32 bg-slate-100 rounded-full overflow-hidden">
+                                    <div className="h-full bg-primary w-[35%] animate-pulse" />
+                                </div>
                             </div>
                         </div>
                     )}
@@ -429,25 +496,79 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                                             )}
                                         >
                                             {message.role === 'assistant' && (
-                                                <div className="w-16 h-16 rounded-2xl bg-white dark:bg-amber-900/40 flex items-center justify-center shrink-0 shadow-md p-3 border-2 border-amber-100 dark:border-amber-900/50 animate-in fade-in zoom-in duration-500">
-                                                    <img src={Logo} alt="BeeYield AI" className="w-full h-full object-contain" />
+                                                <div className="relative group">
+                                                    <div className="absolute -inset-1 bg-primary/20 rounded-2xl blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                    <div className="w-14 h-14 rounded-2xl bg-white/80 backdrop-blur-md dark:bg-amber-900/40 flex items-center justify-center shrink-0 shadow-premium p-3 border border-amber-100 dark:border-amber-900/50 animate-in fade-in zoom-in duration-500 relative z-10">
+                                                        <img src={Logo} alt="BeeYield AI" className="w-full h-full object-contain" />
+                                                    </div>
                                                 </div>
                                             )}
                                             <div
                                                 className={cn(
-                                                    "max-w-[80%] p-6 rounded-[2rem] shadow-sm",
+                                                    "max-w-[80%] p-7 rounded-[2.25rem] shadow-lg relative overflow-hidden",
                                                     message.role === 'user'
-                                                        ? "bg-[#F4D03F] text-gray-900 font-medium rounded-br-none"
-                                                        : "bg-white dark:bg-[#1e1e1e] text-gray-800 dark:text-gray-200 font-medium rounded-bl-none border border-gray-50 dark:border-gray-800"
+                                                        ? "bg-primary text-black font-semibold rounded-br-none"
+                                                        : "bg-white/80 backdrop-blur-xl dark:bg-[#1e1e1e] text-gray-800 dark:text-gray-200 font-medium rounded-bl-none border border-white/40 dark:border-gray-800 shadow-xl"
                                                 )}
                                             >
+                                                {message.role === 'assistant' && (
+                                                    <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
+                                                        <Zap className="h-12 w-12 text-primary" />
+                                                    </div>
+                                                )}
                                                 <FormattedMessage content={message.content} isUser={message.role === 'user'} />
-                                                <p className={cn(
-                                                    "text-[10px] mt-3 uppercase tracking-widest font-bold opacity-60",
-                                                    message.role === 'user' ? "text-gray-800" : "text-gray-400"
-                                                )}>
-                                                    {message.timestamp}
-                                                </p>
+
+                                                {/* Sources Tooltip/Icons */}
+                                                {message.role === 'assistant' && message.sources && message.sources.length > 0 && (
+                                                    <div className="mt-4 flex flex-wrap gap-2">
+                                                        {message.sources.map((source, idx) => (
+                                                            <div
+                                                                key={idx}
+                                                                className="flex items-center gap-1.5 px-2 py-1 bg-black/5 dark:bg-white/5 rounded-lg border border-black/5 dark:border-white/10 group/source hover:bg-primary/10 transition-colors"
+                                                            >
+                                                                {source.type === 'blockchain' && <ShieldCheck className="w-3 h-3 text-emerald-500" />}
+                                                                {source.type === 'iot' && <Cpu className="w-3 h-3 text-indigo-500" />}
+                                                                {source.type === 'database' && <Database className="w-3 h-3 text-amber-500" />}
+                                                                {source.type === 'web' && <Globe className="w-3 h-3 text-blue-500" />}
+                                                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 group-hover/source:text-primary transition-colors">
+                                                                    {source.name}
+                                                                </span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+
+                                                {/* Suggestions Chips */}
+                                                {message.role === 'assistant' && message.suggestions && message.suggestions.length > 0 && (
+                                                    <div className="mt-6 flex flex-wrap gap-2 animate-in slide-in-from-bottom-2 duration-500">
+                                                        {message.suggestions.map((suggestion, idx) => (
+                                                            <button
+                                                                key={idx}
+                                                                onClick={() => handleTopicClick(suggestion)}
+                                                                className="px-3 py-1.5 bg-primary/5 hover:bg-primary/20 border border-primary/20 rounded-full text-[10px] font-black text-primary uppercase tracking-wider transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
+                                                            >
+                                                                <Sparkles className="w-3 h-3" />
+                                                                {suggestion}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                )}
+
+                                                <div className="flex items-center justify-between mt-4 border-t border-black/5 dark:border-white/5 pt-3">
+                                                    <p className={cn(
+                                                        "text-[9px] uppercase tracking-widest font-black opacity-40",
+                                                        message.role === 'user' ? "text-black" : "text-gray-400"
+                                                    )}>
+                                                        {message.timestamp} — {message.role === 'assistant' ? "PROCESSED BY NEURAL CORE" : "SENT VIA CLIENT"}
+                                                    </p>
+                                                    {message.role === 'assistant' && (
+                                                        <div className="flex gap-1">
+                                                            <div className="h-1 w-1 rounded-full bg-primary" />
+                                                            <div className="h-1 w-1 rounded-full bg-primary/40" />
+                                                            <div className="h-1 w-1 rounded-full bg-primary/20" />
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     ))

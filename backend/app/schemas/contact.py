@@ -17,7 +17,7 @@ class ContactSubmissionCreate(BaseModel):
     company: Optional[str] = None
     farm_name: Optional[str] = None
     crop_type: Optional[str] = None
-    acres: Optional[int] = None
+    acres: Optional[float] = None
     apiary_name: Optional[str] = None
     hive_count: Optional[int] = None
     experience_years: Optional[str] = None
@@ -33,7 +33,7 @@ class PollinationRequestCreate(BaseModel):
     farm_name: str
     farm_location: str
     crop_type: str
-    acres: int
+    acres: float
     preferred_start_date: str # Date string
     additional_info: Optional[str] = None
 

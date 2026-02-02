@@ -10,18 +10,18 @@ from app.blockchain.honey_chain import honey_blockchain
 router = APIRouter()
 
 @router.get("/code/{code}", response_model=schemas.TraceResponse)
-async def get_trace_by_code(code: str, request: Request, background_tasks: BackgroundTasks):
+def get_trace_by_code(code: str, request: Request, background_tasks: BackgroundTasks):
     """
     Public endpoint to trace honey by its batch code (e.g. from jar).
     Returns full journey: Farmer -> Apiary -> Hive -> Harvest -> Processing.
     """
     from app.db.clickhouse_db import track_traceability_scan
     
-    print(f"🔍 Trace Request for Code: {code}")
+    print(f"Trace Request for Code: {code}")
     result = traceability_service.get_trace_journey(code)
     
     if result:
-        print(f"✅ Found in Blockchain: {code}")
+        print(f"Found in Blockchain: {code}")
         background_tasks.add_task(track_traceability_scan, code)
         return result
         

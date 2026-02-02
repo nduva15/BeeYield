@@ -26,6 +26,84 @@ def get_crop_requirements(
     return pollination_service.get_crop_requirements(crop_name)
 
 
+# ========== POLLINATION APIARIES ==========
+
+@router.get("/apiaries", response_model=List[schemas.PollinationApiary])
+def get_pollination_apiaries(
+    current_user: dict = Depends(security.get_current_user)
+):
+    """
+    Get all apiaries available for pollination.
+    
+    Returns apiaries with hive counts and availability for pollination contracts.
+    """
+    user_id = current_user.get("sub")
+    return pollination_service.get_pollination_apiaries(user_id=user_id)
+
+
+@router.get("/apiaries/{apiary_id}", response_model=schemas.PollinationApiary)
+def get_pollination_apiary(
+    apiary_id: str,
+    current_user: dict = Depends(security.get_current_user)
+):
+    """Get a specific apiary with pollination-relevant data"""
+    user_id = current_user.get("sub")
+    apiary = pollination_service.get_pollination_apiary(apiary_id, user_id=user_id)
+    
+    if not apiary:
+        raise HTTPException(status_code=404, detail="Apiary not found")
+    
+    return apiary
+
+
+@router.post("/apiaries", response_model=schemas.PollinationApiary, status_code=201)
+def create_pollination_apiary(
+    apiary_data: schemas.PollinationApiaryCreate,
+    current_user: dict = Depends(security.get_current_user)
+):
+    """
+    Create a new apiary for pollination operations.
+    
+    This creates a new apiary and associates it with the authenticated user.
+    """
+    user_id = current_user.get("sub")
+    apiary = pollination_service.create_pollination_apiary(apiary_data, user_id)
+    
+    if not apiary:
+        raise HTTPException(status_code=500, detail="Failed to create apiary")
+    
+    return apiary
+
+
+@router.put("/apiaries/{apiary_id}", response_model=schemas.PollinationApiary)
+def update_pollination_apiary(
+    apiary_id: str,
+    apiary_data: schemas.PollinationApiaryUpdate,
+    current_user: dict = Depends(security.get_current_user)
+):
+    """Update an existing pollination apiary"""
+    apiary = pollination_service.update_pollination_apiary(apiary_id, apiary_data)
+    
+    if not apiary:
+        raise HTTPException(status_code=404, detail="Apiary not found or update failed")
+    
+    return apiary
+
+
+@router.delete("/apiaries/{apiary_id}")
+def delete_pollination_apiary(
+    apiary_id: str,
+    current_user: dict = Depends(security.get_current_user)
+):
+    """Delete (soft-delete) a pollination apiary"""
+    success = pollination_service.delete_pollination_apiary(apiary_id)
+    
+    if not success:
+        raise HTTPException(status_code=404, detail="Apiary not found or deletion failed")
+    
+    return {"message": "Apiary deleted successfully"}
+
+
 # ========== POLLINATION CALCULATOR ==========
 
 @router.post("/calculate", response_model=schemas.PollinationCalculatorResult)
@@ -200,6 +278,25 @@ def remove_hive_assignment(
         raise HTTPException(status_code=404, detail="Assignment not found or removal failed")
     
     return {"message": "Hive removed from contract successfully"}
+
+
+@router.put("/assignments/{assignment_id}", response_model=schemas.HiveAssignment)
+def update_hive_assignment(
+    assignment_id: str,
+    assignment_data: schemas.HiveAssignmentUpdate,
+    current_user: dict = Depends(security.get_current_user)
+):
+    """
+    Update a hive assignment.
+    
+    Allows updating placement location, coordinates, and notes.
+    """
+    assignment = pollination_service.update_hive_assignment(assignment_id, assignment_data)
+    
+    if not assignment:
+        raise HTTPException(status_code=404, detail="Assignment not found or update failed")
+    
+    return assignment
 
 
 # ========== HIVE SENSOR DATA ==========

@@ -11,7 +11,7 @@ import {
     Droplets, Scale, Volume2, Sun, CloudRain
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import heroImage from '@/assets/beeyield_hub_hero.png';
+import heroImage from '@/assets/beeyield_hub_sensor.jpg';
 import { toast } from 'sonner';
 
 interface BuyBeeYieldHubViewProps {
@@ -51,19 +51,22 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
 
     const family = [
         {
-            name: 'BeeYield Control',
-            description: 'The brain of your apiary. Manages multiple sensors and transmits data via Satellite or GSM.',
-            color: 'bg-yellow-50'
+            name: 'BeeHUB Queen (Lora)',
+            description: 'The primary gateway for your apiary. Manages data transmission from multiple sensors via LoRa/GSM/Satellite. Built-in battery and solar charging Support.',
+            color: 'bg-yellow-50',
+            image: heroImage
         },
         {
-            name: 'BeeYield Sensor',
-            description: 'Internal hive monitoring. Tracks temperature, humidity, weight, and acoustic signatures.',
-            color: 'bg-green-50'
+            name: 'BeeHUB Sense',
+            description: 'Internal hive monitoring node. Tracks temperature, humidity, and connects wirelessly to the BeeHUB Queen gateway.',
+            color: 'bg-green-50',
+            image: '/images/products/beehub_temp_humidity.png'
         },
         {
-            name: 'BeeYield GPS',
-            description: 'Anti-theft and location tracking. Stay updated on the movement of your hives.',
-            color: 'bg-yellow-50'
+            name: 'BeeHUB Tracker (GPS)',
+            description: 'Anti-theft tracking for your colonies. Integrated GPS and motion sensors to prevent theft and monitor migration.',
+            color: 'bg-yellow-50',
+            image: '/images/products/beehub_sim_card.png'
         }
     ];
 
@@ -203,20 +206,25 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {family.map((item, i) => (
-                        <Card key={i} className={cn("rounded-[2.5rem] border-none p-10 flex flex-col justify-between h-[300px]", item.color)}>
-                            <div className="space-y-4">
-                                <h3 className="text-2xl font-black text-[#1A1A1A] dark:text-white">{item.name}</h3>
-                                <p className="text-[#1A1A1A]/70 dark:text-gray-300 text-sm leading-relaxed">
-                                    {item.description}
-                                </p>
+                        <Card key={i} className={cn("rounded-[2.5rem] border-none p-0 overflow-hidden flex flex-col h-[450px] shadow-sm hover:shadow-md transition-shadow", item.color)}>
+                            <div className="h-48 bg-[#F4F8FB] flex items-center justify-center p-12 border-b border-primary/5">
+                                <img src={item.image} alt={item.name} className="max-h-full max-w-full object-contain transition-transform duration-700 group-hover:scale-110" />
                             </div>
-                            <Button
-                                variant="ghost"
-                                onClick={() => toast.success("Redirecting to product documentation...")}
-                                className="p-0 h-auto font-bold text-[#1B9157] hover:text-[#146c43] w-fit gap-2"
-                            >
-                                Discover more <ArrowRight className="w-4 h-4" />
-                            </Button>
+                            <div className="p-8 flex-1 flex flex-col justify-between">
+                                <div className="space-y-4">
+                                    <h3 className="text-2xl font-black text-[#1A1A1A] dark:text-white uppercase tracking-tighter">{item.name}</h3>
+                                    <p className="text-[#1A1A1A]/70 dark:text-gray-300 text-sm leading-relaxed">
+                                        {item.description}
+                                    </p>
+                                </div>
+                                <Button
+                                    variant="ghost"
+                                    onClick={() => toast.success("Redirecting to product documentation...")}
+                                    className="p-0 h-auto font-bold text-[#1B9157] hover:text-[#146c43] w-fit gap-2 uppercase tracking-widest text-[10px]"
+                                >
+                                    Discover more <ArrowRight className="w-4 h-4" />
+                                </Button>
+                            </div>
                         </Card>
                     ))}
                 </div>
@@ -295,10 +303,10 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
             {/* Parameters Table */}
             <div className="space-y-12 py-12">
                 <div className="text-center space-y-4 max-w-4xl mx-auto">
-                    <h2 className="text-3xl font-bold tracking-tight px-12">
-                        Table of measurement parameters supported by the BeeYield Hub Platform
+                    <h2 className="text-3xl font-bold tracking-tight px-12 uppercase">
+                        Measurement parameters supported by the BeeHUB Platform
                     </h2>
-                    <p className="text-[10px] font-bold text-[#F4D03F] uppercase tracking-widest">COMPLETE CAPABILITIES</p>
+                    <p className="text-[10px] font-bold text-[#F4D03F] uppercase tracking-widest">ADVANCED PRECISION SENSING</p>
                 </div>
 
                 <div className="bg-white dark:bg-[#09090b] rounded-[2.5rem] border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm">

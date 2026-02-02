@@ -74,15 +74,18 @@ const generateFallbackHives = (hiveCount: number): HiveData[] => {
         const row = Math.floor(i / 10);
         const col = i % 10;
 
-        const baseAcoustics = 220 + Math.random() * 30;
-        const baseTemp = 33.5 + Math.random() * 3;
-        const baseHumidity = 55 + Math.random() * 20;
-        const baseVPM = 25 + Math.random() * 25;
+        // Use deterministic seed based on hive number for "Perfect Sync"
+        const seed = (hiveNum * 13) % 100;
+
+        const baseAcoustics = 220 + (seed % 30);
+        const baseTemp = 33.5 + (seed % 30) / 10;
+        const baseHumidity = 55 + (seed % 20);
+        const baseVPM = 25 + (seed % 25);
 
         const trends: ('up' | 'down' | 'stable')[] = ['up', 'down', 'stable'];
-        const randomTrend = () => trends[Math.floor(Math.random() * 3)];
-        const randomTrendValue = (trend: 'up' | 'down' | 'stable') => {
-            const val = (Math.random() * 5 + 0.5).toFixed(1);
+        const getTrend = (s: number) => trends[s % 3];
+        const getTrendValue = (trend: 'up' | 'down' | 'stable', s: number) => {
+            const val = ((s % 50) / 10 + 0.5).toFixed(1);
             return trend === 'stable' ? 'Stable' : `${trend === 'up' ? '+' : '-'}${val}%`;
         };
 
@@ -94,30 +97,30 @@ const generateFallbackHives = (hiveCount: number): HiveData[] => {
             status = 'critical';
         }
 
-        const acousticsTrend = randomTrend();
-        const tempTrend = randomTrend();
-        const humidityTrend = randomTrend();
-        const vpmTrend = randomTrend();
+        const acousticsTrend = getTrend(seed);
+        const tempTrend = getTrend(seed + 1);
+        const humidityTrend = getTrend(seed + 2);
+        const vpmTrend = getTrend(seed + 3);
 
         hives.push({
             id: `H-${String(hiveNum).padStart(3, '0')}`,
             name: `Hive ${hiveNum}`,
             location: {
-                lat: baseLat + (row * 0.0005) + (Math.random() * 0.0002),
-                lng: baseLng + (col * 0.0008) + (Math.random() * 0.0002)
+                lat: baseLat + (row * 0.0005) + ((seed % 10) * 0.00002),
+                lng: baseLng + (col * 0.0008) + ((seed % 10) * 0.00002)
             },
-            x: 5 + (col * 9) + Math.random() * 3,
-            y: 10 + (row * 15) + Math.random() * 5,
+            x: 5 + (col * 9) + (seed % 5),
+            y: 10 + (row * 15) + (seed % 5),
             status,
             sensors: {
-                acoustics: { value: Math.round(baseAcoustics), trend: acousticsTrend, trendValue: randomTrendValue(acousticsTrend) },
-                temperature: { value: parseFloat(baseTemp.toFixed(1)), trend: tempTrend, trendValue: randomTrendValue(tempTrend) },
-                humidity: { value: Math.round(baseHumidity), trend: humidityTrend, trendValue: randomTrendValue(humidityTrend) },
-                flightActivity: { value: parseFloat(baseVPM.toFixed(1)), trend: vpmTrend, trendValue: randomTrendValue(vpmTrend) }
+                acoustics: { value: Math.round(baseAcoustics), trend: acousticsTrend, trendValue: getTrendValue(acousticsTrend, seed) },
+                temperature: { value: parseFloat(baseTemp.toFixed(1)), trend: tempTrend, trendValue: getTrendValue(tempTrend, seed + 5) },
+                humidity: { value: Math.round(baseHumidity), trend: humidityTrend, trendValue: getTrendValue(humidityTrend, seed + 10) },
+                flightActivity: { value: parseFloat(baseVPM.toFixed(1)), trend: vpmTrend, trendValue: getTrendValue(vpmTrend, seed + 15) }
             },
-            framesOfBees: Math.floor(6 + Math.random() * 6),
-            queenStatus: Math.random() > 0.1 ? 'present' : (Math.random() > 0.5 ? 'absent' : 'unknown'),
-            lastSync: `${Math.floor(Math.random() * 10) + 1}m ago`
+            framesOfBees: Math.floor(6 + (seed % 6)),
+            queenStatus: (seed % 10) > 1 ? 'present' : ((seed % 2) === 0 ? 'absent' : 'unknown'),
+            lastSync: `${(seed % 10) + 1}m ago`
         });
     }
 
@@ -343,10 +346,14 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
         ];
 
         const interval = setInterval(() => {
+            if (hives.length === 0) return;
+
             const now = new Date();
             const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const event = events[Math.floor(Math.random() * events.length)];
             const hive = hives[Math.floor(Math.random() * hives.length)];
+
+            if (!hive) return;
 
             setActivityLogs(prev => [
                 { id: Date.now(), time: timeStr, action: event.action, type: event.type as any, hive: hive.id },

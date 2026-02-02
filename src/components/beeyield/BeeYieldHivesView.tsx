@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Grid3X3, StickyNote, CheckSquare, Box, MapPin, Loader2, FileSpreadsheet, ChevronDown, Activity, Zap, X, Edit, Trash2 } from 'lucide-react';
+import { Plus, Grid3X3, StickyNote, CheckSquare, Box, MapPin, Loader2, FileSpreadsheet, ChevronDown, Activity, Zap, X, Edit, Trash2, ClipboardCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from "@/components/ui/badge";
 import { toast } from 'sonner';
@@ -42,6 +42,17 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
         status: 'ACTIVE',
         installation_date: new Date().toISOString().split('T')[0],
         has_sensors: false,
+    });
+
+    // Request Inspection Task
+    const [isRequestingInspection, setIsRequestingInspection] = useState(false);
+    const [inspectionTaskForm, setInspectionTaskForm] = useState({
+        title: 'Routine Inspection',
+        description: 'Standard hive health check',
+        due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Next week
+        priority: 'medium' as 'low' | 'medium' | 'high',
+        hive_id: '',
+        apiary_id: ''
     });
 
     useEffect(() => {
@@ -160,6 +171,46 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
         }
 
         setIsSaving(false);
+    };
+
+    const handleRequestInspection = (hive: Hive) => {
+        setInspectionTaskForm({
+            title: `Inspect Hive ${hive.hive_code}`,
+            description: 'Routine colony health and productivity check.',
+            due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            priority: 'medium',
+            hive_id: hive.id,
+            apiary_id: hive.apiary_id || ''
+        });
+        setIsRequestingInspection(true);
+    };
+
+    const submitInspectionRequest = async () => {
+        setIsSaving(true);
+        try {
+            const { error } = await beeyieldService.createTask({
+                title: inspectionTaskForm.title,
+                description: inspectionTaskForm.description,
+                status: 'pending',
+                priority: inspectionTaskForm.priority,
+                category: 'Inspection',
+                due_date: new Date(inspectionTaskForm.due_date).toISOString(),
+                hive_id: inspectionTaskForm.hive_id,
+                apiary_id: inspectionTaskForm.apiary_id
+            });
+
+            if (!error) {
+                toast.success('Inspection requested successfully', {
+                    description: 'Task has been created.'
+                });
+                setIsRequestingInspection(false);
+            }
+        } catch (e) {
+            console.error(e);
+            toast.error('Failed to request inspection');
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     // Delete hive
@@ -564,6 +615,15 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
+                                                onClick={() => handleRequestInspection(hive)}
+                                                className="text-orange-400 hover:text-orange-600 hover:bg-orange-50 rounded-xl h-8 w-8"
+                                                title="Request Inspection"
+                                            >
+                                                <ClipboardCheck className="w-4 h-4" />
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
                                                 onClick={() => handleEditHive(hive)}
                                                 className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-xl h-8 w-8"
                                             >
@@ -689,6 +749,76 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                     <Plus className="w-6 h-6" />
                 </Button>
             </div>
+
+            {/* Request Inspection Modal */}
+            {isRequestingInspection && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="bg-white dark:bg-[#1e1e1e] rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
+                        <div className="p-6 border-b border-gray-100 dark:border-white/5 flex justify-between items-center">
+                            <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <ClipboardCheck className="w-5 h-5 text-[#1B9157]" />
+                                Request Inspection
+                            </h2>
+                            <Button variant="ghost" size="icon" onClick={() => setIsRequestingInspection(false)}>
+                                <X className="w-4 h-4" />
+                            </Button>
+                        </div>
+                        <div className="p-6 space-y-4">
+                            <div className="space-y-2">
+                                <Label>Title</Label>
+                                <Input
+                                    value={inspectionTaskForm.title}
+                                    onChange={(e) => setInspectionTaskForm({ ...inspectionTaskForm, title: e.target.value })}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Description</Label>
+                                <Input
+                                    value={inspectionTaskForm.description}
+                                    onChange={(e) => setInspectionTaskForm({ ...inspectionTaskForm, description: e.target.value })}
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label>Due Date</Label>
+                                    <Input
+                                        type="date"
+                                        value={inspectionTaskForm.due_date}
+                                        onChange={(e) => setInspectionTaskForm({ ...inspectionTaskForm, due_date: e.target.value })}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Priority</Label>
+                                    <Select
+                                        value={inspectionTaskForm.priority}
+                                        onValueChange={(val: any) => setInspectionTaskForm({ ...inspectionTaskForm, priority: val })}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Priority" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="low">Low</SelectItem>
+                                            <SelectItem value="medium">Medium</SelectItem>
+                                            <SelectItem value="high">High</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="p-6 bg-gray-50 dark:bg-white/5 flex justify-end gap-3">
+                            <Button variant="ghost" onClick={() => setIsRequestingInspection(false)}>Cancel</Button>
+                            <Button
+                                onClick={submitInspectionRequest}
+                                disabled={isSaving}
+                                className="bg-[#1B9157] hover:bg-[#167d4a] text-white"
+                            >
+                                {isSaving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                                Request Inspection
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -1,5 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import { Buffer } from 'buffer';
+
+// Polyfill Buffer for browser environment
+if (typeof window !== 'undefined') {
+    globalThis.Buffer = Buffer;
+}
 import ScrollToTop from './components/ScrollToTop'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
@@ -48,6 +54,7 @@ import UpdatePassword from '@/pages/UpdatePassword'
 import Authentication from '@/pages/Authentication'
 import ProfessionalAuth from '@/pages/ProfessionalAuth'
 import NotFound from '@/pages/NotFound'
+import Receipt from '@/pages/Receipt'
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -108,6 +115,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                                                 <Route path="/login" element={<Authentication />} />
                                                 <Route path="/signup" element={<Authentication />} />
                                                 <Route path="/beeyield-login" element={<ProfessionalAuth />} />
+                                                <Route path="/receipt/:orderId" element={<Receipt />} />
                                                 <Route path="*" element={<NotFound />} />
                                             </Routes>
                                         </Layout>

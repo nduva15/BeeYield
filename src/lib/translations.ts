@@ -62,6 +62,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "system_normal": "System Normal",
         "server_status": "Server Status",
 
+        "nav_agro_intelligence": "Agro Intelligence",
         "agro_intel_desc": "Intelligent beekeeping insights.",
         "places_desc": "Manage your apiaries and locations.",
         "hives_desc": "Comprehensive hive management.",
@@ -198,6 +199,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "chats_label": "Chats",
         "start_conversation": "Start a conversation!",
         "neural_core_online": "NEURAL CORE ONLINE",
+        "neural_core_synchronized": "NEURAL CORE SYNCHRONIZED",
         "ai_hub_title": "BeeYield AI HUB",
         "ai_expert_assistant": "Expert AI/ML Engineering Assistant",
         "ai_proprietary_ml": "I use proprietary ML algorithms to analyze sensor data, detect anomalies, and predict disease risks with engineering precision.",
@@ -368,6 +370,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "system_normal": "Système Normal",
         "server_status": "État du Serveur",
 
+        "nav_agro_intelligence": "Intelligence Agro",
         "agro_intel_desc": "Informations apicoles intelligentes.",
         "places_desc": "Gérez vos ruchers et emplacements.",
         "hives_desc": "Gestion complète des ruches.",
@@ -447,6 +450,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "chats_label": "Conversations",
         "start_conversation": "Commencez une conversation !",
         "neural_core_online": "CŒUR NEURAL EN LIGNE",
+        "neural_core_synchronized": "CŒUR NEURAL SYNCHRONISÉ",
         "ai_hub_title": "BeeYield AI HUB",
         "ai_expert_assistant": "Assistant Expert Ingénierie IA/ML",
         "ai_proprietary_ml": "J'utilise des algorithmes ML propriétaires pour analyser les données des capteurs, détecter les anomalies et prédire les risques de maladies avec une précision technique.",
@@ -608,6 +612,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "server_status": "Estado del Servidor",
 
         "agro_intel_desc": "Información apícola inteligente.",
+        "nav_agro_intelligence": "Inteligencia Agro",
         "places_desc": "Administre sus colmenares y ubicaciones.",
         "hives_desc": "Gestión integral de colmenas.",
         "billing_desc": "Administre su suscripción y uso.",
@@ -793,6 +798,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "server_status": "Server Status",
 
         "agro_intel_desc": "Intelligente Imkerei-Einblicke.",
+        "nav_agro_intelligence": "Agrar-Intelligenz",
         "places_desc": "Verwalten Sie Ihre Bienenstände und Standorte.",
         "hives_desc": "Umfassendes Bienenstock-Management.",
         "billing_desc": "Verwalten Sie Ihr Abonnement und Ihre Nutzung.",
@@ -978,6 +984,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "server_status": "Hali ya Seva",
 
         "agro_intel_desc": "Maarifa ya ufugaji nyuki wenye akili.",
+        "nav_agro_intelligence": "Akili ya Kilimo",
         "places_desc": "Dhibiti apiari zako na maeneo.",
         "hives_desc": "Usimamizi kamili wa mizinga.",
         "billing_desc": "Dhibiti usajili wako na matumizi.",
@@ -1163,6 +1170,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "server_status": "服务器状态",
 
         "agro_intel_desc": "智能养蜂见解。",
+        "nav_agro_intelligence": "农业智能",
         "places_desc": "管理您的养蜂场和地点。",
         "hives_desc": "全面的蜂箱管理。",
         "billing_desc": "管理您的订阅和使用情况。",
@@ -1348,6 +1356,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "server_status": "Status Serwera",
 
         "agro_intel_desc": "Inteligentne spostrzeżenia pszczelarskie.",
+        "nav_agro_intelligence": "Agro Inteligencja",
         "places_desc": "Zarządzaj swoimi pasiekami i lokalizacjami.",
         "hives_desc": "Kompleksowe zarządzanie ulami.",
         "billing_desc": "Zarządzaj subskrypcją i użyciem.",

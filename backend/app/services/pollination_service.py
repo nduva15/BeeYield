@@ -10,13 +10,17 @@ from app.schemas.pollination import (
     PollinationContractUpdate,
     HiveAssignment,
     HiveAssignmentCreate,
+    HiveAssignmentUpdate,
     CropPollinationRequirements,
     PollinationAnalytics,
     PollinationCalculatorInput,
     PollinationCalculatorResult,
     HiveSensorData,
     PollinationActivityLog,
-    HiveStatus
+    HiveStatus,
+    PollinationApiary,
+    PollinationApiaryCreate,
+    PollinationApiaryUpdate
 )
 import math
 
@@ -307,6 +311,220 @@ class PollinationService:
             return True
         except Exception as e:
             print(f"Error removing hive assignment: {e}")
+            return False
+    
+    def update_hive_assignment(
+        self,
+        assignment_id: str,
+        assignment_data: HiveAssignmentUpdate
+    ) -> Optional[HiveAssignment]:
+        """Update an existing hive assignment"""
+        try:
+            data = assignment_data.model_dump(exclude_unset=True)
+            
+            # Handle coordinates if provided
+            if 'placement_coordinates' in data and data['placement_coordinates']:
+                coords = data.pop('placement_coordinates')
+                data['placement_lat'] = coords.get('lat')
+                data['placement_lng'] = coords.get('lng')
+            
+            data['updated_at'] = datetime.now().isoformat()
+            
+            response = self.supabase.table('hive_assignments')\
+                .update(data)\
+                .eq('id', assignment_id)\
+                .execute()
+            
+            if response.data:
+                return HiveAssignment(**response.data[0])
+            return None
+        except Exception as e:
+            print(f"Error updating hive assignment: {e}")
+            return None
+    
+    # ========== POLLINATION APIARIES ==========
+    
+    def get_pollination_apiaries(
+        self,
+        user_id: Optional[str] = None
+    ) -> List[PollinationApiary]:
+        """Get all apiaries available for pollination with hive availability"""
+        try:
+            query = self.supabase.table('apiaries').select('*')
+            
+            if user_id:
+                query = query.eq('user_id', user_id)
+            
+            query = query.order('created_at', desc=True)
+            response = query.execute()
+            
+            apiaries = []
+            for apiary in response.data:
+                # Get hive count for this apiary
+                hives_response = self.supabase.table('hives')\
+                    .select('id')\
+                    .eq('apiary_id', apiary['id'])\
+                    .execute()
+                total_hives = len(hives_response.data) if hives_response.data else 0
+                
+                # Get active assignments for hives in this apiary
+                assigned_hive_ids = set()
+                if hives_response.data:
+                    hive_ids = [h['id'] for h in hives_response.data]
+                    assignments = self.supabase.table('hive_assignments')\
+                        .select('hive_id')\
+                        .in_('hive_id', hive_ids)\
+                        .is_('removal_date', 'null')\
+                        .execute()
+                    assigned_hive_ids = {a['hive_id'] for a in (assignments.data or [])}
+                
+                available_hives = total_hives - len(assigned_hive_ids)
+                
+                apiaries.append(PollinationApiary(
+                    id=apiary['id'],
+                    user_id=apiary.get('user_id'),
+                    name=apiary.get('name', 'Unnamed Apiary'),
+                    location=apiary.get('location_name') or apiary.get('county') or 'Unknown',
+                    latitude=apiary.get('latitude'),
+                    longitude=apiary.get('longitude'),
+                    total_hives=total_hives,
+                    available_hives=available_hives,
+                    notes=apiary.get('notes'),
+                    created_at=apiary.get('created_at', datetime.now().isoformat()),
+                    updated_at=apiary.get('updated_at')
+                ))
+            
+            return apiaries
+        except Exception as e:
+            print(f"Error fetching pollination apiaries: {e}")
+            return []
+    
+    def get_pollination_apiary(
+        self,
+        apiary_id: str,
+        user_id: Optional[str] = None
+    ) -> Optional[PollinationApiary]:
+        """Get a single apiary with pollination data"""
+        try:
+            query = self.supabase.table('apiaries').select('*').eq('id', apiary_id)
+            
+            if user_id:
+                query = query.eq('user_id', user_id)
+            
+            response = query.execute()
+            
+            if not response.data:
+                return None
+            
+            apiary = response.data[0]
+            
+            # Get hive count
+            hives_response = self.supabase.table('hives')\
+                .select('id')\
+                .eq('apiary_id', apiary_id)\
+                .execute()
+            total_hives = len(hives_response.data) if hives_response.data else 0
+            
+            # Get available hives
+            assigned_hive_ids = set()
+            if hives_response.data:
+                hive_ids = [h['id'] for h in hives_response.data]
+                assignments = self.supabase.table('hive_assignments')\
+                    .select('hive_id')\
+                    .in_('hive_id', hive_ids)\
+                    .is_('removal_date', 'null')\
+                    .execute()
+                assigned_hive_ids = {a['hive_id'] for a in (assignments.data or [])}
+            
+            available_hives = total_hives - len(assigned_hive_ids)
+            
+            return PollinationApiary(
+                id=apiary['id'],
+                user_id=apiary.get('user_id'),
+                name=apiary.get('name', 'Unnamed Apiary'),
+                location=apiary.get('location_name') or apiary.get('county') or 'Unknown',
+                latitude=apiary.get('latitude'),
+                longitude=apiary.get('longitude'),
+                total_hives=total_hives,
+                available_hives=available_hives,
+                notes=apiary.get('notes'),
+                created_at=apiary.get('created_at', datetime.now().isoformat()),
+                updated_at=apiary.get('updated_at')
+            )
+        except Exception as e:
+            print(f"Error fetching pollination apiary: {e}")
+            return None
+    
+    def create_pollination_apiary(
+        self,
+        apiary_data: PollinationApiaryCreate,
+        user_id: str
+    ) -> Optional[PollinationApiary]:
+        """Create a new apiary for pollination"""
+        try:
+            # Generate apiary code
+            import uuid
+            apiary_code = f"APY-{str(uuid.uuid4())[:8].upper()}"
+            
+            data = {
+                'name': apiary_data.name,
+                'location_name': apiary_data.location,
+                'latitude': apiary_data.latitude,
+                'longitude': apiary_data.longitude,
+                'notes': apiary_data.notes,
+                'apiary_code': apiary_code,
+                'user_id': user_id,
+                'is_active': True,
+                'created_at': datetime.now().isoformat(),
+                'updated_at': datetime.now().isoformat()
+            }
+            
+            response = self.supabase.table('apiaries').insert(data).execute()
+            
+            if response.data:
+                return self.get_pollination_apiary(response.data[0]['id'])
+            return None
+        except Exception as e:
+            print(f"Error creating pollination apiary: {e}")
+            return None
+    
+    def update_pollination_apiary(
+        self,
+        apiary_id: str,
+        apiary_data: PollinationApiaryUpdate
+    ) -> Optional[PollinationApiary]:
+        """Update an existing apiary"""
+        try:
+            data = apiary_data.model_dump(exclude_unset=True)
+            
+            # Map location to location_name
+            if 'location' in data:
+                data['location_name'] = data.pop('location')
+            
+            data['updated_at'] = datetime.now().isoformat()
+            
+            response = self.supabase.table('apiaries')\
+                .update(data)\
+                .eq('id', apiary_id)\
+                .execute()
+            
+            if response.data:
+                return self.get_pollination_apiary(apiary_id)
+            return None
+        except Exception as e:
+            print(f"Error updating pollination apiary: {e}")
+            return None
+    
+    def delete_pollination_apiary(self, apiary_id: str) -> bool:
+        """Soft delete a pollination apiary by setting is_active to False"""
+        try:
+            response = self.supabase.table('apiaries')\
+                .update({'is_active': False, 'updated_at': datetime.now().isoformat()})\
+                .eq('id', apiary_id)\
+                .execute()
+            return bool(response.data)
+        except Exception as e:
+            print(f"Error deleting pollination apiary: {e}")
             return False
     
     # ========== HIVE SENSOR DATA ==========
