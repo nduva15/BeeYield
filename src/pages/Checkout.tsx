@@ -16,7 +16,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
-import { initializeCheckout, CheckoutOrder, downloadInvoice } from '@/services/shopService';
+import { StripeCardForm } from '@/components/payments/StripeCardForm';
+import { initializeCheckout, CheckoutOrder, downloadInvoice, createStripePaymentIntent } from '@/services/shopService';
 import { adminService } from '@/services/adminService';
 import {
     ShoppingCart, Truck, MapPin, Tag, Minus, Plus, X, ArrowRight,
@@ -75,6 +76,10 @@ const Checkout = () => {
         cardCvc: '',
         cardHolder: '',
     });
+
+    // Stripe state
+    const [stripeCardReady, setStripeCardReady] = useState(false);
+    const [stripePaymentMethodId, setStripePaymentMethodId] = useState<string | null>(null);
 
     const storeCredits = 0; // In real app, this would be fetched from API if user is logged in
 
@@ -165,8 +170,8 @@ const Checkout = () => {
             toast.error('Please enter your M-Pesa number');
             return;
         }
-        if (paymentMethod === 'card' && (!paymentDetails.cardNumber || !paymentDetails.cardExpiry)) {
-            toast.error('Please enter your card details');
+        if (paymentMethod === 'card' && !stripeCardReady) {
+            toast.error('Please verify your card using the secure form');
             return;
         }
         setCurrentStep('delivery');
@@ -809,41 +814,36 @@ const Checkout = () => {
                                         </div>
 
                                         {paymentMethod === 'card' && (
-                                            <div className="pl-20 pr-4 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                                                <div className="space-y-2">
-                                                    <Label className="text-sm font-semibold">Cardholder Name</Label>
-                                                    <Input
-                                                        value={paymentDetails.cardHolder}
-                                                        onChange={e => setPaymentDetails({ ...paymentDetails, cardHolder: e.target.value })}
-                                                        placeholder="Name on card"
+                                            <div className="pl-6 pr-4 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                                                <div className="p-4 bg-muted/30 rounded-xl border border-border">
+                                                    <StripeCardForm
+                                                        mode="save"
+                                                        onSuccess={(pm) => {
+                                                            setStripePaymentMethodId(pm.id);
+                                                            setStripeCardReady(true);
+                                                            setPaymentDetails({
+                                                                ...paymentDetails,
+                                                                cardHolder: '',
+                                                                cardNumber: `**** **** **** ${pm.last4}`,
+                                                                cardExpiry: `${pm.exp_month}/${pm.exp_year}`,
+                                                            });
+                                                            toast.success('Card verified successfully!');
+                                                        }}
+                                                        onError={(error) => {
+                                                            setStripeCardReady(false);
+                                                            toast.error(error);
+                                                        }}
+                                                        buttonText="Verify Card"
                                                     />
                                                 </div>
-                                                <div className="space-y-2">
-                                                    <Label className="text-sm font-semibold">Card Number</Label>
-                                                    <Input
-                                                        value={paymentDetails.cardNumber}
-                                                        onChange={e => setPaymentDetails({ ...paymentDetails, cardNumber: e.target.value })}
-                                                        placeholder="XXXX XXXX XXXX XXXX"
-                                                    />
-                                                </div>
-                                                <div className="grid grid-cols-2 gap-4">
-                                                    <div className="space-y-2">
-                                                        <Label className="text-sm font-semibold">Expiry Date</Label>
-                                                        <Input
-                                                            value={paymentDetails.cardExpiry}
-                                                            onChange={e => setPaymentDetails({ ...paymentDetails, cardExpiry: e.target.value })}
-                                                            placeholder="MM/YY"
-                                                        />
+                                                {stripeCardReady && (
+                                                    <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                                                        <CheckCircle2 className="w-5 h-5 text-green-600" />
+                                                        <p className="text-sm text-green-700 dark:text-green-400 font-medium">
+                                                            Card ending in {paymentDetails.cardNumber.slice(-4)} verified
+                                                        </p>
                                                     </div>
-                                                    <div className="space-y-2">
-                                                        <Label className="text-sm font-semibold">CVC</Label>
-                                                        <Input
-                                                            value={paymentDetails.cardCvc}
-                                                            onChange={e => setPaymentDetails({ ...paymentDetails, cardCvc: e.target.value })}
-                                                            placeholder="123"
-                                                        />
-                                                    </div>
-                                                </div>
+                                                )}
                                             </div>
                                         )}
                                     </RadioGroup>

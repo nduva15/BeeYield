@@ -200,5 +200,62 @@ export const downloadInvoice = async (orderId: string, orderNumber: string) => {
     }
 };
 
+// --- STRIPE PAYMENT SERVICES ---
+
+export interface StripePaymentIntent {
+    client_secret: string;
+    payment_intent_id: string;
+}
+
+export interface StripeSetupIntent {
+    client_secret: string;
+    setup_intent_id: string;
+}
+
+// Create a PaymentIntent for checkout
+export const createStripePaymentIntent = async (amount: number, currency: string = 'kes'): Promise<StripePaymentIntent> => {
+    const headers = await getAuthHeaders();
+    return await apiPost<StripePaymentIntent>('/payments/stripe/create-payment-intent', {
+        amount,
+        currency,
+    }, { headers });
+};
+
+// Create a SetupIntent for saving card without immediate payment
+export const createStripeSetupIntent = async (): Promise<StripeSetupIntent> => {
+    const headers = await getAuthHeaders();
+    return await apiPost<StripeSetupIntent>('/payments/stripe/create-setup-intent', {}, { headers });
+};
+
+// Save a Stripe PaymentMethod to user's account
+export const saveStripePaymentMethod = async (paymentMethodId: string, cardDetails: {
+    last4: string;
+    brand: string;
+    exp_month: number;
+    exp_year: number;
+    card_holder_name?: string;
+}): Promise<unknown> => {
+    const headers = await getAuthHeaders();
+    return await apiPost<unknown>('/shop/payment-methods', {
+        type: 'card',
+        stripe_payment_method_id: paymentMethodId,
+        provider: cardDetails.brand.charAt(0).toUpperCase() + cardDetails.brand.slice(1),
+        last4: cardDetails.last4,
+        expiry_month: cardDetails.exp_month,
+        expiry_year: cardDetails.exp_year,
+        card_holder_name: cardDetails.card_holder_name || '',
+        is_default: true,
+    }, { headers });
+};
+
+// Confirm payment was successful
+export const confirmStripePayment = async (paymentIntentId: string, orderId: string): Promise<unknown> => {
+    const headers = await getAuthHeaders();
+    return await apiPost<unknown>('/payments/stripe/confirm-payment', {
+        payment_intent_id: paymentIntentId,
+        order_id: orderId,
+    }, { headers });
+};
+
 
 

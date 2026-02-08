@@ -7,7 +7,7 @@ from app.api.api_v1.endpoints import (
     forms, shop, blog, careers, media, 
     services, jobs, analytics, notes, admin, iot, ai,
     admin_extended, meters, beeyield, pollination, inspections,
-    ai_assistant, settings
+    ai_assistant, settings, payments
 )
 
 
@@ -41,6 +41,9 @@ api_router.include_router(iot.router, prefix="/iot", tags=["IoT"])
 api_router.include_router(company.router, prefix="/company", tags=["Company"])
 api_router.include_router(traceability.router, prefix="/traceability", tags=["Traceability"])
 api_router.include_router(shop.router, prefix="/shop", tags=["Shop"])
+
+# Payments (Stripe)
+api_router.include_router(payments.router, prefix="/payments/stripe", tags=["Payments"])
 
 # Services endpoints
 api_router.include_router(services.router, prefix="/services", tags=["Services"])
