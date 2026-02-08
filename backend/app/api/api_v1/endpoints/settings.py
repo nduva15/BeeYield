@@ -8,11 +8,14 @@ from app.schemas.user_settings import (
     FullSettingsResponse, 
     ProfileSchema, 
     UserPreferencesSchema, 
-    AlertThresholdResponse,
-    HiveAlertSettingsView,
     ThresholdSchema,
     AlertThresholdCreate,
-    UserPreferencesUpdate
+    UserPreferencesUpdate,
+    NotificationUpdate,
+    UserNotificationSettingsSchema,
+    IoTSettingsUpdate,
+    GlobalIoTSettingsSchema,
+    HiveAlertSettingsView
 )
 
 router = APIRouter()
@@ -83,7 +86,7 @@ def get_full_settings(user_id: str = Depends(get_user_id)):
     }
 
 # 2. Get Hive Threshold List (The Table View)
-@router.get("/hives", response_model=List[HiveAlertSettingsView])
+@router.get("/hives", response_model=List["HiveAlertSettingsView"])
 def get_hive_settings(user_id: str = Depends(get_user_id)):
     """
     Get list of hives with their effective thresholds (merged global + specific).
@@ -222,3 +225,78 @@ def update_preferences(
         raise HTTPException(status_code=500, detail="Failed to update preferences")
         
     return {"message": "Preferences updated", "data": res.get("data")}
+
+# --- PRD: New Settings Endpoints ---
+
+@router.patch("/notifications", response_model=dict)
+def update_notifications(
+    data: NotificationUpdate,
+    user_id: str = Depends(get_user_id)
+):
+    """Partial update for user notification settings (PRD)"""
+    payload = data.dict(exclude_unset=True)
+    if not payload:
+        raise HTTPException(status_code=400, detail="No data provided")
+        
+    res = db_update("user_notification_settings", payload, {"user_id": user_id})
+    if not res.get("success"):
+        # If record doesn't exist, try upsert
+        payload["user_id"] = user_id
+        res = db_upsert("user_notification_settings", payload)
+        
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=f"Failed to update notification settings: {res.get('error')}")
+        
+    return {"status": "updated", "data": res.get("data")}
+
+@router.patch("/iot", response_model=dict)
+def update_iot_thresholds(
+    data: IoTSettingsUpdate,
+    user_id: str = Depends(get_user_id)
+):
+    """Partial update for global IoT settings (PRD)"""
+    payload = data.dict(exclude_unset=True)
+    if not payload:
+        raise HTTPException(status_code=400, detail="No data provided")
+        
+    res = db_update("global_iot_settings", payload, {"user_id": user_id})
+    if not res.get("success"):
+        # If record doesn't exist, try upsert
+        payload["user_id"] = user_id
+        res = db_upsert("global_iot_settings", payload)
+        
+    if not res.get("success"):
+        raise HTTPException(status_code=500, detail=f"Failed to update IoT thresholds: {res.get('error')}")
+        
+    return {"status": "thresholds_updated", "data": res.get("data")}
+
+@router.get("/notifications", response_model=UserNotificationSettingsSchema)
+def get_notifications(user_id: str = Depends(get_user_id)):
+    """Get user notification settings"""
+    settings = db_select("user_notification_settings", filters={"user_id": user_id})
+    if not settings:
+        return {
+            "user_id": user_id,
+            "email_alerts_enabled": True,
+            "sms_alerts_enabled": False,
+            "push_notifications_enabled": True,
+            "notify_on_swarm": True,
+            "notify_on_low_battery": True,
+            "notify_on_theft": True
+        }
+    return settings[0]
+
+@router.get("/iot", response_model=GlobalIoTSettingsSchema)
+def get_iot_settings(user_id: str = Depends(get_user_id)):
+    """Get global IoT settings"""
+    settings = db_select("global_iot_settings", filters={"user_id": user_id})
+    if not settings:
+        return {
+            "user_id": user_id,
+            "temp_min_threshold": 15.0,
+            "temp_max_threshold": 38.0,
+            "weight_drop_alert_kg": 2.0,
+            "humidity_min_threshold": 40,
+            "humidity_max_threshold": 80
+        }
+    return settings[0]

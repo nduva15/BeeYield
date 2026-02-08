@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { apiGet, apiPost, apiPut, apiDelete } from './api';
+import { apiGet, apiPost, apiPut, apiDelete, apiPatch } from './api';
 import { toast } from 'sonner';
 
 // Memory cache for auth session to avoid redundant calls
@@ -73,6 +73,7 @@ export interface IoTDevice {
     last_ping: string;
     location_name: string;
     hive_id?: string;
+    linked_apiary_id?: string;
 }
 
 export interface SensorReading {
@@ -168,6 +169,7 @@ export interface ApiaryCreateInput {
     size_acres?: number;
     notes?: string;
     farmer_id?: string;
+    sun_exposure?: string;
 }
 
 // ========== HIVE TYPES ==========
@@ -207,6 +209,8 @@ export interface HiveCreateInput {
     installation_date?: string;
     has_sensors?: boolean;
     notes?: string;
+    queen_hatched?: string;
+    strength?: number;
 }
 
 // ========== HARVEST TYPES (Core Traceability Data) ==========
@@ -377,6 +381,25 @@ export interface UserSettingsUpdate {
     temp_threshold_high?: number;
     temp_threshold_low?: number;
     weight_drop_threshold?: number;
+}
+
+export interface UserNotificationSettings {
+    user_id: string;
+    email_alerts_enabled: boolean;
+    sms_alerts_enabled: boolean;
+    push_notifications_enabled: boolean;
+    notify_on_swarm: boolean;
+    notify_on_low_battery: boolean;
+    notify_on_theft: boolean;
+}
+
+export interface IoTSettings {
+    user_id: string;
+    temp_min_threshold: number;
+    temp_max_threshold: number;
+    weight_drop_alert_kg: number;
+    humidity_min_threshold: number;
+    humidity_max_threshold: number;
 }
 
 export interface NotificationConfigUpdate {
@@ -809,6 +832,48 @@ export const beeyieldService = {
         }
     },
 
+    // ========== PRD: SETTINGS & NOTIFICATIONS ==========
+
+    async getNotificationSettings(): Promise<UserNotificationSettings> {
+        try {
+            const headers = await getAuthHeaders();
+            return await apiGet<UserNotificationSettings>('/settings/notifications', {}, { headers });
+        } catch (error) {
+            console.error('Error fetching notification settings:', error);
+            throw error;
+        }
+    },
+
+    async updateNotificationSettings(payload: Partial<UserNotificationSettings>): Promise<any> {
+        try {
+            const headers = await getAuthHeaders();
+            return await apiPatch<any>('/settings/notifications', payload, { headers });
+        } catch (error) {
+            console.error('Error updating notification settings:', error);
+            throw error;
+        }
+    },
+
+    async getIoTSettings(): Promise<IoTSettings> {
+        try {
+            const headers = await getAuthHeaders();
+            return await apiGet<IoTSettings>('/settings/iot', {}, { headers });
+        } catch (error) {
+            console.error('Error fetching IoT settings:', error);
+            throw error;
+        }
+    },
+
+    async updateIoTSettings(payload: Partial<IoTSettings>): Promise<any> {
+        try {
+            const headers = await getAuthHeaders();
+            return await apiPatch<any>('/settings/iot', payload, { headers });
+        } catch (error) {
+            console.error('Error updating IoT settings:', error);
+            throw error;
+        }
+    },
+
     // ========== TASK CRUD OPERATIONS ==========
 
     // Get all tasks
@@ -1187,6 +1252,45 @@ export const beeyieldService = {
         } catch (error) {
             console.error('Error adding comment:', error);
             return { data: null, error };
+        }
+    },
+
+    // ========== BLUETOOTH OPERATIONS ==========
+
+    // Get paired bluetooth devices
+    async getBluetoothDevices(): Promise<any[]> {
+        try {
+            const headers = await getAuthHeaders();
+            return await apiGet<any[]>('/bluetooth/devices', {}, { headers });
+        } catch (error) {
+            console.error('Error fetching bluetooth devices:', error);
+            return [];
+        }
+    },
+
+    // Register/update bluetooth device
+    async registerBluetoothDevice(device: { mac_address: string; name: string; device_type: string; assigned_hive_id?: string }): Promise<any> {
+        try {
+            const headers = await getAuthHeaders();
+            const result = await apiPost<any>('/bluetooth/devices', device, { headers });
+            toast.success(`Device ${device.name} registered`);
+            return result;
+        } catch (error) {
+            console.error('Error registering bluetooth device:', error);
+            toast.error('Failed to register device');
+            return null;
+        }
+    },
+
+    // Upload sensor readings via bluetooth
+    async uploadBluetoothReadings(readings: any[]): Promise<boolean> {
+        try {
+            const headers = await getAuthHeaders();
+            await apiPost<any>('/bluetooth/sync', { readings }, { headers });
+            return true;
+        } catch (error) {
+            console.error('Error uploading bluetooth readings:', error);
+            return false;
         }
     },
 };

@@ -112,6 +112,19 @@ export async function apiPut<T>(
     });
 }
 
+// PATCH request helper
+export async function apiPatch<T>(
+    endpoint: string,
+    data: unknown,
+    options?: RequestInit
+): Promise<T> {
+    return apiRequest<T>(endpoint, {
+        method: "PATCH",
+        body: JSON.stringify(data),
+        ...options
+    });
+}
+
 // DELETE request helper
 export async function apiDelete<T>(
     endpoint: string,

@@ -487,7 +487,7 @@ const FeaturesSection = () => {
     {
       icon: Droplets,
       title: "IoT Health Monitoring",
-      description: "Our hives use AI and acoustic sensors to detect disease and stress before they impact the honey.",
+      description: "Our hives use analysis and acoustic sensors to detect disease and stress before they impact the honey.",
     },
   ];
 
@@ -596,7 +596,7 @@ const FAQSection = () => {
     },
     {
       question: "How does BeeYield protect bees from diseases?",
-      answer: "We use IoT-enabled sensors and AI-powered acoustic monitoring to listen to the hive. Our technology can detect the 'signature sounds' of stress or specific diseases (like Varroa mites or Foulbrood) up to 48 hours before they become critical, allowing for non-invasive, early intervention.",
+      answer: "We use IoT-enabled sensors and advanced acoustic monitoring to listen to the hive. Our technology can detect the 'signature sounds' of stress or specific diseases (like Varroa mites or Foulbrood) up to 48 hours before they become critical, allowing for non-invasive, early intervention.",
     },
     {
       question: "Why does protecting bees result in better honey?",

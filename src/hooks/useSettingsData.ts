@@ -7,6 +7,8 @@ export const settingsKeys = {
     all: ['settings'] as const,
     full: ['settings-full'] as const,
     hives: ['settings-hives'] as const,
+    prdNotifications: ['settings-prd-notifications'] as const,
+    prdIoT: ['settings-prd-iot'] as const,
 };
 
 // Use the new /full endpoint by default
@@ -123,5 +125,43 @@ export function useUpdateHiveThresholds() {
             queryClient.invalidateQueries({ queryKey: settingsKeys.hives });
             queryClient.invalidateQueries({ queryKey: ['hives'] });
         },
+    });
+}
+
+// ========== PRD: NEW SETTINGS HOOKS ==========
+
+export function useNotificationSettings() {
+    return useQuery({
+        queryKey: settingsKeys.prdNotifications,
+        queryFn: () => beeyieldService.getNotificationSettings(),
+    });
+}
+
+export function useUpdateNotificationSettings() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (payload: any) => beeyieldService.updateNotificationSettings(payload),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: settingsKeys.prdNotifications });
+            toast.success("Notification settings updated");
+        }
+    });
+}
+
+export function useIoTSettings() {
+    return useQuery({
+        queryKey: settingsKeys.prdIoT,
+        queryFn: () => beeyieldService.getIoTSettings(),
+    });
+}
+
+export function useUpdateIoTSettings() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (payload: any) => beeyieldService.updateIoTSettings(payload),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: settingsKeys.prdIoT });
+            toast.success("IoT thresholds updated");
+        }
     });
 }

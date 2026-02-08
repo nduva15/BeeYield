@@ -40,7 +40,7 @@ const Receipt = () => {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-[#F8FAFC]">
                 <Loader2 className="w-12 h-12 animate-spin text-primary mb-4" />
-                <p className="text-slate-500 font-medium animate-pulse">Generating your premium receipt...</p>
+                <p className="text-slate-500 font-medium animate-pulse">Preparing your receipt...</p>
             </div>
         );
     }
@@ -112,7 +112,7 @@ const Receipt = () => {
                                 <img src={logo} alt="BeeYield" className="h-16 w-auto" />
                                 <div>
                                     <h1 className="text-2xl font-black text-slate-900 tracking-tight">BeeYield Limited</h1>
-                                    <p className="text-sm font-semibold text-primary/80 italic">The Future of Sustainable Apiculture</p>
+                                    <p className="text-sm font-semibold text-primary/80 italic">Sustainable Beekeeping</p>
                                 </div>
                             </div>
 
@@ -186,7 +186,7 @@ const Receipt = () => {
                                                     <div className="space-y-1">
                                                         <h4 className="font-black text-slate-900 text-lg leading-tight uppercase tracking-tight">{item.product_name}</h4>
                                                         <p className="text-sm font-bold text-primary italic">{item.variant_size || 'Standard Jar'}</p>
-                                                        <p className="text-xs text-slate-400 max-w-xs line-clamp-1">Authentic precision apiculture product from Makueni.</p>
+                                                        <p className="text-xs text-slate-400 max-w-xs line-clamp-1">Natural honey product from Makueni.</p>
                                                     </div>
                                                 </div>
                                             </td>
@@ -203,8 +203,7 @@ const Receipt = () => {
                         <div className="mt-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-10">
                             {/* Notes / Footer Text */}
                             <div className="max-w-md bg-slate-50 rounded-[1.5rem] p-6 border border-slate-100 italic text-slate-500 text-sm leading-relaxed">
-                                <p className="mb-2 font-bold text-slate-700 not-italic">Important Note:</p>
-                                This receipt confirms your order for premium BeeYield products. 50% of our profits directly support smallholder farmers in Makueni. Thank you for being part of the sustainable honey revolution.
+                                This receipt confirms your order for BeeYield products. 50% of our profits directly support smallholder farmers in Makueni. Thank you for being part of our sustainable honey project.
                             </div>
 
                             {/* Calculation Table */}
@@ -247,11 +246,11 @@ const Receipt = () => {
                                 </div>
                                 <div className="flex-1 text-center md:text-left">
                                     <h3 className="text-xl font-black mb-2 flex items-center justify-center md:justify-start gap-2">
-                                        HoneyChain™ Authenticity Seal <ShieldCheck className="w-5 h-5 text-primary" />
+                                        HoneyChain™ Verification <ShieldCheck className="w-5 h-5 text-primary" />
                                     </h3>
                                     <p className="text-slate-400 text-sm leading-relaxed max-w-xl">
-                                        This honey is blockchain-verified. Scan the QR code or use the Transaction ID to trace your jar's journey from our hives in Kibwezi to your doorstep.
-                                        <span className="text-primary font-bold block mt-1 hover:underline cursor-pointer">View On-Chain Journey →</span>
+                                        This honey is verified through our system. Scan the QR code or use the Transaction ID to trace your jar's journey from our hives in Kibwezi to your doorstep.
+                                        <span className="text-primary font-bold block mt-1 hover:underline cursor-pointer">View Verified Journey →</span>
                                     </p>
                                 </div>
                             </div>

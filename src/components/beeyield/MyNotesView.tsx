@@ -379,7 +379,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                         <div className="flex flex-col items-start">
                             <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest underline decoration-[#F4D03F] decoration-2 underline-offset-4">MY PLACES</span>
                             <span className="text-[14px] font-black text-slate-700 dark:text-slate-200 uppercase truncate">
-                                {selectedPlace ? selectedPlace.name : "Kibwezi Main Apiary"}
+                                {selectedPlace ? selectedPlace.name : "All Places"}
                             </span>
                         </div>
                         <ChevronDown className={cn("w-4 h-4 ml-auto text-slate-300 transition-transform", isPlacesOpen && "rotate-180")} />
@@ -424,7 +424,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                         <div className="flex flex-col items-start">
                             <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">HIVE</span>
                             <span className="text-[14px] font-black text-slate-700 dark:text-slate-200 uppercase truncate">
-                                {selectedHive ? selectedHive.hive_code : "184 Hives"}
+                                {selectedHive ? selectedHive.hive_code : "All Hives"}
                             </span>
                         </div>
                         <ChevronDown className={cn("w-4 h-4 ml-auto text-slate-300 transition-transform", isHivesOpen && "rotate-180")} />
@@ -465,8 +465,8 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                         <div className="w-24 h-24 bg-white dark:bg-white/5 rounded-[2rem] shadow-sm flex items-center justify-center mb-8">
                             <StickyNote className="w-10 h-10 text-slate-200" />
                         </div>
-                        <h3 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter mb-2">Archive Empty</h3>
-                        <p className="text-slate-400 font-bold text-sm max-w-xs uppercase tracking-widest">No observations recorded for this territory selection.</p>
+                        <h3 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter mb-2">No Notes Found</h3>
+                        <p className="text-slate-400 font-bold text-sm max-w-xs uppercase tracking-widest">No observations recorded for this selection.</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -515,7 +515,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                             <div className="flex items-center gap-2 px-3 py-1 bg-slate-50 dark:bg-white/5 rounded-full">
                                                 <Box className="w-3 h-3 text-[#F4D03F]" />
                                                 <span className="text-[9px] font-black uppercase text-slate-600 dark:text-slate-300 tracking-widest">
-                                                    {hives.find(h => h.id === note.hive_id)?.hive_code || "Node"}
+                                                    {hives.find(h => h.id === note.hive_id)?.hive_code || "Unit"}
                                                 </span>
                                             </div>
                                         )}

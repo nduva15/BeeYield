@@ -60,7 +60,7 @@ const PrecisionPollination = () => {
             <div>
               <h2 className="text-4xl font-bold mb-6 text-foreground">What is Precision Pollination?</h2>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Precision Pollination is a groundbreaking, innovative approach to the critical process of managed pollination in commercial crop growing. Growers whose crops rely on commercial beekeepers for their annual pollination can now, for the first time, get visibility and accountability for their pollination experience.
+                Precision Pollination is an advanced approach to managed pollination in commercial crop growing. Growers whose crops rely on commercial beekeepers for their annual pollination can now get clear tracking and reports for their pollination experience.
               </p>
             </div>
 
@@ -149,10 +149,10 @@ const PrecisionPollination = () => {
               </Badge>
               <h2 className="text-4xl font-bold mb-6 text-foreground">Easy-to-Understand Dashboard</h2>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                All the key metrics for each orchard, from the day the bees are delivered until the day the beekeepers remove them, are displayed on the dashboard.
+                All metrics for each orchard, from the day the bees are delivered until the day they are removed, are recorded on the dashboard.
               </p>
               <p className="text-muted-foreground leading-relaxed mb-6">
-                These include the current frames-per-acre count of the orchards, along with bee activity, flight time, location and temperature for drop points, and more — giving growers complete confidence that they are getting the pollination they have paid for.
+                These include the frames-per-acre count, bee activity, flight time, and temperature for drop points — giving growers confidence in the pollination service.
               </p>
               <ul className="space-y-3">
                 {["Frames-per-acre count", "Bee activity & flight time", "GPS Location & Temperature"].map((item, i) => (
@@ -196,7 +196,7 @@ const PrecisionPollination = () => {
           <h2 className="text-4xl font-bold mb-2 text-foreground">Do You Know What's in the Box?</h2>
           <p className="text-4xl font-bold text-primary mb-8">We do.</p>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            When you pollinate with BeeYield you get complete visibility into the hives deployed in your orchards. We are accountable to you to bring the precise number of bees needed for optimal pollination outcomes. We replace any non-performing hives with stronger, more effective colonies.
+            When you work with BeeYield, you get reports on the hives in your orchards. We track the number of bees to ensure effective pollination. We can replace non-performing hives with stronger colonies when needed.
           </p>
         </div>
       </section>
@@ -297,7 +297,7 @@ const PrecisionPollination = () => {
                 <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
                   <Cpu className="h-5 w-5 text-primary" />
                 </div>
-                <span className="font-bold text-lg">Intelligent Hives</span>
+                <span className="font-bold text-lg">Technical Hives</span>
               </div>
             </div>
           </div>

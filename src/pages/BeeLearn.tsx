@@ -98,7 +98,7 @@ const educationProducts: Product[] = [
   },
   {
     id: "edu-5",
-    name: "IoT Hive Monitoring Course",
+    name: "Hive Monitoring Course",
     description: "Learn to set up, calibrate, and interpret data from BeeYield sensors. Includes troubleshooting guides.",
     category: "education",
     badge: "Technical",

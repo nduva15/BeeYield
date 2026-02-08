@@ -168,11 +168,11 @@ const Diseases = () => {
         },
         {
             question: "Why does the system use satellite data?",
-            answer: "Satellite data enables the analysis of environmental conditions around the apiary, such as temperature, humidity, weather changes, and the availability of forage for bees. Combining this information with sensor data allows our machine learning algorithm to provide beekeepers with precise guidance on potential threats to their apiary."
+            answer: "Satellite data enables the analysis of environmental conditions around the apiary, such as temperature, humidity, weather changes, and the availability of forage for bees. Combining this information with sensor data allows our analysis model to provide beekeepers with precise guidance on potential threats to their apiary."
         },
         {
-            question: "How does BeeYield use artificial intelligence (AI)?",
-            answer: "BeeYield uses proprietary machine learning algorithms to analyze the collected data, enabling rapid detection of anomalies and prediction of disease risks."
+            question: "How does BeeYield use automated analysis?",
+            answer: "BeeYield uses proprietary analysis models to scan the collected data, enabling rapid detection of anomalies and prediction of disease risks."
         },
         {
             question: "What data do the in-hive sensors collect?",
@@ -180,7 +180,7 @@ const Diseases = () => {
         },
         {
             question: "What is BeeYield?",
-            answer: "BeeYield is an intelligent hive monitoring system that enables early detection of bee diseases and other threats using IoT sensors, AI algorithms, and satellite data."
+            answer: "BeeYield is a technical hive monitoring system that enables early detection of bee diseases and other threats using IoT sensors, advanced analysis, and satellite data."
         }
     ];
 
@@ -197,7 +197,7 @@ const Diseases = () => {
                             BeeYield Protection for Your <span className="text-primary">Beehives</span>
                         </h1>
                         <p className="text-xl text-muted-foreground leading-relaxed mb-8 max-w-2xl mx-auto">
-                            BeeYield is an innovative system that intelligently helps protect beehives from diseases and environmental threats. By combining modern technologies, we provide real-time monitoring of bee health – without disturbing their natural rhythm.
+                            BeeYield is an innovative system that helps protect beehives from diseases and environmental threats. By combining modern technologies, we provide real-time monitoring of bee health – without disturbing their natural rhythm.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Button size="lg" className="gap-2" onClick={() => document.getElementById('beeyield-system')?.scrollIntoView({ behavior: 'smooth' })}>
@@ -268,7 +268,7 @@ const Diseases = () => {
                     <div className="text-center mb-16 max-w-3xl mx-auto">
                         <h2 className="text-3xl font-bold mb-6">BeeYield System</h2>
                         <p className="text-lg opacity-90 leading-relaxed">
-                            BeeYield is the central hub for managing your entire apiary – it combines data from hive-installed devices, weather information, satellite data, beekeeper’s notes and inspections, and AI analyses into one clear system.
+                            BeeYield is the central hub for managing your entire apiary – it combines data from hive-installed devices, weather information, satellite data, beekeeper’s notes and inspections, and advanced analysis into one clear system.
                         </p>
                     </div>
 
@@ -364,7 +364,7 @@ const Diseases = () => {
                                 <div className="h-12 w-12 bg-primary/20 rounded-full flex items-center justify-center">
                                     <Cpu className="h-6 w-6 text-primary" />
                                 </div>
-                                <span className="font-bold text-xl">Intelligent Hives</span>
+                                <span className="font-bold text-xl">Technical Hives</span>
                             </div>
                         </div>
                     </div>

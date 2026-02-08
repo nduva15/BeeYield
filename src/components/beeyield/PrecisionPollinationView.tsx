@@ -399,10 +399,10 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
             {/* Header matches MyDevicesView exactly */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center px-2 mb-8">
                 <div>
-                    <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                    <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
                         {t('precision_pollination_title')}
                     </h1>
-                    <p className="text-sm font-semibold text-slate-400 dark:text-slate-500 mt-1">
+                    <p className="text-xs font-semibold text-slate-400 mt-1">
                         {t('precision_pollination_subtitle')}
                     </p>
                 </div>
@@ -442,10 +442,10 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                 {/* Left Column - Fixed Widths */}
                 <div className="lg:col-span-4 flex flex-col gap-6 h-full">
                     {/* Pollination Calculator */}
-                    <div className="bg-white dark:bg-[#111111] rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm p-6 flex-none">
+                    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex-none">
                         <div className="flex items-center gap-2 mb-6">
-                            <Calculator className="w-4 h-4 text-[#1B9157]" />
-                            <h3 className="text-sm font-black text-slate-800 dark:text-slate-200 uppercase tracking-tight">Pollination Calculator</h3>
+                            <Calculator className="w-4 h-4 text-green-600" />
+                            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Pollination Calculator</h3>
                         </div>
                         <div className="space-y-5">
                             <div className="space-y-1.5">
@@ -498,12 +498,12 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
 
                         <Separator className="my-5 bg-gray-100 dark:bg-white/5" />
 
-                        {/* BeeYield AI - Integrated into Calculator Card */}
-                        <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
+                        {/* BeeYield Assistant Integration */}
+                        <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
                             <div className="flex items-center justify-between mb-3">
                                 <div className="flex items-center gap-2">
-                                    <Bot className="w-4 h-4 text-[#F4D03F]" />
-                                    <h4 className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">BeeYield AI</h4>
+                                    <Bot className="w-4 h-4 text-amber-500" />
+                                    <h4 className="text-[10px] font-bold uppercase tracking-wider text-slate-700">BeeYield Assistant</h4>
                                 </div>
                                 <div className="flex items-center gap-1.5">
                                     <div className="relative flex h-2 w-2">
@@ -561,11 +561,11 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                         </Button>
                     </div>
 
-                    <div className="bg-white dark:bg-[#111111] rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm overflow-hidden flex flex-col flex-1 min-h-[250px]">
-                        <div className="p-4 border-b border-gray-50 dark:border-white/5 flex items-center justify-between shrink-0">
+                    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col flex-1 min-h-[250px]">
+                        <div className="p-4 border-b border-slate-50 flex items-center justify-between shrink-0">
                             <div className="flex items-center gap-2">
-                                <Hexagon className="w-4 h-4 text-[#F4D03F]" />
-                                <h3 className="text-xs font-black uppercase tracking-tight text-slate-700 dark:text-slate-300">Hive Fleet</h3>
+                                <Hexagon className="w-4 h-4 text-amber-500" />
+                                <h3 className="text-[10px] font-bold uppercase tracking-wider text-slate-700">Hive Network</h3>
                             </div>
                             <div className="flex gap-1">
                                 <Button
@@ -666,17 +666,17 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
 
                 {/* Right Column */}
                 <div className="lg:col-span-8 flex flex-col gap-6 h-full">
-                    {/* IoT Sensory Hub */}
-                    <div id="iot-sensory-hub" className="bg-white dark:bg-[#111111] rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm p-6 flex-none">
+                    {/* Sensory Hub */}
+                    <div id="iot-sensory-hub" className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex-none">
                         <div className="flex justify-between items-center mb-5">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center">
-                                    <Cpu className="w-5 h-5 text-[#F4D03F]" />
+                                <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
+                                    <Cpu className="w-5 h-5 text-amber-500" />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-black uppercase tracking-tight text-slate-800 dark:text-slate-200">{t('iot_sensory_hub')}</h3>
-                                    <p className="text-[10px] text-gray-400 font-semibold">
-                                        {selectedHive ? `${selectedHive.name} • ${selectedHive.lastSync}` : `Average of ${hives.length} hives`}
+                                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">Hive Monitoring Hub</h3>
+                                    <p className="text-[10px] text-slate-400 font-bold">
+                                        {selectedHive ? `${selectedHive.name} • ${selectedHive.lastSync}` : `Average for ${hives.length} hives`}
                                     </p>
                                 </div>
                             </div>

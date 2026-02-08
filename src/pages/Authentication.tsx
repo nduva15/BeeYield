@@ -176,7 +176,7 @@ const Authentication: React.FC = () => {
                                 <div>
                                     <CardTitle className="text-2xl font-black font-heading flex items-center gap-2">
                                         <LogIn className="h-6 w-6 text-primary" />
-                                        {authMode === 'login' ? 'Authentication' : authMode === 'register' ? 'Create Account' : 'Reset Protocol'}
+                                        {authMode === 'login' ? 'Sign In' : authMode === 'register' ? 'Create Account' : 'Reset Password'}
                                     </CardTitle>
                                     <p className="text-sm font-medium text-muted-foreground mt-1">
                                         {authMode === 'login' ? 'Secure access to your BeeYield profile' : 'Join the precision pollination revolution'}
@@ -265,9 +265,9 @@ const Authentication: React.FC = () => {
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-muted-foreground text-xs font-medium">
                     <p>© 2026 BeeYield Professional Pollination. All rights reserved.</p>
                     <div className="flex gap-6">
-                        <a href="#" className="hover:text-primary transition-colors">Privacy Protocol</a>
-                        <a href="#" className="hover:text-primary transition-colors">Terms of Engagement</a>
-                        <a href="#" className="hover:text-primary transition-colors">Support Matrix</a>
+                        <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
+                        <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>
+                        <a href="#" className="hover:text-primary transition-colors">Support</a>
                     </div>
                 </div>
             </div>

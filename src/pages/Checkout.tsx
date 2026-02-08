@@ -462,8 +462,8 @@ const Checkout = () => {
                                             </h4>
                                             <p className="text-green-700/80 text-sm mb-4">
                                                 {orderTraceabilityBatches.length > 1
-                                                    ? 'These batches have been successfully blockchain-recorded for authenticity.'
-                                                    : 'This batch has been successfully blockchain-recorded for authenticity.'
+                                                    ? 'These batches have been verified for authenticity.'
+                                                    : 'This batch has been verified for authenticity.'
                                                 }
                                             </p>
                                             <div className="flex flex-wrap gap-2">

@@ -49,7 +49,7 @@ const ProfessionalAuth: React.FC = () => {
             <div className="min-h-screen bg-zinc-50 flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
                     <Activity className="h-8 w-8 text-primary animate-pulse" />
-                    <span className="text-zinc-400 font-mono text-xs tracking-widest uppercase">Initializing Protocol...</span>
+                    <span className="text-zinc-400 font-mono text-xs tracking-widest uppercase">Initializing...</span>
                 </div>
             </div>
         );
@@ -72,7 +72,7 @@ const ProfessionalAuth: React.FC = () => {
                         </div>
                         <div>
                             <h1 className="text-lg font-bold tracking-tighter leading-none text-zinc-900">BEEYIELD <span className="text-primary">PRO</span></h1>
-                            <p className="text-xs text-zinc-400 leading-none mt-1 font-bold tracking-wider">INDUSTRIAL IOT ECOSYSTEM</p>
+                            <p className="text-xs text-zinc-400 leading-none mt-1 font-bold tracking-wider">HIVE MANAGEMENT SYSTEM</p>
                         </div>
                     </div>
 
@@ -95,18 +95,18 @@ const ProfessionalAuth: React.FC = () => {
                                     <span className="text-xs font-bold text-primary tracking-widest uppercase">System Operational</span>
                                 </div>
                                 <h2 className="text-6xl font-black tracking-tighter leading-tight text-zinc-900">
-                                    Secure <br />
-                                    <span className="text-primary italic">Intelligence</span> <br />
-                                    Interface
+                                    Professional <br />
+                                    <span className="text-primary italic">Dashboard</span> <br />
+                                    Access
                                 </h2>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 {[
-                                    { icon: Bot, label: 'AI Analytics', desc: 'Predictive hive modeling' },
-                                    { icon: Activity, label: 'Real-time IoT', desc: 'Live sensor telemetry' },
-                                    { icon: Shield, label: 'Vault Security', desc: 'AES-256 data protection' },
-                                    { icon: Database, label: 'Fleet Logic', desc: 'Scaleable apiary management' }
+                                    { icon: Bot, label: 'Health Analysis', desc: 'Predictive hive management' },
+                                    { icon: Activity, label: 'Live Data', desc: 'Real-time sensor telemetry' },
+                                    { icon: Shield, label: 'Data Security', desc: 'Secure information storage' },
+                                    { icon: Database, label: 'Apiary Control', desc: 'Scalable apiary management' }
                                 ].map((item, i) => (
                                     <div key={i} className="p-6 rounded-2xl bg-white border border-zinc-200 hover:border-primary/50 transition-all group shadow-sm hover:shadow-md">
                                         <item.icon className="h-6 w-6 text-zinc-400 group-hover:text-primary mb-4 transition-colors" />
@@ -119,8 +119,8 @@ const ProfessionalAuth: React.FC = () => {
                             <div className="p-6 rounded-2xl bg-white border border-zinc-200 flex items-center gap-4 shadow-sm">
                                 <Terminal className="h-5 w-5 text-zinc-400" />
                                 <div className="font-mono text-xs text-zinc-400 overflow-hidden whitespace-nowrap">
-                                    <p className="animate-typing">root@beeyield-hub: auth --mode professional_v2.0.4</p>
-                                    <p className="opacity-50 tracking-tighter">Initializing secure kernel session...</p>
+                                    <p className="animate-typing">Connected to BeeYield Hub</p>
+                                    <p className="opacity-50 tracking-tighter">System ready. Initializing session...</p>
                                 </div>
                             </div>
                         </div>
@@ -135,23 +135,23 @@ const ProfessionalAuth: React.FC = () => {
                                                 onClick={() => setAuthMode('login')}
                                                 className={`px-6 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${authMode === 'login' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-900'}`}
                                             >
-                                                Authorize
+                                                Sign In
                                             </button>
                                             <button
                                                 onClick={() => setAuthMode('register')}
                                                 className={`px-6 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${authMode === 'register' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-900'}`}
                                             >
-                                                Deploy
+                                                Register
                                             </button>
                                         </div>
                                         <Lock className="h-4 w-4 text-zinc-300" />
                                     </div>
 
                                     <h3 className="text-2xl font-black tracking-tightest text-zinc-900">
-                                        {authMode === 'login' ? 'PORTAL ACCESS' : authMode === 'register' ? 'NETWORK JOIN' : 'KEY RECOVERY'}
+                                        {authMode === 'login' ? 'SIGN IN' : authMode === 'register' ? 'CREATE ACCOUNT' : 'RESET PASSWORD'}
                                     </h3>
                                     <p className="text-xs text-zinc-400 font-bold uppercase tracking-[0.2em] mt-2">
-                                        {authMode === 'login' ? 'Enter credentials for identity validation' : 'Register your professional IoT account'}
+                                        {authMode === 'login' ? 'Enter credentials to access your account' : 'Register your professional account'}
                                     </p>
                                 </div>
 
@@ -175,7 +175,7 @@ const ProfessionalAuth: React.FC = () => {
                                                 <div className="pro-auth-forms">
                                                     <RegisterForm
                                                         onSuccess={() => {
-                                                            toast.success("Protocol Initialized");
+                                                            toast.success("Account Created");
                                                             setAuthMode('login');
                                                         }}
                                                         onSwitchToLogin={() => setAuthMode('login')}
@@ -199,10 +199,10 @@ const ProfessionalAuth: React.FC = () => {
                                     <div className="mt-12 pt-8 border-t border-zinc-100 flex flex-col items-center gap-4 text-center">
                                         <div className="flex gap-4">
                                             <div className="flex items-center gap-2 text-xs font-bold text-zinc-300 uppercase tracking-[0.3em]">
-                                                <Shield className="h-3 w-3" /> FIPS 140-2
+                                                <Shield className="h-3 w-3" /> SECURE DATA
                                             </div>
                                             <div className="flex items-center gap-2 text-xs font-bold text-zinc-300 uppercase tracking-[0.3em]">
-                                                <Lock className="h-3 w-3" /> ISO 27001
+                                                <Lock className="h-3 w-3" /> VERIFIED
                                             </div>
                                         </div>
                                     </div>
@@ -214,17 +214,17 @@ const ProfessionalAuth: React.FC = () => {
 
                 {/* Cyber Footer (Light Version) */}
                 <div className="py-8 border-t border-zinc-200 flex items-center justify-between text-xs font-bold text-zinc-400 uppercase tracking-[0.3em]">
-                    <p>© 2026 BEEYIELD GLOBAL HUB // CORE v4.0.2</p>
+                    <p>© 2026 BEEYIELD PROFESSIONAL DASHBOARD</p>
                     <div className="flex gap-8">
                         <span>LAT: 1.2921 N</span>
                         <span>LONG: 36.8219 E</span>
-                        <span className="text-primary/60 font-black">Secure Endpoint Connection</span>
+                        <span className="text-primary/60 font-black">Secure Connection Established</span>
                     </div>
                 </div>
-            </div>
+            </div >
 
 
-        </div>
+        </div >
     );
 };
 

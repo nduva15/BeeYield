@@ -22,11 +22,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
-import { useUserSettings, useUpdateSettings, useUpdateNotificationConfig, useUpdateHiveThresholds } from '@/hooks/useSettingsData';
-import { UserSettingsUpdate, NotificationConfigUpdate } from '@/services/beeyieldService';
+import { useUserSettings, useUpdateSettings, useUpdateNotificationConfig, useUpdateHiveThresholds, useNotificationSettings, useUpdateNotificationSettings, useIoTSettings, useUpdateIoTSettings } from '@/hooks/useSettingsData';
+import { UserSettingsUpdate, NotificationConfigUpdate, UserNotificationSettings, IoTSettings } from '@/services/beeyieldService';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useHives } from '@/hooks/useApiaries';
 import { useHiveSettings } from '@/hooks/useSettingsData';
+import { Slider } from "@/components/ui/slider";
+import { BellRing, Shield, Smartphone, Zap, Thermometer, Droplets, Weight } from 'lucide-react';
 
 interface SettingsViewProps {
     onTabChange: (tab: string) => void;
@@ -60,6 +62,12 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
     const updateNotifMutation = useUpdateNotificationConfig();
     const updateHiveThresholdsMutation = useUpdateHiveThresholds();
     const { data: allHivesSettings } = useHiveSettings();
+
+    // PRD Settings Hooks
+    const { data: prdNotifications, isLoading: notifLoading } = useNotificationSettings();
+    const { data: prdIoT, isLoading: iotLoading } = useIoTSettings();
+    const updatePrdNotif = useUpdateNotificationSettings();
+    const updatePrdIoT = useUpdateIoTSettings();
 
     // State for local overrides before saving
     const [localSettings, setLocalSettings] = useState<UserSettingsUpdate>({});
@@ -407,7 +415,10 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                         <SelectTrigger
                                             className="w-full pt-8 pb-3 px-4 rounded-2xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-[4.5rem] shadow-none font-bold hover:border-amber-500/30 focus:border-amber-500 transition-all outline-none focus:ring-0 flex items-center justify-between group"
                                         >
-                                            <div className="flex items-center w-full pt-1">
+                                            <div className="flex items-center gap-3 w-full pt-1">
+                                                <div className="w-6 h-4 rounded-[3px] overflow-hidden shadow-sm border border-black/10 flex-shrink-0">
+                                                    <img src={languages.find(l => l.code === language)?.flag} alt={languages.find(l => l.code === language)?.country} className="w-full h-full object-cover" />
+                                                </div>
                                                 <SelectValue placeholder={t('language')} />
                                             </div>
                                         </SelectTrigger>
@@ -449,95 +460,175 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                         </Card>
                     </motion.div>
 
-                    {/* IoT Thresholds Section */}
+                    {/* PRD: IoT Alert Thresholds Section */}
                     <motion.div variants={itemVariants}>
-                        <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-xl shadow-sm overflow-hidden hover:shadow-md transition-all duration-500">
+                        <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500 border-l-[10px] border-l-[#F4D03F]">
                             <CardHeader className="p-10 pb-4">
-                                <CardTitle className="text-2xl font-black leading-tight">IoT Alert Thresholds</CardTitle>
-                                <p className="text-sm text-gray-400 font-medium pt-2">Global default thresholds for your smart sensors</p>
+                                <CardTitle className="text-2xl font-black leading-tight flex items-center gap-2">
+                                    <Thermometer className="w-6 h-6" />
+                                    {t('iot_thresholds') || 'IoT Alert Thresholds'}
+                                </CardTitle>
+                                <p className="text-sm text-gray-400 font-medium pt-2">Global default thresholds for your smart sensors. These apply to all hives unless overridden.</p>
                             </CardHeader>
-                            <CardContent className="p-10 pt-0 space-y-6">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="relative group">
-                                        <Label className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10">High Temp (°C)</Label>
-                                        <Input
-                                            type="number"
-                                            defaultValue={settings?.temp_threshold_high}
-                                            onChange={(e) => setLocalSettings(prev => ({ ...prev, temp_threshold_high: parseFloat(e.target.value) }))}
-                                            className="pt-8 pb-3 px-4 rounded-2xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-[4.5rem] font-bold"
-                                        />
+                            <CardContent className="p-10 pt-0 space-y-10">
+                                {/* Temperature Slider */}
+                                <div className="space-y-6">
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex flex-col">
+                                            <span className="text-sm font-bold text-gray-700 dark:text-gray-200 uppercase tracking-widest flex items-center gap-2">
+                                                <Thermometer className="w-4 h-4 text-orange-500" /> Temperature Range
+                                            </span>
+                                            <span className="text-[11px] text-gray-400 font-medium">Alert if temperature goes out of this range</span>
+                                        </div>
+                                        <div className="bg-orange-500/10 text-orange-600 px-3 py-1 rounded-lg font-black text-sm">
+                                            {prdIoT?.temp_min_threshold}°C - {prdIoT?.temp_max_threshold}°C
+                                        </div>
                                     </div>
-                                    <div className="relative group">
-                                        <Label className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10">Low Temp (°C)</Label>
-                                        <Input
-                                            type="number"
-                                            defaultValue={settings?.temp_threshold_low}
-                                            onChange={(e) => setLocalSettings(prev => ({ ...prev, temp_threshold_low: parseFloat(e.target.value) }))}
-                                            className="pt-8 pb-3 px-4 rounded-2xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-[4.5rem] font-bold"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="relative group">
-                                    <Label className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10">Weight Drop Alert (kg)</Label>
-                                    <Input
-                                        type="number"
-                                        defaultValue={settings?.weight_drop_threshold}
-                                        onChange={(e) => setLocalSettings(prev => ({ ...prev, weight_drop_threshold: parseFloat(e.target.value) }))}
-                                        className="pt-8 pb-3 px-4 rounded-2xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-[4.5rem] font-bold"
+                                    <Slider
+                                        defaultValue={[prdIoT?.temp_min_threshold || 15, prdIoT?.temp_max_threshold || 38]}
+                                        max={50}
+                                        min={0}
+                                        step={0.5}
+                                        onValueChange={(v) => updatePrdIoT.mutate({ temp_min_threshold: v[0], temp_max_threshold: v[1] })}
                                     />
                                 </div>
-                                <div className="flex justify-end">
-                                    <motion.button
-                                        whileHover={{ scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
-                                        onClick={handleSaveGeneral}
-                                        className="bg-transparent border-2 border-gray-200 dark:border-gray-800 text-gray-500 hover:border-[#B48428] hover:text-[#B48428] rounded-2xl px-10 py-3 font-bold text-sm transition-all"
-                                    >
-                                        Save Defaults
-                                    </motion.button>
+
+                                {/* Weight Drop Slider */}
+                                <div className="space-y-6">
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex flex-col">
+                                            <span className="text-sm font-bold text-gray-700 dark:text-gray-200 uppercase tracking-widest flex items-center gap-2">
+                                                <Weight className="w-4 h-4 text-blue-500" /> Weight Drop Alert
+                                            </span>
+                                            <span className="text-[11px] text-gray-400 font-medium">Triggers alert for theft or swarming</span>
+                                        </div>
+                                        <div className="bg-blue-500/10 text-blue-600 px-3 py-1 rounded-lg font-black text-sm">
+                                            {prdIoT?.weight_drop_alert_kg} kg
+                                        </div>
+                                    </div>
+                                    <Slider
+                                        defaultValue={[prdIoT?.weight_drop_alert_kg || 2]}
+                                        max={10}
+                                        min={0.5}
+                                        step={0.5}
+                                        onValueChange={(v) => updatePrdIoT.mutate({ weight_drop_alert_kg: v[0] })}
+                                    />
+                                </div>
+
+                                {/* Humidity Range Slider */}
+                                <div className="space-y-6">
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex flex-col">
+                                            <span className="text-sm font-bold text-gray-700 dark:text-gray-200 uppercase tracking-widest flex items-center gap-2">
+                                                <Droplets className="w-4 h-4 text-cyan-500" /> Humidity Range
+                                            </span>
+                                            <span className="text-[11px] text-gray-400 font-medium">Optimal hive humidity level</span>
+                                        </div>
+                                        <div className="bg-cyan-500/10 text-cyan-600 px-3 py-1 rounded-lg font-black text-sm">
+                                            {prdIoT?.humidity_min_threshold}% - {prdIoT?.humidity_max_threshold}%
+                                        </div>
+                                    </div>
+                                    <Slider
+                                        defaultValue={[prdIoT?.humidity_min_threshold || 40, prdIoT?.humidity_max_threshold || 80]}
+                                        max={100}
+                                        min={0}
+                                        step={1}
+                                        onValueChange={(v) => updatePrdIoT.mutate({ humidity_min_threshold: v[0], humidity_max_threshold: v[1] })}
+                                    />
                                 </div>
                             </CardContent>
                         </Card>
                     </motion.div>
 
-                    {/* AI Auto Notifications */}
-
-                    {/* Email Notifications Hub */}
+                    {/* PRD: Notification Settings Section */}
                     <motion.div variants={itemVariants}>
-                        <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-xl shadow-sm overflow-hidden hover:shadow-md transition-all duration-500">
-                            <CardHeader className="p-10 pb-4">
-                                <CardTitle className="text-2xl font-black leading-tight">{t('email_notifications_hub')}</CardTitle>
-                                <p className="text-sm text-gray-400 font-medium pt-2">Manage how you receive alerts for hive events.</p>
+                        <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500 border-l-[10px] border-l-[#171717]">
+                            <CardHeader className="p-10 pb-4 text-white bg-[#171717]">
+                                <CardTitle className="text-2xl font-black leading-tight flex items-center gap-2">
+                                    <BellRing className="w-6 h-6 text-[#F4D03F]" />
+                                    {t('live_notifications') || 'Live Notifications'}
+                                </CardTitle>
+                                <p className="text-sm text-gray-400 font-medium pt-2">Manage how the HiveIQ engine communicates with you.</p>
                             </CardHeader>
-                            <CardContent className="p-10 pt-0 space-y-6">
-                                {settings?.notification_configs?.map((config) => (
-                                    <div key={config.event_type} className="flex items-center justify-between p-4 bg-gray-50/50 dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/5">
-                                        <div className="flex flex-col">
-                                            <span className="text-sm font-bold text-gray-700 dark:text-gray-300 capitalize">{config.event_type.replace(/_/g, ' ')}</span>
-                                            <div className="flex gap-4 mt-2">
-                                                <div className="flex items-center gap-2">
-                                                    <Switch
-                                                        checked={config.email_enabled}
-                                                        onCheckedChange={(val) => handleNotifToggle(config.event_type, 'email_enabled', val)}
-                                                        className="scale-75"
-                                                    />
-                                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Email</span>
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    <Switch
-                                                        checked={config.push_enabled}
-                                                        onCheckedChange={(val) => handleNotifToggle(config.event_type, 'push_enabled', val)}
-                                                        className="scale-75"
-                                                    />
-                                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Push</span>
-                                                </div>
+                            <CardContent className="p-10 space-y-8">
+                                {/* Master Switches */}
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pb-8 border-b border-gray-100 dark:border-gray-800">
+                                    <div className="flex flex-col items-center p-6 bg-gray-50 dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/5 group hover:border-[#F4D03F]/50 transition-all">
+                                        <Mail className="w-6 h-6 mb-4 text-[#737373] group-hover:text-[#F4D03F]" />
+                                        <span className="text-[10px] font-black uppercase tracking-widest mb-4">Email</span>
+                                        <Switch
+                                            checked={prdNotifications?.email_alerts_enabled}
+                                            onCheckedChange={(v) => updatePrdNotif.mutate({ email_alerts_enabled: v })}
+                                        />
+                                    </div>
+                                    <div className="flex flex-col items-center p-6 bg-gray-50 dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/5 group hover:border-[#F4D03F]/50 transition-all">
+                                        <Smartphone className="w-6 h-6 mb-4 text-[#737373] group-hover:text-[#F4D03F]" />
+                                        <span className="text-[10px] font-black uppercase tracking-widest mb-4">Push</span>
+                                        <Switch
+                                            checked={prdNotifications?.push_notifications_enabled}
+                                            onCheckedChange={(v) => updatePrdNotif.mutate({ push_notifications_enabled: v })}
+                                        />
+                                    </div>
+                                    <div className="flex flex-col items-center p-6 bg-gray-50 dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/5 opacity-50 relative group">
+                                        <Zap className="w-6 h-6 mb-4 text-[#737373]" />
+                                        <span className="text-[10px] font-black uppercase tracking-widest mb-4">SMS</span>
+                                        <Badge className="absolute top-2 right-2 bg-black text-[#F4D03F] text-[8px] font-black">PRO</Badge>
+                                        <Switch disabled checked={false} />
+                                    </div>
+                                </div>
+
+                                {/* Granular Event Toggles */}
+                                <div className="space-y-4">
+                                    <h4 className="text-[11px] font-black text-[#A3A3A3] uppercase tracking-[0.2em] mb-6">Automated Event Alerts</h4>
+
+                                    <div className="flex items-center justify-between p-5 bg-white dark:bg-[#09090b] rounded-2xl border border-gray-100 dark:border-gray-800 hover:shadow-md transition-all group">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-500/10 flex items-center justify-center text-orange-600">
+                                                <Zap className="w-5 h-5" />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-bold">Swarm Detection</span>
+                                                <span className="text-[11px] text-gray-400">Notify if rapid weight loss is detected</span>
                                             </div>
                                         </div>
+                                        <Switch
+                                            checked={prdNotifications?.notify_on_swarm}
+                                            onCheckedChange={(v) => updatePrdNotif.mutate({ notify_on_swarm: v })}
+                                        />
                                     </div>
-                                ))}
-                                {(!settings?.notification_configs || settings.notification_configs.length === 0) && (
-                                    <p className="text-sm text-center text-gray-400 font-medium py-8">No notification configurations found.</p>
-                                )}
+
+                                    <div className="flex items-center justify-between p-5 bg-white dark:bg-[#09090b] rounded-2xl border border-gray-100 dark:border-gray-800 hover:shadow-md transition-all">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-500/10 flex items-center justify-center text-red-600">
+                                                <Shield className="w-5 h-5" />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-bold">Theft / Disturbance</span>
+                                                <span className="text-[11px] text-gray-400">Accelerometer & tilt sensor alerts</span>
+                                            </div>
+                                        </div>
+                                        <Switch
+                                            checked={prdNotifications?.notify_on_theft}
+                                            onCheckedChange={(v) => updatePrdNotif.mutate({ notify_on_theft: v })}
+                                        />
+                                    </div>
+
+                                    <div className="flex items-center justify-between p-5 bg-white dark:bg-[#09090b] rounded-2xl border border-gray-100 dark:border-gray-800 hover:shadow-md transition-all">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-500/10 flex items-center justify-center text-amber-600">
+                                                <Smartphone className="w-5 h-5" />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-bold">Low Battery</span>
+                                                <span className="text-[11px] text-gray-400">Battery levels below 15%</span>
+                                            </div>
+                                        </div>
+                                        <Switch
+                                            checked={prdNotifications?.notify_on_low_battery}
+                                            onCheckedChange={(v) => updatePrdNotif.mutate({ notify_on_low_battery: v })}
+                                        />
+                                    </div>
+                                </div>
                             </CardContent>
                         </Card>
                     </motion.div>

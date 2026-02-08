@@ -110,7 +110,7 @@ class AIService:
         synthesis_protocol = await Synthesizer.synthesize_response(search_results, message, route_expert)
         
         system_prompt = (
-            f"SYSTEM ROLE: You are the MASTER RESEARCH LIBRARIAN for BeeYield AI.\n"
+            f"SYSTEM ROLE: You are the NI NEURAL CORE (v4.2), the primary intelligence engine for BeeYield.\n"
             f"TIMESTAMP: {current_time} EAT, {current_date}\n\n"
             f"SYNTHESIS ARCHITECTURE:\n{synthesis_protocol}\n\n"
             f"DATA ARSENAL:\n"
@@ -118,11 +118,11 @@ class AIService:
             f"BUSINESS INTEL: {business_intel}\n"
             f"TRACEABILITY: {trace_context}\n\n"
             f"CORE DIRECTIVES:\n"
-            f"1. OUTPUT STRUCTURE: You MUST use the Five-Pillar framework (Brief, Diagnosis, Regional, Internal, Bibliography).\n"
-            f"2. TECHNICAL DEPTH: Responses must be highly detailed and professional. **AIM FOR 100+ LINES / 800+ WORDS.**\n"
-            f"3. CITATIONS: Use [X] for every factual claim. Correlate University research with IoT benchmarks.\n"
+            f"1. OUTPUT STRUCTURE: Use the Five-Pillar framework (Brief, Diagnosis, Regional, Internal, Bibliography).\n"
+            f"2. TECHNICAL DEPTH: Provide EXTREMELY DOCUMENTED, LONG-FORM ANSWERS. MINIMUM 800 WORDS.\n"
+            f"3. CITATIONS: Use [X] for every claim. Correlate University research with IoT benchmarks.\n"
             f"4. SENSOR LINK: Always mention APISENSE VOC sensors and BeeHero benchmarks if relevant to health.\n"
-            f"5. COMPREHENSIVENESS: PROVIDE EXTREMELY DOCUMENTED, LONG-FORM ANSWERS. DO NOT SUMMARIZE. EXPAND ON EVERY POINT."
+            f"5. AESTHETICS: Use bold text (e.g., **Key Term**) for important directives or metrics to sync with the frontend UI highlights."
         )
 
         def sanitize_final(text: str) -> str:

@@ -93,3 +93,42 @@ class FullSettingsResponse(BaseModel):
     profile: Optional[ProfileSchema] = None
     preferences: Optional[UserPreferencesSchema] = None
     global_thresholds: Optional[AlertThresholdResponse] = None
+
+# --- PRD: New Settings Schemas ---
+class UserNotificationSettingsSchema(BaseModel):
+    user_id: UUID
+    email_alerts_enabled: bool = True
+    sms_alerts_enabled: bool = False
+    push_notifications_enabled: bool = True
+    notify_on_swarm: bool = True
+    notify_on_low_battery: bool = True
+    notify_on_theft: bool = True
+    
+    class Config:
+        from_attributes = True
+
+class NotificationUpdate(BaseModel):
+    email_alerts_enabled: Optional[bool] = None
+    sms_alerts_enabled: Optional[bool] = None
+    push_notifications_enabled: Optional[bool] = None
+    notify_on_swarm: Optional[bool] = None
+    notify_on_low_battery: Optional[bool] = None
+    notify_on_theft: Optional[bool] = None
+
+class GlobalIoTSettingsSchema(BaseModel):
+    user_id: UUID
+    temp_min_threshold: float = 15.0
+    temp_max_threshold: float = 38.0
+    weight_drop_alert_kg: float = 2.0
+    humidity_min_threshold: int = 40
+    humidity_max_threshold: int = 80
+    
+    class Config:
+        from_attributes = True
+
+class IoTSettingsUpdate(BaseModel):
+    temp_min_threshold: Optional[float] = None
+    temp_max_threshold: Optional[float] = None
+    weight_drop_alert_kg: Optional[float] = None
+    humidity_min_threshold: Optional[int] = None
+    humidity_max_threshold: Optional[int] = None

@@ -512,7 +512,7 @@ const BuyerDashboard = () => {
                                         <button
                                             key={i}
                                             onClick={() => setActiveTab(action.tab)}
-                                            className="flex flex-col items-center justify-center p-6 bg-white dark:bg-black/40 rounded-3xl border border-white/20 hover:scale-105 transition-all shadow-sm"
+                                            className="flex flex-col items-center justify-center p-6 bg-white rounded-3xl border border-slate-100 hover:scale-105 transition-all shadow-sm"
                                         >
                                             <action.icon className="w-8 h-8 text-primary mb-3" />
                                             <span className="text-sm font-bold">{action.label}</span>
@@ -754,24 +754,24 @@ const BuyerDashboard = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {paymentMethods.map((pm) => (
-                                <Card key={pm.id} className="bg-gradient-to-br from-gray-900 to-gray-800 text-white border-none">
+                                <Card key={pm.id} className="bg-gradient-to-br from-amber-50 to-amber-100 text-slate-800 border border-amber-200">
                                     <CardContent className="p-6 relative">
                                         <div className="flex justify-between items-start mb-8">
-                                            <CreditCard className="h-8 w-8 text-white/80" />
-                                            <Button variant="ghost" size="icon" className="text-white/50 hover:text-white" onClick={() => handleDeletePaymentMethod(pm.id)}>
+                                            <CreditCard className="h-8 w-8 text-amber-600/80" />
+                                            <Button variant="ghost" size="icon" className="text-slate-400 hover:text-destructive" onClick={() => handleDeletePaymentMethod(pm.id)}>
                                                 <XCircle className="h-5 w-5" />
                                             </Button>
                                         </div>
                                         <div className="mb-4">
-                                            <p className="text-xl font-mono tracking-wider">**** **** **** {pm.last4}</p>
+                                            <p className="text-xl font-mono tracking-wider text-slate-900">**** **** **** {pm.last4}</p>
                                         </div>
                                         <div className="flex justify-between items-end">
                                             <div>
-                                                <p className="text-[10px] uppercase text-white/50">Card Holder</p>
+                                                <p className="text-[10px] uppercase text-slate-500">Card Holder</p>
                                                 <p className="font-medium truncate max-w-[120px]">{pm.card_holder_name || 'Customer'}</p>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-[10px] uppercase text-white/50">{pm.provider || 'Card'}</p>
+                                                <p className="text-[10px] uppercase text-slate-500">{pm.provider || 'Card'}</p>
                                                 <p className="font-medium">{pm.expiry_month}/{pm.expiry_year}</p>
                                             </div>
                                         </div>
@@ -1197,7 +1197,7 @@ const BuyerDashboard = () => {
                                     </Card>
                                     <div className="flex items-center gap-3 p-4 bg-primary/5 rounded-2xl border border-primary/10">
                                         <Shield className="w-5 h-5 text-primary" />
-                                        <p className="text-xs font-medium text-muted-foreground leading-tight">Your data is secured with banking-grade encryption protocol.</p>
+                                        <p className="text-xs font-medium text-muted-foreground leading-tight">Your data is secured with bank-level encryption.</p>
                                     </div>
                                 </div>
                             </div>

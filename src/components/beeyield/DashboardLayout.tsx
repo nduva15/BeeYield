@@ -1,6 +1,7 @@
 import React from 'react';
 import DashboardSidebar, { NavItem } from './DashboardSidebar';
 import DashboardHeader from './DashboardHeader';
+import QuickActionModal from './QuickActionModal';
 import FirstStepsBanner from './FirstStepsBanner';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
@@ -24,8 +25,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     isAdmin = false,
     hideHeader = false
 }) => {
+    const [isQuickActionOpen, setIsQuickActionOpen] = React.useState(false);
     return (
-        <div className="flex h-screen w-full bg-[#f8f9fc] dark:bg-[#000000] overflow-hidden font-sans text-foreground selection:bg-primary/20">
+        <div className="flex h-screen w-full bg-[#FAF9F6] overflow-hidden font-sans text-foreground selection:bg-primary/20">
             <div className="relative z-10 flex w-full h-full">
                 <DashboardSidebar
                     activeTab={activeTab}
@@ -36,7 +38,23 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 />
 
                 <main className="flex-1 flex flex-col h-full overflow-hidden relative">
-                    {!hideHeader && <DashboardHeader onLogout={onLogout} onTabChange={onTabChange} activeTab={activeTab} />}
+                    {!hideHeader && (
+                        <DashboardHeader
+                            onLogout={onLogout}
+                            onTabChange={onTabChange}
+                            activeTab={activeTab}
+                            onQuickAction={() => setIsQuickActionOpen(true)}
+                        />
+                    )}
+
+                    <QuickActionModal
+                        isOpen={isQuickActionOpen}
+                        onClose={() => setIsQuickActionOpen(false)}
+                        onSuccess={() => {
+                            // Optionally trigger a refresh of the current view
+                            console.log('Refresh current view data');
+                        }}
+                    />
 
                     <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
                         <div className="max-w-[1600px] mx-auto">
