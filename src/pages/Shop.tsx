@@ -279,7 +279,7 @@ const STATIC_PRODUCTS: Product[] = [
     name: "Acoustic Analysis Module",
     description: "Microphone sensor for analyzing hive sound signatures to detect queen presence and swarm behavior.",
     category: "hardware",
-    badge: "AI Powered",
+    badge: "Technical",
     images: ["/images/products/beehub_sound_sensor.png"],
     rating: 4.8,
     review_count: 19,
@@ -476,7 +476,7 @@ const STATIC_PRODUCTS: Product[] = [
   },
   {
     id: "edu-5",
-    name: "IOT HIVE MONITORING COURSE",
+    name: "HIVE MONITORING COURSE",
     description: "Learn to set up, calibrate, and interpret data from BeeYield sensors. Includes troubleshooting guides.",
     category: "education",
     badge: "TECHNICAL",
@@ -660,14 +660,14 @@ const Shop = () => {
           <div className="max-w-3xl">
             <Badge variant="outline" className="mb-4 sm:mb-6 px-3 sm:px-4 py-1 sm:py-1.5 border-primary/20 bg-primary/20 text-primary-foreground font-black animate-in fade-in slide-in-from-bottom-2 duration-700 text-xs sm:text-sm uppercase tracking-widest">
               <Zap className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1.5 sm:mr-2 fill-primary/20" />
-              The Future of Apiculture Is Here
+              Support Sustainable Beekeeping
             </Badge>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black text-foreground mb-4 sm:mb-6 tracking-tightest leading-[1.1] animate-in fade-in slide-in-from-bottom-4 duration-1000">
-              Harvest the <span className="text-primary italic">Precision.</span>
+              Quality <span className="text-primary italic">Honey & Gear.</span>
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-muted-foreground font-medium mb-6 sm:mb-8 md:mb-10 leading-relaxed max-w-2xl animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
-              From our award-winning traceable honey to cutting-edge IoT hive sensors,
-              everything in our shop supports the mission of sustainable pollination in Kenya.
+              From our natural traceable honey to hive sensors,
+              everything in our shop supports the mission of sustainable pollination.
             </p>
 
             <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 animate-in fade-in mt-2 duration-1000 delay-500 justify-center lg:justify-start">
@@ -718,7 +718,7 @@ const Shop = () => {
                   <SelectItem value="featured">Featured Status</SelectItem>
                   <SelectItem value="price-low">Economic to Premium</SelectItem>
                   <SelectItem value="price-high">Premium to Economic</SelectItem>
-                  <SelectItem value="rating">Technical Rating</SelectItem>
+                  <SelectItem value="rating">Average Rating</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -772,7 +772,7 @@ const Shop = () => {
                           <div className="absolute top-8 right-8 z-30 animate-in fade-in zoom-in duration-1000 delay-300">
                             <Badge className="bg-white/90 backdrop-blur-sm text-primary border-primary/20 shadow-sm hover:bg-white transition-all flex items-center gap-1.5 px-3 py-1.5 rounded-full font-black text-[10px] uppercase tracking-wider">
                               <ShieldCheck className="h-3.5 w-3.5" />
-                              Blockchain Verified
+                              Verified Quality
                             </Badge>
                           </div>
                         )}
@@ -815,7 +815,7 @@ const Shop = () => {
                         }}
                         className={`absolute top-6 left-6 z-30 p-2.5 rounded-full shadow-sm transition-all duration-300 hover:scale-110 active:scale-95 ${isInWishlist(product.id)
                           ? "bg-primary text-primary-foreground shadow-primary/25"
-                          : "bg-white text-muted-foreground hover:bg-primary hover:text-primary-foreground shadow-black/5 border border-border/10"
+                          : "bg-white text-muted-foreground hover:bg-primary hover:text-primary-foreground shadow-sm border border-border/10"
                           }`}
                       >
                         <Heart className={`h-5 w-5 ${isInWishlist(product.id) ? "fill-current" : ""}`} />
@@ -888,7 +888,7 @@ const Shop = () => {
                                 className={cn(
                                   "w-full h-12 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all duration-300 shadow-lg px-6",
                                   (!product.variants.find(v => v.size === (selectedSizes[product.id] || product.variants[0].size))?.is_available || (product.variants.find(v => v.size === (selectedSizes[product.id] || product.variants[0].size))?.stock_quantity ?? 0) <= 0)
-                                    ? "bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700 cursor-not-allowed shadow-none"
+                                    ? "bg-slate-50 text-slate-400 border border-slate-200 cursor-not-allowed shadow-none"
                                     : "bg-primary text-primary-foreground hover:scale-[1.02] active:scale-[0.98] shadow-primary/20"
                                 )}
                                 onClick={() => handleAddToCart(product)}
@@ -987,7 +987,7 @@ const Shop = () => {
               <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
                 <Cpu className="h-5 w-5 text-primary" />
               </div>
-              <span className="font-bold text-lg">Intelligent Hives</span>
+              <span className="font-bold text-lg">Technical Hives</span>
             </div>
           </div>
         </div>

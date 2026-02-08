@@ -16,7 +16,7 @@ const Careers = () => {
             Join Us to Make <br /> an Impact
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed mb-8">
-            We're a team on a mission to help future-proof the global food supply.
+            We're a team on a mission to help protect the global food supply.
           </p>
           <Button size="lg" className="shadow-xl h-14 text-lg">
             View Openings
@@ -38,7 +38,7 @@ const Careers = () => {
             <div className="bg-secondary/30 p-8 rounded-2xl border border-secondary">
               <h3 className="text-2xl font-bold mb-4 text-foreground">So why choose us?</h3>
               <p className="text-muted-foreground mb-6">
-                Well for one thing we're one of the world's fastest-growing ag-tech companies with a genuinely purpose-driven mission: BeeYield combines a passion for leveraging technology to improve pollination and thereby improve crop outcomes, and at the same time ensuring beekeepers and their bees continue to thrive.
+                Well for one thing we're one of the fastest-growing ag-tech companies with a genuine mission: BeeYield combines a passion for technology to improve pollination and crop outcomes, while ensuring beekeepers and their bees continue to thrive.
               </p>
               <div className="flex items-center gap-3 font-medium text-foreground">
                 <Heart className="h-5 w-5 text-primary" />
@@ -68,7 +68,7 @@ const Careers = () => {
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-foreground">We are Pioneers</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  We aim to redefine pollination by leveraging technology to deliver predictability and precision to the process.
+                  We aim to improve pollination by using technology to deliver predictability and precision to the process.
                 </p>
               </CardContent>
             </Card>
@@ -80,7 +80,7 @@ const Careers = () => {
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-foreground">We are Technologists</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  We believe in the power of technology to improve crop yields & future proof humanity's food supply.
+                  We believe in the power of technology to improve crop yields and support the food supply.
                 </p>
               </CardContent>
             </Card>
@@ -126,9 +126,9 @@ const Careers = () => {
                 <div className="bg-orange-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                   <Zap className="h-6 w-6 text-orange-600" />
                 </div>
-                <h3 className="text-xl font-bold mb-3 text-foreground">Innovation is in our DNA</h3>
+                <h3 className="text-xl font-bold mb-3 text-foreground">Knowledge Hub</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  We're building the world's largest database of bee and pollination knowledge — empowering beekeepers to manage hives right from their smartphones.
+                  We're building a comprehensive database of bee knowledge — helping beekeepers manage hives from their smartphones.
                 </p>
               </CardContent>
             </Card>
@@ -139,9 +139,9 @@ const Careers = () => {
       {/* Innovation DNA Extra Section */}
       <section className="py-20 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 max-w-4xl text-center">
-          <h2 className="text-3xl font-bold mb-6">Innovation - It's in our DNA</h2>
+          <h2 className="text-3xl font-bold mb-6">Built for Progress</h2>
           <p className="text-lg opacity-90 leading-relaxed mb-8">
-            With AI and machine learning, we're decoding colony behavior to better understand and support bee health. At the same time, growers are using our state-of-the-art pollination platform to boost crop outcomes. Pretty cool, right? TIME magazine thought so too!
+            Using data analytics, we're studying colony behavior to better understand and support bee health. At the same time, growers are using our advanced pollination platform to boost crop outcomes.
           </p>
           <Button variant="secondary" className="gap-2 font-bold">
             Check out The Buzz Blog <ArrowRight className="h-4 w-4" />

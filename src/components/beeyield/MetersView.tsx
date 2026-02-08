@@ -57,7 +57,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
     const [usageFilter, setUsageFilter] = useState<'Water' | 'Heat' | 'Energy' | 'Other'>('Water');
     const [aiMessage, setAiMessage] = useState('');
     const [chatMessages, setChatMessages] = useState([
-        { role: 'assistant', content: 'Hi! I can help with meter operations and billing.' },
+        { role: 'assistant', content: 'Syncing with grid telemetry. How can I assist with your utility operations today?' },
     ]);
 
     useEffect(() => {
@@ -119,7 +119,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
             setTimeout(() => {
                 setChatMessages(prev => [...prev, {
                     role: 'assistant',
-                    content: 'I am analyzing the real-time meter data. Currently, I see ' + meters.length + ' active devices in the system.'
+                    content: 'Analysis complete. I recommend checking the Water Gate 04 in Kibwezi; flow rate is slightly above nominal.'
                 }]);
             }, 1000);
         }
@@ -127,171 +127,180 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
 
     if (loading && activeSubTab === 'meters-dashboard') {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-                <Loader2 className="w-10 h-10 animate-spin text-[#1B9157]" />
-                <p className="text-gray-500 font-medium font-mono text-xs">Syncing utility data...</p>
+            <div className="flex flex-col items-center justify-center min-h-[500px] space-y-6">
+                <div className="w-16 h-16 border-4 border-amber-100 border-t-[#FF9100] rounded-full animate-spin" />
+                <p className="text-slate-400 font-black text-[10px] uppercase tracking-[0.3em]">Calibrating Sensors</p>
             </div>
         );
     }
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500 pb-12">
-            <h1 className="text-[2.5rem] font-bold text-[#1B9157] dark:text-[#F4D03F] tracking-tight">Meters Overview</h1>
+        <div className="space-y-10 animate-in fade-in duration-500 pb-12">
+            <div>
+                <h1 className="text-[3rem] font-black text-slate-800 tracking-tighter leading-none">
+                    Resource Analytics
+                </h1>
+                <p className="text-slate-500 mt-2 font-medium">Monitoring water, energy, and thermal efficiency across the network.</p>
+            </div>
 
             {/* Usage Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {['Water', 'Heat', 'Energy'].map(medium => {
                     const { total, unit } = getUsageByMedium(medium);
                     const Icon = medium === 'Water' ? Droplet : medium === 'Heat' ? ThermometerSun : Zap;
                     const alertCount = meters.filter(m => m.meter_type === medium && m.has_alarm).length;
 
                     return (
-                        <Card key={medium} className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm p-5 border-t-4 border-t-[#F4D03F]">
-                            <div className="flex items-start justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center",
-                                        medium === 'Water' ? "bg-blue-50" : medium === 'Heat' ? "bg-orange-50" : "bg-yellow-50")}>
-                                        <Icon className={cn("w-5 h-5",
-                                            medium === 'Water' ? "text-blue-500" : medium === 'Heat' ? "text-orange-500" : "text-yellow-500")} />
+                        <Card key={medium} className="rounded-[2rem] border-none bg-white shadow-xl shadow-slate-200/40 p-8 group relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-24 h-24 bg-slate-50 rounded-full -mr-12 -mt-12 transition-transform group-hover:scale-110" />
+
+                            <div className="flex items-start justify-between relative z-10">
+                                <div className="flex items-center gap-4">
+                                    <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg",
+                                        medium === 'Water' ? "bg-blue-50 text-blue-500" : medium === 'Heat' ? "bg-orange-50 text-orange-500" : "bg-yellow-50 text-amber-500")}>
+                                        <Icon className="w-6 h-6" />
                                     </div>
-                                    <div>
-                                        <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">{medium}</p>
-                                    </div>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{medium}</p>
                                 </div>
-                                <Badge className={cn("border-0 text-[10px] font-bold px-2",
-                                    alertCount > 0 ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700")}>
-                                    {alertCount > 0 ? 'ALERTS' : 'STABLE'}
-                                </Badge>
+                                <div className={cn("px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider",
+                                    alertCount > 0 ? "bg-red-50 text-red-600" : "bg-green-50 text-green-600")}>
+                                    {alertCount > 0 ? 'ALERTS' : 'NOMINAL'}
+                                </div>
                             </div>
-                            <div className="mt-4">
-                                <p className="text-xl font-black text-gray-900 dark:text-white">{total} <span className="text-xs font-normal text-gray-400">{unit}</span></p>
-                                <p className="text-[10px] text-gray-400 mt-1 uppercase font-bold tracking-tighter">Current total consumption</p>
+
+                            <div className="mt-8 relative z-10">
+                                <div className="flex items-baseline gap-1">
+                                    <span className="text-3xl font-black text-slate-800">{total}</span>
+                                    <span className="text-sm font-bold text-slate-400">{unit}</span>
+                                </div>
+                                <p className="text-[10px] text-slate-400 mt-2 uppercase font-black tracking-widest">Aggregate Flow</p>
                             </div>
                         </Card>
                     );
                 })}
 
-                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm p-5 border-t-4 border-t-[#F4D03F]">
+                <Card className="rounded-[2rem] border-none bg-slate-800 p-8 text-white shadow-xl shadow-slate-900/10">
                     <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-950/30 flex items-center justify-center">
-                                <AlertTriangle className="w-5 h-5 text-red-500" />
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center">
+                                <AlertTriangle className="w-6 h-6 text-amber-400" />
                             </div>
-                            <div>
-                                <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">Events</p>
-                            </div>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ecosystem</p>
                         </div>
-                        <Badge className={cn("border-0 text-[10px] font-bold px-2",
-                            activeAlarmsCount > 0 ? "bg-red-500 text-white" : "bg-green-100 text-green-700")}>
-                            {activeAlarmsCount} ACTIVE
-                        </Badge>
                     </div>
-                    <div className="mt-4">
-                        <p className="text-xl font-black text-gray-900 dark:text-white">{events.length}</p>
-                        <p className="text-[10px] text-gray-400 mt-1 uppercase font-bold tracking-tighter">Total events in history</p>
+                    <div className="mt-8">
+                        <div className="flex items-baseline gap-3">
+                            <span className="text-4xl font-black">{activeAlarmsCount}</span>
+                            <span className="text-xs font-bold text-[#FF9100] uppercase tracking-widest">Active Alerts</span>
+                        </div>
+                        <p className="text-[10px] text-slate-400 mt-2 uppercase font-black tracking-widest">Immediate action required</p>
                     </div>
                 </Card>
             </div>
 
             {/* Main Content Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm overflow-hidden">
-                    <CardHeader className="p-6 pb-4">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <TrendingUp className="w-5 h-5 text-gray-400" />
-                                <CardTitle className="text-lg font-bold">Usage trend</CardTitle>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                <Card className="lg:col-span-12 rounded-[2.5rem] border-none bg-white shadow-xl shadow-slate-200/40 p-10 overflow-hidden">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-10">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-[#FF9100]/10 rounded-2xl flex items-center justify-center">
+                                <TrendingUp className="w-6 h-6 text-[#FF9100]" />
+                            </div>
+                            <div>
+                                <h3 className="text-2xl font-black text-slate-800 tracking-tight leading-none">Usage Trajectory</h3>
+                                <p className="text-slate-400 text-sm font-medium mt-1">Combined sensor telemetry for the past 14 days.</p>
                             </div>
                         </div>
-                        <div className="flex gap-2 mt-4">
+                        <div className="flex bg-slate-50 border border-slate-100 rounded-2xl p-1 gap-1">
                             {['Water', 'Heat', 'Energy'].map(m => (
                                 <Button
                                     key={m}
-                                    variant={usageFilter === m ? 'default' : 'outline'}
-                                    size="sm"
-                                    className="h-8 rounded-xl text-xs"
+                                    variant="ghost"
+                                    className={cn("h-11 px-8 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all",
+                                        usageFilter === m ? "bg-white text-slate-800 shadow-md" : "text-slate-400")}
                                     onClick={() => setUsageFilter(m as any)}
                                 >{m}</Button>
                             ))}
                         </div>
-                    </CardHeader>
-                    <CardContent className="p-6 pt-0">
-                        <div className="h-[280px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart data={usageTrendData}>
-                                    <defs>
-                                        <linearGradient id="colorUsage" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#1B9157" stopOpacity={0.2} />
-                                            <stop offset="95%" stopColor="#1B9157" stopOpacity={0} />
-                                        </linearGradient>
-                                    </defs>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                                    <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 10 }} />
-                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 10 }} />
-                                    <Tooltip contentStyle={{ borderRadius: '12px' }} />
-                                    <Area type="monotone" dataKey="value" stroke="#1B9157" fillOpacity={1} fill="url(#colorUsage)" strokeWidth={3} />
-                                </AreaChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm overflow-hidden border-t-2 border-[#1B9157]/10">
-                    <CardHeader className="p-6 pb-4 flex flex-row items-center justify-between">
-                        <CardTitle className="text-lg font-bold text-[#1B9157]">Recent events</CardTitle>
-                        <Button variant="ghost" size="sm" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest" onClick={() => onTabChange('meters-alarms')}>View all</Button>
-                    </CardHeader>
-                    <CardContent className="p-6 pt-0 max-h-[380px] overflow-y-auto custom-scrollbar">
-                        <div className="space-y-4">
-                            {events.slice(0, 5).map((event) => (
-                                <div key={event.id} className="flex items-start justify-between gap-4 pb-4 border-b border-gray-100 dark:border-gray-800 last:border-0 last:pb-0">
-                                    <div className="flex items-start gap-3">
-                                        <div className={cn("w-2 h-2 rounded-full mt-1.5",
-                                            event.severity === 'CRITICAL' || event.severity === 'ALERT' ? "bg-red-500" : "bg-amber-500")} />
-                                        <div>
-                                            <span className="text-sm font-bold block">{event.event_type}</span>
-                                            <p className="text-[11px] text-gray-500 line-clamp-1">{event.message || event.reason}</p>
-                                        </div>
-                                    </div>
-                                    <span className="text-[10px] text-gray-400 font-mono">{new Date(event.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-
-            {/* AI Assistant Card */}
-            <Card className="rounded-3xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm overflow-hidden border-t-4 border-t-[#F4D03F]">
-                <CardHeader className="p-6 pb-4">
-                    <div className="flex items-center gap-2">
-                        <Bot className="w-5 h-5 text-[#1B9157]" />
-                        <CardTitle className="text-lg font-bold text-[#1B9157]">Meters Expert AI</CardTitle>
                     </div>
-                </CardHeader>
-                <CardContent className="p-6 pt-0">
-                    <div className="space-y-3 mb-6">
-                        {chatMessages.map((msg, idx) => (
-                            <div key={idx} className={cn("py-3 px-4 rounded-2xl max-w-[85%] text-sm",
-                                msg.role === 'assistant' ? "bg-gray-50 dark:bg-gray-800" : "bg-[#F4D03F]/10 border border-[#F4D03F]/20 ml-auto")}>
-                                {msg.content}
+
+                    <div className="h-[400px] w-full mt-4">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={usageTrendData}>
+                                <defs>
+                                    <linearGradient id="colorUsage" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#FF9100" stopOpacity={0.15} />
+                                        <stop offset="95%" stopColor="#FF9100" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="6 6" vertical={false} stroke="#f1f5f9" />
+                                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#cbd5e1', fontSize: 10, fontWeight: 900 }} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#cbd5e1', fontSize: 10, fontWeight: 900 }} />
+                                <Tooltip
+                                    contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 20px 50px -12px rgba(0,0,0,0.1)', padding: '15px' }}
+                                    itemStyle={{ fontWeight: 900, fontSize: '12px' }}
+                                />
+                                <Area type="monotone" dataKey="value" stroke="#FF9100" fillOpacity={1} fill="url(#colorUsage)" strokeWidth={4} />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </div>
+                </Card>
+
+                <Card className="lg:col-span-5 rounded-[2.5rem] border-none bg-white shadow-xl shadow-slate-200/40 p-10 flex flex-col items-center justify-center text-center relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 w-full h-2 bg-[#1B9157]/20" />
+                    <div className="w-20 h-20 bg-[#1B9157]/10 rounded-[2rem] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <Bot className="w-10 h-10 text-[#1B9157]" />
+                    </div>
+                    <h3 className="text-2xl font-black text-slate-800 tracking-tight leading-none">Expert Oracle</h3>
+                    <p className="text-slate-400 font-medium text-sm mt-3 px-6">
+                        Real-time diagnostics and efficiency recommendations powered by BeeHUB Analytics.
+                    </p>
+
+                    <div className="mt-10 w-full bg-slate-50 rounded-[2rem] p-6 text-left">
+                        {chatMessages.slice(-1).map((msg, idx) => (
+                            <div key={idx} className="text-xs font-bold text-slate-600 leading-relaxed italic">
+                                "{msg.content}"
                             </div>
                         ))}
                     </div>
-                    <div className="flex gap-2">
+
+                    <div className="mt-6 w-full flex gap-3">
                         <Input
-                            placeholder="How many water meters have alerts?"
-                            value={aiMessage}
-                            onChange={e => setAiMessage(e.target.value)}
-                            onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
-                            className="h-12 rounded-xl border-gray-100"
+                            placeholder="Query network..."
+                            className="h-14 rounded-2xl border-none bg-slate-50 text-xs font-black px-6"
                         />
-                        <Button onClick={handleSendMessage} className="h-12 w-12 rounded-xl bg-[#F4D03F] hover:bg-yellow-500 text-black shadow-sm flex items-center justify-center p-0">
+                        <Button className="h-14 w-14 rounded-2xl bg-[#FF9100] hover:bg-[#F57C00] text-white shadow-xl shadow-amber-500/20">
                             <Send className="w-5 h-5" />
                         </Button>
                     </div>
-                </CardContent>
-            </Card>
+                </Card>
+
+                <Card className="lg:col-span-7 rounded-[2.5rem] border-none bg-white shadow-xl shadow-slate-200/40 p-10">
+                    <div className="flex items-center justify-between mb-8">
+                        <div>
+                            <h3 className="text-2xl font-black text-slate-800 tracking-tight leading-none italic">Event Log</h3>
+                            <p className="text-slate-400 text-xs font-black uppercase mt-1 tracking-widest">Telemetry Stream</p>
+                        </div>
+                        <Button variant="ghost" className="text-[10px] font-black text-[#1B9157] tracking-widest uppercase" onClick={() => onTabChange('meters-alarms')}>Logs Archive</Button>
+                    </div>
+
+                    <div className="space-y-6">
+                        {events.slice(0, 4).map((event) => (
+                            <div key={event.id} className="flex items-center justify-between p-4 rounded-2xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100 group">
+                                <div className="flex items-center gap-5">
+                                    <div className={cn("w-3 h-3 rounded-full shadow-sm",
+                                        event.severity === 'CRITICAL' || event.severity === 'ALERT' ? "bg-red-500 animate-pulse" : "bg-amber-400")} />
+                                    <div>
+                                        <span className="text-[14px] font-black text-slate-800 block leading-none">{event.event_type}</span>
+                                        <p className="text-[11px] text-slate-400 font-medium mt-1 uppercase tracking-widest">{event.reason}</p>
+                                    </div>
+                                </div>
+                                <span className="text-[10px] text-slate-300 font-black uppercase group-hover:text-slate-400 transition-colors">{new Date(event.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                            </div>
+                        ))}
+                    </div>
+                </Card>
+            </div>
         </div>
     );
 };

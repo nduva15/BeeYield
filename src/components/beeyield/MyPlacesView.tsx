@@ -110,7 +110,7 @@ const ApiaryDetailView = ({ apiary, setViewingApiary }: { apiary: Apiary; setVie
             </div>
 
             <div className="space-y-6 mx-2">
-                {/* IoT Sensory Hub (Ported from Precision Pollination Stats) */}
+                {/* Field Summary */}
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
                     <StatCard label="Total Hives" value={stats.total} colorClass="bg-[#F4D03F]" />
                     <StatCard label="Healthy" value={stats.healthy} colorClass="bg-[#1B9157]" />

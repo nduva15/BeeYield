@@ -31,8 +31,8 @@ const FlightMapView: React.FC = () => {
         <div className="space-y-6 animate-in fade-in duration-500 pb-12">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">Flight Map</h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Real-time bee activity and forage path tracking.</p>
+                    <h1 className="text-[2.5rem] font-bold text-[#0F172A] tracking-tight">Flight Map</h1>
+                    <p className="text-gray-500 mt-1">Real-time bee activity and forage path tracking.</p>
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline" size="sm" className="rounded-xl border-gray-200" onClick={() => setIsPlaying(!isPlaying)}>
@@ -48,7 +48,7 @@ const FlightMapView: React.FC = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 {/* Map View */}
-                <Card className="lg:col-span-8 rounded-[2.5rem] border-none bg-slate-900 overflow-hidden shadow-2xl relative min-h-[500px]">
+                <Card className="lg:col-span-8 rounded-[2.5rem] border border-slate-100 bg-slate-50 overflow-hidden shadow-2xl relative min-h-[500px]">
                     <div className="absolute inset-0 opacity-20 pointer-events-none"
                         style={{ backgroundImage: 'radial-gradient(circle, #1B9157 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
@@ -66,7 +66,7 @@ const FlightMapView: React.FC = () => {
                                         strokeWidth="1"
                                         fill="none"
                                         initial={{ pathLength: 0, opacity: 0 }}
-                                        animate={{ pathLength: 1, opacity: 0.3 }}
+                                        animate={{ pathLength: 1, opacity: 0.6 }}
                                         transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
                                     />
                                 );
@@ -88,7 +88,7 @@ const FlightMapView: React.FC = () => {
                             )}>
                                 {point.type === 'hive' ? <Navigation className="w-2 h-2 text-white" /> : <div className="w-1 h-1 bg-white rounded-full" />}
                             </div>
-                            <div className="absolute top-6 left-1/2 -translate-x-1/2 whitespace-nowrap bg-black/80 px-2 py-1 rounded text-[8px] font-bold text-white opacity-0 group-hover:opacity-100 uppercase">
+                            <div className="absolute top-6 left-1/2 -translate-x-1/2 whitespace-nowrap bg-white px-2 py-1 rounded text-[8px] font-bold text-slate-900 border border-slate-200 opacity-0 group-hover:opacity-100 uppercase shadow-sm">
                                 {point.type === 'hive' ? `Hive ${point.id}` : 'Forage Area'}
                             </div>
                         </motion.div>
@@ -97,11 +97,11 @@ const FlightMapView: React.FC = () => {
                     <div className="absolute bottom-6 left-6 flex gap-4">
                         <div className="flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full bg-[#1B9157]" />
-                            <span className="text-[10px] font-bold text-white/50 uppercase tracking-widest">Active Hives</span>
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active Hives</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full bg-[#F4D03F]" />
-                            <span className="text-[10px] font-bold text-white/50 uppercase tracking-widest">Forage Zones</span>
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Forage Zones</span>
                         </div>
                     </div>
 
@@ -114,27 +114,27 @@ const FlightMapView: React.FC = () => {
 
                 {/* Info Sidebar */}
                 <div className="lg:col-span-4 space-y-6">
-                    <Card className="rounded-[2rem] border-none bg-white dark:bg-[#09090b] shadow-sm p-6 border-t-4 border-t-[#1B9157]">
+                    <Card className="rounded-[2rem] border-none bg-white shadow-sm p-6 border-t-4 border-t-[#1B9157]">
                         <h3 className="text-sm font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Flight Stats</h3>
                         <div className="space-y-4">
                             <div className="flex justify-between items-end border-b border-gray-50 pb-2">
                                 <span className="text-sm font-medium text-gray-500">Active Bees/m²</span>
-                                <span className="text-xl font-black text-gray-900 dark:text-white">124</span>
+                                <span className="text-xl font-black text-gray-900">124</span>
                             </div>
                             <div className="flex justify-between items-end border-b border-gray-50 pb-2">
                                 <span className="text-sm font-medium text-gray-500">Avg Trip Duration</span>
-                                <span className="text-xl font-black text-gray-900 dark:text-white">12.4 min</span>
+                                <span className="text-xl font-black text-gray-900">12.4 min</span>
                             </div>
                             <div className="flex justify-between items-end border-b border-gray-50 pb-2">
                                 <span className="text-sm font-medium text-gray-500">Forage Range</span>
-                                <span className="text-xl font-black text-gray-900 dark:text-white">2.4 km</span>
+                                <span className="text-xl font-black text-gray-900">2.4 km</span>
                             </div>
                         </div>
                     </Card>
 
-                    <Card className="rounded-[2rem] border-none bg-white dark:bg-[#09090b] shadow-sm p-6 border-t-4 border-t-[#F4D03F]">
+                    <Card className="rounded-[2rem] border-none bg-white shadow-sm p-6 border-t-4 border-t-[#F4D03F]">
                         <h3 className="text-sm font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Activity Heatmap</h3>
-                        <div className="aspect-square bg-slate-50 dark:bg-slate-900 rounded-2xl flex items-center justify-center border border-dashed border-gray-200">
+                        <div className="aspect-square bg-slate-50 rounded-2xl flex items-center justify-center border border-dashed border-gray-200">
                             <Activity className="w-12 h-12 text-gray-200" />
                         </div>
                     </Card>

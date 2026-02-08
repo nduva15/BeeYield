@@ -38,9 +38,9 @@ import SettingsView from '@/components/beeyield/SettingsView';
 import PrecisionPollinationView from '@/components/beeyield/PrecisionPollinationView';
 import {
     BeeYieldOnlineView,
-    BluetoothView,
     USBView
 } from '@/components/beeyield/RemainingViews';
+import { BluetoothConnectivityView } from '@/components/beeyield/BluetoothConnectivityView';
 
 import MyRequestsView from '@/components/beeyield/MyRequestsView';
 import MyNotesView from '@/components/beeyield/MyNotesView';
@@ -71,6 +71,7 @@ const BeeYieldDashboard: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [devices, setDevices] = useState<IoTDevice[]>([]);
     const [readings, setReadings] = useState<SensorReading[]>([]);
+    const [apiaries, setApiaries] = useState<any[]>([]);
     const [activeTab, setActiveTab] = useState('devices');
     const [aiInitialMessage, setAiInitialMessage] = useState<string | null>(null);
     const [tabInitialAction, setTabInitialAction] = useState<string | null>(null);
@@ -100,12 +101,14 @@ const BeeYieldDashboard: React.FC = () => {
 
             setLoading(true);
             try {
-                const [devicesData, readingsData] = await Promise.all([
+                const [devicesData, readingsData, apiariesData] = await Promise.all([
                     beeyieldService.getDevices(),
-                    beeyieldService.getSensorReadings(undefined, 24 * 7) // Get last 7 days for stats
+                    beeyieldService.getSensorReadings(undefined, 24 * 7), // Get last 7 days for stats
+                    beeyieldService.getApiaries()
                 ]);
                 setDevices(devicesData);
                 setReadings(readingsData);
+                setApiaries(apiariesData);
             } catch (error) {
                 console.error('Failed to load dashboard data', error);
                 toast.error(t('error_load_dashboard'));
@@ -270,9 +273,9 @@ const BeeYieldDashboard: React.FC = () => {
             case 'online':
                 return <BeeYieldOnlineView onTabChange={handleTabChange} />;
             case 'bluetooth':
-                return <BluetoothView onTabChange={handleTabChange} />;
+                return <BluetoothConnectivityView onTabChange={handleTabChange} />;
             case 'devices':
-                return <MyDevicesView devices={devices} readings={readings} onTabChange={handleTabChange} />;
+                return <MyDevicesView devices={devices} readings={readings} apiaries={apiaries} onTabChange={handleTabChange} />;
             case 'usb':
                 return <USBView onTabChange={handleTabChange} />;
             case 'notes':
@@ -330,14 +333,14 @@ const BeeYieldDashboard: React.FC = () => {
                 return <HealthGuideView onTabChange={handleTabChange} />;
             default:
                 return (
-                    <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8 bg-white dark:bg-[#09090b] rounded-[2.5rem] border border-dashed border-gray-200 dark:border-[#1e1e1e]">
-                        <div className="w-16 h-16 bg-gray-50 dark:bg-[#1e1e1e] rounded-2xl flex items-center justify-center mb-4">
+                    <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8 bg-white rounded-[2.5rem] border border-dashed border-gray-200">
+                        <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mb-4">
                             <Box className="w-8 h-8 text-gray-400" />
                         </div>
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                        <h3 className="text-lg font-medium text-gray-900">
                             {navItems.find(i => i.id === activeTab)?.label || t('view_content')}
                         </h3>
-                        <p className="text-gray-500 dark:text-gray-400 mt-1 max-w-sm font-medium">
+                        <p className="text-gray-500 mt-1 max-w-sm font-medium">
                             {t('under_development')}
                         </p>
                     </div>
@@ -361,43 +364,49 @@ const BeeYieldDashboard: React.FC = () => {
     // 1. User is not logged in OR does not have a Pollination account: Show Login/Register
     if (!user || !isBeeYieldActive) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#050505] text-white font-mono">
-                <div className="max-w-md w-full text-center space-y-8">
-                    <div className="w-24 h-24 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto border border-primary/20 relative">
-                        <Hexagon className="h-12 w-12 text-primary" />
-                        <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full opacity-50" />
-                    </div>
-                    <div className="space-y-4">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 mb-2">
-                            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                            <span className="text-[10px] font-bold text-red-500 tracking-widest uppercase">{t('access_denied')}</span>
-                        </div>
-                        <h1 className="text-4xl font-black tracking-tighter">{t('restricted_airspace')}</h1>
-                        {t('auth_mandatory')}
+            <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-[#FAF9F6] relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#F4D03F]/[0.03] rounded-full -mr-64 -mt-64 blur-3xl animate-pulse" />
+                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#1B9157]/[0.02] rounded-full -ml-32 -mb-32 blur-2xl" />
+
+                <div className="max-w-md w-full text-center space-y-10 relative z-10">
+                    <div className="w-32 h-32 rounded-[2.5rem] bg-white flex items-center justify-center mx-auto shadow-2xl shadow-amber-500/10 border border-amber-100/50 relative group">
+                        <Hexagon className="h-14 w-14 text-[#FF9100] transition-transform duration-700 group-hover:rotate-60" />
+                        <div className="absolute inset-0 bg-amber-500/5 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
 
-                    <div className="grid gap-3">
+                    <div className="space-y-6">
+                        <div className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-red-50 border border-red-100 mb-2">
+                            <div className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                            <span className="text-[10px] font-black text-red-600 tracking-[0.2em] uppercase">{t('access_denied')}</span>
+                        </div>
+                        <h1 className="text-5xl font-black tracking-tighter text-slate-800 leading-none">{t('restricted_airspace')}</h1>
+                        <p className="text-slate-500 font-medium text-lg max-w-[300px] mx-auto leading-tight">
+                            {t('auth_mandatory')}
+                        </p>
+                    </div>
+
+                    <div className="grid gap-4 w-full">
                         <Button
                             onClick={() => navigate('/beeyield-login')}
-                            className="w-full h-14 text-sm font-black rounded-xl bg-primary text-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all"
+                            className="w-full h-16 text-sm font-black rounded-2xl bg-[#FF9100] text-white hover:bg-[#F57C00] uppercase tracking-widest shadow-xl shadow-amber-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
                         >
-                            <LogIn className="w-4 h-4 mr-2" /> {t('authenticate_session')}
+                            <LogIn className="w-5 h-5 mr-3" /> {t('authenticate_session')}
                         </Button>
                         <Button
                             variant="ghost"
                             onClick={() => navigate('/shop')}
-                            className="w-full h-14 text-white/40 hover:text-white transition-colors uppercase tracking-widest text-[10px] font-bold"
+                            className="w-full h-16 text-slate-400 hover:text-slate-600 transition-all uppercase tracking-widest text-[11px] font-black group"
                         >
-                            <ArrowLeft className="w-4 h-4 mr-2" /> {t('return_public_shop')}
+                            <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" /> {t('return_public_shop')}
                         </Button>
                     </div>
 
-                    <div className="pt-8 border-t border-white/5 flex flex-col items-center gap-2">
-                        <div className="flex gap-4">
-                            <Shield className="h-3 w-3 text-white/10" />
-                            <Lock className="h-3 w-3 text-white/10" />
+                    <div className="pt-10 border-t border-slate-100 flex flex-col items-center gap-4">
+                        <div className="flex gap-6 opacity-30">
+                            <Shield className="h-5 w-5 text-slate-400" />
+                            <Lock className="h-5 w-5 text-slate-400" />
                         </div>
-                        <p className="text-[8px] text-white/10 tracking-[0.3em]">{t('encrypted_kernel_access')}</p>
+                        <p className="text-[9px] text-slate-300 font-black tracking-[0.4em] uppercase">{t('encrypted_kernel_access')}</p>
                     </div>
                 </div>
             </div>

@@ -17,7 +17,7 @@ const GlobalHiveNetwork = () => {
       <section className="relative py-16 sm:py-20 md:py-24 lg:py-32 bg-gradient-to-br from-secondary via-background to-primary/10 overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 relative z-10 text-center max-w-4xl">
           <Badge className="mb-4 sm:mb-6 bg-primary/10 text-primary border-primary/20 text-xs sm:text-sm">
-            A Planetary Initiative
+            A Global Effort
           </Badge>
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 tracking-tight text-foreground px-2">
             Saving Africa and the World's Pollinators
@@ -56,7 +56,7 @@ const GlobalHiveNetwork = () => {
                 <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center">
                   <Activity className="h-4 w-4 text-primary" />
                 </div>
-                <span className="font-bold text-base text-foreground/80">Intelligent Hives</span>
+                <span className="font-bold text-base text-foreground/80">Technical Hives</span>
               </div>
             </div>
           </div>
@@ -118,7 +118,7 @@ const GlobalHiveNetwork = () => {
       <section className="py-24 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-4xl font-bold mb-6 text-foreground">A Data-Driven Approach to African Agriculture</h2>
+            <h2 className="text-4xl font-bold mb-6 text-foreground">A Research-Based Approach to African Agriculture</h2>
             <p className="text-xl text-muted-foreground leading-relaxed">
               To address this crisis, BeeYield is bringing precision pollination technology to African farmers. We're partnering with local beekeepers and agricultural communities to monitor hive health, optimize pollination, and improve yields for crops that feed millions.
             </p>
@@ -131,7 +131,7 @@ const GlobalHiveNetwork = () => {
                   <Globe className="h-8 w-8 text-primary" />
                 </div>
                 <p className="text-sm font-bold text-primary uppercase tracking-wider mb-2">GOAL 1</p>
-                <h3 className="text-2xl font-bold mb-4 text-foreground">Smart Hives Network</h3>
+                <h3 className="text-2xl font-bold mb-4 text-foreground">Technical Hives Network</h3>
                 <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">Target: 2M hives</p>
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   Building a network of sensor-equipped hives across Makueni and Kitui Counties, empowering local beekeepers with real-time colony health data and precision pollination insights.
@@ -145,10 +145,10 @@ const GlobalHiveNetwork = () => {
                   <Activity className="h-8 w-8 text-primary" />
                 </div>
                 <p className="text-sm font-bold text-primary uppercase tracking-wider mb-2">GOAL 2</p>
-                <h3 className="text-2xl font-bold mb-4 text-foreground">Daily Health Signals</h3>
+                <h3 className="text-2xl font-bold mb-4 text-foreground">Health Monitoring</h3>
                 <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">Target: 100M+ signals</p>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  Collecting millions of daily bee health signals to build Africa's most comprehensive pollinator health dataset, helping farmers optimize crop pollination timing.
+                  Collecting daily bee health data to build a comprehensive healthy hive record, helping farmers optimize crop pollination timing.
                 </p>
               </CardContent>
             </Card>
@@ -173,7 +173,7 @@ const GlobalHiveNetwork = () => {
       {/* Global Case Studies */}
       <section className="py-24 bg-muted/30">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-4 text-foreground">Pioneering Work Across Africa and the World</h2>
+          <h2 className="text-4xl font-bold text-center mb-4 text-foreground">Our Work Across Africa</h2>
           <div className="w-20 h-1 bg-primary mx-auto rounded-full mb-16" />
 
           <div className="space-y-16 max-w-6xl mx-auto">
@@ -214,7 +214,7 @@ const GlobalHiveNetwork = () => {
                 <Badge className="mb-4 bg-blue-100 text-blue-700 border-blue-200">
                   <MapPin className="h-3 w-3 mr-1" /> KITUI COUNTY
                 </Badge>
-                <h3 className="text-3xl font-bold mb-4 text-foreground">Vegetable Crop Revolution</h3>
+                <h3 className="text-3xl font-bold mb-4 text-foreground">Improved Vegetable Production</h3>
                 <p className="text-muted-foreground leading-relaxed mb-6">
                   Working with smallholder farmers in Kitui County, we're transforming bean and tomato production through precision pollination. Our sensors track pollinator activity in real-time, helping farmers time their interventions perfectly.
                 </p>
@@ -288,7 +288,7 @@ const GlobalHiveNetwork = () => {
                 <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
                   <Activity className="h-6 w-6 text-primary" />
                 </div>
-                <span className="font-bold text-lg">Intelligent Hives</span>
+                <span className="font-bold text-lg">Technical Hives</span>
               </div>
             </div>
           </div>

@@ -101,10 +101,10 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
                         <Shield className="w-6 h-6 text-white stroke-[2.2]" />
                     </motion.div>
                     <div className="flex flex-col">
-                        <h1 className="text-[19px] font-black text-gray-900 tracking-[-0.03em] leading-none mb-1.5">BeeYield</h1>
+                        <h1 className="text-[19px] font-bold text-gray-900 tracking-[-0.03em] leading-none mb-1.5">BeeYield</h1>
                         <div className="flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                            <span className="text-[10px] font-black text-gray-400 tracking-[0.08em] uppercase">Control Panel</span>
+                            <span className="text-[10px] font-bold text-gray-400 tracking-[0.08em] uppercase">Control Panel</span>
                         </div>
                     </div>
                 </motion.div>
@@ -191,7 +191,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
 
                 <div className="pt-4 border-t border-gray-100">
                     <div className="px-4 pb-4">
-                        <span className="text-[10px] font-black text-gray-300 uppercase tracking-[0.15em]">Admin Utility</span>
+                        <span className="text-[10px] font-bold text-gray-300 uppercase tracking-[0.15em]">Admin Utility</span>
                     </div>
                     <div className="space-y-1">
                         {[
@@ -236,12 +236,12 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
                     whileHover={{ scale: 1.02, backgroundColor: '#FEF2F2', color: '#EF4444' }}
                     whileTap={{ scale: 0.98 }}
                     onClick={onLogout}
-                    className="w-full flex items-center gap-4 px-4 py-3.5 rounded-[18px] border border-gray-200 bg-white text-gray-400 transition-all font-black text-[13px] shadow-sm uppercase tracking-wider"
+                    className="w-full flex items-center gap-4 px-4 py-3.5 rounded-[18px] border border-gray-200 bg-white text-gray-400 transition-all font-bold text-[13px] shadow-sm uppercase tracking-wider"
                 >
                     <LogOut className="w-5 h-5" />
                     <span>Terminate Session</span>
                 </motion.button>
-                <p className="text-[9px] text-gray-300 font-black text-center pt-5 tracking-[0.1em] uppercase">
+                <p className="text-[9px] text-gray-300 font-bold text-center pt-5 tracking-[0.1em] uppercase">
                     Admin Protocol v4.0.2
                 </p>
             </motion.div>

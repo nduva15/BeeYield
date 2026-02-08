@@ -230,37 +230,37 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
         <div className="space-y-8 animate-in fade-in duration-500 pb-12 relative">
             {/* Page Title */}
             <div className="flex justify-between items-center px-4">
-                <h1 className="text-[2.5rem] font-black text-slate-900 dark:text-white tracking-tight">BeeYield</h1>
+                <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Management</h1>
             </div>
 
             {/* Main Content Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-4">
-                {/* Left Side - Connected Hardware Nodes Card */}
-                <Card className="rounded-[2.5rem] border border-gray-100 dark:border-white/5 bg-white dark:bg-[#111111] shadow-sm min-h-[400px] overflow-hidden">
+                {/* Left Side - Device List */}
+                <Card className="rounded-[2.5rem] border border-slate-100 bg-white shadow-sm min-h-[400px] overflow-hidden">
                     <CardContent className="p-0 flex flex-col h-full">
-                        <div className="p-8 border-b border-gray-50 dark:border-white/5 flex items-center justify-between">
+                        <div className="p-8 border-b border-slate-50 flex items-center justify-between">
                             <div>
-                                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">CONNECTED HARDWARE NODES</h3>
+                                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Connected Hardware</h3>
                                 <div className="flex items-center gap-2">
                                     <div className="flex h-2 w-2 relative">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-20"></span>
                                         <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                                     </div>
-                                    <span className="text-[9px] font-black text-green-600 uppercase tracking-widest">Live Syncing</span>
+                                    <span className="text-[10px] font-bold text-green-600 uppercase tracking-wider">System Online</span>
                                 </div>
                             </div>
-                            <Activity className="w-5 h-5 text-green-500 opacity-20" />
+                            <ShieldCheck className="w-5 h-5 text-green-500 opacity-20" />
                         </div>
                         <div className="flex-1 overflow-y-auto max-h-[350px] custom-scrollbar">
                             <table className="w-full text-left">
-                                <thead className="bg-gray-50 dark:bg-white/[0.02] sticky top-0 z-10">
+                                <thead className="bg-slate-50 sticky top-0 z-10">
                                     <tr>
-                                        <th className="px-8 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest">Node ID</th>
-                                        <th className="px-8 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest">Status</th>
-                                        <th className="px-8 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest">Battery</th>
+                                        <th className="px-8 py-4 text-[9px] font-bold text-slate-400 uppercase tracking-wider">Device ID</th>
+                                        <th className="px-8 py-4 text-[9px] font-bold text-slate-400 uppercase tracking-wider">Status</th>
+                                        <th className="px-8 py-4 text-[9px] font-bold text-slate-400 uppercase tracking-wider">Battery</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-50 dark:divide-white/5">
+                                <tbody className="divide-y divide-slate-50">
                                     {devices.length === 0 ? (
                                         <tr>
                                             <td colSpan={3} className="py-12 text-center text-xs text-gray-400 font-bold uppercase tracking-widest">
@@ -279,9 +279,9 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                                     )}
                                                     onClick={() => linkedHive && handleOpenQuickDetails(linkedHive)}
                                                 >
-                                                    <td className="px-8 py-5 text-xs font-black text-slate-700 dark:text-slate-300 font-mono">
+                                                    <td className="px-8 py-5 text-xs font-bold text-slate-700 font-mono">
                                                         <div className="flex items-center gap-2">
-                                                            {linkedHive && <div className="w-1 h-3 bg-[#1B9157] rounded-full" />}
+                                                            {linkedHive && <div className="w-1 h-3 bg-green-600 rounded-full" />}
                                                             {device.device_code}
                                                         </div>
                                                     </td>
@@ -295,10 +295,10 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                                     </td>
                                                     <td className="px-8 py-5">
                                                         <div className="flex items-center gap-2">
-                                                            <div className="w-8 h-1 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
+                                                            <div className="w-8 h-1 bg-slate-100 rounded-full overflow-hidden">
                                                                 <div className="h-full bg-green-500" style={{ width: `${device.battery_level}%` }} />
                                                             </div>
-                                                            <span className="text-[10px] font-black text-slate-900 dark:text-white">{device.battery_level}%</span>
+                                                            <span className="text-[10px] font-bold text-slate-800">{device.battery_level}%</span>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -308,43 +308,43 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                 </tbody>
                             </table>
                         </div>
-                        <div className="p-4 bg-gray-50 dark:bg-white/[0.02] border-t border-gray-100 dark:border-white/5">
-                            <Button variant="ghost" className="w-full text-[10px] font-black text-slate-500 uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-white/5 py-6">
-                                View Network Topology <ChevronDown className="w-3 h-3 ml-2" />
+                        <div className="p-4 bg-slate-50 border-t border-slate-100">
+                            <Button variant="ghost" className="w-full text-[10px] font-bold text-slate-400 uppercase tracking-wider hover:bg-slate-100 py-6">
+                                View Device Details <ChevronDown className="w-3 h-3 ml-2" />
                             </Button>
                         </div>
                     </CardContent>
                 </Card>
 
-                {/* Right Side - Quick Vitals & Filter Card */}
+                {/* Right Side - Vitals & Filter Card */}
                 <div className="flex flex-col gap-6">
-                    <Card className="rounded-[2.5rem] border border-gray-100 dark:border-white/5 bg-white dark:bg-[#111111] p-8 shadow-sm">
+                    <Card className="rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm">
                         <div className="flex justify-between items-start mb-8">
                             <div>
-                                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">SYSTEMVITALS</h3>
-                                <p className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Operational</p>
+                                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">SYSTEM OVERVIEW</h3>
+                                <p className="text-2xl font-bold text-slate-800 uppercase tracking-tight">Active</p>
                             </div>
-                            <Zap className="w-6 h-6 text-[#F4D03F]" fill="currentColor" />
+                            <ShieldCheck className="w-6 h-6 text-amber-500" />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="p-5 rounded-3xl bg-slate-50 dark:bg-white/[0.02] border border-slate-100 dark:border-white/5">
-                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-2">Total Coverage</p>
-                                <p className="text-xl font-black text-slate-900 dark:text-white">{totalCoverageAcres} AC</p>
+                            <div className="p-5 rounded-3xl bg-slate-50 border border-slate-100">
+                                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-2">Total Area</p>
+                                <p className="text-xl font-bold text-slate-800">{totalCoverageAcres} AC</p>
                             </div>
-                            <div className="p-5 rounded-3xl bg-slate-50 dark:bg-white/[0.02] border border-slate-100 dark:border-white/5">
-                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-2">Nodes Active</p>
-                                <p className="text-xl font-black text-slate-900 dark:text-white">{activeDevices.length}</p>
+                            <div className="p-5 rounded-3xl bg-slate-50 border border-slate-100">
+                                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-2">Active Devices</p>
+                                <p className="text-xl font-bold text-slate-800">{activeDevices.length}</p>
                             </div>
                         </div>
                     </Card>
 
-                    <Card className="rounded-[2.5rem] border border-gray-100 dark:border-white/5 bg-white dark:bg-[#111111] p-8 shadow-sm flex-1">
-                        <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">GLOBAL FILTER</h3>
+                    <Card className="rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm flex-1">
+                        <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-6">LOCATION FILTER</h3>
                         <div className="space-y-6">
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Select Apiary</Label>
                                 <Select value={selectedPlace} onValueChange={setSelectedPlace}>
-                                    <SelectTrigger className="h-14 rounded-2xl bg-slate-50 dark:bg-white/[0.02] border-slate-100 dark:border-white/5 font-bold">
+                                    <SelectTrigger className="h-14 rounded-2xl bg-slate-50 border-slate-100 font-bold">
                                         <SelectValue placeholder="All Territories" />
                                     </SelectTrigger>
                                     <SelectContent className="rounded-2xl">
@@ -358,10 +358,10 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                             <Button
                                 onClick={handleExportExcel}
                                 disabled={isExporting}
-                                className="w-full h-14 rounded-2xl bg-white dark:bg-white/5 border border-slate-100 dark:border-white/5 text-slate-900 dark:text-white font-black uppercase tracking-widest text-[10px] hover:bg-slate-50 dark:hover:bg-white/10"
+                                className="w-full h-14 rounded-2xl bg-white border border-slate-100 text-slate-800 font-bold uppercase tracking-wider text-[10px] hover:bg-slate-50"
                             >
                                 {isExporting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <FileSpreadsheet className="w-4 h-4 mr-2" />}
-                                Export Logistics Data
+                                Export Data
                             </Button>
                         </div>
                     </Card>
@@ -372,11 +372,11 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
             <div className="px-4 mt-4">
                 <div className="flex items-center justify-between mb-8 px-4">
                     <div className="flex items-center gap-3">
-                        <div className="w-2 h-8 bg-[#1B9157] rounded-full" />
-                        <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight uppercase">Colony Archive</h2>
+                        <div className="w-2 h-8 bg-green-600 rounded-full" />
+                        <h2 className="text-2xl font-bold text-slate-800 tracking-tight uppercase">Hive List</h2>
                     </div>
-                    <Badge className="bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 border-none font-black px-4 py-1.5 rounded-full uppercase tracking-widest text-[9px]">
-                        {filteredHives.length} UNITS INDEXED
+                    <Badge className="bg-slate-100 text-slate-500 border-none font-bold px-4 py-1.5 rounded-full uppercase tracking-wider text-[9px]">
+                        {filteredHives.length} Hives
                     </Badge>
                 </div>
 
@@ -388,11 +388,11 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                     </div>
                 ) : filteredHives.length === 0 ? (
                     <div className="py-20 text-center px-4">
-                        <div className="w-20 h-20 bg-slate-50 dark:bg-white/[0.02] rounded-full flex items-center justify-center mx-auto mb-6">
+                        <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
                             <Box className="w-8 h-8 text-slate-200" />
                         </div>
-                        <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2 uppercase">No Archive Found</h3>
-                        <p className="text-slate-500 font-bold text-sm max-w-xs mx-auto">No hive units detected in this territory. Deploy a new module to begin tracking.</p>
+                        <h3 className="text-xl font-bold text-slate-800 mb-2 uppercase">No Hives Found</h3>
+                        <p className="text-slate-500 font-bold text-sm max-w-xs mx-auto">No hive units detected in this territory. Add a new hive to begin tracking.</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
@@ -405,18 +405,18 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                 className="group cursor-pointer"
                                 onClick={() => handleOpenQuickDetails(hive)}
                             >
-                                <Card className="bg-white dark:bg-[#111111] rounded-[2.5rem] border border-gray-100 dark:border-white/5 p-6 shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden h-full">
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-[#1B9157]/5 dark:bg-[#1B9157]/10 rounded-bl-[5rem] -mr-16 -mt-16 transition-all group-hover:scale-110" />
+                                <Card className="bg-white rounded-[2.5rem] border border-slate-100 p-6 shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden h-full">
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-bl-[5rem] -mr-16 -mt-16 transition-all group-hover:scale-110" />
 
                                     <div className="flex justify-between items-start relative z-10 mb-8">
                                         <div>
                                             <Badge className={cn(
-                                                "mb-3 border-none font-black uppercase tracking-widest text-[8px] px-3 py-1 rounded-full",
+                                                "mb-3 border-none font-bold uppercase tracking-wider text-[8px] px-3 py-1 rounded-full",
                                                 hive.status === 'ACTIVE' ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
                                             )}>
                                                 {hive.status}
                                             </Badge>
-                                            <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter uppercase">{hive.hive_code}</h3>
+                                            <h3 className="text-2xl font-bold text-slate-800 tracking-tight uppercase">{hive.hive_code}</h3>
                                         </div>
                                         <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                             <Button
@@ -452,28 +452,28 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                     <div className="space-y-6 relative z-10">
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>
-                                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Architecture</p>
-                                                <p className="text-[10px] font-bold text-slate-900 dark:text-white uppercase truncate">{hive.hive_type}</p>
+                                                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-1">Type</p>
+                                                <p className="text-[10px] font-bold text-slate-800 uppercase truncate">{hive.hive_type}</p>
                                             </div>
                                             <div>
-                                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Bee Species</p>
-                                                <p className="text-[10px] font-bold text-slate-900 dark:text-white uppercase truncate">{hive.bee_type?.split(' ')[0]}</p>
+                                                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-1">Species</p>
+                                                <p className="text-[10px] font-bold text-slate-800 uppercase truncate">{hive.bee_type?.split(' ')[0]}</p>
                                             </div>
                                         </div>
 
-                                        <div className="flex items-center justify-between pt-6 border-t border-slate-50 dark:border-white/5">
+                                        <div className="flex items-center justify-between pt-6 border-t border-slate-50">
                                             <div className="flex items-center text-slate-400">
                                                 <MapPin className="w-3 h-3 mr-1.5" />
-                                                <span className="text-[10px] font-black uppercase tracking-widest truncate max-w-[100px]">
+                                                <span className="text-[10px] font-bold uppercase tracking-wider truncate max-w-[100px]">
                                                     {apiaries.find(a => a.id === hive.apiary_id)?.name || 'Unknown'}
                                                 </span>
                                             </div>
                                             <Button
                                                 variant="ghost"
-                                                className="h-8 px-3 rounded-full bg-[#1B9157]/5 hover:bg-[#1B9157]/10 text-[#1B9157] text-[8px] font-black uppercase tracking-widest transition-all"
+                                                className="h-8 px-3 rounded-full bg-green-50 hover:bg-green-100 text-green-600 text-[8px] font-bold uppercase tracking-wider transition-all"
                                                 onClick={(e) => handleRequestInspection(hive, e)}
                                             >
-                                                Request Sync
+                                                Refresh Data
                                             </Button>
                                         </div>
                                     </div>
@@ -503,21 +503,21 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                             </Button>
                             <Button
                                 onClick={() => { onTabChange('task', undefined, 'add'); setShowFab(false); }}
-                                className="bg-[#F4D03F] hover:bg-[#d4af37] text-black rounded-full pl-4 pr-5 h-12 font-black text-[10px] shadow-2xl flex items-center gap-2 border-2 border-white dark:border-[#141414] uppercase tracking-widest"
+                                className="bg-amber-400 hover:bg-amber-500 text-slate-800 rounded-full pl-4 pr-5 h-12 font-bold text-[10px] shadow-2xl flex items-center gap-2 border-2 border-white uppercase tracking-wider"
                             >
                                 <CheckSquare className="w-4 h-4" />
                                 TASK
                             </Button>
                             <Button
                                 onClick={() => { handleOpenAddHive(); setShowFab(false); }}
-                                className="bg-[#1B9157] hover:bg-[#167d4a] text-white rounded-full pl-4 pr-5 h-12 font-black text-[10px] shadow-2xl flex items-center gap-2 border-2 border-white dark:border-[#141414] uppercase tracking-widest"
+                                className="bg-green-600 hover:bg-green-700 text-white rounded-full pl-4 pr-5 h-12 font-bold text-[10px] shadow-2xl flex items-center gap-2 border-2 border-white uppercase tracking-wider"
                             >
                                 <Box className="w-4 h-4" />
                                 HIVE
                             </Button>
                             <Button
                                 onClick={() => { onTabChange('places'); setShowFab(false); }}
-                                className="bg-white hover:bg-slate-50 text-[#1B9157] rounded-full pl-4 pr-5 h-12 font-black text-[10px] shadow-2xl flex items-center gap-2 border-2 border-white dark:border-[#141414] uppercase tracking-widest"
+                                className="bg-white hover:bg-slate-50 text-green-600 rounded-full pl-4 pr-5 h-12 font-bold text-[10px] shadow-2xl flex items-center gap-2 border-2 border-white uppercase tracking-wider"
                             >
                                 <MapPin className="w-4 h-4" />
                                 PLACE
@@ -529,8 +529,8 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                 <Button
                     onClick={() => setShowFab(!showFab)}
                     className={cn(
-                        "w-16 h-16 rounded-full shadow-[0_20px_50px_rgba(27,145,87,0.3)] flex items-center justify-center transition-all duration-500",
-                        showFab ? "bg-slate-900 rotate-45" : "bg-[#1B9157] hover:bg-[#157d4a]"
+                        "w-16 h-16 rounded-full shadow-[0_20px_50px_rgba(22,163,74,0.3)] flex items-center justify-center transition-all duration-500",
+                        showFab ? "bg-slate-800 rotate-45" : "bg-green-600 hover:bg-green-700"
                     )}
                 >
                     <Plus className="w-8 h-8 text-white" strokeWidth={3} />
@@ -547,10 +547,10 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                             exit={{ opacity: 0, scale: 0.95 }}
                             className="w-full max-w-md"
                         >
-                            <Card className="rounded-[2rem] border-none shadow-2xl bg-white dark:bg-[#111111] overflow-hidden">
-                                <div className="p-8 border-b border-gray-50 dark:border-white/5">
+                            <Card className="rounded-[2rem] border-none shadow-2xl bg-white overflow-hidden">
+                                <div className="p-8 border-b border-slate-50">
                                     <div className="flex justify-between items-center">
-                                        <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Sync Hardware Request</h3>
+                                        <h3 className="text-xl font-bold text-slate-800 uppercase tracking-tight">Data Refresh Request</h3>
                                         <Button variant="ghost" size="icon" className="rounded-full" onClick={() => setIsRequestingInspection(false)}>
                                             <X className="w-5 h-5" />
                                         </Button>
@@ -575,14 +575,14 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                         />
                                     </div>
                                     <div className="pt-4 flex gap-3">
-                                        <Button variant="ghost" className="flex-1 h-12 rounded-xl font-black uppercase tracking-widest text-[10px]" onClick={() => setIsRequestingInspection(false)}>Cancel</Button>
+                                        <Button variant="ghost" className="flex-1 h-12 rounded-xl font-bold uppercase tracking-wider text-[10px]" onClick={() => setIsRequestingInspection(false)}>Cancel</Button>
                                         <Button
                                             onClick={submitInspectionRequest}
                                             disabled={isSavingTask}
-                                            className="flex-1 h-12 rounded-xl font-black uppercase tracking-widest text-[10px] bg-[#1B9157] hover:bg-[#157d4a] text-white"
+                                            className="flex-1 h-12 rounded-xl font-bold uppercase tracking-wider text-[10px] bg-green-600 hover:bg-green-700 text-white"
                                         >
                                             {isSavingTask ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <ClipboardCheck className="w-4 h-4 mr-2" />}
-                                            Execute Sync
+                                            Refresh Now
                                         </Button>
                                     </div>
                                 </CardContent>
@@ -607,16 +607,16 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                             initial={{ scale: 0.9, opacity: 0, y: 20 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            className="bg-white dark:bg-[#0c0c0c] w-full max-w-lg rounded-[2.5rem] shadow-2xl relative z-10 overflow-hidden border border-gray-100 dark:border-white/5"
+                            className="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl relative z-10 overflow-hidden border border-slate-100"
                         >
-                            <div className="p-8 border-b border-gray-50 dark:border-white/5 flex items-center justify-between">
+                            <div className="p-8 border-b border-slate-50 flex items-center justify-between">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center text-[#1B9157]">
+                                    <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-green-600">
                                         <StickyNote className="w-6 h-6" />
                                     </div>
                                     <div>
-                                        <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Hive Notes</h3>
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{activeHive.hive_code}</p>
+                                        <h3 className="text-xl font-bold text-slate-800 uppercase tracking-tight">Hive Notes</h3>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{activeHive.hive_code}</p>
                                     </div>
                                 </div>
                                 <Button variant="ghost" size="icon" onClick={() => setIsNotesModalOpen(false)} className="rounded-full">
@@ -629,16 +629,16 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                     <textarea
                                         value={hiveNotes}
                                         onChange={(e) => setHiveNotes(e.target.value)}
-                                        className="w-full min-h-[200px] bg-slate-50 dark:bg-white/5 border-none rounded-3xl p-6 font-bold text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-[#1B9157]/10 transition-all text-sm resize-none"
+                                        className="w-full min-h-[200px] bg-slate-50 border-none rounded-3xl p-6 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-green-500/10 transition-all text-sm resize-none"
                                         placeholder="Add notes about queen status, honey stores, temperament..."
                                     />
                                 </div>
                                 <Button
                                     onClick={handleSaveNotes}
                                     disabled={isSavingNotes}
-                                    className="w-full h-14 rounded-2xl bg-[#1B9157] hover:bg-[#167d4a] text-white font-black uppercase tracking-widest text-xs shadow-xl shadow-green-500/20"
+                                    className="w-full h-14 rounded-2xl bg-green-600 hover:bg-green-700 text-white font-bold uppercase tracking-wider text-xs shadow-xl shadow-green-500/20"
                                 >
-                                    {isSavingNotes ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : "Save Archive Notes"}
+                                    {isSavingNotes ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : "Save Notes"}
                                 </Button>
                             </div>
                         </motion.div>
@@ -661,21 +661,21 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                             initial={{ scale: 0.9, opacity: 0, y: 20 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            className="bg-white dark:bg-[#0c0c0c] w-full max-w-2xl rounded-[3rem] shadow-2xl relative z-10 overflow-hidden border border-gray-100 dark:border-white/5"
+                            className="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl relative z-10 overflow-hidden border border-slate-100"
                         >
-                            <div className="h-2 bg-gradient-to-r from-[#1B9157] via-[#F4D03F] to-[#1B9157]" />
+                            <div className="h-2 bg-gradient-to-r from-green-600 via-amber-400 to-green-600" />
                             <div className="p-10">
                                 <div className="flex justify-between items-start mb-10">
                                     <div className="flex gap-6 items-center">
-                                        <div className="w-20 h-20 rounded-3xl bg-slate-50 dark:bg-white/5 flex flex-col items-center justify-center border border-gray-100 dark:border-white/5">
-                                            <span className="text-[10px] font-black uppercase text-gray-400">Hive</span>
-                                            <span className="text-2xl font-black text-slate-900 dark:text-white">{activeHive.hive_code.split('-').pop()}</span>
+                                        <div className="w-20 h-20 rounded-3xl bg-slate-50 flex flex-col items-center justify-center border border-slate-100">
+                                            <span className="text-[10px] font-bold uppercase text-slate-400">Hive</span>
+                                            <span className="text-2xl font-bold text-slate-800">{activeHive.hive_code.split('-').pop()}</span>
                                         </div>
                                         <div>
-                                            <h3 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter uppercase mb-1">{activeHive.hive_code}</h3>
+                                            <h3 className="text-3xl font-bold text-slate-800 tracking-tight uppercase mb-1">{activeHive.hive_code}</h3>
                                             <div className="flex items-center gap-3">
                                                 <Badge className={cn(
-                                                    "border-none font-black uppercase tracking-widest text-[8px] px-3 py-1 rounded-full",
+                                                    "border-none font-bold uppercase tracking-wider text-[8px] px-3 py-1 rounded-full",
                                                     activeHive.status === 'ACTIVE' ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
                                                 )}>
                                                     {activeHive.status}
@@ -727,15 +727,15 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                     <div className="flex gap-4">
                                         <Button
                                             onClick={() => handleOpenNotes(activeHive)}
-                                            className="flex-1 h-12 rounded-2xl bg-[#1B9157]/10 hover:bg-[#1B9157]/20 text-[#1B9157] font-black uppercase tracking-widest text-[10px] border-none"
+                                            className="flex-1 h-12 rounded-2xl bg-green-50 hover:bg-green-100 text-green-600 font-bold uppercase tracking-wider text-[10px] border-none"
                                         >
-                                            View Full Archive
+                                            View Details
                                         </Button>
                                         <Button
                                             onClick={() => handleEditHive(activeHive)}
-                                            className="flex-1 h-12 rounded-2xl bg-slate-900 dark:bg-white/5 text-white dark:text-white font-black uppercase tracking-widest text-[10px] border-none"
+                                            className="flex-1 h-12 rounded-2xl bg-slate-800 text-white font-bold uppercase tracking-wider text-[10px] border-none"
                                         >
-                                            Edit Configuration
+                                            Edit Hive
                                         </Button>
                                     </div>
                                 </div>

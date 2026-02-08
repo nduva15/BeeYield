@@ -117,7 +117,7 @@ const InLandPollination = () => {
                 </div>
                 <h3 className="text-2xl font-bold mb-4 text-foreground">We Can Hear Bees!</h3>
                 <p className="text-muted-foreground leading-relaxed mb-6">
-                  Redesigned to withstand the rigors of the land, our new sensor boasts a larger enclosure to deliver improved battery life, and features a custom algorithm precisely tuned to detect the flight audio signature of the bees.
+                  Redesigned to withstand the rigors of the land, our new sensor boasts a larger enclosure to deliver improved battery life, and features a custom analysis precisely tuned to detect the flight audio signature of the bees.
                 </p>
                 <Button variant="link" className="p-0 h-auto text-primary">
                   Learn More <ChevronRight className="h-4 w-4 ml-1" />
@@ -188,7 +188,7 @@ const InLandPollination = () => {
               {/* Research Quote */}
               <div className="bg-muted/50 p-4 rounded-lg border-l-4 border-primary">
                 <p className="text-sm italic text-foreground mb-2">
-                  "We built highly sensitive algorithms that can distinguish the acoustic signature of a flying bee from a tractor engine on the same frequency."
+                  "We built highly sensitive analysis models that can distinguish the acoustic signature of a flying bee from a tractor engine on the same frequency."
                 </p>
                 <p className="text-xs font-bold text-foreground">George Clouston</p>
                 <p className="text-xs text-muted-foreground">Research Director</p>
@@ -286,7 +286,7 @@ const InLandPollination = () => {
                 <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
                   <Cpu className="h-5 w-5 text-primary" />
                 </div>
-                <span className="font-bold text-lg">Intelligent Hives</span>
+                <span className="font-bold text-lg">Technical Hives</span>
               </div>
             </div>
           </div>

@@ -32,8 +32,7 @@ const ESG = () => {
         doc.text('BeeYield', 50, 25);
 
         doc.setFontSize(10);
-        doc.setTextColor(107, 114, 128);
-        doc.text('Corporate Social Responsibility Report 2024', 50, 32);
+        doc.text('Social Impact Report 2024', 50, 32);
         doc.text('Kibwezi, Makueni County, Kenya', 50, 38);
 
         // Title
@@ -94,8 +93,8 @@ const ESG = () => {
         const pillars = [
           "1. Bee Disease Prevention - <15% colony loss rate",
           "2. The 50/50 Harvest Promise - Ethical beekeeping",
-          "3. HoneyChain™ Traceability - 100% verified journey",
-          "4. Sustainable AgriTech - IoT & AI optimization",
+          "3. HoneyChain™ Tracking - Verified journey",
+          "4. Sustainable Technology - IoT data optimization",
           "5. Sustainable Farming - Zero chemical pesticides",
           "6. Women-Led Tech Leadership - 66% women founders"
         ];
@@ -159,7 +158,7 @@ const ESG = () => {
       impact: "Sustainable beekeeping that ensures long-term colony health and productivity"
     },
     {
-      title: "HoneyChain™ Traceability",
+      title: "HoneyChain™ Tracking",
       icon: Database,
       color: "from-blue-500 to-indigo-600",
       initiatives: [
@@ -169,7 +168,7 @@ const ESG = () => {
         "Beekeeper profiles and fair payment records on-chain",
         "Consumer transparency dashboard for complete product visibility"
       ],
-      impact: "100% of honey batches traceable to specific hive, beekeeper, and harvest date"
+      impact: "Every honey batch is tracked to a specific hive, beekeeper, and harvest date"
     },
     {
       title: "Sustainable AgriTech",
@@ -177,7 +176,7 @@ const ESG = () => {
       color: "from-violet-500 to-purple-600",
       initiatives: [
         "Solar-powered IoT hive monitoring systems for off-grid apiaries",
-        "AI-driven predictive analytics for optimal harvest timing",
+        "Automated predictive analysis for optimal harvest timing",
         "Real-time temperature and humidity sensors protecting colony health",
         "Mobile app for beekeepers with instant hive health alerts",
         "Carbon-neutral technology operations through renewable energy"
@@ -233,7 +232,7 @@ const ESG = () => {
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-              Environmental, Social, and Governance practices aren't just corporate buzzwords for us—they're the foundation of everything we do at BeeYield. From the semi-arid lands of Kibwezi, Kenya, we're proving that sustainable beekeeping can transform communities and ecosystems.
+              Environmental, Social, and Governance practices are the foundation of everything we do at BeeYield. From the semi-arid lands of Kibwezi, Kenya, we're proving that sustainable beekeeping can transform communities and ecosystems.
             </p>
 
             <div className="flex flex-wrap justify-center gap-4">
@@ -295,7 +294,7 @@ const ESG = () => {
                 What ESG Means for BeeYield
               </h2>
               <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                At BeeYield, ESG isn't a checkbox—it's our DNA. From bee disease prevention to women empowerment, from sustainable agritech to full traceability, these six pillars define how we operate and measure success.
+                At BeeYield, ESG is central to our mission. From bee disease prevention to women's leadership, from sustainable technology to tracking, these six pillars define how we operate.
               </p>
             </div>
 
@@ -475,7 +474,7 @@ const ESG = () => {
                 <div className="max-w-md text-left">
                   <h4 className="font-bold text-lg mb-2">Women Leading in AgriTech</h4>
                   <p className="text-sm text-muted-foreground">
-                    BeeYield is proudly co-founded by <strong>Carole Nduva</strong> (Chief Growth Officer) and <strong>Agatha Nduva</strong> (Chief IT Head). Their leadership in business strategy and technology infrastructure proves that women are at the forefront of Africa's digital revolution in agriculture.
+                    BeeYield is co-founded by <strong>Carole Nduva</strong> (Chief Growth Officer) and <strong>Agatha Nduva</strong> (Chief IT Head). Their leadership in business and technology infrastructure shows the role of women in Africa's agricultural progress.
                   </p>
                 </div>
               </div>

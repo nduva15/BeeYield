@@ -8,7 +8,7 @@ const Team = () => {
     {
       name: "Timothy Nduva",
       role: "CEO & Founder",
-      description: "Visionary leader driving BeeYield's mission to revolutionize pollination through technology.",
+      description: "Leader driving BeeYield's mission to improve pollination using technology.",
       image: TIMOTHY_PHOTO,
       linkedin: "#"
     },
@@ -22,7 +22,7 @@ const Team = () => {
     {
       name: "Agatha Nduva",
       role: "Chief IT Head & Co-founder",
-      description: "Leading technology infrastructure and digital innovation at BeeYield.",
+      description: "Leading technology infrastructure and technical development at BeeYield.",
       image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400",
       linkedin: "#"
     },
@@ -59,7 +59,7 @@ const Team = () => {
             Meet the BeeYield Team
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            A family-driven team combining agriculture, technology, and innovation to secure the future of pollination and food security.
+            A family-driven team combining agriculture and technology to support pollination and food security.
           </p>
         </div>
 
@@ -77,7 +77,7 @@ const Team = () => {
               <h2 className="text-3xl font-bold text-foreground">Who is BeeYield?</h2>
             </div>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              BeeYield's founders guide a team of beekeepers, IOT Engineers, data scientists, programmers, researchers, ML Experts, Blockchain Experts and more who are committed to applying their diverse expertise to help secure the future of the world's food supply. By bringing the power of data science and ML to bear on the critical role played by pollination in agriculture, BeeYield is working tirelessly to ensure the well-being of all pollinators.
+              BeeYield's founders guide a team of beekeepers, engineers, data scientists, and researchers who are committed to applying their expertise to support the global food supply. By using data and research to improve the role played by pollination in agriculture, BeeYield is working to ensure the well-being of pollinators.
             </p>
           </div>
         </div>
@@ -93,7 +93,7 @@ const Team = () => {
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Our Founders</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Three siblings united by a shared vision to transform agriculture through precision pollination and Traceability.
+              Three siblings united by a shared vision to grow agriculture through pollination services and tracking.
             </p>
           </div>
 
@@ -136,11 +136,11 @@ const Team = () => {
           <div className="text-center mb-16">
             <div className="flex items-center justify-center gap-2 mb-4">
               <Code className="h-6 w-6 text-primary" />
-              <Badge variant="secondary">Tech Wizards</Badge>
+              <Badge variant="secondary">Our Engineers</Badge>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Technical Team</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              The brilliant minds building the technology that powers BeeYield's innovation.
+              The team building the technology that powers BeeYield.
             </p>
           </div>
 

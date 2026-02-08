@@ -33,7 +33,7 @@ const OurStory = () => {
                 The Story of <span className="text-primary">BeeYield</span>
               </h1>
               <p className="text-lg text-muted-foreground sm:text-xl max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-                Born in Kibwezi, Makueni County, Kenya — a story of family, resilience, and a mission to transform pollination for a sustainable future.
+                Born in Kibwezi, Makueni County, Kenya — a story of family, resilience, and a mission to improve pollination for a sustainable future.
               </p>
             </div>
 
@@ -49,7 +49,7 @@ const OurStory = () => {
                   <Sprout size={24} />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold">Native Innovation</p>
+                  <p className="text-sm font-semibold">Local Roots</p>
                   <p className="text-xs text-muted-foreground">Kenya Grown</p>
                 </div>
               </div>
@@ -98,7 +98,7 @@ const OurStory = () => {
                   In 2020, while the world stood still amid a global pandemic, <strong className="text-foreground">Timothy</strong>, a Strathmore University student, saw an opportunity in the quiet of rural Kibwezi, Makueni County. With just <strong className="text-foreground">half an acre of land and 4 beehives</strong>, BeeYield was born.
                 </p>
                 <p>
-                  What started as a small venture quickly became a family affair. Timothy's two sisters, <strong className="text-foreground">Agatha</strong> and <strong className="text-foreground">Carole</strong>, brought their unique expertise to shape the company's direction — from web development and product design to IoT research, they helped give BeeYield its visibility and technological edge.
+                  What started as a small venture quickly became a family affair. Timothy's two sisters, <strong className="text-foreground">Agatha</strong> and <strong className="text-foreground">Carole</strong>, brought their unique expertise to shape the company's direction — from web development and product design to IoT research, they helped give BeeYield its technical expertise.
                 </p>
                 <p>
                   Together, the three siblings transformed a modest apiary into something much greater — proving that innovation can flourish anywhere, even in the most unexpected places.
@@ -148,7 +148,7 @@ const OurStory = () => {
               Who We Are And What We Stand For
             </h2>
             <p className="mt-4 text-muted-foreground">
-              Three siblings, one mission: revolutionizing pollination in Kenya and beyond.
+              Three siblings, one mission: modernizing pollination in Kenya and beyond.
             </p>
           </div>
 
@@ -203,7 +203,7 @@ const OurStory = () => {
                   Our pollination journey started with traditional methods — moving hives to client farms and letting nature do its work. We successfully pollinated <strong className="text-foreground">25 acres+</strong> of farmland, proving the value of managed pollination services in Kenya.
                 </p>
                 <p>
-                  But we knew we could do more. Today, BeeYield is evolving toward <strong className="text-foreground">precision pollination</strong> — leveraging IoT sensors, data analytics, and smart hive management to deliver measurable, optimized pollination outcomes.
+                  But we knew we could do more. Today, BeeYield is evolving toward precision pollination — using sensors, data, and hive management to deliver clear pollination results.
                 </p>
                 <p>
                   Our goal is to help farmers across the world increase their yields while supporting bee health and biodiversity.
@@ -247,7 +247,7 @@ const OurStory = () => {
                 Join Us on Our <span className="text-green-400 italic">Journey</span>
               </h2>
               <p className="text-green-100/80 max-w-2xl mx-auto mb-10 text-lg relative z-10">
-                From a family dream in rural Kenya to a growing force in precision pollination — we're just getting started. Partner with us to transform agriculture.
+                From a family dream in rural Kenya to a growing presence in pollination services — we're just getting started. Partner with us to improve agriculture.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
                 <Button size="lg" className="bg-white text-green-900 hover:bg-green-50 font-bold px-8 h-12 rounded-xl" asChild>

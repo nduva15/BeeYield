@@ -28,6 +28,8 @@ class ApiaryCreate(BaseModel):
     size_acres: Optional[float] = Field(0, description="Size in acres")
     expected_hives: Optional[int] = Field(0, description="Expected number of hives")
     primary_forage: Optional[str] = None
+    forage_type: Optional[str] = None # Alias for primary_forage
+    sun_exposure: Optional[str] = Field("Semi-Shade", description="Full Sun, Shade, Semi-Shade")
     notes: Optional[str] = None
     status: Optional[str] = Field("active", description="active, inactive")
 
@@ -56,6 +58,8 @@ class HiveCreate(BaseModel):
     material: Optional[str] = Field("Wood", description="Construction material")
     status: Optional[str] = Field("ACTIVE", description="ACTIVE, WEAK, INACTIVE, etc.")
     installation_date: Optional[date] = None
+    queen_hatched: Optional[date] = None
+    strength: Optional[int] = Field(3, description="1 (Weak) to 5 (Strong)")
     has_sensors: Optional[bool] = False
     health_status: Optional[str] = None
 

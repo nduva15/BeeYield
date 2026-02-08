@@ -733,13 +733,13 @@ const Media = () => {
             "https://images.unsplash.com/photo-1558818498-28c1e002b655?auto=format&fit=crop&q=80&w=1200",
         },
         {
-          farmer: "Innovation Hub",
+          farmer: "Research Group",
           location: "Makindu, Makueni",
           role: "Research Greenhouse",
           acres: 1,
           description:
-            "Monitoring the efficiency of bee pollination vs manual. The data is clear: bees are 3x more efficient and produce 15% heavier fruit.",
-          quote: "Data-driven proof that nature does it best.",
+            "Monitoring the efficiency of bee pollination vs manual. The evidence is clear: bees are efficient and produce heavier fruit.",
+          quote: "Nature does it best.",
           stats: [
             { label: "Efficiency", value: "3x" },
             { label: "Acres Pollinated", value: "1" },
@@ -854,7 +854,7 @@ const Media = () => {
             Crop Case <span className="text-primary">Studies</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Explore how precision pollination is transforming yields across
+            Explore how our pollination services are improving yields across
             different crops. Verified results from our partner farmers.
           </p>
           <div className="flex flex-wrap justify-center gap-2">
@@ -917,7 +917,7 @@ const Media = () => {
                               alt={`${story.farmer} - ${study.title}`}
                               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent pointer-events-none" />
                             <div className="absolute top-6 right-6 z-10">
                               <Badge className="bg-background/95 text-foreground backdrop-blur border-none shadow-xl px-4 py-2 text-sm font-bold">
                                 {story.acres} Acres Pollinated
@@ -927,7 +927,7 @@ const Media = () => {
                               <p className="font-bold text-2xl mb-2">
                                 {story.farmer}
                               </p>
-                              <p className="text-white/90 text-sm flex items-center font-medium bg-black/20 backdrop-blur-sm w-fit px-3 py-1 rounded-full">
+                              <p className="text-white/90 text-sm flex items-center font-medium bg-white/10 backdrop-blur-sm w-fit px-3 py-1 rounded-full">
                                 <MapPin className="w-4 h-4 mr-1.5" />
                                 {story.location}
                               </p>
@@ -1043,7 +1043,7 @@ const Media = () => {
             variant="secondary"
             className="rounded-full text-lg px-8 py-6 shadow-xl hover:scale-105 transition-transform"
           >
-            <Link to="/pollination-request">Start Your Transformation</Link>
+            <Link to="/pollination-request">Work With Us</Link>
           </Button>
         </div>
       </section>

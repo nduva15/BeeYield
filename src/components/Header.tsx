@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ChevronDown, ShoppingBag, User, Shield, LogIn, UserPlus, LogOut, LayoutDashboard } from "lucide-react";
+import { Menu, X, ChevronDown, ShoppingBag, User, Shield, LogIn, UserPlus, LogOut, LayoutDashboard, HardDrive } from "lucide-react";
 import { Button } from "./ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/contexts/CartContext";
@@ -181,6 +181,14 @@ const Header = () => {
                   >
                     <Shield className="h-4 w-4 group-hover:scale-110 transition-transform" />
                     <span className="text-sm font-semibold">BeeYield Dashboard</span>
+                  </Link>
+                  <Link
+                    to="/my-devices"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2.5 rounded-lg hover:bg-primary-foreground/10 text-primary-foreground transition-colors group"
+                  >
+                    <HardDrive className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                    <span className="text-sm font-semibold">My Devices</span>
                   </Link>
                   <button
                     onClick={() => {

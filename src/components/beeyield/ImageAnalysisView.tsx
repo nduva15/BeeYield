@@ -146,18 +146,18 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
 
                 if (isTech || !isBiological || isProcessedHoney) {
                     setIsAnalyzing(false);
-                    setError("Invalid Target Specimen");
+                    setError("Invalid Object Detected");
                     // @ts-ignore
                     const detectedClass = predictions[0].className.split(',')[0];
                     let errorMessage = `Analysis detected: '${detectedClass}'.`;
 
                     if (isProcessedHoney) {
-                        errorMessage += " Processed honey (jars/bottles) is restricted. Please upload photos of live bees, hives, or honeycombs only.";
+                        errorMessage += " Processed honey (jars/bottles) is restricted. Please use photos of live bees or hives.";
                     } else {
-                        errorMessage += " Only natural bees, hives, and apiary structures are permitted.";
+                        errorMessage += " Only natural bees, hives, and apiary structures are supported.";
                     }
 
-                    toast.error("Strict Biological Protocol Engaged", {
+                    toast.error("Invalid Image Type", {
                         description: errorMessage,
                         duration: 6000
                     });
@@ -206,9 +206,9 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
             } catch (err) {
                 console.error("AI Error:", err);
                 setIsAnalyzing(false);
-                setError("AI Engine Offline");
-                toast.error("Neural Network Error", {
-                    description: "Could not initialize the biological classification engine. Please check your connection."
+                setError("Analysis Offline");
+                toast.error("System Error", {
+                    description: "Could not initialize the image analysis engine. Please check your connection."
                 });
             }
         }, 1000); // Initial delay for model loading/classification
@@ -233,23 +233,23 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                 <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center border border-slate-100 dark:border-white/10 shadow-sm">
                     <Camera className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                 </div>
-                <h1 className="text-2xl font-bold text-[#0F172A] dark:text-white tracking-tight">
-                    Image analysis
+                <h1 className="text-xl font-bold text-slate-800 tracking-tight">
+                    Image Analysis
                 </h1>
             </div>
 
-            <p className="text-[15px] font-medium text-slate-600 dark:text-slate-400 pl-1">
-                Upload a photo of your hive or bees to detect potential health problems like Varroa, Nosema, and more.
+            <p className="text-sm font-medium text-slate-500 pl-1">
+                Upload a photo of your hive or bees to detect potential health issues and colony status.
             </p>
 
             {/* Instruction Card (Existing Design) */}
             <Card className="rounded-[2rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-[#111111] shadow-sm overflow-hidden mb-6">
                 <CardContent className="p-8">
                     <div className="flex items-center gap-3 mb-6">
-                        <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 dark:border-amber-500/20">
-                            <Info className="w-4 h-4 text-[#D4AF37]" />
+                        <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center border border-amber-200">
+                            <Info className="w-4 h-4 text-amber-600" />
                         </div>
-                        <h2 className="text-xl font-bold text-[#0F172A] dark:text-white">How to use the analysis</h2>
+                        <h2 className="text-lg font-bold text-slate-800">How it works</h2>
                     </div>
 
                     <div className="space-y-4">
@@ -262,10 +262,10 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                             {instructions.map((item, idx) => (
                                 <div key={idx} className="flex gap-4">
                                     <div className="min-w-[160px]">
-                                        <h4 className="text-[13px] font-bold text-[#0F172A] dark:text-white">{item.label}</h4>
+                                        <h4 className="text-xs font-bold text-slate-800">{item.label}</h4>
                                     </div>
                                     <div>
-                                        <p className="text-[13px] text-slate-400 dark:text-slate-500 font-medium">{item.description}</p>
+                                        <p className="text-xs text-slate-400 font-medium">{item.description}</p>
                                     </div>
                                 </div>
                             ))}
@@ -297,14 +297,14 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                             <div className="min-h-[300px] flex items-center justify-center bg-slate-50 dark:bg-white/5">
                                 <img src={previewUrl} alt="Analyzed" className="w-full h-auto object-contain max-h-[500px]" />
                                 {isAnalyzing && (
-                                    <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex flex-col items-center justify-center z-10 rounded-[1.5rem]">
+                                    <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex flex-col items-center justify-center z-10 rounded-2xl">
                                         {realtimeCount > 0 ? (
                                             <>
-                                                <div className="text-6xl font-black text-[#F4D03F] animate-pulse drop-shadow-lg">{realtimeCount}</div>
-                                                <div className="text-white font-bold uppercase tracking-widest text-[10px] mt-2 bg-black/50 px-3 py-1 rounded-full border border-white/10">Bees Detected</div>
+                                                <div className="text-5xl font-bold text-amber-400 drop-shadow-lg">{realtimeCount}</div>
+                                                <div className="text-white font-bold uppercase tracking-wider text-[10px] mt-2 bg-black/50 px-3 py-1 rounded-full border border-white/10">Bees Detected</div>
                                             </>
                                         ) : (
-                                            <Bot className="w-12 h-12 text-white animate-bounce" />
+                                            <Bot className="w-10 h-10 text-white animate-bounce" />
                                         )}
                                     </div>
                                 )}
@@ -318,18 +318,18 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                         </div>
 
                         {results && (
-                            <Card className="rounded-[2.5rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-[#111111] px-10 py-8 shadow-sm max-w-sm mx-auto">
+                            <Card className="rounded-3xl border border-slate-100 bg-white px-10 py-8 shadow-sm max-w-sm mx-auto">
                                 <div className="space-y-6">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center"><Search className="w-4 h-4 text-blue-500" /></div>
-                                        <h3 className="text-2xl font-bold text-[#0F172A] dark:text-white">Results</h3>
+                                        <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center"><Search className="w-4 h-4 text-blue-500" /></div>
+                                        <h3 className="text-xl font-bold text-slate-800">Results</h3>
                                     </div>
                                     <div className="flex items-center justify-between gap-4">
-                                        <span className="text-sm font-bold text-[#0F172A] dark:text-white">Healthy</span>
-                                        <div className="flex-1 h-2 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden">
-                                            <div className="h-full bg-[#F4D03F]" style={{ width: `${results.overallConfidence}%` }} />
+                                        <span className="text-xs font-bold text-slate-800">Healthy</span>
+                                        <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                                            <div className="h-full bg-amber-500" style={{ width: `${results.overallConfidence}%` }} />
                                         </div>
-                                        <span className="text-sm font-bold text-[#0F172A] dark:text-white">{results.overallConfidence}%</span>
+                                        <span className="text-xs font-bold text-slate-800">{results.overallConfidence}%</span>
                                     </div>
                                 </div>
                             </Card>
@@ -338,14 +338,14 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
 
                     <div className="lg:col-span-6 space-y-6">
                         {isAnalyzing ? (
-                            <Card className="rounded-[1.5rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-[#111111] p-8 h-full flex flex-col justify-center items-center text-center space-y-8 min-h-[400px]">
-                                <div className="w-24 h-24 rounded-[2rem] bg-amber-50 dark:bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 dark:border-amber-500/20 shadow-inner">
-                                    <Bot className="w-12 h-12 text-[#F4D03F] animate-bounce" />
+                            <Card className="rounded-2xl border border-slate-100 bg-white p-8 h-full flex flex-col justify-center items-center text-center space-y-8 min-h-[400px]">
+                                <div className="w-20 h-20 rounded-2xl bg-amber-50 flex items-center justify-center border border-amber-100 shadow-inner">
+                                    <Bot className="w-10 h-10 text-amber-500 animate-bounce" />
                                 </div>
                                 <div className="space-y-3">
-                                    <h3 className="text-2xl font-black text-[#0F172A] dark:text-white uppercase tracking-tight leading-tight italic">Scanning specimen...</h3>
-                                    <p className="text-slate-400 dark:text-slate-500 font-medium leading-relaxed max-w-[280px]">
-                                        Our AI Meta-Scanner is isolating biological signatures across the hive structure.
+                                    <h3 className="text-xl font-bold text-slate-800 uppercase tracking-tight italic">Scanning image...</h3>
+                                    <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest leading-relaxed max-w-[280px]">
+                                        Differentiating biological signatures across the hive.
                                     </p>
                                 </div>
                                 <div className="w-full max-w-[200px] h-1.5 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
@@ -358,13 +358,13 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                                 </div>
                             </Card>
                         ) : error ? (
-                            <Card className="rounded-[2.5rem] border border-red-100 dark:border-red-500/20 bg-red-50/30 dark:bg-red-500/5 p-8 h-full flex flex-col justify-center items-center text-center space-y-6 min-h-[400px]">
-                                <Bot className="w-10 h-10 text-red-600 dark:text-red-400" />
+                            <Card className="rounded-3xl border border-red-100 bg-red-50/10 p-8 h-full flex flex-col justify-center items-center text-center space-y-6 min-h-[400px]">
+                                <Bot className="w-8 h-8 text-red-600" />
                                 <div className="space-y-3">
-                                    <h3 className="text-2xl font-black text-red-600 dark:text-red-400 uppercase tracking-tight">Detection Failed</h3>
-                                    <p className="text-red-800/60 dark:text-red-400/60 font-medium leading-relaxed max-w-[320px]">
-                                        Our AI meta-scanner could not identify any honey bees or hive structures in this image.
-                                        Only biological data is permitted.
+                                    <h3 className="text-xl font-bold text-red-600 uppercase tracking-tight">Detection Failed</h3>
+                                    <p className="text-red-700/60 font-medium text-xs leading-relaxed max-w-[320px]">
+                                        Could not identify any honey bees or hive structures in this image.
+                                        Please use a clearer photo of your bees or hive.
                                     </p>
                                 </div>
                                 <Button onClick={clearImage} className="rounded-xl px-8 h-12 bg-red-600 hover:bg-red-700 text-white font-bold uppercase tracking-widest text-xs">
@@ -440,11 +440,11 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                                 </div>
                             </Card>
                         ) : !isAnalyzing && (
-                            <Card className="rounded-[1.5rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-[#111111] p-8 h-full flex flex-col justify-center items-center text-center space-y-8 border-dashed min-h-[400px]">
-                                <Bot className="w-12 h-12 text-blue-500 animate-pulse" />
-                                <h3 className="text-xl font-bold text-slate-500">Ready for Processing</h3>
-                                <Button onClick={() => handleStartAnalysis()} className="w-full h-16 rounded-2xl bg-[#F4D03F]/10 text-white font-black text-lg uppercase shadow-xl shadow-orange-500/20">
-                                    Process Specimen
+                            <Card className="rounded-2xl border border-slate-100 bg-white p-8 h-full flex flex-col justify-center items-center text-center space-y-8 border-dashed min-h-[400px]">
+                                <Bot className="w-10 h-10 text-blue-500 animate-pulse" />
+                                <h3 className="text-lg font-bold text-slate-400 uppercase tracking-wider">Ready for Analysis</h3>
+                                <Button onClick={() => handleStartAnalysis()} className="w-full h-14 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm uppercase shadow-lg shadow-amber-500/20">
+                                    Start Process
                                 </Button>
                             </Card>
                         )}

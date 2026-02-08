@@ -119,13 +119,13 @@ export const SupportRequestsTab: React.FC = () => {
                     <Table>
                         <TableHeader>
                             <TableRow className="border-b border-border bg-muted/20">
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Reference</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Category</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Subject</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Priority</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
-                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Reference</TableHead>
+                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Category</TableHead>
+                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Subject</TableHead>
+                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Priority</TableHead>
+                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Status</TableHead>
+                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Date</TableHead>
+                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -180,7 +180,7 @@ export const SupportRequestsTab: React.FC = () => {
                                         {selectedRequest.priority} Priority
                                     </Badge>
                                 </div>
-                                <DialogTitle className="text-2xl font-black tracking-tight">{selectedRequest.subject}</DialogTitle>
+                                <DialogTitle className="text-2xl font-bold tracking-tight">{selectedRequest.subject}</DialogTitle>
                                 <DialogDescription className="flex items-center gap-2 mt-2">
                                     <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-none capitalize">{selectedRequest.category}</Badge>
                                     <span>•</span>
@@ -190,14 +190,14 @@ export const SupportRequestsTab: React.FC = () => {
 
                             <div className="p-6 space-y-6">
                                 <div className="bg-muted/50 rounded-2xl p-4 border border-border/50">
-                                    <div className="flex items-center gap-2 mb-2 text-xs font-black uppercase tracking-widest text-muted-foreground">
+                                    <div className="flex items-center gap-2 mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                                         <AlertTriangle className="h-3 w-3" /> Issue Description
                                     </div>
                                     <p className="text-sm leading-relaxed text-foreground/80">{selectedRequest.description}</p>
                                 </div>
 
                                 <div className="space-y-4">
-                                    <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                                    <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                                         <History className="h-3 w-3" /> Communication Thread
                                     </h4>
 

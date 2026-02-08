@@ -51,5 +51,28 @@ export const aiService = {
         } catch (error) {
             return { status: 'online', mode: 'local' };
         }
+    },
+
+    async traceBatch(batchCode: string) {
+        try {
+            const response = await axios.post(`${API_BASE_URL}/assistant/trace`, { batch_code: batchCode });
+            return response.data;
+        } catch (error) {
+            console.error('Traceability search failed:', error);
+            throw error;
+        }
+    },
+
+    async analyzeHive(hiveId: string) {
+        try {
+            const response = await axios.post(`${API_BASE_URL}/assistant/hive/analyze`, {
+                hive_id: hiveId,
+                include_recommendations: true
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Hive analysis failed:', error);
+            throw error;
+        }
     }
 };

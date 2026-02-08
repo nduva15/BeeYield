@@ -4,8 +4,15 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import {
-    Plus, MoreHorizontal, FileText, Globe, ChevronDown, ChevronRight, Download
+    Plus, MoreHorizontal, FileText, Globe, ChevronDown, ChevronRight, Download, Check
 } from 'lucide-react';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { cn } from '@/lib/utils';
 
 // Analytics Section Component
@@ -286,11 +293,22 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
     const tabs = ['Dashboard', 'Revenue', 'Costs', 'Documents', 'Analytics', 'Settings'];
 
     const currencies = [
-        { code: 'KES', name: 'Kenyan Shilling', flag: '🇰🇪' },
-        { code: 'GBP', name: 'British Pound', flag: '🇬🇧' },
-        { code: 'USD', name: 'US Dollar', flag: '🇺🇸' },
-        { code: 'EUR', name: 'Euro', flag: '🇪🇺' },
-        { code: 'AUD', name: 'Australian Dollar', flag: '🇦🇺' },
+        { code: 'KES', name: 'Kenyan Shilling', flag: 'https://flagcdn.com/ke.svg' },
+        { code: 'GBP', name: 'British Pound', flag: 'https://flagcdn.com/gb.svg' },
+        { code: 'USD', name: 'US Dollar', flag: 'https://flagcdn.com/us.svg' },
+        { code: 'EUR', name: 'Euro', flag: 'https://flagcdn.com/eu.svg' },
+        { code: 'AUD', name: 'Australian Dollar', flag: 'https://flagcdn.com/au.svg' },
+    ];
+
+    const countries = [
+        { code: 'ke', name: 'Kenya', flag: 'https://flagcdn.com/ke.svg' },
+        { code: 'gb', name: 'United Kingdom', flag: 'https://flagcdn.com/gb.svg' },
+        { code: 'us', name: 'USA', flag: 'https://flagcdn.com/us.svg' },
+        { code: 'pl', name: 'Poland', flag: 'https://flagcdn.com/pl.svg' },
+        { code: 'de', name: 'Germany', flag: 'https://flagcdn.com/de.svg' },
+        { code: 'fr', name: 'France', flag: 'https://flagcdn.com/fr.svg' },
+        { code: 'es', name: 'Spain', flag: 'https://flagcdn.com/es.svg' },
+        { code: 'cn', name: 'China', flag: 'https://flagcdn.com/cn.svg' },
     ];
 
     const currentCurrency = currencies.find(c => c.code === currency) || currencies[0];
@@ -328,7 +346,9 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                             onClick={() => setIsCurrencyOpen(!isCurrencyOpen)}
                             className="flex items-center gap-3 bg-white dark:bg-[#09090b] border border-gray-100 dark:border-[#1e1e1e] rounded-full px-5 h-10 shadow-sm cursor-pointer hover:border-[#1B9157]/40 transition-all select-none"
                         >
-                            <span className="text-lg">{currentCurrency.flag}</span>
+                            <div className="w-6 h-4 rounded-[3px] overflow-hidden shadow-sm border border-black/10 flex-shrink-0">
+                                <img src={currentCurrency.flag} alt={currentCurrency.code} className="w-full h-full object-cover" />
+                            </div>
                             <span className="text-sm font-black text-[#1B9157] dark:text-[#F4D03F] uppercase tracking-wider">{currentCurrency.code}</span>
                             <ChevronDown className={cn("w-3.5 h-3.5 text-[#1B9157] transition-transform duration-300", isCurrencyOpen && "rotate-180")} />
                         </div>
@@ -356,7 +376,9 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                                 )}
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <span className="text-xl">{c.flag}</span>
+                                                    <div className="w-6 h-4 rounded-[3px] overflow-hidden shadow-sm border border-black/10 flex-shrink-0">
+                                                        <img src={c.flag} alt={c.code} className="w-full h-full object-cover" />
+                                                    </div>
                                                     <div className="text-left">
                                                         <p className="text-sm font-bold text-[#0F172A] dark:text-white">{c.name}</p>
                                                         <p className="text-[10px] text-gray-400 font-medium uppercase">{c.code}</p>
@@ -975,7 +997,23 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-bold text-gray-400 uppercase">Country</label>
-                                        <Input defaultValue="Kenya" className="rounded-xl border-gray-100 h-12 shadow-sm" />
+                                        <Select defaultValue="ke">
+                                            <SelectTrigger className="rounded-xl border-gray-100 h-12 shadow-sm bg-white">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-2xl border-gray-100 shadow-xl">
+                                                {countries.map((c) => (
+                                                    <SelectItem key={c.code} value={c.code} className="py-3 px-4 focus:bg-amber-50 cursor-pointer rounded-xl my-1 mx-1">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-6 h-4 rounded-[3px] overflow-hidden shadow-sm border border-black/10 flex-shrink-0">
+                                                                <img src={c.flag} alt={c.name} className="w-full h-full object-cover" />
+                                                            </div>
+                                                            <span className="font-bold text-sm text-gray-900">{c.name}</span>
+                                                        </div>
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-bold text-gray-400 uppercase">Tax status</label>
@@ -1134,20 +1172,52 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-bold text-gray-400 uppercase">Currency</label>
-                                        <select
-                                            value={currency}
-                                            onChange={(e) => setCurrency(e.target.value)}
-                                            className="flex h-12 w-full rounded-xl border border-gray-100 bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 appearance-none"
-                                        >
-                                            {currencies.map(c => <option key={c.code} value={c.code}>{c.code}</option>)}
-                                        </select>
+                                        <Select value={currency} onValueChange={setCurrency}>
+                                            <SelectTrigger className="rounded-xl border-gray-100 h-12 bg-white flex items-center justify-between group">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-2xl border-gray-100 shadow-xl">
+                                                {currencies.map((c) => (
+                                                    <SelectItem key={c.code} value={c.code} className="py-3 px-4 focus:bg-amber-50 cursor-pointer rounded-xl my-1 mx-1">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-6 h-4 rounded-[3px] overflow-hidden shadow-sm border border-black/10 flex-shrink-0">
+                                                                <img src={c.flag} alt={c.name} className="w-full h-full object-cover" />
+                                                            </div>
+                                                            <div className="flex flex-col">
+                                                                <span className="font-bold text-sm text-gray-900">{c.name}</span>
+                                                                <span className="text-[10px] text-gray-400 font-medium uppercase">{c.code}</span>
+                                                            </div>
+                                                        </div>
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-bold text-gray-400 uppercase">Language</label>
-                                        <select className="flex h-12 w-full rounded-xl border border-gray-100 bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 appearance-none">
-                                            <option>English</option>
-                                            <option>Polish</option>
-                                        </select>
+                                        <Select defaultValue="English">
+                                            <SelectTrigger className="rounded-xl border-gray-100 h-12 bg-white flex items-center justify-between group">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-2xl border-gray-100 shadow-xl">
+                                                <SelectItem value="English" className="py-3 px-4 focus:bg-amber-50 cursor-pointer rounded-xl my-1 mx-1">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-6 h-4 rounded-[3px] overflow-hidden shadow-sm border border-black/10 flex-shrink-0">
+                                                            <img src="https://flagcdn.com/gb.svg" alt="English" className="w-full h-full object-cover" />
+                                                        </div>
+                                                        <span className="font-bold text-sm text-gray-900">English</span>
+                                                    </div>
+                                                </SelectItem>
+                                                <SelectItem value="Polish" className="py-3 px-4 focus:bg-amber-50 cursor-pointer rounded-xl my-1 mx-1">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-6 h-4 rounded-[3px] overflow-hidden shadow-sm border border-black/10 flex-shrink-0">
+                                                            <img src="https://flagcdn.com/pl.svg" alt="Polish" className="w-full h-full object-cover" />
+                                                        </div>
+                                                        <span className="font-bold text-sm text-gray-900">Polish</span>
+                                                    </div>
+                                                </SelectItem>
+                                            </SelectContent>
+                                        </Select>
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-bold text-gray-400 uppercase">Reference #</label>
@@ -1183,6 +1253,26 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                         <Input defaultValue="Marszalkowska 1, 00-001 Warsaw, Poland" className="rounded-xl border-gray-100 h-12" />
                                     </div>
                                     <div className="space-y-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase">Country</label>
+                                        <Select defaultValue="pl">
+                                            <SelectTrigger className="rounded-xl border-gray-100 h-12 bg-white">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-2xl border-gray-100 shadow-xl">
+                                                {countries.map((c) => (
+                                                    <SelectItem key={c.code} value={c.code} className="py-3 px-4 focus:bg-amber-50 cursor-pointer rounded-xl my-1 mx-1">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-6 h-4 rounded-[3px] overflow-hidden shadow-sm border border-black/10 flex-shrink-0">
+                                                                <img src={c.flag} alt={c.name} className="w-full h-full object-cover" />
+                                                            </div>
+                                                            <span className="font-bold text-sm text-gray-900">{c.name}</span>
+                                                        </div>
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
                                         <label className="text-[10px] font-bold text-gray-400 uppercase">Email</label>
                                         <Input defaultValue="billing@beeyield.app" className="rounded-xl border-gray-100 h-12" />
                                     </div>
@@ -1211,6 +1301,26 @@ const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-bold text-gray-400 uppercase">Address</label>
                                         <Input placeholder="Enter address..." className="rounded-xl border-gray-100 h-12" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase">Country</label>
+                                        <Select defaultValue="ke">
+                                            <SelectTrigger className="rounded-xl border-gray-100 h-12 bg-white">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-2xl border-gray-100 shadow-xl">
+                                                {countries.map((c) => (
+                                                    <SelectItem key={c.code} value={c.code} className="py-3 px-4 focus:bg-amber-50 cursor-pointer rounded-xl my-1 mx-1">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-6 h-4 rounded-[3px] overflow-hidden shadow-sm border border-black/10 flex-shrink-0">
+                                                                <img src={c.flag} alt={c.name} className="w-full h-full object-cover" />
+                                                            </div>
+                                                            <span className="font-bold text-sm text-gray-900">{c.name}</span>
+                                                        </div>
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-bold text-gray-400 uppercase">Email</label>

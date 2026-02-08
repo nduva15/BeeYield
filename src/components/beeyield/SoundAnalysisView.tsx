@@ -76,9 +76,9 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
         { range: "350", interpretation: "Bees returning with nectar" },
         { range: "280-380", interpretation: "Colony logistics, nectar recovery" },
         { range: "240-400", interpretation: "Nectar collecting and daily activity" },
-        { range: "380-400", interpretation: "Emotional activity, possible stressors" },
-        { range: "400-500", interpretation: "Mobilization, excitement, pre-swarming state" },
-        { range: "500-550", interpretation: "Nectar gathering recruitment" }
+        { range: "380-400", interpretation: "Intense activity, possible stressors" },
+        { range: "400-500", interpretation: "High mobilization, excitement" },
+        { range: "500-550", interpretation: "Intensive recruitment signals" }
     ];
 
     return (
@@ -87,14 +87,14 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
 
             {/* Page Header */}
             <div className="pt-4">
-                <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">
+                <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
                     Beehive Sound Analysis
                 </h1>
             </div>
 
             {/* Description Box */}
-            <Card className="rounded-[1.5rem] border-none bg-slate-50 dark:bg-[#111111] p-6 shadow-none">
-                <p className="text-[15px] font-medium text-slate-600 dark:text-slate-400 leading-relaxed">
+            <Card className="rounded-2xl border-none bg-slate-50 p-6 shadow-none">
+                <p className="text-sm font-medium text-slate-600 leading-relaxed">
                     In this section, you can analyze your own audio files and discover what bees are communicating. For fully automatic, continuous monitoring, we recommend BeeYield — our smart device that tracks hive activity throughout the season.
                 </p>
             </Card>
@@ -129,8 +129,8 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                             <div className="absolute inset-0 border-4 border-[#F4D03F] border-t-transparent rounded-full animate-spin"></div>
                         </div>
                         <div className="text-center">
-                            <h3 className="text-sm font-bold text-[#0F172A] dark:text-white">Analyzing sound wave frequencies...</h3>
-                            <p className="text-[12px] text-slate-400 dark:text-slate-500 font-medium">Matching against biological database</p>
+                            <h3 className="text-sm font-bold text-slate-800">Analyzing audio frequencies...</h3>
+                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Comparing with biological data</p>
                         </div>
                     </div>
                 ) : (
@@ -139,12 +139,12 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                             <Headphones className="w-6 h-6 text-slate-400" />
                         </div>
                         <div className="text-center">
-                            <h3 className="text-[17px] font-bold text-[#0F172A] dark:text-white flex items-center justify-center gap-2">
-                                <MusicNote className="w-5 h-5 text-[#F4D03F]/60" />
-                                {selectedFile ? selectedFile.name : "Select an audio file"}
+                            <h3 className="text-sm font-bold text-slate-800 flex items-center justify-center gap-2">
+                                <MusicNote className="w-4 h-4 text-amber-500/60" />
+                                {selectedFile ? selectedFile.name : "Select Audio File"}
                             </h3>
-                            <p className="text-[13px] text-slate-400 dark:text-slate-500 font-medium mt-1">
-                                {selectedFile ? "Click to change file" : "Drag and drop audio here or click to browse"}
+                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">
+                                {selectedFile ? "Click to change file" : "Drag and drop or click to browse"}
                             </p>
                         </div>
                     </>
@@ -169,9 +169,9 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
             {/* Interpretation Guide Table */}
             <Card className="rounded-[1.5rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-[#111111] shadow-sm overflow-hidden mt-8">
                 <CardContent className="p-0">
-                    <div className="p-6 border-b border-slate-50 dark:border-white/5 flex items-center justify-between">
-                        <h2 className="text-xl font-bold text-[#0F172A] dark:text-white flex items-center gap-3">
-                            📖 Beehive sound interpretation guide 📖
+                    <div className="p-6 border-b border-slate-50 flex items-center justify-between">
+                        <h2 className="text-lg font-bold text-slate-800 flex items-center gap-3">
+                            Interpretation Guide
                         </h2>
                     </div>
                     <div className="overflow-x-auto">

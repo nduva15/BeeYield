@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Copy, User, Mail, Key, Database } from 'lucide-react';
+import { Copy, User, Mail, Key, Database, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { beeyieldService } from '@/services/beeyieldService';
 
@@ -71,53 +71,55 @@ const UserDebugPanel: React.FC = () => {
     }
 
     return (
-        <div className="space-y-4">
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <User className="h-5 w-5" />
+        <div className="space-y-4 pb-12">
+            <Card className="rounded-[1.5rem] border border-slate-100 shadow-sm overflow-hidden">
+                <CardHeader className="bg-slate-50 border-b border-slate-100">
+                    <CardTitle className="flex items-center gap-2 text-sm font-bold text-slate-800 uppercase tracking-wider">
+                        <User className="h-4 w-4 text-amber-500" />
                         Current User Session
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2">
+                <CardContent className="space-y-4 p-6">
+                    <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">User ID:</span>
+                            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">User ID:</span>
                             <div className="flex items-center gap-2">
-                                <code className="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                                <code className="text-[10px] bg-slate-50 border border-slate-100 px-3 py-1 rounded-lg font-mono text-slate-600">
                                     {user.id}
                                 </code>
                                 <Button
                                     size="sm"
                                     variant="ghost"
+                                    className="h-8 w-8 p-0 rounded-lg hover:bg-slate-50"
                                     onClick={() => copyToClipboard(user.id, 'User ID')}
                                 >
-                                    <Copy className="h-3 w-3" />
+                                    <Copy className="h-3 w-3 text-slate-400" />
                                 </Button>
                             </div>
                         </div>
 
                         <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Email:</span>
+                            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Email:</span>
                             <div className="flex items-center gap-2">
-                                <code className="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                                <code className="text-[10px] bg-slate-50 border border-slate-100 px-3 py-1 rounded-lg font-mono text-slate-600">
                                     {user.email || 'Not set'}
                                 </code>
                                 {user.email && (
                                     <Button
                                         size="sm"
                                         variant="ghost"
+                                        className="h-8 w-8 p-0 rounded-lg hover:bg-slate-50"
                                         onClick={() => copyToClipboard(user.email!, 'Email')}
                                     >
-                                        <Copy className="h-3 w-3" />
+                                        <Copy className="h-3 w-3 text-slate-400" />
                                     </Button>
                                 )}
                             </div>
                         </div>
 
                         <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Name:</span>
-                            <span className="text-sm">
+                            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Name:</span>
+                            <span className="text-sm font-bold text-slate-800">
                                 {dbName ||
                                     user.user_metadata?.full_name ||
                                     user.user_metadata?.name ||
@@ -129,69 +131,63 @@ const UserDebugPanel: React.FC = () => {
                 </CardContent>
             </Card>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Database className="h-5 w-5" />
-                        Your Data Summary
+            <Card className="rounded-[1.5rem] border border-slate-100 shadow-sm overflow-hidden">
+                <CardHeader className="bg-slate-50 border-b border-slate-100">
+                    <CardTitle className="flex items-center gap-2 text-sm font-bold text-slate-800 uppercase tracking-wider">
+                        <Database className="h-4 w-4 text-green-600" />
+                        Account Data
                     </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-6">
                     {loading ? (
-                        <p className="text-sm text-gray-500">Loading...</p>
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest text-center py-4">Loading Data...</p>
                     ) : (
-                        <div className="space-y-3">
-                            <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                                <span className="text-sm font-medium">Apiaries (Places):</span>
-                                <Badge variant={apiaries.length > 0 ? "default" : "secondary"}>
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                                <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">Apiaries Found:</span>
+                                <Badge className="bg-amber-100 text-amber-700 border-none font-bold">
                                     {apiaries.length}
                                 </Badge>
                             </div>
 
-                            <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                                <span className="text-sm font-medium">Hives:</span>
-                                <Badge variant={hives.length > 0 ? "default" : "secondary"}>
+                            <div className="flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                                <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">Hive Units:</span>
+                                <Badge className="bg-green-100 text-green-700 border-none font-bold">
                                     {hives.length}
                                 </Badge>
                             </div>
 
                             {apiaries.length > 0 && (
-                                <div className="mt-4 pt-4 border-t">
-                                    <h4 className="text-sm font-semibold mb-2">Your Apiaries:</h4>
-                                    <ul className="space-y-1">
+                                <div className="mt-6 pt-6 border-t border-slate-100">
+                                    <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-4">Linked Apiaries:</h4>
+                                    <div className="grid gap-2">
                                         {apiaries.map((apiary) => (
-                                            <li key={apiary.id} className="text-sm text-gray-600 dark:text-gray-400">
-                                                • {apiary.name} ({apiary.hive_count || 0} hives)
-                                            </li>
+                                            <div key={apiary.id} className="text-sm font-bold text-slate-700 flex items-center justify-between p-3 bg-white border border-slate-50 rounded-lg">
+                                                <span>{apiary.name}</span>
+                                                <span className="text-[10px] text-slate-400 uppercase">{apiary.hive_count || 0} Hives</span>
+                                            </div>
                                         ))}
-                                    </ul>
+                                    </div>
                                 </div>
                             )}
 
                             {apiaries.length === 0 && (
-                                <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                                    <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                                        ⚠️ No apiaries found for your account. This means either:
+                                <div className="mt-4 p-5 bg-amber-50 border border-amber-100 rounded-2xl">
+                                    <p className="text-sm text-slate-800 font-bold mb-3 flex items-center gap-2">
+                                        <AlertTriangle className="h-4 w-4 text-amber-500" />
+                                        No Data Linked
                                     </p>
-                                    <ul className="mt-2 text-xs text-yellow-700 dark:text-yellow-300 space-y-1 ml-4 mb-4">
-                                        <li>• You haven't created any apiaries yet</li>
-                                        <li>• The data was created under a different user ID</li>
-                                        <li>• There's a data isolation issue</li>
-                                    </ul>
+                                    <p className="text-xs text-slate-500 font-medium leading-relaxed mb-6">
+                                        No apiaries are linked to your current authentication ID. This is likely due to account creation inconsistencies.
+                                    </p>
 
                                     <Button
-
                                         onClick={async () => {
                                             try {
                                                 setLoading(true);
-
-                                                // Direct fetch call safely
                                                 const { supabase } = await import('@/lib/supabase');
-
                                                 if (!supabase) throw new Error("Supabase client not initialized");
-
                                                 const { data: { session } } = await supabase.auth.getSession();
-
                                                 if (!session) throw new Error("No session");
 
                                                 const res = await fetch(`${import.meta.env.VITE_API_URL}/beeyield/fix-ownership`, {
@@ -203,10 +199,8 @@ const UserDebugPanel: React.FC = () => {
                                                 });
 
                                                 const data = await res.json();
-
                                                 if (res.ok) {
                                                     toast.success("Ownership Fixed!", { description: data.message });
-                                                    // Reload data
                                                     const [a, h] = await Promise.all([
                                                         beeyieldService.getApiaries(),
                                                         beeyieldService.getHives()
@@ -216,7 +210,6 @@ const UserDebugPanel: React.FC = () => {
                                                 } else {
                                                     toast.error("Fix failed", { description: data.detail || "Unknown error" });
                                                 }
-
                                             } catch (e) {
                                                 console.error(e);
                                                 toast.error("Error running fix");
@@ -224,9 +217,9 @@ const UserDebugPanel: React.FC = () => {
                                                 setLoading(false);
                                             }
                                         }}
-                                        className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold"
+                                        className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold h-12 rounded-xl shadow-lg shadow-amber-500/20 uppercase tracking-wider text-[10px]"
                                     >
-                                        🛠️ Claim "Kibwezi Main Apiary" (Fix Data)
+                                        Claim Kibwezi Main Apiary
                                     </Button>
                                 </div>
                             )}
