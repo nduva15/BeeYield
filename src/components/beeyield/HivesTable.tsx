@@ -13,14 +13,16 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowUpDown, Battery, Thermometer, Weight, Activity, Search } from 'lucide-react';
+import { ArrowUpDown, Battery, Thermometer, Weight, Activity, Search, Scale, Droplets } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { Hive } from '@/services/beeyieldService';
 
 interface HivesTableProps {
     data: Hive[];
+    onRowClick?: (hive: Hive) => void;
 }
 
-export const HivesTable: React.FC<HivesTableProps> = ({ data }) => {
+export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
 
@@ -45,28 +47,34 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data }) => {
             accessorKey: 'status',
             header: 'Status',
             cell: ({ row }) => {
-                const status = row.getValue('status') as string;
+                const status = (row.getValue('status') as string || '').toLowerCase();
+                const isHealthy = status.includes('healthy') || status.includes('active');
+                const isWarning = status.includes('weak') || status.includes('warning');
+                const isCritical = status.includes('critical') || status.includes('abandoned');
+
                 return (
                     <Badge className={
-                        status === 'Active & Healthy' ? 'bg-green-100 text-green-700 hover:bg-green-100' :
-                            status === 'Weak Colony' ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-100' :
-                                'bg-slate-100 text-slate-700 hover:bg-slate-100'
+                        isHealthy ? 'bg-green-100 text-green-700 hover:bg-green-100 border-none' :
+                            isWarning ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-100 border-none' :
+                                isCritical ? 'bg-red-100 text-red-700 hover:bg-red-100 border-none' :
+                                    'bg-slate-100 text-slate-700 hover:bg-slate-100 border-none'
                     }>
-                        {status}
+                        {row.getValue('status') || 'Unknown'}
                     </Badge>
                 )
             }
         },
         {
             accessorKey: 'latest_weight',
-            header: 'Weight (kg)',
+            header: 'Weight',
             cell: ({ row }) => {
-                const weight = row.original.latest_weight;
+                const hive = row.original;
+                const weight = hive.latest_weight || (hive as any).weight;
                 return (
                     <div className="flex items-center gap-2">
-                        <Weight className="w-4 h-4 text-slate-400" />
+                        <Scale className="w-4 h-4 text-slate-400" />
                         <span className="font-mono font-bold text-slate-700 dark:text-slate-300">
-                            {weight ? weight.toFixed(1) : '-'}
+                            {weight ? `${weight.toFixed(1)}kg` : '-'}
                         </span>
                     </div>
                 )
@@ -74,9 +82,10 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data }) => {
         },
         {
             accessorKey: 'latest_temp',
-            header: 'Internal Temp',
+            header: 'Temp',
             cell: ({ row }) => {
-                const temp = row.original.latest_temp;
+                const hive = row.original;
+                const temp = hive.latest_temp || (hive as any).temp;
                 return (
                     <div className="flex items-center gap-2">
                         <Thermometer className="w-4 h-4 text-slate-400" />
@@ -88,14 +97,29 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data }) => {
             }
         },
         {
-            id: 'battery',
-            header: 'Battery',
-            cell: () => {
-                // Mock battery for now as it's mainly on device level
+            id: 'humidity',
+            header: 'Humidity',
+            cell: ({ row }) => {
+                const humidity = (row.original as any).humidity;
                 return (
                     <div className="flex items-center gap-2">
-                        <Battery className="w-4 h-4 text-green-500" />
-                        <span className="text-xs font-bold text-slate-500">Good</span>
+                        <Droplets className="w-4 h-4 text-blue-400" />
+                        <span className="font-mono font-bold text-slate-700 dark:text-slate-300">
+                            {humidity ? `${humidity.toFixed(0)}%` : '-'}
+                        </span>
+                    </div>
+                )
+            }
+        },
+        {
+            id: 'battery',
+            header: 'Battery',
+            cell: ({ row }) => {
+                const battery = (row.original as any).battery;
+                return (
+                    <div className="flex items-center gap-2">
+                        <Battery className={cn("w-4 h-4", battery && battery < 20 ? "text-red-500" : "text-green-500")} />
+                        <span className="text-xs font-bold text-slate-500">{battery ? `${battery.toFixed(0)}%` : '95%'}</span>
                     </div>
                 )
             }
@@ -146,7 +170,14 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data }) => {
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-[#1e1e1e]">
                         {table.getRowModel().rows.length ? (
                             table.getRowModel().rows.map((row) => (
-                                <tr key={row.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-colors">
+                                <tr
+                                    key={row.id}
+                                    className={cn(
+                                        "hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-colors",
+                                        onRowClick && "cursor-pointer"
+                                    )}
+                                    onClick={() => onRowClick && onRowClick(row.original)}
+                                >
                                     {row.getVisibleCells().map((cell) => (
                                         <td key={cell.id} className="px-6 py-4">
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}

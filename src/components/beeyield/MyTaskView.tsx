@@ -41,12 +41,18 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { beeyieldService, Apiary, Hive, Task } from '@/services/beeyieldService';
 
 interface MyTaskViewProps {
-    onTabChange: (tab: string) => void;
+    onTabChange: (tab: string, message?: string, action?: string) => void;
+    initialAction?: 'add';
+    onInitialActionConsumed?: () => void;
 }
 
 
 
-const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
+const MyTaskView: React.FC<MyTaskViewProps> = ({
+    onTabChange,
+    initialAction,
+    onInitialActionConsumed
+}) => {
     const { t } = useLanguage();
     const [view, setView] = useState<'list' | 'month'>('month');
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -56,9 +62,12 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
     const [title, setTitle] = useState("");
     const [taskDate, setTaskDate] = useState<Date>(new Date());
     const [taskTime, setTaskTime] = useState("00:00");
-    const [priority, setPriority] = useState<"low" | "medium" | "high">("medium");
+    const [priority, setPriority] = useState<"Low" | "Medium" | "High">("Medium");
+    const [taskType, setTaskType] = useState<"Inspection" | "Feeding" | "Treatment" | "Harvest" | "Other">("Inspection");
     const [category, setCategory] = useState("General");
     const [description, setDescription] = useState("");
+    const [isRecurring, setIsRecurring] = useState(false);
+    const [recurrenceDays, setRecurrenceDays] = useState("7");
     const [selectedApiary, setSelectedApiary] = useState<Apiary | null>(null);
     const [selectedHive, setSelectedHive] = useState<Hive | null>(null);
     const [isApiaryOpen, setIsApiaryOpen] = useState(false);
@@ -93,8 +102,12 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
             }
         };
 
+        if (initialAction === 'add') {
+            setIsAddingTask(true);
+            onInitialActionConsumed?.();
+        }
         fetchAllData();
-    }, []);
+    }, [initialAction]);
 
     const generateCalendarDays = () => {
         const monthStart = startOfMonth(currentDate);
@@ -127,11 +140,13 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
                 description,
                 status: 'pending',
                 priority,
+                type: taskType,
                 category,
                 due_date: due.toISOString(),
                 apiary_id: selectedApiary?.id,
                 hive_id: selectedHive?.id,
-                is_completed: false
+                is_completed: false,
+                recurrence: isRecurring ? JSON.stringify({ days: parseInt(recurrenceDays) || 7 }) : "None"
             });
 
             if (error) throw error;
@@ -149,7 +164,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
             setTaskTime("00:00");
             setSelectedApiary(null);
             setSelectedHive(null);
-            setPriority("medium");
+            setPriority("Medium");
             setCategory("General");
             setDescription("");
         } catch (error) {
@@ -188,6 +203,56 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
                             placeholder={t('task_title_placeholder')}
                             className="w-full h-14 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl px-6 font-bold text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-[#1B9157]/10 transition-all font-sans text-lg placeholder:text-slate-300"
                         />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {/* Task Type */}
+                        <div className="space-y-2">
+                            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('task_type_label') || "Task Type"}<span className="text-red-500">*</span></label>
+                            <div className="flex flex-wrap gap-2">
+                                {['Inspection', 'Feeding', 'Treatment', 'Harvest', 'Other'].map((type) => (
+                                    <button
+                                        key={type}
+                                        type="button"
+                                        onClick={() => setTaskType(type as any)}
+                                        className={cn(
+                                            "flex-1 px-4 h-12 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all outline-none cursor-pointer border-2",
+                                            taskType === type
+                                                ? "bg-[#1B9157] text-white border-[#1B9157] shadow-lg shadow-[#1B9157]/40"
+                                                : "bg-slate-50 text-slate-400 border-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-500"
+                                        )}
+                                    >
+                                        {type}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Recurring Toggle */}
+                        <div className="space-y-2">
+                            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('recurring_task_label') || "Recurring Task"}</label>
+                            <div className="flex items-center gap-4 bg-slate-50 dark:bg-slate-900 h-14 rounded-2xl px-6">
+                                <span className="text-sm font-bold text-slate-600 dark:text-slate-300 flex-1">Repeat this task?</span>
+                                <input
+                                    type="checkbox"
+                                    checked={isRecurring}
+                                    onChange={(e) => setIsRecurring(e.target.checked)}
+                                    className="w-5 h-5 accent-[#1B9157]"
+                                />
+                                {isRecurring && (
+                                    <div className="flex items-center gap-2 ml-4 border-l border-slate-200 dark:border-slate-700 pl-4">
+                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-tight">Every</span>
+                                        <input
+                                            type="number"
+                                            value={recurrenceDays}
+                                            onChange={(e) => setRecurrenceDays(e.target.value)}
+                                            className="w-12 bg-transparent border-none text-center font-black text-[#1B9157] focus:ring-0"
+                                        />
+                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-tight">Days</span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -415,7 +480,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
                         <div className="space-y-4">
                             <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('priority_label')}</label>
                             <div className="flex gap-2">
-                                {['low', 'medium', 'high'].map((p) => (
+                                {['Low', 'Medium', 'High'].map((p) => (
                                     <button
                                         key={p}
                                         type="button"
@@ -424,20 +489,20 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
                                             "flex-1 flex items-center justify-center gap-2 h-12 rounded-xl border-2 transition-all font-bold text-[10px] uppercase tracking-widest outline-none cursor-pointer",
                                             priority === p
                                                 ? cn(
-                                                    p === 'low' && "border-green-200 bg-green-50 text-[#1B9157]",
-                                                    p === 'medium' && "border-[#F4D03F]/20 bg-[#F4D03F]/5 text-[#7a6820]",
-                                                    p === 'high' && "border-rose-200 bg-rose-50 text-rose-600"
+                                                    p === 'Low' && "border-green-200 bg-green-50 text-[#1B9157]",
+                                                    p === 'Medium' && "border-[#F4D03F]/20 bg-[#F4D03F]/5 text-[#7a6820]",
+                                                    p === 'High' && "border-rose-200 bg-rose-50 text-rose-600"
                                                 )
                                                 : "border-slate-50 bg-slate-50 text-slate-400 hover:border-slate-200 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-500"
                                         )}
                                     >
                                         <div className={cn(
                                             "w-2 h-2 rounded-full",
-                                            p === 'low' && "bg-[#1B9157]",
-                                            p === 'medium' && "bg-[#F4D03F]",
-                                            p === 'high' && "bg-rose-500"
+                                            p === 'Low' && "bg-[#1B9157]",
+                                            p === 'Medium' && "bg-[#F4D03F]",
+                                            p === 'High' && "bg-rose-500"
                                         )} />
-                                        {t(`priority_${p}`)}
+                                        {p}
                                     </button>
                                 ))}
                             </div>
@@ -632,12 +697,12 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({ onTabChange }) => {
                                                                     <div className="flex items-center gap-3">
                                                                         <div className={cn(
                                                                             "w-2 h-2 rounded-full",
-                                                                            task.priority === 'high' ? "bg-red-500" : task.priority === 'medium' ? "bg-[#F4D03F]" : "bg-[#1B9157]"
+                                                                            task.priority === 'High' ? "bg-red-500" : task.priority === 'Medium' ? "bg-[#F4D03F]" : "bg-[#1B9157]"
                                                                         )} />
                                                                         <div>
                                                                             <h4 className="font-bold text-slate-700 dark:text-slate-200 text-sm">{task.title}</h4>
                                                                             <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                                                                                {task.category} • {format(new Date(task.due_date!), 'h:mm a')}
+                                                                                {task.type} • {format(new Date(task.due_date!), 'h:mm a')}
                                                                             </p>
                                                                         </div>
                                                                     </div>

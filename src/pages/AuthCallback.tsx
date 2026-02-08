@@ -29,10 +29,50 @@ const AuthCallback = () => {
                 }
 
                 if (session) {
+                    // Fetch the user data to get the name for the toast
+                    const { data: { user } } = await supabase.auth.getUser();
+
+                    // Metadata Validation Check
+                    const requireMetadataStr = localStorage.getItem('authRequireMetadata');
+                    if (requireMetadataStr && user) {
+                        try {
+                            const requireMetadata = JSON.parse(requireMetadataStr);
+                            const missingMetadata = Object.entries(requireMetadata).some(
+                                ([key, value]) => {
+                                    // Skip metadata check for Timothy's primary account
+                                    if (user.email === 'timothynduva349@gmail.com') return false;
+                                    return user.user_metadata?.[key] !== value;
+                                }
+                            );
+
+                            if (missingMetadata) {
+                                await supabase.auth.signOut();
+                                localStorage.removeItem('authRequireMetadata');
+                                navigate('/beeyield-login?error=account_required', { replace: true });
+                                return;
+                            }
+                        } catch (e) {
+                            console.error('Error parsing requireMetadata:', e);
+                        }
+                    }
+                    localStorage.removeItem('authRequireMetadata');
+
+                    const fullName = (user?.user_metadata?.full_name || user?.user_metadata?.name) ||
+                        (user?.user_metadata?.first_name ? `${user.user_metadata.first_name} ${user.user_metadata.last_name || ''}`.trim() : null) ||
+                        'Client';
+
+                    import('sonner').then(({ toast }) => {
+                        toast.success(`Welcome back, ${fullName}! 🎉`);
+                    });
+
                     // Successfully authenticated, redirect to home or intended destination
                     const returnTo = localStorage.getItem('authReturnTo') || '/';
                     localStorage.removeItem('authReturnTo');
-                    navigate(returnTo, { replace: true });
+
+                    // Small delay to ensure session is fully propagated
+                    setTimeout(() => {
+                        navigate(returnTo, { replace: true });
+                    }, 500);
                 } else {
                     // No session, redirect to login
                     navigate('/login', { replace: true });

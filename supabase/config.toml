@@ -1,0 +1,23 @@
+project_id = "ezfccfypwmuvbpujkqrg"
+
+[api]
+port = 54321
+external_url = "https://ezfccfypwmuvbpujkqrg.supabase.co"
+
+[db]
+port = 54322
+shadow_port = 54323
+
+[storage]
+enabled = true
+
+[auth]
+enabled = true
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["https://ezfccfypwmuvbpujkqrg.supabase.co"]
+jwt_expiry = 3600
+enable_signup = true
+
+[functions]
+[functions.task-notifications]
+verify_jwt = false

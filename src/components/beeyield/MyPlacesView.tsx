@@ -1,29 +1,245 @@
-
 import React, { useState } from 'react';
-import { Plus, MapPin, Trash2, Edit } from 'lucide-react';
+import { Plus, MapPin, Trash2, Edit, Thermometer, Droplets, Scale, Battery, Activity, LayoutGrid, List as ListIcon, Hexagon, ShieldCheck } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select";
-import { Apiary, ApiaryCreateInput } from '@/services/beeyieldService';
-import { toast } from 'sonner';
-import { useApiaries, useCreateApiary, useUpdateApiary, useDeleteApiary } from '@/hooks/useApiaries';
-import { useHivesWithTelemetry } from '@/hooks/useHives';
-import { HivesTable } from './HivesTable';
+} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Badge as BadgeComponent } from '../ui/badge';
+import { toast } from 'sonner';
+import {
+    Apiary,
+    ApiaryCreateInput,
+    Hive
+} from '@/services/beeyieldService';
+import {
+    useApiaries,
+    useCreateApiary,
+    useUpdateApiary,
+    useDeleteApiary,
+    useHivesWithTelemetry
+} from '@/hooks/useHives';
+import { HivesTable } from './HivesTable';
+import HiveFormModal from './HiveFormModal';
 
-console.log('BadgeComponent loaded:', BadgeComponent);
+// --- Sub-components (StatCard from PrecisionPollination) ---
+const StatCard = ({ label, value, colorClass }: { label: string; value: string | number; colorClass: string }) => (
+    <div className="bg-white dark:bg-[#111111] rounded-2xl p-4 border border-gray-100 dark:border-white/5 flex flex-col gap-1 shadow-sm">
+        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{label}</span>
+        <div className="flex items-center gap-2">
+            <div className={cn("w-1.5 h-1.5 rounded-full", colorClass)} />
+            <span className="text-xl font-black text-slate-800 dark:text-slate-100">{value}</span>
+        </div>
+    </div>
+);
+
+// --- Detail View Component ---
+const ApiaryDetailView = ({ apiary, setViewingApiary }: { apiary: Apiary; setViewingApiary: (a: Apiary | null) => void }) => {
+    const { hives, isLoading: hivesLoading } = useHivesWithTelemetry(apiary.id);
+    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+    const [isAddingHive, setIsAddingHive] = useState(false);
+    const [editingHive, setEditingHive] = useState<Hive | null>(null);
+
+    const handleEditHive = (hive: Hive) => {
+        setEditingHive(hive);
+        setIsAddingHive(true);
+    };
+
+    const handleOpenAddHive = () => {
+        setEditingHive(null);
+        setIsAddingHive(true);
+    };
+
+    const getStatusColor = (status?: string) => {
+        if (!status) return 'bg-gray-400';
+        const s = status.toLowerCase();
+        if (s.includes('healthy') || s.includes('active')) return 'bg-[#1B9157]';
+        if (s.includes('weak') || s.includes('warning')) return 'bg-[#F4D03F]';
+        if (s.includes('critical') || s.includes('abandoned')) return 'bg-red-500 animate-pulse';
+        return 'bg-gray-400';
+    };
+
+    // Calculate aggregate health status
+    const stats = React.useMemo(() => {
+        const total = hives.length;
+        const healthy = hives.filter(h => {
+            const s = h.status?.toLowerCase() || '';
+            return s.includes('healthy') || s.includes('active');
+        }).length;
+        const warnings = hives.filter(h => h.status?.toLowerCase().includes('weak')).length;
+        const critical = hives.filter(h => h.status?.toLowerCase().includes('abandoned')).length;
+
+        return { total, healthy, warnings, critical };
+    }, [hives]);
+
+    return (
+        <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 pb-20">
+            <div className="mb-8 px-2 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setViewingApiary(null)}
+                        className="rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
+                    </Button>
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                                {apiary.name}
+                            </h1>
+                            <Badge className="bg-[#1B9157]/10 text-[#1B9157] border-none font-bold text-[10px] uppercase">
+                                <ShieldCheck className="w-3 h-3 mr-1" /> Live
+                            </Badge>
+                        </div>
+                        <p className="text-slate-500 text-sm font-semibold flex items-center gap-2 mt-1">
+                            <MapPin className="w-3 h-3" />
+                            {apiary.location_name || 'No location set'}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="space-y-6 mx-2">
+                {/* IoT Sensory Hub (Ported from Precision Pollination Stats) */}
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                    <StatCard label="Total Hives" value={stats.total} colorClass="bg-[#F4D03F]" />
+                    <StatCard label="Healthy" value={stats.healthy} colorClass="bg-[#1B9157]" />
+                    <StatCard label="Warnings" value={stats.warnings} colorClass="bg-[#F4D03F]" />
+                    <StatCard label="Critical" value={stats.critical} colorClass="bg-red-500" />
+                    <StatCard label="Acreage" value={`${apiary.size_acres || 0} Ac`} colorClass="bg-blue-500" />
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                    {/* Left Panel: Hive Fleet Visualization */}
+                    <div className="lg:col-span-4 bg-white dark:bg-[#111111] rounded-[2rem] border border-gray-100 dark:border-white/5 shadow-sm overflow-hidden flex flex-col min-h-[400px]">
+                        <div className="p-6 border-b border-gray-50 dark:border-white/5 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Hexagon className="w-4 h-4 text-[#F4D03F]" />
+                                <h3 className="text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">Hive Fleet</h3>
+                            </div>
+                            <div className="flex gap-1">
+                                <Button
+                                    variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                                    size="sm"
+                                    className={cn("h-7 w-7 p-0", viewMode === 'grid' && "bg-[#F4D03F] text-black hover:bg-[#F4D03F]/90")}
+                                    onClick={() => setViewMode('grid')}
+                                >
+                                    <LayoutGrid className="w-3.5 h-3.5" />
+                                </Button>
+                                <Button
+                                    variant={viewMode === 'list' ? 'default' : 'ghost'}
+                                    size="sm"
+                                    className={cn("h-7 w-7 p-0", viewMode === 'list' && "bg-[#F4D03F] text-black hover:bg-[#F4D03F]/90")}
+                                    onClick={() => setViewMode('list')}
+                                >
+                                    <ListIcon className="w-3.5 h-3.5" />
+                                </Button>
+                            </div>
+                        </div>
+
+                        <div className="p-5 flex-1 overflow-y-auto max-h-[500px] custom-scrollbar">
+                            {viewMode === 'grid' ? (
+                                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-6 gap-1.5">
+                                    {hives.map(hive => (
+                                        <div
+                                            key={hive.id}
+                                            className={cn(
+                                                "aspect-square rounded flex items-center justify-center text-[10px] font-black text-white transition-all cursor-pointer hover:scale-110",
+                                                getStatusColor(hive.status)
+                                            )}
+                                            title={`${hive.hive_code} - ${hive.status}`}
+                                            onClick={() => handleEditHive(hive)}
+                                        >
+                                            {hive.hive_code.split('-')[1] || hive.hive_code.slice(-2)}
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="space-y-2">
+                                    {hives.slice(0, 50).map(hive => (
+                                        <div
+                                            key={hive.id}
+                                            className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-white/5 border border-transparent hover:border-slate-200 dark:hover:border-white/10 transition-all cursor-pointer"
+                                            onClick={() => handleEditHive(hive)}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <div className={cn("w-2 h-2 rounded-full", getStatusColor(hive.status))} />
+                                                <span className="text-xs font-black text-slate-700 dark:text-slate-200">{hive.hive_code}</span>
+                                            </div>
+                                            <div className="flex items-center gap-3 text-[10px] font-bold text-slate-400">
+                                                <span className="flex items-center gap-1">
+                                                    <Thermometer className="w-3 h-3" />
+                                                    {((hive as any).temp || hive.latest_temp)?.toFixed(1) || '--'}°
+                                                </span>
+                                                <span className="flex items-center gap-1">
+                                                    <Scale className="w-3 h-3" />
+                                                    {((hive as any).weight || hive.latest_weight)?.toFixed(1) || '--'}kg
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {hives.length > 50 && (
+                                        <p className="text-center text-[10px] font-bold text-slate-400 py-2 uppercase tracking-widest">+ {hives.length - 50} more hives</p>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Right Panel: Detailed Hives List (Table) */}
+                    <div className="lg:col-span-8 bg-white dark:bg-[#111111] rounded-[2rem] border border-gray-100 dark:border-white/5 shadow-sm overflow-hidden min-h-[400px]">
+                        <div className="p-8">
+                            <div className="flex items-center justify-between mb-8">
+                                <div className="flex items-center gap-3">
+                                    <Activity className="w-5 h-5 text-[#1B9157]" />
+                                    <h2 className="text-xl font-bold text-slate-900 dark:text-white">Active Hives</h2>
+                                </div>
+                                <Button
+                                    onClick={handleOpenAddHive}
+                                    className="bg-[#1B9157] hover:bg-[#157a48] text-white font-bold rounded-xl btn-hover-effect"
+                                >
+                                    <Plus className="w-4 h-4 mr-2" /> New Hive
+                                </Button>
+                            </div>
+
+                            {hivesLoading ? (
+                                <div className="space-y-4">
+                                    <Skeleton className="h-10 w-full rounded-lg" />
+                                    <Skeleton className="h-[300px] w-full rounded-[1.5rem]" />
+                                </div>
+                            ) : (
+                                <HivesTable
+                                    data={hives || []}
+                                    onRowClick={handleEditHive}
+                                />
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <HiveFormModal
+                isOpen={isAddingHive}
+                onClose={() => setIsAddingHive(false)}
+                preselectedApiaryId={apiary.id}
+                editingHive={editingHive}
+            />
+        </div>
+    );
+};
 
 interface MyPlacesViewProps {
-    onTabChange: (tab: string) => void;
+    onTabChange: (tab: string, message?: string, action?: string) => void;
 }
 
 const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
@@ -102,87 +318,8 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
         }
     };
 
-    // --- Detail View Component ---
-    const ApiaryDetailView = ({ apiary }: { apiary: Apiary }) => {
-        const { hives, isLoading: hivesLoading, readings } = useHivesWithTelemetry(apiary.id);
-
-        // Merge telemetry into hives for display if needed specifically outside table
-        // For now, passing hives directly as useHivesWithTelemetry already can enhance them locally
-        // But HivesTable expects Hive objects.
-
-        // Enrich hives with 'latest_weight' and 'latest_temp' from telemetry readings matching device_id?
-        // Current implementation of 'useHivesWithTelemetry' does simple mapping.
-        // Let's pass the enriched hives.
-
-        return (
-            <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 pb-20">
-                <div className="mb-8 px-2 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => setViewingApiary(null)}
-                            className="rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
-                        </Button>
-                        <div>
-                            <h1 className="text-3xl font-bold text-[#1e293b] dark:text-white tracking-tight">
-                                {apiary.name}
-                            </h1>
-                            <p className="text-slate-500 text-sm flex items-center gap-2">
-                                <MapPin className="w-3 h-3" />
-                                {apiary.location_name || 'No location set'}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="space-y-6 mx-2">
-                    {/* Stats Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <Card className="border-none shadow-sm bg-white dark:bg-[#1e1e1e] rounded-3xl p-6">
-                            <h3 className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-2">Total Hives</h3>
-                            <p className="text-3xl font-black text-[#F4D03F]">{hives?.length || 0}</p>
-                        </Card>
-                        <Card className="border-none shadow-sm bg-white dark:bg-[#1e1e1e] rounded-3xl p-6">
-                            <h3 className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-2">Acreage</h3>
-                            <p className="text-3xl font-black text-green-500">{apiary.size_acres || 0} <span className="text-sm font-bold text-slate-400">ACRES</span></p>
-                        </Card>
-                        <Card className="border-none shadow-sm bg-white dark:bg-[#1e1e1e] rounded-3xl p-6">
-                            <h3 className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-2">Expected Hives</h3>
-                            <p className="text-3xl font-black text-slate-700 dark:text-slate-300">{apiary.expected_hives || 0}</p>
-                        </Card>
-                    </div>
-
-                    {/* Hives List (Table) */}
-                    <Card className="border-none shadow-sm bg-white dark:bg-[#1e1e1e] rounded-[2rem] overflow-hidden">
-                        <CardContent className="p-8">
-                            <div className="flex items-center justify-between mb-8">
-                                <h2 className="text-xl font-bold text-[#1e293b] dark:text-white">Active Hives</h2>
-                                <Button className="bg-[#F4D03F] hover:bg-[#D4AF37] text-white font-bold rounded-xl btn-hover-effect">
-                                    <Plus className="w-4 h-4 mr-2" /> Add Hive
-                                </Button>
-                            </div>
-
-                            {hivesLoading ? (
-                                <div className="space-y-2">
-                                    <Skeleton className="h-8 w-full" />
-                                    <Skeleton className="h-20 w-full" />
-                                    <Skeleton className="h-20 w-full" />
-                                </div>
-                            ) : (
-                                <HivesTable data={hives || []} />
-                            )}
-                        </CardContent>
-                    </Card>
-                </div>
-            </div>
-        );
-    };
-
     if (viewingApiary) {
-        return <ApiaryDetailView apiary={viewingApiary} />;
+        return <ApiaryDetailView apiary={viewingApiary} setViewingApiary={setViewingApiary} />;
     }
 
     if (isAddingPlace) {
@@ -408,9 +545,9 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
 
                             <div className="flex items-start justify-between mb-6">
                                 <div>
-                                    <BadgeComponent className="mb-3 bg-green-100 text-green-700 hover:bg-green-100 border-none px-3 py-1 rounded-full uppercase text-[10px] font-bold tracking-wider">
+                                    <Badge className="mb-3 bg-green-100 text-green-700 hover:bg-green-100 border-none px-3 py-1 rounded-full uppercase text-[10px] font-bold tracking-wider">
                                         {apiary.type || 'Permanent'}
-                                    </BadgeComponent>
+                                    </Badge>
                                     <h3 className="text-xl font-bold text-[#1e293b] dark:text-white mb-1 group-hover:text-[#F4D03F] transition-colors">
                                         {apiary.name}
                                     </h3>

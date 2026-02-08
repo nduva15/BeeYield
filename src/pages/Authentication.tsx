@@ -31,12 +31,15 @@ const Authentication: React.FC = () => {
     const { items } = useCart();
     const [authMode, setAuthMode] = useState<AuthMode>('login');
 
-    // Parse mode from URL if possible (e.g. /login?mode=register)
+    // Parse mode from URL if possible (e.g. /login?mode=register) or path
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const mode = params.get('mode') as AuthMode;
+
         if (mode && ['login', 'register', 'forgot-password'].includes(mode)) {
             setAuthMode(mode);
+        } else if (location.pathname === '/signup') {
+            setAuthMode('register');
         }
     }, [location]);
 

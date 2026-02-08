@@ -20,7 +20,7 @@ pub async fn scrape_company_site(config: CompanyScraperConfig) -> Result<(), Box
     let mut website = Website::new(&config.start_url);
     
     // Configure aggressive but polite crawling
-    website.configuration.user_agent = Some(Box::new("BeeYield-Enterprise-Bot/1.0"));
+    website.configuration.user_agent = Some(Box::new("BeeYield-Enterprise-Bot/1.0".into()));
     website.configuration.respect_robots_txt = true;
     website.configuration.delay = 500; // 500ms delay to be nice to our own server
 
@@ -36,9 +36,9 @@ pub async fn scrape_company_site(config: CompanyScraperConfig) -> Result<(), Box
     let mut page_count = 0;
 
     for page in website.get_pages() {
-        if let Some(pages) = page {
-            let url = pages.get_url();
-            let html = pages.get_html();
+        if true { 
+            let url = page.get_url();
+            let html = page.get_html();
             
             // Convert HTML to Markdown (simplified for now, ideally use a crate like html2md)
             // For now, we'll strip tags to get raw text, in production we'd use html2md

@@ -39,6 +39,7 @@ import { DocumentsRegistryTab } from '@/components/admin/tabs/DocumentsRegistryT
 import { PaymentsTab } from '@/components/admin/tabs/PaymentsTab';
 import { AccountsTab } from '@/components/admin/tabs/AccountsTab';
 import { InvoicesTab } from '@/components/admin/tabs/InvoicesTab';
+import { SupportRequestsTab } from '@/components/admin/tabs/SupportRequestsTab';
 
 const AdminDashboard: React.FC = () => {
     const { user, loading: authLoading, signOut } = useAuth();
@@ -62,6 +63,7 @@ const AdminDashboard: React.FC = () => {
     const [stockMovements, setStockMovements] = useState<any[]>([]);
     const [apiaries, setApiaries] = useState<any[]>([]);
     const [hives, setHives] = useState<any[]>([]);
+    const [supportRequests, setSupportRequests] = useState<any[]>([]);
     const [activeTab, setActiveTab] = useState('overview');
 
     // Loading States
@@ -253,6 +255,11 @@ const AdminDashboard: React.FC = () => {
                 case 'newsletter': {
                     const subscribersData = await adminService.getNewsletterSubscribers();
                     setSubscribers(subscribersData);
+                    break;
+                }
+                case 'support': {
+                    const requestsData = await beeyieldService.getRequests();
+                    setSupportRequests(requestsData);
                     break;
                 }
                 case 'team': {
@@ -943,6 +950,7 @@ const AdminDashboard: React.FC = () => {
                 { id: 'pollination', label: 'Pollination', icon: Bug },
                 { id: 'contact', label: 'Contact', icon: MessageSquare },
                 { id: 'newsletter', label: 'Newsletter', icon: Mail },
+                { id: 'support', label: 'Support', icon: MessageSquare },
                 { id: 'documents', label: 'Documents', icon: FileText },
             ]
         },
@@ -3235,6 +3243,16 @@ const AdminDashboard: React.FC = () => {
 
                     <TabsContent value="invoices">
                         <InvoicesTab />
+                    </TabsContent>
+
+                    {/* --- SUPPORT TAB --- */}
+                    <TabsContent value="support" className="space-y-6">
+                        <SupportRequestsTab />
+                    </TabsContent>
+
+                    {/* --- BATCHES TAB --- */}
+                    <TabsContent value="batches" className="space-y-6">
+                        <TracingHistoryTab />
                     </TabsContent>
                 </Tabs>
             </div>

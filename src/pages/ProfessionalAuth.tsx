@@ -29,6 +29,16 @@ const ProfessionalAuth: React.FC = () => {
     const [authMode, setAuthMode] = useState<AuthMode>('login');
 
     useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        if (params.get('error') === 'account_required') {
+            toast.error('Dashboard Profile Required', {
+                description: 'You have a Shop account, but you must register/deploy your Professional Profile to access the BeeYield Dashboard.'
+            });
+            setAuthMode('register');
+        }
+    }, [location.search]);
+
+    useEffect(() => {
         if (user && !authLoading) {
             navigate('/beeyield-dashboard');
         }

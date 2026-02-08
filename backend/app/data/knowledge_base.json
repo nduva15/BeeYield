@@ -1,8 +1,8 @@
 {
   "metadata": {
     "version": "6.0.0-ELITE",
-    "last_sync": "Sat Feb  7 17:46:39 2026",
-    "total_nodes": 376
+    "last_sync": "Sun Feb  8 19:53:57 2026",
+    "total_nodes": 378
   },
   "dna": {
     "company": "BeeYield",
@@ -174,7 +174,7 @@
     {
       "source": "Checkout.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Your Cart is Empty. Discover our premium honey and sustainable beekeeping products. Start Shopping. BeeYield. Order Confirmed!. Thank you,. ! Your order has been placed and is being prepared for dispatch.. Order Number. Payment Method. Items Summary. 20% OFF. Subtotal. Delivery. Total Paid. 24 Hours Delivery Promise. Each delivery takes 24 hours for shipping dispatch and delivery. You will receive a SMS tracking link shortly.. View & Print Receipt. Continue Shopping. Track Your Order in Dashboard. Checkout. Check your Wishlist below! \ud83d\udc47. 20% OFF. Remove. Product. Stock Status. Action. In Stock. Out of Stock. Add To Cart. Payment Method. M-Pesa. Pay securely via your mobile phone. M-Pesa Phone Number. Bank Card. Visa, Mastercard, or AMEX. Cardholder Name. Card Number. Expiry Date. Continue to Delivery. Delivery Information. Full Name. Phone Number. Address. County. Review Order. Final Confirmation. Everything is ready! Click below to complete your payment of. Order Summary."
+      "content": "Your Cart is Empty. Discover our premium honey and sustainable beekeeping products. Start Shopping. BeeYield. Order Confirmed!. Thank you,. ! Your order has been placed and is being prepared for dispatch.. Order Number. Payment Method. Items Summary. 20% OFF. Subtotal. Delivery. Total Paid. 24 Hours Delivery Promise. Each delivery takes 24 hours for shipping dispatch and delivery. You will receive a SMS tracking link shortly.. View & Print Receipt. Continue Shopping. Track Your Order in Dashboard. Checkout. My Account. Check your Wishlist below! \ud83d\udc47. 20% OFF. Remove. Product. Stock Status. Action. In Stock. Out of Stock. Add To Cart. Payment Method. M-Pesa. Pay securely via your mobile phone. M-Pesa Phone Number. Bank Card. Visa, Mastercard, or AMEX. Cardholder Name. Card Number. Expiry Date. Continue to Delivery. Delivery Information. Full Name. Phone Number. Address. County. Review Order. Final Confirmation. Everything is ready! Click below to complete your payment of. Order Summary."
     },
     {
       "source": "Checkout.tsx",
@@ -499,7 +499,7 @@
     {
       "source": "Shop.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "The Future of Apiculture Is Here. Harvest the. Precision.. From our award-winning traceable honey to cutting-edge IoT hive sensors, everything in our shop supports the mission of sustainable pollination in Kenya.. Fast Delivery Nationwide. Secure Transactions. Scroll to explore the range. Order By. Featured Status. Economic to Premium. Premium to Economic. Technical Rating. Blockchain Verified. Pro Grade. Performance. Ultra Precision. Connectivity. LoRaWAN/GSM. Sold Out. Add to Cart. Bring Professional Grade. Pollination Tech. To Your Farm.. Request Consultation. Try BeeYield in your apiary. BeeYield is constantly evolving. We invite you to take part in the international testing of our system \u2013 together, we can advance technology that protects bees worldwide.. Join the Program. Global Partners. Farmers. ApiSense. Intelligent Hives. Sort by. Add to wishlist. Pure, light, and delicate Acacia honey harvested from the pristine northern plains."
+      "content": "The Future of Apiculture Is Here. Harvest the. Precision.. From our award-winning traceable honey to cutting-edge IoT hive sensors, everything in our shop supports the mission of sustainable pollination in Kenya.. Fast Delivery Nationwide. Secure Transactions. Scroll to explore the range. Order By. Featured Status. Economic to Premium. Premium to Economic. Technical Rating. My Account. Blockchain Verified. Pro Grade. Performance. Ultra Precision. Connectivity. LoRaWAN/GSM. Sold Out. Add to Cart. Bring Professional Grade. Pollination Tech. To Your Farm.. Request Consultation. Try BeeYield in your apiary. BeeYield is constantly evolving. We invite you to take part in the international testing of our system \u2013 together, we can advance technology that protects bees worldwide.. Join the Program. Global Partners. Farmers. ApiSense. Intelligent Hives. Sort by. Add to wishlist. Pure, light, and delicate Acacia honey harvested from the pristine northern plains."
     },
     {
       "source": "Shop.tsx",
@@ -554,7 +554,7 @@
     {
       "source": "Traceability.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Timothy, along with his sisters Agatha and Carole, has transformed a modest venture into a technological edge for beekeeping\u2014leveraging IoT and blockchain to ensure transparency, protect the African honey bee, and restore biodiversity in our native Kenya.. Live Hive Metrics. Live IoT Stream. Temperature. Humidity. Hive Weight. Active. Colony Status. Origin Details. Batch Identifier. Harvest Date. Harvest Context. Selected Hives. Total Harvest. Specific Lot Impact. Apiary Location. Flower Sources. Acacia. Wildflower. Water Source. Precision Pollination Node. Precision Node. Queen Guard Active. Colony Alert. State Unknown. Global GPS. Colony Acoustics. Flight Activity. Brood Temperature. Nest Humidity. Vibration Index. Queen Pheromone. Blockchain Integrity. Confirmations. Network. HoneyChain\u2122 2.0. Secure Link. Verified 256-bit. End-to-End. Master Beekeeper. Verified. Certified Master Beekeeper. Our Commitment. 50% Harvest Promise."
+      "content": "Timothy, along with his sisters Agatha and Carole, has transformed a modest venture into a technological edge for beekeeping\u2014leveraging IoT and blockchain to ensure transparency, protect the African honey bee, and restore biodiversity in our native Kenya.. Live Hive Metrics. Live IoT Stream. Temperature. Humidity. Hive Weight. Active. Colony Status. Origin Details. Batch Identifier. Harvest Date. Harvest Context. Selected Hives. Total Harvest. Specific Lot Impact. Apiary Location. Flower Sources. Acacia. Wildflower. Water Source. Precision Pollination Node. Precision Node. Queen Guard Active. Colony Alert. State Unknown. Global GPS. Colony Acoustics. Flight Activity. Brood Temperature. Nest Humidity. Vibration Index. Queen Pheromone. Blockchain Integrity. Confirmations. Networks. HoneyChain\u2122 2.0. \ud83d\udd17 Polygon \u2713. Secure Link. Verified 256-bit. End-to-End. Master Beekeeper. Verified. Certified Master Beekeeper. Our Commitment. 50% Harvest Promise."
     },
     {
       "source": "Traceability.tsx",
@@ -579,7 +579,7 @@
     {
       "source": "Header.tsx",
       "subtopic": "Key Facts",
-      "content": "BeeYield. Professional Pollination. Pollination Solutions. In-Hive Precision Pollination. In-Land Pollination Insights Platform. Diseases. Beekeeping Network. Traceability. Main Navigation. Professional Pollination. Pollination Solutions. In-Hive Precision Pollination. In-Land Pollination Insights. Diseases. Beekeeping Network. Professional Portal. BeeYield Dashboard. BeeYield home. BeeYield Dashboard. View shopping cart. Toggle menu. flex items-center space-x-2 flex-shrink-0. fixed inset-0 bg-background/80 backdrop-blur-sm z-40. flex flex-col space-y-1 pb-4 border-b border-primary-foreground/20. text-xs uppercase tracking-wider text-primary-foreground/60 px-3 py-1 font-medium. text-yellow-300 bg-primary-foreground/10. text-yellow-300 bg-primary-foreground/10. text-yellow-300 bg-primary-foreground/10. text-yellow-300 bg-primary-foreground/10. text-yellow-300 bg-primary-foreground/10. text-yellow-300 bg-primary-foreground/10. text-yellow-300 bg-primary-foreground/10"
+      "content": "BeeYield. Professional Pollination. Pollination Solutions. In-Hive Precision Pollination. In-Land Pollination Insights Platform. Diseases. Beekeeping Network. Traceability. User Account. Authenticated as. My Buyer Account. BeeYield Dashboard. Sign Out. Sign In / Register. Main Navigation. Professional Pollination. Pollination Solutions. In-Hive Precision Pollination. In-Land Pollination Insights. Diseases. Beekeeping Network. BeeYield home. BeeYield Dashboard. View shopping cart. Toggle menu. flex items-center space-x-2 flex-shrink-0. fixed inset-0 bg-background/80 backdrop-blur-sm z-40. flex flex-col space-y-1 pb-4 border-b border-primary-foreground/20. text-xs uppercase tracking-wider text-primary-foreground/60 px-3 py-1 font-medium. text-yellow-300 bg-primary-foreground/10. text-yellow-300 bg-primary-foreground/10. text-yellow-300 bg-primary-foreground/10. text-yellow-300 bg-primary-foreground/10. text-yellow-300 bg-primary-foreground/10. text-yellow-300 bg-primary-foreground/10. text-yellow-300 bg-primary-foreground/10"
     },
     {
       "source": "HoneyTracePDF.tsx",
@@ -647,6 +647,11 @@
       "content": "Total Revenue. Transactions. M-Pesa Volume. Card Volume. Payment Transactions. All incoming and outgoing payments. Order #. Customer. Method. Amount. Status. M-Pesa. bg-green-100 text-green-800 border-green-200. bg-yellow-100 text-yellow-800 border-yellow-200. bg-red-100 text-red-800 border-red-200. bg-gray-100 text-gray-800 border-gray-200"
     },
     {
+      "source": "SupportRequestsTab.tsx",
+      "subtopic": "Key Facts",
+      "content": "Support Pipeline. Manage incoming hardware, software and traceability assistance requests.. Reference. Category. Subject. Priority. Status. Actions. No matching requests found.. Issue Description. Communication Thread. No comments yet. Be the first to respond!. Search by ID or subject.... Type your response here.... bg-red-500/10 text-red-600 border-red-200. bg-amber-500/10 text-amber-600 border-amber-200. bg-blue-500/10 text-blue-600 border-blue-200. h-8 w-8 animate-spin mx-auto text-muted-foreground. text-center py-20 text-muted-foreground. px-6 font-mono text-xs text-primary. px-6 capitalize text-xs font-semibold. h-6 w-6 animate-spin text-muted-foreground. text-center p-8 bg-muted/30 rounded-2xl text-xs text-muted-foreground italic. , comment.is_internal ?"
+    },
+    {
       "source": "TracingHistoryTab.tsx",
       "subtopic": "Key Facts",
       "content": "Total Traces. QR Scans. Direct product scans. Unique Batches. Products looked up. Authenticated. Logged-in users. Tracing History. Log of all batch traceability lookups. Last 7 Days. Last 30 Days. Last 3 Months. Batch Code. Product Info. Source. User / Device. Authenticated. Period"
@@ -699,7 +704,7 @@
     {
       "source": "BeeYieldHivesView.tsx",
       "subtopic": "Key Facts",
-      "content": "Cancel. Hive Code. Apiary. Hive Type. Langstroth. Traditional Log. Frame Count. Bee Type. African Honey Bee. Italian Bee. Carniolan Bee. Buckfast Bee. Status. Active & Healthy. Weak Colony. Inactive. Queenless. Abandoned. Material. Plastic. Polystyrene. Bamboo. Installation Date. Discard. BeeYield. CONNECTED HARDWARE NODES. Live Syncing. Hive ID. Status. Efficiency. No connected hardware nodes found.. View Network Topology. NETWORK OVERVIEW. Signal Health. Battery Avg. Region / Apiary. AI AUDIT. Frames. Installed. Add First Hive. ADD NOTES. Request Inspection. Description. Due Date. Priority. Medium. Cancel. e.g. KBZ-001. Select apiary. Select type. Select bee type. Select status. Select material. Select a place. Request Inspection. Priority. Routine colony health and productivity check.. bg-green-500/20 text-green-600. bg-green-500/20 text-green-600. bg-yellow-500/20 text-yellow-600. No hives found. Add your first hive!. , showFab ?"
+      "content": "BeeYield. CONNECTED HARDWARE NODES. Live Syncing. Node ID. Status. Battery. No connected nodes found. View Network Topology. SYSTEMVITALS. Operational. Total Coverage. Nodes Active. GLOBAL FILTER. Select Apiary. All Territories. Colony Archive. No Archive Found. No hive units detected in this territory. Deploy a new module to begin tracking.. Architecture. Bee Species. Request Sync. ADD NOTES. Sync Hardware Request. Operation Description. Scheduled Date. Cancel. Hive Notes. Colony Observations. Recent Observations. View Full Archive. Edit Configuration. All Territories. Edit Hive. View Notes. Delete Hive. Add notes about queen status, honey stores, temperament.... Routine colony health and productivity check.. , linkedHive &&. bg-green-500/10 text-green-600. , showFab ?"
     },
     {
       "source": "BillingView.tsx",
@@ -789,7 +794,7 @@
     {
       "source": "HarvestsView.tsx",
       "subtopic": "Key Facts",
-      "content": "Source Hive*. Harvest date. BeeYield HoneyChain\u2122. Batch Code. Acacia. Multi-flower. Forest. Rapeseed. Moisture %. Color Grade. Water White. Extra White. Extra Light Amber. Light Amber. Dark Amber. Seal on HoneyChain\u2122. Immutable traceability record. Cancel. Harvests. PRODUCTIVITY OVERVIEW. Avg Moisture. Total Yield. Organic Status. HoneyChain Seals. Hive / Batch. Apiary. Farmer. Quantity. Honey Type. HoneyChain\u2122. Actions. Verified. Filters. Fine-tune the harvest analytics using the filters below.. Add harvest. LOCATION. All Apiaries. All Hives. PERIOD. QUICK YEAR. Select a year to quickly load its harvest data.. HoneyChain\u2122 Traceability Record. Total Harvest. Honey Type. Moisture Level. Color Grade. Hive Source. HoneyChain Verified. This record has been sealed and secured via IoT node.. Edit Record. Select Hive. Select type. e.g. 17.5. Select Apiary. Select Hive"
+      "content": "Source Hive*. Harvest date. BeeYield HoneyChain\u2122. Batch Code. Acacia. Multi-flower. Forest. Rapeseed. Moisture %. Color Grade. Water White. Extra White. Extra Light Amber. Light Amber. Dark Amber. Seal on HoneyChain\u2122. Immutable traceability record. Cancel. Harvests. Yearly Aggregate. Quick Add. PRODUCTIVITY OVERVIEW. Avg Moisture. Total Yield. Organic Status. HoneyChain Seals. Hive / Batch. Apiary. Farmer. Quantity. Honey Type. HoneyChain\u2122. Actions. Verified. Filters. Fine-tune the harvest analytics using the filters below.. Add harvest. LOCATION. All Apiaries. All Hives. PERIOD. QUICK YEAR. Select a year to quickly load its harvest data.. HoneyChain\u2122 Traceability Record. Total Harvest. Honey Type. Moisture Level. Color Grade. Hive Source. HoneyChain Verified. This record has been sealed and secured via IoT node.. Edit Record. Select Hive. Select type. e.g. 17.5. Select Apiary. Select Hive"
     },
     {
       "source": "HealthGuideView.tsx",
@@ -802,9 +807,14 @@
       "content": "Select a health condition.... Select a bee species.... font-semibold py-3 rounded-lg text-slate-400 italic. font-semibold py-3 rounded-lg text-slate-400 italic. bg-red-500/10 text-red-600 border-red-500/20. bg-orange-500/10 text-orange-600 border-orange-500/20. bg-amber-500/10 text-amber-600 border-amber-500/20. w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-600 text-2xl font-bold. text-2xl font-black text-white uppercase tracking-tighter. text-slate-400 font-medium text-lg leading-relaxed."
     },
     {
+      "source": "HiveFormModal.tsx",
+      "subtopic": "Key Facts",
+      "content": "Assigned Apiary. Architecture Type. Traditional Log. Frame Capacity. Colony Species. Carniolan Bee. Buckfast Bee. Current Vitals Status. Active & Productive. Weak / Under Observation. Inactive Unit. Chassis Material. Cedar / Pine Wood. High-Density Plastic. Structural Bamboo. Deployment Timestamp. Discard Changes. e.g. ALPHA-001. Select target apiary. Select architecture. Select species. Update status. Select material. w-full max-w-4xl animate-in fade-in zoom-in-95 duration-200. mb-4 flex items-center justify-between. text-3xl font-black text-white tracking-tight"
+    },
+    {
       "source": "HivesTable.tsx",
       "subtopic": "Key Facts",
-      "content": "Hive ID. No hives found.. Previous. Filter hives..."
+      "content": "Hive ID. No hives found.. Previous. Filter hives.... , onRowClick &&"
     },
     {
       "source": "ImageAnalysisView.tsx",
@@ -879,27 +889,27 @@
     {
       "source": "MyNotesView.tsx",
       "subtopic": "Key Facts",
-      "content": "Click the + button to create your first note. , isSelected ?. , isSelected ?. border-rose-200 bg-rose-50 text-rose-600. , isPlacesOpen &&. , isHivesOpen &&. text-slate-400 text-sm font-medium. flex items-center justify-between"
+      "content": "Title / Summary. Detailed Body / Observations. Auto-syncing.... Link to Hive / Apiary. Select Apiary. Select Hive. MY NOTES. MY PLACES. Archive Empty. No observations recorded for this territory selection.. e.g. Varroa check in Kibwezi Main. Describe your findings in detail.... border-rose-200 bg-rose-50 text-rose-600. , isPlacesOpen &&. , isHivesOpen &&"
     },
     {
       "source": "MyPlacesView.tsx",
       "subtopic": "Key Facts",
-      "content": "Total Hives. Acreage. Expected Hives. Active Hives. Add Hive. Cancel. Apiary Name. Apiary Type. Permanent. Migratory. Breeding. Quarantine. Expected Hives. Location Name. Primary Forage. Cancel. My Places. Manage your apiaries and hive locations. New Apiary. No Apiaries Yet. Start by adding your first apiary location to track your hives and harvests.. Add First Place. Forage. e.g. Nanyuki North Field. Select type. e.g. Mount Kenya Region. e.g. Acacia, Canola. Enter additional details.... from telemetry readings matching device_id? // Current implementation of. does simple mapping. // Let. animate-in fade-in slide-in-from-bottom-2 duration-500 pb-20. mb-8 px-2 flex items-center justify-between. mb-8 px-2 flex items-center justify-between"
+      "content": "Hive Fleet. Active Hives. New Hive. Cancel. Apiary Name. Apiary Type. Permanent. Migratory. Breeding. Quarantine. Expected Hives. Location Name. Primary Forage. Cancel. My Places. Manage your apiaries and hive locations. New Apiary. No Apiaries Yet. Start by adding your first apiary location to track your hives and harvests.. Add First Place. Forage. Total Hives. Healthy. Warnings. Critical. Acreage. e.g. Nanyuki North Field. Select type. e.g. Mount Kenya Region. e.g. Acacia, Canola. Enter additional details.... mb-8 px-2 flex items-center justify-between. mb-8 px-2 flex items-center justify-between"
     },
     {
       "source": "MyRequestsView.tsx",
       "subtopic": "Key Facts",
-      "content": "My Requests. My Places. All Places. No places found. All Hives. No hives found. , isPlacesOpen &&. , isHivesOpen &&"
+      "content": "MY REQUESTS. New Request. No places found. No hives found. Subject. Message Detail. Review. Category. Related Hive. Subject. Description. Submit Request. Request History. Fetching ticket archives.... No Requests Found. No support requests match your current filters. Start a new request using the button above.. Reference ID. Request Subject. Category. Priority. Status. Date Submitted. What can we help you with?. Describe your issue or request in detail.... Search by ID or Subject.... Dashboard bugs, sync issues, AI predictions. bg-emerald-500/10 text-emerald-600 border-emerald-500/20. bg-blue-500/10 text-blue-600 border-blue-500/20. bg-orange-500/10 text-orange-600 border-orange-500/20. bg-slate-500/10 text-slate-600 border-slate-500/20. bg-slate-500/10 text-slate-600 border-slate-500/20. , showWizard ?. , isPlacesOpen &&. , isHivesOpen &&. mt-1 p-3 rounded-xl transition-colors. bg-orange-500/10 text-orange-500. flex flex-wrap items-center gap-3. bg-orange-500/10 text-orange-500"
     },
     {
       "source": "MyTaskView.tsx",
       "subtopic": "Key Facts",
-      "content": "Add any additional details about this task.... , isSelected ?. , isSelected ?. border-rose-200 bg-rose-50 text-rose-600. , !isCurrentMonth &&. , isCurrentMonth ?"
+      "content": "Repeat this task?. Add any additional details about this task.... , isSelected ?. , isSelected ?. border-rose-200 bg-rose-50 text-rose-600. , !isCurrentMonth &&. , isCurrentMonth ?"
     },
     {
       "source": "PrecisionPollinationView.tsx",
       "subtopic": "Key Facts",
-      "content": "72 || baseVPM. 37 || baseVPM. Pollination Calculator. BeeYield AI. Connected. Based on recent acoustic patterns, relocating Hive 4 closer to the central crop area could improve pollination coverage by. Ask BeeYield AI. Request Pollination. Hive Fleet. Loading Hives.... Live Feed. Pesticide Detection. NONE DETECTED. SAFE ZONE. Colony Varroa Pressure. MONITORING. Foraging Efficiency. Yield Projection. Active Hives. Full Report. DOWNLOAD PDF. Target FPA. Active Hives. Warnings. Critical. Coverage. Colony Acoustics. Brood Temperature. Nest Humidity. Flight Activity. Vibration Index. Queen Pheromone. precision_pollination_subtitle"
+      "content": "72 || baseVPM. 37 || baseVPM. Pollination Calculator. BeeYield AI. Connected. Based on recent acoustic patterns, relocating Hive 4 closer to the central crop area could improve pollination coverage by. Ask BeeYield AI. Request Pollination. Hive Fleet. No hives found. Add Hives in Hives Tab. Manage Hives. Loading Hives.... Live Feed. Pesticide Detection. NONE DETECTED. SAFE ZONE. Colony Varroa Pressure. MONITORING. Foraging Efficiency. Yield Projection. Active Hives. Full Report. DOWNLOAD PDF. Target FPA. Active Hives. Warnings. Critical. Coverage. Colony Acoustics. Brood Temperature. Nest Humidity. Flight Activity. Vibration Index. Queen Pheromone. precision_pollination_subtitle. flex items-center gap-2 overflow-hidden. flex justify-between items-center mb-5"
     },
     {
       "source": "RemainingViews.tsx",

@@ -136,7 +136,7 @@ impl Scraper for WikipediaScraper {
                         if !content.is_empty() {
                             all_documents.push(Document {
                                 id: format!("wiki_{}", member.pageid),
-                                title: page.title.unwrap_or(member.title),
+                                title: page.title.unwrap_or(member.title.clone()),
                                 content,
                                 source: "wikipedia".to_string(),
                                 url: Some(format!("https://en.wikipedia.org/wiki/{}", 

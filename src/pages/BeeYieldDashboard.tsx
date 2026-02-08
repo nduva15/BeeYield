@@ -73,11 +73,15 @@ const BeeYieldDashboard: React.FC = () => {
     const [readings, setReadings] = useState<SensorReading[]>([]);
     const [activeTab, setActiveTab] = useState('devices');
     const [aiInitialMessage, setAiInitialMessage] = useState<string | null>(null);
+    const [tabInitialAction, setTabInitialAction] = useState<string | null>(null);
     const [showBanner, setShowBanner] = useState(true);
 
-    const handleTabChange = (tab: string, message?: string) => {
+    const handleTabChange = (tab: string, message?: string, action?: string) => {
         if (tab === 'assistant' && message) {
             setAiInitialMessage(message);
+        }
+        if (action) {
+            setTabInitialAction(action);
         }
         setActiveTab(tab);
     };
@@ -272,11 +276,23 @@ const BeeYieldDashboard: React.FC = () => {
             case 'usb':
                 return <USBView onTabChange={handleTabChange} />;
             case 'notes':
-                return <MyNotesView onTabChange={handleTabChange} />;
+                return (
+                    <MyNotesView
+                        onTabChange={handleTabChange}
+                        initialAction={tabInitialAction === 'add' ? 'add' : undefined}
+                        onInitialActionConsumed={() => setTabInitialAction(null)}
+                    />
+                );
             case 'requests':
                 return <MyRequestsView onTabChange={handleTabChange} />;
             case 'task':
-                return <MyTaskView onTabChange={handleTabChange} />;
+                return (
+                    <MyTaskView
+                        onTabChange={handleTabChange}
+                        initialAction={tabInitialAction === 'add' ? 'add' : undefined}
+                        onInitialActionConsumed={() => setTabInitialAction(null)}
+                    />
+                );
             case 'buy':
                 return <BuyBeeYieldHubView onTabChange={handleTabChange} />;
             case 'meters':

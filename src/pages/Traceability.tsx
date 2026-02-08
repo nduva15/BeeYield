@@ -239,7 +239,7 @@ const Traceability = () => {
                       <div className="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800">
                         <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">Try these example codes</p>
                         <div className="flex flex-wrap gap-2">
-                          {["KIB-ACACIAL-26", "KIB-SAV-2026", "KIB-GOLD-2026"].map(code => (
+                          {["HB-2026-0110-001", "HB-2025-0615-088", "KIB-ACACIAL-26", "KIB-SAV-2026"].map(code => (
                             <Button
                               key={code}
                               variant="ghost"
@@ -723,7 +723,7 @@ const Traceability = () => {
                                           <p className="text-[9px] font-black text-indigo-400 uppercase mb-2 tracking-tighter">TX Hash (Immutable Proof)</p>
                                           <div className="p-3 bg-black/40 rounded-xl border border-white/5">
                                             <p className="text-[10px] font-mono text-indigo-200 break-all leading-tight opacity-90">
-                                              0x{Array.from(traceData.batch_code).map(c => c.charCodeAt(0).toString(16)).join('').slice(0, 12)}...{traceData.batch_code.replace(/[^a-zA-Z0-9]/g, '').slice(-4)}
+                                              {traceData.polygon_tx_hash || `0x${Array.from(traceData.batch_code).map(c => c.charCodeAt(0).toString(16)).join('').slice(0, 12)}...${traceData.batch_code.replace(/[^a-zA-Z0-9]/g, '').slice(-4)}`}
                                             </p>
                                           </div>
                                         </div>
@@ -736,9 +736,23 @@ const Traceability = () => {
                                               <p className="text-xl font-black text-white">{(traceData.batch_code.length * 314 + 1024).toLocaleString()}</p>
                                             </div>
                                           </div>
-                                          <div className="text-right">
-                                            <p className="text-[9px] font-black text-indigo-400 uppercase mb-1 tracking-tighter">Network</p>
-                                            <Badge className="bg-indigo-500/30 text-indigo-100 border border-indigo-400/20 text-[9px] font-black px-2 py-0.5 whitespace-nowrap">HoneyChain™ 2.0</Badge>
+                                          <div className="text-right space-y-1">
+                                            <p className="text-[9px] font-black text-indigo-400 uppercase mb-1 tracking-tighter">Networks</p>
+                                            <div className="flex flex-col gap-1 items-end">
+                                              <Badge className="bg-indigo-500/30 text-indigo-100 border border-indigo-400/20 text-[9px] font-black px-2 py-0.5 whitespace-nowrap">HoneyChain™ 2.0</Badge>
+                                              {traceData.polygon_verified && (
+                                                <a
+                                                  href={traceData.polygon_verification_url || "#"}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  className="inline-flex"
+                                                >
+                                                  <Badge className="bg-purple-500/30 text-purple-100 border border-purple-400/20 text-[9px] font-black px-2 py-0.5 whitespace-nowrap hover:bg-purple-500/50 transition-colors cursor-pointer">
+                                                    🔗 Polygon ✓
+                                                  </Badge>
+                                                </a>
+                                              )}
+                                            </div>
                                           </div>
                                         </div>
                                       </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist, WishlistItem } from '@/contexts/WishlistContext';
@@ -21,7 +21,7 @@ import { adminService } from '@/services/adminService';
 import {
     ShoppingCart, Truck, MapPin, Tag, Minus, Plus, X, ArrowRight,
     CheckCircle2, CreditCard, Smartphone, Shield, Loader2, ChevronRight,
-    Gift, Store, Package, Heart, ShieldCheck, FileText, Printer
+    Gift, Store, Package, Heart, ShieldCheck, FileText, Printer, User
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -529,12 +529,18 @@ const Checkout = () => {
             {/* Header with Breadcrumb */}
             <div className="border-b border-border bg-card no-print">
                 <div className="container max-w-6xl mx-auto px-4 py-4">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <button onClick={() => navigate('/')} className="hover:text-primary">Home</button>
-                        <ChevronRight className="w-4 h-4" />
-                        <button onClick={() => navigate('/shop')} className="hover:text-primary">Shop</button>
-                        <ChevronRight className="w-4 h-4" />
-                        <span className="text-foreground font-medium">Checkout</span>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <button onClick={() => navigate('/')} className="hover:text-primary">Home</button>
+                            <ChevronRight className="w-4 h-4" />
+                            <button onClick={() => navigate('/shop')} className="hover:text-primary">Shop</button>
+                            <ChevronRight className="w-4 h-4" />
+                            <span className="text-foreground font-medium">Checkout</span>
+                        </div>
+                        <Link to="/my-account" className="flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors">
+                            <User className="h-4 w-4" />
+                            <span className="hidden sm:inline">My Account</span>
+                        </Link>
                     </div>
                 </div>
             </div>

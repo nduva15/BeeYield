@@ -88,3 +88,66 @@ def create_batch(batch_in: dict[str, Any]):
     return traceability_service.create_batch(batch_in)
 
 
+# ==================== POLYGON BLOCKCHAIN ENDPOINTS ====================
+
+@router.get("/polygon/status", response_model=dict[str, Any])
+def get_polygon_status():
+    """
+    Get Polygon network connection status.
+    Returns network info, connection state, and cached anchor count.
+    """
+    from app.services.polygon_service import polygon_service
+    return polygon_service.get_network_status()
+
+
+@router.get("/polygon/verify/{batch_code}", response_model=dict[str, Any])
+def verify_on_polygon(batch_code: str):
+    """
+    Verify a batch's anchoring status on the Polygon blockchain.
+    Returns verification details including tx hash and PolygonScan URL.
+    """
+    from app.services.polygon_service import polygon_service
+    return polygon_service.verify_batch_on_chain(batch_code)
+
+
+@router.post("/polygon/anchor/{batch_code}", response_model=dict[str, Any])
+def anchor_to_polygon(batch_code: str, background_tasks: BackgroundTasks):
+    """
+    Manually anchor a batch hash to the Polygon blockchain.
+    This creates an immutable public record of the batch.
+    """
+    from app.services.polygon_service import polygon_service
+    
+    # Get batch data from HoneyChain
+    trace_result = honey_blockchain.trace_batch(batch_code)
+    
+    if not trace_result.get('found'):
+        raise HTTPException(status_code=404, detail=f"Batch '{batch_code}' not found in HoneyChain")
+    
+    # Compute hash from batch data
+    batch_data = trace_result.get('batch_details', {})
+    data_hash = polygon_service.compute_batch_hash(batch_code, batch_data)
+    
+    # Anchor to Polygon
+    result = polygon_service.anchor_batch_hash(
+        batch_code=batch_code,
+        data_hash=data_hash,
+        metadata={
+            "honeychain_block": trace_result.get('block_hash'),
+            "honey_type": batch_data.get('honey_type'),
+            "farmer_id": batch_data.get('farmer_id')
+        }
+    )
+    
+    return result
+
+
+@router.get("/polygon/anchors", response_model=list[dict[str, Any]])
+def get_all_polygon_anchors(limit: int = 50):
+    """
+    Get all batches anchored to Polygon.
+    Returns list of anchored batches with their verification details.
+    """
+    from app.services.polygon_service import polygon_service
+    return polygon_service.get_all_anchors(limit=limit)
+

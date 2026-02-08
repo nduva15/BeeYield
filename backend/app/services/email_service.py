@@ -12,14 +12,42 @@ class EmailService:
         self.smtp_user = os.getenv("SMTP_USER", "")
         self.smtp_password = os.getenv("SMTP_PASSWORD", "")
         self.from_email = os.getenv("SMTP_FROM_EMAIL", "noreply@beeyield.com")
-        self.enabled = bool(self.smtp_user and self.smtp_password)
+        
+        self.resend_api_key = os.getenv("RESEND_API_KEY", "")
+        
+        # Valid if SMTP configured OR Resend API key present
+        self.enabled = bool((self.smtp_user and self.smtp_password) or self.resend_api_key)
 
     def send_email(self, to_email: str, subject: str, html_content: str):
         """
-        Send an email using SMTP or log to console if not configured.
+        Send an email using Resend API (preferred) or SMTP.
         """
         if not self.enabled:
             # Service not enabled, do not send or mock
+            print("Email service not configured (No SMTP or Resend Key). Skipping email.")
+            return
+        
+        # 1. Try Resend API
+        if self.resend_api_key:
+            try:
+                import resend
+                resend.api_key = self.resend_api_key
+                
+                params = {
+                    "from": self.from_email,
+                    "to": [to_email],
+                    "subject": subject,
+                    "html": html_content
+                }
+                
+                r = resend.Emails.send(params)
+                print(f"Email sent via Resend API to {to_email}. ID: {r.get('id')}")
+                return
+            except Exception as e:
+                print(f"Resend API error: {e}. Falling back to SMTP if available.")
+        
+        # 2. Fallback to SMTP
+        if not (self.smtp_user and self.smtp_password):
             return
         
         try:

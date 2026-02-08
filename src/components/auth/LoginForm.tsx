@@ -114,6 +114,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegister, on
 
     const handleGoogleSignIn = async () => {
         setGoogleLoading(true);
+        // Store current path and metadata requirements so callback knows where to return and what to verify
+        localStorage.setItem('authReturnTo', window.location.pathname);
+        if (requireMetadata) {
+            localStorage.setItem('authRequireMetadata', JSON.stringify(requireMetadata));
+        } else {
+            localStorage.removeItem('authRequireMetadata');
+        }
+
         const { error } = await signInWithGoogle();
         if (error) {
             toast.error('Google sign-in failed', { description: error.message });

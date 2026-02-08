@@ -4,6 +4,7 @@ import httpx
 import os
 import asyncio
 import re
+from google import genai
 from app.db.supabase_db import db_select
 from app.core.config import settings
 from app.services.content_service import ContentService
@@ -118,9 +119,10 @@ class AIService:
             f"TRACEABILITY: {trace_context}\n\n"
             f"CORE DIRECTIVES:\n"
             f"1. OUTPUT STRUCTURE: You MUST use the Five-Pillar framework (Brief, Diagnosis, Regional, Internal, Bibliography).\n"
-            f"2. TECHNICAL DEPTH: Responses must be highly detailed and professional (approx 500 words).\n"
+            f"2. TECHNICAL DEPTH: Responses must be highly detailed and professional. **AIM FOR 100+ LINES / 800+ WORDS.**\n"
             f"3. CITATIONS: Use [X] for every factual claim. Correlate University research with IoT benchmarks.\n"
-            f"4. SENSOR LINK: Always mention APISENSE VOC sensors and BeeHero benchmarks if relevant to health."
+            f"4. SENSOR LINK: Always mention APISENSE VOC sensors and BeeHero benchmarks if relevant to health.\n"
+            f"5. COMPREHENSIVENESS: PROVIDE EXTREMELY DOCUMENTED, LONG-FORM ANSWERS. DO NOT SUMMARIZE. EXPAND ON EVERY POINT."
         )
 
         def sanitize_final(text: str) -> str:
@@ -131,32 +133,89 @@ class AIService:
 
         # --- PHASE 3: NEURAL EXECUTION ---
         google_key = settings.GOOGLE_API_KEY
+        openai_key = settings.OPENAI_API_KEY
         final_answer = ""
         
+        print(f"DEBUG: Starting Neural Execution for prompt: {message[:50]}...")
+        
+        # PRIORITIZE GEMINI (Stable & Long Context)
         if google_key:
             try:
-                gemini_history = []
+                print("DEBUG: Using Gemini API...")
+                from google.genai import types
+                client = genai.Client(api_key=google_key)
+                
+                gemini_contents = []
                 for h in (history or [])[-10:]:
                     role = "user" if h["role"] == "user" else "model"
-                    gemini_history.append({"role": role, "parts": [{"text": h["content"]}]})
+                    gemini_contents.append({"role": role, "parts": [{"text": h["content"]}]})
+                
+                # Use current message
+                gemini_contents.append({"role": "user", "parts": [{"text": message}]})
+
+                response = client.models.generate_content(
+                    model="gemini-1.5-flash-latest",
+                    contents=gemini_contents,
+                    config=types.GenerateContentConfig(
+                        system_instruction=system_prompt,
+                        temperature=temp,
+                        max_output_tokens=8192,
+                    )
+                )
+                
+                if response.text:
+                    final_answer = sanitize_final(response.text)
+                    print(f"DEBUG: Gemini response received. Length: {len(final_answer)} characters.")
+                else:
+                    print("DEBUG: Gemini returned empty response.")
+            except Exception as e:
+                print(f"GEMINI NEURAL ERROR: {e}")
+
+        # Fallback to OpenAI if Gemini fails and key is available
+        if not final_answer and openai_key and not openai_key.startswith("sk-proj-REPLACE"):
+            try:
+                print("DEBUG: Falling back to OpenAI...")
+                openai_history = []
+                for h in (history or [])[-10:]:
+                    openai_history.append({"role": h["role"], "content": h["content"]})
                 
                 async with httpx.AsyncClient() as client:
-                    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={google_key}"
-                    payload = {
-                        "contents": gemini_history + [{"role": "user", "parts": [{"text": f"INSTRUCTIONS: {system_prompt}\n\nUSER MESSAGE: {message}"}]}],
-                        "generationConfig": {"temperature": 0.2, "maxOutputTokens": 2048}
+                    url = "https://api.openai.com/v1/chat/completions"
+                    headers = {
+                        "Authorization": f"Bearer {openai_key}",
+                        "Content-Type": "application/json"
                     }
-                    resp = await client.post(url, json=payload, timeout=30.0)
+                    payload = {
+                        "model": "gpt-4-turbo-preview",
+                        "messages": [
+                            {"role": "system", "content": system_prompt + "\n\nCRITICAL: YOU MUST WRITE A 100-LINE TECHNICAL REPORT. DO NOT BE BRIEF."}
+                        ] + openai_history + [
+                            {"role": "user", "content": message}
+                        ],
+                        "temperature": temp,
+                        "max_tokens": 4000
+                    }
+                    resp = await client.post(url, headers=headers, json=payload, timeout=90.0)
                     data = resp.json()
-                    if "candidates" in data:
-                        raw_text = data["candidates"][0]["content"]["parts"][0]["text"]
+                    if "choices" in data:
+                        raw_text = data["choices"][0]["message"]["content"]
                         final_answer = sanitize_final(raw_text)
+                    else:
+                        print(f"OPENAI API ERROR: {data}")
             except Exception as e:
-                print(f"NEURAL ERROR: {e}")
+                print(f"OPENAI NEURAL ERROR: {e}")
 
-        # Fallback 
+        # Ultimate Fallback 
         if not final_answer:
-            final_answer = f"ANALYSIS COMPLETE. Five-Pillar Synthesis pending LLM resolution.\n\nSummary:\n{knowledge_context[:800]}"
+            print("DEBUG: All AI providers failed. Using static fallback.")
+            final_answer = (
+                f"# ⚠️ BeeYield Intelligence Offline (Neural Failure)\n\n"
+                f"The advanced neural link could not be established. "
+                f"Showing raw intelligence from the BeeYield Hive Mind:\n\n"
+                f"## 📂 Retrieved Knowledge\n{knowledge_context[:1500]}\n\n"
+                f"## 📊 Business Intelligence\n{business_intel}\n\n"
+                f"**Please verify your API connection or try again for a full 100-line synthesis.**"
+            )
 
         # --- PHASE 4: PDF REPORTING ---
         if "pdf" in msg_lower or "report" in msg_lower:

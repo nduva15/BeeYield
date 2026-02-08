@@ -20,7 +20,7 @@ interface AuthContextType {
     mfaFactorId: string | null;
     signIn: (email: string, password: string) => Promise<{ error: AuthError | null; mfaRequired?: boolean }>;
     signUp: (email: string, password: string, metadata?: { first_name?: string; last_name?: string; role?: string }) => Promise<{ error: AuthError | null; data?: { user: User | null } }>;
-    signInWithGoogle: () => Promise<{ error: AuthError | null }>;
+    signInWithGoogle: (metadata?: Record<string, any>) => Promise<{ error: AuthError | null }>;
     signOut: () => Promise<void>;
     // Password Reset Methods
     resetPassword: (email: string) => Promise<{ error: AuthError | null }>;
@@ -114,7 +114,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return { error, data: { user: data.user } };
     };
 
-    const signInWithGoogle = async () => {
+    const signInWithGoogle = async (metadata?: Record<string, any>) => {
         if (!supabase) return { error: new Error('Supabase client not initialized') as AuthError };
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
@@ -124,6 +124,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                     access_type: 'offline',
                     prompt: 'consent',
                 },
+                data: metadata,
             },
         });
         return { error };

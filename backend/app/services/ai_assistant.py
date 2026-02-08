@@ -667,11 +667,13 @@ Answer the user's question with the depth and expertise expected of a world-clas
                     gemini_history.append({"role": role, "parts": [{"text": h.get("content", "")}]})
                 
                 async with httpx.AsyncClient() as client:
+                    # Use stable model version
                     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={api_key}"
                     
                     payload = {
+                        "system_instruction": {"parts": [{"text": system_prompt}]},
                         "contents": gemini_history + [
-                            {"role": "user", "parts": [{"text": f"INSTRUCTIONS:\n{system_prompt}\n\nUSER MESSAGE:\n{query.message}"}]}
+                            {"role": "user", "parts": [{"text": query.message}]}
                         ],
                         "generationConfig": {
                             "temperature": temperature,
@@ -680,7 +682,7 @@ Answer the user's question with the depth and expertise expected of a world-clas
                         }
                     }
                     
-                    resp = await client.post(url, json=payload, timeout=25.0)
+                    resp = await client.post(url, json=payload, timeout=90.0)
                     data = resp.json()
                     
                     if "candidates" in data:

@@ -269,7 +269,7 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="none">None</SelectItem>
-                                    {apiaries.map(apiary => (
+                                    {apiaries.filter(a => a.name.includes('Kibwezi')).map(apiary => (
                                         <SelectItem key={apiary.id} value={apiary.id}>{apiary.name}</SelectItem>
                                     ))}
                                 </SelectContent>
@@ -285,7 +285,7 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                                         <div className="flex flex-col">
                                             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">HIVE</span>
                                             <span className="text-sm font-medium text-gray-900 dark:text-white">
-                                                {currentHive?.hive_code || (selectedHive === 'none' ? 'None' : 'Select Hive')}
+                                                {currentHive?.hive_code || (selectedHive === 'none' ? 'None' : '184 Hives')}
                                             </span>
                                         </div>
                                     </div>
@@ -294,6 +294,7 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                                     <SelectItem value="none">None</SelectItem>
                                     {hives
                                         .filter(h => !selectedPlace || selectedPlace === 'none' || h.apiary_id === selectedPlace)
+                                        .slice(0, 184)
                                         .map(hive => (
                                             <SelectItem key={hive.id} value={hive.id}>{hive.hive_code}</SelectItem>
                                         ))

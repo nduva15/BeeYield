@@ -141,7 +141,29 @@ def create_batch(batch_data: dict[str, Any]) -> dict[str, Any]:
         # Fallback to batches if honey_batches is missing
         db_insert("batches", db_record)
     
+    # 4. Anchor to Polygon blockchain
+    try:
+        from app.services.polygon_service import polygon_service
+        batch_code = final_data.get('batch_code')
+        data_hash = polygon_service.compute_batch_hash(batch_code, final_data)
+        anchor_result = polygon_service.anchor_batch_hash(
+            batch_code=batch_code,
+            data_hash=data_hash,
+            metadata={
+                "honeychain_block": block.hash,
+                "honey_type": final_data.get('honey_type'),
+                "farmer_id": farmer_id
+            }
+        )
+        final_data['polygon_tx_hash'] = anchor_result.get('tx_hash')
+        final_data['polygon_verified'] = anchor_result.get('success', False)
+        final_data['polygon_verification_url'] = anchor_result.get('verification_url')
+    except Exception as e:
+        print(f"POLYGON: Anchoring failed (non-critical): {e}")
+        final_data['polygon_verified'] = False
+    
     return final_data
+
 
 # --- Read Operations (Traceability Journey) ---
 

@@ -26,6 +26,7 @@ import { useUserSettings, useUpdateSettings, useUpdateNotificationConfig, useUpd
 import { UserSettingsUpdate, NotificationConfigUpdate } from '@/services/beeyieldService';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useHives } from '@/hooks/useApiaries';
+import { useHiveSettings } from '@/hooks/useSettingsData';
 
 interface SettingsViewProps {
     onTabChange: (tab: string) => void;
@@ -58,7 +59,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
     const updateSettingsMutation = useUpdateSettings();
     const updateNotifMutation = useUpdateNotificationConfig();
     const updateHiveThresholdsMutation = useUpdateHiveThresholds();
-    const { data: allHives } = useHives();
+    const { data: allHivesSettings } = useHiveSettings();
 
     // State for local overrides before saving
     const [localSettings, setLocalSettings] = useState<UserSettingsUpdate>({});
@@ -748,55 +749,67 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {allHives?.map((hive) => (
-                                        <TableRow key={hive.id} className="border-b border-gray-50 dark:border-[#1e1e1e] hover:bg-gray-50/30 dark:hover:bg-white/5 transition-colors">
+                                    {allHivesSettings?.map((hive) => (
+                                        <TableRow key={hive.hive_id} className="border-b border-gray-50 dark:border-[#1e1e1e] hover:bg-gray-50/30 dark:hover:bg-white/5 transition-colors">
                                             <TableCell className="py-6 px-8">
                                                 <div className="flex flex-col">
                                                     <span className="font-black text-gray-900 dark:text-white">{hive.hive_code}</span>
-                                                    <span className="text-[10px] text-gray-400 font-bold uppercase">{hive.apiary?.name || 'Main Apiary'}</span>
+                                                    <span className="text-[10px] text-gray-400 font-bold uppercase">{hive.hive_name || 'Main Apiary'}</span>
+                                                    {hive.threshold_id && (
+                                                        <Badge variant="outline" className="mt-1 w-fit text-[9px] border-amber-200 text-amber-600 bg-amber-50">Custom</Badge>
+                                                    )}
                                                 </div>
                                             </TableCell>
                                             <TableCell className="py-6 px-8">
-                                                <Input
-                                                    type="number"
-                                                    placeholder={settings?.temp_threshold_high?.toString()}
-                                                    value={hiveThresholds[hive.id]?.temp_threshold_high ?? hive.temp_threshold_high ?? ''}
-                                                    onChange={(e) => setHiveThresholds(prev => ({
-                                                        ...prev,
-                                                        [hive.id]: { ...prev[hive.id], temp_threshold_high: parseFloat(e.target.value) }
-                                                    }))}
-                                                    className="w-24 h-10 rounded-xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 font-bold text-sm focus:border-amber-500 transition-all outline-none"
-                                                />
+                                                <div className="flex flex-col gap-1">
+                                                    <Input
+                                                        type="number"
+                                                        placeholder={hive.effective_temp_high?.toString()}
+                                                        value={hiveThresholds[hive.hive_id]?.temp_threshold_high ?? hive.override_temp_high ?? ''}
+                                                        onChange={(e) => setHiveThresholds(prev => ({
+                                                            ...prev,
+                                                            [hive.hive_id]: { ...prev[hive.hive_id], temp_threshold_high: parseFloat(e.target.value) }
+                                                        }))}
+                                                        className="w-24 h-10 rounded-xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 font-bold text-sm focus:border-amber-500 transition-all outline-none"
+                                                    />
+                                                    <span className="text-[10px] text-gray-400">Global: {hive.global_temp_high}</span>
+                                                </div>
                                             </TableCell>
                                             <TableCell className="py-6 px-8">
-                                                <Input
-                                                    type="number"
-                                                    placeholder={settings?.temp_threshold_low?.toString()}
-                                                    value={hiveThresholds[hive.id]?.temp_threshold_low ?? hive.temp_threshold_low ?? ''}
-                                                    onChange={(e) => setHiveThresholds(prev => ({
-                                                        ...prev,
-                                                        [hive.id]: { ...prev[hive.id], temp_threshold_low: parseFloat(e.target.value) }
-                                                    }))}
-                                                    className="w-24 h-10 rounded-xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 font-bold text-sm focus:border-amber-500 transition-all outline-none"
-                                                />
+                                                <div className="flex flex-col gap-1">
+                                                    <Input
+                                                        type="number"
+                                                        placeholder={hive.effective_temp_low?.toString()}
+                                                        value={hiveThresholds[hive.hive_id]?.temp_threshold_low ?? hive.override_temp_low ?? ''}
+                                                        onChange={(e) => setHiveThresholds(prev => ({
+                                                            ...prev,
+                                                            [hive.hive_id]: { ...prev[hive.hive_id], temp_threshold_low: parseFloat(e.target.value) }
+                                                        }))}
+                                                        className="w-24 h-10 rounded-xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 font-bold text-sm focus:border-amber-500 transition-all outline-none"
+                                                    />
+                                                    <span className="text-[10px] text-gray-400">Global: {hive.global_temp_low}</span>
+                                                </div>
                                             </TableCell>
                                             <TableCell className="py-6 px-8">
-                                                <Input
-                                                    type="number"
-                                                    placeholder={settings?.weight_drop_threshold?.toString()}
-                                                    value={hiveThresholds[hive.id]?.weight_drop_threshold ?? hive.weight_drop_threshold ?? ''}
-                                                    onChange={(e) => setHiveThresholds(prev => ({
-                                                        ...prev,
-                                                        [hive.id]: { ...prev[hive.id], weight_drop_threshold: parseFloat(e.target.value) }
-                                                    }))}
-                                                    className="w-24 h-10 rounded-xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 font-bold text-sm focus:border-amber-500 transition-all outline-none"
-                                                />
+                                                <div className="flex flex-col gap-1">
+                                                    <Input
+                                                        type="number"
+                                                        placeholder={hive.effective_weight_drop?.toString()}
+                                                        value={hiveThresholds[hive.hive_id]?.weight_drop_threshold ?? hive.override_weight_drop ?? ''}
+                                                        onChange={(e) => setHiveThresholds(prev => ({
+                                                            ...prev,
+                                                            [hive.hive_id]: { ...prev[hive.hive_id], weight_drop_threshold: parseFloat(e.target.value) }
+                                                        }))}
+                                                        className="w-24 h-10 rounded-xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 font-bold text-sm focus:border-amber-500 transition-all outline-none"
+                                                    />
+                                                    <span className="text-[10px] text-gray-400">Global: {hive.global_weight_drop}</span>
+                                                </div>
                                             </TableCell>
                                             <TableCell className="py-6 px-8 text-right">
                                                 <Button
                                                     variant="ghost"
-                                                    disabled={!hiveThresholds[hive.id] || updateHiveThresholdsMutation.isPending}
-                                                    onClick={() => handleUpdateHiveThreshold(hive.id)}
+                                                    disabled={!hiveThresholds[hive.hive_id] || updateHiveThresholdsMutation.isPending}
+                                                    onClick={() => handleUpdateHiveThreshold(hive.hive_id)}
                                                     className="h-10 px-4 rounded-xl font-bold text-xs text-amber-600 hover:text-amber-700 hover:bg-amber-50 transition-all disabled:opacity-50"
                                                 >
                                                     {updateHiveThresholdsMutation.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Update'}
@@ -804,7 +817,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                             </TableCell>
                                         </TableRow>
                                     ))}
-                                    {(!allHives || allHives.length === 0) && (
+                                    {(!allHivesSettings || allHivesSettings.length === 0) && (
                                         <TableRow>
                                             <TableCell colSpan={5} className="py-12 text-center text-gray-400 font-bold">
                                                 No hives found
