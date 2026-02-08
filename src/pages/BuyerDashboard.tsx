@@ -777,7 +777,12 @@ const BuyerDashboard = () => {
                                             </Button>
                                         </div>
                                         <div className="mb-6">
-                                            <p className="text-2xl font-mono tracking-[0.3em]">•••• •••• •••• {pm.last4}</p>
+                                            <p 
+                                                className="text-2xl font-mono tracking-[0.3em]"
+                                                aria-label={`Card ending in ${pm.last4}`}
+                                            >
+                                                •••• •••• •••• {pm.last4}
+                                            </p>
                                         </div>
                                         <div className="flex justify-between items-end">
                                             <div>
