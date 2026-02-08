@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { getUserOrders, getProducts, Product } from '@/services/shopService';
+import { getUserOrders, getProducts, Product, saveStripePaymentMethod } from '@/services/shopService';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,7 @@ import { Progress } from "@/components/ui/progress";
 import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
 import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
+import { StripeCardForm } from '@/components/payments/StripeCardForm';
 import { toast } from 'sonner';
 import {
     User, Mail, Shield, LogOut, Loader2, UserPlus, LogIn,
@@ -702,84 +703,110 @@ const BuyerDashboard = () => {
                         <div className="flex justify-between items-center">
                             <div>
                                 <h2 className="text-2xl font-black tracking-tight">Payment Methods</h2>
-                                <p className="text-muted-foreground">Manage your saved cards and payment details.</p>
+                                <p className="text-muted-foreground">Manage your saved cards and payment details securely with Stripe.</p>
                             </div>
                             <Dialog>
                                 <DialogTrigger asChild>
                                     <Button><Plus className="h-4 w-4 mr-2" /> Add Card</Button>
                                 </DialogTrigger>
-                                <DialogContent>
+                                <DialogContent className="sm:max-w-md">
                                     <DialogHeader>
-                                        <DialogTitle>Add Payment Card</DialogTitle>
-                                        <DialogDescription>Your data is encrypted and secure.</DialogDescription>
+                                        <DialogTitle className="flex items-center gap-2">
+                                            <CreditCard className="h-5 w-5 text-primary" />
+                                            Add Payment Card
+                                        </DialogTitle>
+                                        <DialogDescription>
+                                            Your card information is encrypted and processed securely by Stripe.
+                                        </DialogDescription>
                                     </DialogHeader>
-                                    <form onSubmit={async (e) => {
-                                        e.preventDefault();
-                                        const formData = new FormData(e.currentTarget);
-                                        await savePaymentMethod({
-                                            type: 'card',
-                                            provider: (formData.get('number') as string).startsWith('4') ? 'Visa' : 'Mastercard',
-                                            last4: (formData.get('number') as string).slice(-4),
-                                            expiry_month: parseInt((formData.get('expiry') as string).split('/')[0]),
-                                            expiry_year: parseInt((formData.get('expiry') as string).split('/')[1]),
-                                            card_holder_name: formData.get('holder') as string,
-                                            is_default: true
-                                        });
-                                        window.location.reload();
-                                    }} className="space-y-4">
-                                        <div className="grid gap-2">
-                                            <Label>Card Holder Name</Label>
-                                            <Input name="holder" required placeholder="Timothy Nduva" />
-                                        </div>
-                                        <div className="grid gap-2">
-                                            <Label>Card Number</Label>
-                                            <Input name="number" required placeholder="**** **** **** 4242" maxLength={16} />
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="grid gap-2">
-                                                <Label>Expiry (MM/YY)</Label>
-                                                <Input name="expiry" required placeholder="12/28" maxLength={5} />
-                                            </div>
-                                            <div className="grid gap-2">
-                                                <Label>CVC</Label>
-                                                <Input name="cvc" required placeholder="***" maxLength={3} />
-                                            </div>
-                                        </div>
-                                        <Button type="submit" className="w-full">Link Securely</Button>
-                                    </form>
+                                    <div className="py-4">
+                                        <StripeCardForm
+                                            mode="save"
+                                            onSuccess={async (paymentMethod) => {
+                                                try {
+                                                    await saveStripePaymentMethod(paymentMethod.id, {
+                                                        last4: paymentMethod.last4,
+                                                        brand: paymentMethod.brand,
+                                                        exp_month: paymentMethod.exp_month,
+                                                        exp_year: paymentMethod.exp_year,
+                                                    });
+                                                    // Reload payment methods
+                                                    loadUserData();
+                                                } catch (error) {
+                                                    console.error('Failed to save payment method:', error);
+                                                    toast.error('Failed to save card. Please try again.');
+                                                }
+                                            }}
+                                            onError={(error) => {
+                                                console.error('Stripe error:', error);
+                                            }}
+                                            buttonText="Save Card Securely"
+                                        />
+                                    </div>
                                 </DialogContent>
                             </Dialog>
                         </div>
 
+                        {/* Info banner about Stripe security */}
+                        <Card className="border-none bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
+                            <CardContent className="p-4 flex items-center gap-4">
+                                <div className="p-2 bg-blue-500/10 rounded-full">
+                                    <Shield className="h-6 w-6 text-blue-600" />
+                                </div>
+                                <div className="flex-1">
+                                    <p className="font-semibold text-blue-900 dark:text-blue-100">Secured by Stripe</p>
+                                    <p className="text-sm text-blue-700 dark:text-blue-300">Your payment information is encrypted and never stored on our servers.</p>
+                                </div>
+                            </CardContent>
+                        </Card>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {paymentMethods.map((pm) => (
-                                <Card key={pm.id} className="bg-gradient-to-br from-gray-900 to-gray-800 text-white border-none">
-                                    <CardContent className="p-6 relative">
-                                        <div className="flex justify-between items-start mb-8">
-                                            <CreditCard className="h-8 w-8 text-white/80" />
-                                            <Button variant="ghost" size="icon" className="text-white/50 hover:text-white" onClick={() => handleDeletePaymentMethod(pm.id)}>
+                                <Card key={pm.id} className="bg-gradient-to-br from-gray-900 to-gray-800 text-white border-none overflow-hidden relative">
+                                    {/* Card chip decoration */}
+                                    <div className="absolute top-6 left-6 w-10 h-8 rounded bg-gradient-to-br from-amber-300 to-amber-500 opacity-80" />
+                                    <CardContent className="p-6 pt-16 relative">
+                                        <div className="absolute top-4 right-4">
+                                            <Button 
+                                                variant="ghost" 
+                                                size="icon" 
+                                                className="text-white/50 hover:text-white hover:bg-white/10" 
+                                                onClick={() => handleDeletePaymentMethod(pm.id)}
+                                            >
                                                 <XCircle className="h-5 w-5" />
                                             </Button>
                                         </div>
-                                        <div className="mb-4">
-                                            <p className="text-xl font-mono tracking-wider">**** **** **** {pm.last4}</p>
+                                        <div className="mb-6">
+                                            <p className="text-2xl font-mono tracking-[0.3em]">•••• •••• •••• {pm.last4}</p>
                                         </div>
                                         <div className="flex justify-between items-end">
                                             <div>
-                                                <p className="text-[10px] uppercase text-white/50">Card Holder</p>
-                                                <p className="font-medium truncate max-w-[120px]">{pm.card_holder_name || 'Customer'}</p>
+                                                <p className="text-[10px] uppercase text-white/50 mb-1">Card Holder</p>
+                                                <p className="font-medium truncate max-w-[150px]">{pm.card_holder_name || 'Customer'}</p>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-[10px] uppercase text-white/50">{pm.provider || 'Card'}</p>
-                                                <p className="font-medium">{pm.expiry_month}/{pm.expiry_year}</p>
+                                                <p className="text-[10px] uppercase text-white/50 mb-1">Valid Thru</p>
+                                                <p className="font-medium">{String(pm.expiry_month).padStart(2, '0')}/{pm.expiry_year}</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-lg font-bold uppercase tracking-wider">{pm.provider || 'Card'}</p>
                                             </div>
                                         </div>
-
+                                        {(pm.is_default || pm.isDefault) && (
+                                            <Badge className="absolute top-4 left-20 bg-primary text-primary-foreground text-[10px]">
+                                                Default
+                                            </Badge>
+                                        )}
                                     </CardContent>
                                 </Card>
                             ))}
-                            {paymentMethods.length === 0 && <p className="text-muted-foreground col-span-2 text-center py-8">No saved payment methods.</p>}
+                            {paymentMethods.length === 0 && (
+                                <div className="col-span-2 text-center py-12 bg-muted/20 rounded-2xl border-2 border-dashed border-muted">
+                                    <CreditCard className="h-12 w-12 mx-auto text-muted-foreground/30 mb-4" />
+                                    <h3 className="font-bold text-lg mb-2">No saved cards</h3>
+                                    <p className="text-muted-foreground mb-4">Add a card for faster checkout next time.</p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 );
