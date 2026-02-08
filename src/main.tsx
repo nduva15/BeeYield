@@ -7,7 +7,7 @@ if (typeof window !== 'undefined') {
     globalThis.Buffer = Buffer;
 }
 import ScrollToTop from './components/ScrollToTop'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { BeeYieldQueryProvider } from './components/QueryClientProvider'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from '@/components/ui/sonner'
@@ -18,6 +18,7 @@ import { AuthProvider } from '@/contexts/AuthContext'
 import { SettingsProvider } from '@/contexts/SettingsContext'
 import { LanguageProvider } from '@/contexts/LanguageContext'
 import Layout from '@/components/Layout'
+import ProtectedRoute from '@/components/auth/ProtectedRoute'
 import '@/index.css'
 
 // Page imports
@@ -56,17 +57,9 @@ import ProfessionalAuth from '@/pages/ProfessionalAuth'
 import NotFound from '@/pages/NotFound'
 import Receipt from '@/pages/Receipt'
 
-const queryClient = new QueryClient({
-    defaultOptions: {
-        queries: {
-            staleTime: 1000 * 60 * 5,
-        },
-    },
-})
-
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-        <QueryClientProvider client={queryClient}>
+        <BeeYieldQueryProvider>
             <TooltipProvider>
                 <AuthProvider>
                     <SettingsProvider>
@@ -104,18 +97,18 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                                                 <Route path="/pollination-request" element={<PollinationRequest />} />
                                                 <Route path="/diseases" element={<Diseases />} />
                                                 <Route path="/media" element={<Media />} />
-                                                <Route path="/beeyield-dashboard" element={<BeeYieldDashboard />} />
-                                                <Route path="/ceba" element={<AdminDashboard />} />
+                                                <Route path="/beeyield-dashboard" element={<ProtectedRoute requireBeeYield={true}><BeeYieldDashboard /></ProtectedRoute>} />
+                                                <Route path="/ceba" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
                                                 <Route path="/ceba/login" element={<AdminLogin />} />
                                                 {/* Mapped my-account to BuyerDashboard based on routes/my-account.tsx */}
-                                                <Route path="/my-account" element={<BuyerDashboard />} />
-                                                <Route path="/buyer-dashboard" element={<BuyerDashboard />} />
-                                                <Route path="/account-settings" element={<AccountSettings />} />
-                                                <Route path="/update-password" element={<UpdatePassword />} />
+                                                <Route path="/my-account" element={<ProtectedRoute><BuyerDashboard /></ProtectedRoute>} />
+                                                <Route path="/buyer-dashboard" element={<ProtectedRoute><BuyerDashboard /></ProtectedRoute>} />
+                                                <Route path="/account-settings" element={<ProtectedRoute><AccountSettings /></ProtectedRoute>} />
+                                                <Route path="/update-password" element={<ProtectedRoute><UpdatePassword /></ProtectedRoute>} />
                                                 <Route path="/login" element={<Authentication />} />
                                                 <Route path="/signup" element={<Authentication />} />
                                                 <Route path="/beeyield-login" element={<ProfessionalAuth />} />
-                                                <Route path="/receipt/:orderId" element={<Receipt />} />
+                                                <Route path="/receipt/:orderId" element={<ProtectedRoute><Receipt /></ProtectedRoute>} />
                                                 <Route path="*" element={<NotFound />} />
                                             </Routes>
                                         </Layout>
@@ -126,6 +119,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                     </SettingsProvider>
                 </AuthProvider>
             </TooltipProvider>
-        </QueryClientProvider>
+        </BeeYieldQueryProvider>
     </React.StrictMode>
 )

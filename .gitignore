@@ -52,6 +52,11 @@ dist
 .cache
 build
 out
+target/
+**/*.rlib
+**/*.pdb
+debug/
+release/
 
 # Database / Locally generated
 *.db

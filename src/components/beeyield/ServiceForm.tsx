@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 import Logo from '@/assets/Logo.png';
 
-export const ServiceForm = forwardRef<HTMLDivElement, {}>((props, ref) => {
+export const ServiceForm = forwardRef<HTMLDivElement, any>((props, ref) => {
     return (
         <>
             <style type="text/css" media="print">

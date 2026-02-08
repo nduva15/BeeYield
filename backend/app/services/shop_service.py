@@ -281,6 +281,7 @@ def create_order(order_in: schemas.OrderCreate, user_id: Optional[str] = None) -
         
         product_name = product.get("name", "Unknown") if product else "Unknown"
         variant_size = variant.get("size", "") if variant else ""
+        product_image = product.get("images", [""])[0] if product and product.get("images") else ""
         
         item_data = {
             "order_id": order_id,
@@ -288,6 +289,7 @@ def create_order(order_in: schemas.OrderCreate, user_id: Optional[str] = None) -
             "variant_id": s_variant_id,
             "product_name": product_name,
             "variant_size": variant_size,
+            "product_image": product_image,
             "quantity": item.quantity,
             "unit_price": variant.get("price_kes", 0) if variant else 0,
             "total_price": (variant.get("price_kes", 0) if variant else 0) * item.quantity

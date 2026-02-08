@@ -1,0 +1,116 @@
+{
+    "version": "1.0",
+    "last_audit": "2026-02-05T21:22:56.824459",
+    "total_sources": 13893,
+    "hubs": {
+        "AFRICAN": 640,
+        "EUROPEAN": 0,
+        "ASIAN": 0,
+        "CORPORATE": 9500,
+        "ACADEMIC": 4888
+    },
+    "sources": {
+        "beebiome_portal_20260205_211216": {
+            "file": "data\\research_batch\\batch_beebiome_portal_batch_20260205_211216.json",
+            "doc_count": 50,
+            "last_seen": "2026-02-05T21:22:56.630918",
+            "status": "INDEXED"
+        },
+        "corporate_intelligence_hyper_20260205_211532": {
+            "file": "data\\research_batch\\batch_corporate_intelligence_hyper_20260205_211532.json",
+            "doc_count": 1000,
+            "last_seen": "2026-02-05T21:22:56.686680",
+            "status": "INDEXED"
+        },
+        "ncbi_biosample_20260205_151922": {
+            "file": "data\\research_batch\\batch_ncbi_biosample_20260205_151922.json",
+            "doc_count": 50,
+            "last_seen": "2026-02-05T21:22:56.744882",
+            "status": "INDEXED"
+        },
+        "ncbi_biosample_20260205_151946": {
+            "file": "data\\research_batch\\batch_ncbi_biosample_20260205_151946.json",
+            "doc_count": 50,
+            "last_seen": "2026-02-05T21:22:56.746980",
+            "status": "INDEXED"
+        },
+        "ncbi_biosample_extended_20260205_211216": {
+            "file": "data\\research_batch\\batch_ncbi_biosample_extended_20260205_211216.json",
+            "doc_count": 200,
+            "last_seen": "2026-02-05T21:22:56.752819",
+            "status": "INDEXED"
+        },
+        "ncbi_biosample_hyper_20260205_211532": {
+            "file": "data\\research_batch\\batch_ncbi_biosample_hyper_20260205_211532.json",
+            "doc_count": 461,
+            "last_seen": "2026-02-05T21:22:56.762806",
+            "status": "INDEXED"
+        },
+        "researchgate_african_hub_20260205_151922": {
+            "file": "data\\research_batch\\batch_researchgate_african_hub_20260205_151922.json",
+            "doc_count": 30,
+            "last_seen": "2026-02-05T21:22:56.813235",
+            "status": "INDEXED"
+        },
+        "researchgate_african_hub_20260205_151946": {
+            "file": "data\\research_batch\\batch_researchgate_african_hub_20260205_151946.json",
+            "doc_count": 30,
+            "last_seen": "2026-02-05T21:22:56.813506",
+            "status": "INDEXED"
+        },
+        "researchgate_african_hub_extended_20260205_211216": {
+            "file": "data\\research_batch\\batch_researchgate_african_hub_extended_20260205_211216.json",
+            "doc_count": 100,
+            "last_seen": "2026-02-05T21:22:56.813982",
+            "status": "INDEXED"
+        },
+        "researchgate_hyper_scale_20260205_211532": {
+            "file": "data\\research_batch\\batch_researchgate_hyper_scale_20260205_211532.json",
+            "doc_count": 1500,
+            "last_seen": "2026-02-05T21:22:56.818973",
+            "status": "INDEXED"
+        },
+        "corporate_intelligence_hyper_20260205_211718": {
+            "file": "data\\research_batch\\batch_corporate_intelligence_hyper_20260205_211718.json",
+            "doc_count": 1000,
+            "last_seen": "2026-02-05T21:22:56.689800",
+            "status": "INDEXED"
+        },
+        "ncbi_biosample_hyper_20260205_211718": {
+            "file": "data\\research_batch\\batch_ncbi_biosample_hyper_20260205_211718.json",
+            "doc_count": 461,
+            "last_seen": "2026-02-05T21:22:56.780852",
+            "status": "INDEXED"
+        },
+        "researchgate_hyper_scale_20260205_211718": {
+            "file": "data\\research_batch\\batch_researchgate_hyper_scale_20260205_211718.json",
+            "doc_count": 1500,
+            "last_seen": "2026-02-05T21:22:56.824405",
+            "status": "INDEXED"
+        },
+        "corporate_industry_10k_20260205_212256": {
+            "file": "data\\research_batch\\batch_corporate_industry_10k_20260205_212256.json",
+            "doc_count": 2500,
+            "last_seen": "2026-02-05T21:22:56.682142",
+            "status": "INDEXED"
+        },
+        "government_policy_10k_20260205_212256": {
+            "file": "data\\research_batch\\batch_government_policy_10k_20260205_212256.json",
+            "doc_count": 1500,
+            "last_seen": "2026-02-05T21:22:56.716443",
+            "status": "INDEXED"
+        },
+        "ncbi_biosample_10k_20260205_212256": {
+            "file": "data\\research_batch\\batch_ncbi_biosample_10k_20260205_212256.json",
+            "doc_count": 461,
+            "last_seen": "2026-02-05T21:22:56.742518",
+            "status": "INDEXED"
+        },
+        "researchgate_10k_scale_20260205_212256": {
+            "file": "data\\research_batch\\batch_researchgate_10k_scale_20260205_212256.json",
+            "doc_count": 3000,
+            "last_seen": "2026-02-05T21:22:56.812368",
+            "status": "INDEXED"
+        }
+    }
+}

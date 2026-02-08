@@ -21,7 +21,7 @@ import {
     Package, ShoppingBag, MapPin, Phone, Clock, CheckCircle2,
     XCircle, Truck, CreditCard, RefreshCw, ChevronRight,
     FileText, Search, Plus, Trash2, Edit2, Star, Gift,
-    ArrowRight, LayoutGrid, Settings, HelpCircle, Bell, Wallet, Heart,
+    Download, ArrowRight, LayoutGrid, Settings, HelpCircle, Bell, Wallet, Heart,
     Smartphone, CreditCard as CardIcon, Loader2 as Loader
 } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -75,7 +75,12 @@ interface PaymentMethod {
     last4?: string;
     brand?: string;
     expiry?: string;
-    isDefault: boolean;
+    isDefault?: boolean;
+    is_default?: boolean;
+    card_holder_name?: string;
+    provider?: string;
+    expiry_month?: number;
+    expiry_year?: number;
 }
 
 const BuyerDashboard = () => {
@@ -139,8 +144,8 @@ const BuyerDashboard = () => {
         setOrdersLoading(true);
         try {
             const { getUserOrders } = await import('@/services/shopService');
-            const data = await getUserOrders(user.email);
-            setOrders(data);
+            const data = await getUserOrders(user?.email || '');
+            setOrders(data as unknown as Order[]);
         } catch (error) {
             console.error("Failed to load orders:", error);
         } finally {
@@ -158,8 +163,8 @@ const BuyerDashboard = () => {
                 import('@/services/shopService').then(m => m.getPaymentMethods())
             ]);
 
-            setAddresses(savedAddresses);
-            setPaymentMethods(savedPayments || []);
+            setAddresses(savedAddresses as Address[]);
+            setPaymentMethods(savedPayments as PaymentMethod[] || []);
         } catch (error) {
             console.error("Failed to load user data from backend:", error);
             // Fallback to metadata if backend fails
@@ -173,7 +178,7 @@ const BuyerDashboard = () => {
         setProfileForm({
             firstName: meta.first_name || '',
             lastName: meta.last_name || '',
-            email: user.email || '',
+            email: user?.email || '',
             phone: meta.phone || ''
         });
     };
@@ -226,7 +231,7 @@ const BuyerDashboard = () => {
                 activity_type: 'account',
                 action: 'updated',
                 entity_type: 'user_profile',
-                entity_reference: user.email || 'unknown',
+                entity_reference: user?.email || 'unknown',
                 metadata: { fields: ['first_name', 'last_name', 'phone'] }
             }).catch(() => { });
 
@@ -242,7 +247,7 @@ const BuyerDashboard = () => {
         try {
             const { addAddress } = await import('@/services/shopService');
             const saved = await addAddress(newAddress);
-            setAddresses([...addresses, saved]);
+            setAddresses([...addresses, saved as Address]);
             toast.success("Address saved");
         } catch (error) {
             toast.error("Failed to save address");
@@ -269,7 +274,7 @@ const BuyerDashboard = () => {
         try {
             const { addPaymentMethod } = await import('@/services/shopService');
             const saved = await addPaymentMethod(newMethod);
-            setPaymentMethods([...paymentMethods, saved]);
+            setPaymentMethods([...paymentMethods, saved as PaymentMethod]);
             toast.success("Payment method added");
         } catch (error) {
             toast.error("Failed to add payment method");
@@ -302,7 +307,7 @@ const BuyerDashboard = () => {
         try {
             const { getOrderTracking } = await import('@/services/shopService');
             const info = await getOrderTracking(order.id);
-            setTrackingInfo(info);
+            setTrackingInfo(info as any);
         } catch (error) {
             console.error("Tracking unavailable:", error);
             setTrackingInfo(null);
@@ -557,8 +562,11 @@ const BuyerDashboard = () => {
                                                     <Button variant="secondary" size="sm" className="rounded-full" onClick={() => handleTrackOrder(order)}>
                                                         <Truck className="w-4 h-4 mr-2" /> Track
                                                     </Button>
+                                                    <Button variant="outline" size="sm" className="rounded-full" onClick={() => navigate(`/receipt/${order.id}`)}>
+                                                        <FileText className="w-4 h-4 mr-2" /> Receipt
+                                                    </Button>
                                                     <Button variant="outline" size="sm" className="rounded-full" onClick={() => handleDownloadInvoice(order)}>
-                                                        <FileText className="w-4 h-4 mr-2" /> Invoice
+                                                        <Download className="w-4 h-4 mr-2" /> PDF
                                                     </Button>
                                                 </div>
                                             </div>
@@ -667,7 +675,7 @@ const BuyerDashboard = () => {
                                     <CardHeader>
                                         <CardTitle className="text-base font-bold flex justify-between">
                                             {addr.name}
-                                            {addr.isDefault && <Badge variant="secondary">Default</Badge>}
+                                            {addr.is_default && <Badge variant="secondary">Default</Badge>}
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent className="text-sm space-y-1 text-muted-foreground">
@@ -925,7 +933,7 @@ const BuyerDashboard = () => {
                         </div>
                     </div>
                 );
-            case 'checkout':
+            case 'checkout': {
                 const totalPrice: number = getTotalPrice();
                 const checkoutShippingCost: number = totalPrice >= 5000 ? 0 : 350;
                 const checkoutTotalWithShipping: number = totalPrice + checkoutShippingCost;
@@ -1196,6 +1204,7 @@ const BuyerDashboard = () => {
                         )}
                     </div>
                 );
+            }
             default:
                 return (
                     <div className="text-center py-32 bg-white dark:bg-black/20 rounded-[3rem] border-2 border-dashed border-muted">

@@ -33,7 +33,7 @@ export const aiService = {
                 }
             });
             return response.data;
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.warn('Backend connection failed, switching to local intelligence.');
             const fallback = await localIntelligence.chat(message);
             return {

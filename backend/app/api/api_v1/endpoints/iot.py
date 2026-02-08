@@ -11,7 +11,11 @@ def get_devices(
     farmer_id: Optional[str] = None,
     current_user: dict = Depends(security.get_current_user)
 ):
-    """Get all IoT devices. Requires authentication."""
+    """Get all IoT devices. Restricted to primary developer/farmer account."""
+    email = current_user.get("email")
+    if email != "timothynduva349@gmail.com":
+         return [] # Current demo data is only for Timothy
+         
     return iot_service.get_devices(farmer_id)
 
 @router.get("/readings", response_model=list[schemas.SensorReading])
@@ -21,7 +25,11 @@ def get_readings(
     hours: int = 24,
     current_user: dict = Depends(security.get_current_user)
 ):
-    """Get sensor readings. Requires authentication."""
+    """Get sensor readings. Restricted to primary developer/farmer account."""
+    email = current_user.get("email")
+    if email != "timothynduva349@gmail.com":
+         return [] # Current demo data is only for Timothy
+         
     return iot_service.get_sensor_readings(device_id, sensor_type, hours)
 
 @router.get("/client-hives", response_model=list[schemas.ClientHive])

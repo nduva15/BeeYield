@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
@@ -20,6 +21,10 @@ app = FastAPI(
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     description="Backend API for BeeYield - Honey Traceability and E-commerce Platform"
 )
+
+# Mount static files for reports
+os.makedirs("backend/app/static/reports", exist_ok=True)
+app.mount("/static", StaticFiles(directory="backend/app/static"), name="static")
 
 # Set all CORS enabled origins
 if settings.BACKEND_CORS_ORIGINS:

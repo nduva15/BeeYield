@@ -20,36 +20,72 @@ if not SUPABASE_URL or not SUPABASE_KEY:
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 print(f"Connected to Supabase: {SUPABASE_URL}")
 
-def get_first_user_id():
-    """Get the first user ID from auth.users (requires service role)"""
+def get_timothy_user_id():
+    """Get the user ID for timothynduva349@gmail.com"""
     try:
-        # Note: Querying auth schema directly might be restricted depending on Supabase version
-        # But we can try to get it from a table that might already have it or use a default
-        res = supabase.table("user_profiles").select("id").limit(1).execute()
-        if res.data:
-            return res.data[0]["id"]
+        # 1. Try to find in auth.admin (most reliable if service role key is available)
+        try:
+            users = supabase.auth.admin.list_users()
+            for user in users:
+                if user.email == "timothynduva349@gmail.com":
+                    print(f"   ✓ Found User ID for Timothy in Auth: {user.id}")
+                    # Ensure profile exists since other parts of app rely on it
+                    try:
+                        supabase.table("profiles").upsert({
+                            "id": user.id,
+                            "email": user.email,
+                            "full_name": "Timothy Nduva"
+                        }).execute()
+                    except:
+                        pass
+                    return user.id
+        except Exception as e:
+            print(f"   ! Could not list auth users: {e}")
+            pass
+
+        # 2. Search in user_profiles or profiles for the specific email
+        for table in ["profiles", "user_profiles"]:
+            try:
+                res = supabase.table(table).select("id").eq("email", "timothynduva349@gmail.com").execute()
+                if res.data:
+                    print(f"   ✓ Found User ID for Timothy in {table}: {res.data[0]['id']}")
+                    return res.data[0]["id"]
+            except:
+                continue
         
-        # If no profiles, try to get from auth.users via an RPC if available, 
-        # or just return None and let the SQL sync handle it
+        # 3. Fallback to any user if Timothy not found, but warn
+        for table in ["profiles", "user_profiles"]:
+            try:
+                res = supabase.table(table).select("id").limit(1).execute()
+                if res.data:
+                    print(f"   ! User 'timothynduva349@gmail.com' not found. Falling back to ID from {table}: {res.data[0]['id']}")
+                    return res.data[0]["id"]
+            except:
+                continue
+            
         return None
     except Exception as e:
         print(f"   [DEBUG] Could not fetch user_id: {e}")
         return None
 
-def clear_traceability_data():
-    """Wipe existing traceability data"""
-    print("--- Clearing existing traceability data ---")
+def clear_all_beeyield_data():
+    """Wipe all existing BeeYield related data to remove mock entries"""
+    print("--- Wiping all BeeYield data (leaving only real data soon) ---")
     tables = [
         "inspections", "tasks", "processing_records", "harvests", 
-        "hives", "apiaries", "farmers"
+        "hives", "apiaries", "farmers", "iot_devices", "sensor_readings",
+        "colonies", "flower_sources", "honey_batches", "packaged_batches",
+        "blockchain_records", "pollination_contracts", "hive_assignments",
+        "pollination_activity_logs", "activity_logs", "tracing_history"
     ]
     for table in tables:
         try:
             print(f"   - Clearing {table}...")
-            # Use a condition that is always true but matches Supabase requirements
+            # Use as much force as possible to delete everything
             supabase.table(table).delete().neq("id", "00000000-0000-0000-0000-000000000000").execute()
         except Exception as e:
-            print(f"   --> Could not clear {table}: {e}")
+            # Table might not exist or have RLS issues, skip
+            print(f"   --> Skipped {table}: {e}")
             pass
 
 def setup_timothy_data(user_id):
@@ -156,14 +192,14 @@ def main():
     print("BeeYield Timothy Nduva Data Setup")
     print("=" * 60)
     
-    user_id = get_first_user_id()
+    user_id = get_timothy_user_id()
     if not user_id:
         print("! Warning: No user_id found. Data will be created without owner.")
         print("! You may need to run 'backend/db/sync_beeyield_data.sql' afterwards.")
     else:
         print(f"Using User ID: {user_id}")
     
-    clear_traceability_data()
+    clear_all_beeyield_data()
     setup_timothy_data(user_id)
     update_company_stats()
     

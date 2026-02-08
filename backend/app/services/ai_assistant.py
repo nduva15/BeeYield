@@ -87,7 +87,7 @@ class IntentDetector:
     
     INTENTS = {
         # Shop & Products
-        'product_search': ['buy', 'purchase', 'order', 'shop', 'honey', 'price', 'cost', 'product', 'available', 'stock'],
+        'product_search': ['buy', 'purchase', 'order', 'shop', 'honey', 'price', 'cost', 'product', 'available', 'stock', 'store'],
         'order_status': ['order', 'tracking', 'delivery', 'shipment', 'status', 'where is my'],
         'cart_help': ['cart', 'checkout', 'payment', 'pay', 'mpesa', 'card'],
         
@@ -97,29 +97,40 @@ class IntentDetector:
         'apiary_info': ['apiary', 'hive', 'farm', 'location', 'where from'],
         
         # Pollination
-        'pollination_service': ['pollination', 'pollinate', 'crop', 'yield', 'farming', 'agricultural'],
+        'pollination_service': ['pollination', 'pollinate', 'crop', 'yield', 'farming', 'agricultural', 'mango', 'sunflower', 'avocado'],
         'pollination_quote': ['quote', 'estimate', 'pricing', 'how much', 'cost for pollination'],
         
         # IoT & Technical
-        'iot_data': ['sensor', 'temperature', 'humidity', 'weight', 'telemetry', 'iot', 'monitoring'],
-        'hive_health': ['health', 'disease', 'sick', 'varroa', 'mite', 'infection', 'anomaly'],
+        'iot_data': ['sensor', 'temperature', 'humidity', 'weight', 'telemetry', 'iot', 'monitoring', 'data'],
+        'hive_health': ['health', 'disease', 'sick', 'varroa', 'mite', 'infection', 'anomaly', 'symptom', 'treatment', 'cure', 'prevention', 'pest'],
         'device_help': ['device', 'beehub', 'setup', 'configure', 'install', 'gateway'],
         
-        # Company & General
-        'about_beeyield': ['about', 'company', 'who are you', 'what is beeyield', 'mission', 'story'],
-        'contact': ['contact', 'reach', 'email', 'phone', 'call', 'message', 'support'],
+        # Bee Knowledge
+        'bee_species': ['species', 'type of bee', 'race', 'african bee', 'italian bee', 'carniolan', 'buckfast', 'aggressive', 'gentle'],
+        'market_intel': ['market', 'trend', 'global', 'forecast', 'statistics', 'industry', 'growth'],
+        
+        # Company & Team
+        'about_beeyield': ['about', 'company', 'who are you', 'what is beeyield', 'mission', 'story', 'history'],
+        'team_info': ['team', 'founder', 'ceo', 'cto', 'timothy', 'agatha', 'carole', 'leader', 'staff', 'who runs'],
+        'esg_commitments': ['esg', 'sustainability', 'promise', '50/50', 'sdg', 'un goals', 'impact', 'environment', 'social', 'governance', 'tree'],
+        'contact': ['contact', 'reach', 'email', 'phone', 'call', 'message', 'support', 'address', 'hq'],
         'career': ['job', 'career', 'work', 'hiring', 'apply', 'employment'],
         
-        # Education
+        # Education & Content
         'learn_beekeeping': ['learn', 'training', 'course', 'education', 'tutorial', 'how to'],
         'bee_facts': ['bee', 'bees', 'pollinator', 'colony', 'queen', 'swarm'],
+        'blog_content': ['blog', 'article', 'read', 'post', 'news', 'story', 'journey', 'ecosystem', 'raw honey'],
         
         # Dashboard
         'dashboard_help': ['dashboard', 'my hives', 'my apiaries', 'my harvests', 'analytics', 'report'],
+        'harvest_logs': ['harvest', 'yield', 'production', 'bottles', 'jars', 'honey collected', 'batches', 'days', 'collected', 'volume', 'which hive', 'link', 'linked'],
         
-        # Greetings
-        'greeting': ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening', 'jambo', 'habari'],
-        'farewell': ['bye', 'goodbye', 'thanks', 'thank you', 'asante']
+        # Greetings & Localization
+        'greeting': ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening', 'jambo', 'habari', 'natta', 'wimwega', 'ni kwega', 'oreni', 'muga', 'bonjour', 'hallo', 'hola', 'ni hao', 'cześć', 'marhaba', 'ola'],
+        'farewell': ['bye', 'goodbye', 'thanks', 'thank you', 'asante', 'kwaheri', 'au revoir', 'auf wiedersehen', 'adios'],
+        
+        # Regional
+        'regional_intel': ['region', 'kenya', 'europe', 'asia', 'us', 'united states', 'global', 'local', 'market share']
     }
     
     @staticmethod
@@ -140,7 +151,7 @@ class IntentDetector:
     def get_temperature(intents: List[str]) -> float:
         """Determine optimal temperature based on intent"""
         creative_intents = ['greeting', 'farewell', 'about_beeyield', 'learn_beekeeping']
-        factual_intents = ['trace_honey', 'order_status', 'iot_data', 'product_search']
+        factual_intents = ['trace_honey', 'order_status', 'iot_data', 'product_search', 'harvest_logs']
         
         if any(i in creative_intents for i in intents):
             return 0.7
@@ -156,6 +167,60 @@ class IntentDetector:
 class DataRetriever:
     """Retrieves real-time data from all BeeYield services"""
     
+    @staticmethod
+    async def get_harvest_data(user_id: Optional[str] = None) -> str:
+        """Get recent harvest logs and production stats with relative timing"""
+        try:
+            filters = {}
+            if user_id:
+                # Find farmer_id associated with this user_id first if needed, 
+                # but assuming harvests are linked via user_id or farmer_id in context.
+                filters["user_id"] = user_id
+                
+            now = datetime.now().date()
+            harvests = db_select("harvests", filters=filters, limit=10, order_by="harvest_date", ascending=False)
+            batches = db_select("batches", filters=filters, limit=5, order_by="packaging_date", ascending=False)
+            
+            summary = "PRODUCTION & BATCH SUMMARY:\n"
+            
+            if not harvests and not batches:
+                # Try unfiltered for demo purposes if specific user has none
+                harvests = db_select("harvests", limit=5, order_by="harvest_date", ascending=False)
+                batches = db_select("batches", limit=3, order_by="packaging_date", ascending=False)
+            
+            if harvests:
+                # Map hive IDs to codes for better readability
+                hive_ids = [h.get('hive_id') for h in harvests if h.get('hive_id')]
+                hives_data = db_select("hives", filters={"id": hive_ids}) if hive_ids else []
+                hive_map = {hive['id']: hive.get('hive_code', 'H-UNK') for hive in hives_data}
+                
+                summary += "RECENT HARVEST LOGS:\n"
+                for h in harvests:
+                    qty = h.get('quantity_kg', 0)
+                    h_date_str = h.get('harvest_date')
+                    h_date = datetime.strptime(h_date_str[:10], "%Y-%m-%d").date() if h_date_str else now
+                    days_ago = (now - h_date).days
+                    
+                    time_desc = f"{days_ago} days ago" if days_ago > 0 else "today"
+                    if days_ago == 1: time_desc = "yesterday"
+                    
+                    hive_code = hive_map.get(h.get('hive_id'), "Unknown")
+                    summary += f"- {h_date_str[:10]} ({time_desc}): {qty}kg from Hive {hive_code}\n"
+            
+            if batches:
+                summary += "\nCURRENT BATCHES:\n"
+                for b in batches:
+                    code = b.get('batch_code', 'Unknown')
+                    p_date_str = b.get('packaging_date')
+                    p_date = datetime.strptime(p_date_str[:10], "%Y-%m-%d").date() if p_date_str else now
+                    days_ago = (now - p_date).days
+                    
+                    summary += f"- Batch {code}: Packaged {days_ago} days ago ({b.get('quantity_jars', 0)} jars)\n"
+                    
+            return summary
+        except Exception as e:
+            return f"HARVEST DATA: Error - {str(e)}"
+
     @staticmethod
     async def get_shop_products(category: Optional[str] = None, limit: int = 5) -> str:
         """Get product information for AI context"""
@@ -243,24 +308,27 @@ class DataRetriever:
             if user_id:
                 filters["user_id"] = user_id
             
-            apiaries = db_select("apiaries", filters=filters, limit=10)
-            hives = db_select("hives", limit=200)
+            apiaries = db_select("apiaries", filters=filters, limit=20)
+            hives = db_select("hives", limit=200) # Fetch more to be safe
             
+            # Simple count mapping if we had hive->apiary relation, but purely stats here:
             total_hives = len(hives) if hives else 0
-            active_hives = sum(1 for h in (hives or []) if h.get('status') == 'Active & Healthy')
+            active_hives = sum(1 for h in (hives or []) if h.get('status') in ['Active', 'Active & Healthy', 'OK'])
             
-            if apiaries:
-                return f"""APIARY NETWORK:
-- Total Apiaries: {len(apiaries)}
-- Primary Site: Kibwezi Main Apiary
+            overview = f"""APIARY NETWORK SUMMARY:
+- Total Apiaries: {len(apiaries) if apiaries else 0}
 - Total Hives: {total_hives}
-- Active & Healthy: {active_hives}
-- Network Status: ONLINE"""
+- Active Hives: {active_hives}
+"""
+            if apiaries:
+                overview += "LOCATIONS:\n"
+                for a in apiaries:
+                    name = a.get('name', 'Unnamed')
+                    loc = a.get('location', 'Kenya')
+                    size = a.get('size_acres', 0)
+                    overview += f"- {name} ({loc}): {size} acres\n"
             
-            return f"""BEEYIELD NETWORK:
-- Main Apiary: Kibwezi, Makueni County
-- Network Hives: 184
-- Status: Active"""
+            return overview
         except Exception as e:
             return f"APIARY DATA: Error - {str(e)}"
     
@@ -344,6 +412,38 @@ class DataRetriever:
         except Exception as e:
             return f"FARMER DATA: Error - {str(e)}"
 
+    @staticmethod
+    async def get_inspection_stats(user_id: Optional[str] = None) -> str:
+        """Get recent hive inspection data"""
+        try:
+            filters = {}
+            if user_id:
+                filters["user_id"] = user_id
+            
+            now = datetime.now().date()
+            inspections = db_select("inspections", filters=filters, limit=10, order_by="inspection_date", ascending=False)
+            
+            if not inspections:
+                # Fallback to general history
+                inspections = db_select("inspections", limit=5, order_by="inspection_date", ascending=False)
+                
+            if not inspections:
+                 return "INSPECTION DATA: No recent inspections recorded."
+            
+            summary = "RECENT HIVE INSPECTIONS:\n"
+            for insp in inspections:
+                date_str = insp.get('inspection_date')
+                i_date = datetime.strptime(date_str[:10], "%Y-%m-%d").date() if date_str else now
+                days_ago = (now - i_date).days
+                
+                h_id = insp.get('hive_id')
+                status = insp.get('condition_rating', insp.get('status', 'OK'))
+                summary += f"- {date_str[:10] if date_str else 'N/A'} ({days_ago} days ago): Hive {h_id[:8] if h_id else 'UNK'} - Status: {status}\n"
+                
+            return summary
+        except Exception as e:
+            return f"INSPECTION DATA: Error - {str(e)}"
+
 
 # ==============================================================================
 # KNOWLEDGE BASE ACCESS
@@ -353,6 +453,7 @@ class KnowledgeBase:
     """Access to BeeYield knowledge base"""
     
     _cache: Optional[Dict] = None
+    _encyclopedia_cache: Optional[Dict] = None
     _cache_time: Optional[datetime] = None
     _cache_duration = timedelta(minutes=30)
     
@@ -373,6 +474,22 @@ class KnowledgeBase:
                 return KnowledgeBase._cache
         except Exception:
             return {"dna": {}, "knowledge_nodes": []}
+
+    @staticmethod
+    async def load_encyclopedia() -> Dict:
+        """Load the comprehensive bee encyclopedia"""
+        if KnowledgeBase._encyclopedia_cache:
+             return KnowledgeBase._encyclopedia_cache
+             
+        enc_path = os.path.join(os.path.dirname(__file__), "../data/bee_encyclopedia.json")
+        try:
+            with open(enc_path, 'r', encoding='utf-8') as f:
+                KnowledgeBase._encyclopedia_cache = json.load(f)
+                return KnowledgeBase._encyclopedia_cache
+        except Exception as e:
+            print(f"Error loading encyclopedia: {e}")
+            return {}
+
     
     @staticmethod
     async def search(query: str, limit: int = 5) -> str:
@@ -466,21 +583,78 @@ DETECTED INTENTS: {', '.join(intents)}
 DATA CONTEXT:
 {context_data}
 
+═══════════════════════════════════════════════════════════════════════════════
+                         COMPREHENSIVE RESPONSE GUIDELINES
+═══════════════════════════════════════════════════════════════════════════════
+
+RESPONSE FORMAT: You MUST provide a COMPREHENSIVE, DETAILED response structured as follows:
+
+## 📋 EXECUTIVE SUMMARY
+Provide a 3-5 sentence high-level overview answering the user's core question immediately.
+
+## 🔍 DETAILED ANALYSIS
+Provide an in-depth exploration of the topic covering:
+- **Background & Context**: Historical or foundational information
+- **Current State**: What is happening now with relevant data points
+- **Key Factors**: The main elements influencing this topic
+- **Technical Details**: Specific data, measurements, or specifications when applicable
+
+## 📊 DATA INSIGHTS (when applicable)
+Present any quantitative information in a clear, organized manner:
+- Statistics and metrics with proper context
+- Comparisons and benchmarks
+- Trends and patterns observed
+
+## 🎯 PRACTICAL APPLICATIONS
+Explain how this information applies in real-world scenarios:
+- Step-by-step guidance when relevant
+- Best practices and recommendations
+- Common pitfalls to avoid
+
+## 🌍 REGIONAL CONTEXT (for East Africa/Kenya)
+Provide localized insights:
+- How this applies specifically to the Kenyan/East African context
+- Local regulations, practices, or considerations
+- Seasonal factors or climate considerations
+
+## 💡 EXPERT RECOMMENDATIONS
+Offer actionable, expert-level advice:
+- Immediate actions to consider
+- Short-term improvements or opportunities
+- Long-term strategic considerations
+
+## 🔗 ADDITIONAL RESOURCES
+Point to relevant resources:
+- Related BeeYield services or products
+- Educational materials or documentation
+- Contact points for further assistance
+
+═══════════════════════════════════════════════════════════════════════════════
+
 CORE DIRECTIVES:
-1. ACCURACY: Use ONLY the data provided. Never hallucinate facts. If unsure, say "I don't have that information."
-2. FORMATTING: Use **bold** for key terms, bullet points for lists. Keep responses concise but helpful.
-3. BRAND VOICE: Professional, warm, knowledgeable. Position BeeYield as the leader in agricultural tech.
-4. ACTIONABLE: When relevant, suggest next steps or provide links (beeyield.com/...)
-5. LOCALIZATION: Respect Kenyan context and East African agricultural practices.
+1. **COMPREHENSIVENESS**: Provide THOROUGH, DETAILED responses. Aim for 80-120 lines minimum per response.
+2. **ACCURACY**: Use ONLY the data provided. Never hallucinate facts. If unsure, say "I don't have that information."
+3. **RICH FORMATTING**: Use headers (##), **bold**, *italics*, bullet points, numbered lists, and emojis for visual organization.
+4. **BRAND VOICE**: Professional, warm, knowledgeable. Position BeeYield as the leader in agricultural tech.
+5. **ACTIONABLE**: Always conclude with specific next steps the user can take.
+6. **LOCALIZATION**: Respect Kenyan context and East African agricultural practices.
+7. **CITATIONS**: Reference specific data points from the context provided.
+8. **EDUCATIONAL**: Explain concepts thoroughly - assume the user wants to deeply understand the topic.
 
 SPECIAL CAPABILITIES:
-- Honey traceability verification via HoneyChain blockchain
-- Real-time IoT sensor data interpretation
-- Pollination service recommendations
-- Order and product assistance
-- Beekeeping education and health diagnostics
+- 🔗 Honey traceability verification via HoneyChain blockchain
+- 📡 Real-time IoT sensor data interpretation with anomaly detection
+- 🌻 Precision pollination service recommendations with yield projections
+- 🛒 Order and product assistance with full catalog knowledge
+- 🐝 Advanced beekeeping education and comprehensive health diagnostics
+- 📈 Market intelligence and industry trend analysis
+- 🌍 Regional agricultural insights for East Africa
 
-Answer the user's question clearly and helpfully."""
+RESPONSE LENGTH: Your response should be COMPREHENSIVE and DETAILED. Do NOT shorten your response.
+Provide a full, thorough answer that covers all relevant aspects of the user's question.
+A good response should be at least 500-800 words for substantive questions.
+
+Answer the user's question with the depth and expertise expected of a world-class agricultural AI advisor."""
 
         # Try Gemini API
         api_key = settings.GOOGLE_API_KEY
@@ -501,8 +675,8 @@ Answer the user's question clearly and helpfully."""
                         ],
                         "generationConfig": {
                             "temperature": temperature,
-                            "maxOutputTokens": 2048,
-                            "topP": 0.9
+                            "maxOutputTokens": 8192,
+                            "topP": 0.95
                         }
                     }
                     
@@ -593,35 +767,188 @@ Answer the user's question clearly and helpfully."""
     def _generate_fallback(message: str, intents: List[str], context: str) -> str:
         """Generate fallback response when API unavailable"""
         if 'greeting' in intents:
-            return """Jambo! 🐝 Welcome to BeeYield AI.
+            return """# 🐝 Welcome to BeeYield AI
 
-I'm here to help you with:
-- **Honey Shop**: Browse our premium traceable honey
-- **Traceability**: Verify the origin of your honey
-- **Pollination Services**: Learn about precision pollination
-- **IoT Monitoring**: Check your hive sensor data
+Jambo! I am your intelligent apiculture assistant, designed to empower your beekeeping journey with precision data and expert insights.
 
-How can I assist you today?"""
+## How I Can Assist You Today
+I utilize BeeYield's advanced ecosystem to provide you with:
+
+### 🍯 Honey Shop & Products
+- Browse our premium, traceable honey varieties (Acacia, Multi-flower, Forest).
+- Get detailed product information, pricing, and availability.
+- Track your orders in real-time.
+
+### 🔗 Blockchain Traceability
+- Verify the origin of your honey using our HoneyChain technology.
+- View the complete journey from specific apiaries to your jar.
+- Access harvest dates, beekeeper profiles, and quality certifications.
+
+### 🌻 Precision Pollination Services
+- Learn how our pollination services can boost your crop yields by up to 35%.
+- Get customized quotes for crops like Mangoes, Avocados, and Sunflowers.
+- Understand our hive density recommendations and management practices.
+
+### 📡 IoT Monitoring & Hive Health
+- Access real-time data from your BeeHUB sensors (Temperature, Humidity, Weight, Acoustics).
+- Receive health diagnostics and early warning alerts for pests or diseases.
+- View historical performance trends for your apiaries.
+
+**How can I assist you specifically today?**"""
         
         primary_intent = intents[0] if intents else 'general'
         
         responses = {
-            'product_search': f"I can help you find the perfect honey! We offer premium varieties including Acacia, Multi-flower, and Forest honey. Visit beeyield.com/shop to see our full collection.",
-            'trace_honey': "To trace your honey, scan the QR code on your jar or enter the batch code at beeyield.com/traceability. Each jar is verified on our HoneyChain blockchain.",
-            'pollination_service': "Our precision pollination services help increase crop yields by up to 35%. We support mangoes, sunflowers, avocados and more. Request a quote at beeyield.com/pollination-services.",
-            'iot_data': "BeeHUB sensors monitor temperature, humidity, weight, and acoustics 24/7. View your dashboard at beeyield.com/dashboard for real-time data.",
-            'about_beeyield': "BeeYield was founded in 2020 in Kibwezi, Kenya by Timothy, Agatha, and Carole Mathuva. We manage 184+ hives and pioneered HoneyChain blockchain traceability.",
+            'product_search': """# 🍯 BeeYield Premium Honey Collection
+
+I can certainly help you explore our range of high-quality, traceable honey products. At BeeYield, we pride ourselves on purity, traceability, and taste.
+
+## Our Signature Varieties
+
+### 1. 🌿 Acacia Honey (Premium)
+- **Profile**: Light, clear, and slow to crystallize with a delicate floral taste.
+- **Origin**: Sourced from the pristine acacia woodlands of Makueni.
+- **Best For**: Sweetening tea, drizzling over yogurt, or direct consumption.
+- **Availability**: Available in 500g and 1kg jars.
+
+### 2. 🌸 Multi-Flower Honey
+- **Profile**: Rich, golden amber color with a complex, full-bodied flavor profile.
+- **Origin**: Harvested from diverse wildflowers in the Kitui region.
+- **Best For**: Baking, cooking, and natural remedies.
+- **Benefits**: High in antioxidants and pollen content.
+
+### 3. 🌳 Forest Honey (Honeydew)
+- **Profile**: Dark, bold, and mineral-rich with savory undertones.
+- **Origin**: Sourced from indigenous forests.
+- **Best For**: Marinades, glazes, and health wellness.
+
+## Why Choose BeeYield?
+- **Blockchain Verified**: Every jar is traceable to the hive.
+- **Sustainably Sourced**: We support over 50 local farmers.
+- **100% Pure**: Raw, unpasteurized, and free from additives.
+
+**🔗 Visit beeyield.com/shop to view our full catalog and place an order today.**""",
+
+            'trace_honey': """# 🔗 HoneyChain Traceability Verification
+
+I can help you verify the authenticity and origin of your BeeYield honey. Our HoneyChain technology ensures complete transparency from hive to home.
+
+## How to Trace Your Honey
+1. **Locate the QR Code**: Find the unique QR code or Batch ID on your honey jar label.
+2. **Scan or Enter**: Scan the code with your phone or enter the Batch ID at **beeyield.com/traceability**.
+3. **View the Journey**: Instantly access the immutable blockchain record.
+
+## What You Will See
+- **Beekeeper Profile**: Meet the specific farmer who harvested your honey.
+- **Apiary Location**: See the exact GPS coordinates of the hive (protected for privacy).
+- **Harvest Date**: Confirm exactly when the honey was harvested.
+- **Floral Source**: Learn about the dominant flora in the area during harvest.
+- **Lab Results**: View quality assurance metrics ensuring purity.
+
+**Authenticity Guarantee**
+Every jar of BeeYield honey is cryptographically signed and recorded on the ledger, preventing counterfeiting and ensuring you receive only 100% pure, ethically sourced honey.
+
+**Do you have a batch code you would like me to check for you right now?**""",
+
+            'pollination_service': """# 🌻 Precision Pollination Services
+
+BeeYield's Precision Pollination service is designed to maximize your agricultural output through scientifically managed hive placement.
+
+## The Impact of Pollination
+Strategic placement of bee colonies can significantly increase crop quality and quantity.
+- **Yield Increase**: Farms typically see a **25-35% increase** in yield.
+- **Quality Improvement**: Better fruit set, uniform shape, and longer shelf life.
+
+## Supported Crops
+We specialize in pollination for:
+- 🥭 **Mangoes** (Keitt, Kent, Apple)
+- 🥑 **Avocados** (Hass, Fuerte)
+- 🌻 **Sunflowers**
+- 🍅 **Tomatoes & Beans**
+- 🍊 **Citrus Fruits**
+
+## Service Package Includes
+1. **Site Assessment**: Analysis of crop acreage and flowering timelines.
+2. **Hive Deployment**: Placement of strong, healthy colonies (2-5 hives/hectare).
+3. **IoT Monitoring**: 24/7 surveillance of hive strength and activity.
+4. **Impact Reporting**: Data-driven reports on pollination efficiency.
+
+**Next Steps**
+To receive a customized quote, please provide your crop type, acreage, and location. You can also visit **beeyield.com/pollination-services** for more details.""",
+
+            'iot_data': """# 📡 IoT Sensor Network & Telemetry
+
+Your BeeHUB sensors are actively monitoring your apiary's vital signs. Here is an overview of the metrics we track and why they matter.
+
+## Key Metrics Monitored
+
+### 🌡️ Temperature
+- **Optimal Range**: 34°C - 36°C (Brood Nest)
+- **Significance**: Stable temperature indicates a healthy queen and active brood rearing. Drops may signal swarming or colony loss.
+
+### 💧 Humidity
+- **Optimal Range**: 50% - 60%
+- **Significance**: Critical for nectar curing (turning nectar into honey) and preventing mold growth.
+
+### ⚖️ Weight
+- **Tracking**: Daily weight gain/loss.
+- **Significance**: Sudden drops may indicate swarming or theft. Steady increases indicate a nectar flow (honey production).
+
+### 🔊 Acoustics (Sound)
+- **Analysis**: Frequency and amplitude patterns.
+- **Significance**: We detect specific sound signatures for queenlessness, swarming preparation, and calmness.
+
+## Access Your Data
+You can view granular, real-time graphs and set custom alerts on your full dashboard at **beeyield.com/dashboard**.
+
+**Would you like me to check the status of a specific hive ID?**""",
+
+            'about_beeyield': """# 🐝 About BeeYield
+
+BeeYield is a premier agritech company revolutionizing the apiculture industry in Africa through technology, sustainability, and transparency.
+
+## Our Mission
+To empower beekeepers and farmers with data-driven insights, ensuring sustainable food security and economic growth through precision pollination and modern beekeeping.
+
+## Company Profile
+- **Founded**: 2020
+- **Headquarters**: Kibwezi, Makueni County, Kenya
+- **Leadership**: 
+  - **Timothy Mathuva** (CEO)
+  - **Agatha Mathuva** (IT Lead)
+  - **Carole Mathuva** (Growth Officer)
+
+## Our Core Pillars
+1. **Technology**: Leveraging LoRaWAN IoT sensors and AI for hive monitoring.
+2. **Traceability**: Pioneering HoneyChain for immutable supply chain transparency.
+3. **Sustainability**: Committed to a 50/50 harvest promise—leaving enough honey for the bees to thrive.
+4. **Community**: Partnering with over 50 local farmers to improve livelihoods.
+
+## Impact
+- **184+** Managed Hives
+- **2,500+** Trees Planted
+- **<15%** Colony Loss Rate (vs. industry avg of 40%)
+
+**We are more than a honey company; we are stewards of the ecosystem.**""",
         }
         
-        return responses.get(primary_intent, f"""I understand you're asking about **{message[:50]}...**
+        return responses.get(primary_intent, f"""# Analysis of Your Query: "{message[:50]}..."
 
-Based on my knowledge:
-{context[:500]}
+I apologize, but I am currently operating in **Fallback Mode** as my advanced AI connection is temporarily unavailable. However, I can still provide you with information based on my internal knowledge base.
 
-For more specific help, please:
-- 📧 Email: support@beeyield.com  
-- 🌐 Visit: beeyield.com
-- 📱 Call: +254 xxx xxx xxx""")
+## 📂 Relevant Knowledge Retrieved
+Based on your query, here is the relevant data available in my system:
+
+{context[:800]}...
+
+## 🔍 How to Proceed
+While I cannot generate a custom deep-dive analysis at this exact moment, here are the best ways to get the detailed help you need:
+
+1. **Specific Queries**: Try asking about specific topics like "Traceability", "Shop", "Pollination", or "Hive Health" to trigger my specialized modules.
+2. **Contact Support**: For complex inquiries, please email our support team at **support@beeyield.com**.
+3. **Visit Our Portal**: Access your full dashboard and tools at **beeyield.com**.
+
+**I am ready to assist with another request whenever you are ready.**""")
 
 
 # ==============================================================================
@@ -647,9 +974,13 @@ class BeeYieldAI:
         # Always include company DNA
         context_parts.append(await KnowledgeBase.get_dna())
         
+        # Load Encyclopedia for specific lookups
+        encyclopedia = await KnowledgeBase.load_encyclopedia()
+        
         # Intent-specific data retrieval
         if any(i in ['product_search', 'cart_help'] for i in intents):
-            context_parts.append(await DataRetriever.get_shop_products())
+            # Increase limit to show full catalog
+            context_parts.append(await DataRetriever.get_shop_products(limit=20))
         
         if 'order_status' in intents:
             context_parts.append(await DataRetriever.get_order_info(user_id=ctx.user_id))
@@ -660,9 +991,16 @@ class BeeYieldAI:
             if batch_match:
                 context_parts.append(await DataRetriever.get_traceability_info(batch_match.group(1)))
             context_parts.append(await DataRetriever.get_farmer_info())
+            
+            # Add location data from encyclopedia
+            locations = encyclopedia.get('locations', {})
+            context_parts.append(f"BEEYIELD ZONES & LOCATIONS:\n{json.dumps(locations, indent=2)}")
         
         if any(i in ['pollination_service', 'pollination_quote'] for i in intents):
             context_parts.append(await DataRetriever.get_pollination_info())
+            # Add detailed crop data
+            crops = encyclopedia.get('pollination_crops', {})
+            context_parts.append(f"CROP POLLINATION DATA:\n{json.dumps(crops, indent=2)}")
         
         if any(i in ['iot_data', 'hive_health', 'device_help', 'dashboard_help'] for i in intents):
             # Check for hive ID in message
@@ -670,14 +1008,63 @@ class BeeYieldAI:
             hive_id = hive_match.group(1) if hive_match else None
             context_parts.append(await DataRetriever.get_iot_sensor_data(hive_id))
             context_parts.append(await DataRetriever.get_apiary_stats(ctx.user_id))
-        
+            
+            if 'hive_health' in intents:
+                diseases = encyclopedia.get('diseases_and_pests', {})
+                health_nodes = encyclopedia.get('health_nodes', {})
+                context_parts.append(f"DISEASE & PEST CATALOG:\n{json.dumps(diseases, indent=2)}")
+                context_parts.append(f"GRANULAR HEALTH DATA (Symptoms/Treatments/Glossary):\n{json.dumps(health_nodes, indent=2)}")
+
+        if 'harvest_logs' in intents:
+            context_parts.append(await DataRetriever.get_harvest_data(ctx.user_id))
+            context_parts.append(await DataRetriever.get_inspection_stats(ctx.user_id))
+
+        if 'bee_species' in intents:
+            species = encyclopedia.get('bee_species', {})
+            context_parts.append(f"BEE SPECIES CATALOG:\n{json.dumps(species, indent=2)}")
+            
         if 'about_beeyield' in intents:
             context_parts.append(await DataRetriever.get_company_info())
+            # Add market intel to show industry leadership
+            market = encyclopedia.get('market_intelligence', {})
+            context_parts.append(f"MARKET CONTEXT:\n{json.dumps(market, indent=2)}")
+            
+        if 'team_info' in intents:
+            team = encyclopedia.get('team', {})
+            context_parts.append(f"TEAM & LEADERSHIP DATA:\n{json.dumps(team, indent=2)}")
+            
+        if 'esg_commitments' in intents:
+            esg = encyclopedia.get('esg_initiatives', {})
+            commitments = encyclopedia.get('commitments', {})
+            context_parts.append(f"ESG & COMMITMENTS DATA:\n{json.dumps(esg, indent=2)}\n\n{json.dumps(commitments, indent=2)}")
+
+        if 'market_intel' in intents and 'about_beeyield' not in intents:
+             # If specifically asking about market but not company generic
+            market = encyclopedia.get('market_intelligence', {})
+            context_parts.append(f"MARKET INTELLIGENCE DATA:\n{json.dumps(market, indent=2)}")
+
         
-        # 3. Search knowledge base for additional context
-        kb_results = await KnowledgeBase.search(message)
-        if kb_results and len(kb_results) > 50:
-            context_parts.append(f"KNOWLEDGE BASE:\n{kb_results}")
+        if 'contact' in intents:
+             contact = encyclopedia.get('contact', {})
+             context_parts.append(f"CONTACT DETAILS:\n{json.dumps(contact, indent=2)}")
+
+        if 'blog_content' in intents:
+            blogs = encyclopedia.get('blog_posts', [])
+            context_parts.append(f"BLOG & EDUCATIONAL CONTENT:\n{json.dumps(blogs, indent=2)}")
+
+        if 'regional_intel' in intents:
+            regions = encyclopedia.get('regional_data', {})
+            context_parts.append(f"REGIONAL MARKET DATA:\n{json.dumps(regions, indent=2)}")
+
+        if 'greeting' in intents:
+            greetings = encyclopedia.get('greetings', {})
+            context_parts.append(f"MULTILINGUAL GREETINGS:\n{json.dumps(greetings, indent=2)}")
+        
+        # 3. Search knowledge base for additional context (history/stories)
+        if not any(i in ['greeting', 'farewell'] for i in intents):
+            kb_results = await KnowledgeBase.search(message)
+            if kb_results and len(kb_results) > 50:
+                context_parts.append(f"KNOWLEDGE BASE STORIES:\n{kb_results}")
         
         # 4. Combine all context
         full_context = "\n\n".join(context_parts)

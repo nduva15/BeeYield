@@ -158,6 +158,12 @@ export const getOrderTracking = async (orderId: string) => {
     return await apiGet<unknown>(`/shop/orders/${orderId}/tracking`, {}, { headers });
 };
 
+// Order Detail Services
+export const getOrder = async (orderId: string): Promise<any> => {
+    const headers = await getAuthHeaders();
+    return await apiGet<any>(`/shop/orders/${orderId}`, {}, { headers });
+};
+
 // Invoice Services
 export const downloadInvoice = async (orderId: string, orderNumber: string) => {
     const session = await (supabase ? supabase.auth.getSession() : Promise.resolve({ data: { session: null } }));
