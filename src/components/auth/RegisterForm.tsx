@@ -70,7 +70,13 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
 
     const handleGoogleSignUp = async () => {
         setGoogleLoading(true);
-        const { error } = await signInWithGoogle();
+        // Store current path so callback knows where to return
+        localStorage.setItem('authReturnTo', window.location.pathname);
+
+        const { error } = await signInWithGoogle({
+            role: defaultRole,
+            ...additionalMetadata,
+        });
         if (error) {
             toast.error('Google sign-up failed', { description: error.message });
             setGoogleLoading(false);

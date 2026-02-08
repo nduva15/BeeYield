@@ -34,7 +34,7 @@ class ClickHouseService:
                 cls._client = client
             return client
         except Exception as e:
-            print(f"⚠️ ClickHouse connection failed: {e}")
+            print(f"ClickHouse connection failed: {e}")
             if database is None:
                 cls._client = None
             return None

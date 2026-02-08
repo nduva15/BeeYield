@@ -72,15 +72,24 @@ export interface IoTDevice {
     firmware_version: string;
     last_ping: string;
     location_name: string;
+    hive_id?: string;
 }
 
 export interface SensorReading {
     id: string;
     device_id: string;
+    hive_id?: string; // Links back to hive
+    hive_code?: string;
     sensor_type: 'infield' | 'inland' | 'disease';
     timestamp: string;
     status: string;
     readings: InfieldReadings | InlandReadings | DiseaseReadings;
+    // Flat accessors for UI convenience
+    temperature?: number;
+    humidity?: number;
+    weight?: number;
+    battery_level?: number;
+    is_simulated?: boolean;
 }
 
 export interface DashboardStats {
@@ -174,6 +183,7 @@ export interface Hive {
     status?: string;
     installation_date?: string;
     has_sensors?: boolean;
+    notes?: string;
     created_at?: string;
     updated_at?: string;
     // Joined
@@ -196,6 +206,7 @@ export interface HiveCreateInput {
     status?: string;
     installation_date?: string;
     has_sensors?: boolean;
+    notes?: string;
 }
 
 // ========== HARVEST TYPES (Core Traceability Data) ==========
@@ -242,15 +253,19 @@ export interface HarvestCreateInput {
 // ========== TASK TYPES ==========
 export interface Task {
     id: string;
+    user_id: string;
     title: string;
     description?: string;
     status: 'pending' | 'completed' | 'in_progress';
-    priority: 'low' | 'medium' | 'high';
-    category: string;
+    priority: 'Low' | 'Medium' | 'High';
+    type: 'Inspection' | 'Feeding' | 'Harvest' | 'Treatment' | 'Other';
+    category?: string;
     due_date?: string;
+    completed_at?: string;
     apiary_id?: string;
     hive_id?: string;
     is_completed: boolean;
+    recurrence?: string;
     created_at?: string;
     updated_at?: string;
     // Relationships
@@ -262,12 +277,14 @@ export interface TaskCreateInput {
     title: string;
     description?: string;
     status?: 'pending' | 'completed' | 'in_progress';
-    priority?: 'low' | 'medium' | 'high';
+    priority?: 'Low' | 'Medium' | 'High';
+    type?: 'Inspection' | 'Feeding' | 'Harvest' | 'Treatment' | 'Other';
     category?: string;
     due_date?: string;
     apiary_id?: string;
     hive_id?: string;
     is_completed?: boolean;
+    recurrence?: string;
 }
 
 export interface InspectionCreateInput {
@@ -366,6 +383,95 @@ export interface NotificationConfigUpdate {
     email_enabled?: boolean;
     push_enabled?: boolean;
     sms_enabled?: boolean;
+}
+
+export interface InteractionPayload {
+    name: string;
+    email: string;
+    message: string;
+    subject?: string;
+}
+
+// ========== NOTE TYPES ==========
+export interface Note {
+    id: string;
+    user_id: string;
+    apiary_id?: string;
+    hive_id?: string;
+    title?: string;
+    content?: string;
+    description?: string; // For compatibility
+    category?: string;
+    priority?: string;
+    note_date?: string;
+    note_time?: string;
+    created_at: string;
+    updated_at: string;
+    // UI convenience
+    place_name?: string;
+    hive_code?: string;
+}
+
+export interface NoteCreateInput {
+    title?: string;
+    content?: string;
+    description?: string;
+    category?: string;
+    priority?: string;
+    hive_id?: string;
+    apiary_id?: string;
+    note_date?: string;
+    note_time?: string;
+}
+
+// ========== SUPPORT REQUEST TYPES ==========
+export interface SupportRequest {
+    id: string;
+    reference_id: string;
+    user_id: string;
+    subject: string;
+    description: string;
+    category: 'Hardware' | 'Software' | 'Traceability' | 'General';
+    status: string;
+    priority: string;
+    hive_id?: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface SupportRequestCreate {
+    subject: string;
+    description: string;
+    category: string;
+    priority: string;
+    status?: string;
+    hive_id?: string;
+}
+
+export interface RequestComment {
+    id: string;
+    request_id: string;
+    user_id: string;
+    comment_text: string;
+    is_internal: boolean;
+    created_at: string;
+}
+
+export interface HiveAlertSettingsView {
+    hive_id: string;
+    hive_name?: string;
+    hive_code?: string;
+    user_id: string;
+    threshold_id?: string;
+    override_temp_high?: number;
+    override_temp_low?: number;
+    override_weight_drop?: number;
+    global_temp_high?: number;
+    global_temp_low?: number;
+    global_weight_drop?: number;
+    effective_temp_high?: number;
+    effective_temp_low?: number;
+    effective_weight_drop?: number;
 }
 
 // Data for BeeYield service is fetched directly from the backend API.
@@ -940,19 +1046,146 @@ export const beeyieldService = {
         }
     },
 
-    // Update specific hive thresholds
+    // Get Full Settings (Profile, Prefs, Global Thresholds)
+    async getFullSettings(): Promise<any> {
+        try {
+            const headers = await getAuthHeaders();
+            return await apiGet<any>('/settings/full', {}, { headers });
+        } catch (error) {
+            console.error('Error fetching full settings:', error);
+            return null;
+        }
+    },
+
+    // Get Hives with ThresholdsTable
+    async getHiveSettings(): Promise<HiveAlertSettingsView[]> {
+        try {
+            const headers = await getAuthHeaders();
+            return await apiGet<HiveAlertSettingsView[]>('/settings/hives', {}, { headers });
+        } catch (error) {
+            console.error('Error fetching hive settings:', error);
+            return [];
+        }
+    },
+
+    // Update specific hive thresholds (Upsert)
     async updateHiveThresholds(
         hiveId: string,
-        thresholds: { temp_threshold_high?: number; temp_threshold_low?: number; weight_drop_threshold?: number }
+        thresholds: { temp_high?: number; temp_low?: number; weight_drop?: number }
     ): Promise<{ data: any; error: any }> {
         try {
             const headers = await getAuthHeaders();
-            const data = await apiPut<any>(`/settings/hives/${hiveId}`, thresholds, { headers });
+            // POST to /settings/hives/{id}/thresholds
+            const data = await apiPost<any>(`/settings/hives/${hiveId}/thresholds`, thresholds, { headers });
             toast.success(`Hive thresholds updated`);
             return { data, error: null };
         } catch (error) {
             console.error('Error updating hive thresholds:', error);
             toast.error('Failed to update hive thresholds');
+            return { data: null, error };
+        }
+    },
+
+    // ========== NOTE CRUD OPERATIONS ==========
+
+    // Get all notes for current user
+    async getNotes(): Promise<Note[]> {
+        try {
+            const headers = await getAuthHeaders();
+            return await apiGet<Note[]>('/notes', {}, { headers });
+        } catch (error) {
+            console.error('Error fetching notes:', error);
+            return [];
+        }
+    },
+
+    // Create a new note
+    async createNote(input: NoteCreateInput): Promise<{ data: Note | null; error: any }> {
+        try {
+            const headers = await getAuthHeaders();
+            const data = await apiPost<Note>('/notes', input, { headers });
+            toast.success('Note saved successfully');
+            return { data, error: null };
+        } catch (error) {
+            console.error('Error creating note:', error);
+            toast.error('Failed to save note');
+            return { data: null, error };
+        }
+    },
+
+    // Update an existing note
+    async updateNote(id: string, input: Partial<NoteCreateInput>): Promise<{ data: Note | null; error: any }> {
+        try {
+            const headers = await getAuthHeaders();
+            const data = await apiPut<Note>(`/notes/${id}`, input, { headers });
+            toast.success('Note updated');
+            return { data, error: null };
+        } catch (error) {
+            console.error('Error updating note:', error);
+            toast.error('Failed to update note');
+            return { data: null, error };
+        }
+    },
+
+    // Delete a note
+    async deleteNote(id: string): Promise<{ error: any }> {
+        try {
+            const headers = await getAuthHeaders();
+            await apiDelete(`/notes/${id}`, { headers });
+            toast.success('Note removed');
+            return { error: null };
+        } catch (error) {
+            console.error('Error deleting note:', error);
+            toast.error('Failed to delete note');
+            return { error };
+        }
+    },
+    // ========== SUPPORT REQUEST OPERATIONS ==========
+
+    // Get all support requests for current user
+    async getRequests(): Promise<SupportRequest[]> {
+        try {
+            const headers = await getAuthHeaders();
+            return await apiGet<SupportRequest[]>('/requests', {}, { headers });
+        } catch (error) {
+            console.error('Error fetching support requests:', error);
+            return [];
+        }
+    },
+
+    // Create a new support request
+    async createRequest(input: SupportRequestCreate): Promise<{ data: SupportRequest | null; error: any }> {
+        try {
+            const headers = await getAuthHeaders();
+            const data = await apiPost<SupportRequest>('/requests', input, { headers });
+            toast.success('Support request submitted!');
+            return { data, error: null };
+        } catch (error) {
+            console.error('Error creating support request:', error);
+            toast.error('Failed to submit request');
+            return { data: null, error };
+        }
+    },
+
+    // Get comments for a specific request
+    async getRequestComments(requestId: string): Promise<RequestComment[]> {
+        try {
+            const headers = await getAuthHeaders();
+            return await apiGet<RequestComment[]>(`/requests/${requestId}/comments`, {}, { headers });
+        } catch (error) {
+            console.error('Error fetching request comments:', error);
+            return [];
+        }
+    },
+
+    // Add a comment to a request
+    async addRequestComment(requestId: string, commentText: string): Promise<{ data: RequestComment | null; error: any }> {
+        try {
+            const headers = await getAuthHeaders();
+            const data = await apiPost<RequestComment>(`/requests/${requestId}/comments`, { comment_text: commentText }, { headers });
+            return { data, error: null };
+        } catch (error) {
+            console.error('Error adding comment:', error);
             return { data: null, error };
         }
     },

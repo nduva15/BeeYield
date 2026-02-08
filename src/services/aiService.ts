@@ -27,7 +27,7 @@ export const aiService = {
                 language,
                 include_sources: true
             }, {
-                timeout: 30000, // Increased timeout for detailed AI generation
+                timeout: 120000, // Increased timeout to 120s for ultra-long AI generation
                 headers: {
                     'Content-Type': 'application/json'
                 }

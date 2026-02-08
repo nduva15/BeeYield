@@ -55,6 +55,7 @@ fantoccini = "0.19"  # WebDriver client
 
 # Enterprise Spider Crawler
 spider = "1.37"
+chrono = "0.4"
 
 # Text Chunking
 text-splitter = { version = "0.7", features = ["markdown"] }

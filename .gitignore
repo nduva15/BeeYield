@@ -45,20 +45,41 @@ requirements.txt
 !.github/workflows/requirements.txt
 
 # Build / Output
-dist
-.output
-.vinxi
-.vercel
-.cache
-build
-out
+dist/
+.output/
+.vinxi/
+.vercel/
+.cache/
+build/
+out/
 target/
 **/*.rlib
 **/*.pdb
 debug/
 release/
 
-# Database / Locally generated
-*.db
-*.sqlite
-supabase/.temp
+# Sensitive Scripts and Dumps (Project Hardening)
+*.sql
+*.py
+!backend/main.py
+!backend/app/**/*.py
+!*.config.*
+
+# Internal Logs and Debugging
+*.txt
+*.log
+*.json
+!package*.json
+!tsconfig*.json
+!src/**/*.json
+!components.json
+!tsr.config.json
+
+# Private Data and Context
+data/
+brain/
+.gemini/
+.agent/
+node_modules/
+.venv/
+venv/

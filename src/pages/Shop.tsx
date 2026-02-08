@@ -29,7 +29,8 @@ import {
   Zap,
   Globe,
   Activity,
-  ShoppingBag
+  ShoppingBag,
+  User
 } from "lucide-react";
 import { toast } from "sonner";
 import { BrandedProductImage } from "@/components/BrandedProductImage";
@@ -704,7 +705,7 @@ const Shop = () => {
               <Filter className="h-4 w-4" />
               <span>Scroll to explore the range</span>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
               <div className="hidden sm:flex items-center gap-2">
                 <Filter className="h-4 w-4 text-muted-foreground" />
                 <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">Order By</span>
@@ -720,6 +721,18 @@ const Shop = () => {
                   <SelectItem value="rating">Technical Rating</SelectItem>
                 </SelectContent>
               </Select>
+
+              {/* Account Shortcut for Shop */}
+              <Button
+                variant="outline"
+                className="h-12 rounded-xl px-4 border-border/50 bg-card hover:bg-muted/50 transition-all font-black text-[10px] uppercase tracking-widest gap-2"
+                asChild
+              >
+                <Link to="/my-account">
+                  <User className="h-4 w-4 text-primary" />
+                  <span className="hidden md:inline">My Account</span>
+                </Link>
+              </Button>
             </div>
           </div>
 

@@ -1,27 +1,78 @@
-from fastapi import APIRouter, HTTPException
-from typing import List, Any
-from app.db.supabase_db import db_select, db_insert
+from fastapi import APIRouter, HTTPException, Depends
+from typing import List, Any, Dict, Optional
+from app.db.supabase_db import db_select, db_insert, db_update, db_delete
+from app.core.security import get_current_user
+from app.schemas.notes import NoteCreate, NoteUpdate
 
 router = APIRouter()
 
 @router.get("/", response_model=List[Any])
-def read_notes():
+def read_notes(
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
     """
-    Retrieve all notes.
+    Retrieve notes for the authenticated user.
+    RLS on the database handles isolation, but we enforce it here by passing user_id filter.
     """
-    notes = db_select("notes", order_by="id", ascending=True)
+    user_id = current_user.get("sub")
+    # Even though RLS is enabled, explicitly filtering by user_id is good practice for the API layer
+    notes = db_select("notes", filters={"user_id": user_id}, order_by="created_at", ascending=False)
     return notes
 
 @router.post("/", response_model=Any)
-def create_note(title: str):
+def create_note(
+    note_in: NoteCreate,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
     """
-    Create a new note.
+    Create a new note for the authenticated user.
+    The User ID is automatically assigned from the JWT token.
     """
-    if not title:
-        raise HTTPException(status_code=400, detail="Title is required")
+    user_id = current_user.get("sub")
+    note_data = note_in.dict(exclude_unset=True)
+    note_data["user_id"] = user_id
     
-    result = db_insert("notes", {"title": title})
+    # Map 'description' to 'content' if content is missing, for frontend compatibility
+    if not note_data.get("content") and note_data.get("description"):
+        note_data["content"] = note_data.get("description")
+
+    result = db_insert("notes", note_data)
     if not result.get("success"):
         raise HTTPException(status_code=500, detail=result.get("error"))
     
     return result.get("data")
+
+@router.put("/{note_id}", response_model=Any)
+def update_note(
+    note_id: str,
+    note_in: NoteUpdate,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """
+    Update a note. RLS ensures only owner can modify.
+    """
+    user_id = current_user.get("sub")
+    note_data = note_in.dict(exclude_unset=True)
+    
+    # Ensure user can only update their own note
+    result = db_update("notes", note_data, filters={"id": note_id, "user_id": user_id})
+    if not result.get("success"):
+        raise HTTPException(status_code=500, detail=result.get("error"))
+    
+    return result.get("data")
+
+@router.delete("/{note_id}", response_model=Any)
+def delete_note(
+    note_id: str,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """
+    Delete a note. RLS ensures only owner can delete.
+    """
+    user_id = current_user.get("sub")
+    
+    result = db_delete("notes", filters={"id": note_id, "user_id": user_id})
+    if not result.get("success"):
+        raise HTTPException(status_code=500, detail=result.get("error"))
+    
+    return {"success": True}

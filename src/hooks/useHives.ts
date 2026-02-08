@@ -1,6 +1,6 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { beeyieldService, Hive, HiveCreateInput, SensorReading } from '@/services/beeyieldService';
+import { beeyieldService, Hive, HiveCreateInput, SensorReading, Apiary, ApiaryCreateInput } from '@/services/beeyieldService';
 import { toast } from 'sonner';
 
 export const hiveKeys = {
@@ -45,16 +45,20 @@ export function useHivesWithTelemetry(apiaryId?: string) {
     const readings = telemetryQuery.data || [];
 
     const enrichedHives = hives.map(hive => {
-        // Find reading for this hive using device mapping logic
-        // Assuming implicit link via location or if hive.has_sensors is true
-        // In a real scenario, we'd match reading.device_id to hive.device_id
-        // For now, we'll try to match by some heuristic or just return as is
+        // Find reading for this hive
+        const reading = readings.find(r => r.hive_id === hive.id);
 
-        // IF we had a device_id on hive, we'd do:
-        // const reading = readings.find(r => r.device_id === hive.device_id);
-
-        // Since we don't have explicit link in frontend model yet, we leave it for now.
-        // The previous beeyield.py logic didn't return sensor data in get_hives.
+        if (reading) {
+            return {
+                ...hive,
+                telemetry: reading,
+                // Use flat accessors from SensorReading if available
+                temp: reading.temperature,
+                humidity: reading.humidity,
+                weight: reading.weight,
+                battery: reading.battery_level
+            };
+        }
 
         return hive;
     });
@@ -117,5 +121,75 @@ export function useDeleteHive() {
             toast.success('Hive deleted');
         },
         onError: () => toast.error('Failed to delete hive'),
+    });
+}
+
+export const apiaryKeys = {
+    all: ['apiaries'] as const,
+    lists: () => [...apiaryKeys.all, 'list'] as const,
+};
+
+// Fetch apiaries
+export function useApiaries() {
+    return useQuery({
+        queryKey: apiaryKeys.lists(),
+        queryFn: async () => {
+            return await beeyieldService.getApiaries();
+        },
+        staleTime: 1000 * 60, // 1 minute
+    });
+}
+
+export function useCreateApiary() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (input: ApiaryCreateInput) => {
+            const { data, error } = await beeyieldService.createApiary(input);
+            if (error) throw error;
+            return data as Apiary;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: apiaryKeys.lists() });
+        },
+        onError: () => {
+            // Error handling done in service
+        }
+    });
+}
+
+export function useUpdateApiary() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async ({ id, data }: { id: string; data: Partial<ApiaryCreateInput> }) => {
+            const { data: updated, error } = await beeyieldService.updateApiary(id, data);
+            if (error) throw error;
+            return updated as Apiary;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: apiaryKeys.lists() });
+        },
+        onError: () => {
+            // Error handling done in service
+        }
+    });
+}
+
+export function useDeleteApiary() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (id: string) => {
+            const { error } = await beeyieldService.deleteApiary(id);
+            if (error) throw error;
+            return id;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: apiaryKeys.lists() });
+        },
+        onError: () => {
+            // Error handling done in service
+        }
     });
 }

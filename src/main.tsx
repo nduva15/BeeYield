@@ -54,6 +54,7 @@ import AccountSettings from '@/pages/AccountSettings'
 import UpdatePassword from '@/pages/UpdatePassword'
 import Authentication from '@/pages/Authentication'
 import ProfessionalAuth from '@/pages/ProfessionalAuth'
+import AuthCallback from '@/pages/AuthCallback'
 import NotFound from '@/pages/NotFound'
 import Receipt from '@/pages/Receipt'
 
@@ -108,6 +109,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                                                 <Route path="/login" element={<Authentication />} />
                                                 <Route path="/signup" element={<Authentication />} />
                                                 <Route path="/beeyield-login" element={<ProfessionalAuth />} />
+                                                <Route path="/auth/callback" element={<AuthCallback />} />
                                                 <Route path="/receipt/:orderId" element={<ProtectedRoute><Receipt /></ProtectedRoute>} />
                                                 <Route path="*" element={<NotFound />} />
                                             </Routes>

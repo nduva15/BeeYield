@@ -541,20 +541,22 @@ class PollinationService:
                 assignments = self.get_hive_assignments(contract_id=contract_id, active_only=True)
                 hive_ids = [a.hive_id for a in assignments]
             
-            if not hive_ids:
-                # Get all hives
-                query = self.supabase.table('hives').select('*')
-            else:
-                query = self.supabase.table('hives').select('*').in_('id', hive_ids)
+            # Use join to get apiary details in one go
+            query = self.supabase.table('hives').select('*, apiaries(*)')
+            
+            if hive_ids:
+                query = query.in_('id', hive_ids)
             
             response = query.execute()
             
             # Transform hive data to sensor data format
             sensor_data = []
             for hive in response.data:
+                apiary = hive.get('apiaries', {})
+                
                 # Simulate sensor readings (in production, this would come from IoT devices)
-                temp = hive.get('latest_temp', 34.5)
-                humidity = hive.get('latest_humidity', 65)
+                temp = hive.get('latest_temp', 34.5) or 34.5
+                humidity = hive.get('latest_humidity', 65) or 65
                 
                 # Determine status based on sensor readings
                 if temp < 32 or temp > 37:
@@ -574,13 +576,13 @@ class PollinationService:
                         'humidity': {'value': humidity, 'trend': 'down', 'trendValue': '-1.2%'},
                         'flight_activity': {'value': 38.5, 'trend': 'up', 'trendValue': '+5%'}
                     },
-                    frames_of_bees=hive.get('frame_count', 8),
+                    frames_of_bees=hive.get('frame_count', 8) or 8,
                     queen_status='present',
                     last_sync='Just now',
                     location={
-                        'lat': hive.get('apiary', {}).get('latitude', -1.2921),
-                        'lng': hive.get('apiary', {}).get('longitude', 36.8219)
-                    } if hive.get('apiary') else None
+                        'lat': apiary.get('latitude', -1.2921),
+                        'lng': apiary.get('longitude', 36.8219)
+                    } if apiary else None
                 ))
             
             return sensor_data

@@ -1,1 +1,0 @@
-["id", "hive_id", "hive_code", "apiary_id", "farmer_id", "hive_type", "bee_type", "queen_type", "frame_count", "material", "installation_date", "has_sensors", "status", "last_inspection", "blockchain_hash", "created_at", "updated_at", "user_id", "health_status"]
