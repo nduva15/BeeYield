@@ -13,7 +13,7 @@ import {
     X, ChevronDown, MapPin, Search, ClipboardList, Calculator, Receipt, LifeBuoy, Settings,
     Hand, Map, TrendingUp, Volume2, Camera, BookOpen, Droplet, Flame, Zap, Building2, Home, PieChart,
     ArrowRightLeft, FileInput, Bot, Activity, Gauge, List, Layers, BarChart3, Upload, LayoutList, Hexagon, Puzzle,
-    LogIn, UserPlus, Loader2, ArrowLeft, Shield, Lock, Bell, Banknote, Globe
+    LogIn, UserPlus, Loader2, ArrowLeft, Shield, Lock, Bell, Banknote, Globe, Tag
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -52,11 +52,13 @@ import SupportCenterView from '@/components/beeyield/SupportCenterView';
 import ServerStatusView from '@/components/beeyield/ServerStatusView';
 import InspectionsView from '@/components/beeyield/InspectionsView';
 import HarvestsView from '@/components/beeyield/HarvestsView';
+import LabelStudioView from '@/components/beeyield/LabelStudioView';
 import ImageAnalysisView from '@/components/beeyield/ImageAnalysisView';
 import SoundAnalysisView from '@/components/beeyield/SoundAnalysisView';
 import HealthGuideView from '@/components/beeyield/HealthGuideView';
 import FlightMapView from '@/components/beeyield/FlightMapView';
 import VarroaView from '@/components/beeyield/VarroaView';
+import ReportsExportsView from '@/components/beeyield/ReportsExportsView';
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 
@@ -167,6 +169,7 @@ const BeeYieldDashboard: React.FC = () => {
             submenuItems: [
                 { id: 'inspections', label: t('nav_inspections'), icon: Search },
                 { id: 'harvests', label: t('nav_harvests'), icon: Hand },
+                { id: 'label-studio', label: t('nav_label_studio'), icon: Tag },
                 { id: 'flight-map', label: t('nav_flight_map'), icon: Map },
                 { id: 'varroa', label: t('nav_varroa'), icon: TrendingUp },
                 { id: 'sound', label: t('nav_sound'), icon: Volume2 },
@@ -188,8 +191,9 @@ const BeeYieldDashboard: React.FC = () => {
             ]
         },
         { id: 'notes', label: t('nav_my_notes'), icon: FileText },
-        { id: 'requests', label: t('nav_my_requests'), icon: HelpCircle },
         { id: 'task', label: t('nav_my_task'), icon: ClipboardList },
+        { id: 'reports-exports', label: t('nav_reports_exports'), icon: FileText },
+        { id: 'requests', label: t('nav_my_requests'), icon: HelpCircle },
         { id: 'buy', label: t('nav_buy'), icon: Cpu },
         {
             id: 'meters',
@@ -262,6 +266,8 @@ const BeeYieldDashboard: React.FC = () => {
                 return <InspectionsView onTabChange={handleTabChange} />;
             case 'harvests':
                 return <HarvestsView onTabChange={handleTabChange} />;
+            case 'label-studio':
+                return <LabelStudioView onTabChange={handleTabChange} />;
             case 'flight-map':
                 return <FlightMapView />;
             case 'varroa':
@@ -286,6 +292,8 @@ const BeeYieldDashboard: React.FC = () => {
                         onInitialActionConsumed={() => setTabInitialAction(null)}
                     />
                 );
+            case 'reports-exports':
+                return <ReportsExportsView />;
             case 'requests':
                 return <MyRequestsView onTabChange={handleTabChange} />;
             case 'task':

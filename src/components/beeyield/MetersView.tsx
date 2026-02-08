@@ -13,6 +13,7 @@ import { meterService, Meter, MeterEvent, Building } from '@/services/meterServi
 import MetersAlarms from './MetersAlarms';
 import MetersPayments from './MetersPayments';
 import MetersReports from './MetersReports';
+import ReportsExportsView from './ReportsExportsView';
 import MetersSettings from './MetersSettings';
 import MetersMeasurements from './MetersMeasurements';
 import MetersListWater from './MetersListWater';
@@ -85,7 +86,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
 
     if (activeSubTab === 'meters-alarms') return <MetersAlarms />;
     if (activeSubTab === 'meters-payments') return <MetersPayments onTabChange={onTabChange} />;
-    if (activeSubTab === 'meters-reports') return <MetersReports />;
+    if (activeSubTab === 'meters-reports') return <ReportsExportsView />;
     if (activeSubTab === 'meters-settings') return <MetersSettings />;
     if (activeSubTab === 'meters-water' || activeSubTab === 'meters-list') return <MetersListWater onTabChange={onTabChange} />;
     if (activeSubTab === 'meters-heat') return <MetersListHeat onTabChange={onTabChange} />;

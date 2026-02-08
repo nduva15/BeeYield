@@ -7,7 +7,8 @@ from app.api.api_v1.endpoints import (
     forms, shop, blog, careers, media, 
     services, jobs, analytics, notes, admin, iot, ai,
     admin_extended, meters, beeyield, pollination, inspections,
-    ai_assistant, settings, requests, usb_hub, bluetooth
+    ai_assistant, settings, requests, usb_hub, bluetooth,
+    measurements, ai_admin, reports, image_analysis
 )
 
 
@@ -19,6 +20,9 @@ api_router.include_router(meters.router, prefix="/meters", tags=["Meters"])
 
 # BeeYield Dashboard (User-specific data)
 api_router.include_router(beeyield.router, prefix="/beeyield", tags=["BeeYield Dashboard"])
+
+# Reports & Exports (background generation, history, download)
+api_router.include_router(reports.router, prefix="/beeyield/reports", tags=["Reports & Exports"])
 
 # Precision Pollination endpoint
 api_router.include_router(pollination.router, prefix="/pollination", tags=["Precision Pollination"])
@@ -32,11 +36,20 @@ api_router.include_router(ai.router, prefix="/ai", tags=["AI"])
 # AI Assistant v2 (comprehensive)
 api_router.include_router(ai_assistant.router, prefix="/assistant", tags=["AI Assistant"])
 
+# AI Admin (infrastructure management)
+api_router.include_router(ai_admin.router, prefix="/ai-admin", tags=["AI Admin"])
+
 # Analytics endpoint
 api_router.include_router(analytics.router, prefix="/analytics", tags=["Analytics"])
 
 # IoT endpoint
 api_router.include_router(iot.router, prefix="/iot", tags=["IoT"])
+
+# Measurements endpoint
+api_router.include_router(measurements.router, prefix="/measurements", tags=["Measurements"])
+
+# Image Analysis (Bee detection, health classification, disease detection)
+api_router.include_router(image_analysis.router, prefix="/image", tags=["Image Analysis"])
 
 # Core business endpoints
 api_router.include_router(company.router, prefix="/company", tags=["Company"])
@@ -137,7 +150,8 @@ def api_root():
             "contact": "/api/v1/contact",
             "notes": "/api/v1/notes",
             "inspections": "/api/v1/inspections",
-            "stats": "/api/v1/stats/impact"
+            "stats": "/api/v1/stats/impact",
+            "image_analysis": "/api/v1/image"
         },
         "docs": "/docs"
     }

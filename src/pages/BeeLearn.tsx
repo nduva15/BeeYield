@@ -43,7 +43,7 @@ const educationProducts: Product[] = [
   {
     id: "edu-1",
     name: "Beekeeping Starter Guide",
-    description: "Comprehensive 85-page PDF covering hive selection, bee health, and honey harvesting for beginners in East Africa.",
+    description: "85-page PDF: hive selection, bee health, and honey harvesting for beginners in East Africa.",
     category: "education",
     badge: "Digital",
     images: ["/images/products/beekeeping_guide.png"],
@@ -57,7 +57,7 @@ const educationProducts: Product[] = [
   {
     id: "edu-2",
     name: "Precision Pollination Handbook",
-    description: "Advanced techniques for using data to optimize crop yields. Essential for commercial farmers and professional beekeepers.",
+    description: "Data-driven techniques for crop yields. For commercial farmers and professional beekeepers.",
     category: "education",
     badge: "Professional",
     images: ["/images/products/beekeeping_guide.png"],
@@ -272,7 +272,7 @@ const BeeLearn = () => {
               </h1>
 
               <p className="text-lg lg:text-xl text-neutral-600 mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                Access expert-led video curriculums, comprehensive PDF field manuals, and apiary certifications. From backyard hobbyists to commercial producers.
+                Expert-led video courses, PDF field manuals, and apiary certifications. For backyard beekeepers and commercial producers.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10">
@@ -398,7 +398,7 @@ const BeeLearn = () => {
                   <FileText className="h-5 w-5 text-amber-600" />
                   <p className="text-sm font-bold text-neutral-900">50+ Digital Guides</p>
                 </div>
-                <p className="text-xs text-neutral-500 mb-3">Instant access to comprehensive field manuals</p>
+                <p className="text-xs text-neutral-500 mb-3">Instant access to field manuals</p>
                 <Button size="sm" variant="outline" className="h-8 text-xs font-bold w-full border-amber-200 hover:bg-amber-50">
                   Preview Library
                 </Button>
@@ -569,7 +569,7 @@ const BeeLearn = () => {
               <span className="text-green-400">Sustainable Beekeeping</span>
             </h2>
             <p className="text-green-100/60 text-lg max-w-2xl mx-auto">
-              Join our comprehensive workshops designed for every level of expertise
+              Workshops for every level, from beginner to professional
             </p>
           </div>
 

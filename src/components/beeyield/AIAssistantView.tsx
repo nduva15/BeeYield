@@ -27,6 +27,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 import { beeyieldService, Hive, IoTDevice } from '@/services/beeyieldService';
 import { motion, AnimatePresence } from 'framer-motion';
+import { spring } from '@/lib/motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
@@ -448,9 +449,10 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                         <AnimatePresence mode="popLayout">
                             {showWelcome ? (
                                 <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
+                                    initial={{ opacity: 0, y: 16 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, scale: 0.95 }}
+                                    exit={{ opacity: 0, scale: 0.98 }}
+                                    transition={spring.gentle}
                                     className="flex flex-col items-center justify-center h-full text-center space-y-10"
                                 >
                                     <div className="w-24 h-24 rounded-[2rem] bg-white flex items-center justify-center p-5 shadow-xl border border-slate-100 animate-float">
@@ -488,6 +490,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                                             key={m.id}
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
+                                            transition={spring.gentle}
                                             className={cn(
                                                 "flex gap-4",
                                                 m.role === 'user' ? "justify-end" : "justify-start"

@@ -120,7 +120,7 @@ const GlobalHiveNetwork = () => {
           <div className="max-w-3xl mx-auto text-center mb-16">
             <h2 className="text-4xl font-bold mb-6 text-foreground">A Research-Based Approach to African Agriculture</h2>
             <p className="text-xl text-muted-foreground leading-relaxed">
-              To address this crisis, BeeYield is bringing precision pollination technology to African farmers. We're partnering with local beekeepers and agricultural communities to monitor hive health, optimize pollination, and improve yields for crops that feed millions.
+              BeeYield is bringing precision pollination to African farmers. We partner with local beekeepers and farming communities to monitor hive health, improve pollination, and raise yields for crops that feed millions.
             </p>
           </div>
 
@@ -134,7 +134,7 @@ const GlobalHiveNetwork = () => {
                 <h3 className="text-2xl font-bold mb-4 text-foreground">Technical Hives Network</h3>
                 <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">Target: 2M hives</p>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  Building a network of sensor-equipped hives across Makueni and Kitui Counties, empowering local beekeepers with real-time colony health data and precision pollination insights.
+                  A network of sensor-equipped hives across Makueni and Kitui. Beekeepers get real-time colony health and pollination data.
                 </p>
               </CardContent>
             </Card>
@@ -148,7 +148,7 @@ const GlobalHiveNetwork = () => {
                 <h3 className="text-2xl font-bold mb-4 text-foreground">Health Monitoring</h3>
                 <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">Target: 100M+ signals</p>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  Collecting daily bee health data to build a comprehensive healthy hive record, helping farmers optimize crop pollination timing.
+                  Daily bee health data builds a clear picture of hive condition so farmers can time crop pollination better.
                 </p>
               </CardContent>
             </Card>

@@ -1,117 +1,159 @@
 from typing import List, Dict, Any, Optional
 import os
 import json
+import math
 import re
+
+# Query expansion: domain-specific synonyms for better recall
+QUERY_EXPANSION_MAP = {
+    "varroa": ["varroa destructor", "mite", "pathogen", "disease", "treatment"],
+    "honey": ["honey production", "harvest", "nectar", "honeycomb"],
+    "pollination": ["pollinate", "crop", "agriculture", "bee activity"],
+    "sensor": ["IoT", "monitoring", "temperature", "weight", "acoustic"],
+    "africa": ["Kenya", "East Africa", "Kibwezi", "Makueni", "African"],
+    "blockchain": ["traceability", "HoneyChain", "ledger", "verified"],
+    "hive": ["colony", "apiary", "beehive", "brood"],
+    "disease": ["AFB", "nosema", "health", "detection"],
+}
+
 
 class ContentService:
     @staticmethod
-    async def get_raw_knowledge_base() -> Dict[str, Any]:
-        """Reads the ultra-granular knowledge base and aggregates research batches."""
-        kb_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../data/knowledge_base.json"))
-        data = {"knowledge_nodes": []}
-        
-        # 1. Load Core Knowledge Base
+    async def get_lakehouse_data() -> Dict[str, Any]:
+        """Reads the standardized knowledge lakehouse, fallback to knowledge_base."""
+        lakehouse_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "../data/standardized_lakehouse.json")
+        )
+        if os.path.exists(lakehouse_path):
+            try:
+                with open(lakehouse_path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except Exception:
+                pass
+        # Fallback: use knowledge_base.json
+        kb_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "../data/knowledge_base.json")
+        )
         if os.path.exists(kb_path):
             try:
                 with open(kb_path, 'r', encoding='utf-8') as f:
-                    core_kb = json.load(f)
-                    data["dna"] = core_kb.get("dna", {})
-                    data["knowledge_nodes"].extend(core_kb.get("knowledge_nodes", []))
-                    for node in data["knowledge_nodes"]:
-                        node["is_internal"] = True # Explicitly mark core data
+                    kb = json.load(f)
+                nodes = kb.get("knowledge_nodes", [])
+                # Convert to lakehouse format with default metadata
+                lakehouse_nodes = [
+                    {
+                        "content": n.get("content", ""),
+                        "metadata": {
+                            "source": n.get("source", "Unknown"),
+                            "subtopic": n.get("subtopic", "General"),
+                            "continent": "Global",
+                            "source_type": "General",
+                            "reliability_score": 0.8,
+                            "is_internal": "BeeYield" in str(n.get("source", "")),
+                            "url": ""
+                        }
+                    }
+                    for n in nodes
+                ]
+                return {"lakehouse_nodes": lakehouse_nodes}
             except Exception:
                 pass
-
-        # 2. Load Research Batches (Neural Librarian)
-        research_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../data/research_batch"))
-        if os.path.exists(research_dir):
-            for filename in os.listdir(research_dir):
-                if filename.endswith(".json") and filename.startswith("batch_"):
-                    try:
-                        with open(os.path.join(research_dir, filename), 'r', encoding='utf-8') as f:
-                            batch_data = json.load(f)
-                            for item in batch_data:
-                                data["knowledge_nodes"].append({
-                                    "source": item.get("source", "Global Research"),
-                                    "subtopic": item.get("type", "General"),
-                                    "content": f"{item.get('title')}\n{item.get('summary')}",
-                                    "url": item.get("url"),
-                                    "is_internal": False
-                                })
-                    except Exception:
-                        continue
-        
-        return data
+        return {"lakehouse_nodes": []}
 
     @staticmethod
-    async def search_knowledge(query: str, limit: int = 4) -> str:
-        """
-        Advanced Multi-Node Retrieval Scoring.
-        Prioritizes nodes with higher keyword density and relevant DNA matches.
-        """
-        kb = await ContentService.get_raw_knowledge_base()
-        if not kb:
-            return ""
+    def _expand_query(query: str) -> List[str]:
+        """Expand query with synonyms for better recall."""
+        query_lower = query.lower()
+        expanded = [query]
+        for trigger, synonyms in QUERY_EXPANSION_MAP.items():
+            if trigger in query_lower:
+                expanded.extend(synonyms[:2])  # Add top 2 synonyms
+        return list(dict.fromkeys(expanded))  # Dedupe preserving order
 
-        query_words = [w for w in re.findall(r'\w+', query.lower()) if len(w) > 3]
-        if not query_words:
-            query_words = [w for w in re.findall(r'\w+', query.lower())]
+    @staticmethod
+    async def search_knowledge(
+        query: str, 
+        limit: int = 25, 
+        continent: Optional[str] = None,
+        source_type: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        GEOSPATIAL & METADATA-AWARE SEARCH (v5.0).
+        BM25-style scoring + query expansion + hybrid matching.
+        """
+        lakehouse = await ContentService.get_lakehouse_data()
+        nodes = lakehouse.get("lakehouse_nodes", [])
 
-        nodes = kb.get("knowledge_nodes", [])
+        # Query expansion
+        expanded_queries = ContentService._expand_query(query)
+        all_query_terms = set()
+        for q in expanded_queries:
+            all_query_terms.update(w for w in re.findall(r'\w+', q.lower()) if len(w) > 2)
+
+        if not all_query_terms:
+            all_query_terms = set(re.findall(r'\w+', query.lower()))
+        all_query_terms = list(all_query_terms)
+
         scored_nodes = []
-        
+        n_nodes = len(nodes)
+        avg_doc_len = max(1, sum(len(n.get("content", "").split()) for n in nodes) / max(1, n_nodes))
+        k1, b = 1.5, 0.75
+
         for node in nodes:
+            meta = node.get("metadata", {})
+            if continent and meta.get("continent") != continent and meta.get("continent") != "Global":
+                continue
+            if source_type and meta.get("source_type") != source_type:
+                continue
+
             content = node.get("content", "").lower()
-            source = node.get("source", "").lower()
-            subtopic = node.get("subtopic", "").lower()
-            is_internal = node.get("is_company", False) or node.get("is_internal", False)
-            
-            score = 0
-            for word in query_words:
-                # Frequency match
-                matches = content.count(word)
-                score += (matches * 1)
-                
-                # Metadata bonus
-                if word in source or word in subtopic:
-                    score += 10
-                    
-                # Exact phrase bonus (if query has multiple words)
-                if len(query_words) > 1 and " ".join(query_words[:2]) in content:
-                    score += 20
-            
-            # --- NEURAL LIBRARIAN: VAULT PRIORITY ---
-            if is_internal:
-                # If query is about harvests, team, or internal ops, boost is massive
-                if any(kw in query.lower() for kw in ["harvest", "team", "yield", "protocol", "beeyield"]):
-                    score *= 5.0
-                else:
-                    score += 15 # Baseline boost for company data
-            
+            doc_len = max(1, len(content.split()))
+            score = 0.0
+
+            for term in all_query_terms:
+                tf = content.count(term)
+                if tf == 0:
+                    continue
+                df = sum(1 for n in nodes if term in n.get("content", "").lower())
+                idf = math.log((n_nodes - df + 0.5) / (df + 0.5) + 1) if n_nodes else 1
+                norm = 1 - b + b * (doc_len / avg_doc_len)
+                score += idf * (tf * (k1 + 1)) / (tf + k1 * norm)
+                if term in meta.get("source", "").lower() or term in meta.get("subtopic", "").lower():
+                    score += 8.0
+
+            score *= meta.get("reliability_score", 0.7)
+            if meta.get("is_internal"):
+                score *= 2.0
+
             if score > 0:
-                # Length penalty (we want concise high-density nodes, not just giant blobs)
-                final_score = score / (1 + (len(content) / 2000))
-                scored_nodes.append((final_score, node))
-        
-        # Sort by score
+                scored_nodes.append((score, node))
+
         scored_nodes.sort(key=lambda x: x[0], reverse=True)
         top_results = scored_nodes[:limit]
-        
-        if not top_results:
-            # Absolute fallback if no keywords match - return high-level site data
-            top_results = [(0, n) for n in nodes if "OurStory" in n['source'] or "About" in n['source']][:3]
 
         intel_summary = ""
+        bibliography = []
+        seen_content = set()
         for _, n in top_results:
-            intel_summary += f"{n.get('content')}\n\n"
-            
-        return intel_summary.strip()
+            content = n.get("content", "").strip()
+            if content and content[:100] not in seen_content:  # Dedupe near-duplicates
+                seen_content.add(content[:100])
+                intel_summary += f"[{n.get('metadata', {}).get('source', 'Unknown')}]\n{content}\n\n"
+            meta = n.get("metadata", {})
+            if meta.get("url"):
+                source_id = f"{meta['source']} ({meta['subtopic']})"
+                if not any(s["name"] == source_id for s in bibliography):
+                    bibliography.append({"name": source_id, "url": meta["url"]})
+
+        return {
+            "summary": intel_summary.strip(),
+            "sources": bibliography[:10]
+        }
 
     @staticmethod
     async def get_website_knowledge_summary(query: str = "") -> str:
-        """
-        Combines DNA (Identity) + Hybrid Search Retrieval (Context).
-        """
+        """LEGACY COMPATIBILITY: Hybrid Search retrieval."""
+        # 1. Identity Component (DNA)
         kb_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../data/knowledge_base.json"))
         dna_text = "BEEYIELD DNA: Knowledge Loading..."
         
@@ -127,14 +169,8 @@ class ContentService:
                     f"- Tech: {dna.get('tech_stack', {}).get('sensors')} using {dna.get('tech_stack', {}).get('blockchain')}\n"
                 )
 
-        # 2. Hybrid Search Component (Semantic + Keyword)
-        from app.services.hybrid_search import HybridSearch
-        search_results = await HybridSearch.search(query)
-        specific_intel = search_results.get("semantic_context", "")
+        # 2. Retrieval Component
+        results = await ContentService.search_knowledge(query)
+        specific_intel = results["summary"]
         
-        # Inject detected metadata (batch codes, etc.)
-        metadata_notes = ""
-        for hit in search_results.get("keyword_results", []):
-            metadata_notes += f"ALERT: Detected high-precision match: {hit.get('content')}\n"
-
-        return f"{dna_text}\n{metadata_notes}\nDETAILED TRAINING DATA:\n{specific_intel}"
+        return f"{dna_text}\n\nDETAILED TRAINING DATA:\n{specific_intel}"

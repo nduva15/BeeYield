@@ -197,7 +197,7 @@ const Diseases = () => {
                             BeeYield Protection for Your <span className="text-primary">Beehives</span>
                         </h1>
                         <p className="text-xl text-muted-foreground leading-relaxed mb-8 max-w-2xl mx-auto">
-                            BeeYield is an innovative system that helps protect beehives from diseases and environmental threats. By combining modern technologies, we provide real-time monitoring of bee health – without disturbing their natural rhythm.
+                            BeeYield helps protect beehives from diseases and environmental threats. Sensors and an app give you real-time bee health monitoring without disturbing the colony.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Button size="lg" className="gap-2" onClick={() => document.getElementById('beeyield-system')?.scrollIntoView({ behavior: 'smooth' })}>
@@ -224,7 +224,7 @@ const Diseases = () => {
                             </div>
                         </div>
                         <div className="order-1 lg:order-2">
-                            <h2 className="text-3xl font-bold mb-6">Innovative IoT Solution</h2>
+                            <h2 className="text-3xl font-bold mb-6">Hive monitoring that fits your apiary</h2>
                             <p className="text-lg text-muted-foreground mb-6">
                                 BeeYield is a compact IoT device that can be easily installed inside a hive, together with an application that allows you to constantly monitor the condition of your apiary, no matter where you are.
                             </p>

@@ -205,7 +205,7 @@ const ESG = () => {
         "Women holding key decision-making roles in technology and strategy",
         "Mentorship programs for young women in STEM and agriculture",
         "Championing gender equality in the African tech ecosystem",
-        "Driving digital innovation to empower rural women farmers"
+        "Digital tools and training for rural women in farming"
       ],
       impact: "Visionary women leaders driving 66% of our founding team's impact"
     }
@@ -412,7 +412,7 @@ const ESG = () => {
           <div className="max-w-5xl mx-auto text-center">
             <Badge variant="secondary" className="mb-4">Social Impact</Badge>
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Empowering 20+ Local Beekeepers
+              Supporting 20+ Local Beekeepers
             </h2>
             <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">
               Our partner beekeeper program provides training, equipment, and a guaranteed market for honey. Each beekeeper manages 5-15 hives, creating sustainable income for their families while practicing ethical and traceable beekeeping.

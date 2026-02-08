@@ -128,7 +128,7 @@ const Careers = () => {
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-foreground">Knowledge Hub</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  We're building a comprehensive database of bee knowledge — helping beekeepers manage hives from their smartphones.
+                  We're building a bee knowledge hub so beekeepers can manage hives from their phones.
                 </p>
               </CardContent>
             </Card>

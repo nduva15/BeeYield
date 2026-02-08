@@ -42,15 +42,16 @@ class Synthesizer:
             f"INTERNAL BUSINESS LOGS: {company_internal[:2]}\n"
             f"IOT & SENSOR DATA (BeeHero/APISENSE): {iot_telemetry[:2]}\n\n"
             f"--- MANDATORY GOVERNANCE PROTOCOL ---\n"
-            f"STRUCTURE YOUR OUTPUT INTO THESE FIVE SECTIONS:\n"
-            f"I. INTELLIGENCE BRIEF: Technical 2-paragraph summary.\n"
-            f"II. DIAGNOSIS & PREVENTION: Methodology using APISENSE VOC metrics.\n"
-            f"III. REGIONAL CONTEXT: Findings from PLOS One (2025-2026).\n"
-            f"IV. INTERNAL OPERATIONS: Correlate query with BeeYield harvest yields.\n"
-            f"V. VERIFIED BIBLIOGRAPHY: Clickable links with Doi verification.\n\n"
+            f"STRUCTURE YOUR OUTPUT INTO THESE FIVE SECTIONS USING '##' HEADERS:\n"
+            f"## I. INTELLIGENCE BRIEF\nTechnical 2-paragraph summary.\n\n"
+            f"## II. DIAGNOSIS & PREVENTION\nMethodology using APISENSE VOC metrics and research benchmarks.\n\n"
+            f"## III. REGIONAL CONTEXT\nFindings from ResearchGate and PLOS One (2025-2026).\n\n"
+            f"## IV. INTERNAL OPERATIONS\nCorrelate query with BeeYield harvest yields and internal apiary logs.\n\n"
+            f"## V. VERIFIED BIBLIOGRAPHY\nClickable links with Doi verification.\n\n"
             f"RULES:\n"
             f"- If a link is not verified in context, do not display it.\n"
-            f"- Use numbered citations [X] throughout the text."
+            f"- Use numbered citations [X] throughout the text.\n"
+            f"- YOU MUST PROVIDE A LONG, TECHNICAL RESPONSE (800+ WORDS)."
         )
         
         return prompt # The AIService will use this in the LLM call

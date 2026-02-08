@@ -160,7 +160,7 @@ const STATIC_PRODUCTS: Product[] = [
   {
     id: "h7",
     name: "Ginger & Lemon Honey",
-    description: "A powerful immune-boosting blend of raw honey, organic ginger root, and zesty lemon. Great for soothing throats and boosting energy.",
+    description: "Raw honey with organic ginger and lemon. Soothing for throats and a natural pick-me-up.",
     category: "honey",
     badge: "Wellness",
     images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
@@ -421,7 +421,7 @@ const STATIC_PRODUCTS: Product[] = [
   {
     id: "edu-1",
     name: "BEEKEEPING STARTER GUIDE",
-    description: "Our comprehensive entry-level handbook covering everything from hive setup to your first honey harvest.",
+    description: "Entry-level handbook: hive setup, bee care, and your first honey harvest.",
     category: "education",
     badge: "DIGITAL",
     images: ["/images/products/beekeeping_guide.png"],
@@ -435,7 +435,7 @@ const STATIC_PRODUCTS: Product[] = [
   {
     id: "edu-2",
     name: "PRECISION POLLINATION HANDBOOK",
-    description: "Advanced techniques for using data to optimize crop yields. Essential for commercial farmers and professional beekeepers.",
+    description: "Data-driven techniques for crop yields. For commercial farmers and professional beekeepers.",
     category: "education",
     badge: "PROFESSIONAL",
     images: ["/images/products/beekeeping_guide.png"],

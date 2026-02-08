@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Optional, Dict, List
 import json
 import httpx
 import os
@@ -8,9 +8,37 @@ from google import genai
 from app.db.supabase_db import db_select
 from app.core.config import settings
 from app.services.content_service import ContentService
-from app.services.bee_health_ai import BeeHealthAI
+from app.services.hybrid_search import HybridSearch
 from app.services.report_generator import ReportGenerator
-from app.blockchain.honey_chain import honey_blockchain
+from app.services.rate_limit_manager import RateLimitManager
+
+# Try to import vector store (optional dependency)
+try:
+    from app.services.vector_store import QdrantVectorStore
+    QDRANT_AVAILABLE = True
+except ImportError:
+    QDRANT_AVAILABLE = False
+
+
+def _get_bee_dna() -> str:
+    """Inject BeeYield identity into every retrieval context."""
+    kb_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../data/knowledge_base.json"))
+    if os.path.exists(kb_path):
+        try:
+            with open(kb_path, 'r', encoding='utf-8') as f:
+                kb = json.load(f)
+            dna = kb.get("dna", {})
+            founders = ", ".join([f"{f.get('name')} ({f.get('role')})" for f in dna.get("founders", [])])
+            return (
+                f"BEEYIELD IDENTITY (always ground answers here):\n"
+                f"- Mission: {dna.get('mission', '')}\n"
+                f"- HQ: {dna.get('hq', {}).get('location', '')} on {dna.get('hq', {}).get('farm_size', '')}, {dna.get('hq', {}).get('hives_count', '')} hives\n"
+                f"- Founders: {founders}\n"
+                f"- Tech: {dna.get('tech_stack', {}).get('sensors', '')} | Blockchain: {dna.get('tech_stack', {}).get('blockchain', '')} | ML: {dna.get('tech_stack', {}).get('ml', '')}\n"
+            )
+        except Exception:
+            pass
+    return ""
 
 class AIService:
     @staticmethod
@@ -22,28 +50,6 @@ class AIService:
         return mapping.get(code.upper(), 'English')
 
     @staticmethod
-    async def search_google(query: str) -> str:
-        """
-        ULTRA-THOUGHT WEB SEARCH LINK
-        Simulates or executes a live web search for real-time intelligence.
-        """
-        # In this ecosystem, we simulate the return of high-density current data
-        # to ground the AI in 2026 realities.
-        msg_lower = query.lower()
-        
-        # Simulated 'Current' Intelligence for Bee Health (JAN 2026 context)
-        if any(kw in msg_lower for kw in ["current", "latest", "outbreak", "news", "trend", "2026"]):
-            return (
-                "CURRENT INTELLIGENCE REPORT (JAN 18, 2026):\n"
-                "- VARROA RESISTANCE: Amitraz (Apivar) resistance confirmed in 45% of Kenyan commercial apiaries. Y337F mutation detected.\n"
-                "- PATHOGEN TRENDS: 2025 saw a 22% spike in Deformed Wing Virus (DWV-B) levels globally, linked to 1.6M colony losses.\n"
-                "- BIO-TECH: USDA-approved AFB Vaccine (Dalan) now entering its second year of wide-scale rollout; 40% reduction in larval mortality.\n"
-                "- CLIMATE CHANGE: Warm winter fluctuations in the Rift Valley causing 'phenological mismatch' – supplemental protein is CRITICAL.\n"
-                "- REGULATORY: New Kenyan drone-based spray monitoring rules now in effect to prevent neonicotinoid drift."
-            )
-        return f"WEB SEARCH: No critical anomalies or news detected for the query '{query}' in the current 6h window."
-
-    @staticmethod
     async def chat(
         message: str, 
         history: list[dict[str, str]] = None, 
@@ -52,250 +58,177 @@ class AIService:
         current_date: str = None
     ) -> str:
         """
-        ULTRA-THOUGHT NEURAL LINK
-        Sends a message to the AI with 600+ node precision context.
+        VERTICAL AI SYSTEM (v4.0): THE DUAL-BRAIN ORCHESTRATOR
+        Tier 1: Gemini 2.0 Flash (Observation & Extraction)
+        Tier 2: GPT-4o (Reasoning & Professional Writing)
+        
+        Features:
+        - Qdrant vector search (if available)
+        - Rate limit management with exponential backoff
+        - Dual-API failover
         """
         msg_lower = message.lower().strip()
-        target_lang = AIService.get_language_name(language)
         
-        # --- PHASE 0: LOGIC ENGINE (INTENT ANALYSIS & MoE ROUTING) ---
-        route_expert = "GENERAL"
-        if any(kw in msg_lower for kw in ["africa", "kenya", "ethiopia", "scutellata"]):
-            route_expert = "AFRICAN"
-        elif any(kw in msg_lower for kw in ["disease", "varroa", "pathology", "mite", "virus"]):
-            route_expert = "PATHOLOGY"
-        elif any(kw in msg_lower for kw in ["asia", "cerana", "manuka", "australia"]):
-            route_expert = "ASIAN_OCEANIC"
-            
-        is_creative = any(kw in msg_lower for kw in ["suggest", "brainstorm", "idea", "creative", "story", "write a", "marketing"])
-        temp = 0.7 if is_creative else 0.15 # Low for facts (pollination/IoT), High for suggests
+        # --- PHASE 0: INTENT & GEOSPATIAL DETECTION ---
+        continent = None
+        if any(kw in msg_lower for kw in ["africa", "kenya", "nairobi", "makueni"]):
+            continent = "Africa"
         
-        # --- PHASE 1: PRECISION DATA RETRIEVAL & QUERY REWRITING ---
-        from app.services.hybrid_search import HybridSearch
-        from app.services.synthesizer import Synthesizer
-        
-        # Hybrid Search executes Query Rewriting & Namespace Partitioning
-        search_results = await HybridSearch.search(message)
-        knowledge_context = search_results.get("semantic_context", "")
+        # --- PHASE 1: HYBRID RAG (Fused Retrieval) ---
+        # HybridSearch: query expansion + BM25-style ContentService
+        hybrid_results = await HybridSearch.search(message, limit=25, continent=continent)
+        knowledge_context = hybrid_results.get("semantic_context", "")
+        citations = hybrid_results.get("sources", [])
+        # Merge keyword hits (e.g. batch codes) into context
+        for kw in hybrid_results.get("keyword_results", []):
+            if kw.get("content"):
+                knowledge_context = f"{kw['content']}\n\n{knowledge_context}"
 
-        # --- PHASE 1.1: REAL-TIME BUSINESS INTEL ---
-        business_intel = ""
-        if any(kw in msg_lower for kw in ["new", "recent", "latest", "added", "registered", "farmer", "apiary", "harvest"]):
-            recent_farmers = db_select("farmers", limit=3, order_by="registration_date", ascending=False)
-            recent_apiaries = db_select("apiaries", limit=3, order_by="created_at", ascending=False)
-            
-            if recent_farmers or recent_apiaries:
-                business_intel = "\nRECENT NETWORK REGISTRATIONS:\n"
-                for f in (recent_farmers or []):
-                    business_intel += f"- Farmer: {f.get('name')} (ID: {f.get('farmer_id')}) in {f.get('region')}\n"
-                for a in (recent_apiaries or []):
-                    business_intel += f"- Apiary: {a.get('name')} (Site: {a.get('location_name')})\n"
-        
-        # Detect specific harvest data for Pillars
-        if "harvest" in msg_lower or "yield" in msg_lower:
-            business_intel += "\nINTERNAL HARVEST LOGS (JAN 2026):\n- Nairobi Hub: 12.4kg yield/hive (Total: 620kg across 50 colonies).\n- Status: 15% increase vs Dec 2025.\n"
-
-        # --- PHASE 1.2: BLOCKCHAIN TRACEABILITY LINK ---
-        trace_context = ""
-        batch_match = re.search(r'([A-Z0-9]{2,}-[A-Z0-9]{2,}-[0-9]{2})', message.upper())
-        if batch_match:
-            batch_code = batch_match.group(1)
-            from app.services.traceability_service import get_trace_journey
-            journey = get_trace_journey(batch_code)
-            if journey:
-                trace_context = f"\nVERIFIED HONEYCHAIN DATA (BATCH {batch_code}):\n"
-                trace_context += f"- Product: {journey.product_name}\n- Status: 100% Verified on Ledger\n"
-
-        # --- PHASE 2: ELITE SYSTEM INSTRUCTIONS (THE NEURAL HIVE FRAMEWORK) ---
-        synthesis_protocol = await Synthesizer.synthesize_response(search_results, message, route_expert)
-        
-        system_prompt = (
-            f"SYSTEM ROLE: You are the NI NEURAL CORE (v4.2), the primary intelligence engine for BeeYield.\n"
-            f"TIMESTAMP: {current_time} EAT, {current_date}\n\n"
-            f"SYNTHESIS ARCHITECTURE:\n{synthesis_protocol}\n\n"
-            f"DATA ARSENAL:\n"
-            f"RESEARCH CORPUS: {knowledge_context}\n"
-            f"BUSINESS INTEL: {business_intel}\n"
-            f"TRACEABILITY: {trace_context}\n\n"
-            f"CORE DIRECTIVES:\n"
-            f"1. OUTPUT STRUCTURE: Use the Five-Pillar framework (Brief, Diagnosis, Regional, Internal, Bibliography).\n"
-            f"2. TECHNICAL DEPTH: Provide EXTREMELY DOCUMENTED, LONG-FORM ANSWERS. MINIMUM 800 WORDS.\n"
-            f"3. CITATIONS: Use [X] for every claim. Correlate University research with IoT benchmarks.\n"
-            f"4. SENSOR LINK: Always mention APISENSE VOC sensors and BeeHero benchmarks if relevant to health.\n"
-            f"5. AESTHETICS: Use bold text (e.g., **Key Term**) for important directives or metrics to sync with the frontend UI highlights."
-        )
-
-        def sanitize_final(text: str) -> str:
-            """PHASE 3: POST-GENERATION FILTERING & GUARDRAILS"""
-            if not text: return ""
-            text = text.replace("HoneyBee Corp", "BeeYield").replace("YieldBee", "BeeYield")
-            return text.strip()
-
-        # --- PHASE 3: NEURAL EXECUTION ---
-        google_key = settings.GOOGLE_API_KEY
-        openai_key = settings.OPENAI_API_KEY
-        final_answer = ""
-        
-        print(f"DEBUG: Starting Neural Execution for prompt: {message[:50]}...")
-        
-        # PRIORITIZE GEMINI (Stable & Long Context)
-        if google_key:
+        # Fuse with Qdrant vector search if available (semantic diversity)
+        if QDRANT_AVAILABLE and knowledge_context:
             try:
-                print("DEBUG: Using Gemini API...")
+                vector_results = await QdrantVectorStore.search(message, limit=15, continent=continent)
+                vec_summary = vector_results.get("summary", "")
+                if vec_summary and vec_summary not in knowledge_context:
+                    knowledge_context = f"{knowledge_context}\n\n--- ADDITIONAL SEMANTIC MATCHES ---\n{vec_summary}"
+                for s in vector_results.get("sources", []):
+                    if s not in citations and len(citations) < 12:
+                        citations.append(s)
+            except Exception as e:
+                print(f"[QDRANT] Fuse skipped: {e}")
+
+        # Inject BeeYield DNA for grounding
+        dna_block = _get_bee_dna()
+        knowledge_context = f"{dna_block}\n{knowledge_context}" if dna_block else knowledge_context
+
+        # --- PHASE 2: TIER 1 - GEMINI FLASH (THE READER) ---
+        observation_prompt = (
+            f"You are the BEE_OBSERVER node. Extract EVERY technical fact, metric, statistic, date, and citation from this context "
+            f"related to the query: '{message}'.\n\n"
+            f"RULES:\n"
+            f"- Be EXHAUSTIVE. Do not omit details. Include percentages, dates, names, figures.\n"
+            f"- Organize by pillar: INTELLIGENCE, GLOBAL_CONTEXT, IOT_ENVIRONMENTAL, INTERNAL_OPS, BIBLIOGRAPHY.\n"
+            f"- Output a structured JSON array: [{{\"pillar\": \"...\", \"fact\": \"...\", \"source\": \"...\"}}]\n\n"
+            f"CONTEXT:\n{knowledge_context}"
+        )
+        
+        extracted_facts = ""
+        google_key = settings.GOOGLE_API_KEY
+        if google_key:
+            async def gemini_observe():
                 from google.genai import types
                 client = genai.Client(api_key=google_key)
-                
-                gemini_contents = []
-                for h in (history or [])[-10:]:
-                    role = "user" if h["role"] == "user" else "model"
-                    gemini_contents.append({"role": role, "parts": [{"text": h["content"]}]})
-                
-                # Use current message
-                gemini_contents.append({"role": "user", "parts": [{"text": message}]})
-
-                response = client.models.generate_content(
-                    model="gemini-1.5-flash-latest",
-                    contents=gemini_contents,
-                    config=types.GenerateContentConfig(
-                        system_instruction=system_prompt,
-                        temperature=temp,
-                        max_output_tokens=8192,
-                    )
+                obs_resp = client.models.generate_content(
+                    model="gemini-2.0-flash",
+                    contents=[observation_prompt],
+                    config=types.GenerateContentConfig(temperature=0.1, max_output_tokens=8192)
                 )
-                
-                if response.text:
-                    final_answer = sanitize_final(response.text)
-                    print(f"DEBUG: Gemini response received. Length: {len(final_answer)} characters.")
-                else:
-                    print("DEBUG: Gemini returned empty response.")
-            except Exception as e:
-                print(f"GEMINI NEURAL ERROR: {e}")
-
-        # Fallback to OpenAI if Gemini fails and key is available
-        if not final_answer and openai_key and not openai_key.startswith("sk-proj-REPLACE"):
+                return obs_resp.text
+            
             try:
-                print("DEBUG: Falling back to OpenAI...")
-                openai_history = []
-                for h in (history or [])[-10:]:
-                    openai_history.append({"role": h["role"], "content": h["content"]})
-                
+                extracted_facts = await RateLimitManager.with_retry(
+                    gemini_observe,
+                    max_retries=3,
+                    base_delay=2.0,
+                    api_name="gemini_observe"
+                )
+            except Exception as e:
+                print(f"GEMINI OBSERVATION ERROR (after retries): {e}")
+                extracted_facts = knowledge_context[:3000]
+
+        # --- PHASE 3: TIER 2 - GPT-4o (THE REASONER & WRITER) ---
+        system_prompt = (
+            f"You are the BEE_ARCHITECT (v5.0), the primary intelligence of BeeYield.\n"
+            f"TIMESTAMP: {current_time}, {current_date}\n\n"
+            f"STRICT GOVERNANCE:\n"
+            f"1. FACT-GROUNDING: Use ONLY facts from the extracted data below. NEVER invent data, statistics, or sources. If uncertain, say 'Based on available data' or omit.\n"
+            f"2. LENGTH: Target 2200-3200 words. Each section MUST have 4-6 substantial paragraphs. Do NOT summarize or truncate.\n"
+            f"3. STRUCTURE: Use ## for main sections, ### for subsections. Include bullet lists for key metrics where appropriate.\n"
+            f"4. CITATIONS: Integrate inline [1], [2] and a full VERIFIED BIBLIOGRAPHY with URLs from: {json.dumps(citations)}\n"
+            f"5. KEY TAKEAWAYS: End Section I with a **Key Takeaways** bullet list (4-6 items). End the report with **Recommendations** (3-5 numbered items).\n\n"
+            f"EXTRACTED FACTS (authoritative source—do not add to this):\n{extracted_facts}\n\n"
+            f"REQUIRED STRUCTURE:\n"
+            f"## I. INTELLIGENCE BRIEF\n"
+            f"### Executive Summary | Key Findings | Key Takeaways (bullets)\n"
+            f"## II. GLOBAL TECHNICAL CONTEXT\n"
+            f"### Industry Trends | Regional Factors | Technical Metrics\n"
+            f"## III. IOT & ENVIRONMENTAL CORRELATION\n"
+            f"### Sensor Data | Environmental Factors | Correlations\n"
+            f"## IV. INTERNAL OPERATIONS SYNC\n"
+            f"### Harvest Data | Apiary Operations | Internal Metrics\n"
+            f"## V. VERIFIED BIBLIOGRAPHY\n"
+            f"### Numbered references with URLs\n"
+            f"## VI. RECOMMENDATIONS\n"
+            f"### 3-5 numbered, actionable recommendations"
+        )
+
+        final_answer = ""
+        openai_key = settings.OPENAI_API_KEY
+        if openai_key and not openai_key.startswith("sk-proj-REPLACE"):
+            async def openai_synthesize():
                 async with httpx.AsyncClient() as client:
                     url = "https://api.openai.com/v1/chat/completions"
-                    headers = {
-                        "Authorization": f"Bearer {openai_key}",
-                        "Content-Type": "application/json"
-                    }
+                    headers = {"Authorization": f"Bearer {openai_key}", "Content-Type": "application/json"}
                     payload = {
-                        "model": "gpt-4-turbo-preview",
+                        "model": "gpt-4o",
                         "messages": [
-                            {"role": "system", "content": system_prompt + "\n\nCRITICAL: YOU MUST WRITE A 100-LINE TECHNICAL REPORT. DO NOT BE BRIEF."}
-                        ] + openai_history + [
-                            {"role": "user", "content": message}
+                            {"role": "system", "content": system_prompt},
+                            {"role": "user", "content": f"Write a full, authoritative report. Do not truncate. Query: {message}"}
                         ],
-                        "temperature": temp,
-                        "max_tokens": 4000
+                        "temperature": 0.25,
+                        "max_tokens": 16384
                     }
-                    resp = await client.post(url, headers=headers, json=payload, timeout=90.0)
+                    resp = await client.post(url, headers=headers, json=payload, timeout=120.0)
                     data = resp.json()
                     if "choices" in data:
-                        raw_text = data["choices"][0]["message"]["content"]
-                        final_answer = sanitize_final(raw_text)
-                    else:
-                        print(f"OPENAI API ERROR: {data}")
+                        return data["choices"][0]["message"]["content"]
+                    elif "error" in data:
+                        raise Exception(data["error"].get("message", "OpenAI API error"))
+                    return ""
+            
+            try:
+                final_answer = await RateLimitManager.with_retry(
+                    openai_synthesize,
+                    max_retries=3,
+                    base_delay=1.0,
+                    api_name="openai_synthesize"
+                )
             except Exception as e:
-                print(f"OPENAI NEURAL ERROR: {e}")
+                print(f"OPENAI SYNTHESIS ERROR (after retries): {e}")
 
-        # Ultimate Fallback 
-        if not final_answer:
-            print("DEBUG: All AI providers failed. Using static fallback.")
-            final_answer = (
-                f"# ⚠️ BeeYield Intelligence Offline (Neural Failure)\n\n"
-                f"The advanced neural link could not be established. "
-                f"Showing raw intelligence from the BeeYield Hive Mind:\n\n"
-                f"## 📂 Retrieved Knowledge\n{knowledge_context[:1500]}\n\n"
-                f"## 📊 Business Intelligence\n{business_intel}\n\n"
-                f"**Please verify your API connection or try again for a full 100-line synthesis.**"
-            )
+        # Fallback to pure Gemini if GPT-4o fails
+        if not final_answer and google_key:
+            async def gemini_synthesize():
+                from google.genai import types
+                client = genai.Client(api_key=google_key)
+                response = client.models.generate_content(
+                    model="gemini-2.0-flash",
+                    contents=[f"Write a full, authoritative report. Do not truncate. Query: {message}"],
+                    config=types.GenerateContentConfig(
+                        system_instruction=system_prompt,
+                        temperature=0.25,
+                        max_output_tokens=16384
+                    )
+                )
+                return response.text
+            
+            try:
+                final_answer = await RateLimitManager.with_retry(
+                    gemini_synthesize,
+                    max_retries=3,
+                    base_delay=5.0,
+                    api_name="gemini_synthesize"
+                )
+            except Exception as e:
+                final_answer = f"Error in synthesis: {e}\n\nRaw Context:\n{knowledge_context[:1000]}"
 
-        # --- PHASE 4: PDF REPORTING ---
+        # --- PHASE 4: ASSET GENERATION ---
         if "pdf" in msg_lower or "report" in msg_lower:
-            simulated_sources = [
-                {"name": "University of Pretoria (2024)", "url": "https://repository.up.ac.za"},
-                {"name": "PLOS One: Sub-Saharan Colony Loss Study", "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0322489"},
-                {"name": "APISENSE VOC Sensor Metrics", "url": "https://apisense.ai/product"}
-            ]
             pdf_url = await ReportGenerator.create_report(
-                title="BeeYield Intelligence Hub: Genesis Report",
+                title="BeeYield Deep-Dive Intelligence Brief",
                 content=final_answer,
-                sources=simulated_sources
+                sources=citations
             )
-            final_answer += f"\n\n---\n**GENERATED ASSET:** 📄 [Download_Intelligence_Report.pdf]({pdf_url})"
+            final_answer += f"\n\n---\n**GENERATOR LOG:** 📄 [Intelligence_Report_v4.pdf]({pdf_url})"
 
         return final_answer
-
-    @staticmethod
-    async def generate_shop_insight(user_profile: dict, product_id: str, product_name: str) -> dict:
-        """
-        BACKGROUND BRAIN: SHOP INSIGHT
-        Generates a 1-sentence sales nudge based on user location/history.
-        """
-        location = user_profile.get("location", "Unknown")
-        user_crop = user_profile.get("primary_crop", "General")
-        
-        # In a real scenario, this would query the Vector DB for "Crop + Location + Product"
-        # For now, we simulate the 'Insight' generation based on rules/LLM
-        
-        insight_text = ""
-        badge_type = "yield"
-        yield_boost = 0.0
-
-        if "hive" in product_name.lower():
-            if "langstroth" in product_name.lower() and "coffee" in user_crop.lower():
-                insight_text = f"Based on your location in {location}, this hive type is projected to increase your Coffee yield by ~18% vs. traditional log hives."
-                yield_boost = 18.5
-                badge_type = "yield"
-            elif "top bar" in product_name.lower():
-                insight_text = "Top Bar hives reduce inspection time by 40% in hot regions like yours."
-                yield_boost = 0.0
-                badge_type = "efficiency"
-            else:
-                insight_text = "Essential for starting your apiary with standardized equipment."
-                
-        elif "suit" in product_name.lower():
-            insight_text = "90% of new farmers in your region report stings within 2 weeks without this grade of protection."
-            badge_type = "health"
-            
-        return {
-            "insight_text": insight_text,
-            "yield_increase_percent": yield_boost,
-            "badge_type": badge_type
-        }
-
-    @staticmethod
-    async def calculate_pollination_roi(acres: float, crop: str) -> dict:
-        """
-        BACKGROUND BRAIN: PRECISION POLLINATION
-        Calculates the Cost of Inaction (FOMO engine).
-        """
-        # Simulated RAG simulation data
-        crop_data = {
-            "avocado": {"yield_per_acre": 5000, "pollination_boost": 0.30, "hives_per_acre": 2},
-            "coffee": {"yield_per_acre": 3000, "pollination_boost": 0.20, "hives_per_acre": 3},
-            "macadamia": {"yield_per_acre": 8000, "pollination_boost": 0.40, "hives_per_acre": 4},
-            "default": {"yield_per_acre": 2000, "pollination_boost": 0.15, "hives_per_acre": 2}
-        }
-        
-        data = crop_data.get(crop.lower(), crop_data["default"])
-        
-        base_revenue = acres * data["yield_per_acre"]
-        boosted_revenue = base_revenue * (1 + data["pollination_boost"])
-        revenue_lost = boosted_revenue - base_revenue
-        optimal_hives = int(acres * data["hives_per_acre"])
-        
-        return {
-            "current_revenue": base_revenue,
-            "potential_revenue": boosted_revenue,
-            "revenue_lost": revenue_lost,
-            "optimal_hives": optimal_hives,
-            "currency": "USD"
-        }

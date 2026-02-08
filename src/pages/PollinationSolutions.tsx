@@ -217,7 +217,7 @@ const PollinationSolutions = () => {
             </Badge>
             <h2 className="text-4xl font-bold mb-6 text-foreground">Better Together</h2>
             <p className="text-lg text-muted-foreground">
-              While powerful individually, our In-Hive and In-Field solutions work best in tandem, providing a complete feedback loop for growers and beekeepers.
+              In-Hive and In-Field work even better together, giving growers and beekeepers a full picture from hive to crop.
             </p>
           </div>
 
@@ -240,8 +240,8 @@ const PollinationSolutions = () => {
               <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Sprout className="h-6 w-6 text-green-600" />
               </div>
-              <h3 className="text-xl font-bold mb-3 text-foreground">Optimize</h3>
-              <p className="text-muted-foreground">Make informed decisions to boost crop yield and bee health.</p>
+              <h3 className="text-xl font-bold mb-3 text-foreground">Improve</h3>
+              <p className="text-muted-foreground">Use the data to improve crop yield and bee health.</p>
             </div>
           </div>
         </div>
