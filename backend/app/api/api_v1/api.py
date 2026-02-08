@@ -7,7 +7,7 @@ from app.api.api_v1.endpoints import (
     forms, shop, blog, careers, media, 
     services, jobs, analytics, notes, admin, iot, ai,
     admin_extended, meters, beeyield, pollination, inspections,
-    ai_assistant
+    ai_assistant, settings
 )
 
 
@@ -59,6 +59,9 @@ api_router.include_router(forms.router, prefix="/forms", tags=["Forms"])
 
 # Auth
 api_router.include_router(auth.router, prefix="/auth", tags=["Auth"])
+
+# Settings
+api_router.include_router(settings.router, prefix="/settings", tags=["Settings"])
 
 # Notes
 api_router.include_router(notes.router, prefix="/notes", tags=["Notes"])

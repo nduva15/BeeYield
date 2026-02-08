@@ -123,11 +123,34 @@ def get_user_orders(
     Get orders for the current user.
     """
     user_id = current_user.get("sub")
-    # In a real app, we'd filter by user_id. 
-    # For now, if email is provided, verify it matches or just use user_id.
-    filters = {"user_id": user_id}
     orders = shop_service.get_user_orders(user_id=user_id)
     return orders
+
+@router.get("/orders/{order_id}", response_model=schemas.Order)
+def get_order_detail(
+    order_id: str,
+    current_user: Optional[dict] = Depends(security.get_optional_current_user)
+):
+    """
+    Get full order details including items.
+    """
+    # Security check: If logged in, must own the order or be guest bypass
+    order = shop_service.get_order(order_id)
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    user_id = current_user.get("sub") if current_user else "TEST-BYPASS-USER"
+    
+    # If it's the bypass user, allow if order was created without a fixed user or by the bypass user
+    if not current_user:
+        if order.get("user_id") is not None and order.get("user_id") != "TEST-BYPASS-USER":
+             raise HTTPException(status_code=403, detail="Access denied")
+    else:
+        # If logged in, must own the order
+        if str(order.get("user_id")) != str(user_id):
+             raise HTTPException(status_code=403, detail="Access denied")
+             
+    return order
 
 # ==========================================
 #  NEW ENDPOINTS

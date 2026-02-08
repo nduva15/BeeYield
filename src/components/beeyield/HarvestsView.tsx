@@ -133,9 +133,23 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
         }
 
         setIsSaving(true);
+
+        if (!selectedHive) {
+            toast.error('Please select a source hive');
+            setIsSaving(false);
+            return;
+        }
+
+        const selectedHiveData = hives.find(h => h.id === selectedHive);
+        if (!selectedHiveData) {
+            toast.error('Selected hive not found in records');
+            setIsSaving(false);
+            return;
+        }
+
         const harvestInput: any = {
-            hive_id: selectedHive || undefined,
-            apiary_id: hives.find(h => h.id === selectedHive)?.apiary_id, // Ensure apiary_id is linked
+            hive_id: selectedHive,
+            apiary_id: selectedHiveData.apiary_id,
             harvest_date: date.toISOString().split('T')[0],
             quantity_kg: parseFloat(amount),
             quantity_left_for_bees_kg: parseFloat(amount), // 50/50 rule

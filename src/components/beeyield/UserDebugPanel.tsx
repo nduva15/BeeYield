@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ const UserDebugPanel: React.FC = () => {
     const { user } = useAuth();
     const [apiaries, setApiaries] = useState<any[]>([]);
     const [hives, setHives] = useState<any[]>([]);
+    const [dbName, setDbName] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -25,6 +27,30 @@ const UserDebugPanel: React.FC = () => {
                 ]);
                 setApiaries(apiariesData);
                 setHives(hivesData);
+
+                // Fetch real name from database
+                if (!supabase) return;
+
+                const { data: farmerData } = await supabase
+                    .from('farmers')
+                    .select('name')
+                    .eq('user_id', user.id)
+                    .maybeSingle();
+
+                if (farmerData?.name) {
+                    setDbName(farmerData.name);
+                } else {
+                    // Try profiles table
+                    const { data: profileData } = await supabase
+                        .from('profiles')
+                        .select('first_name, last_name')
+                        .eq('id', user.id)
+                        .maybeSingle();
+                    if (profileData) {
+                        const fullName = `${profileData.first_name || ''} ${profileData.last_name || ''}`.trim();
+                        if (fullName) setDbName(fullName);
+                    }
+                }
             } catch (error) {
                 console.error('Error loading data:', error);
             } finally {
@@ -40,22 +66,8 @@ const UserDebugPanel: React.FC = () => {
         toast.success(`${label} copied to clipboard`);
     };
 
-    if (!user) {
-        return (
-            <Card className="border-red-500/50 bg-red-50 dark:bg-red-950/20">
-                <CardHeader>
-                    <CardTitle className="text-red-600 dark:text-red-400 flex items-center gap-2">
-                        <User className="h-5 w-5" />
-                        No User Logged In
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-sm text-red-600 dark:text-red-400">
-                        You need to log in to see your data. Please sign in to continue.
-                    </p>
-                </CardContent>
-            </Card>
-        );
+    if (!user || user.email !== 'timothynduva349@gmail.com') {
+        return null;
     }
 
     return (
@@ -106,7 +118,11 @@ const UserDebugPanel: React.FC = () => {
                         <div className="flex items-center justify-between">
                             <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Name:</span>
                             <span className="text-sm">
-                                {user.user_metadata?.full_name || user.user_metadata?.name || 'Not set'}
+                                {dbName ||
+                                    user.user_metadata?.full_name ||
+                                    user.user_metadata?.name ||
+                                    (user.user_metadata?.first_name ? `${user.user_metadata.first_name} ${user.user_metadata.last_name || ''}`.trim() : null) ||
+                                    'Not set'}
                             </span>
                         </div>
                     </div>

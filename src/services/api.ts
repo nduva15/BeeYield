@@ -35,7 +35,7 @@ export async function apiRequest<T>(
         });
 
         if (!response.ok) {
-            let errorData: any = {};
+            let errorData: Record<string, unknown> = {};
             const text = await response.text();
             try {
                 errorData = JSON.parse(text);
@@ -44,20 +44,22 @@ export async function apiRequest<T>(
                 console.error("Non-JSON error response from server:", text.substring(0, 200));
                 errorData = { detail: `API Error ${response.status}: ${response.statusText}. The server returned HTML instead of JSON. Please ensure the backend is running.` };
             }
-            throw new Error(errorData.detail || `API Error: ${response.status}`);
+            throw new Error((errorData.detail as string) || `API Error: ${response.status}`);
         }
 
         const responseText = await response.text();
         try {
             return JSON.parse(responseText);
-        } catch (e: any) {
+        } catch (e: unknown) {
             console.error("Failed to parse JSON response:", responseText.substring(0, 200));
-            throw new Error(`Connection Error: The server returned an invalid response (HTML). Please check if the backend is running at ${API_V1_URL}. Technical: ${e.message}`);
+            const errorMessage = e instanceof Error ? e.message : 'Unknown parse error';
+            throw new Error(`Connection Error: The server returned an invalid response (HTML). Please check if the backend is running at ${API_V1_URL}. Technical: ${errorMessage}`);
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error(`API Error for ${endpoint}:`, error);
         // Better error message for common JSON parse error (HTML returned)
-        if (error.message?.includes("Unexpected token") || error.message?.includes("not valid JSON")) {
+        const errorMessage = error instanceof Error ? error.message : '';
+        if (errorMessage.includes("Unexpected token") || errorMessage.includes("not valid JSON")) {
             throw new Error(`Connection Error: The server returned an invalid response (HTML). Please check if the backend is running at ${API_V1_URL}.`);
         }
         throw error;

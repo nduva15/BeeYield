@@ -17,7 +17,7 @@ export interface CartItem {
     category: 'honey' | 'merch' | 'education' | 'hardware';
 }
 
-interface CartContextType {
+export interface CartContextType {
     items: CartItem[];
     addToCart: (item: Omit<CartItem, 'id'>) => void;
     removeFromCart: (id: string) => void;

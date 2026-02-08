@@ -15,7 +15,7 @@ BASE_URL = "http://localhost:8000/api/v1/beeyield/tasks"
 from app.db.supabase_db import db_select
 
 print("Checking Tasks in DB...")
-try:
+try:    
     tasks = db_select("tasks", limit=5)
     print(f"Found {len(tasks)} tasks.")
     for t in tasks:

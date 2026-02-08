@@ -41,12 +41,12 @@ import { AccountsTab } from '@/components/admin/tabs/AccountsTab';
 import { InvoicesTab } from '@/components/admin/tabs/InvoicesTab';
 
 const AdminDashboard: React.FC = () => {
-    const { user, loading: authLoading } = useAuth();
+    const { user, loading: authLoading, signOut } = useAuth();
     const navigate = useNavigate();
 
     // Role check
     const userRole = user?.user_metadata?.role || 'user';
-    const isSuperAdminEmail = ['timothy.mathuva@strathmore.edu', 'timothynduva349@gmail.com'].includes(user?.email?.toLowerCase() || '');
+    const isSuperAdminEmail = ['timothynduva349@gmail.com'].includes(user?.email?.toLowerCase() || '');
     const isAdmin = userRole === 'admin' || userRole === 'super_admin' || isSuperAdminEmail;
     const isSuperAdmin = userRole === 'super_admin' || isSuperAdminEmail;
 
@@ -193,11 +193,12 @@ const AdminDashboard: React.FC = () => {
         try {
             console.log(`[Admin] Loading data for tab: ${tab}`);
             switch (tab) {
-                case 'orders':
+                case 'orders': {
                     const ordersData = await adminService.getOrders();
                     setOrders(ordersData);
                     break;
-                case 'products':
+                }
+                case 'products': {
                     const [productsData, stockData] = await Promise.all([
                         adminService.getProducts(),
                         adminService.getStockMovements()
@@ -205,16 +206,19 @@ const AdminDashboard: React.FC = () => {
                     setProducts(productsData);
                     setStockMovements(stockData);
                     break;
-                case 'batches':
+                }
+                case 'batches': {
                     const batchesData = await adminService.getBatches();
                     setBatches(batchesData.reverse());
                     break;
-                case 'farmers':
+                }
+                case 'farmers': {
                     const farmersData = await adminService.getFarmers();
                     setFarmers(farmersData);
                     break;
+                }
                 case 'apiaries':
-                case 'hives':
+                case 'hives': {
                     // These are interdependent, load both
                     const [apiariesData, hivesData] = await Promise.all([
                         adminService.getApiaries(),
@@ -235,24 +239,29 @@ const AdminDashboard: React.FC = () => {
                         return next;
                     });
                     break;
-                case 'pollination':
+                }
+                case 'pollination': {
                     const pollinationData = await adminService.getPollinationRequests();
                     setPollinationRequests(pollinationData);
                     break;
-                case 'contact':
+                }
+                case 'contact': {
                     const contactData = await adminService.getContactRequests();
                     setContacts(contactData);
                     break;
-                case 'newsletter':
+                }
+                case 'newsletter': {
                     const subscribersData = await adminService.getNewsletterSubscribers();
                     setSubscribers(subscribersData);
                     break;
-                case 'team':
+                }
+                case 'team': {
                     if (isSuperAdmin) {
                         const usersData = await adminService.getUsers();
                         setSystemUsers(usersData);
                     }
                     break;
+                }
             }
             setLoadedTabs(prev => new Set(prev).add(tab));
         } catch (error) {
@@ -891,7 +900,7 @@ const AdminDashboard: React.FC = () => {
         }
     };
 
-    const { signOut } = useAuth();
+
 
     const navItems = [
         {

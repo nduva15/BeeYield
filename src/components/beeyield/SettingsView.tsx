@@ -22,6 +22,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import { useUserSettings, useUpdateSettings, useUpdateNotificationConfig, useUpdateHiveThresholds } from '@/hooks/useSettingsData';
+import { UserSettingsUpdate, NotificationConfigUpdate } from '@/services/beeyieldService';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useHives } from '@/hooks/useApiaries';
 
 interface SettingsViewProps {
     onTabChange: (tab: string) => void;
@@ -38,7 +42,7 @@ const languages = [
 ];
 
 const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
-    const { user } = useAuth();
+    const { user, signOut } = useAuth();
     const { language, setLanguage, t } = useLanguage();
     const { showGuides, setShowGuides } = useSettings();
     const [uploading, setUploading] = useState(false);
@@ -49,12 +53,66 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
+    // TanStack Query Hooks
+    const { data: settings, isLoading } = useUserSettings();
+    const updateSettingsMutation = useUpdateSettings();
+    const updateNotifMutation = useUpdateNotificationConfig();
+    const updateHiveThresholdsMutation = useUpdateHiveThresholds();
+    const { data: allHives } = useHives();
+
+    // State for local overrides before saving
+    const [localSettings, setLocalSettings] = useState<UserSettingsUpdate>({});
+    const [hiveThresholds, setHiveThresholds] = useState<Record<string, {
+        temp_threshold_high?: number;
+        temp_threshold_low?: number;
+        weight_drop_threshold?: number;
+    }>>({});
+
+    const handleSaveGeneral = async () => {
+        try {
+            await updateSettingsMutation.mutateAsync(localSettings);
+            setLocalSettings({});
+        } catch (error) {
+            // Error handled by service toast
+        }
+    };
+
+    const handleUpdateHiveThreshold = async (hiveId: string) => {
+        const thresholds = hiveThresholds[hiveId];
+        if (!thresholds) return;
+
+        try {
+            await updateHiveThresholdsMutation.mutateAsync({
+                hiveId,
+                thresholds
+            });
+            // Clear local state for this hive after successful update
+            const newThresholds = { ...hiveThresholds };
+            delete newThresholds[hiveId];
+            setHiveThresholds(newThresholds);
+        } catch (error) {
+            // Error handled by service toast
+        }
+    };
+
+    const handleNotifToggle = async (eventType: string, field: 'email_enabled' | 'push_enabled' | 'sms_enabled', value: boolean) => {
+        try {
+            await updateNotifMutation.mutateAsync({
+                eventType,
+                config: { [field]: value }
+            });
+        } catch (error) {
+            // Error handled by service toast
+        }
+    };
+
     // State for modules
     const [modules, setModules] = useState([
-        { id: 'beeyield', icon: Settings2, label: 'BeeYield Hives', desc: 'Manage hives and apiaries', priority: true, enabled: true },
-        { id: 'agro', icon: CloudRain, label: 'Agro & Meteo', desc: 'Weather data and meteo stations', priority: false, enabled: false },
-        { id: 'resources', icon: Briefcase, label: 'My Resources', desc: 'Auxiliary devices and resources (e.g., trackers)', priority: false, enabled: false },
-        { id: 'patients', icon: UserRound, label: 'Patients', desc: 'Care and records in veterinary mode', priority: false, enabled: false },
+        { id: 'beeyield', icon: Sparkles, label: 'BeeYield AI', desc: t('beeyield_desc'), enabled: true, priority: true },
+        { id: 'iot', icon: Settings2, label: 'IoT Core', desc: t('iot_desc'), enabled: true },
+        { id: 'traceability', icon: HelpCircle, label: 'Traceability', desc: t('traceability_desc'), enabled: true },
+        { id: 'training', icon: BookOpen, label: 'Learning Hub', desc: t('training_desc'), enabled: false },
+        { id: 'marketplace', icon: Briefcase, label: 'Marketplace', desc: t('marketplace_desc'), enabled: false },
     ]);
 
     const userMetadata = user?.user_metadata || {};
@@ -308,6 +366,40 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     <Input id="phone" defaultValue="0742014187" className="pt-8 pb-3 px-4 rounded-2xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-[4.5rem] shadow-none font-bold group-hover:border-amber-500/30 focus:border-amber-500 transition-all outline-none focus-visible:ring-0 focus-visible:bg-white dark:focus-visible:bg-black" />
                                 </div>
 
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="relative group">
+                                        <Label htmlFor="unit_system" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-40 pointer-events-none">Unit System</Label>
+                                        <Select
+                                            value={localSettings.unit_system || settings?.unit_system || 'Metric'}
+                                            onValueChange={(val) => setLocalSettings(prev => ({ ...prev, unit_system: val as any }))}
+                                        >
+                                            <SelectTrigger className="w-full pt-8 pb-3 px-4 rounded-2xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-[4.5rem] shadow-none font-bold hover:border-amber-500/30 focus:border-amber-500 transition-all outline-none focus:ring-0">
+                                                <SelectValue placeholder="System" />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-2xl border-gray-100 dark:border-gray-800">
+                                                <SelectItem value="Metric">Metric (kg, °C)</SelectItem>
+                                                <SelectItem value="Imperial">Imperial (lb, °F)</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="relative group">
+                                        <Label htmlFor="theme" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-40 pointer-events-none">Theme</Label>
+                                        <Select
+                                            value={localSettings.theme || settings?.theme || 'System'}
+                                            onValueChange={(val) => setLocalSettings(prev => ({ ...prev, theme: val as any }))}
+                                        >
+                                            <SelectTrigger className="w-full pt-8 pb-3 px-4 rounded-2xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-[4.5rem] shadow-none font-bold hover:border-amber-500/30 focus:border-amber-500 transition-all outline-none focus:ring-0">
+                                                <SelectValue placeholder="Theme" />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-2xl border-gray-100 dark:border-gray-800">
+                                                <SelectItem value="System">Auto (System)</SelectItem>
+                                                <SelectItem value="Light">Light</SelectItem>
+                                                <SelectItem value="Dark">Dark</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+
                                 <div className="relative group">
                                     <Label htmlFor="language" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-40 pointer-events-none">{t('language')}</Label>
                                     <Select value={language} onValueChange={(val) => setLanguage(val as LanguageCode)}>
@@ -344,8 +436,11 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     <motion.button
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
-                                        className="bg-[#B48428]/10 text-[#B48428] border-2 border-[#B48428]/20 hover:bg-[#B48428] hover:text-white rounded-2xl px-12 py-3 font-bold text-sm transition-all shadow-sm hover:shadow-lg hover:shadow-amber-500/20"
+                                        onClick={handleSaveGeneral}
+                                        disabled={updateSettingsMutation.isPending || Object.keys(localSettings).length === 0}
+                                        className="bg-[#B48428]/10 text-[#B48428] border-2 border-[#B48428]/20 hover:bg-[#B48428] hover:text-white rounded-2xl px-12 py-3 font-bold text-sm transition-all shadow-sm hover:shadow-lg hover:shadow-amber-500/20 disabled:opacity-50"
                                     >
+                                        {updateSettingsMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2inline" /> : null}
                                         {t('save_changes')}
                                     </motion.button>
                                 </div>
@@ -353,58 +448,95 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                         </Card>
                     </motion.div>
 
-                    {/* AI Auto Notifications */}
+                    {/* IoT Thresholds Section */}
                     <motion.div variants={itemVariants}>
                         <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-xl shadow-sm overflow-hidden hover:shadow-md transition-all duration-500">
                             <CardHeader className="p-10 pb-4">
-                                <CardTitle className="text-2xl font-black leading-tight">{t('ai_notifications')}</CardTitle>
-                                <p className="text-sm text-gray-400 font-medium pt-2">{t('ai_notifications_desc')}</p>
+                                <CardTitle className="text-2xl font-black leading-tight">IoT Alert Thresholds</CardTitle>
+                                <p className="text-sm text-gray-400 font-medium pt-2">Global default thresholds for your smart sensors</p>
                             </CardHeader>
-                            <CardContent className="p-10 pt-0 space-y-8">
-                                <div className="flex items-center gap-4 bg-gray-50/50 dark:bg-white/5 p-4 rounded-2xl border border-gray-100 dark:border-white/5">
-                                    <Switch defaultChecked className="data-[state=checked]:bg-[#B48428] scale-125 ml-2" />
-                                    <div className="flex flex-col">
-                                        <span className="text-sm font-bold text-gray-700 dark:text-gray-300">{t('enable_ai_notifications')}</span>
-                                        <span className="text-[10px] text-gray-400 font-medium">{t('smart_alerts_desc')}</span>
+                            <CardContent className="p-10 pt-0 space-y-6">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="relative group">
+                                        <Label className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10">High Temp (°C)</Label>
+                                        <Input
+                                            type="number"
+                                            defaultValue={settings?.temp_threshold_high}
+                                            onChange={(e) => setLocalSettings(prev => ({ ...prev, temp_threshold_high: parseFloat(e.target.value) }))}
+                                            className="pt-8 pb-3 px-4 rounded-2xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-[4.5rem] font-bold"
+                                        />
                                     </div>
+                                    <div className="relative group">
+                                        <Label className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10">Low Temp (°C)</Label>
+                                        <Input
+                                            type="number"
+                                            defaultValue={settings?.temp_threshold_low}
+                                            onChange={(e) => setLocalSettings(prev => ({ ...prev, temp_threshold_low: parseFloat(e.target.value) }))}
+                                            className="pt-8 pb-3 px-4 rounded-2xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-[4.5rem] font-bold"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="relative group">
+                                    <Label className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10">Weight Drop Alert (kg)</Label>
+                                    <Input
+                                        type="number"
+                                        defaultValue={settings?.weight_drop_threshold}
+                                        onChange={(e) => setLocalSettings(prev => ({ ...prev, weight_drop_threshold: parseFloat(e.target.value) }))}
+                                        className="pt-8 pb-3 px-4 rounded-2xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-[4.5rem] font-bold"
+                                    />
                                 </div>
                                 <div className="flex justify-end">
                                     <motion.button
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
+                                        onClick={handleSaveGeneral}
                                         className="bg-transparent border-2 border-gray-200 dark:border-gray-800 text-gray-500 hover:border-[#B48428] hover:text-[#B48428] rounded-2xl px-10 py-3 font-bold text-sm transition-all"
                                     >
-                                        {t('save')}
+                                        Save Defaults
                                     </motion.button>
                                 </div>
                             </CardContent>
                         </Card>
                     </motion.div>
 
-                    {/* Email Notifications Segment */}
+                    {/* AI Auto Notifications */}
+
+                    {/* Email Notifications Hub */}
                     <motion.div variants={itemVariants}>
                         <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-xl shadow-sm overflow-hidden hover:shadow-md transition-all duration-500">
                             <CardHeader className="p-10 pb-4">
                                 <CardTitle className="text-2xl font-black leading-tight">{t('email_notifications_hub')}</CardTitle>
-                                <p className="text-sm text-gray-400 font-medium pt-2">{t('email_notifications_hub_desc')}</p>
+                                <p className="text-sm text-gray-400 font-medium pt-2">Manage how you receive alerts for hive events.</p>
                             </CardHeader>
-                            <CardContent className="p-10 pt-0 space-y-8">
-                                <div className="flex items-center gap-4 bg-gray-50/50 dark:bg-white/5 p-4 rounded-2xl border border-gray-100 dark:border-white/5">
-                                    <Switch defaultChecked className="data-[state=checked]:bg-[#B48428] scale-125 ml-2" />
-                                    <div className="flex flex-col">
-                                        <span className="text-sm font-bold text-gray-700 dark:text-gray-300">{t('allow_hub_notifications')}</span>
-                                        <span className="text-[10px] text-gray-400 font-medium">{t('critical_device_status')}</span>
+                            <CardContent className="p-10 pt-0 space-y-6">
+                                {settings?.notification_configs?.map((config) => (
+                                    <div key={config.event_type} className="flex items-center justify-between p-4 bg-gray-50/50 dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/5">
+                                        <div className="flex flex-col">
+                                            <span className="text-sm font-bold text-gray-700 dark:text-gray-300 capitalize">{config.event_type.replace(/_/g, ' ')}</span>
+                                            <div className="flex gap-4 mt-2">
+                                                <div className="flex items-center gap-2">
+                                                    <Switch
+                                                        checked={config.email_enabled}
+                                                        onCheckedChange={(val) => handleNotifToggle(config.event_type, 'email_enabled', val)}
+                                                        className="scale-75"
+                                                    />
+                                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Email</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <Switch
+                                                        checked={config.push_enabled}
+                                                        onCheckedChange={(val) => handleNotifToggle(config.event_type, 'push_enabled', val)}
+                                                        className="scale-75"
+                                                    />
+                                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Push</span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="flex justify-end">
-                                    <motion.button
-                                        whileHover={{ scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
-                                        className="bg-transparent border-2 border-gray-200 dark:border-gray-800 text-gray-500 hover:border-[#B48428] hover:text-[#B48428] rounded-2xl px-10 py-3 font-bold text-sm transition-all"
-                                    >
-                                        {t('save')}
-                                    </motion.button>
-                                </div>
+                                ))}
+                                {(!settings?.notification_configs || settings.notification_configs.length === 0) && (
+                                    <p className="text-sm text-center text-gray-400 font-medium py-8">No notification configurations found.</p>
+                                )}
                             </CardContent>
                         </Card>
                     </motion.div>
@@ -436,6 +568,15 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                         <CloudRain className="w-4 h-4" /> {t('joined')}
                                     </span>
                                     <span className="text-sm font-black text-gray-900 dark:text-white font-mono">{new Date(user?.created_at || Date.now()).toLocaleDateString()}</span>
+                                </div>
+                                <div className="pt-4">
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => signOut()}
+                                        className="w-full h-14 rounded-2xl border-2 border-red-50 dark:border-red-900/20 text-red-500 hover:bg-red-500 hover:text-white font-black uppercase tracking-widest text-xs transition-all shadow-none"
+                                    >
+                                        Logout
+                                    </Button>
                                 </div>
                             </CardContent>
                         </Card>
@@ -582,6 +723,100 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                     </motion.div>
                 </div>
             </div>
+
+            {/* Hive Thresholds Section */}
+            <motion.div variants={itemVariants}>
+                <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-xl shadow-sm overflow-hidden mt-8 hover:shadow-md transition-all duration-500">
+                    <CardHeader className="p-10 pb-6 border-b border-gray-50 dark:border-[#1e1e1e]">
+                        <div>
+                            <CardTitle className="text-3xl font-black">Hive-Specific Thresholds</CardTitle>
+                            <p className="text-sm text-gray-400 font-medium mt-4 max-w-2xl leading-relaxed">
+                                Override global defaults for specific hives. Leave blank to use global settings.
+                            </p>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="p-10 pt-8">
+                        <div className="border border-gray-100 dark:border-[#1e1e1e] rounded-[2.5rem] overflow-hidden">
+                            <Table>
+                                <TableHeader className="bg-gray-50/50 dark:bg-[#1e1e1e]/20">
+                                    <TableRow className="border-b border-gray-100 dark:border-[#1e1e1e] hover:bg-transparent">
+                                        <TableHead className="font-black text-[10px] uppercase tracking-widest text-gray-400 py-4 px-8">Hive Code</TableHead>
+                                        <TableHead className="font-black text-[10px] uppercase tracking-widest text-gray-400 py-4 px-8">High Temp (°C)</TableHead>
+                                        <TableHead className="font-black text-[10px] uppercase tracking-widest text-gray-400 py-4 px-8">Low Temp (°C)</TableHead>
+                                        <TableHead className="font-black text-[10px] uppercase tracking-widest text-gray-400 py-4 px-8">Weight Drop (kg)</TableHead>
+                                        <TableHead className="text-right py-4 px-8"></TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {allHives?.map((hive) => (
+                                        <TableRow key={hive.id} className="border-b border-gray-50 dark:border-[#1e1e1e] hover:bg-gray-50/30 dark:hover:bg-white/5 transition-colors">
+                                            <TableCell className="py-6 px-8">
+                                                <div className="flex flex-col">
+                                                    <span className="font-black text-gray-900 dark:text-white">{hive.hive_code}</span>
+                                                    <span className="text-[10px] text-gray-400 font-bold uppercase">{hive.apiary?.name || 'Main Apiary'}</span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="py-6 px-8">
+                                                <Input
+                                                    type="number"
+                                                    placeholder={settings?.temp_threshold_high?.toString()}
+                                                    value={hiveThresholds[hive.id]?.temp_threshold_high ?? hive.temp_threshold_high ?? ''}
+                                                    onChange={(e) => setHiveThresholds(prev => ({
+                                                        ...prev,
+                                                        [hive.id]: { ...prev[hive.id], temp_threshold_high: parseFloat(e.target.value) }
+                                                    }))}
+                                                    className="w-24 h-10 rounded-xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 font-bold text-sm focus:border-amber-500 transition-all outline-none"
+                                                />
+                                            </TableCell>
+                                            <TableCell className="py-6 px-8">
+                                                <Input
+                                                    type="number"
+                                                    placeholder={settings?.temp_threshold_low?.toString()}
+                                                    value={hiveThresholds[hive.id]?.temp_threshold_low ?? hive.temp_threshold_low ?? ''}
+                                                    onChange={(e) => setHiveThresholds(prev => ({
+                                                        ...prev,
+                                                        [hive.id]: { ...prev[hive.id], temp_threshold_low: parseFloat(e.target.value) }
+                                                    }))}
+                                                    className="w-24 h-10 rounded-xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 font-bold text-sm focus:border-amber-500 transition-all outline-none"
+                                                />
+                                            </TableCell>
+                                            <TableCell className="py-6 px-8">
+                                                <Input
+                                                    type="number"
+                                                    placeholder={settings?.weight_drop_threshold?.toString()}
+                                                    value={hiveThresholds[hive.id]?.weight_drop_threshold ?? hive.weight_drop_threshold ?? ''}
+                                                    onChange={(e) => setHiveThresholds(prev => ({
+                                                        ...prev,
+                                                        [hive.id]: { ...prev[hive.id], weight_drop_threshold: parseFloat(e.target.value) }
+                                                    }))}
+                                                    className="w-24 h-10 rounded-xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 font-bold text-sm focus:border-amber-500 transition-all outline-none"
+                                                />
+                                            </TableCell>
+                                            <TableCell className="py-6 px-8 text-right">
+                                                <Button
+                                                    variant="ghost"
+                                                    disabled={!hiveThresholds[hive.id] || updateHiveThresholdsMutation.isPending}
+                                                    onClick={() => handleUpdateHiveThreshold(hive.id)}
+                                                    className="h-10 px-4 rounded-xl font-bold text-xs text-amber-600 hover:text-amber-700 hover:bg-amber-50 transition-all disabled:opacity-50"
+                                                >
+                                                    {updateHiveThresholdsMutation.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Update'}
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                    {(!allHives || allHives.length === 0) && (
+                                        <TableRow>
+                                            <TableCell colSpan={5} className="py-12 text-center text-gray-400 font-bold">
+                                                No hives found
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </CardContent>
+                </Card>
+            </motion.div>
 
             {/* Modules Section */}
             <motion.div variants={itemVariants}>

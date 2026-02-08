@@ -88,7 +88,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
             }, 500);
             return () => clearTimeout(timer);
         }
-    }, [initialMessage]);
+    }, [initialMessage, onInitialMessageConsumed]);
 
     // Load messages when selecting a chat
     const switchChat = (chatId: string) => {
@@ -237,11 +237,13 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
             });
         };
 
+        // eslint-disable-next-line no-useless-escape
         const parts = content.split(/(\[Insert Link: beeyield\.com\/[a-zA-Z0-9\-\/]+\])/g);
 
         return (
             <div className="text-sm leading-relaxed whitespace-pre-wrap">
                 {parts.map((part, i) => {
+                    // eslint-disable-next-line no-useless-escape
                     const match = part.match(/\[Insert Link: beeyield\.com\/([a-zA-Z0-9\-\/]+)\]/);
                     if (match) {
                         const path = '/' + match[1];

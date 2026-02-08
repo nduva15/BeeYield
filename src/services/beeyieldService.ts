@@ -3,7 +3,7 @@ import { apiGet, apiPost, apiPut, apiDelete } from './api';
 import { toast } from 'sonner';
 
 // Memory cache for auth session to avoid redundant calls
-let cachedSession: any = null;
+let cachedSession: { access_token: string } | null = null;
 let lastSessionFetch = 0;
 const SESSION_CACHE_TTL = 30000; // 30 seconds
 
@@ -23,7 +23,7 @@ export const getAuthHeaders = async (): Promise<Record<string, string>> => {
             setTimeout(() => reject(new Error('Auth timeout')), 5000)
         );
 
-        const result = await Promise.race([sessionPromise, timeoutPromise]) as any;
+        const result = await Promise.race([sessionPromise, timeoutPromise]) as { data: { session: { access_token: string } } };
         const session = result?.data?.session;
 
         if (session) {
@@ -81,6 +81,17 @@ export interface SensorReading {
     timestamp: string;
     status: string;
     readings: InfieldReadings | InlandReadings | DiseaseReadings;
+}
+
+export interface DashboardStats {
+    totalDevices: number;
+    activeDevices: number;
+    totalReadings: number;
+    lastUpdate: string;
+    avgTemperature: number;
+    avgHumidity: number;
+    avgHiveWeight: number;
+    healthScore: number;
 }
 
 export interface ClientHive {
@@ -318,6 +329,45 @@ export interface PollinationAnalytics {
     total_revenue: number;
 }
 
+// ========== SETTINGS TYPES ==========
+export interface NotificationConfig {
+    event_type: string;
+    email_enabled: boolean;
+    push_enabled: boolean;
+    sms_enabled: boolean;
+    updated_at: string;
+}
+
+export interface UserSettings {
+    user_id: string;
+    language: string;
+    unit_system: 'Metric' | 'Imperial';
+    theme: 'Light' | 'Dark' | 'System';
+    timezone: string;
+    temp_threshold_high: number;
+    temp_threshold_low: number;
+    weight_drop_threshold: number;
+    created_at: string;
+    updated_at: string;
+    notification_configs?: NotificationConfig[];
+}
+
+export interface UserSettingsUpdate {
+    language?: string;
+    unit_system?: 'Metric' | 'Imperial';
+    theme?: 'Light' | 'Dark' | 'System';
+    timezone?: string;
+    temp_threshold_high?: number;
+    temp_threshold_low?: number;
+    weight_drop_threshold?: number;
+}
+
+export interface NotificationConfigUpdate {
+    email_enabled?: boolean;
+    push_enabled?: boolean;
+    sms_enabled?: boolean;
+}
+
 // Data for BeeYield service is fetched directly from the backend API.
 
 export const beeyieldService = {
@@ -346,7 +396,7 @@ export const beeyieldService = {
     ): Promise<SensorReading[]> {
         try {
             const headers = await getAuthHeaders();
-            const params: any = { hours };
+            const params: Record<string, unknown> = { hours };
             if (type) params.sensor_type = type;
 
             const readings = await apiGet<SensorReading[]>('/iot/readings', params, { headers });
@@ -385,22 +435,24 @@ export const beeyieldService = {
     },
 
     // Get dashboard stats
-    async getDashboardStats(): Promise<{
-        totalDevices: number;
-        activeDevices: number;
-        totalReadings: number;
-        lastUpdate: string;
-        avgTemperature: number;
-        avgHumidity: number;
-        avgHiveWeight: number;
-        healthScore: number;
-    }> {
+    async getDashboardStats(): Promise<DashboardStats> {
         try {
             const headers = await getAuthHeaders();
-            return await apiGet<any>('/iot/stats', {}, { headers });
+            return await apiGet<DashboardStats>('/iot/stats', {}, { headers });
         } catch (error) {
             console.error('Error fetching dashboard stats:', error);
             throw error;
+        }
+    },
+
+    // Get latest telemetry for user's hives
+    async getTelemetryLatest(): Promise<SensorReading[]> {
+        try {
+            const headers = await getAuthHeaders();
+            return await apiGet<SensorReading[]>('/beeyield/telemetry/latest', {}, { headers });
+        } catch (error) {
+            console.error('Error fetching telemetry:', error);
+            return [];
         }
     },
 
@@ -570,8 +622,8 @@ export const beeyieldService = {
     async getHarvests(filters?: { hive_id?: string; farmer_id?: string; year?: number }): Promise<Harvest[]> {
         try {
             const headers = await getAuthHeaders();
-            // Use backend endpoint which handles complex joins correctly
-            let url = '/traceability/harvests?limit=100';
+            // Use backend endpoint which handles user-specific data correctly
+            const url = '/beeyield/harvests';
 
             // Note: Filters could be passed as query params here if backend supports them, 
             // but for now we filter client-side to match the TS logic if needed, 
@@ -604,7 +656,7 @@ export const beeyieldService = {
     async createHarvest(input: HarvestCreateInput): Promise<{ data: Harvest | null; error: any }> {
         try {
             const headers = await getAuthHeaders();
-            const response = await apiPost<any>('/traceability/harvests', {
+            const response = await apiPost<any>('/beeyield/harvests', {
                 ...input,
                 extraction_method: input.extraction_method || 'Cold Extraction',
                 nectar_source: input.nectar_source || 'Acacia',
@@ -627,7 +679,7 @@ export const beeyieldService = {
     async updateHarvest(id: string, input: Partial<HarvestCreateInput>): Promise<{ data: Harvest | null; error: any }> {
         try {
             const headers = await getAuthHeaders();
-            const data = await apiPut<Harvest>(`/traceability/harvests/${id}`, input, { headers });
+            const data = await apiPut<Harvest>(`/beeyield/harvests/${id}`, input, { headers });
             toast.success('Harvest updated!');
             return { data, error: null };
         } catch (error) {
@@ -842,7 +894,68 @@ export const beeyieldService = {
             console.error('Error fetching activity logs:', error);
             return [];
         }
-    }
+    },
+
+    // ========== SETTINGS & PREFERENCES ==========
+
+    // Get user settings and notification configs
+    async getSettings(): Promise<UserSettings | null> {
+        try {
+            const headers = await getAuthHeaders();
+            return await apiGet<UserSettings>('/settings', {}, { headers });
+        } catch (error) {
+            console.error('Error fetching settings:', error);
+            return null;
+        }
+    },
+
+    // Update user settings
+    async updateSettings(settings: UserSettingsUpdate): Promise<{ data: any; error: any }> {
+        try {
+            const headers = await getAuthHeaders();
+            const data = await apiPut<any>('/settings', settings, { headers });
+            toast.success('Preferences updated');
+            return { data, error: null };
+        } catch (error) {
+            console.error('Error updating settings:', error);
+            toast.error('Failed to update preferences');
+            return { data: null, error };
+        }
+    },
+
+    // Update specific notification config
+    async updateNotificationConfig(
+        eventType: string,
+        config: NotificationConfigUpdate
+    ): Promise<{ data: any; error: any }> {
+        try {
+            const headers = await getAuthHeaders();
+            const data = await apiPut<any>(`/settings/notifications/${eventType}`, config, { headers });
+            toast.success(`Notification updated`);
+            return { data, error: null };
+        } catch (error) {
+            console.error('Error updating notification config:', error);
+            toast.error('Failed to update notification settings');
+            return { data: null, error };
+        }
+    },
+
+    // Update specific hive thresholds
+    async updateHiveThresholds(
+        hiveId: string,
+        thresholds: { temp_threshold_high?: number; temp_threshold_low?: number; weight_drop_threshold?: number }
+    ): Promise<{ data: any; error: any }> {
+        try {
+            const headers = await getAuthHeaders();
+            const data = await apiPut<any>(`/settings/hives/${hiveId}`, thresholds, { headers });
+            toast.success(`Hive thresholds updated`);
+            return { data, error: null };
+        } catch (error) {
+            console.error('Error updating hive thresholds:', error);
+            toast.error('Failed to update hive thresholds');
+            return { data: null, error };
+        }
+    },
 };
 
 export default beeyieldService;

@@ -1,0 +1,3758 @@
+{
+    "metadata": {
+        "version": "1.0.0",
+        "description": "Comprehensive bee encyclopedia integrated from frontend data sources",
+        "last_updated": "2026-02-02"
+    },
+    "bee_species": {
+        "Italian Honey Bee": {
+            "scientific_name": "Apis mellifera ligustica",
+            "origin": "Italy",
+            "characteristics": "Lightly colored (light leather to yellow), long brood cycles, prone to robbing.",
+            "honey_yield": "Very high (up to 150 lbs/hive in warm climates).",
+            "temperament": "Extremely docile and gentle; ideal for beginners.",
+            "climate_suitability": "Prefers warm climates; less winter-hardy.",
+            "pros": [
+                "Excellent honey producers",
+                "Rapid spring buildup",
+                "Low swarming tendency"
+            ],
+            "cons": [
+                "Prone to 'drifting' and robbing",
+                "High food consumption in winter"
+            ],
+            "description": "The most popular bee for commercial beekeeping worldwide due to its high productivity and gentle nature."
+        },
+        "Carniolan Honey Bee": {
+            "scientific_name": "Apis mellifera carnica",
+            "origin": "Slovenia & Austria (Carniolan Alps)",
+            "characteristics": "Greyish-brown, thick hair; rapid spring buildup with ability to hibernate with small clusters.",
+            "honey_yield": "High (100-150 lbs depending on forage).",
+            "temperament": "Very gentle; excellent for suburban settings.",
+            "climate_suitability": "Excellent cold tolerance; thrives in temperate to alpine zones.",
+            "pros": [
+                "Economizes food in dearth",
+                "Resistant to brood diseases",
+                "Rapid population scaling"
+            ],
+            "cons": [
+                "May swarm aggressively in strong nectar flows",
+                "Light-colored wax is less robust for comb foundation"
+            ],
+            "description": "Preferred by European beekeepers for its adaptability, gentle behavior, and resistance to diseases. Performs well in colder climates where forage windows are short."
+        },
+        "Buckfast Bee": {
+            "scientific_name": "Hybrid (Apis mellifera crosses)",
+            "origin": "Buckfast Abbey, England (1919-2011)",
+            "characteristics": "Engineered for disease resistance; variable color from dark brown to yellow.",
+            "honey_yield": "Very High (100-180 lbs).",
+            "temperament": "Calm and easy to work; however, queen progeny can become more aggressive.",
+            "climate_suitability": "Very adaptable; thrives from Northern Europe to Africa.",
+            "pros": [
+                "Extremely disease resistant",
+                "High honey output",
+                "Overwinters well"
+            ],
+            "cons": [
+                "Genetic drift can produce aggressive colonies",
+                "Requires strict queen management"
+            ],
+            "description": "A legendary hybrid developed over decades by Brother Adam. Known for robust health and adaptability, it is the foundation of many modern breeding programs and a perfect match for BeeYield's precision apiary management."
+        },
+        "African Honey Bee (Apis mellifera scutellata)": {
+            "scientific_name": "Apis mellifera scutellata",
+            "origin": "East Africa (Kenya, Tanzania, Uganda)",
+            "characteristics": "Smaller body; extremely defensive; multiple mating flights for queens.",
+            "honey_yield": "Moderate (50-70 lbs); smaller colonies.",
+            "temperament": "Highly defensive ('Africanized' reputation); require experienced handling.",
+            "climate_suitability": "Thrives in tropical and arid climates; does not cluster well in cold.",
+            "pros": [
+                "Highly resistant to Varroa",
+                "Exceptional disease resistance",
+                "Strong foraging instincts"
+            ],
+            "cons": [
+                "Very defensive behavior requires protective measures",
+                "Tendency to abscond under stress"
+            ],
+            "description": "Native to the Kibwezi region and valued by BeeYield for genetic traits. Our colonies selectively breed scutellata with milder strains to combine disease resistance with manageable temperament."
+        },
+        "Eastern Honey Bee (Apis cerana)": {
+            "scientific_name": "Apis cerana",
+            "origin": "Southeast Asia",
+            "characteristics": "Smaller than western bees; dark coloring; colonies can consist of 6,000-8,000 bees.",
+            "honey_yield": "Low (15-30 lbs).",
+            "temperament": "Gentle but flighty under inspection.",
+            "climate_suitability": "Tropical to subtropical; highly adapted to local diseases and predators.",
+            "pros": [
+                "Natural Varroa resistance via grooming",
+                "Excellent at absconding from predators",
+                "Thrives in small hives"
+            ],
+            "cons": [
+                "Low honey production",
+                "Small colonies limit commercial scalability"
+            ],
+            "description": "Used in research for natural mite resistance behaviors, particularly hygienic grooming. BeeYield studies cerana behavior for integration into Scutellata breeding lines."
+        },
+        "German Dark Bee": {
+            "scientific_name": "Apis mellifera mellifera",
+            "origin": "Northern and Central Europe",
+            "characteristics": "Dark brown to black coloring; stocky body; adapted to long, cold winters.",
+            "honey_yield": "Moderate (60-80 lbs).",
+            "temperament": "Defensive under certain conditions; can be 'hot' during inspections.",
+            "climate_suitability": "Superb cold hardiness; survives harsh Nordic winters.",
+            "pros": [
+                "Excellent winter survival",
+                "Low food consumption in dearth",
+                "Strong flight muscles"
+            ],
+            "cons": [
+                "Slow spring buildup",
+                "Can be defensive when colony is disturbed"
+            ],
+            "description": "The original European bee before Italian imports dominated. Now critically endangered in pure form but still found in conservation programs and mountain apiaries."
+        },
+        "Caucasian Bee": {
+            "scientific_name": "Apis mellifera caucasica",
+            "origin": "Caucasus Mountains (Georgia, Armenia)",
+            "characteristics": "Long proboscis (7.2mm) for deep flowers; grey coloring; calm.",
+            "honey_yield": "Moderate to High (80-110 lbs).",
+            "temperament": "Extremely gentle; heaviest propolis use of all subspecies.",
+            "climate_suitability": "Moderate cold tolerance; struggles with humid climates.",
+            "pros": [
+                "Access deep flowers others can't",
+                "Excellent propolis producer",
+                "Very calm"
+            ],
+            "cons": [
+                "Susceptible to Nosema",
+                "Excessive propolizing makes hive management difficult"
+            ],
+            "description": "Valued for unique flower access and pharmaceutical-grade propolis. BeeYield incorporates Caucasian genetics into targeted pollination contracts for deep-throated flowers like red clover."
+        },
+        "Russian Bee": {
+            "scientific_name": "Apis mellifera (Primorsky region strains)",
+            "origin": "Russian Far East (Primorsky Krai)",
+            "characteristics": "Variable coloring; evolved alongside Varroa for 150+ years.",
+            "honey_yield": "Moderate (60-100 lbs).",
+            "temperament": "Gentle but may rear queen cells liberally.",
+            "climate_suitability": "Cold-hardy; performs well in fluctuating spring temps.",
+            "pros": [
+                "Natural Varroa resistance",
+                "Very hygienic behavior",
+                "Economical with winter stores"
+            ],
+            "cons": [
+                "Slow spring buildup",
+                "Multiple queen cells can confuse beginners"
+            ],
+            "description": "Selected by USDA for mite-resistance breeding programs. BeeYield sources Russian queen genetics for natural IPM integration."
+        }
+    },
+    "diseases_and_pests": {
+        "American Foulbrood (AFB)": {
+            "scientific_name": "Paenibacillus larvae",
+            "category": "Bacterial",
+            "risk_level": "CRITICAL",
+            "signs": "Sunken, dark, perforated cappings; 'pupal tongue' protruding from remains.",
+            "symptoms": "Larvae turn coffee-brown and ropy; distinct 'foul' decayed-fish odor. Scale adheres tightly to cell wall.",
+            "causes": "Spore-forming bacteria ingested by young larvae. Spores remain viable for 40+ years.",
+            "detection": "Rope Test (>2cm stretch); Holst Milk Test; EFD Diagnostic Kits.",
+            "treatment": "Usage of antibiotics (Terramycin) only suppresses symptoms. Total incineration of hive, bees, and frames is the only reliable cure.",
+            "prevention": "Regular inspection; tool sterilization; hygienic queens; avoiding buying used equipment without history.",
+            "transmission": "Robbing; drifting; contaminated tools; swapping frames between hives.",
+            "myths": "Freezing equipment kills spores (False); Honey from AFB hives is toxic to humans (False, but spreads disease to bees).",
+            "action_steps": [
+                "Execute Rope Test",
+                "Seal hive immediately",
+                "Notify veterinary authority",
+                "Burn hive in pit"
+            ]
+        },
+        "European Foulbrood (EFB)": {
+            "scientific_name": "Melissococcus plutonius",
+            "category": "Bacterial",
+            "risk_level": "HIGH",
+            "signs": "Twisted, yellow/brown larvae coiled in 'C' shape; die before capping.",
+            "symptoms": "Melted/rubbery larvae; sour/yeasty smell; spotty brood pattern. Tracheal system often visible.",
+            "causes": "Bacterial infection exacerbated by nutritional stress or chilled brood.",
+            "detection": "Visual inspection; EFB diagnostic kits.",
+            "treatment": "Re-queening (break brood cycle); Shook Swarm method; antibiotic treatment (Oxytetracycline) where legal.",
+            "prevention": "Maintain strong colonies; ensure adequate pollen/nectar flow; reduce stress.",
+            "transmission": "Nurse bees feeding larvae; drifting; contaminated pollen.",
+            "myths": "It always kills the colony (False, strong colonies can clear it); It smells like fish (False, smells sour).",
+            "action_steps": [
+                "Feed sugar syrup",
+                "Re-queen",
+                "Perform Shook Swarm if severe"
+            ]
+        },
+        "Varroa Destructor": {
+            "scientific_name": "Varroa destructor",
+            "category": "Parasitic Mite",
+            "risk_level": "CRITICAL",
+            "signs": "Red-brown mites on adult bees; spotty brood pattern.",
+            "symptoms": "Parasitic Mite Syndrome (PMS); Deformed Wing Virus signs; rapid population crash in late summer.",
+            "causes": "Introduction of mites via drifting, robbing, or swarms.",
+            "detection": "Alcohol Wash (Threshold >3/100 bees); Sugar Roll; Sticky Board Drop.",
+            "treatment": "Organic Acids (Formic, Oxalic); Thymol (Apiguard); Synthetic Miticides (Amitraz, Flumethrin).",
+            "prevention": "VSH (Varroa Sensitive Hygiene) Queens; Drone Brood Removal; Screened Bottom Boards.",
+            "transmission": "Vertical (mother to daughter mite); Horizontal (drifting/robbing).",
+            "myths": "Freezing winter kills them (False); Natural bees don't need treatment (False, usually collapse).",
+            "action_steps": [
+                "Monitor monthly",
+                "Rotate treatments",
+                "Treat in late summer/winter"
+            ]
+        },
+        "Chalkbrood": {
+            "scientific_name": "Ascosphaera apis",
+            "category": "Fungal",
+            "risk_level": "MEDIUM",
+            "signs": "Hard, white/grey/black 'mummies' on bottom board or in cells.",
+            "symptoms": "Spotty brood; audible 'rattle' when shaking frames of mummies.",
+            "causes": "Fungal spores triggered by chilling, high humidity, or stress.",
+            "detection": "Visual identification of mummies.",
+            "treatment": "Self-limiting in strong hives. Re-queen if chronic. Increase ventilation. Feed syrup.",
+            "prevention": "Place hives in full sun; avoid opening in cold weather; hygienic genetics.",
+            "transmission": "Spores in pollen/nectar; swapping frames.",
+            "myths": "It kills the colony (Rarely, usually a stress indicator).",
+            "action_steps": [
+                "Clen bottom board",
+                "Increase hive ventilation",
+                "Re-queen if persistent"
+            ]
+        },
+        "Stonebrood": {
+            "scientific_name": "Aspergillus flavus / fumigatus",
+            "category": "Fungal",
+            "risk_level": "LOW",
+            "signs": "Larvae/pupae turn hard and stone-like; greenish fungal spores.",
+            "symptoms": "Mummified brood similar to Chalkbrood but harder; respiratory hazard for beekeeper.",
+            "causes": "Fungal infection often linked to damp conditions.",
+            "detection": "Visual inspection; lab culture.",
+            "treatment": "Destruction of infected comb. Note: Zoonotic risk (can infect humans).",
+            "prevention": "Keep hives dry and ventilated.",
+            "transmission": "Spores.",
+            "myths": "Harmless to humans (False, can cause Aspergillosis).",
+            "action_steps": [
+                "Wear N95 mask",
+                "Remove infected combs",
+                "Ventilate hive"
+            ]
+        },
+        "Nosema (Apis & Ceranae)": {
+            "scientific_name": "Nosema apis / Nosema ceranae",
+            "category": "Microsporidian (Fungal-like)",
+            "risk_level": "HIGH",
+            "signs": "N. apis: Dysentery (fecal staining) on hive front. N. ceranae: No dysentery, simple dwindling.",
+            "symptoms": "Slow spring buildup; crawling bees; disjointed wings (K-wing); sudden population drop.",
+            "causes": "Spore ingestion; stress; poor nutrition; containment during winter.",
+            "detection": "Microscopy (hemocytometer count); Field gut squash (white gut = healthy, milky/swollen = infected).",
+            "treatment": "Fumagillin (where legal); Thymol supplements; probiotics; strong nutrition.",
+            "prevention": "Sunny apiary sites; good winter stores; crush-and-strain honey harvest (cycle combs).",
+            "transmission": "Fecal-oral route; contaminated water.",
+            "myths": "Dysentery always means Nosema (False, can be dysentery from poor food).",
+            "action_steps": [
+                "Wait for cleansing flight",
+                "Feed thick syrup",
+                "Sample for microscopy"
+            ]
+        },
+        "Deformed Wing Virus (DWV)": {
+            "scientific_name": "DWV-A/B/C",
+            "category": "Viral",
+            "risk_level": "CRITICAL",
+            "signs": "Emerging bees with shriveled/crumpled wings; shortened abdomens.",
+            "symptoms": "Flightless bees crawling on ground; rapid colony collapse.",
+            "causes": "Vectored and amplified by Varroa destructor feeding on fat body.",
+            "detection": "Visual observation of deformed workers.",
+            "treatment": "Treat the vector (Varroa). No direct antiviral cure available.",
+            "prevention": "Keep Mite levels <1%; Hygienic stock.",
+            "transmission": "Varroa bite; vertical (egg); trophallaxis.",
+            "myths": "It's genetic (False, it's viral).",
+            "action_steps": [
+                "Aggressive mite treatment",
+                "Remove symptomatic bees"
+            ]
+        },
+        "Acute Bee Paralysis Virus (ABPV)": {
+            "scientific_name": "Dicistroviridae",
+            "category": "Viral",
+            "risk_level": "HIGH",
+            "signs": "Trembling; inability to fly; loss of hair (greasy look).",
+            "symptoms": "Sudden death of large numbers of adult bees outside hive.",
+            "causes": "Triggered by Varroa infestation.",
+            "detection": "Lab PCR.",
+            "treatment": "Control Varroa.",
+            "prevention": "Varroa management.",
+            "transmission": "Varroa vector.",
+            "myths": "Confused with pesticide poisoning.",
+            "action_steps": [
+                "Monitor mite levels"
+            ]
+        },
+        "Chronic Bee Paralysis Virus (CBPV)": {
+            "scientific_name": "CBPV",
+            "category": "Viral",
+            "risk_level": "MEDIUM",
+            "signs": "Type 1: Trembling wings/bodies ('Paralysis'). Type 2: 'Hairless black syndrome' (greasy, black bees).",
+            "symptoms": "Nibbling attacks by healthy bees on infected ones; piles of dead bees.",
+            "causes": "Overcrowding; confinement.",
+            "detection": "Visual (shaking/black bees); PCR.",
+            "treatment": "Re-queen; alleviate overcrowding.",
+            "prevention": "Avoid overcrowding.",
+            "transmission": "Contact; broken hairs.",
+            "myths": "Old bees naturally turn black (True, but trembling is the key differentiator).",
+            "action_steps": [
+                "Expand hive space",
+                "Re-queen"
+            ]
+        },
+        "Sacbrood Virus (SBV)": {
+            "scientific_name": "Ifravirus",
+            "category": "Viral",
+            "risk_level": "LOW",
+            "signs": "Larvae die upright in cell; head turns dark/black ('Gondola shape'); fluid-filled 'sac'.",
+            "symptoms": "Scales are brittle and boat-shaped; easy to remove.",
+            "causes": "Viral infection; stress.",
+            "detection": "Visual inspection of 'Chinese slipper' larvae.",
+            "treatment": "Re-queen (break brood cycle).",
+            "prevention": "Strong apiary hygiene.",
+            "transmission": "Nurse bees.",
+            "myths": "It's foulbrood (False, no smell/ropiness).",
+            "action_steps": [
+                "Re-queen if persistent"
+            ]
+        },
+        "Black Queen Cell Virus (BQCV)": {
+            "scientific_name": "Cripavirus",
+            "category": "Viral",
+            "risk_level": "MEDIUM (for breeders)",
+            "signs": "Queen pupae turn black and die within sealed cell.",
+            "symptoms": "Failed queen rearing; often associated with Nosema.",
+            "causes": "Nosema infection acts as entry vector.",
+            "detection": "Black queen cells.",
+            "treatment": "Treat Nosema.",
+            "prevention": "Control Nosema.",
+            "transmission": "Oral.",
+            "myths": "Chilled cells turn black (True, but BQCV is specific pathology).",
+            "action_steps": [
+                "Check for Nosema",
+                "Sanitize grafting tools"
+            ]
+        },
+        "Israeli Acute Paralysis Virus (IAPV)": {
+            "scientific_name": "Dicistroviridae",
+            "category": "Viral",
+            "risk_level": "CRITICAL",
+            "signs": "Shivering wings; progression to paralysis and death.",
+            "symptoms": "Linked to Colony Collapse Disorder (CCD).",
+            "causes": "Varroa vector; stress.",
+            "detection": "PCR.",
+            "treatment": "Varroa control.",
+            "prevention": "Robust genetics; protein nutrition.",
+            "transmission": "Varroa.",
+            "myths": "Only affects Israel (False, global).",
+            "action_steps": [
+                "Boost nutrition",
+                "Manage mites"
+            ]
+        },
+        "Lake Sinai Virus (LSV)": {
+            "scientific_name": "Sinaivirus",
+            "category": "Viral",
+            "risk_level": "MEDIUM",
+            "signs": "Often asymptomatic; linked to weak colonies.",
+            "symptoms": "General dwindling.",
+            "causes": "Unknown triggers.",
+            "detection": "PCR.",
+            "treatment": "None.",
+            "prevention": "General hygiene.",
+            "transmission": "Unknown.",
+            "myths": "Newly discovered means new threat (Likely omnipresent but recently detected).",
+            "action_steps": [
+                "Maintain strong colonies"
+            ]
+        },
+        "Slow Bee Paralysis Virus (SBPV)": {
+            "scientific_name": "Ifravirus",
+            "category": "Viral",
+            "risk_level": "LOW",
+            "signs": "Paralysis of front legs first.",
+            "symptoms": "Death after ~12 days.",
+            "causes": "Varroa.",
+            "detection": "PCR.",
+            "treatment": "Varroa control.",
+            "prevention": "Varroa control.",
+            "transmission": "Varroa.",
+            "myths": "Same as APV (False, different viral family).",
+            "action_steps": [
+                "Monitor Varroa"
+            ]
+        },
+        "Kashmir Bee Virus (KBV)": {
+            "scientific_name": "Dicistroviridae",
+            "category": "Viral",
+            "risk_level": "HIGH",
+            "signs": "None specific; sudden adult death.",
+            "symptoms": "Highly virulent when injected by mites.",
+            "causes": "Varroa.",
+            "detection": "PCR.",
+            "treatment": "Varroa control.",
+            "prevention": "Varroa control.",
+            "transmission": "Varroa; horizontal.",
+            "myths": "Harmless without mites (mostly True).",
+            "action_steps": [
+                "Keep mites low"
+            ]
+        },
+        "Small Hive Beetle": {
+            "scientific_name": "Aethina tumida",
+            "category": "Pest",
+            "risk_level": "HIGH",
+            "signs": "Adult beetles fleeing light; clusters in corners.",
+            "symptoms": "Fermented honey (slimed); 'rotten orange' smell; larva mining through comb.",
+            "causes": "Weak colony unable to defend space; slimy honey harvest handling.",
+            "detection": "Corrugated plastic traps; visual check of lid.",
+            "treatment": "Swiffer sheets; Oil traps; Nematodes (Heterorhabditis indica) for soil.",
+            "prevention": "Keep hives full of bees (no empty space); sunny location.",
+            "transmission": "Flight.",
+            "myths": " beetles kill hives (False, beetle LARVAE kill hives).",
+            "action_steps": [
+                "Install oil traps",
+                "Remove excess supers",
+                "Burn slimed frames"
+            ]
+        },
+        "Wax Moth (Greater & Lesser)": {
+            "scientific_name": "Galleria mellonella / Achroia grisella",
+            "category": "Pest",
+            "risk_level": "MEDIUM",
+            "signs": "Silken tunnels (galleries) in comb; cocoons on frames.",
+            "symptoms": "Destruction of brood comb; bald brood (uncapped pupae).",
+            "causes": "Weak colony; stored equipment.",
+            "detection": "Visual.",
+            "treatment": "Freeze frames; Bt (Bacillus thuringiensis) spray (Certan).",
+            "prevention": "Strong colonies; Para-dichlorobenzene (PDB) for STORAGE ONLY.",
+            "transmission": "Flight.",
+            "myths": "Moths kill colonies (False, they carry out the dead/weak).",
+            "action_steps": [
+                "Freeze stored comb",
+                "Combine weak hives"
+            ]
+        },
+        "Tracheal Mite": {
+            "scientific_name": "Acarapis woodi",
+            "category": "Parasite",
+            "risk_level": "LOW (Modern genetics)",
+            "signs": "K-wing (disjointed wings); crawling bees.",
+            "symptoms": "Inability to cluster in winter; suffocation.",
+            "causes": "Mite reproducing in bee trachea.",
+            "detection": "Microscopy of thoracic collar.",
+            "treatment": "Menthol crystals; Formic acid; Grease patties.",
+            "prevention": "Resistant genetics (Buckfast/Russian).",
+            "transmission": "Drifting.",
+            "myths": "It's gone (False, just managed by genetics).",
+            "action_steps": [
+                "Use resistant stock",
+                "Grease patties"
+            ]
+        },
+        "Braula Coeca (Bee Louse)": {
+            "scientific_name": "Braula coeca",
+            "category": "Pest",
+            "risk_level": "LOW",
+            "signs": "Reddish-brown wingless fly on queen's thorax.",
+            "symptoms": "Steals food from queen (trophallaxis). Does not suck blood.",
+            "causes": "Presence.",
+            "detection": "Visual.",
+            "treatment": "Tobacco smoke; Camphor.",
+            "prevention": "None.",
+            "transmission": "Contact.",
+            "myths": "It's a mite (False, it's a fly).",
+            "action_steps": [
+                "Rarely requires treatment"
+            ]
+        },
+        "Tropilaelaps Mite": {
+            "scientific_name": "Tropilaelaps",
+            "category": "Parasite",
+            "risk_level": "CRITICAL (Emerging threat)",
+            "signs": "Faster reproduction than Varroa.",
+            "symptoms": "Similar to Varroa but more severe.",
+            "causes": "Importation.",
+            "detection": "Bump test.",
+            "treatment": "Cannot survive without brood >3 days. Brood break.",
+            "prevention": "Biosecurity.",
+            "transmission": "Contact.",
+            "myths": "Same as Varroa (False, faster lifecycle).",
+            "action_steps": [
+                "Report immediately if found outside Asia"
+            ]
+        },
+        "Dysentery": {
+            "scientific_name": "N/A (Condition)",
+            "category": "Digestive",
+            "risk_level": "MEDIUM",
+            "signs": "Brown/yellow streaking on hive front/frames.",
+            "symptoms": "Gastrointestinal distress.",
+            "causes": "High ash/moisture content in winter food (honeydew/uncured ivy honey); nosema; confinement.",
+            "detection": "Visual.",
+            "treatment": "Cleansing flight (warm weather); feed pure sugar syrup.",
+            "prevention": "Good winter feed.",
+            "transmission": "N/A.",
+            "myths": "It is a disease (False, it is a symptom).",
+            "action_steps": [
+                "Wait for warm day"
+            ]
+        },
+        "Chilled Brood": {
+            "scientific_name": "N/A (Condition)",
+            "category": "Environmental",
+            "risk_level": "LOW",
+            "signs": "Dead larvae at hive entrance; black/grey larvae in cells.",
+            "symptoms": "Brood nest reduction.",
+            "causes": "Sudden cold snap; beekeeper opening hive too long; too few bees to cover brood.",
+            "detection": "Visual.",
+            "treatment": "Reduce hive space; feed.",
+            "prevention": "Don't inspect <15°C.",
+            "transmission": "N/A.",
+            "myths": "It's AFB (False, no ropiness).",
+            "action_steps": [
+                "Close hive",
+                "Insulate"
+            ]
+        },
+        "Pesticide Poisoning (Acute)": {
+            "scientific_name": "Toxicosis",
+            "category": "Chemical",
+            "risk_level": "CRITICAL",
+            "signs": "Carpet of dead bees with tongues out (proboscis extension) at entrance.",
+            "symptoms": "Spinning on back; regurgitating; aggression.",
+            "causes": "Neonicotinoids; Organophosphates; Fungicides.",
+            "detection": "Lab analysis.",
+            "treatment": "Remove poisoned pollen; feed syrup; move hive.",
+            "prevention": "Communication with farmers; night spraying.",
+            "transmission": "Foraging.",
+            "myths": "Herbicides are safe (False, adjuvants kill bees).",
+            "action_steps": [
+                "Move hive",
+                "Report kill"
+            ]
+        },
+        "Queen Failure (Drone Layer)": {
+            "scientific_name": "N/A",
+            "category": "Reproductive",
+            "risk_level": "HIGH",
+            "signs": "Bullet-shaped cappings (drone brood) in worker cells; spotty pattern.",
+            "symptoms": "Colony dwindles; no worker brood.",
+            "causes": "Queen ran out of sperm; poor mating.",
+            "detection": "Visual.",
+            "treatment": "Re-queen.",
+            "prevention": "Regular requeening.",
+            "transmission": "N/A.",
+            "myths": "Bees will fix it (False, they will die out).",
+            "action_steps": [
+                "Pinch queen",
+                "Introduce new mate"
+            ]
+        },
+        "Laying Workers": {
+            "scientific_name": "N/A",
+            "category": "Reproductive",
+            "risk_level": "HIGH",
+            "signs": "Multiple eggs per cell; eggs on side of cell wall.",
+            "symptoms": "Drone brood in worker cells; noisy roar.",
+            "causes": "Queenlessness >3 weeks; pheromone lack.",
+            "detection": "Multiple eggs.",
+            "treatment": "Shake out bees 100 yards away; combine with strong hive.",
+            "prevention": "monitor queen status.",
+            "transmission": "N/A.",
+            "myths": "Just add a queen (False, they will kill her).",
+            "action_steps": [
+                "Shake out",
+                "Combine"
+            ]
+        }
+    },
+    "health_nodes": {
+        "symptoms": [
+            {
+                "id": "S001",
+                "name": "Perforated Cappings",
+                "disease": "AFB",
+                "desc": "Small pinprick holes in brood cell cappings."
+            },
+            {
+                "id": "S002",
+                "name": "Greasy Bees",
+                "disease": "CBPV/ABPV",
+                "desc": "Adult bees appearing shiny, black, and hairless."
+            },
+            {
+                "id": "S003",
+                "name": "K-Wing",
+                "disease": "Nosema/Tracheal Mite",
+                "desc": "Wings held at uncoupled angles resembling letter K."
+            },
+            {
+                "id": "S004",
+                "name": "Ropy Larvae",
+                "disease": "AFB",
+                "desc": "Larval remains stetch out >2cm like mucus."
+            },
+            {
+                "id": "S005",
+                "name": "Scale",
+                "disease": "AFB",
+                "desc": "Hardened black crust adhered tightly to bottom of cell."
+            },
+            {
+                "id": "S006",
+                "name": "Mummies",
+                "disease": "Chalkbrood",
+                "desc": "Hard white or grey fungal lumps on bottom board."
+            },
+            {
+                "id": "S007",
+                "name": "Dysentery",
+                "disease": "Nosema Apis",
+                "desc": "Brown/yellow fecal streaking on hive face."
+            },
+            {
+                "id": "S008",
+                "name": "Crawlers",
+                "disease": "Various Viruses",
+                "desc": "Bees unable to fly, crawling on ground in front of hive."
+            },
+            {
+                "id": "S009",
+                "name": "Spotty Brood",
+                "disease": "Genera Failure",
+                "desc": "Inconsistent brood pattern with many missed cells."
+            },
+            {
+                "id": "S010",
+                "name": "Shotgun Pattern",
+                "disease": "Queen Failure",
+                "desc": "Scattered brood pattern indicating failing queen."
+            },
+            {
+                "id": "S011",
+                "name": "Twisted Larvae",
+                "disease": "EFB",
+                "desc": "Larvae corkscrewed up cell walls."
+            },
+            {
+                "id": "S012",
+                "name": "Melted Larvae",
+                "disease": "EFB",
+                "desc": "Larvae looking like melted candle wax."
+            },
+            {
+                "id": "S013",
+                "name": "Sour Smell",
+                "disease": "EFB",
+                "desc": "Vinegar-like or sour odor from hive."
+            },
+            {
+                "id": "S014",
+                "name": "Rotten Smell",
+                "disease": "AFB/SHB",
+                "desc": "Decaying meat or rotten orange smell."
+            },
+            {
+                "id": "S015",
+                "name": "Crumpled Wings",
+                "disease": "DWV",
+                "desc": "Emerging bees with undeveloped/shriveled wings."
+            },
+            {
+                "id": "S016",
+                "name": "Trembling",
+                "disease": "CBPV",
+                "desc": "Uncontrollable shaking of adult bees."
+            },
+            {
+                "id": "S017",
+                "name": "Aggression",
+                "disease": "Genetic/Pests",
+                "desc": "Unprovoked stinging and high defensiveness."
+            },
+            {
+                "id": "S018",
+                "name": "Absconding",
+                "disease": "SHB/Hunger",
+                "desc": "Entire colony leaves the hive suddenly."
+            },
+            {
+                "id": "S019",
+                "name": "Slimed Frames",
+                "disease": "SHB",
+                "desc": "Honey looking wet/slimy and fermenting."
+            },
+            {
+                "id": "S020",
+                "name": "Webbing",
+                "disease": "Wax Moth",
+                "desc": "Silken tunnels through comb face."
+            },
+            {
+                "id": "S021",
+                "name": "Bald Brood",
+                "disease": "Wax Moth",
+                "desc": "Pupae uncapped in straight lines."
+            },
+            {
+                "id": "S022",
+                "name": "Supercedure Cells",
+                "disease": "Queen Failure",
+                "desc": "Queen cells built on face of comb."
+            },
+            {
+                "id": "S023",
+                "name": "Swarm Cells",
+                "disease": "Reproduction",
+                "desc": "Queen cells built on bottom bars."
+            },
+            {
+                "id": "S024",
+                "name": "Emergency Cells",
+                "disease": "Queenless",
+                "desc": "Queen cells built from worker cells in center."
+            },
+            {
+                "id": "S025",
+                "name": "Drone Layer",
+                "disease": "Queen Failure",
+                "desc": "Bullet shaped cappings in worker cells."
+            },
+            {
+                "id": "S026",
+                "name": "Multiple Eggs",
+                "disease": "Laying Worker",
+                "desc": "Several eggs in one cell, often on walls."
+            },
+            {
+                "id": "S027",
+                "name": "Small Bees",
+                "disease": "Nutrition",
+                "desc": "Smaller than average workers due to poor diet."
+            },
+            {
+                "id": "S028",
+                "name": "Bleached Cappings",
+                "disease": "Normal",
+                "desc": "White cappings (fresh wax), sign of flow."
+            },
+            {
+                "id": "S029",
+                "name": "Greasy Cappings",
+                "disease": "Normal",
+                "desc": "Contact with honey (dark look), valid variant."
+            },
+            {
+                "id": "S030",
+                "name": "Sunken Cappings",
+                "disease": "AFB",
+                "desc": "Cappings depressed into cell."
+            },
+            {
+                "id": "S031",
+                "name": "Phoretic Mites",
+                "disease": "Varroa",
+                "desc": "Visible red mites on bee thorax/abdomen."
+            },
+            {
+                "id": "S032",
+                "name": "Tongues Out",
+                "disease": "Poisoning",
+                "desc": "Dead bees with proboscis extended."
+            },
+            {
+                "id": "S033",
+                "name": "Spinning",
+                "disease": "Poisoning",
+                "desc": "Bees spinning in circles on ground."
+            },
+            {
+                "id": "S034",
+                "name": "Regurgitation",
+                "disease": "Poisoning",
+                "desc": "Wet bees vomiting nectar."
+            },
+            {
+                "id": "S035",
+                "name": "Purple Brood",
+                "disease": "Plant Poisoning",
+                "desc": "Larvae turning purple (e.g. from Cyrilla)."
+            },
+            {
+                "id": "S036",
+                "name": "Black Eggs",
+                "disease": "Nutritional",
+                "desc": "Eggs failing to hatch/drying out."
+            },
+            {
+                "id": "S037",
+                "name": "Cannibalism",
+                "disease": "Starvation",
+                "desc": "Bees uncapping and eating brood."
+            },
+            {
+                "id": "S038",
+                "name": "Headless Bees",
+                "disease": "Predator",
+                "desc": "Typically hornets or wasps beheading bees."
+            },
+            {
+                "id": "S039",
+                "name": "Scratches",
+                "disease": "Mammal",
+                "desc": "Claw marks on hive exterior."
+            },
+            {
+                "id": "S040",
+                "name": "Toppled Hive",
+                "disease": "Mammal",
+                "desc": "Hive knocked over (Badger/Bear/Cow)."
+            },
+            {
+                "id": "S041",
+                "name": "Propolis Curtain",
+                "disease": "Caucasian",
+                "desc": "Excessive propolis at entrance (defense)."
+            },
+            {
+                "id": "S042",
+                "name": "Washboarding",
+                "disease": "Normal",
+                "desc": "Bees rocking back and forth on front (cleaning)."
+            },
+            {
+                "id": "S043",
+                "name": "Bearding",
+                "disease": "Heat",
+                "desc": "Cluster hanging off front board."
+            },
+            {
+                "id": "S044",
+                "name": "Fanning",
+                "disease": "Heat/Nectar",
+                "desc": "Bees ventilating at entrance."
+            },
+            {
+                "id": "S045",
+                "name": "Piping",
+                "disease": "Swarming",
+                "desc": "High pitched sound from Queen."
+            },
+            {
+                "id": "S046",
+                "name": "Quacking",
+                "disease": "Swarming",
+                "desc": "Sound from virgin queen in cell."
+            },
+            {
+                "id": "S047",
+                "name": "Roaring",
+                "disease": "Queenless",
+                "desc": "Loud, consistent buzz of distress."
+            },
+            {
+                "id": "S048",
+                "name": "Clicking",
+                "disease": "Normal",
+                "desc": "Mandible clicking (warning signal)."
+            },
+            {
+                "id": "S049",
+                "name": "Robbing Frenzy",
+                "disease": "Robbing",
+                "desc": "Frenzied flight at entrance, fighting."
+            },
+            {
+                "id": "S050",
+                "name": "Dwindling",
+                "disease": "Various",
+                "desc": "Population shrinking despite resources."
+            },
+            {
+                "id": "S051",
+                "name": "Pupal Tongue",
+                "disease": "AFB",
+                "desc": "Thin thread stretching from scale to roof."
+            },
+            {
+                "id": "S052",
+                "name": "Gondola Scale",
+                "disease": "Sacbrood",
+                "desc": "Boat-shaped scale, loose in cell."
+            },
+            {
+                "id": "S053",
+                "name": "Chinese Slipper",
+                "disease": "Sacbrood",
+                "desc": "Larval shape resembling a slipper."
+            },
+            {
+                "id": "S054",
+                "name": "Watery Larvae",
+                "disease": "Sacbrood",
+                "desc": "Larvae filled with fluid sac."
+            },
+            {
+                "id": "S055",
+                "name": "Black Queen",
+                "disease": "BQCV",
+                "desc": "Queen pupa turns black."
+            },
+            {
+                "id": "S056",
+                "name": "Hairless Bees",
+                "disease": "CBPV",
+                "desc": "Bees look shiny and behave like robbers."
+            },
+            {
+                "id": "S057",
+                "name": "Nipig",
+                "disease": "Genetic",
+                "desc": "Chewing of brood cappings (hygienic)."
+            },
+            {
+                "id": "S058",
+                "name": "Recapping",
+                "disease": "Varroa",
+                "desc": "Cappings opened and resealed (VSH)."
+            },
+            {
+                "id": "S059",
+                "name": "Frass",
+                "disease": "Wax Moth",
+                "desc": "Black pellets (poop) in web tunnels."
+            },
+            {
+                "id": "S060",
+                "name": "Indentations",
+                "disease": "Wax Moth",
+                "desc": "Tracks on capped honey surface."
+            },
+            {
+                "id": "S061",
+                "name": "Fermentation",
+                "disease": "SHB",
+                "desc": "Bubbles in honey cells."
+            },
+            {
+                "id": "S062",
+                "name": "Maggots",
+                "disease": "SHB",
+                "desc": "Small larvae crawling in honey."
+            },
+            {
+                "id": "S063",
+                "name": "Red Mite",
+                "disease": "Varroa",
+                "desc": "Distinct reddish oval on bee."
+            },
+            {
+                "id": "S064",
+                "name": "White Mite",
+                "disease": "Varroa",
+                "desc": "Immature varroa (found in brood)."
+            },
+            {
+                "id": "S065",
+                "name": "Clear Mite",
+                "disease": "Tropilaelaps",
+                "desc": "Smaller, faster moving mite."
+            },
+            {
+                "id": "S066",
+                "name": "Louse",
+                "disease": "Braula",
+                "desc": "Wingless fly on thorax."
+            },
+            {
+                "id": "S067",
+                "name": "Chilled brood",
+                "disease": "Temp",
+                "desc": "Dead brood on periphery of nest."
+            },
+            {
+                "id": "S068",
+                "name": "Snotty Brood",
+                "disease": "EFB",
+                "desc": "Mucus-like consistency without rope."
+            },
+            {
+                "id": "S069",
+                "name": "Yellow Streak",
+                "disease": "Nosema",
+                "desc": "Feces color indicator."
+            },
+            {
+                "id": "S070",
+                "name": "Brown Streak",
+                "disease": "Dysentery",
+                "desc": "Feces color indicator."
+            },
+            {
+                "id": "S071",
+                "name": "Dead Pupae",
+                "disease": "Varroa",
+                "desc": "Pupae chewed out with damaged eyes/legs."
+            },
+            {
+                "id": "S072",
+                "name": "White Eyes",
+                "disease": "Genetic",
+                "desc": "Mutation (blindness)."
+            },
+            {
+                "id": "S073",
+                "name": "Red Eyes",
+                "disease": "Genetic",
+                "desc": "Mutation."
+            },
+            {
+                "id": "S074",
+                "name": "Split Sting",
+                "disease": "Genetic",
+                "desc": "Deformity."
+            },
+            {
+                "id": "S075",
+                "name": "Two Heads",
+                "disease": "Genetic",
+                "desc": "Rare mutation."
+            },
+            {
+                "id": "S076",
+                "name": "Gynandromorph",
+                "disease": "Genetic",
+                "desc": "Half male/half female bee."
+            },
+            {
+                "id": "S077",
+                "name": "Diploid Drone",
+                "disease": "Inbreeding",
+                "desc": "Fertile egg becomes drone (cannibalized)."
+            },
+            {
+                "id": "S078",
+                "name": "Empty Cells",
+                "disease": "Inbreeding",
+                "desc": "Removed diploid drones."
+            },
+            {
+                "id": "S079",
+                "name": "Chalk Mummies",
+                "disease": "Chalkbrood",
+                "desc": "Look like chalk pieces."
+            },
+            {
+                "id": "S080",
+                "name": "Stone Mummies",
+                "disease": "Stonebrood",
+                "desc": "Look like pebbles."
+            },
+            {
+                "id": "S081",
+                "name": "Green Mold",
+                "disease": "Stonebrood",
+                "desc": "Fungal spores."
+            },
+            {
+                "id": "S082",
+                "name": "White Mold",
+                "disease": "Mold",
+                "desc": "Saprophytic mold (harmless)."
+            },
+            {
+                "id": "S083",
+                "name": "Pollen Mite",
+                "disease": "Pest",
+                "desc": "Dusty looking pollen (harmless)."
+            },
+            {
+                "id": "S084",
+                "name": "Ants",
+                "disease": "Pest",
+                "desc": "Invasion of feeder/brood."
+            },
+            {
+                "id": "S085",
+                "name": "Earwigs",
+                "disease": "Commensal",
+                "desc": "Living in lids (usually harmless)."
+            },
+            {
+                "id": "S086",
+                "name": "Pseudo-scorpion",
+                "disease": "Symbiote",
+                "desc": "Tiny scorpion-like (eats mites)."
+            },
+            {
+                "id": "S087",
+                "name": "Mouse Nest",
+                "disease": "Pest",
+                "desc": "Grass/Chewed comb in winter."
+            },
+            {
+                "id": "S088",
+                "name": "Woodpecker Hole",
+                "disease": "Predator",
+                "desc": "Hole drilled in box."
+            },
+            {
+                "id": "S089",
+                "name": "Chalky Pollen",
+                "disease": "Normal",
+                "desc": "Not to be confused with chalkbrood."
+            },
+            {
+                "id": "S090",
+                "name": "Entombed Pollen",
+                "disease": "Chemical",
+                "desc": "Pollen sealed under wax (toxic)."
+            },
+            {
+                "id": "S091",
+                "name": "Wet Capppings",
+                "disease": "Normal",
+                "desc": "Honey touching wax."
+            },
+            {
+                "id": "S092",
+                "name": "Dry Cappings",
+                "disease": "Normal",
+                "desc": "Air gap under wax."
+            },
+            {
+                "id": "S093",
+                "name": "Zigzag Pattern",
+                "disease": "Laying Worker",
+                "desc": "Random cell selection."
+            },
+            {
+                "id": "S094",
+                "name": "No Eggs",
+                "disease": "Queenless",
+                "desc": "Brood break."
+            },
+            {
+                "id": "S095",
+                "name": "Dry Larvae",
+                "disease": "Sacbrood",
+                "desc": "Before fluid stage."
+            },
+            {
+                "id": "S096",
+                "name": "Black Scale",
+                "disease": "AFB",
+                "desc": "Old infection."
+            },
+            {
+                "id": "S097",
+                "name": "Rubber Scale",
+                "disease": "EFB",
+                "desc": "Easier to remove."
+            },
+            {
+                "id": "S098",
+                "name": "Fragile Scale",
+                "disease": "Sacbrood",
+                "desc": "Removable boat shape."
+            },
+            {
+                "id": "S099",
+                "name": "Excrement",
+                "disease": "Varroa",
+                "desc": "White spots on cell walls."
+            },
+            {
+                "id": "S100",
+                "name": "Guano",
+                "disease": "Bat/Bird",
+                "desc": "Droppings on hive roof."
+            }
+        ],
+        "treatments": [
+            {
+                "id": "T001",
+                "name": "Oxalic Acid Vapor",
+                "type": "Organic",
+                "target": "Varroa",
+                "method": "Sublimation"
+            },
+            {
+                "id": "T002",
+                "name": "Oxalic Acid Dribble",
+                "type": "Organic",
+                "target": "Varroa",
+                "method": "Syrup Solution"
+            },
+            {
+                "id": "T003",
+                "name": "Formic Acid",
+                "type": "Organic",
+                "target": "Varroa",
+                "method": "Evaporation Pads"
+            },
+            {
+                "id": "T004",
+                "name": "Thymol",
+                "type": "Essential Oil",
+                "target": "Varroa",
+                "method": "Gel/Crystal"
+            },
+            {
+                "id": "T005",
+                "name": "Apivar",
+                "type": "Synthetic",
+                "target": "Varroa",
+                "method": "Amitraz Strip"
+            },
+            {
+                "id": "T006",
+                "name": "Apistan",
+                "type": "Synthetic",
+                "target": "Varroa",
+                "method": "Tau-fluvalinate (Resistance High)"
+            },
+            {
+                "id": "T007",
+                "name": "CheckMite+",
+                "type": "Synthetic",
+                "target": "Varroa/SHB",
+                "method": "Coumaphos (High Residue)"
+            },
+            {
+                "id": "T008",
+                "name": "HopGuard",
+                "type": "Organic",
+                "target": "Varroa",
+                "method": "Hops Beta Acids"
+            },
+            {
+                "id": "T009",
+                "name": "Menthol",
+                "type": "Organic",
+                "target": "Tracheal Mite",
+                "method": "Crystals"
+            },
+            {
+                "id": "T010",
+                "name": "Terramycin",
+                "type": "Antibiotic",
+                "target": "AFB/EFB",
+                "method": "Dusting (Prescription only)"
+            },
+            {
+                "id": "T011",
+                "name": "Tylosin",
+                "type": "Antibiotic",
+                "target": "AFB",
+                "method": "Dusting"
+            },
+            {
+                "id": "T012",
+                "name": "Fumagillin",
+                "type": "Antibiotic",
+                "target": "Nosema",
+                "method": "Syrup Drench"
+            },
+            {
+                "id": "T013",
+                "name": "Nozevit",
+                "type": "Supplement",
+                "target": "Nosema",
+                "method": "Oak Bark Extract"
+            },
+            {
+                "id": "T014",
+                "name": "Hive Alive",
+                "type": "Supplement",
+                "target": "General Health",
+                "method": "Seaweed Extract"
+            },
+            {
+                "id": "T015",
+                "name": "Honey-B-Healthy",
+                "type": "Supplement",
+                "target": "Feeding",
+                "method": "Essential Oils"
+            },
+            {
+                "id": "T016",
+                "name": "Bt Aizawai",
+                "type": "Biological",
+                "target": "Wax Moth",
+                "method": "Spray (Certan)"
+            },
+            {
+                "id": "T017",
+                "name": "Nematodes",
+                "type": "Biological",
+                "target": "SHB",
+                "method": "Ground Drench"
+            },
+            {
+                "id": "T018",
+                "name": "Diatomaceous Earth",
+                "type": "Physical",
+                "target": "Ants/SHB",
+                "method": "Ground Barrier"
+            },
+            {
+                "id": "T019",
+                "name": "Oil Trap",
+                "type": "Physical",
+                "target": "SHB",
+                "method": "Drowning"
+            },
+            {
+                "id": "T020",
+                "name": "Swiffer Sheet",
+                "type": "Physical",
+                "target": "SHB",
+                "method": "Entanglement"
+            },
+            {
+                "id": "T021",
+                "name": "Screened Bottom",
+                "type": "Physical",
+                "target": "Varroa",
+                "method": "Passive Fall"
+            },
+            {
+                "id": "T022",
+                "name": "Drone Culling",
+                "type": "Management",
+                "target": "Varroa",
+                "method": "Removal of Drone Brood"
+            },
+            {
+                "id": "T023",
+                "name": "Powdered Sugar",
+                "type": "Mechanical",
+                "target": "Varroa",
+                "method": "Dusting (Grooming)"
+            },
+            {
+                "id": "T024",
+                "name": "Thermal Treatment",
+                "type": "Physical",
+                "target": "Varroa",
+                "method": "Heating Hive to 42C"
+            },
+            {
+                "id": "T025",
+                "name": "Shook Swarm",
+                "type": "Management",
+                "target": "EFB/AFB",
+                "method": "Transfer to foundation"
+            },
+            {
+                "id": "T026",
+                "name": "Re-queening",
+                "type": "Management",
+                "target": "Brood Disease",
+                "method": "Break Brood Cycle"
+            },
+            {
+                "id": "T027",
+                "name": "Brood Break",
+                "type": "Management",
+                "target": "Varroa",
+                "method": "Caging Queen"
+            },
+            {
+                "id": "T028",
+                "name": "Checkerboarding",
+                "type": "Management",
+                "target": "Swarming",
+                "method": "Space Management"
+            },
+            {
+                "id": "T029",
+                "name": "Slatted Rack",
+                "type": "Physical",
+                "target": "Ventilation",
+                "method": "Airflow"
+            },
+            {
+                "id": "T030",
+                "name": "Quilt Box",
+                "type": "Physical",
+                "target": "Moisture",
+                "method": "Condensation Control"
+            },
+            {
+                "id": "T031",
+                "name": "Mouse Guard",
+                "type": "Physical",
+                "target": "Mice",
+                "method": "Entrance Restriction"
+            },
+            {
+                "id": "T032",
+                "name": "Robbing Screen",
+                "type": "Physical",
+                "target": "Robbing",
+                "method": "Entrance Diversion"
+            },
+            {
+                "id": "T033",
+                "name": "Fume Board",
+                "type": "Harvest",
+                "target": "Bees",
+                "method": "Repellent"
+            },
+            {
+                "id": "T034",
+                "name": "Bee Escape",
+                "type": "Harvest",
+                "target": "Bees",
+                "method": "One-way valve"
+            },
+            {
+                "id": "T035",
+                "name": "Comb Freezing",
+                "type": "Management",
+                "target": "Wax Moth",
+                "method": "Kill stages"
+            },
+            {
+                "id": "T036",
+                "name": "Comb Scorching",
+                "type": "Sanitation",
+                "target": "AFB",
+                "method": "Sterilization"
+            },
+            {
+                "id": "T037",
+                "name": "Bleach Dip",
+                "type": "Sanitation",
+                "target": "AFB",
+                "method": "Disinfection"
+            },
+            {
+                "id": "T038",
+                "name": "Irradiation",
+                "type": "Sanitation",
+                "target": "AFB",
+                "method": "Gamma Rays"
+            },
+            {
+                "id": "T039",
+                "name": "Lye Boil",
+                "type": "Sanitation",
+                "target": "Propolis/Wax",
+                "method": "Cleaning Frames"
+            },
+            {
+                "id": "T040",
+                "name": "Probiotic",
+                "type": "Supplement",
+                "target": "Gut Health",
+                "method": "Microbial Support"
+            },
+            {
+                "id": "T041",
+                "name": "Protein Patty",
+                "type": "Feeding",
+                "target": "Nutrition",
+                "method": "Pollen Sub"
+            },
+            {
+                "id": "T042",
+                "name": "Fondant",
+                "type": "Feeding",
+                "target": "Starvation",
+                "method": "Winter Feed"
+            },
+            {
+                "id": "T043",
+                "name": "Sugar Syrup 1:1",
+                "type": "Feeding",
+                "target": "Build-up",
+                "method": "Spring Feed"
+            },
+            {
+                "id": "T044",
+                "name": "Sugar Syrup 2:1",
+                "type": "Feeding",
+                "target": "Stores",
+                "method": "Autumn Feed"
+            },
+            {
+                "id": "T045",
+                "name": "Dry Sugar",
+                "type": "Feeding",
+                "target": "Emergency",
+                "method": "Mountain Camp"
+            },
+            {
+                "id": "T046",
+                "name": "Grease Patty",
+                "type": "Treatment",
+                "target": "Tracheal Mite",
+                "method": "Oils"
+            },
+            {
+                "id": "T047",
+                "name": "Wintergreen",
+                "type": "Additive",
+                "target": "Mites",
+                "method": "Masking Scent"
+            },
+            {
+                "id": "T048",
+                "name": "Lemongrass",
+                "type": "Additive",
+                "target": "Swarms",
+                "method": "Attractant"
+            },
+            {
+                "id": "T049",
+                "name": "Tea Tree",
+                "type": "Additive",
+                "target": "Fungal",
+                "method": "Antifungal"
+            },
+            {
+                "id": "T050",
+                "name": "Spearmint",
+                "type": "Additive",
+                "target": "Health",
+                "method": "Feeding"
+            },
+            {
+                "id": "T051",
+                "name": "Copper Salts",
+                "type": "Preservative",
+                "target": "Wood",
+                "method": "Rot Prevention"
+            },
+            {
+                "id": "T052",
+                "name": "Paraffin Dip",
+                "type": "Preservative",
+                "target": "Wood",
+                "method": "Boiling Wax"
+            },
+            {
+                "id": "T053",
+                "name": "Linseed Oil",
+                "type": "Preservative",
+                "target": "Wood",
+                "method": "Finish"
+            },
+            {
+                "id": "T054",
+                "name": "VSH Genetics",
+                "type": "Genetics",
+                "target": "Varroa",
+                "method": "Breeding"
+            },
+            {
+                "id": "T055",
+                "name": "Russian Stock",
+                "type": "Genetics",
+                "target": "Varroa",
+                "method": "Breeding"
+            },
+            {
+                "id": "T056",
+                "name": "Saskatraz",
+                "type": "Genetics",
+                "target": "Production",
+                "method": "Breeding"
+            },
+            {
+                "id": "T057",
+                "name": "Buckfast",
+                "type": "Genetics",
+                "target": "General",
+                "method": "Breeding"
+            },
+            {
+                "id": "T058",
+                "name": "Carniolan",
+                "type": "Genetics",
+                "target": "Wintering",
+                "method": "Breeding"
+            },
+            {
+                "id": "T059",
+                "name": "Italian",
+                "type": "Genetics",
+                "target": "Honey",
+                "method": "Breeding"
+            },
+            {
+                "id": "T060",
+                "name": "Caucasian",
+                "type": "Genetics",
+                "target": "Propolis",
+                "method": "Breeding"
+            },
+            {
+                "id": "T061",
+                "name": "Hygienic Test",
+                "type": "Selection",
+                "target": "Genetics",
+                "method": "Liquid Nitrogen"
+            },
+            {
+                "id": "T062",
+                "name": "Alcohol Wash",
+                "type": "Diagnostic",
+                "target": "Varroa",
+                "method": "Sample"
+            },
+            {
+                "id": "T063",
+                "name": "Sugar Shake",
+                "type": "Diagnostic",
+                "target": "Varroa",
+                "method": "Sample"
+            },
+            {
+                "id": "T064",
+                "name": "Ether Roll",
+                "type": "Diagnostic",
+                "target": "Varroa",
+                "method": "Sample"
+            },
+            {
+                "id": "T065",
+                "name": "Uncapper",
+                "type": "Tool",
+                "target": "Harvest",
+                "method": "Knife"
+            },
+            {
+                "id": "T066",
+                "name": "Extractor",
+                "type": "Tool",
+                "target": "Harvest",
+                "method": "Centrifuge"
+            },
+            {
+                "id": "T067",
+                "name": "Refractometer",
+                "type": "Tool",
+                "target": "Honey",
+                "method": "Moisture Check"
+            },
+            {
+                "id": "T068",
+                "name": "Smoker",
+                "type": "Tool",
+                "target": "Defense",
+                "method": "Masking Pheromone"
+            },
+            {
+                "id": "T069",
+                "name": "Hive Tool",
+                "type": "Tool",
+                "target": "Propolis",
+                "method": "Leverage"
+            },
+            {
+                "id": "T070",
+                "name": "Queen Clip",
+                "type": "Tool",
+                "target": "Queen",
+                "method": "Isolation"
+            },
+            {
+                "id": "T071",
+                "name": "Marking Pen",
+                "type": "Tool",
+                "target": "Queen",
+                "method": "Identification"
+            },
+            {
+                "id": "T072",
+                "name": "Grafting Tool",
+                "type": "Tool",
+                "target": "Rearing",
+                "method": "Larva Transfer"
+            },
+            {
+                "id": "T073",
+                "name": "Cell Cup",
+                "type": "Tool",
+                "target": "Rearing",
+                "method": "Queen Cell"
+            },
+            {
+                "id": "T074",
+                "name": "Cloake Board",
+                "type": "Tool",
+                "target": "Rearing",
+                "method": "Colony Division"
+            },
+            {
+                "id": "T075",
+                "name": "Snelgrove Board",
+                "type": "Tool",
+                "target": "Swarm",
+                "method": "Manipulation"
+            },
+            {
+                "id": "T076",
+                "name": "Double Screen",
+                "type": "Tool",
+                "target": "Split",
+                "method": "Division"
+            },
+            {
+                "id": "T077",
+                "name": "Queen Excluder",
+                "type": "Tool",
+                "target": "Queen",
+                "method": "Restriction"
+            },
+            {
+                "id": "T078",
+                "name": "Bee Brush",
+                "type": "Tool",
+                "target": "Bees",
+                "method": "Moving"
+            },
+            {
+                "id": "T079",
+                "name": "Frame Perch",
+                "type": "Tool",
+                "target": "Frames",
+                "method": "Holder"
+            },
+            {
+                "id": "T080",
+                "name": "Frame Grip",
+                "type": "Tool",
+                "target": "Frames",
+                "method": "Lifting"
+            },
+            {
+                "id": "T081",
+                "name": "Suit",
+                "type": "PPE",
+                "target": "Stings",
+                "method": "Protection"
+            },
+            {
+                "id": "T082",
+                "name": "Gloves",
+                "type": "PPE",
+                "target": "Stings",
+                "method": "Protection"
+            },
+            {
+                "id": "T083",
+                "name": "Veil",
+                "type": "PPE",
+                "target": "Face",
+                "method": "Protection"
+            },
+            {
+                "id": "T084",
+                "name": "Gaiters",
+                "type": "PPE",
+                "target": "Ankles",
+                "method": "Protection"
+            },
+            {
+                "id": "T085",
+                "name": "EpiPen",
+                "type": "Medical",
+                "target": "Anaphylaxis",
+                "method": "Emergency"
+            },
+            {
+                "id": "T086",
+                "name": "Antihistamine",
+                "type": "Medical",
+                "target": "Reaction",
+                "method": "Relief"
+            },
+            {
+                "id": "T087",
+                "name": "Ice Pack",
+                "type": "Medical",
+                "target": "Swelling",
+                "method": "Relief"
+            },
+            {
+                "id": "T088",
+                "name": "Plantain",
+                "type": "Herbal",
+                "target": "Sting",
+                "method": "Poultice"
+            },
+            {
+                "id": "T089",
+                "name": "Vinegar",
+                "type": "Folk",
+                "target": "Sting",
+                "method": "Neutralize"
+            },
+            {
+                "id": "T090",
+                "name": "Honey",
+                "type": "Topical",
+                "target": "Wound",
+                "method": "Healing"
+            },
+            {
+                "id": "T091",
+                "name": "Propolis Tincture",
+                "type": "Medical",
+                "target": "Immunity",
+                "method": "Supplement"
+            },
+            {
+                "id": "T092",
+                "name": "Pollen Trap",
+                "type": "Tool",
+                "target": "Harvest",
+                "method": "Collection"
+            },
+            {
+                "id": "T093",
+                "name": "Venom Collector",
+                "type": "Tool",
+                "target": "Medical",
+                "method": "Electrical"
+            },
+            {
+                "id": "T094",
+                "name": "Solar Melter",
+                "type": "Tool",
+                "target": "Wax",
+                "method": "Processing"
+            },
+            {
+                "id": "T095",
+                "name": "Steam Melter",
+                "type": "Tool",
+                "target": "Wax",
+                "method": "Processing"
+            },
+            {
+                "id": "T096",
+                "name": "Foundation",
+                "type": "Supply",
+                "target": "Combs",
+                "method": "Structure"
+            },
+            {
+                "id": "T097",
+                "name": "Wired Frame",
+                "type": "Supply",
+                "target": "Combs",
+                "method": "Support"
+            },
+            {
+                "id": "T098",
+                "name": "Plasticelle",
+                "type": "Supply",
+                "target": "Combs",
+                "method": "Durability"
+            },
+            {
+                "id": "T099",
+                "name": "Starter Strip",
+                "type": "Supply",
+                "target": "Combs",
+                "method": "Natural"
+            },
+            {
+                "id": "T100",
+                "name": "Top Bar",
+                "type": "Hive",
+                "target": "System",
+                "method": "Horizontal"
+            }
+        ],
+        "glossary": [
+            {
+                "term": "Absconding",
+                "def": "Colony abandoning the hive."
+            },
+            {
+                "term": "Afterswarm",
+                "def": "Secondary swarms with virgin queens."
+            },
+            {
+                "term": "American Foulbrood",
+                "def": "Fatal bacterial disease."
+            },
+            {
+                "term": "Anaphylaxis",
+                "def": "Severe allergic reaction."
+            },
+            {
+                "term": "Apiary",
+                "def": "Location of hives."
+            },
+            {
+                "term": "Apiculture",
+                "def": "Beekeeping."
+            },
+            {
+                "term": "Ball",
+                "def": "Bees attacking a queen."
+            },
+            {
+                "term": "Bee Space",
+                "def": "3/8 inch gap bees respect."
+            },
+            {
+                "term": "Beeswax",
+                "def": "Glandular secretion for comb."
+            },
+            {
+                "term": "Brood",
+                "def": "Eggs, larvae, pupae."
+            },
+            {
+                "term": "Burr Comb",
+                "def": "Comb built in wrong places."
+            },
+            {
+                "term": "Capping",
+                "def": "Wax seal over cell."
+            },
+            {
+                "term": "Cast",
+                "def": "Another name for afterswarm."
+            },
+            {
+                "term": "Cell",
+                "def": "Hexagonal unit."
+            },
+            {
+                "term": "Cluster",
+                "def": "Winter gathering for warmth."
+            },
+            {
+                "term": "Colony",
+                "def": "The superorganism."
+            },
+            {
+                "term": "Comb",
+                "def": "Structure of cells."
+            },
+            {
+                "term": "Dance",
+                "def": "Communication method (Waggle)."
+            },
+            {
+                "term": "Dearth",
+                "def": "Lack of nectar flow."
+            },
+            {
+                "term": "Dividing",
+                "def": "Splitting a colony."
+            },
+            {
+                "term": "Drifting",
+                "def": "Bees entering wrong hive."
+            },
+            {
+                "term": "Drone",
+                "def": "Male bee."
+            },
+            {
+                "term": "Dysentery",
+                "def": "Diarrhea in bees."
+            },
+            {
+                "term": "Egg",
+                "def": "First stage of life."
+            },
+            {
+                "term": "Entrance Reducer",
+                "def": "Block to limit opening."
+            },
+            {
+                "term": "Festooning",
+                "def": "Chain of bees making wax."
+            },
+            {
+                "term": "Flight Path",
+                "def": "Route to forage."
+            },
+            {
+                "term": "Forager",
+                "def": "Worker collecting food."
+            },
+            {
+                "term": "Foundation",
+                "def": "Base for comb."
+            },
+            {
+                "term": "Frame",
+                "def": "Holder for foundation."
+            },
+            {
+                "term": "Guard",
+                "def": "Bee protecting entrance."
+            },
+            {
+                "term": "Gum",
+                "def": "Log hive."
+            },
+            {
+                "term": "Hive",
+                "def": "Man-made home."
+            },
+            {
+                "term": "Honey",
+                "def": "Dehydrated nectar."
+            },
+            {
+                "term": "Honeydew",
+                "def": "Aphid secretion."
+            },
+            {
+                "term": "Hygienic",
+                "def": "Trait of cleaning disease."
+            },
+            {
+                "term": "Inspection",
+                "def": "Checking the hive."
+            },
+            {
+                "term": "Instar",
+                "def": "Larval growth stage."
+            },
+            {
+                "term": "Langstroth",
+                "def": "Standard vertical hive."
+            },
+            {
+                "term": "Larva",
+                "def": "Grub stage."
+            },
+            {
+                "term": "Laying Worker",
+                "def": "Worker laying unfertilized eggs."
+            },
+            {
+                "term": "Mandibles",
+                "def": "Jaws."
+            },
+            {
+                "term": "Mate",
+                "def": "Queen breeding."
+            },
+            {
+                "term": "Meconium",
+                "def": "Pupal waste."
+            },
+            {
+                "term": "Metamorphosis",
+                "def": "Change of form."
+            },
+            {
+                "term": "Migration",
+                "def": "Moving hives to crops."
+            },
+            {
+                "term": "Mite",
+                "def": "Varroa parasite."
+            },
+            {
+                "term": "Nectar",
+                "def": "Sweet plant secretion."
+            },
+            {
+                "term": "Nosema",
+                "def": "Gut disease."
+            },
+            {
+                "term": "Nucleus",
+                "def": "Small starter colony."
+            },
+            {
+                "term": "Nurse",
+                "def": "Young bee feeding brood."
+            },
+            {
+                "term": "Observation Hive",
+                "def": "Glass sided hive."
+            },
+            {
+                "term": "Orientation",
+                "def": "Learning flight."
+            },
+            {
+                "term": "Package",
+                "def": "Box of bees for sale."
+            },
+            {
+                "term": "Pheromone",
+                "def": "Chemical signal."
+            },
+            {
+                "term": "Piping",
+                "def": "Queen sound."
+            },
+            {
+                "term": "Pollen",
+                "def": "Protein source."
+            },
+            {
+                "term": "Pollination",
+                "def": "Fertilizing plants."
+            },
+            {
+                "term": "Proboscis",
+                "def": "Tongue."
+            },
+            {
+                "term": "Propolis",
+                "def": "Bee glue."
+            },
+            {
+                "term": "Pupa",
+                "def": "Transformation stage."
+            },
+            {
+                "term": "Queen",
+                "def": "Reproductive female."
+            },
+            {
+                "term": "Queen Cell",
+                "def": "Peanut shape cell."
+            },
+            {
+                "term": "Queen Excluder",
+                "def": "Grid to stop queen."
+            },
+            {
+                "term": "Queenless",
+                "def": "State of no queen."
+            },
+            {
+                "term": "Re-queen",
+                "def": "Replacing queen."
+            },
+            {
+                "term": "Robbing",
+                "def": "Stealing honey."
+            },
+            {
+                "term": "Royal Jelly",
+                "def": "Super food."
+            },
+            {
+                "term": "Sacbrood",
+                "def": "Viral disease."
+            },
+            {
+                "term": "Scale",
+                "def": "Dried AFB remains."
+            },
+            {
+                "term": "Scout",
+                "def": "Bee looking for home/food."
+            },
+            {
+                "term": "Skep",
+                "def": "Straw hive."
+            },
+            {
+                "term": "Slumgum",
+                "def": "Wax waste."
+            },
+            {
+                "term": "Smoker",
+                "def": "Calming tool."
+            },
+            {
+                "term": "Solar Wax Melter",
+                "def": "Sun oven."
+            },
+            {
+                "term": "Spermatheca",
+                "def": "Sperm storage organ."
+            },
+            {
+                "term": "Spiracles",
+                "def": "Breathing holes."
+            },
+            {
+                "term": "Sting",
+                "def": "Venom injector."
+            },
+            {
+                "term": "Super",
+                "def": "Honey box."
+            },
+            {
+                "term": "Supersedure",
+                "def": "Replacing failing queen."
+            },
+            {
+                "term": "Swarm",
+                "def": "Colony reproduction."
+            },
+            {
+                "term": "Trophallaxis",
+                "def": "Food sharing."
+            },
+            {
+                "term": "Uncapping",
+                "def": "Opening honey."
+            },
+            {
+                "term": "Uniting",
+                "def": "Combining colonies."
+            },
+            {
+                "term": "Venom",
+                "def": "Bee poison."
+            },
+            {
+                "term": "Virgin",
+                "def": "Unmated queen."
+            },
+            {
+                "term": "Waggle Dance",
+                "def": "Directional dance."
+            },
+            {
+                "term": "Wax Moth",
+                "def": "Comb pest."
+            },
+            {
+                "term": "Winter Cluster",
+                "def": "Warmth ball."
+            },
+            {
+                "term": "Worker",
+                "def": "Sterile female."
+            },
+            {
+                "term": "Worker Jail",
+                "def": "Cage."
+            },
+            {
+                "term": "Yard",
+                "def": "Apiary."
+            },
+            {
+                "term": "Zander",
+                "def": "Hive type."
+            },
+            {
+                "term": "Zoology",
+                "def": "Study of animals."
+            },
+            {
+                "term": "Acariosis",
+                "def": "Mite infection."
+            },
+            {
+                "term": "Acaricide",
+                "def": "Mite killer."
+            },
+            {
+                "term": "Adulteration",
+                "def": "Fake honey."
+            },
+            {
+                "term": "Alarm Pheromone",
+                "def": "Banana smell."
+            },
+            {
+                "term": "Allele",
+                "def": "Gene variant."
+            },
+            {
+                "term": "Anther",
+                "def": "Pollen part."
+            },
+            {
+                "term": "Antibiotic",
+                "def": "Bacteria killer."
+            },
+            {
+                "term": "Balling",
+                "def": "Temperature killing."
+            },
+            {
+                "term": "Bee Bread",
+                "def": "Fermented pollen."
+            },
+            {
+                "term": "Bee Gym",
+                "def": "Grooming aid."
+            },
+            {
+                "term": "Bee Lining",
+                "def": "Finding wild hives."
+            },
+            {
+                "term": "Bee Milk",
+                "def": "Brood food."
+            },
+            {
+                "term": "Blowtorch",
+                "def": "Sterilizer."
+            },
+            {
+                "term": "Bottling",
+                "def": "Packing honey."
+            },
+            {
+                "term": "Bottom Board",
+                "def": "Floor."
+            },
+            {
+                "term": "Brace Comb",
+                "def": "Support wax."
+            },
+            {
+                "term": "Brood Chamber",
+                "def": "Nursery."
+            },
+            {
+                "term": "Buckfast",
+                "def": "Hybrid bee."
+            },
+            {
+                "term": "Cage",
+                "def": "Queen holder."
+            },
+            {
+                "term": "Candy",
+                "def": "Queen food."
+            },
+            {
+                "term": "Carniolan",
+                "def": "Grey bee."
+            },
+            {
+                "term": "Caste",
+                "def": "Bee type."
+            },
+            {
+                "term": "Caucasian",
+                "def": "Mountain bee."
+            },
+            {
+                "term": "Cell Bar",
+                "def": "Cup holder."
+            },
+            {
+                "term": "Chalkbrood",
+                "def": "Fungus."
+            },
+            {
+                "term": "Chimney",
+                "def": "Center working."
+            },
+            {
+                "term": "Clarifying",
+                "def": "Cleaning wax."
+            },
+            {
+                "term": "Cleansing Flight",
+                "def": "Poop run."
+            },
+            {
+                "term": "Clip",
+                "def": "Wing cut."
+            },
+            {
+                "term": "Cloake",
+                "def": "Rearing method."
+            },
+            {
+                "term": "Cluster",
+                "def": "Ball of bees."
+            },
+            {
+                "term": "Cocoon",
+                "def": "Pupal skin."
+            },
+            {
+                "term": "Cold Way",
+                "def": "Frame orientation."
+            },
+            {
+                "term": "Colony Collapse",
+                "def": "Disappearance."
+            },
+            {
+                "term": "Comb Honey",
+                "def": "Rawest form."
+            }
+        ]
+    },
+    "greetings": {
+        "EN": {
+            "hello": [
+                "Hello!",
+                "Hi there!",
+                "Hey!",
+                "Greetings!",
+                "Salutations!"
+            ],
+            "welcome": [
+                "Welcome to BeeYield.",
+                "Welcome back, partner.",
+                "Glad to have you here.",
+                "Welcome to the hive."
+            ],
+            "good_morning": [
+                "Good morning! The bees are active.",
+                "Rise and shine!",
+                "Morning!"
+            ],
+            "good_afternoon": [
+                "Good afternoon.",
+                "Good day.",
+                "Afternoon!"
+            ],
+            "good_evening": [
+                "Good evening.",
+                "Evening.",
+                "Hope you had a productive day."
+            ],
+            "how_are_you": [
+                "How are you doing?",
+                "How is everything?",
+                "How's it going?",
+                "Hope you are well."
+            ],
+            "farewell": [
+                "Goodbye!",
+                "See you later.",
+                "Take care.",
+                "Have a great day!",
+                "Bye for now."
+            ],
+            "thank_you": [
+                "Thank you.",
+                "Thanks a lot.",
+                "Much appreciated.",
+                "Thanks for your trust."
+            ],
+            "help": [
+                "How can I help you?",
+                "What can I do for you today?",
+                "I'm here to assist."
+            ]
+        },
+        "SW": {
+            "hello": [
+                "Jambo!",
+                "Habari!",
+                "Mambo?",
+                "Hujambo?",
+                "Salama?"
+            ],
+            "welcome": [
+                "Karibu BeeYield.",
+                "Karibu sana.",
+                "Karibu tena.",
+                "Karibu kwenye mzinga."
+            ],
+            "good_morning": [
+                "Habari ya asubuhi!",
+                "Chewa!",
+                "Umeamkaje?"
+            ],
+            "good_afternoon": [
+                "Habari ya mchana!",
+                "Habari ya leo?"
+            ],
+            "good_evening": [
+                "Habari ya jioni.",
+                "Jioni njema.",
+                "Habari za jioni?"
+            ],
+            "how_are_you": [
+                "U hali gani?",
+                "Habari yako?",
+                "Uhali gani?",
+                "Mambo vipi?"
+            ],
+            "farewell": [
+                "Kwaheri!",
+                "Baadaye.",
+                "Tuonanane.",
+                "Lala unono."
+            ],
+            "thank_you": [
+                "Asante.",
+                "Asante sana.",
+                "Nashukuru.",
+                "Tuko pamoja."
+            ],
+            "help": [
+                "Nikusaidie aje?",
+                "Nifanye nini kwa ajili yako?",
+                "Uko na swali?"
+            ]
+        },
+        "KAMBA": {
+            "hello": [
+                "Natta!",
+                "Uvoo?",
+                "Wakya!",
+                "Muuo?"
+            ],
+            "welcome": [
+                "Uka!",
+                "Ninyie muno.",
+                "Tembea.",
+                "Uka kuka."
+            ],
+            "good_morning": [
+                "Walkya!",
+                "Uvoo wa kwakya?",
+                "Tonya!"
+            ],
+            "good_afternoon": [
+                "Uvoo wa muthenya?",
+                "Uinda!"
+            ],
+            "good_evening": [
+                "Uvoo wa wioo?",
+                "Kwatuka!"
+            ],
+            "how_are_you": [
+                "Uvoo waku?",
+                "Wi museo?",
+                "Natta?"
+            ],
+            "farewell": [
+                "Tiwa nesa.",
+                "Tukoonana.",
+                "Enda nesa."
+            ],
+            "thank_you": [
+                "Niuseo.",
+                "Muno.",
+                "Niambete."
+            ],
+            "help": [
+                "Ngutethye ata?",
+                "Wienda kutethyw'a?"
+            ]
+        },
+        "KIKUYU": {
+            "hello": [
+                "Wimwega?",
+                "Natya?",
+                "Uhoro?",
+                "Wimwega muno?"
+            ],
+            "welcome": [
+                "Uka!",
+                "Nyumba ni yaku.",
+                "Karibu."
+            ],
+            "good_morning": [
+                "Wiire?",
+                "Kiako?",
+                "Kiaroko gi kiega."
+            ],
+            "good_afternoon": [
+                "Uhoro wa muthenya?",
+                "Mwirigwe?"
+            ],
+            "good_evening": [
+                "Uhoro wa hwaï-inï?",
+                "Hwaï-inï mwega."
+            ],
+            "how_are_you": [
+                "Uhoro waku?",
+                "Hana atia?",
+                "Wi mwega?"
+            ],
+            "farewell": [
+                "Tigwo na wega.",
+                "Nitukonana.",
+                "Gia na utuku mwega."
+            ],
+            "thank_you": [
+                "Ni wega.",
+                "Ngai ni wega.",
+                "Theengyu."
+            ],
+            "help": [
+                "Nguguteithia atia?",
+                "Urenda uteithio?"
+            ]
+        },
+        "LUO": {
+            "hello": [
+                "Misawa!",
+                "Ber!",
+                "Oyawore!",
+                "Idhi nade?"
+            ],
+            "welcome": [
+                "Oriti.",
+                "Rambisi.",
+                "Bi!."
+            ],
+            "good_morning": [
+                "Oyawore!",
+                "Okinyi aber."
+            ],
+            "good_afternoon": [
+                "Osaore!",
+                "Odiechieng aber."
+            ],
+            "good_evening": [
+                "Othiambo!",
+                "Otieno aber."
+            ],
+            "how_are_you": [
+                "Idhi nade?",
+                "Intie nade?",
+                "Ber?"
+            ],
+            "farewell": [
+                "Oriti.",
+                "Wanere.",
+                "Kue."
+            ],
+            "thank_you": [
+                "Ero kamano.",
+                "Ero.",
+                "Abiro."
+            ],
+            "help": [
+                "Akonyi nade?",
+                "Adwaro kony?"
+            ]
+        },
+        "FR": {
+            "hello": [
+                "Bonjour!",
+                "Salut!",
+                "Allô!",
+                "Coucou!"
+            ],
+            "welcome": [
+                "Bienvenue.",
+                "Soyez le bienvenu.",
+                "Heureux de vous voir."
+            ],
+            "good_morning": [
+                "Bonjour!",
+                "Bon matin!"
+            ],
+            "good_afternoon": [
+                "Bon après-midi!",
+                "Bonne journée."
+            ],
+            "good_evening": [
+                "Bonsoir.",
+                "Bonne soirée."
+            ],
+            "how_are_you": [
+                "Comment allez-vous?",
+                "Ça va?",
+                "Comment vas-tu?",
+                "La forme?"
+            ],
+            "farewell": [
+                "Au revoir!",
+                "À plus tard.",
+                "À bientôt.",
+                "Adieu."
+            ],
+            "thank_you": [
+                "Merci.",
+                "Merci beaucoup.",
+                "Je vous remercie."
+            ],
+            "help": [
+                "Puis-je vous aider?",
+                "Comment puis-je aider?",
+                "Besoin d'aide?"
+            ]
+        },
+        "DE": {
+            "hello": [
+                "Hallo!",
+                "Guten Tag!",
+                "Hi!",
+                "Grüß Gott!",
+                "Moin!"
+            ],
+            "welcome": [
+                "Willkommen.",
+                "Herzlich willkommen.",
+                "Schön, Sie zu sehen."
+            ],
+            "good_morning": [
+                "Guten Morgen!",
+                "Morgen!"
+            ],
+            "good_afternoon": [
+                "Guten Tag!",
+                "Schönen Nachmittag."
+            ],
+            "good_evening": [
+                "Guten Abend.",
+                "Abend."
+            ],
+            "how_are_you": [
+                "Wie geht es Ihnen?",
+                "Wie geht's?",
+                "Alles klar?"
+            ],
+            "farewell": [
+                "Auf Wiedersehen!",
+                "Tschüss!",
+                "Bis bald.",
+                "Servus."
+            ],
+            "thank_you": [
+                "Danke.",
+                "Vielen Dank.",
+                "Dankeschön."
+            ],
+            "help": [
+                "Kann ich helfen?",
+                "Wie kann ich Ihnen helfen?",
+                "Brauchen Sie Hilfe?"
+            ]
+        },
+        "ES": {
+            "hello": [
+                "¡Hola!",
+                "¡Buenas!",
+                "¿Qué tal?",
+                "Saludos."
+            ],
+            "welcome": [
+                "Bienvenido.",
+                "Bienvenida.",
+                "Es un placer."
+            ],
+            "good_morning": [
+                "¡Buenos días!",
+                "Buen día."
+            ],
+            "good_afternoon": [
+                "¡Buenas tardes!"
+            ],
+            "good_evening": [
+                "¡Buenas noches!"
+            ],
+            "how_are_you": [
+                "¿Cómo estás?",
+                "¿Cómo está usted?",
+                "¿Qué pasa?",
+                "¿Todo bien?"
+            ],
+            "farewell": [
+                "¡Adiós!",
+                "Hasta luego.",
+                "Nos vemos.",
+                "Chao."
+            ],
+            "thank_you": [
+                "Gracias.",
+                "Muchas gracias.",
+                "Se agradece."
+            ],
+            "help": [
+                "¿En qué puedo ayudarle?",
+                "¿Necesita ayuda?",
+                "¿Cómo le ayudo?"
+            ]
+        },
+        "ZH": {
+            "hello": [
+                "你好!",
+                "您好!",
+                "嗨!",
+                "哈罗!"
+            ],
+            "welcome": [
+                "欢迎.",
+                "欢迎光临.",
+                "幸会."
+            ],
+            "good_morning": [
+                "早上好!",
+                "早安!"
+            ],
+            "good_afternoon": [
+                "下午好!",
+                "午安!"
+            ],
+            "good_evening": [
+                "晚上好!",
+                "晚安."
+            ],
+            "how_are_you": [
+                "你好吗?",
+                "最近怎么样?",
+                "一切都好吗?"
+            ],
+            "farewell": [
+                "再见!",
+                "拜拜.",
+                "回头见.",
+                "告辞."
+            ],
+            "thank_you": [
+                "谢谢.",
+                "多谢.",
+                "非常感谢.",
+                "感恩."
+            ],
+            "help": [
+                "有什么可以帮您?",
+                "需要帮忙吗?",
+                "请问有什么事?"
+            ]
+        },
+        "AR": {
+            "hello": [
+                "مرحبا!",
+                "أهلاً!",
+                "السلام عليكم!",
+                "هلا!"
+            ],
+            "welcome": [
+                "أهلاً وسهلاً.",
+                "مرحباً بكم.",
+                "شرفتمونا."
+            ],
+            "good_morning": [
+                "صباح الخير!",
+                "صباح النور!"
+            ],
+            "good_afternoon": [
+                "مساء الخير!",
+                "طاب يومك."
+            ],
+            "good_evening": [
+                "مساء الخير.",
+                "مساء النور."
+            ],
+            "how_are_you": [
+                "كيف حالك؟",
+                "كيف الصحة؟",
+                "أخبارك؟"
+            ],
+            "farewell": [
+                "مع السلامة!",
+                "إلى اللقاء.",
+                "وداعاً."
+            ],
+            "thank_you": [
+                "شكراً.",
+                "شكراً جزيلاً.",
+                "تسلم."
+            ],
+            "help": [
+                "كيف يمكنني مساعدتك؟",
+                "هل تحتاج إلى مساعدة؟"
+            ]
+        },
+        "PT": {
+            "hello": [
+                "Olá!",
+                "Oi!",
+                "Viva!",
+                "Boas!"
+            ],
+            "welcome": [
+                "Bem-vindo.",
+                "Bem-vinda.",
+                "Sinta-se em casa."
+            ],
+            "good_morning": [
+                "Bom dia!"
+            ],
+            "good_afternoon": [
+                "Boa tarde!"
+            ],
+            "good_evening": [
+                "Boa noite."
+            ],
+            "how_are_you": [
+                "Como vai?",
+                "Tudo bem?",
+                "Como está?"
+            ],
+            "farewell": [
+                "Adeus!",
+                "Tchau.",
+                "Até logo.",
+                "Até mais."
+            ],
+            "thank_you": [
+                "Obrigado.",
+                "Obrigada.",
+                "Grato."
+            ],
+            "help": [
+                "Como posso ajudar?",
+                "Precisa de ajuda?",
+                "Ao seu dispor."
+            ]
+        },
+        "PL": {
+            "hello": [
+                "Cześć!",
+                "Witaj!",
+                "Halo!",
+                "Hej!"
+            ],
+            "welcome": [
+                "Witamy.",
+                "Zapraszamy.",
+                "Miło Cię widzieć."
+            ],
+            "good_morning": [
+                "Dzień dobry!"
+            ],
+            "good_afternoon": [
+                "Dzień dobry!",
+                "Miłego popołudnia."
+            ],
+            "good_evening": [
+                "Dobry wieczór."
+            ],
+            "how_are_you": [
+                "Jak się masz?",
+                "Co słychać?",
+                "Jak leci?"
+            ],
+            "farewell": [
+                "Do widzenia!",
+                "Cześć!",
+                "Pa!",
+                "Na razie."
+            ],
+            "thank_you": [
+                "Dziękuję.",
+                "Dzięki.",
+                "Wielkie dzięki."
+            ],
+            "help": [
+                "W czym mogę pomóc?",
+                "Jak mogę pomóc?",
+                "Słucham?"
+            ]
+        },
+        "IT": {
+            "hello": [
+                "Ciao!",
+                "Salve!",
+                "Ehilà!"
+            ],
+            "welcome": [
+                "Benvenuto.",
+                "Benvenuti."
+            ],
+            "good_morning": [
+                "Buongiorno!"
+            ],
+            "good_afternoon": [
+                "Buon pomeriggio."
+            ],
+            "good_evening": [
+                "Buonasera."
+            ],
+            "how_are_you": [
+                "Come stai?",
+                "Come va?",
+                "Tutto bene?"
+            ],
+            "farewell": [
+                "Arrivederci!",
+                "Ciao!",
+                "Addio.",
+                "A presto."
+            ],
+            "thank_you": [
+                "Grazie.",
+                "Grazie mille.",
+                "Ti ringrazio."
+            ],
+            "help": [
+                "Posso aiutarti?",
+                "Come posso essere utile?"
+            ]
+        },
+        "RU": {
+            "hello": [
+                "Привет!",
+                "Zdravstvuyte!",
+                "Privet!",
+                "Allo!"
+            ],
+            "welcome": [
+                "Dobro pozhalovat.",
+                "Rad vas videt."
+            ],
+            "good_morning": [
+                "Dobroye utro!"
+            ],
+            "good_afternoon": [
+                "Dobry den!"
+            ],
+            "good_evening": [
+                "Dobry vecher."
+            ],
+            "how_are_you": [
+                "Kak dela?",
+                "Kak pozhivayete?"
+            ],
+            "farewell": [
+                "Do svidaniya!",
+                "Poka!",
+                "Do vstrechi."
+            ],
+            "thank_you": [
+                "Spasibo.",
+                "Bolshoye spasibo.",
+                "Blagodaryu."
+            ],
+            "help": [
+                "Mogu ya pomoch?",
+                "Chem mogu pomoch?"
+            ]
+        },
+        "JA": {
+            "hello": [
+                "Konnichiwa!",
+                "Yā!",
+                "Ossu!"
+            ],
+            "welcome": [
+                "Yōkoso.",
+                "Irasshaimase."
+            ],
+            "good_morning": [
+                "Ohayō gozaimasu!",
+                "Ohayō!"
+            ],
+            "good_afternoon": [
+                "Konnichiwa!"
+            ],
+            "good_evening": [
+                "Konbanwa!"
+            ],
+            "how_are_you": [
+                "Ogenki desu ka?",
+                "Genki?",
+                "Chōshi wa dō?"
+            ],
+            "farewell": [
+                "Sayōnara!",
+                "Ja ne.",
+                "Mata ne.",
+                "Bai bai."
+            ],
+            "thank_you": [
+                "Arigatō gozaimasu.",
+                "Arigatō.",
+                "Dōmo."
+            ],
+            "help": [
+                "Nanika otetsudai shimashō ka?",
+                "Dōshimashita ka?"
+            ]
+        },
+        "HI": {
+            "hello": [
+                "Namaste!",
+                "Namaskar!",
+                "Pranam!",
+                "Hello!"
+            ],
+            "welcome": [
+                "Swagat hai.",
+                "Aaiye."
+            ],
+            "good_morning": [
+                "Suprabhat!"
+            ],
+            "good_afternoon": [
+                "Shubh dopahar."
+            ],
+            "good_evening": [
+                "Shubh sandhya."
+            ],
+            "how_are_you": [
+                "Aap kaise hain?",
+                "Kya haal hai?",
+                "Sab theek?"
+            ],
+            "farewell": [
+                "Alvida!",
+                "Phir milenge.",
+                "Namaste."
+            ],
+            "thank_you": [
+                "Dhanyavad.",
+                "Shukriya.",
+                "Aabhar."
+            ],
+            "help": [
+                "Kya main aapki madad kar sakta hoon?",
+                "Bataiye kya seva karun?"
+            ]
+        },
+        "NL": {
+            "hello": [
+                "Hallo!",
+                "Hoi!",
+                "Goedendag!"
+            ],
+            "welcome": [
+                "Welkom."
+            ],
+            "good_morning": [
+                "Goedemorgen!"
+            ],
+            "good_afternoon": [
+                "Goedemiddag!"
+            ],
+            "good_evening": [
+                "Goedenavond."
+            ],
+            "how_are_you": [
+                "Hoe gaat het?",
+                "Alles goed?"
+            ],
+            "farewell": [
+                "Tot ziens!",
+                "Doei!",
+                "Dag!"
+            ],
+            "thank_you": [
+                "Dank u.",
+                "Bedankt.",
+                "Dank je wel."
+            ],
+            "help": [
+                "Kan ik u helpen?",
+                "Zeg het maar."
+            ]
+        },
+        "TR": {
+            "hello": [
+                "Merhaba!",
+                "Selam!",
+                "Alo!"
+            ],
+            "welcome": [
+                "Hoş geldiniz."
+            ],
+            "good_morning": [
+                "Günaydın!"
+            ],
+            "good_afternoon": [
+                "Tünaydın!",
+                "İyi günler."
+            ],
+            "good_evening": [
+                "İyi akşamlar."
+            ],
+            "how_are_you": [
+                "Nasılsın?",
+                "Ne haber?",
+                "İyi misiniz?"
+            ],
+            "farewell": [
+                "Güle güle!",
+                "Hoşça kal.",
+                "Görüşürüz."
+            ],
+            "thank_you": [
+                "Teşekkürler.",
+                "Sağ ol.",
+                "Mersis."
+            ],
+            "help": [
+                "Nasıl yardımcı olabilirim?",
+                "Buyurun?"
+            ]
+        },
+        "KO": {
+            "hello": [
+                "Annyeonghaseyo!",
+                "Annyeong!"
+            ],
+            "welcome": [
+                "Hwan-yeonghamnida."
+            ],
+            "good_morning": [
+                "Jo-eun achim!"
+            ],
+            "good_afternoon": [
+                "Annyeonghaseyo!"
+            ],
+            "good_evening": [
+                "Annyeonghaseyo!"
+            ],
+            "how_are_you": [
+                "Eotteoke jinaeseyo?",
+                "Jal jinaesseo?"
+            ],
+            "farewell": [
+                "Annyeonghi gyeseyo.",
+                "Jal ga."
+            ],
+            "thank_you": [
+                "Gamsahamnida.",
+                "Gomawo."
+            ],
+            "help": [
+                "Dowa deurilkkayo?"
+            ]
+        },
+        "SV": {
+            "hello": [
+                "Hej!",
+                "Hallå!",
+                "Tjena!"
+            ],
+            "welcome": [
+                "Välkommen."
+            ],
+            "good_morning": [
+                "God morgon!"
+            ],
+            "good_afternoon": [
+                "God eftermiddag!"
+            ],
+            "good_evening": [
+                "God kväll."
+            ],
+            "how_are_you": [
+                "Hur mår du?",
+                "Läget?"
+            ],
+            "farewell": [
+                "Hej då!",
+                "Vi ses."
+            ],
+            "thank_you": [
+                "Tack.",
+                "Tack så mycket."
+            ],
+            "help": [
+                "Kan jag hjälpa till?"
+            ]
+        },
+        "VI": {
+            "hello": [
+                "Xin chào!",
+                "Chào bạn!"
+            ],
+            "welcome": [
+                "Chào mừng."
+            ],
+            "good_morning": [
+                "Chào buổi sáng!"
+            ],
+            "good_afternoon": [
+                "Chào buổi chiều!"
+            ],
+            "good_evening": [
+                "Chào buổi tối."
+            ],
+            "how_are_you": [
+                "Bạn khỏe không?"
+            ],
+            "farewell": [
+                "Tạm biệt!",
+                "Hẹn gặp lại."
+            ],
+            "thank_you": [
+                "Cảm ơn.",
+                "Xin cảm ơn."
+            ],
+            "help": [
+                "Tôi có thể giúp gì?"
+            ]
+        },
+        "TH": {
+            "hello": [
+                "Sawasdee!",
+                "Wadee!"
+            ],
+            "welcome": [
+                "Yindii tawn rap."
+            ],
+            "good_morning": [
+                "Sawasdee torn chao!"
+            ],
+            "good_afternoon": [
+                "Sawasdee torn bai!"
+            ],
+            "good_evening": [
+                "Sawasdee torn yen."
+            ],
+            "how_are_you": [
+                "Sabai dee mai?",
+                "Pen ngai bang?"
+            ],
+            "farewell": [
+                "La gon!",
+                "Jer gan."
+            ],
+            "thank_you": [
+                "Khop khun.",
+                "Khop jai."
+            ],
+            "help": [
+                "Hai chuay arai mai?"
+            ]
+        },
+        "HE": {
+            "hello": [
+                "Shalom!",
+                "He!",
+                "Ahalan!"
+            ],
+            "welcome": [
+                "Baruch haba."
+            ],
+            "good_morning": [
+                "Boker tov!"
+            ],
+            "good_afternoon": [
+                "Tzoharaim tovim!"
+            ],
+            "good_evening": [
+                "Erev tov."
+            ],
+            "how_are_you": [
+                "Ma shlomcha?",
+                "Eich holech?"
+            ],
+            "farewell": [
+                "Lehitraot!",
+                "Bye."
+            ],
+            "thank_you": [
+                "Toda.",
+                "Toda raba."
+            ],
+            "help": [
+                "Efshar laazor?"
+            ]
+        },
+        "ID": {
+            "hello": [
+                "Halo!",
+                "Hai!"
+            ],
+            "welcome": [
+                "Selamat datang."
+            ],
+            "good_morning": [
+                "Selamat pagi!"
+            ],
+            "good_afternoon": [
+                "Selamat siang!"
+            ],
+            "good_evening": [
+                "Selamat malam."
+            ],
+            "how_are_you": [
+                "Apa kabar?",
+                "Gimana kabarnya?"
+            ],
+            "farewell": [
+                "Selamat tinggal!",
+                "Sampai jumpa."
+            ],
+            "thank_you": [
+                "Terima kasih.",
+                "Makasih."
+            ],
+            "help": [
+                "Ada yang bisa dibantu?"
+            ]
+        },
+        "YORUBA": {
+            "hello": [
+                "Bawo!",
+                "Pẹlẹ o!",
+                "Ẹ n lẹ!"
+            ],
+            "welcome": [
+                "Ẹ kaabo."
+            ],
+            "good_morning": [
+                "Ẹ kaarọ!"
+            ],
+            "good_afternoon": [
+                "Ẹ kaasan!"
+            ],
+            "good_evening": [
+                "Ẹ ku irolẹ."
+            ],
+            "how_are_you": [
+                "Bawo ni?",
+                "Ṣe daadaa ni?"
+            ],
+            "farewell": [
+                "O dabọ!",
+                "O di igba kan na."
+            ],
+            "thank_you": [
+                "Ẹ ṣeun.",
+                "O ṣe."
+            ],
+            "help": [
+                "Bawo ni mo ṣe le ran ọ lọwọ?"
+            ]
+        }
+    },
+    "blog_posts": [
+        {
+            "id": 1,
+            "title": "The Importance of Bees in Our Ecosystem",
+            "excerpt": "Discover why bees are crucial for biodiversity and food production, and what we can do to protect them.",
+            "content_summary": "Bees are keystone species essential for pollinating one-third of our food. Threats like habitat loss and pesticides are declining populations. We can help by planting bee-friendly gardens and supporting local beekeepers."
+        },
+        {
+            "id": 2,
+            "title": "How to Identify Pure, Raw Honey",
+            "excerpt": "Learn the key characteristics that distinguish authentic raw honey from processed alternatives.",
+            "content_summary": "Tests for pure honey: Water Test (doesn't dissolve immediately), Texture (crystallizes over time), Burn Test (lights on match). Processed honey lacks pollen and enzymes found in raw honey."
+        },
+        {
+            "id": 3,
+            "title": "Sustainable Beekeeping Practices",
+            "excerpt": "Explore the methods we use to ensure healthy bee colonies and sustainable honey production.",
+            "content_summary": "Sustainability involves respecting the hive (leaving honey for winter), natural disease management (IPM), and habitat preservation (diverse forage)."
+        },
+        {
+            "id": 4,
+            "title": "The Journey from Hive to Home",
+            "excerpt": "Follow our transparent process from ethical harvesting to your kitchen table.",
+            "content_summary": "Bees collect nectar, thicken it into honey. We ethically harvest cold-extracted honey, strain (not filter) it, and bottle immediately to preserve enzymes. Validated by HoneyChain."
+        },
+        {
+            "id": 5,
+            "title": "Health Benefits of Raw Honey",
+            "excerpt": "Understanding the nutritional and medicinal properties of unprocessed honey.",
+            "content_summary": "Raw honey contains antioxidants, antibacterial/antifungal properties, and phytonutrients. It can heal wounds and support overall health."
+        },
+        {
+            "id": 6,
+            "title": "Supporting Local Beekeepers",
+            "excerpt": "How choosing ethical honey makes a difference for small-scale beekeeping communities.",
+            "content_summary": "Buying local supports the economy, preserves traditional knowledge, and promotes better bee health by avoiding migratory stress."
+        }
+    ],
+    "regional_data": {
+        "Kenya": {
+            "production": "Projected 30,000 metric tons by 2026.",
+            "challenges": "Drought and land fragmentation.",
+            "beeyieldForefront": "Leading the 'Restoration Apiary' initiative, planting 2,500+ trees and providing IoT nodes to rural farmers."
+        },
+        "United States": {
+            "production": "69,600 metric tons projected.",
+            "focus": "Almond pollination and Varroa management.",
+            "beeyieldForefront": "Partnering with major almond growers to provide Precision Pollination dashboards."
+        },
+        "Europe": {
+            "focus": "Organic certification and pesticide-free zones.",
+            "beeyieldForefront": "Providing the software backbone for HoneyChain™ certification across 15 EU nations."
+        }
+    },
+    "pollination_crops": {
+        "Mangoes": {
+            "bee_dependence": "High (Pollinator-Dependent)",
+            "optimal_hives_per_acre": "2 - 4 Hives",
+            "target_FPA": 24,
+            "beeyield_advantage": "Our specific hive placement strategy encourages both bee and dipteran (fly) pollination, which is crucial for mango fruit set.",
+            "regional_trends_2026": "Kenya's mango exports projected to grow 12% annually. Drone delivery of monitoring nodes allows coverage in remote areas like Makueni.",
+            "economic_impact": "Proper pollination increases fruit retention and size, directly boosting export revenues."
+        },
+        "Sunflowers": {
+            "bee_dependence": "100% (High)",
+            "optimal_hives_per_acre": "1.5 - 2.5 Hives",
+            "target_FPA": 16,
+            "beeyield_advantage": "BeeYield's 'Flora-Sync' ensures hives are active during the critical morning window when sunflower pollen is most viable.",
+            "regional_trends_2026": "Expansion of sunflower for oil production in Arid regions requires robust, drought-tolerant pollinator management.",
+            "economic_impact": "Seed set is directly correlated to bee visits; adequate pollination can double oil yield per acre."
+        },
+        "Avocados": {
+            "bee_dependence": "High (Cross-Pollination)",
+            "optimal_hives_per_acre": "2.0 - 4.0 Hives",
+            "target_FPA": 32,
+            "beeyield_advantage": "We map A and B flower type opening times to ensure bee activity overlaps perfectly with female stage receptivity.",
+            "regional_trends_2026": "Booming export demand requires intensive pollination management to maximize fruit set per tree.",
+            "economic_impact": "Critical for preventing 'cukes' (seedless fruit) and ensuring market-standard sizes."
+        },
+        "Maize": {
+            "bee_dependence": "Low (Pollen Collection)",
+            "optimal_hives_per_acre": "0.5 - 1.0 Hives",
+            "target_FPA": 8,
+            "beeyield_advantage": "While wind-pollinated, BeeYield monitors ensure bees collect high-protein maize pollen during gaps in other blooms, maintaining colony strength for subsequent crops.",
+            "regional_trends_2026": "Precision planting requires synchronized pest management, which BeeYield's sensors detect via acoustic anomalies.",
+            "economic_impact": "A staple food security crop; healthy pollinator populations in maize fields support surrounding biodiversity."
+        },
+        "Beans": {
+            "bee_dependence": "Medium (Yield Stability)",
+            "optimal_hives_per_acre": "1.0 - 1.5 Hives",
+            "target_FPA": 12,
+            "beeyield_advantage": "BeeYield's sensors track foraging intensity to ensure consistent pod set across the entire field.",
+            "regional_trends_2026": "Shift towards high-value export varieties necessitates reliable pollination services.",
+            "economic_impact": "Increases pod fill and seed quality, essential for both consumption and seed production."
+        },
+        "Oranges": {
+            "bee_dependence": "Medium to High",
+            "optimal_hives_per_acre": "1.5 - 2.5 Hives",
+            "target_FPA": 20,
+            "beeyield_advantage": "We manage hive strength to prevent over-pollination in seedless varieties while ensuring max set for juice varieties.",
+            "regional_trends_2026": "Citrus greening resilience is bolstered by strong ecosystem services, including pollination.",
+            "economic_impact": "Improves fruit weight and juice content per hectare."
+        },
+        "Tomatoes": {
+            "bee_dependence": "High (Buzz Pollination)",
+            "optimal_hives_per_acre": "Specialized Management",
+            "target_FPA": 12,
+            "beeyield_advantage": "BeeYield enables precise monitoring of bumblebee colony health for greenhouse tomato production.",
+            "regional_trends_2026": "Greenhouse automation integration with biological pollinators is the future of intensive farming.",
+            "economic_impact": "Essential for fruit set in enclosed environments; directly determines yield per square meter."
+        },
+        "Onions": {
+            "bee_dependence": "100% (Seed Production)",
+            "optimal_hives_per_acre": "4.0 - 6.0 Hives",
+            "target_FPA": 48,
+            "beeyield_advantage": "Our high-density hive placement overcomes the natural unattractiveness of onion flowers to ensure full seed set.",
+            "regional_trends_2026": "Rising demand for hybrid onion seed requires technical pollination mastery.",
+            "economic_impact": "The primary factor determining seed yield; unpollinated flowers produce no seed."
+        },
+        "Sisal": {
+            "bee_dependence": "Low (Ecological Support)",
+            "optimal_hives_per_acre": "Ecological Placement",
+            "target_FPA": 4,
+            "beeyield_advantage": "Sisal poles provide critical forage during dearth periods, which BeeYield maps to maintain year-round apiary health.",
+            "regional_trends_2026": "Sustainable fiber production is increasingly valued, with pollinators playing a key ecosystem role.",
+            "economic_impact": "Supports the biodiversity necessary for sustainable large-scale plantation management."
+        },
+        "Vegetables": {
+            "bee_dependence": "Variable (High)",
+            "optimal_hives_per_acre": "2.0 - 3.0 Hives",
+            "target_FPA": 16,
+            "beeyield_advantage": "Adaptive hive mobility allows BeeYield to service short-bloom vegetable crops efficiently.",
+            "regional_trends_2026": "Peri-urban vegetable farming growth demands mobile, smart pollination solutions.",
+            "economic_impact": "Crucial for fruit-vegetables like squash, peppers, and cucumbers."
+        }
+    },
+    "market_intelligence": {
+        "global_honey_market": {
+            "forecast_2026": "USD 9.73 Billion Market Value with a CAGR of 4.7%.",
+            "regional_leaders": [
+                "Asia-Pacific (Volume)",
+                "Europe (Premium/Organic)",
+                "East Africa (Growth Star)"
+            ],
+            "beeyield_role": "BeeYield is the architect of the premium honey market, utilizing HoneyChain™ to guarantee 100% traceability, pushing prices 35% higher for certified farmers."
+        },
+        "pollination_services": {
+            "forecast_2026": "Global market valued at USD 2.73 Billion; critical shortage of wild pollinators drives demand.",
+            "beeyield_position": "BeeYield's Precision Pollination™ service utilizes IoT nodes to ensure optimal bee density per acre, increasing crop yields by up to 25% compared to traditional methods."
+        },
+        "iot_adoption": {
+            "projection": "90% of commercial apiaries projected to adopt some form of IoT by 2026.",
+            "beeyield_tech": "BeeYield's Omni-Node™ is the gold standard, featuring zero-latency acoustic health monitoring and real-time weight-to-bloom correlation.",
+            "acoustic_health": {
+                "technology": "Using AI to decode queen-piping and swarming frequency before they happen.",
+                "accuracy": "BeeYield possesses Africa's largest dataset of bee acoustics, allowing for 98.4% accuracy in disease detection via sound alone."
+            }
+        },
+        "environmental_impact": {
+            "mortality_rates": "Global average loss remains at 60%, but BeeYield-monitored colonies report only 12-15% loss.",
+            "climate_adaptation": "AI-driven local climate alerts and early-warning pesticide detection.",
+            "urban_beekeeping": "40% increase in city-based hives by 2026."
+        }
+    },
+    "team": {
+        "leadership": [
+            {
+                "name": "Timothy Mathuva",
+                "role": "CEO & Founder",
+                "background": "Strathmore University, Visionary leader with a passion for agricultural innovation",
+                "expertise": "Strategic planning, agricultural technology, farmer partnerships"
+            },
+            {
+                "name": "Agatha Mathuva",
+                "role": "CTO & Co-Founder",
+                "background": "IT Lead with expertise in IoT systems and blockchain development",
+                "expertise": "IoT architecture, blockchain (HoneyChain), data systems"
+            },
+            {
+                "name": "Carole Mathuva",
+                "role": "Chief Growth Officer & Co-Founder",
+                "background": "Growth strategist focused on market expansion and partnerships",
+                "expertise": "Business development, market expansion, ESG initiatives"
+            }
+        ],
+        "company_culture": "A family-founded company with deep roots in Kibwezi, Kenya. 60% women in leadership positions.",
+        "mission": "To revolutionize African beekeeping through precision IoT and blockchain traceability while ensuring fair compensation for beekeepers."
+    },
+    "esg_initiatives": {
+        "environmental": {
+            "pollinator_protection": "Monitoring and protecting 184+ managed colonies with <15% loss rate (vs 60% global average).",
+            "habitat_conservation": "2,500+ trees planted through the One Hive, One Tree initiative.",
+            "chemical_free": "100% chemical-free bee management using integrated pest management.",
+            "native_restoration": "Partnering with local communities to restore native plant species for bee forage."
+        },
+        "social": {
+            "empowering_beekeepers": "50+ Kenyan beekeepers trained and supported through the Master Beekeeper Program.",
+            "fair_compensation": "The 50/50 Promise ensures beekeepers receive 50% of honey harvest value.",
+            "training_programs": "Regular training on sustainable practices, hive management, and IoT technology.",
+            "community_impact": "Direct economic impact on rural communities in Makueni and Kitui Counties."
+        },
+        "governance": {
+            "women_leadership": "60% women in leadership positions, including co-founders.",
+            "transparency": "Full blockchain traceability through HoneyChain™ for all products.",
+            "ethical_sourcing": "Verified ethical harvesting practices with complete audit trails."
+        }
+    },
+    "commitments": {
+        "un_sdg_alignment": {
+            "sdg2": "Zero Hunger - Supporting food security through pollination services",
+            "sdg8": "Decent Work - Fair wages and training for beekeepers",
+            "sdg12": "Responsible Consumption - Sustainable honey production",
+            "sdg13": "Climate Action - Carbon-neutral operations and tree planting",
+            "sdg15": "Life on Land - Pollinator conservation and habitat restoration"
+        },
+        "50_50_promise": "For every harvest, 50% of the honey remains with the bees for their sustenance, and 50% is ethically harvested for sale. This ensures colony health and sustainability.",
+        "traceability_guarantee": "Every jar of BeeYield honey is traceable from flower to jar via HoneyChain™ blockchain.",
+        "sustainable_agritech": "Using IoT sensors that are solar-powered and built with sustainable materials.",
+        "zero_colony_loss_target": "Working towards <10% annual colony loss through precision monitoring and early intervention."
+    },
+    "locations": {
+        "headquarters": {
+            "name": "Kibwezi Main Apiary",
+            "location": "Kibwezi, Makueni County, Kenya",
+            "size": "5 acres",
+            "hives": 184,
+            "coordinates": "-2.4194, 37.9569",
+            "description": "The heart of BeeYield operations, featuring the main apiary with state-of-the-art IoT monitoring."
+        },
+        "partner_regions": [
+            {
+                "name": "Makueni",
+                "description": "Primary mango and honey production region",
+                "key_crops": [
+                    "Mangoes",
+                    "Sunflowers",
+                    "Beans"
+                ]
+            },
+            {
+                "name": "Kitui",
+                "description": "Expanding operations with focus on drought-resistant beekeeping",
+                "key_crops": [
+                    "Sunflowers",
+                    "Green grams",
+                    "Cowpeas"
+                ]
+            },
+            {
+                "name": "Embu",
+                "description": "Highland honey production with unique flora",
+                "key_crops": [
+                    "Avocados",
+                    "Coffee",
+                    "Macadamia"
+                ]
+            },
+            {
+                "name": "Meru",
+                "description": "Specialty honey region known for herbal and medicinal qualities",
+                "key_crops": [
+                    "Miraa",
+                    "Tea",
+                    "Coffee"
+                ]
+            }
+        ]
+    },
+    "products": {
+        "honey_varieties": [
+            {
+                "name": "Multi-Flower Premium",
+                "description": "A blend of wildflowers from Kibwezi, offering complex flavor notes.",
+                "source": "Kibwezi Main Apiary"
+            },
+            {
+                "name": "Acacia Gold",
+                "description": "Light-colored, mild honey from acacia woodlands.",
+                "source": "Makueni Acacia Zones"
+            },
+            {
+                "name": "Forest Dark Reserve",
+                "description": "Rich, dark honey with bold molasses notes from mountainous regions.",
+                "source": "Highland Apiaries"
+            }
+        ],
+        "services": [
+            {
+                "name": "Precision Pollination™",
+                "description": "IoT-monitored pollination services for farms",
+                "benefits": [
+                    "35% yield increase",
+                    "Real-time monitoring",
+                    "Custom hive deployment"
+                ]
+            },
+            {
+                "name": "BeeHUB IoT System",
+                "description": "Complete hive monitoring solution with sensors and dashboard",
+                "features": [
+                    "Temperature monitoring",
+                    "Humidity tracking",
+                    "Weight sensors",
+                    "Acoustic analysis",
+                    "Mobile app"
+                ]
+            }
+        ]
+    },
+    "contact": {
+        "email": {
+            "general": "info@beeyield.com",
+            "support": "support@beeyield.com",
+            "pollination": "pollination@beeyield.com",
+            "partnerships": "partners@beeyield.com"
+        },
+        "phone": "+254 700 000 000",
+        "website": "https://beeyield.com",
+        "social": {
+            "twitter": "@beeyield",
+            "instagram": "@beeyield",
+            "linkedin": "BeeYield"
+        },
+        "address": "Kibwezi, Makueni County, Kenya"
+    }
+}

@@ -5,11 +5,11 @@ export const Link = RRDLink;
 export const useLocation = RRDUseLocation;
 export const useNavigate = RRDUseNavigate;
 
-export const useParams = <T extends Record<string, any> = {}>(opts?: any): T => {
+export const useParams = <T extends Record<string, any> = any>(opts?: any): T => {
     return RRDUseParams() as T;
 };
 
-export const useSearch = <T extends Record<string, any> = {}>(opts?: any): T => {
+export const useSearch = <T extends Record<string, any> = any>(opts?: any): T => {
     const [searchParams] = RRDUseSearchParams();
     return Object.fromEntries(searchParams.entries()) as any;
 };
@@ -24,8 +24,8 @@ export const Scripts = (props?: any) => null;
 export const Meta = (props?: any) => null;
 
 const genericRoute = {
-    useParams: <T extends Record<string, any> = {}>(opts?: any): T => RRDUseParams() as T,
-    useSearch: <T extends Record<string, any> = {}>(opts?: any): T => {
+    useParams: <T extends Record<string, any> = any>(opts?: any): T => RRDUseParams() as T,
+    useSearch: <T extends Record<string, any> = any>(opts?: any): T => {
         const [searchParams] = RRDUseSearchParams();
         return Object.fromEntries(searchParams.entries()) as any;
     },

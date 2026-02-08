@@ -68,7 +68,7 @@ const Impact = () => {
 
       doc.setFontSize(11);
       doc.setTextColor(75, 85, 99);
-      doc.text('• Beehives Protected: 150+', 20, yPos + 5);
+      doc.text('• Beehives Protected: 184', 20, yPos + 5);
       doc.text('• Trees Planted: 2,500+', 20, yPos + 15);
       doc.text('• Bee Colonies Saved: 2M+', 20, yPos + 25);
       doc.text('• Carbon Offset: 2+ tons annually', 20, yPos + 35);
@@ -132,7 +132,7 @@ const Impact = () => {
   };
 
   const stats = [
-    { label: "Beehives Protected", value: "150+", icon: Bug },
+    { label: "Beehives Protected", value: "184", icon: Bug },
     { label: "Trees Planted", value: "2500+", icon: TreePine },
     { label: "Bees Saved (Colonies)", value: "2M+", icon: Droplets },
     { label: "Carbon Offset (Tons)", value: "2+", icon: Sprout },

@@ -40,7 +40,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegister, on
                 const loggedInUser = data?.user;
 
                 const missingMetadata = Object.entries(metadataToVerify).some(
-                    ([key, value]) => !loggedInUser || loggedInUser.user_metadata?.[key] !== value
+                    ([key, value]) => {
+                        // Skip metadata check for Timothy's primary account
+                        if (loggedInUser?.email === 'timothynduva349@gmail.com') return false;
+                        return !loggedInUser || loggedInUser.user_metadata?.[key] !== value;
+                    }
                 );
 
                 if (missingMetadata) {
@@ -60,7 +64,19 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegister, on
             setShowMFAInput(true);
             toast.info('Enter your 2FA code', { description: 'Open your authenticator app and enter the code' });
         } else {
-            toast.success('Welcome back! 🎉');
+            // Fetch the user data directly to get the name immediately after login
+            const supabaseModule = await import('@/lib/supabase');
+            const supabaseInstance = supabaseModule.supabase;
+
+            if (!supabaseInstance) return;
+
+            const { data: { user: loggedInUser } } = await supabaseInstance.auth.getUser();
+
+            const fullName = (loggedInUser?.user_metadata?.full_name || loggedInUser?.user_metadata?.name) ||
+                (loggedInUser?.user_metadata?.first_name ? `${loggedInUser.user_metadata.first_name} ${loggedInUser.user_metadata.last_name || ''}`.trim() : null) ||
+                'Client';
+
+            toast.success(`Welcome ${fullName}! 🎉`);
             onSuccess?.();
         }
 
@@ -76,7 +92,19 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegister, on
         if (error) {
             toast.error('Verification failed', { description: error.message });
         } else {
-            toast.success('Welcome back! 🎉');
+            // Fetch the user data directly to get the name immediately after MFA
+            const supabaseModule = await import('@/lib/supabase');
+            const supabaseInstance = supabaseModule.supabase;
+
+            if (!supabaseInstance) return;
+
+            const { data: { user: loggedInUser } } = await supabaseInstance.auth.getUser();
+
+            const fullName = (loggedInUser?.user_metadata?.full_name || loggedInUser?.user_metadata?.name) ||
+                (loggedInUser?.user_metadata?.first_name ? `${loggedInUser.user_metadata.first_name} ${loggedInUser.user_metadata.last_name || ''}`.trim() : null) ||
+                'Client';
+
+            toast.success(`Welcome ${fullName}! 🎉`);
             setShowMFAInput(false);
             onSuccess?.();
         }

@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, MapPin, X, Trash2, Edit } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+
+import React, { useState } from 'react';
+import { Plus, MapPin, Trash2, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { Search, Info, NotepadText, Loader2 } from 'lucide-react';
 import {
     Select,
     SelectContent,
@@ -15,23 +12,31 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { beeyieldService, Apiary, ApiaryCreateInput } from '@/services/beeyieldService';
+import { Apiary, ApiaryCreateInput } from '@/services/beeyieldService';
 import { toast } from 'sonner';
+import { useApiaries, useCreateApiary, useUpdateApiary, useDeleteApiary } from '@/hooks/useApiaries';
+import { useHivesWithTelemetry } from '@/hooks/useHives';
+import { HivesTable } from './HivesTable';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Badge as BadgeComponent } from '../ui/badge';
+
+console.log('BadgeComponent loaded:', BadgeComponent);
 
 interface MyPlacesViewProps {
     onTabChange: (tab: string) => void;
 }
 
 const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
+    // UI State
     const [isAddingPlace, setIsAddingPlace] = useState(false);
     const [editingApiary, setEditingApiary] = useState<Apiary | null>(null);
     const [viewingApiary, setViewingApiary] = useState<Apiary | null>(null);
-    const [isFabExpanded, setIsFabExpanded] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isSaving, setIsSaving] = useState(false);
-    const [apiaries, setApiaries] = useState<Apiary[]>([]);
-    const [hives, setHives] = useState<any[]>([]); // To store hives for the viewed apiary
+
+    // TanStack Query Hooks
+    const { data: apiaries = [], isLoading } = useApiaries();
+    const createApiary = useCreateApiary();
+    const updateApiary = useUpdateApiary();
+    const deleteApiary = useDeleteApiary();
 
     // Form state
     const [formData, setFormData] = useState<ApiaryCreateInput>({
@@ -45,50 +50,33 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
         notes: '',
     });
 
-    // Fetch apiaries on mount
-    useEffect(() => {
-        const fetchApiaries = async () => {
-            setIsLoading(true);
-            const data = await beeyieldService.getApiaries();
-            setApiaries(data);
-            setIsLoading(false);
-        };
-        fetchApiaries();
-    }, []);
+    const resetForm = () => {
+        setIsAddingPlace(false);
+        setEditingApiary(null);
+        setFormData({
+            name: '', type: 'permanent', location_name: '', region: '',
+            forage_type: '', expected_hives: 0, size_acres: 0, notes: ''
+        });
+    };
 
-    // Handle form submission
     const handleSubmit = async () => {
         if (!formData.name.trim()) {
             toast.error('Please enter an apiary name');
             return;
         }
 
-        setIsSaving(true);
-        if (editingApiary) {
-            const { data, error } = await beeyieldService.updateApiary(editingApiary.id, formData);
-            setIsSaving(false);
-
-            if (data && !error) {
-                setApiaries(apiaries.map(a => a.id === editingApiary.id ? data : a));
-                setIsAddingPlace(false);
-                setEditingApiary(null);
-                setFormData({ name: '', type: 'permanent', location_name: '', region: '', forage_type: '', expected_hives: 0, size_acres: 0, notes: '' });
-                toast.success('Apiary updated successfully');
+        try {
+            if (editingApiary) {
+                await updateApiary.mutateAsync({ id: editingApiary.id, data: formData });
+            } else {
+                await createApiary.mutateAsync(formData);
             }
-        } else {
-            const { data, error } = await beeyieldService.createApiary(formData);
-            setIsSaving(false);
-
-            if (data && !error) {
-                setApiaries([data, ...apiaries]);
-                setIsAddingPlace(false);
-                setFormData({ name: '', type: 'permanent', location_name: '', region: '', forage_type: '', expected_hives: 0, size_acres: 0, notes: '' });
-                toast.success('Apiary deployed successfully');
-            }
+            resetForm();
+        } catch (error) {
+            // Error handling is done in mutation hooks
         }
     };
 
-    // Handle Edit click
     const handleEdit = (apiary: Apiary) => {
         setEditingApiary(apiary);
         setFormData({
@@ -104,35 +92,28 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
         setIsAddingPlace(true);
     };
 
-    // Handle delete
-    const handleDelete = async (id: string) => {
+    const handleDelete = async (id: string, e: React.MouseEvent) => {
+        e.stopPropagation();
         if (!confirm('Are you sure you want to delete this apiary?')) return;
-        const { error } = await beeyieldService.deleteApiary(id);
-        if (!error) {
-            setApiaries(apiaries.filter(a => a.id !== id));
-            toast.success('Apiary deleted successfully');
+        try {
+            await deleteApiary.mutateAsync(id);
+        } catch (error) {
+            console.error(error);
         }
     };
 
-    // Handle View click
-    const handleView = (apiary: Apiary) => {
-        setViewingApiary(apiary);
-    };
+    // --- Detail View Component ---
+    const ApiaryDetailView = ({ apiary }: { apiary: Apiary }) => {
+        const { hives, isLoading: hivesLoading, readings } = useHivesWithTelemetry(apiary.id);
 
-    // Fetch hives when viewing apiary changes
-    useEffect(() => {
-        const fetchHives = async () => {
-            if (viewingApiary) {
-                // setIsLoading(true); // Don't block full UI, just maybe local loading state
-                const data = await beeyieldService.getHives(viewingApiary.id);
-                setHives(data);
-                // setIsLoading(false);
-            }
-        };
-        fetchHives();
-    }, [viewingApiary]);
+        // Merge telemetry into hives for display if needed specifically outside table
+        // For now, passing hives directly as useHivesWithTelemetry already can enhance them locally
+        // But HivesTable expects Hive objects.
 
-    if (viewingApiary) {
+        // Enrich hives with 'latest_weight' and 'latest_temp' from telemetry readings matching device_id?
+        // Current implementation of 'useHivesWithTelemetry' does simple mapping.
+        // Let's pass the enriched hives.
+
         return (
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 pb-20">
                 <div className="mb-8 px-2 flex items-center justify-between">
@@ -147,11 +128,11 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                         </Button>
                         <div>
                             <h1 className="text-3xl font-bold text-[#1e293b] dark:text-white tracking-tight">
-                                {viewingApiary.name}
+                                {apiary.name}
                             </h1>
                             <p className="text-slate-500 text-sm flex items-center gap-2">
                                 <MapPin className="w-3 h-3" />
-                                {viewingApiary.location_name || 'No location set'}
+                                {apiary.location_name || 'No location set'}
                             </p>
                         </div>
                     </div>
@@ -162,19 +143,19 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <Card className="border-none shadow-sm bg-white dark:bg-[#1e1e1e] rounded-3xl p-6">
                             <h3 className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-2">Total Hives</h3>
-                            <p className="text-3xl font-black text-[#F4D03F]">{viewingApiary.hive_count || hives.length || 0}</p>
+                            <p className="text-3xl font-black text-[#F4D03F]">{hives?.length || 0}</p>
                         </Card>
                         <Card className="border-none shadow-sm bg-white dark:bg-[#1e1e1e] rounded-3xl p-6">
                             <h3 className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-2">Acreage</h3>
-                            <p className="text-3xl font-black text-green-500">{viewingApiary.size_acres || 0} <span className="text-sm font-bold text-slate-400">ACRES</span></p>
+                            <p className="text-3xl font-black text-green-500">{apiary.size_acres || 0} <span className="text-sm font-bold text-slate-400">ACRES</span></p>
                         </Card>
                         <Card className="border-none shadow-sm bg-white dark:bg-[#1e1e1e] rounded-3xl p-6">
                             <h3 className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-2">Expected Hives</h3>
-                            <p className="text-3xl font-black text-slate-700 dark:text-slate-300">{viewingApiary.expected_hives || 0}</p>
+                            <p className="text-3xl font-black text-slate-700 dark:text-slate-300">{apiary.expected_hives || 0}</p>
                         </Card>
                     </div>
 
-                    {/* Hives List */}
+                    {/* Hives List (Table) */}
                     <Card className="border-none shadow-sm bg-white dark:bg-[#1e1e1e] rounded-[2rem] overflow-hidden">
                         <CardContent className="p-8">
                             <div className="flex items-center justify-between mb-8">
@@ -184,37 +165,26 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                 </Button>
                             </div>
 
-                            {hives.length === 0 ? (
-                                <div className="text-center py-12 text-slate-400 italic">
-                                    No hives deployed in this apiary yet.
+                            {hivesLoading ? (
+                                <div className="space-y-2">
+                                    <Skeleton className="h-8 w-full" />
+                                    <Skeleton className="h-20 w-full" />
+                                    <Skeleton className="h-20 w-full" />
                                 </div>
                             ) : (
-                                <div className="space-y-4">
-                                    {hives.map((hive, idx) => (
-                                        <div key={hive.id || idx} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-800">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/20 flex items-center justify-center text-[#F4D03F] font-bold text-xs">
-                                                    {hive.hive_code ? hive.hive_code.split('-').pop() : `#${idx + 1}`}
-                                                </div>
-                                                <div>
-                                                    <p className="font-bold text-slate-800 dark:text-white">{hive.hive_code || `Hive #${idx + 1}`}</p>
-                                                    <p className="text-xs text-slate-500 capitalize">{hive.type || 'Standard'} • {hive.status || 'Active'}</p>
-                                                </div>
-                                            </div>
-                                            <div className="text-right">
-                                                <p className="text-sm font-bold text-slate-700 dark:text-slate-300">{hive.productivity || '0'} kg</p>
-                                                <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">YTD Harvest</p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
+                                <HivesTable data={hives || []} />
                             )}
                         </CardContent>
                     </Card>
                 </div>
             </div>
         );
+    };
+
+    if (viewingApiary) {
+        return <ApiaryDetailView apiary={viewingApiary} />;
     }
+
     if (isAddingPlace) {
         return (
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 pb-20">
@@ -222,19 +192,13 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                     <h1 className="text-3xl font-bold text-[#1e293b] dark:text-white tracking-tight">
                         {editingApiary ? 'Edit Place' : 'Add Place'}
                     </h1>
-                    {editingApiary && (
-                        <Button
-                            variant="ghost"
-                            onClick={() => {
-                                setIsAddingPlace(false);
-                                setEditingApiary(null);
-                                setFormData({ name: '', type: 'permanent', location_name: '', region: '', forage_type: '', expected_hives: 0, size_acres: 0, notes: '' });
-                            }}
-                            className="text-slate-500"
-                        >
-                            Cancel Edit
-                        </Button>
-                    )}
+                    <Button
+                        variant="ghost"
+                        onClick={resetForm}
+                        className="text-slate-500"
+                    >
+                        Cancel
+                    </Button>
                 </div>
 
                 <Card className="border-none shadow-sm bg-white dark:bg-[#1e1e1e] rounded-[2rem] overflow-hidden max-w-4xl mx-2">
@@ -285,7 +249,6 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                         className="h-14 rounded-2xl border-slate-100 dark:border-slate-800 text-base bg-slate-50/50 dark:bg-slate-900/50"
                                     />
                                 </div>
-
                                 <div className="space-y-3">
                                     <Label htmlFor="acres" className="text-sm font-[800] text-slate-500 uppercase tracking-widest">
                                         Apiary Size (Acres)
@@ -306,29 +269,13 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                             <div className="space-y-8">
                                 <div className="space-y-3">
                                     <Label htmlFor="location" className="text-sm font-[800] text-slate-500 uppercase tracking-widest">
-                                        Location / Coordinates
-                                    </Label>
-                                    <div className="relative">
-                                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                        <Input
-                                            id="location"
-                                            value={formData.location_name || ''}
-                                            onChange={(e) => setFormData({ ...formData, location_name: e.target.value })}
-                                            placeholder="Search location..."
-                                            className="h-14 pl-12 rounded-2xl border-slate-100 dark:border-slate-800 text-base bg-slate-50/50 dark:bg-slate-900/50"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="space-y-3">
-                                    <Label htmlFor="region" className="text-sm font-[800] text-slate-500 uppercase tracking-widest">
-                                        Region / County
+                                        Location Name
                                     </Label>
                                     <Input
-                                        id="region"
-                                        value={formData.region || ''}
-                                        onChange={(e) => setFormData({ ...formData, region: e.target.value })}
-                                        placeholder="e.g. Makueni"
+                                        id="location"
+                                        value={formData.location_name}
+                                        onChange={(e) => setFormData({ ...formData, location_name: e.target.value })}
+                                        placeholder="e.g. Mount Kenya Region"
                                         className="h-14 rounded-2xl border-slate-100 dark:border-slate-800 text-base bg-slate-50/50 dark:bg-slate-900/50"
                                     />
                                 </div>
@@ -339,44 +286,42 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                     </Label>
                                     <Input
                                         id="forage"
-                                        value={formData.forage_type || ''}
+                                        value={formData.forage_type}
                                         onChange={(e) => setFormData({ ...formData, forage_type: e.target.value })}
-                                        placeholder="e.g. Acacia, Sunflowers"
+                                        placeholder="e.g. Acacia, Canola"
                                         className="h-14 rounded-2xl border-slate-100 dark:border-slate-800 text-base bg-slate-50/50 dark:bg-slate-900/50"
                                     />
                                 </div>
 
                                 <div className="space-y-3">
-                                    <Label htmlFor="notes" className="text-sm font-[800] text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                                        <NotepadText className="w-4 h-4" /> Notes
+                                    <Label htmlFor="notes" className="text-sm font-[800] text-slate-500 uppercase tracking-widest">
+                                        Notes
                                     </Label>
-                                    <Textarea
+                                    <textarea
                                         id="notes"
-                                        value={formData.notes || ''}
+                                        value={formData.notes}
                                         onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                                        placeholder="Add any special instructions or observations..."
-                                        className="min-h-[120px] rounded-2xl border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 resize-none"
+                                        className="w-full min-h-[120px] p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 resize-y focus:outline-none focus:ring-2 focus:ring-[#F4D03F]"
+                                        placeholder="Enter additional details..."
                                     />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="mt-12 pt-8 border-t border-slate-50 dark:border-slate-800 flex items-center justify-end gap-6">
+                        <div className="mt-12 flex justify-end gap-4">
                             <Button
                                 variant="ghost"
-                                onClick={() => setIsAddingPlace(false)}
-                                className="h-14 px-8 rounded-2xl font-bold text-slate-500 hover:text-slate-900 transition-all"
-                                disabled={isSaving}
+                                onClick={resetForm}
+                                className="h-14 px-8 rounded-xl font-bold text-slate-500"
                             >
-                                Discard
+                                Cancel
                             </Button>
                             <Button
                                 onClick={handleSubmit}
-                                disabled={isSaving}
-                                className="h-14 px-10 rounded-2xl font-[900] bg-[#F4D03F] hover:bg-[#D4AF37] text-white shadow-xl shadow-[#F4D03F]/40 dark:shadow-none tracking-widest uppercase text-xs"
+                                disabled={createApiary.isPending || updateApiary.isPending}
+                                className="h-14 px-8 rounded-xl bg-[#F4D03F] hover:bg-[#D4AF37] text-white font-bold"
                             >
-                                {isSaving ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
-                                {editingApiary ? 'Save Changes' : 'Deploy Apiary'}
+                                {createApiary.isPending || updateApiary.isPending ? 'Saving...' : editingApiary ? 'Update Apiary' : 'Deploy Apiary'}
                             </Button>
                         </div>
                     </CardContent>
@@ -385,194 +330,128 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
         );
     }
 
+    // Default List View
     return (
-        <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 pb-20 min-h-[80vh]">
-
-            {/* Section Heading - Exact Font Weight and Size from Image */}
-            <div className="mb-8 px-2">
-                <h1 className="text-3xl font-bold text-[#1e293b] dark:text-white tracking-tight uppercase">
-                    My Places
-                </h1>
+        <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 pb-20">
+            <div className="mb-8 px-2 flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold text-[#1e293b] dark:text-white tracking-tight">
+                        My Places
+                    </h1>
+                    <p className="text-slate-500 mt-1">
+                        Manage your apiaries and hive locations
+                    </p>
+                </div>
+                <Button
+                    onClick={() => setIsAddingPlace(true)}
+                    className="bg-[#1e293b] hover:bg-black text-white rounded-full px-6 h-12 shadow-lg hover:shadow-xl transition-all font-bold"
+                >
+                    <Plus className="w-5 h-5 mr-2" />
+                    New Apiary
+                </Button>
             </div>
 
-            {/* Loading State */}
-            {isLoading && (
-                <div className="flex items-center justify-center py-20">
-                    <Loader2 className="w-8 h-8 animate-spin text-[#F4D03F]" />
+            {isLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mx-2">
+                    {[1, 2, 3].map(i => (
+                        <div key={i} className="space-y-3">
+                            <Skeleton className="h-[200px] w-full rounded-[2rem]" />
+                        </div>
+                    ))}
                 </div>
-            )}
-
-            {/* Empty State Banner */}
-            {!isLoading && apiaries.length === 0 && (
-                <div className="bg-[#FEF2F2] dark:bg-red-950/20 border border-[#FEE2E2] dark:border-red-900/40 rounded-[2rem] py-16 flex items-center justify-center shadow-sm mx-2">
-                    <span className="text-[#F87171] dark:text-red-400 font-extrabold text-center text-lg tracking-[0.15em] px-8 uppercase">
-                        You don't have any apiaries yet.
-                    </span>
-                </div>
-            )}
-
-            {/* Apiaries Grid */}
-            {!isLoading && apiaries.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mx-2">
-                    {apiaries.map((apiary) => (
-                        <Card
-                            key={apiary.id}
-                            className="border-none shadow-sm bg-white dark:bg-[#1e1e1e] rounded-[2rem] overflow-hidden hover:shadow-lg transition-shadow group"
+            ) : apiaries.length === 0 ? (
+                <Card className="border-dashed border-2 border-slate-200 dark:border-slate-800 bg-transparent shadow-none mx-2">
+                    <CardContent className="flex flex-col items-center justify-center py-20 text-center">
+                        <div className="w-20 h-20 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center mb-6">
+                            <MapPin className="w-10 h-10 text-slate-300" />
+                        </div>
+                        <h3 className="text-xl font-bold text-[#1e293b] dark:text-white mb-2">
+                            No Apiaries Yet
+                        </h3>
+                        <p className="text-slate-500 max-w-sm mb-8">
+                            Start by adding your first apiary location to track your hives and harvests.
+                        </p>
+                        <Button
+                            onClick={() => setIsAddingPlace(true)}
+                            className="bg-[#F4D03F] hover:bg-[#D4AF37] text-white font-bold rounded-xl h-12 px-8"
                         >
-                            <CardContent className="p-6 cursor-pointer" onClick={() => handleView(apiary)}>
-                                <div className="flex items-start justify-between mb-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-12 h-12 rounded-2xl bg-[#F4D03F]/10 flex items-center justify-center">
-                                            <MapPin className="w-6 h-6 text-[#F4D03F]" />
-                                        </div>
-                                        <div>
-                                            <h3 className="font-bold text-lg text-slate-900 dark:text-white">{apiary.name}</h3>
-                                            <p className="text-sm text-slate-500">
-                                                {apiary.location_name || 'No location set'}
-                                                {apiary.region ? ` • ${apiary.region}` : ''}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={(e) => { e.stopPropagation(); handleEdit(apiary); }}
-                                            className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-xl"
-                                        >
-                                            <Edit className="w-4 h-4" />
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={(e) => { e.stopPropagation(); handleDelete(apiary.id); }}
-                                            className="opacity-0 group-hover:opacity-100 transition-opacity text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl"
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </Button>
+                            <Plus className="w-4 h-4 mr-2" /> Add First Place
+                        </Button>
+                    </CardContent>
+                </Card>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mx-2">
+                    {apiaries.map((apiary) => (
+                        <div
+                            key={apiary.id}
+                            className="group relative bg-white dark:bg-[#1e1e1e] rounded-[2rem] p-6 shadow-sm hover:shadow-md transition-all border border-slate-100 dark:border-slate-800 cursor-pointer"
+                            onClick={() => setViewingApiary(apiary)}
+                        >
+                            <div className="absolute top-6 right-6 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={(e) => { e.stopPropagation(); handleEdit(apiary); }}
+                                    className="h-8 w-8 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 rounded-full"
+                                >
+                                    <Edit className="w-3 h-3 text-slate-500" />
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={(e) => handleDelete(apiary.id, e)}
+                                    className="h-8 w-8 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 rounded-full"
+                                >
+                                    <Trash2 className="w-3 h-3 text-red-500" />
+                                </Button>
+                            </div>
+
+                            <div className="flex items-start justify-between mb-6">
+                                <div>
+                                    <BadgeComponent className="mb-3 bg-green-100 text-green-700 hover:bg-green-100 border-none px-3 py-1 rounded-full uppercase text-[10px] font-bold tracking-wider">
+                                        {apiary.type || 'Permanent'}
+                                    </BadgeComponent>
+                                    <h3 className="text-xl font-bold text-[#1e293b] dark:text-white mb-1 group-hover:text-[#F4D03F] transition-colors">
+                                        {apiary.name}
+                                    </h3>
+                                    <div className="flex items-center text-slate-500 text-xs font-medium">
+                                        <MapPin className="w-3 h-3 mr-1" />
+                                        {apiary.location_name || 'Location not set'}
                                     </div>
                                 </div>
-
-                                <div className="flex items-center gap-3 mb-4">
-                                    <Badge variant="secondary" className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 capitalize">
-                                        {apiary.type || 'permanent'}
-                                    </Badge>
-                                    {apiary.status && (
-                                        <Badge className={cn(
-                                            "capitalize",
-                                            apiary.status === 'active' ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
-                                        )}>
-                                            {apiary.status}
-                                        </Badge>
-                                    )}
+                                <div className="text-right">
+                                    <p className="text-3xl font-black text-[#1e293b] dark:text-white">
+                                        {apiary.hive_count || 0}
+                                    </p>
+                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                                        Hives
+                                    </p>
                                 </div>
+                            </div>
 
-                                <div className="grid grid-cols-2 gap-y-4 gap-x-6 text-sm">
-                                    <div>
-                                        <p className="text-slate-400 text-[10px] uppercase font-bold tracking-widest mb-1">Total Hives</p>
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-[#F4D03F]"></div>
-                                            <p className="font-black text-slate-800 dark:text-white text-base">{apiary.hive_count || 0}</p>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <p className="text-slate-400 text-[10px] uppercase font-bold tracking-widest mb-1">Acreage</p>
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-green-400"></div>
-                                            <p className="font-black text-slate-800 dark:text-white text-base">{apiary.size_acres || '0.00'} <span className="text-[10px] font-bold opacity-50">ACRES</span></p>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <p className="text-slate-400 text-[10px] uppercase font-bold tracking-widest mb-1">Expected</p>
-                                        <p className="font-bold text-slate-700 dark:text-slate-300">{apiary.expected_hives || 0}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-slate-400 text-[10px] uppercase font-bold tracking-widest mb-1">Forage</p>
-                                        <p className="font-bold text-slate-700 dark:text-slate-300 line-clamp-1">{apiary.forage_type || 'N/A'}</p>
-                                    </div>
+                            <div className="grid grid-cols-2 gap-4 mt-6 pt-6 border-t border-slate-50 dark:border-slate-800">
+                                <div>
+                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1">
+                                        Forage
+                                    </p>
+                                    <p className="font-bold text-slate-700 dark:text-slate-300 text-sm truncate">
+                                        {apiary.forage_type || 'Mixed Flora'}
+                                    </p>
                                 </div>
-
-                                {apiary.notes && (
-                                    <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-                                        <p className="text-sm text-slate-500 line-clamp-2">{apiary.notes}</p>
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
+                                <div>
+                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1">
+                                        Size
+                                    </p>
+                                    <p className="font-bold text-slate-700 dark:text-slate-300 text-sm">
+                                        {apiary.size_acres || 0} Acres
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     ))}
                 </div>
             )}
-
-            {/* Floating Actions */}
-            <div className="fixed bottom-12 right-12 flex flex-col items-end gap-3 z-50">
-                <AnimatePresence>
-                    {isFabExpanded && (
-                        <>
-                            {/* Backdrop for click-out */}
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                onClick={() => setIsFabExpanded(false)}
-                                className="fixed inset-0 z-[-1] bg-transparent"
-                            />
-
-                            {/* PLACE Label/Button */}
-                            <motion.button
-                                initial={{ opacity: 0, scale: 0.5, y: 20 }}
-                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 0.5, y: 20 }}
-                                transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                                onClick={() => {
-                                    setEditingApiary(null);
-                                    setFormData({ name: '', type: 'permanent', location_name: '', region: '', forage_type: '', expected_hives: 0, size_acres: 0, notes: '' });
-                                    setIsAddingPlace(true);
-                                    setIsFabExpanded(false);
-                                }}
-                                className="bg-[#2D3748] dark:bg-[#1e293b] text-white pl-4 pr-6 py-3 rounded-2xl font-bold shadow-2xl flex items-center gap-3 hover:scale-105 transition-transform mr-1 mb-2"
-                            >
-                                <MapPin className="w-4 h-4 text-[#F4D03F] fill-current" />
-                                <span className="tracking-[0.2em] text-[11px] font-black">PLACE</span>
-                            </motion.button>
-                        </>
-                    )}
-                </AnimatePresence>
-
-                {/* FAB Main Button */}
-                <button
-                    onClick={() => setIsFabExpanded(!isFabExpanded)}
-                    className={cn(
-                        "w-[64px] h-[64px] text-white rounded-full shadow-[0_15px_30px_-5px_rgba(246,173,85,0.4)] flex items-center justify-center transition-all duration-500 active:scale-90 group overflow-hidden relative",
-                        isFabExpanded ? "bg-[#2D3748] rotate-90 shadow-xl" : "bg-[#F4D03F] hover:bg-[#D4AF37]"
-                    )}
-                >
-                    <AnimatePresence mode="wait">
-                        {isFabExpanded ? (
-                            <motion.div
-                                key="close"
-                                initial={{ rotate: -90, opacity: 0 }}
-                                animate={{ rotate: 0, opacity: 1 }}
-                                exit={{ rotate: 90, opacity: 0 }}
-                                transition={{ duration: 0.2 }}
-                            >
-                                <X className="w-7 h-7 text-white stroke-[3.5]" />
-                            </motion.div>
-                        ) : (
-                            <motion.div
-                                key="plus"
-                                initial={{ rotate: 90, opacity: 0 }}
-                                animate={{ rotate: 0, opacity: 1 }}
-                                exit={{ rotate: -90, opacity: 0 }}
-                                transition={{ duration: 0.2 }}
-                            >
-                                <Plus className="w-7 h-7 text-white stroke-[3.5]" />
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </button>
-            </div>
-        </div >
+        </div>
     );
 };
 

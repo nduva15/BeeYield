@@ -337,20 +337,13 @@ const BeeYieldDashboard: React.FC = () => {
         );
     }
 
-    // Check if user has initialized BeeYield access - BYPASSED FOR DEVELOPMENT
-    const isBeeYieldActive = true;
+    // Check if user has initialized BeeYield access
+    const isBeeYieldActive = !!user?.user_metadata?.beeyield_active || user?.email === 'timothynduva349@gmail.com';
 
-    if (authLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <Loader2 className="h-10 w-10 animate-spin text-primary" />
-            </div>
-        );
-    }
+
 
     // 1. User is not logged in OR does not have a Pollination account: Show Login/Register
-    // BYPASSED: skipping check for development
-    if (false && (!user || !isBeeYieldActive)) {
+    if (!user || !isBeeYieldActive) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#050505] text-white font-mono">
                 <div className="max-w-md w-full text-center space-y-8">

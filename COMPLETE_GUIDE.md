@@ -4,7 +4,7 @@ Hello! This guide is designed for you. It explains how your website's "brain" (t
 
 ---
 
-## 1. How the Backend Works (The "Brain")
+## 1. How the Backend Works (The "Brain")sssss
 Your website has two main parts:
 1.  **The Frontend (React/Tailwind)**: What users see and click on.
 2.  **The Backend (Python/FastAPI)**: Where data is processed, emails are sent, and the blockchain lives.

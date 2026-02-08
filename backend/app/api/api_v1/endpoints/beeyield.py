@@ -70,6 +70,9 @@ class HarvestCreate(BaseModel):
     quantity_kg: float
     honey_type: Optional[str] = Field("Multi-flower", description="Acacia, Multi-flower, Forest, etc.")
     moisture_content: Optional[float] = None
+    moisture_content_percent: Optional[float] = None # Added for consistency
+    quantity_left_for_bees_kg: Optional[float] = None # 50/50 rule
+    batch_code: Optional[str] = None
     color_grade: Optional[str] = Field("Light Amber", description="Water White, Extra White, Extra Light Amber, Light Amber, Dark Amber")
     is_verified: Optional[bool] = False
     notes: Optional[str] = None
@@ -81,6 +84,9 @@ class HarvestUpdate(BaseModel):
     quantity_kg: Optional[float] = None
     honey_type: Optional[str] = None
     moisture_content: Optional[float] = None
+    moisture_content_percent: Optional[float] = None # Added for consistency
+    quantity_left_for_bees_kg: Optional[float] = None # 50/50 rule
+    batch_code: Optional[str] = None
     color_grade: Optional[str] = None
     is_verified: Optional[bool] = None
     notes: Optional[str] = None
@@ -191,38 +197,6 @@ def check_apiary_access(apiary_id: str, user_id: str, required_permission: str =
     apiary["share_permission"] = share.get("permission")
     return _process_apiary_output(apiary)
 
-def claim_orphan_data(user_id: str):
-    """
-    Check if 'Kibwezi' records are orphaned and claim them for the given user_id.
-    This ensures that harvests, tasks, and other data are visible to the user.
-    """
-    # 1. Check if Kibwezi Apiary exists but has no owner
-    candidates = db_select("apiaries", filters={"name": "Kibwezi Main Apiary"})
-    for c in candidates:
-        if not c.get("user_id"): # Orphan found!
-            print(f"✨ Auto-assigning Orphan Data from Apiary {c['id']} to user {user_id}")
-            
-            # Update Apiary
-            db_update("apiaries", {"user_id": user_id}, {"id": c["id"]})
-            
-            # Update linked Farmer
-            if c.get("farmer_id"):
-                db_update("farmers", {"user_id": user_id}, {"id": c["farmer_id"]})
-            
-            # Update linked Hives
-            hives = db_select("hives", filters={"apiary_id": c["id"]})
-            for h in hives:
-                db_update("hives", {"user_id": user_id}, {"id": h["id"]})
-            
-            # Update linked Harvests (Critical for the 60kg request!)
-            db_update("harvests", {"user_id": user_id}, {"apiary_id": c["id"]})
-            
-            # Update linked Tasks & Inspections
-            db_update("tasks", {"user_id": user_id}, {"apiary_id": c["id"]})
-            db_update("inspections", {"user_id": user_id}, {"apiary_id": c["id"]})
-            
-            return True
-    return False
 
 # ============================================
 # APIARIES (PLACES) ENDPOINTS
@@ -250,18 +224,11 @@ def get_user_apiaries(
 
     owned_apiaries = [process_apiary(a) for a in owned_apiaries]
     
+    # ------------------------------------------
+
     if status_filter:
         owned_apiaries = [a for a in owned_apiaries if a.get("status") == status_filter]
     
-    # --- NEW AUTO-FIX LOGIC ---
-    if not owned_apiaries:
-        if claim_orphan_data(user_id):
-            # Recalculate owned list
-            owned_apiaries = db_select("apiaries", filters=filters, order_by="created_at", ascending=False)
-            owned_apiaries = [process_apiary(a) for a in owned_apiaries]
-            if status_filter:
-                owned_apiaries = [a for a in owned_apiaries if a.get("status") == status_filter]
-    # --------------------------
     
     # 2. Shared apiaries
     shared_apiaries = []
@@ -413,6 +380,8 @@ def get_user_hives(
     # 1. Owned hives
     owned_hives = db_select("hives", filters=filters, order_by="created_at", ascending=False)
     
+    
+    
     # 2. Shared hives (via apiary shares)
     shared_hives = []
     # If filtered by apiary_id, check if that apiary is shared
@@ -480,8 +449,8 @@ def create_hive(
     apiary = check_apiary_access(str(hive_in.apiary_id), user_id, "edit")
     
     data = hive_in.dict()
-    # The hive belongs to the APIARY OWNER
-    data["user_id"] = apiary["user_id"]
+    # The hive belongs to the APIARY OWNER (or current user if orphaned)
+    data["user_id"] = apiary.get("user_id") or user_id
     
     result = db_insert("hives", data)
     
@@ -571,7 +540,9 @@ def get_user_harvests(
         filters["hive_id"] = hive_id
     
     # 1. Owned harvests
-    owned = db_select("harvests", filters=filters, order_by="harvest_date", ascending=False)
+    columns = "*,hive:hives(*,apiary:apiaries(*)),farmer:farmers(*)"
+    owned = db_select("harvests", filters=filters, columns=columns, order_by="harvest_date", ascending=False)
+    
     
     # 2. Shared harvests
     shared = []
@@ -581,18 +552,13 @@ def get_user_harvests(
         if shares:
             h_filters = {"apiary_id": apiary_id}
             if hive_id: h_filters["hive_id"] = hive_id
-            shared = db_select("harvests", filters=h_filters)
+            shared = db_select("harvests", filters=h_filters, columns=columns)
     elif not hive_id:
         # Fetch all shared apiaries, then harvests
         shares = db_select("apiary_shares", filters={"shared_with_user_id": user_id})
         for share in shares:
-            shared.extend(db_select("harvests", filters={"apiary_id": share["apiary_id"]}))
+            shared.extend(db_select("harvests", filters={"apiary_id": share["apiary_id"]}, columns=columns))
     
-    # --- AUTO-FIX: Claim orphan harvests if none found ---
-    if not owned and not shared:
-         if claim_orphan_data(user_id):
-             # Recalculate owned list
-             owned = db_select("harvests", filters=filters, order_by="harvest_date", ascending=False)
     
     all_harvests = owned + shared
     
@@ -600,17 +566,28 @@ def get_user_harvests(
     if year:
         all_harvests = [h for h in all_harvests if h.get("harvest_date") and str(year) in str(h["harvest_date"])]
     
-    # Enrich with apiary and hive names
+    # Process data to ensure consistency and defaults
     for harvest in all_harvests:
-        if harvest.get("apiary_id"):
-            apiaries = db_select("apiaries", filters={"id": harvest["apiary_id"]})
-            if apiaries:
-                harvest["apiary_name"] = apiaries[0].get("name")
+        # Defaults for missing data
+        if not harvest.get('honey_type'): harvest['honey_type'] = 'Multifloral'
+        if not harvest.get('color_grade'): harvest['color_grade'] = 'Amber'
+        if harvest.get('is_verified') is None: harvest['is_verified'] = False
         
-        if harvest.get("hive_id"):
-            hives = db_select("hives", filters={"id": harvest["hive_id"]})
-            if hives:
-                harvest["hive_code"] = hives[0].get("hive_code")
+        # Consistent moisture field for frontend
+        if harvest.get('moisture_content') is not None and harvest.get('moisture_content_percent') is None:
+            harvest['moisture_content_percent'] = harvest['moisture_content']
+        
+        # Backward compatibility for flat fields if frontend expects them
+        if harvest.get("apiary_id") and not harvest.get("apiary_name"):
+            if harvest.get("hive") and harvest["hive"].get("apiary"):
+                harvest["apiary_name"] = harvest["hive"]["apiary"].get("name")
+        
+        if harvest.get("hive") and not harvest.get("hive_code"):
+            harvest["hive_code"] = harvest["hive"].get("hive_code")
+            
+        # Ensure 'apiary' exists at top level if it's nested in hive
+        if harvest.get('hive') and harvest['hive'].get('apiary') and not harvest.get('apiary'):
+            harvest['apiary'] = harvest['hive']['apiary']
     
     return all_harvests
 
@@ -628,12 +605,17 @@ def create_harvest(
     if not hives:
          raise HTTPException(status_code=404, detail="Hive not found in this apiary")
     
-    data = harvest_in.dict()
-    data["user_id"] = apiary["user_id"]
+    data = harvest_in.dict(exclude_unset=True)
+    data["user_id"] = apiary.get("user_id") or user_id
     
+    # Map moisture_content_percent to moisture_content if needed for DB
+    if "moisture_content_percent" in data and "moisture_content" not in data:
+        data["moisture_content"] = data["moisture_content_percent"]
+
     # Generate harvest code
-    import uuid
-    data["harvest_code"] = f"HRV-{str(uuid.uuid4())[:8].upper()}"
+    if "harvest_code" not in data or not data.get("harvest_code"):
+        import uuid
+        data["harvest_code"] = f"HRV-{str(uuid.uuid4())[:8].upper()}"
     
     result = db_insert("harvests", data)
     
@@ -643,6 +625,19 @@ def create_harvest(
             detail=result.get("error", "Failed to create harvest")
         )
     
+    # Return enriched data so frontend has full hive/apiary/farmer objects
+    new_id = result["data"][0]["id"] if result.get("data") else data.get("id")
+    if new_id:
+        enriched = db_select("harvests", filters={"id": new_id}, columns="*,hive:hives(*,apiary:apiaries(*)),farmer:farmers(*)")
+        if enriched:
+            h = enriched[0]
+            # Ensure consistency
+            if h.get('hive') and h['hive'].get('apiary'): h['apiary'] = h['hive']['apiary']
+            if not h.get('honey_type'): h['honey_type'] = 'Multifloral'
+            if h.get('hive'): h['hive_code'] = h['hive'].get('hive_code')
+            if h.get('moisture_content') is not None: h['moisture_content_percent'] = h['moisture_content']
+            return h
+            
     return result["data"][0] if result.get("data") else data
 
 @router.put("/harvests/{harvest_id}", response_model=dict)
@@ -665,6 +660,10 @@ def update_harvest(
     if not data:
         raise HTTPException(status_code=400, detail="No data to update")
     
+    # Map moisture_content_percent to moisture_content if needed for DB
+    if "moisture_content_percent" in data and "moisture_content" not in data:
+        data["moisture_content"] = data["moisture_content_percent"]
+
     result = db_update("harvests", data, {"id": harvest_id})
     
     if not result.get("success"):
@@ -673,6 +672,16 @@ def update_harvest(
             detail=result.get("error", "Failed to update harvest")
         )
     
+    # Return enriched data
+    enriched = db_select("harvests", filters={"id": harvest_id}, columns="*,hive:hives(*,apiary:apiaries(*)),farmer:farmers(*)")
+    if enriched:
+        h = enriched[0]
+        if h.get('hive') and h['hive'].get('apiary'): h['apiary'] = h['hive']['apiary']
+        if not h.get('honey_type'): h['honey_type'] = 'Multifloral'
+        if h.get('hive'): h['hive_code'] = h['hive'].get('hive_code')
+        if h.get('moisture_content') is not None: h['moisture_content_percent'] = h['moisture_content']
+        return h
+
     return result["data"][0] if result.get("data") else data
 
 @router.delete("/harvests/{harvest_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -699,6 +708,54 @@ def delete_harvest(
         )
     
     return None
+
+# ============================================
+# TELEMETRY ENDPOINTS
+# ============================================
+
+@router.get("/telemetry/latest", response_model=List[dict])
+def get_telemetry_latest(
+    user_id: str = Depends(get_user_id)
+):
+    """
+    Fetches the most recent sensor packets for the user's hives/devices.
+    Links User -> Farmer -> Devices -> Readings
+    """
+    # 1. Get farmer profile for user
+    farmers = db_select("farmers", filters={"user_id": user_id})
+    if not farmers:
+        # If no farmer profile, try direct ownership if supported or return empty
+        # For now, assuming devices are linked to farmers
+        return []
+    
+    farmer_id = farmers[0]["id"]
+    
+    # 2. Get devices for farmer
+    devices = db_select("iot_devices", filters={"farmer_id": farmer_id})
+    if not devices:
+        return []
+    
+    # 3. Get latest reading for each device
+    # Optimization: In a real DB we'd use a window function or distinct on.
+    # Here we loop, assuming device count is small per user.
+    readings = []
+    for dev in devices:
+        # Get latest reading
+        dev_readings = db_select(
+            "sensor_readings", 
+            filters={"device_id": dev["id"]}, 
+            limit=1, 
+            order_by="timestamp", 
+            ascending=False
+        )
+        if dev_readings:
+            reading = dev_readings[0]
+            # Enrich with device info if needed
+            reading["device_code"] = dev.get("device_code")
+            reading["location_name"] = dev.get("location_name")
+            readings.append(reading)
+            
+    return readings
 
 # ============================================
 # TASKS ENDPOINTS
@@ -1192,12 +1249,19 @@ def get_apiary_shares(
 
 @router.post("/fix-ownership", response_model=dict)
 def fix_data_ownership(
-    user_id: str = Depends(get_user_id)
+    current_user: dict = Depends(security.get_current_user)
 ):
     """
     EMERGENCY FIX: Assign orphaned 'Kibwezi Main Apiary' to the current user.
+    RESTRICTED TO: timothynduva349@gmail.com.
     Also ensures hive count is 184.
     """
+    user_id = current_user.get("sub")
+    email = current_user.get("email")
+    
+    if email != "timothynduva349@gmail.com":
+         raise HTTPException(status_code=403, detail="This operation is restricted to the primary BeeYield account.")
+
     print(f"Attempting to fix ownership for user: {user_id}")
     
     # 1. Find the apiary (by name/ID)

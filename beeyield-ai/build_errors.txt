@@ -1,0 +1,711 @@
+﻿cargo :    Compiling 
+rustls v0.23.36
+At line:1 char:1
++ cargo check 2>&1 | 
+Out-File -Encoding utf8 
+build_errors.txt
++ ~~~~~~~~~~~~~~~~
+    + CategoryInfo       
+       : NotSpecified:   
+  (   Compiling rustls   
+  v0.23.36:String) []    
+, RemoteException
+    + FullyQualifiedErro 
+   rId : NativeCommandE  
+  rror
+ 
+    Checking brotli 
+v8.0.2
+    Checking 
+regex-syntax v0.8.9
+    Checking h2 v0.4.13
+   Compiling 
+brotli-decompressor 
+v4.0.3
+   Compiling 
+darling_macro v0.20.11
+    Checking windows-sys 
+v0.52.0
+   Compiling 
+toml_datetime 
+v0.7.5+spec-1.1.0
+   Compiling 
+serde_spanned v1.0.4
+   Compiling phf_codegen 
+v0.11.3
+    Checking 
+windows-result v0.4.1
+   Compiling encoding_rs 
+v0.8.35
+    Checking 
+windows-strings v0.5.1
+    Checking base64 
+v0.22.1
+    Checking dtoa v1.0.11
+    Checking ipnet 
+v2.11.0
+   Compiling 
+unicode-segmentation 
+v1.12.0
+   Compiling utf-8 v0.7.6
+   Compiling toml 
+v0.9.11+spec-1.1.0
+    Checking dtoa-short 
+v0.3.5
+    Checking 
+windows-registry v0.6.1
+    Checking 
+regex-automata v0.4.14
+   Compiling 
+convert_case v0.8.0
+   Compiling 
+fast_markup5ever v0.11.1
+    Checking socket2 
+v0.5.10
+   Compiling darling 
+v0.20.11
+    Checking rand v0.8.5
+    Checking libc 
+v0.2.180
+    Checking 
+windows_x86_64_msvc 
+v0.48.5
+    Checking 
+crypto-common v0.1.7
+    Checking 
+block-buffer v0.10.4
+    Checking http-body 
+v0.4.6
+    Checking h2 v0.3.27
+    Checking 
+compression-codecs 
+v0.4.36
+    Checking 
+http-body-util v0.1.3
+    Checking 
+async-compression v0.4.37
+   Compiling ureq v3.2.0
+    Checking hyper v1.8.1
+   Compiling ureq v2.12.1
+    Checking rand_core 
+v0.9.5
+   Compiling selectors 
+v0.25.0
+    Checking 
+sync_wrapper v1.0.2
+    Checking 
+allocator-api2 v0.2.21
+    Checking fastrand 
+v2.3.0
+    Checking psl-types 
+v2.0.11
+    Checking utf8parse 
+v0.2.2
+    Checking 
+once_cell_polyfill 
+v1.70.2
+    Checking byteorder 
+v1.5.0
+    Checking mime v0.3.17
+    Checking tower-layer 
+v0.3.3
+    Checking anstyle 
+v1.0.13
+    Checking httpdate 
+v1.0.3
+    Checking 
+anstyle-wincon v3.0.11
+   Compiling 
+auto_generate_cdp v0.4.6
+    Checking tower v0.5.3
+    Checking fxhash 
+v0.2.1
+    Checking 
+anstyle-parse v0.2.7
+    Checking hyper-util 
+v0.1.20
+    Checking 
+publicsuffix v2.3.0
+    Checking hashbrown 
+v0.14.5
+    Checking cssparser 
+v0.31.2
+    Checking hyper 
+v0.14.32
+    Checking rand_chacha 
+v0.9.0
+    Checking digest 
+v0.10.7
+    Checking 
+windows-targets v0.48.5
+    Checking html5ever 
+v0.26.0
+   Compiling 
+derive_builder_core 
+v0.20.2
+    Checking cookie 
+v0.18.1
+    Checking 
+serde_urlencoded v0.7.1
+    Checking castaway 
+v0.2.4
+   Compiling 
+ua_generator v0.5.47
+    Checking 
+crossbeam-epoch v0.9.18
+    Checking servo_arc 
+v0.3.0
+    Checking 
+anstyle-query v1.1.5
+    Checking 
+static_assertions v1.1.0
+    Checking cpufeatures 
+v0.2.17
+    Checking colorchoice 
+v1.0.4
+    Checking iri-string 
+v0.7.10
+    Checking lazy_static 
+v1.5.0
+    Checking either 
+v1.15.0
+    Checking 
+is_terminal_polyfill 
+v1.70.2
+    Checking zeroize 
+v1.8.2
+    Checking anstream 
+v0.6.21
+    Checking 
+rustls-pki-types v1.14.0
+    Checking compact_str 
+v0.8.1
+    Checking 
+crossbeam-deque v0.8.6
+    Checking sha1 v0.10.6
+    Checking hyper-tls 
+v0.6.0
+    Checking thiserror 
+v2.0.18
+   Compiling 
+derive_builder_macro 
+v0.20.2
+   Compiling 
+headless_chrome v1.0.21
+    Checking 
+cookie_store v0.22.0
+    Checking windows-sys 
+v0.48.0
+    Checking rand v0.9.2
+    Checking cookie 
+v0.16.2
+    Checking winapi 
+v0.3.9
+    Checking regex 
+v1.12.3
+    Checking hyper-tls 
+v0.5.0
+    Checking 
+phf_generator v0.11.3
+    Checking xml5ever 
+v0.17.0
+    Checking windows-sys 
+v0.59.0
+    Checking raw-cpuid 
+v11.6.0
+    Checking 
+futures-executor v0.3.31
+    Checking winapi-util 
+v0.1.11
+    Checking env_home 
+v0.1.0
+    Checking base64 
+v0.13.1
+    Checking unicase 
+v2.9.0
+    Checking 
+data-encoding v2.10.0
+    Checking tower-http 
+v0.6.8
+    Checking winsafe 
+v0.0.19
+    Checking ego-tree 
+v0.6.3
+    Checking 
+unicode-width v0.2.2
+    Checking bit-vec 
+v0.6.3
+    Checking clap_lex 
+v0.7.7
+    Checking strsim 
+v0.11.1
+    Checking base64 
+v0.21.7
+    Checking 
+clap_builder v4.5.57
+    Checking getopts 
+v0.2.24
+    Checking quanta 
+v0.12.6
+    Checking bit-set 
+v0.5.3
+    Checking 
+rustls-pemfile v1.0.4
+    Checking tungstenite 
+v0.28.0
+    Checking reqwest 
+v0.12.28
+    Checking webdriver 
+v0.46.0
+    Checking 
+pulldown-cmark v0.10.3
+    Checking same-file 
+v1.0.6
+    Checking futures 
+v0.3.31
+    Checking 
+markup5ever_rcdom v0.2.0
+    Checking strum 
+v0.26.3
+    Checking 
+fast_html5ever v0.26.6
+    Checking 
+derive_builder v0.20.2
+    Checking winreg 
+v0.50.0
+    Checking 
+case_insensitive_string 
+v0.2.10
+    Checking rayon-core 
+v1.13.0
+    Checking anyhow 
+v1.0.100
+    Checking 
+portable-atomic v1.13.1
+    Checking itertools 
+v0.12.1
+    Checking 
+sharded-slab v0.1.7
+    Checking winreg 
+v0.55.0
+    Checking dashmap 
+v5.5.3
+    Checking matchers 
+v0.2.0
+    Checking tempfile 
+v3.24.0
+    Checking tracing-log 
+v0.2.0
+    Checking 
+tokio-stream v0.1.18
+    Checking quick-xml 
+v0.36.2
+    Checking 
+spinning_top v0.3.0
+    Checking 
+nu-ansi-term v0.50.3
+    Checking 
+thread_local v1.1.9
+    Checking 
+futures-timer v3.0.3
+    Checking 
+sync_wrapper v0.1.2
+    Checking nonzero_ext 
+v0.3.0
+    Checking 
+no-std-compat v0.4.1
+    Checking 
+string_concat v0.0.1
+    Checking num_cpus 
+v1.17.0
+    Checking 
+tracing-subscriber 
+v0.3.22
+    Checking reqwest 
+v0.11.27
+    Checking governor 
+v0.6.3
+    Checking which v8.0.0
+    Checking thiserror 
+v1.0.69
+    Checking clap v4.5.57
+    Checking rayon 
+v1.11.0
+    Checking fantoccini 
+v0.19.3
+    Checking select 
+v0.6.1
+    Checking walkdir 
+v2.5.0
+    Checking 
+text-splitter v0.7.0
+    Checking scraper 
+v0.18.1
+    Checking spider 
+v1.99.37
+    Checking 
+beeyield-ai-ingestor 
+v0.1.0 (C:\Users\aggym\Do
+wnloads\Honey\beeyield-ai
+)
+error[E0432]: unresolved 
+import `chrono`
+ --> src\company_scraper.
+rs:7:5
+  |
+7 | use chrono::Utc;
+  |     ^^^^^^ use of 
+unresolved module or 
+unlinked crate `chrono`
+  |
+  = help: if you wanted 
+to use a crate named 
+`chrono`, use `cargo add 
+chrono` to add it to 
+your `Cargo.toml`
+
+warning: unused import: 
+`Context`
+ --> src\scrapers\researc
+hgate.rs:2:22
+  |
+2 | use anyhow::{Result, 
+Context};
+  |                      
+^^^^^^^
+  |
+  = note: `#[warn(unused_
+imports)]` (part of 
+`#[warn(unused)]`) on by 
+default
+
+warning: unused imports: 
+`Html` and `Selector`
+ --> src\scrapers\researc
+hgate.rs:5:15
+  |
+5 | use scraper::{Html, 
+Selector};
+  |               ^^^^  
+^^^^^^^^
+
+warning: unused import: 
+`warn`
+ --> src\scrapers\researc
+hgate.rs:6:21
+  |
+6 | use tracing::{info, 
+warn};
+  |                     
+^^^^
+
+warning: unused import: 
+`Context`
+ --> 
+src\scrapers\usda.rs:2:22
+  |
+2 | use anyhow::{Result, 
+Context};
+  |                      
+^^^^^^^
+
+warning: unused import: 
+`warn`
+ --> 
+src\scrapers\usda.rs:5:21
+  |
+5 | use tracing::{info, 
+warn};
+  |                     
+^^^^
+
+warning: unused import: 
+`Context`
+ --> src\scrapers\biorxiv
+.rs:2:22
+  |
+2 | use anyhow::{Result, 
+Context};
+  |                      
+^^^^^^^
+
+warning: unused import: 
+`warn`
+ --> src\scrapers\biorxiv
+.rs:5:21
+  |
+5 | use tracing::{info, 
+warn};
+  |                     
+^^^^
+
+warning: unused import: 
+`Context`
+ --> src\scrapers\arxiv.r
+s:2:22
+  |
+2 | use anyhow::{Result, 
+Context};
+  |                      
+^^^^^^^
+
+warning: unused import: 
+`warn`
+ --> src\scrapers\arxiv.r
+s:5:21
+  |
+5 | use tracing::{info, 
+warn};
+  |                     
+^^^^
+
+warning: unused import: 
+`Context`
+ --> src\scrapers\semanti
+c_scholar.rs:2:22
+  |
+2 | use anyhow::{Result, 
+Context};
+  |                      
+^^^^^^^
+
+warning: unused import: 
+`warn`
+ --> src\scrapers\semanti
+c_scholar.rs:5:21
+  |
+5 | use tracing::{info, 
+warn};
+  |                     
+^^^^
+
+warning: unused import: 
+`anyhow::Result`
+ --> 
+src\cleaners\mod.rs:7:5
+  |
+7 | use anyhow::Result;
+  |     ^^^^^^^^^^^^^^
+
+warning: unused import: 
+`CleanText`
+ --> src\pipeline.rs:8:35
+  |
+8 | use crate::cleaners::
+{clean_text, CleanText};
+  |                      
+             ^^^^^^^^^
+
+warning: unused import: 
+`spider::tokio`
+ --> src\company_scraper.
+rs:2:5
+  |
+2 | use spider::tokio;
+  |     ^^^^^^^^^^^^^
+
+error[E0308]: mismatched 
+types
+  --> src\company_scraper
+.rs:23:54
+   |
+23 |     website.configur
+ation.user_agent = Some(B
+ox::new("BeeYield-Enterpr
+ise-Bot/1.0"));
+   |                     
+                        
+-------- ^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^ expected 
+`CompactString`, found 
+`&str`
+   |                     
+                        |
+   |                     
+                        
+arguments to this 
+function are incorrect
+   |
+note: associated 
+function defined here
+  --> /rustc/254b59607d44
+17e9dffbc307138ae5c86280f
+e4c\library\alloc\src\box
+ed.rs:264:12
+help: call `Into::into` 
+on this expression to 
+convert `&'static str` 
+into `CompactString`
+   |
+23 |     website.configur
+ation.user_agent = Some(B
+ox::new("BeeYield-Enterpr
+ise-Bot/1.0".into()));
+   |                     
+                         
+                         
+            +++++++
+
+error[E0308]: mismatched 
+types
+  --> src\company_scraper
+.rs:39:16
+   |
+39 |         if let 
+Some(pages) = page {
+   |                
+^^^^^^^^^^^   ---- this 
+expression has type 
+`&Box<Vec<Page>>`
+   |                |
+   |                
+expected 
+`Box<Vec<Page>>`, found 
+`Option<_>`
+   |
+   = note: expected 
+struct `Box<Vec<Page>>`
+                found 
+enum 
+`std::option::Option<_>`
+
+error[E0382]: borrow of 
+moved value: 
+`member.title`
+   --> src\scrapers\wikip
+edia.rs:143:37
+    |
+139 | ...                
+   title: page.title.unwr
+ap_or(member.title),
+    |                    
+                         
+      ------------ value 
+moved here
+...
+143 | ...                
+       
+member.title.replace(' 
+', "_"))),
+    |                    
+       ^^^^^^^^^^^^ 
+value borrowed here 
+after move
+    |
+    = note: move occurs 
+because `member.title` 
+has type 
+`std::string::String`, 
+which does not implement 
+the `Copy` trait
+    = note: borrow 
+occurs due to deref 
+coercion to `str`
+
+warning: unused 
+variable: `search_url`
+  --> src\scrapers\resear
+chgate.rs:33:13
+   |
+33 |         let 
+search_url = format!("htt
+ps://www.researchgate.net
+/search/publication?q={}"
+, query.replace(" ", 
+"%20"));
+   |             
+^^^^^^^^^^ help: if this 
+is intentional, prefix 
+it with an underscore: 
+`_search_url`
+   |
+   = note: `#[warn(unused
+_variables)]` (part of 
+`#[warn(unused)]`) on by 
+default
+
+warning: unused 
+variable: `client`
+  --> src\scrapers\resear
+chgate.rs:42:17
+   |
+42 |             let 
+client = 
+self.client.clone();
+   |                 
+^^^^^^ help: if this is 
+intentional, prefix it 
+with an underscore: 
+`_client`
+
+warning: unused 
+variable: `client`
+  --> src\scrapers\usda.r
+s:36:17
+   |
+36 |             let 
+client = 
+self.client.clone();
+   |                 
+^^^^^^ help: if this is 
+intentional, prefix it 
+with an underscore: 
+`_client`
+
+warning: unused 
+variable: `client`
+  --> src\scrapers\biorxi
+v.rs:39:17
+   |
+39 |             let 
+client = 
+self.client.clone();
+   |                 
+^^^^^^ help: if this is 
+intentional, prefix it 
+with an underscore: 
+`_client`
+
+warning: unused 
+variable: `client`
+  --> src\scrapers\arxiv.
+rs:36:17
+   |
+36 |             let 
+client = 
+self.client.clone();
+   |                 
+^^^^^^ help: if this is 
+intentional, prefix it 
+with an underscore: 
+`_client`
+
+warning: unused 
+variable: `client`
+  --> src\scrapers\semant
+ic_scholar.rs:36:17
+   |
+36 |             let 
+client = 
+self.client.clone();
+   |                 
+^^^^^^ help: if this is 
+intentional, prefix it 
+with an underscore: 
+`_client`
+
+Some errors have 
+detailed explanations: 
+E0308, E0382, E0432.
+For more information 
+about an error, try 
+`rustc --explain E0308`.
+warning: 
+`beeyield-ai-ingestor` 
+(lib) generated 20 
+warnings
+error: could not compile 
+`beeyield-ai-ingestor` 
+(lib) due to 4 previous 
+errors; 20 warnings 
+emitted

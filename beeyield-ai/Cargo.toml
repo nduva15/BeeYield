@@ -1,0 +1,63 @@
+[package]
+name = "beeyield-ai-ingestor"
+version = "0.1.0"
+edition = "2021"
+description = "High-speed concurrent scraper for bee research data"
+authors = ["BeeYield Team"]
+
+[dependencies]
+# Async runtime
+tokio = { version = "1.35", features = ["full"] }
+
+# HTTP client
+reqwest = { version = "0.11", features = ["json", "gzip"] }
+
+# HTML parsing
+scraper = "0.18"
+select = "0.6"
+
+# JSON handling
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Regex for citation stripping
+regex = "1.10"
+
+# Parallel processing
+rayon = "1.8"
+
+# CLI
+clap = { version = "4.4", features = ["derive"] }
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Error handling
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Rate limiting
+governor = "0.6"
+
+# File system
+walkdir = "2.4"
+
+# Lazy initialization
+once_cell = "1.19"
+
+# Async trait support
+async-trait = "0.1"
+
+# Headless browser for JS-heavy sites
+headless_chrome = "1.0"
+fantoccini = "0.19"  # WebDriver client
+
+# Enterprise Spider Crawler
+spider = "1.37"
+
+# Text Chunking
+text-splitter = { version = "0.7", features = ["markdown"] }
+
+[dev-dependencies]
+tokio-test = "0.4"

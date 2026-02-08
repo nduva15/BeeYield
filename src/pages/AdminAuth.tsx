@@ -20,7 +20,7 @@ const AdminAuth = () => {
         if (!loading && user) {
             // Check if user has admin role
             const userRole = user?.user_metadata?.role || 'user';
-            const isSuperAdminEmail = ['timothy.mathuva@strathmore.edu', 'timothynduva349@gmail.com'].includes(user?.email?.toLowerCase() || '');
+            const isSuperAdminEmail = ['timothynduva349@gmail.com'].includes(user?.email?.toLowerCase() || '');
             const isAdmin = userRole === 'admin' || userRole === 'super_admin' || isSuperAdminEmail;
 
             if (isAdmin) {
