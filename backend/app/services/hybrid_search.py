@@ -1,5 +1,5 @@
 import re
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from app.services.content_service import ContentService
 
 class HybridSearch:
@@ -9,7 +9,7 @@ class HybridSearch:
     """
 
     @staticmethod
-    async def search(query: str, limit: int = 5) -> Dict[str, Any]:
+    async def search(query: str, limit: int = 25, continent: Optional[str] = None) -> Dict[str, Any]:
         """
         Executes a hybrid search query with Namespace Partitioning.
         1. Context Rewriting: Normalizes query and extracts entities.
@@ -20,14 +20,20 @@ class HybridSearch:
         query_lower = query.lower()
         
         # --- 1. INTENT-BASED QUERY REWRITING ---
-        # Expand query for better semantic hit rate
         expanded_terms = []
-        if any(kw in query_lower for kw in ["varroa", "mite", "pathogen"]):
-            expanded_terms.append("Varroa destructor management and biosecurity protocols 2026")
-        if any(kw in query_lower for kw in ["africa", "kenya", "nairobi"]):
-            expanded_terms.append("African honey bee resilience Apis mellifera scutellata PLOS One 2025")
-            
-        search_query = f"{query} {' '.join(expanded_terms)}"
+        intent_map = [
+            (["varroa", "mite", "pathogen", "disease"], "Varroa destructor management biosecurity disease detection treatment"),
+            (["africa", "kenya", "nairobi", "makueni", "kibwezi"], "African honey bee Apis mellifera scutellata East Africa pollination"),
+            (["sensor", "iot", "monitoring", "temperature"], "IoT sensor hive monitoring acoustic thermal weight LoRaWAN"),
+            (["blockchain", "traceability", "honeychain"], "blockchain traceability HoneyChain harvest verification"),
+            (["pollination", "crop", "mango", "bean"], "pollination services crop yield precision agriculture"),
+            (["harvest", "honey", "nectar"], "honey harvest production nectar flow extraction"),
+        ]
+        for keywords, expansion in intent_map:
+            if any(kw in query_lower for kw in keywords):
+                expanded_terms.append(expansion)
+                break
+        search_query = f"{query} {' '.join(expanded_terms)}" if expanded_terms else query
 
         # --- 2. NAMESPACE PARTITIONING (KEYWORD/ENTITY) ---
         batch_pattern = r'([A-Z0-9]{2,}-[A-Z0-9]{2,}-[0-9]{2})'
@@ -46,13 +52,21 @@ class HybridSearch:
             })
 
         # --- 3. SEMANTIC SEARCH (SCIENTIFIC & CORPORATE) ---
-        semantic_context = await ContentService.get_website_knowledge_summary(search_query)
+<<<<<<< Current (Your changes)
+        search_results = await ContentService.search_knowledge(search_query)
+        semantic_context = search_results["summary"]
+=======
+        search_results = await ContentService.search_knowledge(search_query, limit=limit, continent=continent)
+        semantic_context = search_results["summary"]
+        sources = search_results.get("sources", [])
+>>>>>>> Incoming (Background Agent changes)
         
         return {
             "query": query,
             "rewritten_query": search_query,
             "keyword_results": keyword_results,
             "semantic_context": semantic_context,
+            "sources": sources,
             "top_hits": keyword_results + [{"content": semantic_context, "type": "SEMANTIC", "score": 0.8}]
         }
 

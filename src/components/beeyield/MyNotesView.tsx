@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { LayoutGrid, Plus, ChevronDown, Box, MapPin, Loader2, Check, Clock as ClockIcon, StickyNote, Trash2, Edit } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { spring } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -388,9 +389,10 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                     <AnimatePresence>
                         {isPlacesOpen && (
                             <motion.div
-                                initial={{ opacity: 0, y: 10 }}
+                                initial={{ opacity: 0, y: 6 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: 10 }}
+                                exit={{ opacity: 0, y: 6 }}
+                                transition={spring.snappy}
                                 className="absolute top-full left-0 right-0 mt-3 bg-white dark:bg-[#111111] border border-gray-100 dark:border-white/5 rounded-[2rem] shadow-2xl z-50 overflow-hidden"
                             >
                                 <div className="p-3 max-h-[300px] overflow-y-auto custom-scrollbar">
@@ -433,9 +435,10 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                     <AnimatePresence>
                         {isHivesOpen && (
                             <motion.div
-                                initial={{ opacity: 0, y: 10 }}
+                                initial={{ opacity: 0, y: 6 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: 10 }}
+                                exit={{ opacity: 0, y: 6 }}
+                                transition={spring.snappy}
                                 className="absolute top-full left-0 right-0 mt-3 bg-white dark:bg-[#111111] border border-gray-100 dark:border-white/5 rounded-[2rem] shadow-2xl z-50 overflow-hidden"
                             >
                                 <div className="p-3 max-h-[300px] overflow-y-auto custom-scrollbar">
@@ -474,8 +477,9 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                             <motion.div
                                 key={note.id}
                                 layout
-                                initial={{ opacity: 0, scale: 0.9 }}
+                                initial={{ opacity: 0, scale: 0.96 }}
                                 animate={{ opacity: 1, scale: 1 }}
+                                transition={spring.gentle}
                                 className="group"
                             >
                                 <div className="bg-white dark:bg-[#111111] p-8 rounded-[3rem] border border-gray-100 dark:border-white/5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full relative overflow-hidden">

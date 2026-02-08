@@ -121,7 +121,7 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                                     IoT monitoring system
                                 </h1>
                                 <p className="text-lg text-gray-500 dark:text-gray-400 leading-relaxed max-w-xl">
-                                    What to use when monitoring your apiary? Our BeeYield Hub system offers the most advanced and comprehensive solution for beekeepers. Optimize honey production, monitor health in real-time, and get early warnings for your hives.
+                                    What to use when monitoring your apiary? BeeYield Hub gives beekeepers one place to see hive health, honey production, and early warnings—all in real time.
                                 </p>
                             </div>
 
@@ -166,7 +166,7 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                 <div className="text-center space-y-4 max-w-3xl mx-auto">
                     <h2 className="text-4xl font-black tracking-tight">User-friendly Interface</h2>
                     <p className="text-gray-500 dark:text-gray-400 lg:text-lg">
-                        Innovative technology meets intuitive design to provide the most seamless beekeeping experience possible.
+                        Built for beekeepers: clear dashboards, simple setup, and support when you need it.
                     </p>
                 </div>
 

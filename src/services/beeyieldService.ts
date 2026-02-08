@@ -497,6 +497,83 @@ export interface HiveAlertSettingsView {
     effective_weight_drop?: number;
 }
 
+// ========== IMAGE ANALYSIS TYPES ==========
+
+export interface BoundingBox {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+
+export interface BeeDetection {
+    id: number;
+    label: string;
+    confidence: number;
+    health?: string;
+    health_confidence?: number;
+    bbox: BoundingBox;
+}
+
+export interface DiseaseIndicator {
+    disease: string;
+    probability: number;
+    affected_bees: number[];
+    severity: string;
+}
+
+export interface AnalysisResults {
+    bee_count: number;
+    health_status: string;
+    health_score: number;
+    confidence: number;
+    detections: BeeDetection[];
+    disease_indicators: DiseaseIndicator[];
+    recommendations: string[];
+}
+
+export interface ImageAnalysisResponse {
+    success: boolean;
+    analysis_id: string;
+    status: string;
+    results: AnalysisResults;
+    image_url?: string;
+    annotated_image_url?: string;
+    created_at: string;
+    processing_time_ms: number;
+}
+
+export interface AnalysisHistoryItem {
+    id: string;
+    thumbnail_url?: string;
+    bee_count: number;
+    health_score: number;
+    health_status: string;
+    created_at?: string;
+    hive_id?: string;
+    apiary_id?: string;
+}
+
+export interface AnalysisHistoryResponse {
+    items: AnalysisHistoryItem[];
+    total: number;
+}
+
+export interface HealthTrendPoint {
+    date?: string;
+    health_score: number;
+    bee_count: number;
+    health_status?: string;
+}
+
+export interface HealthTrendsResponse {
+    hive_id: string;
+    trends: HealthTrendPoint[];
+    average_score?: number;
+    total_analyses: number;
+}
+
+
 // Data for BeeYield service is fetched directly from the backend API.
 
 export const beeyieldService = {
@@ -830,6 +907,27 @@ export const beeyieldService = {
             toast.error('Failed to delete harvest');
             return { error };
         }
+    },
+
+    /** Smart Storyteller: generate marketing blurb (max 140 chars) for label from floral type */
+    async generateLabelBlurb(params: {
+        floral_type?: string;
+        location?: string;
+        harvest_year?: string;
+        use_ai?: boolean;
+    }): Promise<{ blurb: string; length: number }> {
+        const headers = await getAuthHeaders();
+        const data = await apiPost<{ blurb: string; length: number }>(
+            '/beeyield/labels/generate-blurb',
+            {
+                floral_type: params.floral_type ?? null,
+                location: params.location ?? null,
+                harvest_year: params.harvest_year ?? null,
+                use_ai: params.use_ai ?? true,
+            },
+            { headers }
+        );
+        return data;
     },
 
     // ========== PRD: SETTINGS & NOTIFICATIONS ==========
@@ -1293,6 +1391,49 @@ export const beeyieldService = {
             return false;
         }
     },
+
+    // ========== Reports & Exports ==========
+    async generateReport(params: {
+        report_type: string;
+        file_format: string;
+        apiary_id?: string | null;
+        start?: string | null;
+        end?: string | null;
+    }): Promise<{ id: string }> {
+        const headers = await getAuthHeaders();
+        return apiPost<{ message: string; id: string }>('/beeyield/reports/generate', params, { headers });
+    },
+    async getReports(): Promise<GeneratedReport[]> {
+        const headers = await getAuthHeaders();
+        const data = await apiGet<GeneratedReport[]>('/beeyield/reports', {}, { headers });
+        return data || [];
+    },
+    async getReportById(reportId: string): Promise<GeneratedReport> {
+        const headers = await getAuthHeaders();
+        return apiGet<GeneratedReport>(`/beeyield/reports/${reportId}`, {}, { headers });
+    },
+    /** Returns the download URL (signed or static) so the UI can open it in a new tab. */
+    async getReportDownloadUrl(reportId: string): Promise<string> {
+        const headers = await getAuthHeaders();
+        const { API_V1_URL } = await import('./api');
+        const res = await fetch(`${API_V1_URL}/beeyield/reports/download/${reportId}`, { redirect: 'manual', headers: { ...headers } as HeadersInit });
+        if (res.status === 302 || res.status === 301) {
+            const location = res.headers.get('Location');
+            if (location) return location;
+        }
+        return `${API_V1_URL}/beeyield/reports/download/${reportId}`;
+    },
 };
+
+export interface GeneratedReport {
+    id: string;
+    user_id: string;
+    report_type: string;
+    parameters?: Record<string, unknown>;
+    file_format: string;
+    storage_path?: string | null;
+    status: 'pending' | 'completed' | 'failed';
+    created_at: string;
+}
 
 export default beeyieldService;

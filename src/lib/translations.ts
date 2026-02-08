@@ -25,7 +25,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "ai_notifications": "AI auto notifications",
         "ai_notifications_desc": "When significant patterns are detected (e.g., anomalies, swarming risk, sensor issues), we'll send an automatic notification.",
         "enable_ai_notifications": "Enable AI notifications",
-        "smart_alerts_desc": "Smart alerts based on hive data analysis",
+        "smart_alerts_desc": "Alerts based on your hive data",
         "email_notifications_hub": "Email notifications from BeeYield Hub devices",
         "email_notifications_hub_desc": "BeeYield Hub devices send out vandalism alerts. You can temporarily disable this option, for example during an inspection.",
         "allow_hub_notifications": "Allow for email notifications from BeeYield Hub devices",
@@ -63,9 +63,9 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "server_status": "Server Status",
 
         "nav_agro_intelligence": "Agro Intelligence",
-        "agro_intel_desc": "Intelligent beekeeping insights.",
+        "agro_intel_desc": "Beekeeping insights from your data.",
         "places_desc": "Manage your apiaries and locations.",
-        "hives_desc": "Comprehensive hive management.",
+        "hives_desc": "Manage hives and locations.",
         "billing_desc": "Manage your subscription and usage.",
         "support_desc": "Get help and track requests.",
         "meters_desc": "Energy and consumption monitoring.",
@@ -401,6 +401,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "nav_my_notes": "Mes Notes",
         "nav_my_requests": "Mes Demandes",
         "nav_my_task": "Mes Tâches",
+        "nav_reports_exports": "Rapports et exportations",
 
         // My Notes View
         "notes_title": "Mes Notes",
@@ -629,6 +630,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "nav_beeyield_hives": "Colmenas BeeYield",
         "nav_inspections": "Inspecciones",
         "nav_harvests": "Cosechas",
+        "nav_label_studio": "Estudio de Etiquetas",
         "nav_flight_map": "Mapa de Vuelo",
         "nav_varroa": "Modelado Varroa",
         "nav_sound": "Análisis de Sonido",
@@ -642,6 +644,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "nav_my_notes": "Mis Notas",
         "nav_my_requests": "Mis Solicitudes",
         "nav_my_task": "Mis Tareas",
+        "nav_reports_exports": "Informes y exportaciones",
 
         // My Notes View
         "notes_title": "Mis Notas",
@@ -828,6 +831,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "nav_my_notes": "Meine Notizen",
         "nav_my_requests": "Meine Anfragen",
         "nav_my_task": "Meine Aufgaben",
+        "nav_reports_exports": "Berichte & Exporte",
 
         // My Notes View
         "notes_title": "Meine Notizen",
@@ -1014,6 +1018,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "nav_my_notes": "Maelezo Yangu",
         "nav_my_requests": "Maombi Yangu",
         "nav_my_task": "Kazi Zangu",
+        "nav_reports_exports": "Ripoti na Usafirishaji",
 
         // My Notes View
         "notes_title": "Maelezo Yangu",
@@ -1200,6 +1205,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "nav_my_notes": "我的笔记",
         "nav_my_requests": "我的请求",
         "nav_my_task": "我的任务",
+        "nav_reports_exports": "报告与导出",
 
         // My Notes View
         "notes_title": "我的笔记",
@@ -1386,6 +1392,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "nav_my_notes": "Moje Notatki",
         "nav_my_requests": "Moje Prośby",
         "nav_my_task": "Moje Zadania",
+        "nav_reports_exports": "Raporty i eksport",
 
         // My Notes View
         "notes_title": "Moje Notatki",

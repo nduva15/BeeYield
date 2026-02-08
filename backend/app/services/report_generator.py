@@ -1,4 +1,5 @@
 import os
+import re
 from datetime import datetime
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
@@ -60,6 +61,14 @@ class ReportGenerator:
             alignment=1 # Center
         )
         
+        styles.add(ParagraphStyle(
+            'Small',
+            parent=styles['Normal'],
+            fontSize=8,
+            leading=10,
+            textColor=colors.grey
+        ))
+        
         pillar_header_style = ParagraphStyle(
             'PillarHeader',
             parent=styles['Heading2'],
@@ -115,8 +124,8 @@ class ReportGenerator:
                 for sub_p in p_content.split('\n\n'):
                     if sub_p.strip():
                         # Handle basic markdown bold/italics in content
-                        clean_p = sub_p.replace('**', '<b>').replace('**', '</b>')
-                        clean_p = clean_p.replace('*', '<i>').replace('*', '</i>')
+                        clean_p = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', sub_p)
+                        clean_p = re.sub(r'\*(.*?)\*', r'<i>\1</i>', clean_p)
                         elements.append(Paragraph(clean_p.replace('\n', '<br/>'), body_style))
                         elements.append(Spacer(1, 0.15*inch))
         else:

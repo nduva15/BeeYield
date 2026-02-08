@@ -57,6 +57,7 @@ import ProfessionalAuth from '@/pages/ProfessionalAuth'
 import AuthCallback from '@/pages/AuthCallback'
 import NotFound from '@/pages/NotFound'
 import Receipt from '@/pages/Receipt'
+import MeasurementData from '@/pages/MeasurementData'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
@@ -99,6 +100,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                                                 <Route path="/diseases" element={<Diseases />} />
                                                 <Route path="/media" element={<Media />} />
                                                 <Route path="/beeyield-dashboard" element={<ProtectedRoute requireBeeYield={true}><BeeYieldDashboard /></ProtectedRoute>} />
+                                                <Route path="/measurements" element={<ProtectedRoute requireBeeYield={true}><MeasurementData /></ProtectedRoute>} />
                                                 <Route path="/ceba" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
                                                 <Route path="/ceba/login" element={<AdminLogin />} />
                                                 {/* Mapped my-account to BuyerDashboard based on routes/my-account.tsx */}

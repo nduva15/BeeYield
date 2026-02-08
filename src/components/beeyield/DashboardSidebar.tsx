@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { LucideIcon, Hexagon, ChevronDown, LogOut, Search, Command, LayoutGrid, Zap, Settings } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { spring } from '@/lib/motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export interface NavItem {
@@ -47,23 +48,21 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
         );
     };
 
-    // Stagger variants for modern entrance
     const containerVariants = {
-        hidden: { opacity: 0, x: -20 },
+        hidden: { opacity: 0, x: -12 },
         visible: {
             opacity: 1,
             x: 0,
             transition: {
-                duration: 0.8,
-                ease: [0.16, 1, 0.3, 1] as any,
-                staggerChildren: 0.08
+                delayChildren: 0.05,
+                staggerChildren: 0.04
             }
         }
-    } as any;
+    };
 
     const itemVariants = {
-        hidden: { opacity: 0, y: 10 },
-        visible: { opacity: 1, y: 0 }
+        hidden: { opacity: 0, y: 8 },
+        visible: { opacity: 1, y: 0, transition: spring.gentle }
     };
 
     return (
@@ -124,7 +123,7 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                 </motion.div>
             </div>
 
-            {/* Navigation Body - Enhanced with tighter spacing and smoother animations */}
+            {/* Navigation */}
             <div className="flex-1 px-4 space-y-2 overflow-y-auto custom-scrollbar-modern pb-6">
                 <div>
                     <motion.div variants={itemVariants} className="px-3 pb-2">

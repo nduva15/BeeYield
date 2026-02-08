@@ -29,21 +29,30 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 
 @app.on_event("startup")
 async def startup_event():
-    """Run knowledge sync on startup and potentially in background."""
-    from app.services.content_service import ContentService
+    """
+    Initialize the BeeYield AI infrastructure on startup:
+    1. Start the 12-hour knowledge sync scheduler
+    2. Initialize Qdrant vector store (if available)
+    """
     import asyncio
     
-    async def periodic_sync():
-        from scripts.knowledge_sync import sync_all
-        while True:
-            try:
-                await sync_all()
-            except Exception as e:
-                print(f"Startup Sync Error: {e}")
-            await asyncio.sleep(600) # Sync every 10 minutes
+    # 1. Start the Knowledge Sync Scheduler (12-hour interval)
+    try:
+        from app.services.sync_scheduler import KnowledgeSyncScheduler
+        await KnowledgeSyncScheduler.start(interval_hours=12)
+        print("[STARTUP] Knowledge sync scheduler started (12h interval)")
+    except Exception as e:
+        print(f"[STARTUP] Scheduler error (non-fatal): {e}")
     
-    # Run first sync immediately without blocking startup
-    asyncio.create_task(periodic_sync())
+    # 2. Initialize Qdrant Vector Store
+    try:
+        from app.services.vector_store import QdrantVectorStore
+        init_result = await QdrantVectorStore.initialize()
+        print(f"[STARTUP] Vector store: {init_result}")
+    except ImportError:
+        print("[STARTUP] Qdrant not installed - using JSON search")
+    except Exception as e:
+        print(f"[STARTUP] Vector store error (non-fatal): {e}")
 
 
 @app.get("/")

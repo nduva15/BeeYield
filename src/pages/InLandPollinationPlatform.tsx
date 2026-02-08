@@ -15,13 +15,13 @@ const InLandPollination = () => {
       name: "Sarah Jenkins",
       role: "Almond Grower, Central Valley CA",
       image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400",
-      quote: "PLIP gave us visibility we never had before. We identified a cold spot in the north orchard immediately and optimized our hive placement, resulting in a 15% yield increase."
+      quote: "PLIP gave us visibility we never had before. We spotted a cold spot in the north orchard and adjusted hive placement—15% yield increase that season."
     },
     {
       name: "Miguel Rodriguez",
       role: "Blueberry Farm Owner, WA",
       image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400",
-      quote: "The acoustic monitoring is game-changing. Knowing exactly when the bees are active helps us time our nutrient sprays perfectly to avoid disrupting pollination."
+      quote: "Acoustic monitoring tells us exactly when bees are active. We time nutrient sprays around that so we don’t disrupt pollination."
     },
     {
       name: "David Chen",
@@ -87,7 +87,7 @@ const InLandPollination = () => {
             <div>
               <h2 className="text-4xl font-bold mb-6 text-foreground">PLIP. BeeYield's In-Land Solution</h2>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                BeeYield's Pollination Land Insight Platform (PLIP) measures bee activity in crops. This innovative platform provides you with the crucial knowledge of how many bees are actually pollinating your crop, along with additional actionable data to make real-time decisions that influence crop yield.
+                BeeYield's Pollination Land Insight Platform (PLIP) measures bee activity in crops. You see how many bees are actually pollinating your crop and get data in real time so you can act on it.
               </p>
             </div>
 
@@ -300,7 +300,7 @@ const InLandPollination = () => {
             <div className="h-1 w-16 bg-primary-foreground/30 hidden md:block" />
             {/* CTA Side */}
             <div className="text-center md:text-left">
-              <h2 className="text-3xl font-bold mb-4">Ready to optimize your lands?</h2>
+              <h2 className="text-3xl font-bold mb-4">Ready to get more from your land?</h2>
               <p className="opacity-90 mb-6">
                 Start getting actionable data on your pollination efficacy today.
               </p>

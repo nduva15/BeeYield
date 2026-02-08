@@ -41,7 +41,7 @@ const CommitmentPage = () => {
     {
       number: 8,
       title: "Decent Work & Economic Growth",
-      description: "Our platform creates dignified employment opportunities in rural areas, empowering beekeepers with fair compensation and market access.",
+      description: "We create dignified work in rural areas: beekeepers get fair pay and a direct market for their honey.",
       impact: "Creating sustainable livelihoods for rural youth",
       color: "from-rose-600 to-rose-700",
       icon: Building,

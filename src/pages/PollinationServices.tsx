@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -50,7 +50,7 @@ const PollinationServices = () => {
         {
             icon: Target,
             title: "Visitation Data",
-            description: "Quantifying the number of bee visits per flower to optimize total harvest potential.",
+            description: "Count bee visits per flower so you can see how pollination is performing and plan harvest.",
             link: "/in-land-pollination"
         },
         {
@@ -515,7 +515,7 @@ const PollinationServices = () => {
                                     How does precision pollination differ from traditional beekeeping?
                                 </AccordionTrigger>
                                 <AccordionContent className="text-muted-foreground leading-relaxed font-medium text-base pb-6">
-                                    Traditional beekeeping involves placing hives near crops and hoping for the best. BeeYield's <strong className="font-bold text-foreground">Precision Pollination</strong> uses tracking sensors inside every hive and optimized placement across the land. We monitor colony strength, bee activity, and weather patterns to ensure fertilization during the critical bloom phase, taking the guesswork out of the harvest.
+                                    Traditional beekeeping is hives near crops and hope. BeeYield's <strong className="font-bold text-foreground">Precision Pollination</strong> puts sensors in every hive and uses placement and weather data so you know colony strength and bee activity during bloom—no guesswork.
                                 </AccordionContent>
                             </AccordionItem>
 
@@ -560,7 +560,7 @@ const PollinationServices = () => {
                                 "name": "How does precision pollination differ from traditional beekeeping?",
                                 "acceptedAnswer": {
                                     "@type": "Answer",
-                                    "text": "Precision pollination uses IoT sensors and optimized hive placement to monitor colony strength and bee activity 24/7. Unlike traditional beekeeping which relies on proximity alone, BeeYield ensures maximum fertilization during the critical bloom phase using real-time field data."
+                                    "text": "Precision pollination uses in-hive sensors and placement data to monitor colony strength and bee activity 24/7. BeeYield uses real-time field data during bloom instead of relying on proximity alone."
                                 }
                             },
                             {
@@ -568,7 +568,7 @@ const PollinationServices = () => {
                                 "name": "What results can farmers expect with BeeYield?",
                                 "acceptedAnswer": {
                                     "@type": "Answer",
-                                    "text": "Farmers using BeeYield typically see an average increase of 35% in crop yield through optimized pollination. We also provide verifiable data showing a 300% increase in measurable colony activity compared to traditional methods."
+                                    "text": "Farmers using BeeYield often see about 35% higher crop yield. We provide verifiable data on colony activity—typically 300% more measurable activity than with traditional methods."
                                 }
                             },
                             {

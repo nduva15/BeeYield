@@ -779,6 +779,37 @@ def delete_harvest(
     
     return None
 
+
+# ============================================
+# LABEL STUDIO (Smart Storyteller)
+# ============================================
+
+class GenerateBlurbRequest(BaseModel):
+    floral_type: Optional[str] = Field(None, description="Honey/floral type from harvest, e.g. Acacia, Lipowy, Polyfloral")
+    location: Optional[str] = Field(None, description="Origin location for context")
+    harvest_year: Optional[str] = Field(None, description="Harvest year")
+    use_ai: Optional[bool] = Field(True, description="Use AI when available; else curated only")
+
+
+@router.post("/labels/generate-blurb", response_model=dict)
+async def generate_label_blurb(
+    body: GenerateBlurbRequest,
+    user_id: str = Depends(get_user_id),
+):
+    """
+    Smart Storyteller: generate a short marketing blurb (max 140 chars) for the honey label
+    based on floral type. Uses curated descriptions or AI (Gemini/OpenAI) when enabled.
+    """
+    from app.services.label_studio_service import generate_blurb_smart
+    blurb = await generate_blurb_smart(
+        floral_type=body.floral_type,
+        location=body.location,
+        harvest_year=body.harvest_year,
+        use_ai=body.use_ai if body.use_ai is not None else True,
+    )
+    return {"blurb": blurb, "length": len(blurb)}
+
+
 # ============================================
 # TELEMETRY ENDPOINTS
 # ============================================

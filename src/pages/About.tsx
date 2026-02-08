@@ -201,7 +201,7 @@ const About = () => {
                 </div>
                 <h3 className="mb-3 text-2xl font-bold">Our Commitment</h3>
                 <p className="text-muted-foreground mb-6 line-clamp-3">
-                  Read about our core values: Sustainability, Traceability, and Community Empowerment.
+                  Our values: sustainability, traceability, and strong local communities.
                 </p>
                 <Link to="/commitment" className="inline-flex items-center text-foreground font-semibold group-hover:translate-x-1 transition-transform">
                   Our Promise <ArrowRight className="ml-2 h-4 w-4" />

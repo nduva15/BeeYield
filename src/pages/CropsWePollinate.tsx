@@ -255,7 +255,7 @@ const CropsWePollinate = () => {
           </div>
           <h2 className="text-3xl font-bold md:text-4xl mb-4">Don't See Your Crop?</h2>
           <p className="max-w-2xl mx-auto text-primary-foreground/80 mb-8">
-            If your crop relies on bees for pollination, we would love to talk to see how we can improve your pollination. Whether through optimized placement, more precise timing of bee removal, or simply more efficient and cost-effective outcomes.
+            If your crop depends on bees, we’d like to hear from you. We can help with hive placement, timing of bee removal, and more efficient, cost-effective pollination.
           </p>
           <Button size="lg" variant="secondary" className="rounded-full" asChild>
             <a href="mailto:info@beeyield.com">
