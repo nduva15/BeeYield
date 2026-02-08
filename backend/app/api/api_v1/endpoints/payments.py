@@ -8,8 +8,13 @@ from pydantic import BaseModel
 from app.core.config import settings
 from app.core import security
 import stripe
+import logging
+
+# Import shop service for order updates
+from app.services.shop_service import update_order_status
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 # Initialize Stripe with the secret key
 if settings.STRIPE_SECRET_KEY:
@@ -47,8 +52,9 @@ def create_payment_intent(
     
     try:
         # Convert KES to USD cents for Stripe (approximate rate)
-        # In production, use a real exchange rate API
-        kes_to_usd = 0.0065  # Approximate rate: 1 KES = 0.0065 USD
+        # Note: In production, use a real-time exchange rate API service
+        # for accurate currency conversion
+        kes_to_usd = 0.0069  # Approximate rate: 1 KES = 0.0069 USD
         amount_usd = request.amount * kes_to_usd
         
         # Stripe requires minimum 50 cents for USD
@@ -82,13 +88,13 @@ def create_payment_intent(
         }
         
     except stripe.error.StripeError as e:
-        print(f"Stripe Error: {e}")
+        logger.error(f"Stripe payment intent error: {type(e).__name__}")
         raise HTTPException(
             status_code=400,
-            detail=f"Payment initialization failed: {str(e)}"
+            detail="Payment initialization failed. Please try again."
         )
     except Exception as e:
-        print(f"Payment Error: {e}")
+        logger.error(f"Unexpected payment error: {type(e).__name__}")
         raise HTTPException(
             status_code=500,
             detail="An error occurred while creating payment"
@@ -127,13 +133,13 @@ def create_setup_intent(
         }
         
     except stripe.error.StripeError as e:
-        print(f"Stripe Error: {e}")
+        logger.error(f"Stripe setup intent error: {type(e).__name__}")
         raise HTTPException(
             status_code=400,
-            detail=f"Card setup failed: {str(e)}"
+            detail="Card setup failed. Please try again."
         )
     except Exception as e:
-        print(f"Setup Error: {e}")
+        logger.error(f"Unexpected setup error: {type(e).__name__}")
         raise HTTPException(
             status_code=500,
             detail="An error occurred while setting up card"
@@ -160,7 +166,6 @@ def confirm_payment(
         
         if intent.status == "succeeded":
             # Update order status in database
-            from app.services.shop_service import update_order_status
             update_order_status(
                 request.order_id, 
                 status="paid",
@@ -180,13 +185,13 @@ def confirm_payment(
             }
             
     except stripe.error.StripeError as e:
-        print(f"Stripe Error: {e}")
+        logger.error(f"Stripe payment confirm error: {type(e).__name__}")
         raise HTTPException(
             status_code=400,
-            detail=f"Payment verification failed: {str(e)}"
+            detail="Payment verification failed. Please try again."
         )
     except Exception as e:
-        print(f"Confirm Error: {e}")
+        logger.error(f"Unexpected confirm error: {type(e).__name__}")
         raise HTTPException(
             status_code=500,
             detail="An error occurred while confirming payment"
@@ -197,10 +202,15 @@ def confirm_payment(
 async def stripe_webhook(request_body: bytes = Depends(lambda r: r.body())):
     """
     Handle Stripe webhooks for async payment events.
+    Note: This is a placeholder. For production, implement signature verification
+    using stripe.Webhook.construct_event() with STRIPE_WEBHOOK_SECRET.
     """
     if not settings.STRIPE_WEBHOOK_SECRET:
         raise HTTPException(status_code=503, detail="Webhook not configured")
     
-    # This would be implemented for production to handle async events
+    # TODO: Implement webhook signature verification for production:
+    # sig_header = request.headers.get('stripe-signature')
+    # event = stripe.Webhook.construct_event(request_body, sig_header, settings.STRIPE_WEBHOOK_SECRET)
+    
     # For now, we handle payments synchronously
     return {"received": True}
