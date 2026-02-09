@@ -270,7 +270,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
 
             {/* Page Title */}
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3 mb-8">
-                {t('ai_assistant_title')} <span role="img" aria-label="robot">🤖</span>
+                {t('ai_assistant_title')} <span role="img" aria-label="assistant">🐝</span>
             </h1>
 
             {/* Orange Hero Card */}
@@ -294,7 +294,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                     <div className="space-y-6 max-w-2xl">
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full">
                             <Zap className="h-3 w-3 text-primary" />
-                            <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Neural Network v4.2</span>
+                            <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Standard Core v4.2</span>
                         </div>
                         <h2 className="text-4xl lg:text-5xl font-black text-white uppercase tracking-tight leading-[1.1]">
                             {t('ai_hub_intelligence')}
@@ -302,7 +302,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                         <div className="flex items-center gap-3">
                             <div className="flex -space-x-2">
                                 {[1, 2, 3].map(i => (
-                                    <div key={i} className="w-8 h-8 rounded-full border-2 border-[#0F172A] bg-primary/20 flex items-center justify-center text-[10px] font-black text-white">AI</div>
+                                    <div key={i} className="w-8 h-8 rounded-full border-2 border-[#0F172A] bg-primary/20 flex items-center justify-center text-[10px] font-black text-white">PRO</div>
                                 ))}
                             </div>
                             <p className="text-white font-bold opacity-70 uppercase tracking-widest text-xs">
@@ -410,7 +410,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                                 <div>
                                     <div className="flex items-center gap-2 mb-1">
                                         <h3 className="font-black text-2xl text-gray-900 dark:text-white uppercase tracking-tighter">
-                                            BeeYield AI
+                                            BeeYield Assistant
                                         </h3>
                                         <Badge className="bg-primary/10 text-primary border-primary/20 text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5">INTERNAL</Badge>
                                     </div>
@@ -425,7 +425,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                             </div>
 
                             <div className="hidden md:flex flex-col items-end">
-                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Neural Load</p>
+                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">System Load</p>
                                 <div className="h-1.5 w-32 bg-slate-100 rounded-full overflow-hidden">
                                     <div className="h-full bg-primary w-[35%] animate-pulse" />
                                 </div>

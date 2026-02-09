@@ -1,14 +1,6 @@
-/**
- * API Configuration for BeeYield Frontend
- * Centralizes all API endpoint configuration
- */
+import { supabase } from '@/lib/supabase';
 
 // Use environment variable for the API base URL
-// In development with Vite proxy: use relative path "/api/v1"
-// In production: use the full URL from environment
-// Use environment variable for the API base URL
-// In development with Vite proxy: use relative path "/api/v1"
-// In production: use the full URL from environment
 const isDev = import.meta.env.DEV;
 const rawBaseUrl = (import.meta.env.VITE_API_URL as string) || (isDev ? "http://localhost:8000/api/v1" : "/api/v1");
 export const API_BASE_URL = rawBaseUrl.endsWith("/") ? rawBaseUrl.slice(0, -1) : rawBaseUrl;
@@ -18,50 +10,67 @@ export const API_V1_URL = API_BASE_URL.includes("/api/v1")
     ? API_BASE_URL
     : `${API_BASE_URL}/api/v1`;
 
+/**
+ * Get authentication headers from Supabase session
+ */
+export async function getAuthHeaders(): Promise<Record<string, string>> {
+    if (!supabase) return {};
+
+    try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.access_token) {
+            return {
+                'Authorization': `Bearer ${session.access_token}`
+            };
+        }
+    } catch (error) {
+        console.error('Error getting auth headers:', error);
+    }
+    return {};
+}
+
 // Helper function for API calls with error handling
 export async function apiRequest<T>(
     endpoint: string,
     options?: RequestInit
 ): Promise<T> {
-    const url = `${API_V1_URL}${endpoint}`;
+    const url = endpoint.startsWith('http') ? endpoint : `${API_V1_URL}${endpoint}`;
+
+    const authHeaders = await getAuthHeaders();
 
     try {
         const response = await fetch(url, {
             ...options,
             headers: {
                 "Content-Type": "application/json",
+                ...authHeaders,
                 ...options?.headers,
             },
         });
 
         if (!response.ok) {
-            let errorData: Record<string, unknown> = {};
+            let errorData: any = {};
             const text = await response.text();
             try {
                 errorData = JSON.parse(text);
             } catch (e) {
-                // If JSON parse fails, it might be HTML or empty
-                console.error("Non-JSON error response from server:", text.substring(0, 200));
-                errorData = { detail: `API Error ${response.status}: ${response.statusText}. The server returned HTML instead of JSON. Please ensure the backend is running.` };
+                console.error("Non-JSON error response:", text.substring(0, 200));
+                errorData = { detail: `API Error ${response.status}: ${response.statusText}` };
             }
-            throw new Error((errorData.detail as string) || `API Error: ${response.status}`);
+            throw new Error(errorData.detail || errorData.message || `API Error: ${response.status}`);
         }
 
         const responseText = await response.text();
+        if (!responseText) return {} as T;
+
         try {
             return JSON.parse(responseText);
-        } catch (e: unknown) {
-            console.error("Failed to parse JSON response:", responseText.substring(0, 200));
-            const errorMessage = e instanceof Error ? e.message : 'Unknown parse error';
-            throw new Error(`Connection Error: The server returned an invalid response (HTML). Please check if the backend is running at ${API_V1_URL}. Technical: ${errorMessage}`);
+        } catch (e) {
+            console.error("Failed to parse JSON:", responseText.substring(0, 200));
+            throw new Error(`Invalid JSON response from server`);
         }
-    } catch (error: unknown) {
+    } catch (error: any) {
         console.error(`API Error for ${endpoint}:`, error);
-        // Better error message for common JSON parse error (HTML returned)
-        const errorMessage = error instanceof Error ? error.message : '';
-        if (errorMessage.includes("Unexpected token") || errorMessage.includes("not valid JSON")) {
-            throw new Error(`Connection Error: The server returned an invalid response (HTML). Please check if the backend is running at ${API_V1_URL}.`);
-        }
         throw error;
     }
 }
@@ -118,4 +127,44 @@ export async function apiDelete<T>(
     options?: RequestInit
 ): Promise<T> {
     return apiRequest<T>(endpoint, { method: "DELETE", ...options });
+}
+
+/**
+ * Handle file downloads from the API
+ */
+export async function apiDownload(
+    endpoint: string,
+    data: any = {},
+    filename?: string
+): Promise<Blob> {
+    const url = endpoint.startsWith('http') ? endpoint : `${API_V1_URL}${endpoint}`;
+    const authHeaders = await getAuthHeaders();
+
+    const response = await fetch(url, {
+        method: "POST", // Most downloads use POST with body data
+        headers: {
+            "Content-Type": "application/json",
+            ...authHeaders,
+        },
+        body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+        throw new Error(`Download failed: ${response.status} ${response.statusText}`);
+    }
+
+    const blob = await response.blob();
+
+    if (filename) {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+    }
+
+    return blob;
 }

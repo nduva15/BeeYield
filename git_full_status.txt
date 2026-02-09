@@ -1,0 +1,108 @@
+﻿ M backend/app/api/api_v1/api.py
+ M backend/app/api/api_v1/endpoints/beeyield.py
+ M backend/app/api/api_v1/endpoints/meters.py
+ M backend/app/data/knowledge_base.json
+ M backend/app/services/meter_service.py
+ M backend/app/services/report_generator.py
+ M backend/apply_fix.py
+ M index.html
+ M src/components/Newsletter.tsx
+ M src/components/beeyield/BillingView.tsx
+ M src/components/beeyield/MetersReports.tsx
+ M src/components/beeyield/MyDevicesView.tsx
+ M src/components/beeyield/MyNotesView.tsx
+ M src/components/beeyield/MyRequestsView.tsx
+ M src/components/beeyield/PrecisionPollinationView.tsx
+ M src/components/beeyield/RemainingViews.tsx
+ M src/components/beeyield/SupportCenterView.tsx
+ M src/components/payments/StripeCardInput.tsx
+ M src/components/shop/ShopDashboardHeader.tsx
+ M src/lib/translations.ts
+ M src/pages/AdminDashboard.tsx
+ M src/pages/Authentication.tsx
+ M src/pages/BeeYieldDashboard.tsx
+ M src/pages/BuyerDashboard.tsx
+ M src/pages/Checkout.tsx
+ M src/pages/Contact.tsx
+ M src/pages/HoneyLanding.tsx
+ M src/pages/Traceability.tsx
+ M src/services/api.ts
+ M src/services/beeyieldService.ts
+?? .claude/
+?? .github/copilot-instructions.md
+?? BEE_YIELD_HIVES_BACKEND.sql
+?? HARDEN_DATABASE_RLS.sql
+?? apply_measurements_migration.py
+?? apply_migration.py
+?? backend/app/api/api_v1/endpoints/labels.py
+?? backend/app/api/api_v1/endpoints/pages.py
+?? backend/app/blockchain/polygon_anchors.json
+?? backend/app/core/auth.py
+?? backend/app/data/standardized_lakehouse.json
+?? backend/app/services/label_studio_service.py
+?? backend/apply_settings.py
+?? backend/check_harvests_cols.py
+?? backend/check_setup.py
+?? backend/complete_2026.py
+?? backend/db_audit.py
+?? backend/debug_import.py
+?? backend/debug_timothy_data.py
+?? backend/find_timothy_uuid.py
+?? backend/fix_ownership_final.py
+?? backend/fix_timothy_data.py
+?? backend/honeychain_migration.py
+?? backend/list_all_apiaries.py
+?? backend/measurement_data_page.py
+?? backend/migrate_notes.py
+?? backend/migrate_timothy_harvest.py
+?? backend/migrate_timothy_harvest_v2.py
+?? backend/reflex_harvest_form.py
+?? backend/resolve_ownership.py
+?? backend/scripts/metadata_standardizer.py
+?? backend/scripts/migrate_timothy_harvests.py
+?? backend/seed_timothy_hives.py
+?? backend/test_settings_db_logic.py
+?? backend/verify_devices_setup.py
+?? backend/verify_genai.py
+?? backend/verify_settings_api.py
+?? backend_log.txt
+?? beeyield-ai/cargo_check_output.txt
+?? beeyield-ai/check_errors.txt
+?? broad_search.py
+?? check_and_fix.py
+?? check_farmers.py
+?? check_h30.py
+?? check_harvests.py
+?? check_orphans.py
+?? check_sensor_readings.py
+?? cleanup_report.txt
+?? db_search_markempai.py
+?? docs/
+?? farmers_report.txt
+?? final_absolute_cleanup.py
+?? final_cleanup.py
+?? frontend_log.txt
+?? full_system_report.py
+?? full_system_report.txt
+?? git_full_status.txt
+?? git_status_clean.txt
+?? harvests_report.txt
+?? list_all_tables.py
+?? master_db_search.py
+?? master_db_search.txt
+?? migration_error.txt
+?? migration_output.txt
+?? offline_submissions.json
+?? scripts/
+?? search_markempai.py
+?? search_results.txt
+?? seed_measurements.py
+?? src/components/beeyield/LabelGeneratorView.tsx
+?? src/components/beeyield/ReportsExportsView.tsx
+?? src/services/labelService.ts
+?? status.txt
+?? supabase/
+?? verification_results.txt
+?? verify_backend.py
+?? verify_data.py
+?? verify_state.py
