@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { IoTDevice, SensorReading, Apiary, Hive } from '@/services/beeyieldService';
+import { beeyieldService, IoTDevice, SensorReading, Apiary, Hive } from '@/services/beeyieldService';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {

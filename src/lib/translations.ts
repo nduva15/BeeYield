@@ -62,7 +62,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "system_normal": "System Normal",
         "server_status": "Server Status",
 
-        "nav_agro_intelligence": "Agro Intelligence",
+        "nav_agro_intelligence": "Agro Insights",
         "agro_intel_desc": "Intelligent beekeeping insights.",
         "places_desc": "Manage your apiaries and locations.",
         "hives_desc": "Comprehensive hive management.",
@@ -72,7 +72,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
 
         // Navigation
         "quick_search": "Quick search...",
-        "intelligence_explorer": "Intelligence Explorer",
+        "intelligence_explorer": "Data Explorer",
         "admin_core": "Admin Core",
         "main_hub": "Main Hub",
 
@@ -111,7 +111,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "standard_pollination": "Standard Unit",
         "precision_pollination": "Precision Node",
         "calculate": "Update Modeling",
-        "results": "Deployment Intelligence",
+        "results": "Deployment Insights",
         "beeyield_recommendation": "Optimal FPA Target",
         "standard_explanation": "Simple hive counts ignore individual colony strength, leading to yield-limiting 'cold spots'.",
         "precision_explanation": "Our FOB model accounts for biological capacity, ensuring every acre receives precise foraging pressure.",
@@ -372,7 +372,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "system_normal": "Système Normal",
         "server_status": "État du Serveur",
 
-        "nav_agro_intelligence": "Intelligence Agro",
+        "nav_agro_intelligence": "Aperçus Agro",
         "agro_intel_desc": "Informations apicoles intelligentes.",
         "places_desc": "Gérez vos ruchers et emplacements.",
         "hives_desc": "Gestion complète des ruches.",
@@ -381,7 +381,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "meters_desc": "Surveillance de l'énergie et de la consommation.",
 
         "quick_search": "Recherche rapide...",
-        "intelligence_explorer": "Explorateur d'Intelligence",
+        "intelligence_explorer": "Explorateur de Données",
         "admin_core": "Noyau Admin",
         "main_hub": "Hub Principal",
 
@@ -459,7 +459,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "ai_expert_assistant": "Assistant Intelligent BeeYield",
         "ai_proprietary_ml": "J'utilise des algorithmes pour analyser les données des capteurs, détecter les anomalies et fournir des informations sur la santé des ruches.",
         "ask_ai_placeholder": "Posez une question... (Photos, docs ou liens)",
-        "ai_terms_agree": "En utilisant l'Assistant IA, vous acceptez nos",
+        "ai_terms_agree": "En utilisant l'Assistant BeeYield, vous acceptez nos",
         "terms_regulations": "Conditions et Règlements",
         "error_ai_thinking": "Je suis désolé, j'ai du mal à réfléchir en ce moment. Veuillez réessayer.",
         "new_conversation_title": "Nouvelle Conversation",
@@ -549,7 +549,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "pollen_diversity": "Diversité du Pollen",
         "activity_heatmap": "Carte de Chaleur d'Activité de Pollinisation",
         "precision_pollination_title": "Pollinisation de Précision",
-        "precision_pollination_subtitle": "Intelligence de Terrain et Force de Pollinisation pilotée par l'Analyse",
+        "precision_pollination_subtitle": "Analyse de Terrain et Force de Pollinisation",
         "iot_sensory_hub": "Hub Sensoriel IoT",
         "view_detailed_analytics": "Voir les Analyses Détaillées",
         "cold_spot_alert": "Zone Froide Détectée",
@@ -616,7 +616,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "server_status": "Estado del Servidor",
 
         "agro_intel_desc": "Información apícola inteligente.",
-        "nav_agro_intelligence": "Inteligencia Agro",
+        "nav_agro_intelligence": "Perspectivas Agro",
         "places_desc": "Administre sus colmenares y ubicaciones.",
         "hives_desc": "Gestión integral de colmenas.",
         "billing_desc": "Administre su suscripción y uso.",
@@ -804,7 +804,7 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "server_status": "Server Status",
 
         "agro_intel_desc": "Intelligente Imkerei-Einblicke.",
-        "nav_agro_intelligence": "Agrar-Intelligenz",
+        "nav_agro_intelligence": "Agrar-Einblicke",
         "places_desc": "Verwalten Sie Ihre Bienenstände und Standorte.",
         "hives_desc": "Umfassendes Bienenstock-Management.",
         "billing_desc": "Verwalten Sie Ihr Abonnement und Ihre Nutzung.",
@@ -1310,14 +1310,14 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "add_first_device": "添加设备"
     },
     PL: {
-        "search_placeholder": "Zapytaj BeeYield AI...",
+        "search_placeholder": "Zapytaj BeeYield...",
         "profile": "Profil",
         "billing": "Płatności",
         "logout": "Wyloguj",
         "notifications": "Powiadomienia",
         "help": "Pomoc",
         "settings": "Ustawienia",
-        "ai": "Sztuczna Inteligencja",
+        "ai": "System",
         "region_language": "Region i Język",
         "general": "Ogólne",
         "username": "Nazwa użytkownika",

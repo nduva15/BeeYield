@@ -279,7 +279,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                 <div className="absolute top-0 right-0 w-1/2 h-full bg-[#F4D03F]/10 rounded-l-full blur-[100px] group-hover:bg-[#F4D03F]/20 transition-all duration-1000" />
                 <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-primary/20 rounded-full blur-[80px]" />
 
-                {/* Neural Pattern Overlay */}
+                {/* Pattern Overlay */}
                 <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
                     <svg className="w-full h-full" viewBox="0 0 100 100">
                         <pattern id="neural-grid" width="20" height="20" patternUnits="userSpaceOnUse">

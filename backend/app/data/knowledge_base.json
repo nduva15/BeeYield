@@ -1,8 +1,8 @@
 {
   "metadata": {
     "version": "6.0.0-ELITE",
-    "last_sync": "Mon Feb  9 14:15:19 2026",
-    "total_nodes": 380
+    "last_sync": "Mon Feb  9 21:09:27 2026",
+    "total_nodes": 379
   },
   "dna": {
     "company": "BeeYield",
@@ -259,17 +259,12 @@
     {
       "source": "ESG.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Consumer transparency dashboard for complete product visibility. 100% of honey batches traceable to specific hive, beekeeper, and harvest date. AI-driven predictive analytics for optimal harvest timing. Real-time temperature and humidity sensors protecting colony health. Mobile app for beekeepers with instant hive health alerts. Carbon-neutral technology operations through renewable energy. Tech-enabled beekeeping reducing environmental impact while maximizing efficiency. Zero chemical pesticides in all partner apiaries. Water source protection and conservation programs. Native pollinator corridor creation across Makueni County. Regenerative agriculture partnerships with local farms. 3,000+ tons CO\u2082 avoided annually through ecosystem restoration. Women holding key decision-making roles in technology and strategy. Mentorship programs for young women in STEM and agriculture. Championing gender equality in the African tech ecosystem."
+      "content": "Consumer transparency dashboard for complete product visibility. 100% of honey batches traceable to specific hive, beekeeper, and harvest date. Smart predictive analytics for optimal harvest timing. Real-time temperature and humidity sensors protecting colony health. Mobile app for beekeepers with instant hive health alerts. Carbon-neutral technology operations through renewable energy. Tech-enabled beekeeping reducing environmental impact while maximizing efficiency. Zero chemical pesticides in all partner apiaries. Water source protection and conservation programs. Native pollinator corridor creation across Makueni County. Regenerative agriculture partnerships with local farms. 3,000+ tons CO\u2082 avoided annually through ecosystem restoration. Women holding key decision-making roles in technology and strategy. Mentorship programs for young women in STEM and agriculture. Championing gender equality in the African tech ecosystem. Driving digital innovation to empower rural women farmers."
     },
     {
       "source": "ESG.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Driving digital innovation to empower rural women farmers. Visionary women leaders driving 66% of our founding team. absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/10. absolute top-20 right-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl. absolute bottom-10 left-10 w-96 h-96 bg-accent/5 rounded-full blur-3xl. container relative z-10 mx-auto px-4. mb-6 px-4 py-2 text-sm font-medium border-primary/30 bg-primary/5. re the foundation of everything we do at BeeYield. From the semi-arid lands of Kibwezi, Kenya, we. flex flex-wrap justify-center gap-4. text-muted-foreground max-w-2xl mx-auto. Kenyan farmers benefiting from pollination services in their mango and avocado orchards. Since BeeYield brought their hives to my farm, my mango harvest has doubled. My family eats better now.. t a report we file once a year\u2014it. text-lg text-muted-foreground mb-8."
-    },
-    {
-      "source": "ESG.tsx",
-      "subtopic": "Detailed Narrative",
-      "content": "re a farmer seeking pollination services, an investor aligned with ESG principles, or a beekeeper looking to join our network\u2014we. flex flex-wrap justify-center gap-4."
+      "content": "Visionary women leaders driving 66% of our founding team. absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/10. absolute top-20 right-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl. absolute bottom-10 left-10 w-96 h-96 bg-accent/5 rounded-full blur-3xl. container relative z-10 mx-auto px-4. mb-6 px-4 py-2 text-sm font-medium border-primary/30 bg-primary/5. re the foundation of everything we do at BeeYield. From the semi-arid lands of Kibwezi, Kenya, we. flex flex-wrap justify-center gap-4. text-muted-foreground max-w-2xl mx-auto. Kenyan farmers benefiting from pollination services in their mango and avocado orchards. Since BeeYield brought their hives to my farm, my mango harvest has doubled. My family eats better now.. t a report we file once a year\u2014it. text-lg text-muted-foreground mb-8. re a farmer seeking pollination services, an investor aligned with ESG principles, or a beekeeper looking to join our network\u2014we. flex flex-wrap justify-center gap-4."
     },
     {
       "source": "GlobalHiveNetwork.tsx",
@@ -444,7 +439,7 @@
     {
       "source": "PollinationSolutions.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "End-to-End Visibility. Pollination Solutions. We combine biological understanding with technological innovation to monitor pollination from the inside out.. In-Hive Precision. Our proprietary sensors live inside the hive box, monitoring acoustic signatures, temperature, and humidity 24/7. Know the strength of your colonies before they are deployed.. Queen health status. Colony strength grading. Environmental stress alerts. Explore In-Hive Technology. In-Field Insights. Sensors deployed across your orchards measure actual bee flight activity and pollination events. Visualize coverage maps to ensure every acre gets the attention it needs.. Real-time pollination maps. Foraging efficiency tracking. Weather impact analysis. Explore In-Field Technology. Disease Defense. Intelligent protection for your beehives. Detect diseases early and monitor colony health with AI-driven analysis and real-time alerts.. Early disease detection. Colony health grading. Reduced chemical use."
+      "content": "End-to-End Visibility. Pollination Solutions. We combine biological understanding with technological innovation to monitor pollination from the inside out.. In-Hive Precision. Our proprietary sensors live inside the hive box, monitoring acoustic signatures, temperature, and humidity 24/7. Know the strength of your colonies before they are deployed.. Queen health status. Colony strength grading. Environmental stress alerts. Explore In-Hive Technology. In-Field Insights. Sensors deployed across your orchards measure actual bee flight activity and pollination events. Visualize coverage maps to ensure every acre gets the attention it needs.. Real-time pollination maps. Foraging efficiency tracking. Weather impact analysis. Explore In-Field Technology. Disease Defense. Intelligent protection for your beehives. Detect diseases early and monitor colony health with smart analysis and real-time alerts.. Early disease detection. Colony health grading. Reduced chemical use."
     },
     {
       "source": "PollinationSolutions.tsx",
@@ -1094,7 +1089,7 @@
     {
       "source": "progress.tsx",
       "subtopic": "Key Facts",
-      "content": ", React.ComponentPropsWithoutRef. relative h-4 w-full overflow-hidden rounded-full bg-secondary. h-full w-full flex-1 bg-primary transition-all"
+      "content": "relative h-4 w-full overflow-hidden rounded-full bg-secondary. h-full w-full flex-1 bg-primary transition-all"
     },
     {
       "source": "radio-group.tsx",

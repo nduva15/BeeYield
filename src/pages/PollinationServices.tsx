@@ -354,7 +354,7 @@ const PollinationServices = () => {
                                             Proactive protection for your apiary. Detect threats in the hive and across the land before they impact your harvest.
                                         </p>
                                         <ul className="space-y-3 pt-2">
-                                            {["Early pathogen detection", "In-Hive & In-Land safety", "AI-driven health alerts"].map((feature, i) => (
+                                            {["Early pathogen detection", "In-Hive & In-Land safety", "Automated health alerts"].map((feature, i) => (
                                                 <li key={i} className="flex items-center gap-3 text-sm font-bold">
                                                     <Check className="h-5 w-5 text-red-500" />
                                                     {feature}

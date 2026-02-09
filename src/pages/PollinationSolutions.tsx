@@ -128,7 +128,7 @@ const PollinationSolutions = () => {
 
                 <h2 className="text-3xl font-bold mb-4 text-foreground">Disease Defense</h2>
                 <p className="text-lg text-muted-foreground mb-8 flex-grow">
-                  Intelligent protection for your beehives. Detect diseases early and monitor colony health with AI-driven analysis and real-time alerts.
+                  Intelligent protection for your beehives. Detect diseases early and monitor colony health with smart analysis and real-time alerts.
                 </p>
 
                 <div className="space-y-4 mb-8">
