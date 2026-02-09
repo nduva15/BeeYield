@@ -2,10 +2,8 @@ import { supabase } from '@/lib/supabase';
 import { apiGet, apiPost, apiPut, apiDelete } from './api';
 import { toast } from 'sonner';
 
-// Memory cache for auth session to avoid redundant calls
-let cachedSession: { access_token: string } | null = null;
+let cachedSession: any = null;
 let lastSessionFetch = 0;
-const SESSION_CACHE_TTL = 30000; // 30 seconds
 
 export const getAuthHeaders = async (): Promise<Record<string, string>> => {
     if (!supabase) return {};
@@ -72,6 +70,19 @@ export interface IoTDevice {
     firmware_version: string;
     last_ping: string;
     location_name: string;
+    apiary_id?: string;
+    linked_apiary_id?: string;
+    hive_id?: string;
+}
+
+export interface IoTDeviceCreateInput {
+    device_code: string;
+    device_name: string;
+    device_type: 'infield' | 'inland' | 'disease';
+    location_name?: string;
+    apiary_id?: string;
+    linked_apiary_id?: string;
+    hive_id?: string;
 }
 
 export interface SensorReading {
@@ -106,6 +117,71 @@ export interface ClientHive {
     contract_end: string;
 }
 
+// ========== REPORTS & EXPORTS TYPES ==========
+export interface GeneratedReport {
+    id: string;
+    user_id: string;
+    report_type: string;
+    status: 'pending' | 'processing' | 'completed' | 'failed';
+    file_format: string;
+    file_url?: string;
+    parameters?: any;
+    created_at: string;
+}
+
+export interface ScheduledReport {
+    id: string;
+    user_id: string;
+    name: string;
+    report_type: string;
+    frequency: 'daily' | 'weekly' | 'monthly';
+    recipients: string[];
+    is_active: boolean;
+    last_run_at?: string;
+    next_run_at?: string;
+    created_at: string;
+    report_config?: any;
+}
+
+export interface ReportCreateInput {
+    report_type: string;
+    parameters?: any;
+    file_format?: string;
+}
+
+export interface ScheduledReportCreateInput {
+    name: string;
+    report_type: string;
+    frequency: 'daily' | 'weekly' | 'monthly';
+    recipients?: string[];
+    is_active?: boolean;
+    report_config?: any;
+}
+
+// ========== REQUESTS TYPES ==========
+export interface Request {
+    id: string;
+    user_id: string;
+    subject: string;
+    description: string;
+    status: 'pending' | 'open' | 'in_progress' | 'resolved' | 'closed';
+    priority: 'low' | 'medium' | 'high';
+    type: 'maintenance' | 'support' | 'inspection' | 'other';
+    apiary_id?: string;
+    hive_id?: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface RequestCreateInput {
+    subject: string;
+    description: string;
+    type: string;
+    priority?: string;
+    apiary_id?: string;
+    hive_id?: string;
+}
+
 // ========== APIARY & FARMER TYPES ==========
 export interface Farmer {
     id: string;
@@ -125,10 +201,10 @@ export interface Farmer {
 
 export interface Apiary {
     id: string;
-    user_id?: string; // Optional since it may not exist in schema
+    user_id?: string;
     farmer_id?: string | null;
     name: string;
-    type?: string; // permanent, migratory, breeding, quarantine
+    type?: string;
     status?: string | null;
     location_name?: string | null;
     county?: string | null;
@@ -137,13 +213,11 @@ export interface Apiary {
     longitude?: number | null;
     forage_type?: string;
     expected_hives?: number;
-    size_acres?: number; // Added for coverage calculation
+    size_acres?: number;
     notes?: string;
     created_at?: string;
     updated_at?: string;
-    // Joined from farmer
     farmer?: Farmer | null;
-    // Computed
     hive_count?: number;
 }
 
@@ -167,7 +241,7 @@ export interface Hive {
     apiary_id?: string | null;
     farmer_id?: string | null;
     hive_code: string;
-    hive_type?: string; // Langstroth, Traditional Log, etc.
+    hive_type?: string;
     bee_type?: string;
     frame_count?: number;
     material?: string;
@@ -176,10 +250,8 @@ export interface Hive {
     has_sensors?: boolean;
     created_at?: string;
     updated_at?: string;
-    // Joined
     apiary?: Apiary | null;
     farmer?: Farmer | null;
-    // From sensor_readings (computed)
     latest_temp?: number;
     latest_humidity?: number;
     latest_weight?: number;
@@ -198,7 +270,7 @@ export interface HiveCreateInput {
     has_sensors?: boolean;
 }
 
-// ========== HARVEST TYPES (Core Traceability Data) ==========
+// ========== HARVEST TYPES ==========
 export interface Harvest {
     id: string;
     hive_id?: string | null;
@@ -213,11 +285,10 @@ export interface Harvest {
     batch_code?: string;
     honey_type?: string;
     color_grade?: string;
-    is_verified?: boolean; // HoneyChain™ sealed
+    is_verified?: boolean;
     blockchain_hash?: string;
     created_at?: string;
     updated_at?: string;
-    // Full linked data - THIS IS THE KEY FOR "everything synced"
     hive?: Hive | null;
     farmer?: Farmer | null;
     apiary?: Apiary | null;
@@ -253,7 +324,6 @@ export interface Task {
     is_completed: boolean;
     created_at?: string;
     updated_at?: string;
-    // Relationships
     apiary?: Apiary;
     hive?: Hive;
 }
@@ -270,6 +340,7 @@ export interface TaskCreateInput {
     is_completed?: boolean;
 }
 
+// ========== INSPECTION TYPES ==========
 export interface InspectionCreateInput {
     hive_id: string;
     inspector_name?: string;
@@ -368,53 +439,47 @@ export interface NotificationConfigUpdate {
     sms_enabled?: boolean;
 }
 
-// Data for BeeYield service is fetched directly from the backend API.
-
 export const beeyieldService = {
-    // Get all IoT devices
+    // ========== IoT DEVICES ==========
     async getDevices(): Promise<IoTDevice[]> {
         try {
-            const headers = await getAuthHeaders();
-            const devices = await apiGet<IoTDevice[]>('/iot/devices', {}, { headers });
-            return devices;
+            return await apiGet<IoTDevice[]>('/iot/devices', {});
         } catch (error) {
             console.error('Error fetching devices:', error);
             return [];
         }
     },
 
-    // Get devices by type
+    async createDevice(input: IoTDeviceCreateInput): Promise<{ data: IoTDevice | null; error: any }> {
+        try {
+            const data = await apiPost<IoTDevice>('/iot/devices', input);
+            toast.success('Device linked successfully!');
+            return { data, error: null };
+        } catch (error) {
+            console.error('Error creating device:', error);
+            toast.error('Failed to link device');
+            return { data: null, error };
+        }
+    },
+
     async getDevicesByType(type: 'infield' | 'inland' | 'disease'): Promise<IoTDevice[]> {
         const devices = await this.getDevices();
         return devices.filter(d => d.device_type === type);
     },
 
-    // Get sensor readings
-    async getSensorReadings(
-        type?: 'infield' | 'inland' | 'disease',
-        hours: number = 24
-    ): Promise<SensorReading[]> {
+    async getSensorReadings(type?: 'infield' | 'inland' | 'disease', hours: number = 24): Promise<SensorReading[]> {
         try {
-            const headers = await getAuthHeaders();
             const params: Record<string, unknown> = { hours };
             if (type) params.sensor_type = type;
-
-            const readings = await apiGet<SensorReading[]>('/iot/readings', params, { headers });
-            return readings;
+            return await apiGet<SensorReading[]>('/iot/readings', params);
         } catch (error) {
             console.error('Error fetching readings:', error);
             return [];
         }
     },
 
-    // Get latest reading for each device
-    async getLatestReadings(): Promise<{
-        infield: SensorReading | null;
-        inland: SensorReading | null;
-        disease: SensorReading | null;
-    }> {
+    async getLatestReadings(): Promise<{ infield: SensorReading | null; inland: SensorReading | null; disease: SensorReading | null }> {
         const readings = await this.getSensorReadings();
-
         return {
             infield: readings.find(r => r.sensor_type === 'infield') || null,
             inland: readings.find(r => r.sensor_type === 'inland') || null,
@@ -422,59 +487,43 @@ export const beeyieldService = {
         };
     },
 
-    // Get client hives for logged in user
     async getClientHives(userId?: string): Promise<ClientHive[]> {
         try {
-            const headers = await getAuthHeaders();
-            const hives = await apiGet<ClientHive[]>('/iot/client-hives', {}, { headers });
-            return hives;
+            return await apiGet<ClientHive[]>('/iot/client-hives', {});
         } catch (error) {
             console.error('Error fetching client hives:', error);
             return [];
         }
     },
 
-    // Get dashboard stats
     async getDashboardStats(): Promise<DashboardStats> {
         try {
-            const headers = await getAuthHeaders();
-            return await apiGet<DashboardStats>('/iot/stats', {}, { headers });
+            return await apiGet<DashboardStats>('/iot/stats', {});
         } catch (error) {
             console.error('Error fetching dashboard stats:', error);
             throw error;
         }
     },
 
-    // Get latest telemetry for user's hives
     async getTelemetryLatest(): Promise<SensorReading[]> {
         try {
-            const headers = await getAuthHeaders();
-            return await apiGet<SensorReading[]>('/beeyield/telemetry/latest', {}, { headers });
+            return await apiGet<SensorReading[]>('/beeyield/telemetry/latest', {});
         } catch (error) {
             console.error('Error fetching telemetry:', error);
             return [];
         }
     },
 
-    // Update User Metadata
     async updateUserMetadata(metadata: Record<string, any>): Promise<{ error: any }> {
         if (!supabase) return { error: new Error('Supabase client not initialized') };
-        const { error } = await supabase.auth.updateUser({
-            data: metadata
-        });
+        const { error } = await supabase.auth.updateUser({ data: metadata });
         return { error };
     },
 
-    // ========== APIARY CRUD OPERATIONS ==========
-
-    // Get all apiaries for the current user
+    // ========== APIARIES ==========
     async getApiaries(): Promise<Apiary[]> {
         try {
-            const headers = await getAuthHeaders();
-            // Get through backend API which handles ownership and sharing
-            const data = await apiGet<any[]>('/beeyield/apiaries?status_filter=active', {}, { headers });
-
-            // Remap fields from backend schema to frontend interface
+            const data = await apiGet<any[]>('/beeyield/apiaries?status_filter=active', {});
             return (data || []).map(a => ({
                 ...a,
                 type: a.apiary_type || a.type || 'permanent',
@@ -486,24 +535,18 @@ export const beeyieldService = {
         }
     },
 
-    // Create a new apiary
     async createApiary(input: any): Promise<{ data: Apiary | null; error: any }> {
         try {
-            const headers = await getAuthHeaders();
-            // Use the user-centric beeyield endpoint
             const data = await apiPost<any>('/beeyield/apiaries', {
                 ...input,
-                // These defaults are handled by the backend too, but keeping them here for safety
                 apiary_type: input.type || 'Permanent',
                 primary_forage: input.forage_type || input.primary_forage,
-            }, { headers });
-
+            });
             const remapped = {
                 ...data,
                 type: data.apiary_type || data.type || 'permanent',
                 forage_type: data.primary_forage || data.forage_type || ''
             };
-
             toast.success('Apiary deployed successfully!');
             return { data: remapped as Apiary, error: null };
         } catch (error) {
@@ -513,23 +556,17 @@ export const beeyieldService = {
         }
     },
 
-    // Update an existing apiary
     async updateApiary(id: string, input: Partial<ApiaryCreateInput>): Promise<{ data: Apiary | null; error: any }> {
         try {
-            const headers = await getAuthHeaders();
-            // Map forage_type to primary_forage if needed for backend schema
             const payload: any = { ...input };
             if (input.forage_type) payload.primary_forage = input.forage_type;
             if (input.type) payload.apiary_type = input.type;
-
-            const data = await apiPut<any>(`/beeyield/apiaries/${id}`, payload, { headers });
-
+            const data = await apiPut<any>(`/beeyield/apiaries/${id}`, payload);
             const remapped = {
                 ...data,
                 type: data.apiary_type || data.type || 'permanent',
                 forage_type: data.primary_forage || data.forage_type || ''
             };
-
             toast.success('Apiary updated!');
             return { data: remapped as Apiary, error: null };
         } catch (error) {
@@ -539,12 +576,9 @@ export const beeyieldService = {
         }
     },
 
-    // Delete an apiary
     async deleteApiary(id: string): Promise<{ error: any }> {
         try {
-            const headers = await getAuthHeaders();
-            await apiDelete(`/beeyield/apiaries/${id}`, { headers });
-
+            await apiDelete(`/beeyield/apiaries/${id}`);
             toast.success('Apiary removed');
             return { error: null };
         } catch (error) {
@@ -554,29 +588,23 @@ export const beeyieldService = {
         }
     },
 
-    // ========== HIVE CRUD OPERATIONS ==========
-
-    // Get all hives for the current user
+    // ========== HIVES ==========
     async getHives(apiaryId?: string): Promise<Hive[]> {
         try {
-            const headers = await getAuthHeaders();
             const params: any = apiaryId ? { apiary_id: apiaryId } : {};
-            return await apiGet<Hive[]>('/beeyield/hives', params, { headers });
+            return await apiGet<Hive[]>('/beeyield/hives', params);
         } catch (error) {
             console.error('Error in getHives:', error);
             return [];
         }
     },
 
-    // Create a new hive
     async createHive(input: HiveCreateInput): Promise<{ data: Hive | null; error: any }> {
         try {
-            const headers = await getAuthHeaders();
             const data = await apiPost<Hive>('/beeyield/hives', {
                 ...input,
                 installation_date: input.installation_date || new Date().toISOString().split('T')[0]
-            }, { headers });
-
+            });
             toast.success('Hive added successfully!');
             return { data, error: null };
         } catch (error) {
@@ -586,12 +614,9 @@ export const beeyieldService = {
         }
     },
 
-    // Update an existing hive
     async updateHive(id: string, input: Partial<HiveCreateInput>): Promise<{ data: Hive | null; error: any }> {
         try {
-            const headers = await getAuthHeaders();
-            const data = await apiPut<Hive>(`/beeyield/hives/${id}`, input, { headers });
-
+            const data = await apiPut<Hive>(`/beeyield/hives/${id}`, input);
             toast.success('Hive updated!');
             return { data, error: null };
         } catch (error) {
@@ -601,12 +626,9 @@ export const beeyieldService = {
         }
     },
 
-    // Delete a hive
     async deleteHive(id: string): Promise<{ error: any }> {
         try {
-            const headers = await getAuthHeaders();
-            await apiDelete(`/beeyield/hives/${id}`, { headers });
-
+            await apiDelete(`/beeyield/hives/${id}`);
             toast.success('Hive removed');
             return { error: null };
         } catch (error) {
@@ -616,22 +638,10 @@ export const beeyieldService = {
         }
     },
 
-    // ========== HARVEST CRUD OPERATIONS (Full Traceability) ==========
-
-    // Get all harvests with FULL linked data (farmer, hive, apiary)
+    // ========== HARVESTS ==========
     async getHarvests(filters?: { hive_id?: string; farmer_id?: string; year?: number }): Promise<Harvest[]> {
         try {
-            const headers = await getAuthHeaders();
-            // Use backend endpoint which handles user-specific data correctly
-            const url = '/beeyield/harvests';
-
-            // Note: Filters could be passed as query params here if backend supports them, 
-            // but for now we filter client-side to match the TS logic if needed, 
-            // although the new backend endpoint returns all recent harvests.
-
-            const harvests = await apiGet<Harvest[]>(url, {}, { headers });
-
-            // Client-side filtering if specific filters requested
+            const harvests = await apiGet<Harvest[]>('/beeyield/harvests', {});
             if (filters) {
                 return harvests.filter(h => {
                     if (filters.hive_id && h.hive_id !== filters.hive_id) return false;
@@ -643,30 +653,22 @@ export const beeyieldService = {
                     return true;
                 });
             }
-
             return harvests;
         } catch (error) {
             console.error('Error in getHarvests:', error);
-            // Return empty array instead of crashing
             return [];
         }
     },
 
-    // Create a new harvest (with HoneyChain™ verification)
     async createHarvest(input: HarvestCreateInput): Promise<{ data: Harvest | null; error: any }> {
         try {
-            const headers = await getAuthHeaders();
             const response = await apiPost<any>('/beeyield/harvests', {
                 ...input,
                 extraction_method: input.extraction_method || 'Cold Extraction',
                 nectar_source: input.nectar_source || 'Acacia',
                 weather_conditions: input.weather_conditions || 'Sunny'
-            }, { headers });
-
-            const batchCode = response.batch_code || input.batch_code;
-            toast.success('Harvest recorded!', {
-                description: `Batch ${batchCode} sealed on HoneyChain™`
             });
+            toast.success('Harvest recorded!');
             return { data: response as Harvest, error: null };
         } catch (error) {
             console.error('Error in createHarvest:', error);
@@ -675,11 +677,9 @@ export const beeyieldService = {
         }
     },
 
-    // Update an existing harvest
     async updateHarvest(id: string, input: Partial<HarvestCreateInput>): Promise<{ data: Harvest | null; error: any }> {
         try {
-            const headers = await getAuthHeaders();
-            const data = await apiPut<Harvest>(`/beeyield/harvests/${id}`, input, { headers });
+            const data = await apiPut<Harvest>(`/beeyield/harvests/${id}`, input);
             toast.success('Harvest updated!');
             return { data, error: null };
         } catch (error) {
@@ -689,11 +689,9 @@ export const beeyieldService = {
         }
     },
 
-    // Delete a harvest
     async deleteHarvest(id: string): Promise<{ error: any }> {
         try {
-            const headers = await getAuthHeaders();
-            await apiDelete(`/beeyield/harvests/${id}`, { headers });
+            await apiDelete(`/beeyield/harvests/${id}`);
             toast.success('Harvest removed');
             return { error: null };
         } catch (error) {
@@ -703,24 +701,19 @@ export const beeyieldService = {
         }
     },
 
-    // ========== TASK CRUD OPERATIONS ==========
-
-    // Get all tasks
+    // ========== TASKS ==========
     async getTasks(): Promise<Task[]> {
         try {
-            const headers = await getAuthHeaders();
-            return await apiGet<Task[]>('/beeyield/tasks', {}, { headers });
+            return await apiGet<Task[]>('/beeyield/tasks', {});
         } catch (error) {
             console.error('Error fetching tasks:', error);
             return [];
         }
     },
 
-    // Create a task
     async createTask(task: TaskCreateInput): Promise<{ data: Task | null; error: any }> {
         try {
-            const headers = await getAuthHeaders();
-            const data = await apiPost<Task>('/beeyield/tasks', task, { headers });
+            const data = await apiPost<Task>('/beeyield/tasks', task);
             toast.success('Task created successfully');
             return { data, error: null };
         } catch (error) {
@@ -730,11 +723,9 @@ export const beeyieldService = {
         }
     },
 
-    // Update a task
     async updateTask(id: string, updates: Partial<TaskCreateInput>): Promise<{ data: Task | null; error: any }> {
         try {
-            const headers = await getAuthHeaders();
-            const data = await apiPut<Task>(`/beeyield/tasks/${id}`, updates, { headers });
+            const data = await apiPut<Task>(`/beeyield/tasks/${id}`, updates);
             toast.success('Task updated');
             return { data, error: null };
         } catch (error) {
@@ -744,11 +735,9 @@ export const beeyieldService = {
         }
     },
 
-    // Delete a task
     async deleteTask(id: string): Promise<{ error: any }> {
         try {
-            const headers = await getAuthHeaders();
-            await apiDelete(`/beeyield/tasks/${id}`, { headers });
+            await apiDelete(`/beeyield/tasks/${id}`);
             toast.success('Task deleted');
             return { error: null };
         } catch (error) {
@@ -758,39 +747,30 @@ export const beeyieldService = {
         }
     },
 
-
-
-    // ========== INSPECTION CRUD OPERATIONS ==========
-
-    // Get all inspections
+    // ========== INSPECTIONS ==========
     async getInspections(hiveId?: string): Promise<Inspection[]> {
         try {
-            const headers = await getAuthHeaders();
             const params: any = {};
             if (hiveId) params.hive_id = hiveId;
-            return await apiGet<Inspection[]>('/beeyield/inspections', params, { headers });
+            return await apiGet<Inspection[]>('/beeyield/inspections', params);
         } catch (error) {
             console.error('Error fetching inspections:', error);
             return [];
         }
     },
 
-    // Get inspection by ID
     async getInspectionById(id: string): Promise<Inspection | null> {
         try {
-            const headers = await getAuthHeaders();
-            return await apiGet<Inspection>(`/beeyield/inspections/${id}`, {}, { headers });
+            return await apiGet<Inspection>(`/beeyield/inspections/${id}`, {});
         } catch (error) {
             console.error('Error fetching inspection:', error);
             return null;
         }
     },
 
-    // Create an inspection
     async createInspection(inspection: InspectionCreateInput): Promise<{ data: Inspection | null; error: any }> {
         try {
-            const headers = await getAuthHeaders();
-            const data = await apiPost<Inspection>('/beeyield/inspections', inspection, { headers });
+            const data = await apiPost<Inspection>('/beeyield/inspections', inspection);
             toast.success('Inspection saved successfully');
             return { data, error: null };
         } catch (error) {
@@ -800,11 +780,9 @@ export const beeyieldService = {
         }
     },
 
-    // Update an inspection
     async updateInspection(id: string, updates: Partial<InspectionCreateInput>): Promise<{ data: Inspection | null; error: any }> {
         try {
-            const headers = await getAuthHeaders();
-            const data = await apiPut<Inspection>(`/beeyield/inspections/${id}`, updates, { headers });
+            const data = await apiPut<Inspection>(`/beeyield/inspections/${id}`, updates);
             toast.success('Inspection updated successfully');
             return { data, error: null };
         } catch (error) {
@@ -814,11 +792,9 @@ export const beeyieldService = {
         }
     },
 
-    // Delete an inspection
     async deleteInspection(id: string): Promise<{ error: any }> {
         try {
-            const headers = await getAuthHeaders();
-            await apiDelete(`/beeyield/inspections/${id}`, { headers });
+            await apiDelete(`/beeyield/inspections/${id}`);
             toast.success('Inspection deleted');
             return { error: null };
         } catch (error) {
@@ -828,92 +804,74 @@ export const beeyieldService = {
         }
     },
 
-    // ========== PRECISION POLLINATION ==========
-
-    // Calculate pollination needs
+    // ========== POLLINATION ==========
     async calculatePollination(input: { crop_type: string; acreage: number; avg_frames_per_hive: number }): Promise<any> {
         try {
-            const headers = await getAuthHeaders();
-            return await apiPost<any>('/pollination/calculate', input, { headers });
+            return await apiPost<any>('/pollination/calculate', input);
         } catch (error) {
             console.error('Error calculating pollination:', error);
             return null;
         }
     },
 
-    // Create a new pollination contract
     async createPollinationContract(contract: any): Promise<any> {
         try {
-            const headers = await getAuthHeaders();
-            return await apiPost<any>('/pollination/contracts', contract, { headers });
+            return await apiPost<any>('/pollination/contracts', contract);
         } catch (error) {
             console.error('Error creating contract:', error);
             return { error };
         }
     },
 
-    // Get pollination contracts
     async getPollinationContracts(): Promise<PollinationContract[]> {
         try {
-            const headers = await getAuthHeaders();
-            return await apiGet<PollinationContract[]>('/pollination/contracts', {}, { headers });
+            return await apiGet<PollinationContract[]>('/pollination/contracts', {});
         } catch (error) {
             console.error('Error fetching contracts:', error);
             return [];
         }
     },
 
-    // Get pollination analytics
     async getPollinationAnalytics(): Promise<PollinationAnalytics | null> {
         try {
-            const headers = await getAuthHeaders();
-            return await apiGet<PollinationAnalytics>('/pollination/analytics', {}, { headers });
+            return await apiGet<PollinationAnalytics>('/pollination/analytics', {});
         } catch (error) {
             console.error('Error fetching analytics:', error);
             return null;
         }
     },
 
-    // Get hive sensor data (real-time)
     async getHiveSensorData(): Promise<any[]> {
         try {
-            const headers = await getAuthHeaders();
-            return await apiGet<any[]>('/pollination/hive-sensors', {}, { headers });
+            return await apiGet<any[]>('/pollination/hive-sensors', {});
         } catch (error) {
             console.error('Error fetching hive sensors:', error);
             return [];
         }
     },
 
-    // Get activity logs
     async getPollinationActivityLogs(): Promise<any[]> {
         try {
-            const headers = await getAuthHeaders();
-            return await apiGet<any[]>('/pollination/activity-logs', { limit: 20 }, { headers });
+            return await apiGet<any[]>('/pollination/activity-logs', { limit: 20 });
         } catch (error) {
             console.error('Error fetching activity logs:', error);
             return [];
         }
     },
 
-    // ========== SETTINGS & PREFERENCES ==========
-
-    // Get user settings and notification configs
+    // ========== SETTINGS ==========
     async getSettings(): Promise<UserSettings | null> {
         try {
-            const headers = await getAuthHeaders();
-            return await apiGet<UserSettings>('/settings', {}, { headers });
+            return await apiGet<UserSettings>('/settings', {});
         } catch (error) {
             console.error('Error fetching settings:', error);
             return null;
         }
     },
 
-    // Update user settings
     async updateSettings(settings: UserSettingsUpdate): Promise<{ data: any; error: any }> {
         try {
-            const headers = await getAuthHeaders();
-            const data = await apiPut<any>('/settings', settings, { headers });
+            const data = await apiPut<any>('/settings', settings);
             toast.success('Preferences updated');
             return { data, error: null };
         } catch (error) {
@@ -923,14 +881,9 @@ export const beeyieldService = {
         }
     },
 
-    // Update specific notification config
-    async updateNotificationConfig(
-        eventType: string,
-        config: NotificationConfigUpdate
-    ): Promise<{ data: any; error: any }> {
+    async updateNotificationConfig(eventType: string, config: NotificationConfigUpdate): Promise<{ data: any; error: any }> {
         try {
-            const headers = await getAuthHeaders();
-            const data = await apiPut<any>(`/settings/notifications/${eventType}`, config, { headers });
+            const data = await apiPut<any>(`/settings/notifications/${eventType}`, config);
             toast.success(`Notification updated`);
             return { data, error: null };
         } catch (error) {
@@ -940,20 +893,86 @@ export const beeyieldService = {
         }
     },
 
-    // Update specific hive thresholds
-    async updateHiveThresholds(
-        hiveId: string,
-        thresholds: { temp_threshold_high?: number; temp_threshold_low?: number; weight_drop_threshold?: number }
-    ): Promise<{ data: any; error: any }> {
+    async updateHiveThresholds(hiveId: string, thresholds: { temp_threshold_high?: number; temp_threshold_low?: number; weight_drop_threshold?: number }): Promise<{ data: any; error: any }> {
         try {
-            const headers = await getAuthHeaders();
-            const data = await apiPut<any>(`/settings/hives/${hiveId}`, thresholds, { headers });
+            const data = await apiPut<any>(`/settings/hives/${hiveId}`, thresholds);
             toast.success(`Hive thresholds updated`);
             return { data, error: null };
         } catch (error) {
             console.error('Error updating hive thresholds:', error);
             toast.error('Failed to update hive thresholds');
             return { data: null, error };
+        }
+    },
+
+    // ========== REQUESTS ==========
+    async getRequests(): Promise<Request[]> {
+        try {
+            return await apiGet<Request[]>('/beeyield/requests');
+        } catch (error) {
+            console.error('Error fetching requests:', error);
+            return [];
+        }
+    },
+
+    async createRequest(input: RequestCreateInput): Promise<{ data: Request | null; error: any }> {
+        try {
+            const data = await apiPost<Request>('/beeyield/requests', input);
+            toast.success('Request submitted successfully');
+            return { data, error: null };
+        } catch (error) {
+            console.error('Error creating request:', error);
+            toast.error('Failed to submit request');
+            return { data: null, error };
+        }
+    },
+
+    // ========== REPORTS ==========
+    async getGeneratedReports(): Promise<GeneratedReport[]> {
+        try {
+            return await apiGet<GeneratedReport[]>('/beeyield/reports');
+        } catch (error) {
+            console.error('Error fetching reports:', error);
+            return [];
+        }
+    },
+
+    async generateReport(input: ReportCreateInput): Promise<{ data: GeneratedReport | null; error: any }> {
+        try {
+            const data = await apiPost<GeneratedReport>('/beeyield/reports', input);
+            return { data, error: null };
+        } catch (error) {
+            console.error('Error generating report:', error);
+            return { data: null, error };
+        }
+    },
+
+    async getScheduledReports(): Promise<ScheduledReport[]> {
+        try {
+            return await apiGet<ScheduledReport[]>('/beeyield/reports/scheduled');
+        } catch (error) {
+            console.error('Error fetching schedules:', error);
+            return [];
+        }
+    },
+
+    async createScheduledReport(input: ScheduledReportCreateInput): Promise<{ data: ScheduledReport | null; error: any }> {
+        try {
+            const data = await apiPost<ScheduledReport>('/beeyield/reports/scheduled', input);
+            return { data, error: null };
+        } catch (error) {
+            console.error('Error creating schedule:', error);
+            return { data: null, error };
+        }
+    },
+
+    async deleteScheduledReport(id: string): Promise<{ error: any }> {
+        try {
+            await apiDelete(`/beeyield/reports/scheduled/${id}`);
+            return { error: null };
+        } catch (error) {
+            console.error('Error deleting schedule:', error);
+            return { error };
         }
     },
 };

@@ -79,15 +79,11 @@ export interface CheckoutResponse {
 
 export const initializeCheckout = async (orderData: CheckoutOrder, accessToken?: string): Promise<CheckoutResponse> => {
     try {
-        const headers: Record<string, string> = {};
+        const options: RequestInit = {};
         if (accessToken) {
-            headers.Authorization = `Bearer ${accessToken}`;
-        } else if (supabase) {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) headers.Authorization = `Bearer ${session.access_token}`;
+            options.headers = { Authorization: `Bearer ${accessToken}` };
         }
-
-        return await apiPost<CheckoutResponse>('/shop/checkout/init', orderData, { headers });
+        return await apiPost<CheckoutResponse>('/shop/checkout/init', orderData, options);
     } catch (error) {
         console.error("Error initializing checkout via API:", error);
         throw error;
@@ -96,11 +92,7 @@ export const initializeCheckout = async (orderData: CheckoutOrder, accessToken?:
 
 export const getUserOrders = async (email: string): Promise<Record<string, unknown>[]> => {
     try {
-        const { data: { session } } = await (supabase ? supabase.auth.getSession() : Promise.resolve({ data: { session: null } }));
-        const headers: Record<string, string> = {};
-        if (session) headers.Authorization = `Bearer ${session.access_token}`;
-
-        const orders = await apiGet<unknown[]>('/shop/orders', { email }, { headers });
+        const orders = await apiGet<unknown[]>('/shop/orders', { email });
         return Array.isArray(orders) ? (orders as Record<string, unknown>[]).map(o => ({
             ...o,
             total_amount: (o.total_kes as number) || (o.total_amount as number)
@@ -113,89 +105,52 @@ export const getUserOrders = async (email: string): Promise<Record<string, unkno
 
 // --- NEW SERVICES ---
 
-const getAuthHeaders = async (): Promise<Record<string, string>> => {
-    const { data: { session } } = await (supabase ? supabase.auth.getSession() : Promise.resolve({ data: { session: null } }));
-    return session ? { Authorization: `Bearer ${session.access_token}` } : {};
-};
-
 // Address Services
 export const getAddresses = async () => {
-    const headers = await getAuthHeaders();
-    return await apiGet<unknown[]>('/shop/addresses', {}, { headers });
+    return await apiGet<unknown[]>('/shop/addresses', {});
 };
 
 export const addAddress = async (address: unknown) => {
-    const headers = await getAuthHeaders();
-    return await apiPost<unknown>('/shop/addresses', address, { headers });
+    return await apiPost<unknown>('/shop/addresses', address);
 };
 
 export const deleteAddress = async (addressId: string) => {
-    const headers = await getAuthHeaders();
     const { apiDelete } = await import("./api");
-    return await apiDelete<unknown>(`/shop/addresses/${addressId}`, { headers });
+    return await apiDelete<unknown>(`/shop/addresses/${addressId}`);
 };
 
 // Payment Method Services
 export const getPaymentMethods = async () => {
-    const headers = await getAuthHeaders();
-    return await apiGet<unknown[]>('/shop/payment-methods', {}, { headers });
+    return await apiGet<unknown[]>('/shop/payment-methods', {});
 };
 
 export const addPaymentMethod = async (paymentMethod: unknown) => {
-    const headers = await getAuthHeaders();
-    return await apiPost<unknown>('/shop/payment-methods', paymentMethod, { headers });
+    return await apiPost<unknown>('/shop/payment-methods', paymentMethod);
 };
 
 export const deletePaymentMethod = async (paymentId: string) => {
-    const headers = await getAuthHeaders();
     const { apiDelete } = await import("./api");
-    return await apiDelete<unknown>(`/shop/payment-methods/${paymentId}`, { headers });
+    return await apiDelete<unknown>(`/shop/payment-methods/${paymentId}`);
 };
 
 // Tracking Services
 export const getOrderTracking = async (orderId: string) => {
-    const headers = await getAuthHeaders();
-    return await apiGet<unknown>(`/shop/orders/${orderId}/tracking`, {}, { headers });
+    return await apiGet<unknown>(`/shop/orders/${orderId}/tracking`, {});
 };
 
 // Order Detail Services
 export const getOrder = async (orderId: string): Promise<any> => {
-    const headers = await getAuthHeaders();
-    return await apiGet<any>(`/shop/orders/${orderId}`, {}, { headers });
+    return await apiGet<any>(`/shop/orders/${orderId}`, {});
 };
 
 // Invoice Services
 export const downloadInvoice = async (orderId: string, orderNumber: string) => {
-    const session = await (supabase ? supabase.auth.getSession() : Promise.resolve({ data: { session: null } }));
-    const token = session.data.session?.access_token;
-
-    const { API_V1_URL } = await import("./api");
-    const downloadUrl = `${API_V1_URL}/shop/orders/${orderId}/invoice`;
-    console.log(`Downloading invoice from: ${downloadUrl}`);
-
+    const { apiDownload } = await import("./api");
+    const fileName = `Invoice-${orderNumber || orderId}.pdf`;
     try {
-        const response = await fetch(downloadUrl, {
-            headers: token ? {
-                Authorization: `Bearer ${token}`
-            } : {}
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error("Invoice Download Failed:", response.status, response.statusText, errorText);
-            throw new Error(`Failed to download invoice: ${response.status} ${response.statusText}`);
-        }
-
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Invoice-${orderNumber || orderId}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
+        await apiDownload(`/shop/orders/${orderId}/invoice`, {}, fileName);
     } catch (error) {
-        console.error("Invoice PDF Fetch Error:", error);
+        console.error("Invoice PDF Download Error:", error);
         throw error;
     }
 };
@@ -214,17 +169,15 @@ export interface StripeSetupIntent {
 
 // Create a PaymentIntent for checkout
 export const createStripePaymentIntent = async (amount: number, currency: string = 'kes'): Promise<StripePaymentIntent> => {
-    const headers = await getAuthHeaders();
     return await apiPost<StripePaymentIntent>('/payments/stripe/create-payment-intent', {
         amount,
         currency,
-    }, { headers });
+    });
 };
 
 // Create a SetupIntent for saving card without immediate payment
 export const createStripeSetupIntent = async (): Promise<StripeSetupIntent> => {
-    const headers = await getAuthHeaders();
-    return await apiPost<StripeSetupIntent>('/payments/stripe/create-setup-intent', {}, { headers });
+    return await apiPost<StripeSetupIntent>('/payments/stripe/create-setup-intent', {});
 };
 
 // Save a Stripe PaymentMethod to user's account
@@ -235,7 +188,6 @@ export const saveStripePaymentMethod = async (paymentMethodId: string, cardDetai
     exp_year: number;
     card_holder_name?: string;
 }): Promise<unknown> => {
-    const headers = await getAuthHeaders();
     return await apiPost<unknown>('/shop/payment-methods', {
         type: 'card',
         stripe_payment_method_id: paymentMethodId,
@@ -245,16 +197,15 @@ export const saveStripePaymentMethod = async (paymentMethodId: string, cardDetai
         expiry_year: cardDetails.exp_year,
         card_holder_name: cardDetails.card_holder_name || '',
         is_default: true,
-    }, { headers });
+    });
 };
 
 // Confirm payment was successful
 export const confirmStripePayment = async (paymentIntentId: string, orderId: string): Promise<unknown> => {
-    const headers = await getAuthHeaders();
     return await apiPost<unknown>('/payments/stripe/confirm-payment', {
         payment_intent_id: paymentIntentId,
         order_id: orderId,
-    }, { headers });
+    });
 };
 
 

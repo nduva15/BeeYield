@@ -1,0 +1,16 @@
+{
+  "KIB-ACACIA-101-1KG": {
+    "batch_code": "KIB-ACACIA-101-1KG",
+    "data_hash": "2b7e151628aed2a6abf7158809cf4f3c",
+    "anchored_at": "2026-02-08T07:56:08.032361",
+    "network": "mumbai",
+    "chain_id": 80001,
+    "metadata": {
+      "honey_type": "Acacia"
+    },
+    "tx_hash": "0x445fec2c57752f1cd0f890164e67d62af7959d71f657c6cf1d4d69ee406bfbf8",
+    "status": "cached_mock",
+    "verification_url": "https://mumbai.polygonscan.com/tx/0x445fec2c57752f1cd0f890164e67d62af7959d71f657c6cf1d4d69ee406bfbf8",
+    "mock_mode": true
+  }
+}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { beeyieldService, IoTDevice, SensorReading } from '@/services/beeyieldService';
+import { beeyieldService, IoTDevice, SensorReading, Apiary, Hive } from '@/services/beeyieldService';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -13,7 +13,7 @@ import {
     X, ChevronDown, MapPin, Search, ClipboardList, Calculator, Receipt, LifeBuoy, Settings,
     Hand, Map, TrendingUp, Volume2, Camera, BookOpen, Droplet, Flame, Zap, Building2, Home, PieChart,
     ArrowRightLeft, FileInput, Bot, Activity, Gauge, List, Layers, BarChart3, Upload, LayoutList, Hexagon, Puzzle,
-    LogIn, UserPlus, Loader2, ArrowLeft, Shield, Lock, Bell, Banknote, Globe
+    LogIn, UserPlus, Loader2, ArrowLeft, Shield, Lock, Bell, Banknote, Globe, Tag
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -41,6 +41,8 @@ import {
     BluetoothView,
     USBView
 } from '@/components/beeyield/RemainingViews';
+import ReportsExportsView from '@/components/beeyield/ReportsExportsView';
+import LabelGeneratorView from '@/components/beeyield/LabelGeneratorView';
 
 import MyRequestsView from '@/components/beeyield/MyRequestsView';
 import MyNotesView from '@/components/beeyield/MyNotesView';
@@ -63,6 +65,7 @@ type AuthMode = 'login' | 'register' | 'forgot-password';
 const BeeYieldDashboard: React.FC = () => {
     const { user, loading: authLoading, signOut } = useAuth();
     const navigate = useNavigate();
+    const { t } = useLanguage();
 
     // Auth State
     const [authMode, setAuthMode] = useState<AuthMode>('login');
@@ -71,6 +74,8 @@ const BeeYieldDashboard: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [devices, setDevices] = useState<IoTDevice[]>([]);
     const [readings, setReadings] = useState<SensorReading[]>([]);
+    const [apiaries, setApiaries] = useState<Apiary[]>([]);
+    const [hives, setHives] = useState<Hive[]>([]);
     const [activeTab, setActiveTab] = useState('devices');
     const [aiInitialMessage, setAiInitialMessage] = useState<string | null>(null);
     const [showBanner, setShowBanner] = useState(true);
@@ -96,12 +101,16 @@ const BeeYieldDashboard: React.FC = () => {
 
             setLoading(true);
             try {
-                const [devicesData, readingsData] = await Promise.all([
+                const [devicesData, readingsData, apiariesData, hivesData] = await Promise.all([
                     beeyieldService.getDevices(),
-                    beeyieldService.getSensorReadings(undefined, 24 * 7) // Get last 7 days for stats
+                    beeyieldService.getSensorReadings(undefined, 24 * 7), // Get last 7 days for stats
+                    beeyieldService.getApiaries(),
+                    beeyieldService.getHives()
                 ]);
                 setDevices(devicesData);
                 setReadings(readingsData);
+                setApiaries(apiariesData);
+                setHives(hivesData);
             } catch (error) {
                 console.error('Failed to load dashboard data', error);
                 toast.error(t('error_load_dashboard'));
@@ -144,7 +153,7 @@ const BeeYieldDashboard: React.FC = () => {
 
     const lowBattery = devices.filter(d => d.battery_level < 20).length;
 
-    const { language, t } = useLanguage();
+
 
     // Nav Items matching screenshot precisely
     const navItems: NavItem[] = [
@@ -165,6 +174,8 @@ const BeeYieldDashboard: React.FC = () => {
                 { id: 'sound', label: t('nav_sound'), icon: Volume2 },
                 { id: 'image-analysis', label: t('nav_image_analysis'), icon: Camera },
                 { id: 'health-guide', label: t('nav_health_guide'), icon: BookOpen },
+                { id: 'reports-exports', label: t('nav_reports_exports'), icon: FileText },
+                { id: 'label-generator', label: t('nav_label_generator'), icon: Tag },
                 { id: 'global-hive-network', label: t('nav_global_hive_network'), icon: Globe },
             ]
         },
@@ -268,7 +279,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'bluetooth':
                 return <BluetoothView onTabChange={handleTabChange} />;
             case 'devices':
-                return <MyDevicesView devices={devices} readings={readings} onTabChange={handleTabChange} />;
+                return <MyDevicesView devices={devices} readings={readings} apiaries={apiaries} hives={hives} onTabChange={handleTabChange} />;
             case 'usb':
                 return <USBView onTabChange={handleTabChange} />;
             case 'notes':
@@ -312,6 +323,10 @@ const BeeYieldDashboard: React.FC = () => {
                 return <SoundAnalysisView onTabChange={handleTabChange} />;
             case 'health-guide':
                 return <HealthGuideView onTabChange={handleTabChange} />;
+            case 'reports-exports':
+                return <ReportsExportsView onTabChange={handleTabChange} />;
+            case 'label-generator':
+                return <LabelGeneratorView onTabChange={handleTabChange} />;
             default:
                 return (
                     <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8 bg-white dark:bg-[#09090b] rounded-[2.5rem] border border-dashed border-gray-200 dark:border-[#1e1e1e]">

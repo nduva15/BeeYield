@@ -1,8 +1,8 @@
 {
   "metadata": {
     "version": "6.0.0-ELITE",
-    "last_sync": "Sat Feb  7 17:46:39 2026",
-    "total_nodes": 376
+    "last_sync": "Mon Feb  9 14:05:17 2026",
+    "total_nodes": 380
   },
   "dna": {
     "company": "BeeYield",
@@ -144,22 +144,22 @@
     {
       "source": "BuyerDashboard.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Pending. Processing. Shipped. Delivered. Cancelled. Dashboard. Overview. Start Shopping. Shipment. Tracking. Syncing with logistics network.... Status. Tracking information not yet available for this order.. Recent Orders. Your last 3 transactions. View All. No recent orders found.. Start Shopping. Quick Actions. Commonly tasks for your account. Order History. Refresh. No Orders Yet. Browse Shop. Receipt. Delivery Locations. Manage your shipping addresses.. Add Address. Add New Address. Add a new delivery location for checkout.. Location Name. Context Email. Street & Number. Building / Estate. Apartment / Suite. Floor / Level. County. Postal Code. Phone Number. Set as default address. Save Location. Default. No addresses saved.. Payment Methods. Manage your saved cards and payment details.. Add Card. Add Payment Card. Your data is encrypted and secure.. Card Holder Name. Card Number. Link Securely. Card Holder. No saved payment methods.. Curated."
+      "content": "Pending. Processing. Shipped. Delivered. Cancelled. Dashboard. Overview. Start Shopping. Shipment. Tracking. Syncing with logistics network.... Status. Tracking information not yet available for this order.. Recent Orders. Your last 3 transactions. View All. No recent orders found.. Start Shopping. Quick Actions. Commonly tasks for your account. Order History. Refresh. No Orders Yet. Browse Shop. Receipt. Delivery Locations. Manage your shipping addresses.. Add Address. Add New Address. Add a new delivery location for checkout.. Location Name. Context Email. Street & Number. Building / Estate. Apartment / Suite. Floor / Level. County. Postal Code. Phone Number. Set as default address. Save Location. Default. No addresses saved.. Payment Methods. Manage your saved cards and payment details securely with Stripe.. Add Card. Add Payment Card. Your card information is encrypted and processed securely by Stripe.. Secured by Stripe."
     },
     {
       "source": "BuyerDashboard.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Based on your interest in precision apiculture. Personal Details. Update your contact information.. First Name. Last Name. Email Address. Phone Number. Save Changes. Favorites. Your favorites list is empty. Start exploring our shop and save items you love!. Browse Shop. Details. Buy Now. Support. Center. How can we help you today?. Contact Specialist. Your cart is empty. Browse Products. Secure. Checkout. Complete your premium order. Order Confirmed! \ud83c\udf89. Order Identifier. Continue Shopping. View My Orders. 1. Shipping. 2. Payment. Use a saved location. Full Name / Recipient. Contact Phone. Contact Email. Street & Number. Building / Estate. Apt / Suite / Floor. County. Continue to Payment. M-Pesa. Bank Card. Order Summary. Shipping. Your data is secured with banking-grade encryption protocol.. In Development. This section is being custom built for your account.. Return Home. Account Required. To view your orders, wallet, and saved addresses, please sign in to your shop account.."
+      "content": "Your payment information is encrypted and never stored on our servers.. Card Holder. Valid Thru. Default. No saved cards. Add a card for faster checkout next time.. Curated. Based on your interest in precision apiculture. Personal Details. Update your contact information.. First Name. Last Name. Email Address. Phone Number. Save Changes. Favorites. Your favorites list is empty. Start exploring our shop and save items you love!. Browse Shop. Details. Buy Now. Support. Center. How can we help you today?. Contact Specialist. Your cart is empty. Browse Products. Secure. Checkout. Complete your premium order. Order Confirmed! \ud83c\udf89. Order Identifier. Continue Shopping. View My Orders. 1. Shipping. 2. Payment. Use a saved location. Full Name / Recipient. Contact Phone. Contact Email. Street & Number. Building / Estate. Apt / Suite / Floor. County. Continue to Payment. M-Pesa. Bank Card. Order Summary. Shipping. Your data is secured with banking-grade encryption protocol.. In Development."
     },
     {
       "source": "BuyerDashboard.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Go to Login Dashboard. Continue as Guest. Shipment. Tracking. Syncing with logistics network.... Status. Tracking information not yet available for this order.. Home / Office. delivery@beeyield.com. 123 Beevior St. Honey Heights. Unit 402. 4th Floor. Nairobi. Nairobi. Timothy Nduva. Timothy Nduva. test@example.com. 123 Beevior Road. Honey Heights. Apt 2B. Nairobi. Nairobi. bg-yellow-500/10 text-yellow-600 border-yellow-200. bg-blue-500/10 text-blue-600 border-blue-200. bg-purple-500/10 text-purple-600 border-purple-200. bg-green-500/10 text-green-600 border-green-200. bg-red-500/10 text-red-600 border-red-200. bg-muted text-foreground border-none. Edit feature coming soon. Please delete and re-add for now.. rounded-xl border border-border. Questions about delivery or returns. Trouble with the BeeYield platform. bg-muted/50 rounded-3xl p-6 inline-block mb-10 border border-border/50. text-xs font-black uppercase tracking-widest text-muted-foreground mb-1."
+      "content": "This section is being custom built for your account.. Return Home. Account Required. To view your orders, wallet, and saved addresses, please sign in to your shop account.. Go to Login Dashboard. Continue as Guest. Shipment. Tracking. Syncing with logistics network.... Status. Tracking information not yet available for this order.. Home / Office. delivery@beeyield.com. 123 Beevior St. Honey Heights. Unit 402. 4th Floor. Nairobi. Nairobi. Timothy Nduva. test@example.com. 123 Beevior Road. Honey Heights. Apt 2B. Nairobi. Nairobi. bg-yellow-500/10 text-yellow-600 border-yellow-200. bg-blue-500/10 text-blue-600 border-blue-200. bg-purple-500/10 text-purple-600 border-purple-200. bg-green-500/10 text-green-600 border-green-200. bg-red-500/10 text-red-600 border-red-200. bg-muted text-foreground border-none. Edit feature coming soon. Please delete and re-add for now.. rounded-xl border border-border. Questions about delivery or returns. Trouble with the BeeYield platform."
     },
     {
       "source": "BuyerDashboard.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "text-3xl font-black text-primary. bg-primary text-white shadow-sm. bg-primary text-white shadow-sm. w-full rounded-full h-12 text-lg font-bold. w-full h-12 text-lg font-bold rounded-xl shadow-glow."
+      "content": "bg-muted/50 rounded-3xl p-6 inline-block mb-10 border border-border/50. text-xs font-black uppercase tracking-widest text-muted-foreground mb-1. text-3xl font-black text-primary. bg-primary text-white shadow-sm. bg-primary text-white shadow-sm. w-full rounded-full h-12 text-lg font-bold. w-full h-12 text-lg font-bold rounded-xl shadow-glow."
     },
     {
       "source": "Careers.tsx",
@@ -174,17 +174,12 @@
     {
       "source": "Checkout.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Your Cart is Empty. Discover our premium honey and sustainable beekeeping products. Start Shopping. BeeYield. Order Confirmed!. Thank you,. ! Your order has been placed and is being prepared for dispatch.. Order Number. Payment Method. Items Summary. 20% OFF. Subtotal. Delivery. Total Paid. 24 Hours Delivery Promise. Each delivery takes 24 hours for shipping dispatch and delivery. You will receive a SMS tracking link shortly.. View & Print Receipt. Continue Shopping. Track Your Order in Dashboard. Checkout. Check your Wishlist below! \ud83d\udc47. 20% OFF. Remove. Product. Stock Status. Action. In Stock. Out of Stock. Add To Cart. Payment Method. M-Pesa. Pay securely via your mobile phone. M-Pesa Phone Number. Bank Card. Visa, Mastercard, or AMEX. Cardholder Name. Card Number. Expiry Date. Continue to Delivery. Delivery Information. Full Name. Phone Number. Address. County. Review Order. Final Confirmation. Everything is ready! Click below to complete your payment of. Order Summary."
+      "content": "Your Cart is Empty. Discover our premium honey and sustainable beekeeping products. Start Shopping. BeeYield. Order Confirmed!. Thank you,. ! Your order has been placed and is being prepared for dispatch.. Order Number. Payment Method. Items Summary. 20% OFF. Subtotal. Delivery. Total Paid. 24 Hours Delivery Promise. Each delivery takes 24 hours for shipping dispatch and delivery. You will receive a SMS tracking link shortly.. View & Print Receipt. Continue Shopping. Track Your Order in Dashboard. Checkout. Check your Wishlist below! \ud83d\udc47. 20% OFF. Remove. Product. Stock Status. Action. In Stock. Out of Stock. Add To Cart. Payment Method. M-Pesa. Pay securely via your mobile phone. M-Pesa Phone Number. Bank Card. Visa, Mastercard, or AMEX. Continue to Delivery. Delivery Information. Full Name. Phone Number. Address. County. Review Order. Final Confirmation. Everything is ready! Click below to complete your payment of. Order Summary. Processing.... Shipment Status. Payment Confirmed."
     },
     {
       "source": "Checkout.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Processing.... Shipment Status. Payment Confirmed. Preparing Shipment. Our team is packing your items with care. Out for Delivery. Get Receipt Instantly. Coupons. Your Order. Delivery. Delivery. Pick Up. Nairobi. Mombasa. Kisumu. Service Fee. Coupon Discount. Total Payable. PROCEED TO CHECKOUT. Your payment is secured with banking-grade encryption. Sign in to Checkout. Create an account or sign in to complete your order. Sign In. Create Account. 07XX XXX XXX. Name on card. XXXX XXXX XXXX XXXX. John Doe. john@example.com. 123 Bee Street, Building A. Nairobi. Nairobi County. Special delivery instructions.... Coupon code. w-10 h-10 object-contain block. font-black text-xl italic text-foreground. w-24 h-24 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-8 mt-4 animate-bounce. border-green-200 text-green-700 bg-green-50. border-red-200 text-red-700 bg-red-50. flex items-center gap-2 cursor-pointer. flex items-center gap-2 cursor-pointer."
-    },
-    {
-      "source": "Checkout.tsx",
-      "subtopic": "Detailed Narrative",
-      "content": "bg-primary text-white border-primary."
+      "content": "Preparing Shipment. Our team is packing your items with care. Out for Delivery. Get Receipt Instantly. Coupons. Your Order. Delivery. Delivery. Pick Up. Nairobi. Mombasa. Kisumu. Service Fee. Coupon Discount. Total Payable. PROCEED TO CHECKOUT. Your payment is secured with banking-grade encryption. Sign in to Checkout. Create an account or sign in to complete your order. Sign In. Create Account. 07XX XXX XXX. John Doe. john@example.com. 123 Bee Street, Building A. Nairobi. Nairobi County. Special delivery instructions.... Coupon code. w-10 h-10 object-contain block. font-black text-xl italic text-foreground. w-24 h-24 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-8 mt-4 animate-bounce. border-green-200 text-green-700 bg-green-50. border-red-200 text-red-700 bg-red-50. flex items-center gap-2 cursor-pointer. flex items-center gap-2 cursor-pointer. bg-primary text-white border-primary."
     },
     {
       "source": "Commitment.tsx",
@@ -679,22 +674,22 @@
     {
       "source": "AddDeviceModal.tsx",
       "subtopic": "Key Facts",
-      "content": "Assign device to hive. Select an apiary, choose a hive, and enter the BeeHUB short id.. No apiaries available yet.. Go back. Assign device"
+      "content": "Assign device to hive. Select an apiary, choose a hive, and enter the BeeHUB short id.. Apiary. Device Type. Disease Monitor. Cancel. Select Apiary. Select Hive. e.g. HUB-42X. e.g. Front Gate Monitor"
     },
     {
       "source": "AgroIntelligenceView.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "BeeYield Intelligence. Moving agriculture forward - Earth Observation + AI + Agronomy. Field-first workflows that connect satellite imagery, AI, and beekeeper data.. Earth Observation. AI + Agronomy. Pollinators. Quick links. Jump straight to the Copernicus tools.. BeeYield Intelligence Layer. From satellites to decisions. Copernicus Data. BeeYield Intelligence Layer. AI Models. BeeYield Dashboard. Decisions / Reports / Alerts. Field management. Auto area, perimeter, and centroid.. Assign crop, season, owner, apiary, or farm.. Change history and boundary versioning.. Leaflet Draw + GeoJSON/PostGIS ready.. True and false color imagery. Timeline slider with seasonal animation.. Cloud masking using SCL.. Analytical layers. NDRE - nitrogen stress.. EVI - biomass signal.. Moisture index - drough signal.. Management zones. Automatic segmentation of fields.. K-means / DBSCAN on NDVI.. Year-over-year zone comparison.. Export GeoJSON, SHP, ISOXML.. Crop Intelligence Engine."
+      "content": "BeeYield Insights. Moving agriculture forward - Earth Observation + Insights + Agronomy. Field-first workflows that connect satellite imagery, analysis, and beekeeper data.. Earth Observation. Insights + Agronomy. Pollinators. Quick links. Jump straight to the Copernicus tools.. BeeYield Analysis Layer. From satellites to decisions. Copernicus Data. BeeYield Analysis Layer. Predictive Models. BeeYield Dashboard. Decisions / Reports / Alerts. Field management. Auto area, perimeter, and centroid.. Assign crop, season, owner, apiary, or farm.. Change history and boundary versioning.. Leaflet Draw + GeoJSON/PostGIS ready.. True and false color imagery. Timeline slider with seasonal animation.. Cloud masking using SCL.. Analytical layers. NDRE - nitrogen stress.. EVI - biomass signal.. Moisture index - drough signal.. Yield proxy.. Management zones. Automatic segmentation of fields.. K-means / DBSCAN on NDVI.. Year-over-year zone comparison.. Export GeoJSON, SHP, ISOXML.."
     },
     {
       "source": "AgroIntelligenceView.tsx",
       "subtopic": "Detailed Narrative",
-      "content": "Forecasting, anomalies, phenology.. BeeYield integration advantage. Pollinators and crops in one view.. Honey plant phenology.. Pollination heatmap.. Story of the field. Click a field to see the season narrative.. Weather Resilience. PENDING. Crop-Sync Delay. CALCULATING. Moisture Saturation. INITIALIZING. Carbon Impact. COLLECTING. flex flex-col animate-in fade-in duration-500 pb-12 space-y-8."
+      "content": "Crop Analysis Engine. Forecasting, anomalies, phenology.. BeeYield integration advantage. Pollinators and crops in one view.. Honey plant phenology.. Pollination heatmap.. Story of the field. Click a field to see the season narrative.. Weather Resilience. PENDING. Crop-Sync Delay. CALCULATING. Moisture Saturation. INITIALIZING. Carbon Impact. COLLECTING. flex flex-col animate-in fade-in duration-500 pb-12 space-y-8."
     },
     {
       "source": "AIAssistantView.tsx",
       "subtopic": "Key Facts",
-      "content": "Neural Network v4.2. BeeYield AI. INTERNAL. Neural Load. Delete Chat. Upload Document. Upload Photo. Add Link. w-full h-full object-contain relative z-10"
+      "content": "Standard Core v4.2. BeeYield Assistant. INTERNAL. System Load. assistant. Delete Chat. Upload Document. Upload Photo. Add Link. w-full h-full object-contain relative z-10"
     },
     {
       "source": "BeeYieldHivesView.tsx",
@@ -822,6 +817,11 @@
       "content": "BACK TO HISTORY. Destination. Apiary. Target Hive. Inspection Date. Inspector Name. Hive AI Assistant. Complete the inspection data to receive automated health scoring and varroa risk assessment.. Colony Vitals. Queen Seen. Visual confirmation of the queen. Eggs Seen. Evidence of a laying queen. Queen Cells. Active or emerging queen cells. Colony Temperament. Weather. Cloudy. SH Beetles. Key Findings. Actions Taken. History & Logs. Detailed monitoring and health records for all active hives.. New Inspection. All Places. All Hives. Healthy. Warning. Critical. Synchronizing with HiveChain\u2122.... No records found. Start documenting your hive maintenance and health status by creating your first inspection.. CREATE NEW RECORD. Honey Stores. Temperament. Indicators. Select Apiary. Select Hive. Full Name. What did you observe?. Added super, treated for varroa, etc.. Please select a hive for this inspection. Inspection updated successfully. w-1.5 h-1.5 rounded-full bg-red-500"
     },
     {
+      "source": "LabelGeneratorView.tsx",
+      "subtopic": "Key Facts",
+      "content": "New Design. Label data. Link to Record. Honey name / type*. Weight*. Country of origin*. Country*. Producer / apiary*. Address / city*. Optional fields. Bottling date. Best before date. Storage conditions. Contact / www. QR code. BeeHUB.app footer. Show logo. Drop the logo or click to upload. PNG, JPG, SVG. Logo scale. Validation and checklists. Checklist. Provide honey name. Provide net weight. My labels. New project. No saved designs. Duplicate. Delete. Templates. Label size. 99.1 x 57 mm. 100 x 50 mm. 50 x 37 mm. 125 x 35 mm. Custom size. Shape*. Rectangle. Circle. Export. Format. PNG Image. A4 sheet. Export. Select Record. Clean typography and a delicate touch in honey color.. Contrasting, premium, with a dark recipe.. Bright background, soft lines and calm layout.. A stylish background with gold and an elegant feel.. Geometric pattern motif with strong contrast.. A subtle bee on a warm climate of the apiary.. Zbi\u00f3r z pasiek wsr\u00f3d lipowych alei.. Design and print professional honey jar labels"
+    },
+    {
       "source": "MeasurementDataView.tsx",
       "subtopic": "Key Facts",
       "content": "Measurement Data. Historical and real-time sensor analytics.. Export PDF. Export CSV. Last 24 Hours. In-hive Temperature Trend. Inner Cover. Ambient. Queen Present. space-y-8 animate-in fade-in duration-500 pb-12"
@@ -912,6 +912,11 @@
       "content": "Common Actions. Flash Firmware. Debug Logs. E-mail. Bluetooth BeeYield. Firmware updates and data export via wired connection.. Firmware updates and data export via wired connection.. w-12 h-12 text-gray-300 mx-auto mb-4. w-full justify-start rounded-xl text-xs h-10 border-gray-100. w-full justify-start rounded-xl text-xs h-10 border-gray-100."
     },
     {
+      "source": "ReportsExportsView.tsx",
+      "subtopic": "Key Facts",
+      "content": "Reports & Exports. Synthesize your apiculture data into actionable insights and professional documents.. Total Reports. Schedules. Compiling Report Data.... Define Report Content. Temporal Scope. Export Format. Powered by BeeYield Intelligence\u2122. Automated Reports. Setup weekly summaries to be sent directly to your email.. CONFIGURE SCHEDULE \u2192. Export History. View All. No recent exports found.. Active Schedules. NEW SCHEDULE. No active report schedules.. Artificial Intelligence. Precision AI. Synthesis. Beyond simple exports, BeeYield AI analyzes your historical data to predict harvest weights, detect early disease markers, and suggest foraging improvements.. Select Target APIARY. All Places. Select TARGET HIVE. All Hives. Report Schedule. Automate your data exports.. Schedule Name. Frequency. Weekly. Monthly. Status. Enabled. All Active Places. Select Hive. e.g. Monthly Apiary Audit. border-emerald-500 text-emerald-600. border-emerald-500 text-emerald-600. bg-emerald-100 text-emerald-700. , schedule.is_active ?. , schedule.is_active ?. bg-emerald-500/5 border border-emerald-500/10 rounded-2xl p-6 flex items-start gap-4. w-5 h-5 text-emerald-500 shrink-0 mt-0.5"
+    },
+    {
       "source": "ServerStatusView.tsx",
       "subtopic": "Key Facts",
       "content": "API status. Quick connectivity overview for BeeYield services.. Check now. System health. Online. Last refresh. API usage. Client-side estimate for last 7 days.. Total calls. TOP ENDPOINTS. Online. Check path. Last check. flex justify-between items-center text-sm"
@@ -945,6 +950,21 @@
       "source": "VarroaView.tsx",
       "subtopic": "Key Facts",
       "content": "Varroa Monitoring. AI-powered acoustic analysis for varroa mite detection.. Run Diagnosis. High Infestation Alert. Hive H-004 shows a 5.2% infestation rate. Treatment recommended within 48 hours.. Treatment Guide. Mite Infestation Rate. Historic Trend. Infestation levels over the last 30 days.. Recommended Actions. Oxalic Acid Treatment. Scheduled for next maintenance window.. Drone Brood Removal. Effective biological control method.. Formic Pro Application. Recommended for High infestation levels."
+    },
+    {
+      "source": "StripeCardForm.tsx",
+      "subtopic": "Key Facts",
+      "content": "Card payments are not configured. Please set up your Stripe API keys."
+    },
+    {
+      "source": "StripeCardInput.tsx",
+      "subtopic": "Key Facts",
+      "content": "Loading payment form.... Cardholder Name. Card Details. Your card information is encrypted and securely processed by Stripe. Processing.... Name on card. system-ui, -apple-system, sans-serif"
+    },
+    {
+      "source": "StripeCheckout.tsx",
+      "subtopic": "Key Facts",
+      "content": "Your payment is secured with bank-grade encryption by Stripe. Processing Payment.... Loading.... Card Payments Unavailable. Stripe is not configured. Please use M-Pesa or contact support."
     },
     {
       "source": "ShopDashboardHeader.tsx",
