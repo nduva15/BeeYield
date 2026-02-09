@@ -74,7 +74,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
         setResults(null);
         setError(null);
 
-        // Initialize Real-Time AI Model via TensorFlow.js
+        // Initialize Real-Time Analysis Model via TensorFlow.js
         setTimeout(async () => {
             try {
                 // Ensure Scripts are loaded (Fallback for CDN readiness)
@@ -94,7 +94,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
 
                 // @ts-ignore
                 if (!window.mobilenet || !window.tf) {
-                    throw new Error("AI Models could not be initialized from CDN");
+                    throw new Error("Analysis Models could not be initialized from CDN");
                 }
 
                 const img = document.createElement('img');
@@ -207,7 +207,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                 console.error("AI Error:", err);
                 setIsAnalyzing(false);
                 setError("AI Engine Offline");
-                toast.error("Neural Network Error", {
+                toast.error("Analysis Error", {
                     description: "Could not initialize the biological classification engine. Please check your connection."
                 });
             }

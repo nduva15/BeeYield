@@ -1,4 +1,4 @@
-import { createFileRoute, notFound } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import LocationLandingPage from '@/components/LocationLandingPage';
 import { locations } from '@/data/locations';
 
@@ -6,7 +6,9 @@ export const Route = createFileRoute('/locations/$locationSlug')({
     component: LocationComponent,
     loader: ({ params }) => {
         const data = locations.find((l) => l.slug === params.locationSlug);
-        if (!data) throw notFound();
+        if (!data) {
+            throw new Error('Location not found');
+        }
         return data;
     },
     head: ({ loaderData }) => ({

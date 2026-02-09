@@ -92,6 +92,8 @@ export interface SensorReading {
     timestamp: string;
     status: string;
     readings: InfieldReadings | InlandReadings | DiseaseReadings;
+    signal_strength?: number;
+    battery_level?: number;
 }
 
 export interface DashboardStats {

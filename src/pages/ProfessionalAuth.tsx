@@ -93,7 +93,7 @@ const ProfessionalAuth: React.FC = () => {
 
                             <div className="grid grid-cols-2 gap-4">
                                 {[
-                                    { icon: Bot, label: 'AI Analytics', desc: 'Predictive hive modeling' },
+                                    { icon: Bot, label: 'Smart Analytics', desc: 'Predictive hive modeling' },
                                     { icon: Activity, label: 'Real-time IoT', desc: 'Live sensor telemetry' },
                                     { icon: Shield, label: 'Vault Security', desc: 'AES-256 data protection' },
                                     { icon: Database, label: 'Fleet Logic', desc: 'Scaleable apiary management' }

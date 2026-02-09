@@ -177,7 +177,7 @@ const ESG = () => {
       color: "from-violet-500 to-purple-600",
       initiatives: [
         "Solar-powered IoT hive monitoring systems for off-grid apiaries",
-        "AI-driven predictive analytics for optimal harvest timing",
+        "Smart predictive analytics for optimal harvest timing",
         "Real-time temperature and humidity sensors protecting colony health",
         "Mobile app for beekeepers with instant hive health alerts",
         "Carbon-neutral technology operations through renewable energy"
