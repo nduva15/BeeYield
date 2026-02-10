@@ -593,15 +593,15 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                 {/* Place Selector Premium */}
                                 <div className="bg-white/5 border border-white/10 p-6 rounded-[2rem] backdrop-blur-md">
                                     <div className="flex items-center justify-between mb-4">
-                                        <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Select Target APIARY</span>
+                                        <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{t('nav_my_places')}</span>
                                         <LayoutGrid className="w-4 h-4 text-emerald-400" />
                                     </div>
                                     <Select value={selectedPlace} onValueChange={setSelectedPlace}>
                                         <SelectTrigger className="w-full bg-white/10 border-white/10 text-white rounded-2xl h-14">
-                                            <SelectValue placeholder="All Active Places" />
+                                            <SelectValue placeholder={t('nav_my_places')} />
                                         </SelectTrigger>
                                         <SelectContent className="bg-[#0F172A] border-white/10 text-white">
-                                            <SelectItem value="">All Places</SelectItem>
+                                            <SelectItem value="">{t('nav_my_places')}</SelectItem>
                                             {apiaries.map(a => (
                                                 <SelectItem key={a.id} value={a.id} className="hover:bg-white/10">{a.name}</SelectItem>
                                             ))}
@@ -612,15 +612,15 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                 {/* Hive Selector Premium */}
                                 <div className="bg-white/5 border border-white/10 p-6 rounded-[2rem] backdrop-blur-md">
                                     <div className="flex items-center justify-between mb-4">
-                                        <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Select TARGET HIVE</span>
+                                        <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{t('nav_beeyield_hives')}</span>
                                         <Box className="w-4 h-4 text-amber-400" />
                                     </div>
                                     <Select value={selectedHive} onValueChange={setSelectedHive}>
                                         <SelectTrigger className="w-full bg-white/10 border-white/10 text-white rounded-2xl h-14" disabled={!selectedPlace}>
-                                            <SelectValue placeholder="Select Hive" />
+                                            <SelectValue placeholder={t('nav_beeyield_hives')} />
                                         </SelectTrigger>
                                         <SelectContent className="bg-[#0F172A] border-white/10 text-white">
-                                            <SelectItem value="">All Hives</SelectItem>
+                                            <SelectItem value="">{t('nav_beeyield_hives')}</SelectItem>
                                             {hives.filter(h => h.apiary_id === selectedPlace).map(h => (
                                                 <SelectItem key={h.id} value={h.id} className="hover:bg-white/10">{h.hive_code}</SelectItem>
                                             ))}
@@ -653,8 +653,8 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                             <div className="p-8 md:p-12">
                                 <div className="flex items-center justify-between mb-10">
                                     <div className="space-y-1">
-                                        <h2 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Report Schedule</h2>
-                                        <p className="text-gray-500 text-sm">Automate your data exports.</p>
+                                        <h2 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">{t('scheduled_reports')}</h2>
+                                        <p className="text-gray-500 text-sm">{t('reports_desc')}</p>
                                     </div>
                                     <button
                                         onClick={() => setIsScheduleModalOpen(false)}
@@ -723,7 +723,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                             disabled={isSavingSchedule}
                                             className="w-full h-16 rounded-full bg-[#10B981] hover:bg-[#059669] text-white font-black text-lg tracking-wide shadow-2xl shadow-emerald-500/30 gap-4"
                                         >
-                                            {isSavingSchedule ? "SAVING..." : "ACTIVATE SCHEDULE"}
+                                            {isSavingSchedule ? "SAVING..." : t('add_schedule')}
                                         </Button>
                                     </div>
                                 </form>
