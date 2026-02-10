@@ -294,7 +294,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                     <div className="space-y-6 max-w-2xl">
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full">
                             <Zap className="h-3 w-3 text-primary" />
-                            <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Standard Core v4.2</span>
+                            <span className="text-xs font-black text-primary uppercase tracking-[0.2em]">Verified Hub</span>
                         </div>
                         <h2 className="text-4xl lg:text-5xl font-black text-white uppercase tracking-tight leading-[1.1]">
                             {t('ai_hub_intelligence')}
@@ -302,10 +302,10 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                         <div className="flex items-center gap-3">
                             <div className="flex -space-x-2">
                                 {[1, 2, 3].map(i => (
-                                    <div key={i} className="w-8 h-8 rounded-full border-2 border-[#0F172A] bg-primary/20 flex items-center justify-center text-[10px] font-black text-white">PRO</div>
+                                    <div key={i} className="w-8 h-8 rounded-full border-2 border-[#0F172A] bg-primary/20 flex items-center justify-center text-xs font-black text-white">PRO</div>
                                 ))}
                             </div>
-                            <p className="text-white font-bold opacity-70 uppercase tracking-widest text-xs">
+                            <p className="text-white font-bold opacity-70 uppercase tracking-widest text-sm">
                                 {t('ai_hub_status')}
                             </p>
                         </div>
@@ -314,7 +314,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                                 <button
                                     key={index}
                                     onClick={() => handleTopicClick(topic.label)}
-                                    className="flex items-center gap-2 px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white text-[11px] font-black uppercase tracking-widest rounded-xl transition-all duration-300 backdrop-blur-md"
+                                    className="flex items-center gap-2 px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-black uppercase tracking-widest rounded-xl transition-all duration-300 backdrop-blur-md"
                                 >
                                     <span>{topic.icon}</span>
                                     <span>{topic.label}</span>
@@ -371,10 +371,10 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                                                 </p>
                                             </div>
                                             <div className="flex justify-between items-center ml-11">
-                                                <p className="text-[10px] text-gray-400 font-medium">
+                                                <p className="text-xs text-gray-400 font-medium">
                                                     {chat.date}
                                                 </p>
-                                                <p className="text-[10px] text-[#F4D03F]/60 font-bold group-hover/chat:opacity-100 opacity-0 transition-opacity">
+                                                <p className="text-xs text-[#F4D03F]/60 font-bold group-hover/chat:opacity-100 opacity-0 transition-opacity">
                                                     {chat.messages.length} {t('msgs_count')}
                                                 </p>
                                             </div>
@@ -408,27 +408,17 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                                     <img src={Logo} alt="BEEYIELD" className="w-full h-full object-contain relative z-10" />
                                 </div>
                                 <div>
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <h3 className="font-black text-2xl text-gray-900 dark:text-white uppercase tracking-tighter">
-                                            BeeYield Assistant
-                                        </h3>
-                                        <Badge className="bg-primary/10 text-primary border-primary/20 text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5">INTERNAL</Badge>
-                                    </div>
-                                    <p className="text-[10px] text-amber-500 font-black uppercase tracking-[0.2em] flex items-center gap-2">
-                                        <span className={cn(
-                                            "w-2 h-2 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)] animate-[pulse-fast_1s_infinite]",
-                                            systemStatus.status === 'healthy' ? "bg-green-500" : "bg-amber-500"
-                                        )} />
-                                        {systemStatus.status === 'healthy' ? t('neural_core_synchronized') : t('neural_core_online')}
-                                    </p>
+                                    <h3 className="font-black text-2xl text-gray-900 dark:text-white uppercase tracking-tighter">
+                                        BeeYield Helper
+                                    </h3>
                                 </div>
-                            </div>
-
-                            <div className="hidden md:flex flex-col items-end">
-                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">System Load</p>
-                                <div className="h-1.5 w-32 bg-slate-100 rounded-full overflow-hidden">
-                                    <div className="h-full bg-primary w-[35%] animate-pulse" />
-                                </div>
+                                <p className="text-xs text-amber-500 font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                                    <span className={cn(
+                                        "w-2 h-2 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)] animate-[pulse-fast_1s_infinite]",
+                                        systemStatus.status === 'healthy' ? "bg-green-500" : "bg-amber-500"
+                                    )} />
+                                    {systemStatus.status === 'healthy' ? t('neural_core_synchronized') : t('neural_core_online')}
+                                </p>
                             </div>
                         </div>
                     )}
@@ -447,7 +437,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                                                 {t('ai_hub_title')}
                                             </h3>
                                         </div>
-                                        <p className="text-gray-500 dark:text-gray-400 font-bold text-xs uppercase tracking-[0.15em] opacity-70">
+                                        <p className="text-gray-500 dark:text-gray-400 font-bold text-sm uppercase tracking-[0.15em] opacity-70">
                                             {t('ai_expert_assistant')}
                                         </p>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -467,7 +457,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                                             ))}
                                         </div>
                                         <div className="space-y-4 pt-4">
-                                            <p className="text-gray-400 font-bold text-[10px] uppercase tracking-widest leading-relaxed px-10">
+                                            <p className="text-gray-400 font-bold text-xs uppercase tracking-widest leading-relaxed px-10">
                                                 {t('ai_proprietary_ml')}
                                             </p>
                                         </div>
@@ -528,7 +518,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                                                                 key={idx}
                                                                 className="flex items-center gap-1.5 px-2 py-1 bg-black/5 dark:bg-white/5 rounded-lg border border-black/5 dark:border-white/10 group/source hover:bg-primary/10 transition-colors"
                                                             >
-                                                                {source.type === 'blockchain' && <ShieldCheck className="w-3 h-3 text-emerald-500" />}
+                                                                {source.type === 'origin' && <ShieldCheck className="w-3 h-3 text-emerald-500" />}
                                                                 {source.type === 'iot' && <Cpu className="w-3 h-3 text-indigo-500" />}
                                                                 {source.type === 'database' && <Database className="w-3 h-3 text-amber-500" />}
                                                                 {source.type === 'web' && <Globe className="w-3 h-3 text-blue-500" />}
@@ -547,7 +537,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                                                             <button
                                                                 key={idx}
                                                                 onClick={() => handleTopicClick(suggestion)}
-                                                                className="px-3 py-1.5 bg-primary/5 hover:bg-primary/20 border border-primary/20 rounded-full text-[10px] font-black text-primary uppercase tracking-wider transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
+                                                                className="px-3 py-1.5 bg-primary/5 hover:bg-primary/20 border border-primary/20 rounded-full text-xs font-black text-primary uppercase tracking-wider transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
                                                             >
                                                                 <Sparkles className="w-3 h-3" />
                                                                 {suggestion}
@@ -558,10 +548,10 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
 
                                                 <div className="flex items-center justify-between mt-4 border-t border-black/5 dark:border-white/5 pt-3">
                                                     <p className={cn(
-                                                        "text-[9px] uppercase tracking-widest font-black opacity-40",
+                                                        "text-xs uppercase tracking-widest font-black opacity-40",
                                                         message.role === 'user' ? "text-black" : "text-gray-400"
                                                     )}>
-                                                        {message.timestamp} — {message.role === 'assistant' ? "PROCESSED BY NEURAL CORE" : "SENT VIA CLIENT"}
+                                                        {message.timestamp} — Verified Search
                                                     </p>
                                                     {message.role === 'assistant' && (
                                                         <div className="flex gap-1">
@@ -640,7 +630,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                     .
                 </p>
             </div>
-        </div>
+        </div >
     );
 };
 

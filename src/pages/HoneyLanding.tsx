@@ -216,8 +216,12 @@ const HeroSection = () => {
       <div className="container mx-auto px-4 sm:px-6 relative">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           <div className="relative z-10 text-center lg:text-left lg:pl-16 xl:pl-24">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-100 text-green-700 text-[10px] font-black uppercase tracking-widest mb-6 border border-green-200 shadow-sm animate-in fade-in slide-in-from-left-4 duration-1000">
+              <Zap className="w-3 h-3 fill-green-700" />
+              Verified Quality & Source
+            </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-neutral-900 mb-6 tracking-tighter leading-none">
-              Premium Raw <span className="text-amber-600 italic">Honey</span> <br />
+              BeeYield <span className="text-amber-600 italic">Naturally Sourced</span> <br />
               Direct from <span className="text-green-700">Kibwezi</span>
             </h1>
             <p className="text-sm md:text-base text-neutral-600 mb-4 max-w-md mx-auto lg:mx-0">
@@ -485,10 +489,10 @@ const AboutSection = () => {
               BeeYield was founded with a singular vision: to revolutionize beekeeping through technology and radical transparency. Our journey began in the pristine landscapes of Kenya, where we saw the need for a more sustainable approach. Today, we are proud to lead with our <strong>50/50 Harvest Promise</strong>—ensuring that for every drop we take, enough is left for the bees to thrive and pollinate our future.
             </p>
             <p className="text-neutral-600 leading-relaxed mb-4 text-sm md:text-base">
-              With over <strong>2,500 trees planted</strong> and a growing network of tech-enabled apiaries, our impact goes beyond just honey. Every jar you hold is powered by <strong>HoneyChain™ Traceability</strong>, allowing you to trace your honey back to the very hive it came from, meeting the beekeeper and seeing the digital seal of authenticity.
+              With over <strong>2,500 trees planted</strong> and a growing network of tech-enabled apiaries, our impact goes beyond just honey. Every jar you hold features <strong>Honey Journey Tracking</strong>, allowing you to trace your honey back to the very hive it came from, meeting the beekeeper and seeing our verified seal of authenticity.
             </p>
             <p className="text-neutral-600 leading-relaxed text-sm md:text-base">
-              We believe in "Pollination with Purpose." By choosing BeeYield, you're not just buying raw, unfiltered honey; you're supporting a circular ecosystem that restores biodiversity, empowers local farmers, and uses IoT monitoring to protect the health of our colonies. This is the new standard of sweetness.
+              We believe in "Pollination with Purpose." By choosing BeeYield, you're not just buying raw, unfiltered honey; you're supporting a circular ecosystem that restores biodiversity, empowers local farmers, and uses smart monitoring to protect the health of our colonies. This is the new standard of sweetness.
             </p>
           </div>
         </div>
@@ -503,7 +507,7 @@ const FeaturesSection = () => {
   const features = [
     {
       icon: ShieldCheck,
-      title: "HoneyChain™ Traceability",
+      title: "Honey Journey Tracking",
       description: "Scan the QR code on any jar to trace your honey back to the specific hive and harvest date.",
     },
     {
@@ -513,8 +517,8 @@ const FeaturesSection = () => {
     },
     {
       icon: Droplets,
-      title: "IoT Health Monitoring",
-      description: "Our hives use AI and acoustic sensors to detect disease and stress before they impact the honey.",
+      title: "Smart Hive Monitoring",
+      description: "Our hives use smart sensors to detect disease and stress before they impact the honey.",
     },
   ];
 
@@ -532,7 +536,7 @@ const FeaturesSection = () => {
               </div>
               <h3 className="text-base font-bold text-neutral-900 mb-2">{feature.title}</h3>
               <p className="text-sm text-neutral-500 mb-4">{feature.description}</p>
-              {feature.title === "HoneyChain™ Traceability" && (
+              {feature.title === "Honey Journey Tracking" && (
                 <Button
                   variant="link"
                   className="text-green-700 font-bold p-0 h-auto gap-1 text-xs uppercase tracking-widest"
@@ -584,7 +588,7 @@ const FlashSaleSection = () => {
           <div className="relative z-10 max-w-xl">
             <Badge className="bg-green-700 text-white mb-6 animate-bounce">Flash Sale</Badge>
             <h2 className="text-3xl md:text-5xl font-black text-neutral-900 mb-4 leading-tight">
-              Get <span className="text-green-700">20% Off</span> on your first HoneyChain™ order!
+              Get <span className="text-green-700">20% Off</span> on your first order!
             </h2>
 
             {/* Countdown Timer */}
@@ -623,8 +627,8 @@ const FlashSaleSection = () => {
 const FAQSection = () => {
   const faqs = [
     {
-      question: "How can I verify the authenticity of my honey?",
-      answer: "Every jar of BeeYield honey features a unique HoneyChain™ QR code. By scanning it, you can access the 'Digital Birth Certificate' of your honey, showing the exact hive location, harvest date, moisture levels, and even the beekeeper who cared for the colony.",
+      question: "How can I verify where my honey comes from?",
+      answer: "Every jar of BeeYield honey features a unique QR code. By scanning it, you can access the record of your honey, showing the exact hive location, harvest date, moisture levels, and even the beekeeper who cared for the colony.",
     },
     {
       question: "What exactly is the 50/50 Harvest Promise?",
@@ -632,7 +636,7 @@ const FAQSection = () => {
     },
     {
       question: "How does BeeYield protect bees from diseases?",
-      answer: "We use IoT-enabled sensors and AI-powered acoustic monitoring to listen to the hive. Our technology can detect the 'signature sounds' of stress or specific diseases (like Varroa mites or Foulbrood) up to 48 hours before they become critical, allowing for non-invasive, early intervention.",
+      answer: "We use smart sensors and sound monitoring to listen to the hive. Our technology can detect signs of stress or specific diseases (like Varroa mites) early, allowing us to help the bees before it becomes a problem.",
     },
     {
       question: "Why does protecting bees result in better honey?",

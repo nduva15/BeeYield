@@ -89,7 +89,7 @@ const PrecisionPollination = () => {
               </div>
               <h3 className="text-2xl font-bold mb-4 text-foreground">In-Hive Sensor</h3>
               <p className="text-muted-foreground leading-relaxed mb-6">
-                BeeYield Hives are equipped with small IoT (Internet of Things) sensors. They capture key metrics from the colony, including temperature, humidity, light levels, location, hive orientation, and most importantly, the acoustic signature of the hive. The sensors communicate with the Gateway, which is attached to the outside of the hive.
+                BeeYield Hives are equipped with small digital sensors. They capture key info from the colony, including temperature, humidity, light levels, location, and most importantly, the sound of the hive. The sensors talk to the Gateway, which is attached to the outside of the hive.
               </p>
               <Button variant="link" className="p-0 h-auto text-primary">
                 Read More <ChevronRight className="h-4 w-4 ml-1" />
@@ -102,7 +102,7 @@ const PrecisionPollination = () => {
               </div>
               <h3 className="text-2xl font-bold mb-4 text-foreground">Gateway</h3>
               <p className="text-muted-foreground leading-relaxed mb-6">
-                One Gateway (think of it as a modem) is attached to the exterior of one of the hives. The sensors communicate with the Gateway via a low energy Bluetooth™ connection. The Gateway then transfers the data to the cloud for analysis.
+                One Gateway (think of it as a modem) is attached to the exterior of one of the hives. The sensors connect to the Gateway wirelessly. The Gateway then sends the info to our system for review.
               </p>
               <Button variant="link" className="p-0 h-auto text-primary">
                 Read More <ChevronRight className="h-4 w-4 ml-1" />
@@ -297,7 +297,7 @@ const PrecisionPollination = () => {
                 <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
                   <Cpu className="h-5 w-5 text-primary" />
                 </div>
-                <span className="font-bold text-lg">Intelligent Hives</span>
+                <span className="font-bold text-lg">Smart Hives</span>
               </div>
             </div>
           </div>

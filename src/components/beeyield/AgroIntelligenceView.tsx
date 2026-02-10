@@ -43,7 +43,7 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
                     BeeYield Insights
                 </h1>
                 <p className="text-gray-500 dark:text-gray-400 font-medium">
-                    Moving agriculture forward - Earth Observation + Insights + Agronomy
+                    Moving agriculture forward - Data + Insights + Farming | Secure Intelligence Interface
                 </p>
             </div>
             {/* ... (rest of the content) */}
@@ -55,11 +55,11 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
                         We don't just monitor fields. We understand crops, climate and pollinators - together.
                     </h2>
                     <p className="text-gray-500 dark:text-gray-400 mb-6 text-sm">
-                        Field-first workflows that connect satellite imagery, analysis, and beekeeper data.
+                        Simple workflows that connect satellite images, reports, and beekeeper data.
                     </p>
                     <div className="flex flex-wrap gap-2">
                         <Badge variant="secondary" className="bg-[#1B9157]/10 text-[#1B9157] hover:bg-[#1B9157]/20 dark:bg-[#1B9157]/30 dark:text-[#1B9157] px-4 py-1.5 rounded-full font-semibold border-0">
-                            Earth Observation
+                            Satellite Data
                         </Badge>
                         <Badge variant="secondary" className="bg-[#F4D03F]/10 text-[#7a6820] hover:bg-[#F4D03F]/20 dark:bg-[#F4D03F]/30 dark:text-[#F4D03F] px-4 py-1.5 rounded-full font-semibold border-0">
                             Insights + Agronomy
@@ -110,16 +110,16 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
             {/* Agro Intelligence Layer Flow */}
             <div className="space-y-4">
                 <div className="space-y-1">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">BeeYield Analysis Layer</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">From satellites to decisions</p>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">BeeYield Insight Layer</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">From satellites to choices</p>
                 </div>
                 <div className="p-6 bg-white dark:bg-[#141414] rounded-[2rem] border border-[#F4D03F]/20 dark:border-[#F4D03F]/10 shadow-sm flex flex-col items-center">
                     <div className="flex flex-col lg:flex-row items-center gap-4 w-full overflow-x-auto pb-2">
                         <div className="flex-1 min-w-[180px] bg-[#F4D03F]/5 dark:bg-[#F4D03F]/10 px-6 py-4 rounded-2xl border border-[#F4D03F]/20 dark:border-[#F4D03F]/20 font-bold text-sm text-[#7a6820] dark:text-[#F4D03F] shadow-sm flex justify-between items-center group cursor-pointer hover:bg-[#F4D03F]/10 transition-colors">
-                            Copernicus Data <span className="text-[#F4D03F] group-hover:translate-x-1 transition-transform">→</span>
+                            Satellite Data <span className="text-[#F4D03F] group-hover:translate-x-1 transition-transform">→</span>
                         </div>
                         <div className="flex-1 min-w-[180px] bg-[#1B9157]/5 dark:bg-[#1B9157]/10 px-6 py-4 rounded-2xl border border-[#1B9157]/20 dark:border-[#1B9157]/20 font-bold text-sm text-[#1B9157] dark:text-[#1B9157] shadow-sm flex justify-between items-center group cursor-pointer hover:bg-[#1B9157]/10 transition-colors">
-                            BeeYield Analysis Layer <span className="text-[#1B9157] group-hover:translate-x-1 transition-transform">→</span>
+                            BeeYield Insight Layer <span className="text-[#1B9157] group-hover:translate-x-1 transition-transform">→</span>
                         </div>
                         <div className="flex-1 min-w-[180px] bg-[#F4D03F]/5 dark:bg-[#F4D03F]/10 px-6 py-4 rounded-2xl border border-[#F4D03F]/20 dark:border-[#F4D03F]/20 font-bold text-sm text-[#7a6820] dark:text-[#F4D03F] shadow-sm flex justify-between items-center group cursor-pointer hover:bg-[#F4D03F]/10 transition-colors">
                             Predictive Models <span className="text-[#F4D03F] group-hover:translate-x-1 transition-transform">→</span>
@@ -160,7 +160,7 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
                                 <span>Change history and boundary versioning.</span>
                             </li>
                         </ul>
-                        <p className="text-xs text-[#1B9157]/60 mt-4 italic">Leaflet Draw + GeoJSON/PostGIS ready.</p>
+                        <p className="text-xs text-[#1B9157]/60 mt-4 italic">Map tools ready.</p>
                     </CardContent>
                 </Card>
 
@@ -185,7 +185,7 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
                             </li>
                             <li className="flex gap-2 items-start">
                                 <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />
-                                <span>Cloud masking using SCL.</span>
+                                <span>Cloud cleaning for clear views.</span>
                             </li>
                         </ul>
                     </CardContent>
@@ -242,7 +242,7 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
                         <ul className="space-y-3 text-sm text-gray-600 dark:text-gray-300">
                             <li className="flex gap-2 items-start">
                                 <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />
-                                <span>K-means / DBSCAN on NDVI.</span>
+                                <span>Smart field grouping.</span>
                             </li>
                             <li className="flex gap-2 items-start">
                                 <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />
@@ -263,8 +263,8 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
                 {/* Crop Intelligence Engine */}
                 <Card className="rounded-[2rem] border-none shadow-sm bg-white dark:bg-[#141414] overflow-hidden">
                     <CardHeader>
-                        <CardTitle className="text-lg font-bold">Crop Analysis Engine</CardTitle>
-                        <p className="text-xs text-gray-400 font-medium">Forecasting, anomalies, phenology.</p>
+                        <CardTitle className="text-lg font-bold">Crop Analysis Hub</CardTitle>
+                        <p className="text-xs text-gray-400 font-medium">Forecasting, alerts, growth cycles.</p>
                     </CardHeader>
                     <CardContent className="space-y-3">
                         <ul className="space-y-3 text-sm text-gray-600 dark:text-gray-300">
@@ -278,7 +278,7 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
                             </li>
                             <li className="flex gap-2 items-start">
                                 <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />
-                                <span>Phenology: start, peak biomass, senescence.</span>
+                                <span>Growth cycles: start, peak growth, harvest ready.</span>
                             </li>
                         </ul>
                     </CardContent>
@@ -336,8 +336,8 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
                         <Badge className="w-fit bg-gray-500/20 text-gray-600 border-none text-[8px] font-black">INITIALIZING</Badge>
                     </Card>
                     <Card className="p-4 rounded-2xl border-none bg-indigo-50 dark:bg-indigo-900/10 flex flex-col justify-between h-28 border-l-4 border-l-indigo-500">
-                        <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">Carbon Impact</p>
-                        <p className="text-2xl font-black text-slate-800 dark:text-white mt-1">-<span className="text-xs"> tCO2e</span></p>
+                        <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">Carbon Footprint</p>
+                        <p className="text-2xl font-black text-slate-800 dark:text-white mt-1">-<span className="text-xs"> Carbon score</span></p>
                         <Badge className="w-fit bg-gray-500/20 text-gray-600 border-none text-[8px] font-black">COLLECTING</Badge>
                     </Card>
                 </div>

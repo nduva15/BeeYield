@@ -2,6 +2,7 @@ import React from 'react';
 import AdminSidebar, { AdminNavItem } from './AdminSidebar';
 import AdminHeader from './AdminHeader';
 import { cn } from '@/lib/utils';
+import { Container } from '@/components/ui/layout';
 
 interface AdminLayoutProps {
     children: React.ReactNode;
@@ -28,10 +29,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
             />
             <main className="flex-1 flex flex-col overflow-hidden bg-muted/20">
                 <AdminHeader onLogout={onLogout} />
-                <div className="flex-1 overflow-y-auto p-4 md:p-8">
-                    <div className="max-w-[1600px] mx-auto">
+                <div className="flex-1 overflow-y-auto">
+                    <Container size="lg" className="py-8">
                         {children}
-                    </div>
+                    </Container>
                 </div>
             </main>
         </div>

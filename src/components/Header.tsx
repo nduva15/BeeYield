@@ -70,7 +70,7 @@ const Header = () => {
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="focus:bg-primary/80 focus:text-primary-foreground">
                 <Link to="/in-land-pollination" className="w-full cursor-pointer px-4 py-3 text-base font-medium text-primary-foreground hover:bg-primary/80 rounded-lg">
-                  In-Land Pollination Insights Platform
+                  In-Land Pollination Insights
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="focus:bg-primary/80 focus:text-primary-foreground">
@@ -181,7 +181,7 @@ const Header = () => {
                     className={`text-sm font-medium hover:bg-primary-foreground/10 rounded-lg px-3 py-2 transition-colors ${isActive("/precision-pollination") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground/90"
                       }`}
                   >
-                    In-Hive Precision Pollination
+                    Hive Monitoring
                   </Link>
                   <Link
                     to="/in-land-pollination"
@@ -189,7 +189,7 @@ const Header = () => {
                     className={`text-sm font-medium hover:bg-primary-foreground/10 rounded-lg px-3 py-2 transition-colors ${isActive("/in-land-pollination") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground/90"
                       }`}
                   >
-                    In-Land Pollination Insights
+                    Land Analysis
                   </Link>
                   <Link
                     to="/diseases"
@@ -222,13 +222,13 @@ const Header = () => {
 
             {/* Secondary Links Section */}
             <div className="flex flex-col space-y-1 pt-4">
-              <span className="text-xs uppercase tracking-wider text-primary-foreground/60 px-3 py-1 font-medium mt-2">Professional Portal</span>
+              <span className="text-xs uppercase tracking-wider text-primary-foreground/60 px-3 py-1 font-medium mt-2">My Dashboard</span>
               <Link
                 to="/beeyield-dashboard"
                 onClick={() => setIsMenuOpen(false)}
                 className={`text-sm sm:text-base font-black hover:bg-white/20 rounded-lg px-3 py-2.5 sm:py-3 transition-colors bg-white/10 text-yellow-300 border border-yellow-300/30 flex items-center justify-between mb-2 ${isActive("/beeyield-dashboard") ? "ring-2 ring-yellow-300" : ""}`}
               >
-                BeeYield Dashboard
+                Dashboard
                 <Shield className="h-4 w-4" />
               </Link>
 

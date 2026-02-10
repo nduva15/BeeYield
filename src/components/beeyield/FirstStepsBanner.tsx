@@ -65,7 +65,7 @@ const FirstStepsBanner: React.FC<FirstStepsBannerProps> = ({ onTabChange }) => {
                         onClick={() => onTabChange('agro-intelligence')}
                         className="rounded-full bg-white dark:bg-zinc-900 border border-[#F4D03F]/10 hover:border-[#F4D03F]/40 hover:bg-[#F4D03F]/5 dark:hover:bg-zinc-800 text-slate-900 dark:text-white shadow-sm text-[13px] font-bold px-7 h-11 transition-all active:scale-95"
                     >
-                        BeeHUB Agro Intelligence
+                        BeeHUB Insights
                     </button>
                     <button
                         onClick={() => onTabChange('settings')}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -41,6 +41,7 @@ import { PaymentsTab } from '@/components/admin/tabs/PaymentsTab';
 import { AccountsTab } from '@/components/admin/tabs/AccountsTab';
 import { InvoicesTab } from '@/components/admin/tabs/InvoicesTab';
 import { RecruitmentTab } from '@/components/admin/tabs/RecruitmentTab';
+import { Container, Grid, Col, Section } from '@/components/ui/layout';
 import ContentDashboard from '@/components/beeyield/ContentDashboard';
 
 const AdminDashboard: React.FC = () => {
@@ -367,7 +368,7 @@ const AdminDashboard: React.FC = () => {
                     metadata: { honey_type: batchForm.honey_type }
                 }).catch(() => { });
 
-                toast.success("Batch created on Blockchain");
+                toast.success("Batch record created");
             }
             setIsBatchModalOpen(false);
             setEditingBatchId(null);
@@ -394,7 +395,7 @@ const AdminDashboard: React.FC = () => {
     };
 
     const handleDeleteBatch = async (id: string) => {
-        if (confirm("Permanently remove this batch from the ledger? (Note: Blockchain records are technically immutable, this removes it from the UI/metadata)")) {
+        if (confirm("Permanently remove this batch history?")) {
             try {
                 await adminService.deleteBatch(id);
 
@@ -627,7 +628,7 @@ const AdminDashboard: React.FC = () => {
                     entity_reference: userForm.email
                 }).catch(() => { });
 
-                toast.success("New operator authenticated");
+                toast.success("New team member added");
             }
             setIsUserModalOpen(false);
             setEditingUser(null);
@@ -652,7 +653,7 @@ const AdminDashboard: React.FC = () => {
                     metadata: { name: farmerForm.name }
                 }).catch(() => { });
 
-                toast.success("Farmer profile recalibrated");
+                toast.success("Farmer profile updated");
             } else {
                 await adminService.createFarmer(farmerForm);
 
@@ -665,7 +666,7 @@ const AdminDashboard: React.FC = () => {
                     metadata: { name: farmerForm.name }
                 }).catch(() => { });
 
-                toast.success("Farmer registration protocol complete");
+                toast.success("Farmer registration complete");
             }
             setIsFarmerModalOpen(false);
             setEditingFarmer(null);
@@ -676,7 +677,7 @@ const AdminDashboard: React.FC = () => {
             });
             loadAllData();
         } catch (error) {
-            toast.error(editingFarmer ? "Failed to recalibrate profile" : "Failed to register farmer on network");
+            toast.error(editingFarmer ? "Failed to update profile" : "Failed to register farmer");
         }
     };
 
@@ -1012,9 +1013,9 @@ const AdminDashboard: React.FC = () => {
 
                     <TabsContent value="overview" className="space-y-6">
                         {/* Row 1: General Report + Visitors + Users By Age */}
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <Grid cols={12} gap="lg">
                             {/* General Report Section */}
-                            <div className="lg:col-span-4 space-y-4">
+                            <Col span={4} className="space-y-4">
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-lg font-bold text-foreground">General Report</h3>
                                     <select className="text-xs bg-transparent border border-border rounded-lg px-3 py-1.5 text-muted-foreground">
@@ -1025,43 +1026,30 @@ const AdminDashboard: React.FC = () => {
                                 </div>
 
                                 {/* Stats Card */}
-                                <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl p-5 shadow-sm">
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <div className="w-12 h-12 bg-amber-100 dark:bg-amber-500/20 rounded-xl flex items-center justify-center">
-                                            <CreditCard className="w-6 h-6 text-amber-600" />
-                                        </div>
-                                        <div>
-                                            <p className="text-xs text-muted-foreground uppercase tracking-wide">TOTAL ORDERS</p>
-                                            <p className="text-sm font-medium text-amber-600">{(dashboardStats as any).total_orders || orders.length}</p>
-                                        </div>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <p className="text-[10px] text-muted-foreground uppercase tracking-wide">PENDING ORDERS</p>
-                                        <p className="text-xs text-muted-foreground">{dashboardStats.pendingOrders}</p>
-                                    </div>
-                                </Card>
+                                <AdminMetricCard
+                                    title="Total Orders"
+                                    value={(dashboardStats as any).total_orders || orders.length}
+                                    icon={CreditCard}
+                                    description={`${dashboardStats.pendingOrders} Pending Orders`}
+                                    className="h-auto"
+                                />
 
-                                <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl p-5 shadow-sm">
-                                    <p className="text-3xl font-bold text-foreground">KES {dashboardStats.totalRevenue.toLocaleString()}</p>
-                                    <div className="flex gap-4 mt-3 text-xs">
-                                        <div className="flex items-center gap-1">
-                                            <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
-                                            <span className="text-muted-foreground">40%</span>
-                                        </div>
-                                        <div className="flex items-center gap-1">
-                                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                            <span className="text-muted-foreground">Sales growth this month</span>
-                                        </div>
-                                    </div>
-                                    <p className="text-xs text-muted-foreground mt-2">Active Apiaries: {dashboardStats.totalApiaries}</p>
-                                </Card>
+                                <AdminMetricCard
+                                    title="Total Revenue"
+                                    value={`KES ${dashboardStats.totalRevenue.toLocaleString()}`}
+                                    icon={CreditCard}
+                                    trend="40%"
+                                    trendDirection="up"
+                                    description="Sales growth this month"
+                                    className="h-auto"
+                                />
 
                                 <div className="flex gap-3">
-                                    <div className="flex-1 bg-white dark:bg-card border border-gray-100 dark:border-border rounded-xl p-3">
+                                    <div className="flex-1 bg-card border border-border rounded-xl p-3">
                                         <p className="text-[10px] text-muted-foreground uppercase">GROSS RENTAL VALUE</p>
                                         <p className="text-sm font-bold">KES 72,000 <span className="text-green-500 text-xs">↑4%</span></p>
                                     </div>
-                                    <div className="flex-1 bg-white dark:bg-card border border-gray-100 dark:border-border rounded-xl p-3">
+                                    <div className="flex-1 bg-card border border-border rounded-xl p-3">
                                         <p className="text-[10px] text-muted-foreground uppercase">BEEKEEPER PROFITS</p>
                                         <p className="text-sm font-bold">KES 54,000 <span className="text-green-500 text-xs">↑6%</span></p>
                                     </div>
@@ -1070,13 +1058,13 @@ const AdminDashboard: React.FC = () => {
                                 <Button onClick={loadAllData} className="w-full rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-medium">
                                     <RefreshCw className="w-4 h-4 mr-2" /> Refresh Dashboard
                                 </Button>
-                            </div>
+                            </Col>
 
                             {/* Visitors Section */}
-                            <div className="lg:col-span-4 space-y-4">
+                            <Col span={4} className="space-y-4">
                                 <h3 className="text-lg font-bold text-foreground">Visitors</h3>
 
-                                <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl p-5 shadow-sm">
+                                <Card className="bg-card border-border rounded-2xl p-5 shadow-sm">
                                     <div className="flex items-center justify-between mb-4">
                                         <div>
                                             <p className="text-xs text-muted-foreground">Realtime active users</p>
@@ -1126,16 +1114,16 @@ const AdminDashboard: React.FC = () => {
                                         Real-Time Report →
                                     </Button>
                                 </Card>
-                            </div>
+                            </Col>
 
                             {/* Users By Age Section */}
-                            <div className="lg:col-span-4 space-y-4">
+                            <Col span={4} className="space-y-4">
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-lg font-bold text-foreground">Users By Age</h3>
                                     <span className="text-xs text-muted-foreground">Show More</span>
                                 </div>
 
-                                <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl p-5 shadow-sm">
+                                <Card className="bg-card border-border rounded-2xl p-5 shadow-sm">
                                     <div className="flex gap-2 mb-4">
                                         <Button size="sm" className="rounded-full bg-amber-500 text-white text-xs px-4 h-7">Active</Button>
                                         <Button size="sm" variant="outline" className="rounded-full text-xs px-4 h-7">Inactive</Button>
@@ -1180,15 +1168,15 @@ const AdminDashboard: React.FC = () => {
                                         </div>
                                     </div>
                                 </Card>
-                            </div>
-                        </div>
+                            </Col>
+                        </Grid>
 
                         {/* Row 2: Map + Weekly Best Sellers */}
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <Grid cols={12} gap="lg">
                             {/* Map Section */}
-                            <div className="lg:col-span-2">
-                                <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl overflow-hidden shadow-sm h-full flex flex-col">
-                                    <div className="p-4 border-b border-gray-100 dark:border-border bg-white dark:bg-card z-10">
+                            <Col span={8}>
+                                <Card className="bg-card border-border rounded-2xl overflow-hidden shadow-sm h-full flex flex-col">
+                                    <div className="p-4 border-b border-border bg-card z-10">
                                         <div className="flex items-center justify-between">
                                             <h3 className="text-lg font-bold">Official Store</h3>
                                             <div className="flex gap-2">
@@ -1259,11 +1247,11 @@ const AdminDashboard: React.FC = () => {
                                         <div className="absolute bottom-1 left-2 text-[10px] text-gray-400 font-sans">Google</div>
                                     </div>
                                 </Card>
-                            </div>
+                            </Col>
 
                             {/* Weekly Best Sellers */}
-                            <div className="lg:col-span-1">
-                                <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl p-5 shadow-sm h-full flex flex-col">
+                            <Col span={4}>
+                                <Card className="bg-card border-border rounded-2xl p-5 shadow-sm h-full flex flex-col">
                                     <h3 className="text-lg font-bold mb-6">Weekly Best Sellers</h3>
 
                                     <div className="space-y-6 flex-1">
@@ -1278,40 +1266,46 @@ const AdminDashboard: React.FC = () => {
                                         View More
                                     </Button>
                                 </Card>
-                            </div>
-                        </div>
+                            </Col>
+                        </Grid>
 
                         {/* Row 3: Promotional Banners */}
-                        {/* Activity Overview Summary */}
-                        <Card className="bg-amber-600 rounded-2xl p-6 text-white relative overflow-hidden flex flex-col justify-center h-48">
-                            <div className="relative z-10 max-w-xs">
-                                <h3 className="text-lg font-bold mb-1 leading-tight">Farmer Network Expansion</h3>
-                                <p className="text-amber-100 text-xs mb-4">Monitor and support our master beekeepers.</p>
-                                <Button onClick={() => setActiveTab('farmers')} size="sm" className="bg-white text-amber-600 hover:bg-amber-50 rounded-lg font-bold text-xs h-8 px-4">
-                                    Manage Farmers
-                                </Button>
-                            </div>
-                            <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                                <Users className="w-24 h-24 text-amber-400/30" />
-                            </div>
-                        </Card>
+                        <Grid cols={2} gap="lg">
+                            {/* Activity Overview Summary */}
+                            <Col span={1}>
+                                <Card className="bg-amber-600 rounded-2xl p-6 text-white relative overflow-hidden flex flex-col justify-center h-48">
+                                    <div className="relative z-10 max-w-xs">
+                                        <h3 className="text-lg font-bold mb-1 leading-tight">Farmer Network Expansion</h3>
+                                        <p className="text-amber-100 text-xs mb-4">Monitor and support our master beekeepers.</p>
+                                        <Button onClick={() => setActiveTab('farmers')} size="sm" className="bg-white text-amber-600 hover:bg-amber-50 rounded-lg font-bold text-xs h-8 px-4">
+                                            Manage Farmers
+                                        </Button>
+                                    </div>
+                                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                                        <Users className="w-24 h-24 text-amber-400/30" />
+                                    </div>
+                                </Card>
+                            </Col>
+                            <Col span={1}>
 
-                        <Card className="bg-indigo-600 rounded-2xl p-6 text-white relative overflow-hidden flex flex-col justify-center h-48">
-                            <div className="relative z-10 max-w-xs">
-                                <h3 className="text-lg font-bold mb-1 leading-tight">Traceability Ledger</h3>
-                                <p className="text-indigo-100 text-xs mb-4">View immutable honey production records.</p>
-                                <Button onClick={() => setActiveTab('batches')} size="sm" className="bg-white text-indigo-600 hover:bg-indigo-50 rounded-lg font-bold text-xs h-8 px-4">
-                                    View Ledger
-                                </Button>
-                            </div>
-                            <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                                <Database className="w-24 h-24 text-indigo-400/30" />
-                            </div>
-                        </Card>
+                                <Card className="bg-indigo-600 rounded-2xl p-6 text-white relative overflow-hidden flex flex-col justify-center h-48">
+                                    <div className="relative z-10 max-w-xs">
+                                        <h3 className="text-lg font-bold mb-1 leading-tight">Traceability Ledger</h3>
+                                        <p className="text-indigo-100 text-xs mb-4">View immutable honey production records.</p>
+                                        <Button onClick={() => setActiveTab('batches')} size="sm" className="bg-white text-indigo-600 hover:bg-indigo-50 rounded-lg font-bold text-xs h-8 px-4">
+                                            View Ledger
+                                        </Button>
+                                    </div>
+                                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                                        <Database className="w-24 h-24 text-indigo-400/30" />
+                                    </div>
+                                </Card>
+                            </Col>
+                        </Grid>
 
                         {/* Row 4: Weekly Top Products Table */}
-                        <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl shadow-sm overflow-hidden">
-                            <div className="p-4 border-b border-gray-100 dark:border-border flex items-center justify-between">
+                        <Card className="bg-card border-border rounded-2xl shadow-sm overflow-hidden">
+                            <div className="p-4 border-b border-border flex items-center justify-between">
                                 <h3 className="text-lg font-bold">Weekly Top Products</h3>
                                 <div className="flex gap-2">
                                     <Button size="sm" variant="outline" className="rounded-lg text-xs h-8 gap-2">
@@ -1335,9 +1329,9 @@ const AdminDashboard: React.FC = () => {
                                 </TableHeader>
                                 <TableBody>
                                     {products.length > 0 ? products.slice(0, 5).map((product, i) => (
-                                        <TableRow key={product.id || i} className="hover:bg-muted/10 border-b border-gray-100 dark:border-border/50">
+                                        <TableRow key={product.id || i} className="hover:bg-muted/10 border-b border-border/50">
                                             <TableCell className="py-3">
-                                                <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden border border-gray-200">
+                                                <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden border border-border">
                                                     {product.images?.[0] ? (
                                                         <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
                                                     ) : (
@@ -1385,7 +1379,7 @@ const AdminDashboard: React.FC = () => {
                             </Table>
 
                             {/* Pagination */}
-                            <div className="p-4 border-t border-gray-100 dark:border-border flex items-center justify-between">
+                            <div className="p-4 border-t border-border flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <Button size="sm" variant="outline" className="w-8 h-8 rounded-lg">&lt;</Button>
                                     <Button size="sm" className="w-8 h-8 rounded-lg bg-amber-500 text-white">1</Button>
@@ -1402,7 +1396,7 @@ const AdminDashboard: React.FC = () => {
                         </Card>
 
                         {/* Row 5: Important Notes */}
-                        <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl p-5 shadow-sm">
+                        <Card className="bg-card border-border rounded-2xl p-5 shadow-sm">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-lg font-bold">Important Notes</h3>
                                 <div className="flex gap-2">
@@ -1429,9 +1423,9 @@ const AdminDashboard: React.FC = () => {
                         </Card>
 
                         {/* Row 6: Bottom Widgets - Schedules, Recent Activities, Transactions */}
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <Grid cols={12} gap="lg">
                             {/* Schedules / Calendar */}
-                            <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl p-5 shadow-sm">
+                            <Col span={4}><Card className="bg-card border-border rounded-2xl p-5 shadow-sm">
                                 <div className="flex items-center justify-between mb-4">
                                     <h3 className="font-bold">Schedules</h3>
                                     <Button size="sm" variant="outline" className="rounded-lg text-xs h-7 gap-1">
@@ -1470,10 +1464,10 @@ const AdminDashboard: React.FC = () => {
                                     <Clock className="w-8 h-8 text-muted-foreground/30 mb-2" />
                                     <p className="text-xs font-medium text-muted-foreground">No upcoming inspections</p>
                                 </div>
-                            </Card>
+                            </Card></Col>
 
                             {/* Recent Activities */}
-                            <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl p-5 shadow-sm">
+                            <Col span={4}><Card className="bg-card border-border rounded-2xl p-5 shadow-sm">
                                 <div className="flex items-center justify-between mb-4">
                                     <h3 className="font-bold">Recent Activities</h3>
                                     <Button variant="link" className="text-amber-600 text-xs p-0 h-auto">Show More</Button>
@@ -1508,10 +1502,10 @@ const AdminDashboard: React.FC = () => {
                                         <p className="text-xs text-muted-foreground text-center py-10">No recent network activity</p>
                                     )}
                                 </div>
-                            </Card>
+                            </Card></Col>
 
                             {/* Transactions */}
-                            <Card className="bg-white dark:bg-card border-gray-100 dark:border-border rounded-2xl p-5 shadow-sm">
+                            <Col span={4}><Card className="bg-card border-border rounded-2xl p-5 shadow-sm">
                                 <h3 className="font-bold mb-4">Transactions</h3>
 
                                 <div className="space-y-4">
@@ -1544,8 +1538,8 @@ const AdminDashboard: React.FC = () => {
                                 <Button variant="link" className="text-amber-600 text-xs p-0 h-auto mt-4">
                                     View More →
                                 </Button>
-                            </Card>
-                        </div>
+                            </Card></Col>
+                        </Grid>
 
                         {/* Quick Actions Removed */}
                     </TabsContent>
