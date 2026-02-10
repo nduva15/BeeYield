@@ -48,6 +48,7 @@ import Diseases from '@/pages/Diseases'
 import Media from '@/pages/Media'
 import BeeYieldDashboard from '@/pages/BeeYieldDashboard'
 import AdminDashboard from '@/pages/AdminDashboard'
+import ContentEditor from '@/components/beeyield/ContentEditor'
 import AdminLogin from '@/pages/AdminAuth'
 import BuyerDashboard from '@/pages/BuyerDashboard'
 import AccountSettings from '@/pages/AccountSettings'
@@ -102,6 +103,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                                                 <Route path="/beeyield-dashboard" element={<ProtectedRoute requireBeeYield={true}><BeeYieldDashboard /></ProtectedRoute>} />
                                                 <Route path="/measurements" element={<ProtectedRoute requireBeeYield={true}><MeasurementData /></ProtectedRoute>} />
                                                 <Route path="/ceba" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+                                                <Route path="/ceba/content/editor/:id" element={<ProtectedRoute><ContentEditor /></ProtectedRoute>} />
                                                 <Route path="/ceba/login" element={<AdminLogin />} />
                                                 {/* Mapped my-account to BuyerDashboard based on routes/my-account.tsx */}
                                                 <Route path="/my-account" element={<ProtectedRoute><BuyerDashboard /></ProtectedRoute>} />

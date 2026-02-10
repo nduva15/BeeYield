@@ -31,15 +31,12 @@ const Authentication: React.FC = () => {
     const { items } = useCart();
     const [authMode, setAuthMode] = useState<AuthMode>('login');
 
-    // Parse mode from URL if possible (e.g. /login?mode=register) or path
+    // Parse mode from URL if possible (e.g. /login?mode=register)
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const mode = params.get('mode') as AuthMode;
-
         if (mode && ['login', 'register', 'forgot-password'].includes(mode)) {
             setAuthMode(mode);
-        } else if (location.pathname === '/signup') {
-            setAuthMode('register');
         }
     }, [location]);
 
@@ -90,12 +87,12 @@ const Authentication: React.FC = () => {
 
                         <div className="flex items-center gap-2">
                             <img src={Logo} alt="Logo" className="h-8 w-8" />
-                            <h1 className="text-2xl font-black font-heading tracking-tight">BeeYield <span className="text-primary italic">Secure</span></h1>
+                            <h1 className="text-2xl font-black font-heading tracking-tight">BeeYield</h1>
                         </div>
 
                         <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
                             <Lock className="h-4 w-4 text-primary" />
-                            <span className="hidden sm:inline">Secure Transaction</span>
+                            <span className="hidden sm:inline">Secure Connection</span>
                         </div>
                     </div>
 
@@ -115,7 +112,7 @@ const Authentication: React.FC = () => {
                                             <StepIcon className="h-5 w-5" />
                                         </div>
                                         <span
-                                            className={`text-[10px] font-black uppercase tracking-widest mt-2 ${step.active ? 'text-primary' : 'text-muted-foreground'
+                                            className={`text-xs font-black uppercase tracking-widest mt-2 ${step.active ? 'text-primary' : 'text-muted-foreground'
                                                 }`}
                                         >
                                             {step.label}
@@ -162,7 +159,7 @@ const Authentication: React.FC = () => {
                                     </div>
                                     <div>
                                         <h4 className="font-bold text-lg">{benefit.title}</h4>
-                                        <p className="text-sm text-muted-foreground font-medium">{benefit.desc}</p>
+                                        <p className="text-base text-muted-foreground font-medium">{benefit.desc}</p>
                                     </div>
                                 </div>
                             ))}
@@ -176,22 +173,22 @@ const Authentication: React.FC = () => {
                                 <div>
                                     <CardTitle className="text-2xl font-black font-heading flex items-center gap-2">
                                         <LogIn className="h-6 w-6 text-primary" />
-                                        {authMode === 'login' ? 'Sign In' : authMode === 'register' ? 'Create Account' : 'Reset Password'}
+                                        {authMode === 'login' ? 'Welcome Back' : authMode === 'register' ? 'Create Account' : 'Reset Password'}
                                     </CardTitle>
-                                    <p className="text-sm font-medium text-muted-foreground mt-1">
-                                        {authMode === 'login' ? 'Secure access to your BeeYield profile' : 'Join the precision pollination revolution'}
+                                    <p className="text-base font-medium text-muted-foreground mt-1">
+                                        {authMode === 'login' ? 'Please enter your details to continue' : 'Join BeeYield today'}
                                     </p>
                                 </div>
                                 <div className="flex gap-1 p-1 bg-background/50 rounded-xl border border-border/50">
                                     <button
                                         onClick={() => setAuthMode('login')}
-                                        className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-tighter transition-all ${authMode === 'login' ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground hover:bg-muted'}`}
+                                        className={`px-4 py-2 rounded-lg text-sm font-black uppercase tracking-tighter transition-all ${authMode === 'login' ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground hover:bg-muted'}`}
                                     >
                                         Log In
                                     </button>
                                     <button
                                         onClick={() => setAuthMode('register')}
-                                        className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-tighter transition-all ${authMode === 'register' ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground hover:bg-muted'}`}
+                                        className={`px-4 py-2 rounded-lg text-sm font-black uppercase tracking-tighter transition-all ${authMode === 'register' ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground hover:bg-muted'}`}
                                     >
                                         Sign Up
                                     </button>
@@ -202,6 +199,7 @@ const Authentication: React.FC = () => {
                                     {authMode === 'login' && (
                                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                                             <LoginForm
+                                                variant="shop"
                                                 onSuccess={() => {
                                                     toast.success("Identity Verified");
                                                     // Redirection handled by useEffect
@@ -265,9 +263,9 @@ const Authentication: React.FC = () => {
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-muted-foreground text-xs font-medium">
                     <p>© 2026 BeeYield Professional Pollination. All rights reserved.</p>
                     <div className="flex gap-6">
-                        <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
-                        <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>
-                        <a href="#" className="hover:text-primary transition-colors">Support</a>
+                        <a href="#" className="hover:text-primary transition-colors">Privacy Protocol</a>
+                        <a href="#" className="hover:text-primary transition-colors">Terms of Engagement</a>
+                        <a href="#" className="hover:text-primary transition-colors">Support Matrix</a>
                     </div>
                 </div>
             </div>

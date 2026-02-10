@@ -20,7 +20,6 @@ class ApiaryCreate(BaseModel):
     name: str = Field(..., description="Apiary name")
     apiary_type: Optional[str] = Field("Permanent", description="Permanent, Migratory, Breeding, Quarantine")
     location_name: Optional[str] = None
-    farmer_id: Optional[UUID] = None # Link to specialist farmer
     county: Optional[str] = None
     region: Optional[str] = None
     latitude: Optional[float] = None
@@ -28,15 +27,12 @@ class ApiaryCreate(BaseModel):
     size_acres: Optional[float] = Field(0, description="Size in acres")
     expected_hives: Optional[int] = Field(0, description="Expected number of hives")
     primary_forage: Optional[str] = None
-    forage_type: Optional[str] = None # Alias for primary_forage
-    sun_exposure: Optional[str] = Field("Semi-Shade", description="Full Sun, Shade, Semi-Shade")
     notes: Optional[str] = None
     status: Optional[str] = Field("active", description="active, inactive")
 
 class ApiaryUpdate(BaseModel):
     name: Optional[str] = None
     apiary_type: Optional[str] = None
-    farmer_id: Optional[UUID] = None
     location_name: Optional[str] = None
     county: Optional[str] = None
     region: Optional[str] = None
@@ -51,36 +47,25 @@ class ApiaryUpdate(BaseModel):
 class HiveCreate(BaseModel):
     hive_code: str = Field(..., description="Unique hive identifier")
     apiary_id: UUID = Field(..., description="Parent apiary ID")
-    farmer_id: Optional[UUID] = None # Optional specialist assignment
-    hive_type: Optional[str] = Field("Langstroth", description="Langstroth, KTBH, Traditional Log")
-    bee_type: Optional[str] = Field("African Honey Bee", description="Bee species")
-    frame_count: Optional[int] = Field(10, description="Number of frames")
-    material: Optional[str] = Field("Wood", description="Construction material")
-    status: Optional[str] = Field("ACTIVE", description="ACTIVE, WEAK, INACTIVE, etc.")
+    type: Optional[str] = Field("Langstroth", description="Langstroth, KTBH, Traditional Log")
+    status: Optional[str] = Field("Active & Healthy", description="Active & Healthy, Weak Colony, Abandoned, Recently Harvested")
     installation_date: Optional[date] = None
-    queen_hatched: Optional[date] = None
-    strength: Optional[int] = Field(3, description="1 (Weak) to 5 (Strong)")
-    has_sensors: Optional[bool] = False
     health_status: Optional[str] = None
+    notes: Optional[str] = None
 
 class HiveUpdate(BaseModel):
     hive_code: Optional[str] = None
     apiary_id: Optional[UUID] = None
-    farmer_id: Optional[UUID] = None
-    hive_type: Optional[str] = None
-    bee_type: Optional[str] = None
-    frame_count: Optional[int] = None
-    material: Optional[str] = None
+    type: Optional[str] = None
     status: Optional[str] = None
     installation_date: Optional[date] = None
-    has_sensors: Optional[bool] = None
     health_status: Optional[str] = None
     last_inspection_date: Optional[date] = None
+    notes: Optional[str] = None
 
 class HarvestCreate(BaseModel):
     hive_id: UUID
     apiary_id: UUID
-    farmer_id: Optional[UUID] = None
     harvest_date: date
     quantity_kg: float
     honey_type: Optional[str] = Field("Multi-flower", description="Acacia, Multi-flower, Forest, etc.")
@@ -95,7 +80,6 @@ class HarvestCreate(BaseModel):
 class HarvestUpdate(BaseModel):
     hive_id: Optional[UUID] = None
     apiary_id: Optional[UUID] = None
-    farmer_id: Optional[UUID] = None
     harvest_date: Optional[date] = None
     quantity_kg: Optional[float] = None
     honey_type: Optional[str] = None
@@ -229,61 +213,7 @@ def get_user_apiaries(
     # Handle missing 'status' column by filtering in memory or using is_active
     db_filters = filters.copy()
     
-    # 1. Owned apiaries
-    filters = {"user_id": user_id}
-    # Handle missing 'status' column by filtering in memory or using is_active
-    db_filters = filters.copy()
-    
-    owned_apiaries = db_select("apiaries", filters=db_filters, limit=5000, order_by="created_at", ascending=False)
-    
-    # Post-process for status filter and ensure 'status' field exists
-    def process_apiary(a):
-        # Fallback for missing status column
-        if "status" not in a:
-            a["status"] = "active" if a.get("is_active", True) else "inactive"
-        return a
-
-    owned_apiaries = [process_apiary(a) for a in owned_apiaries]
-    
-    # ------------------------------------------
-
-    if status_filter:
-        owned_apiaries = [a for a in owned_apiaries if a.get("status") == status_filter]
-    
-    
-    # 2. Shared apiaries
-    shared_apiaries = []
-    shares = db_select("apiary_shares", filters={"shared_with_user_id": user_id}, limit=5000)
-    if shares:
-        shared_ids = [s["apiary_id"] for s in shares]
-        # Bulk fetch shared apiaries
-        results = db_select("apiaries", filters={"id": shared_ids}, limit=5000)
-        # Add sharing metadata
-        share_map = {s["apiary_id"]: s for s in shares}
-        for a in results:
-            process_apiary(a)
-            if status_filter and a.get("status") != status_filter:
-                continue
-            a["is_shared"] = True
-            a["permission"] = share_map.get(a["id"], {}).get("permission")
-            shared_apiaries.append(a)
-    
-    all_apiaries = owned_apiaries + shared_apiaries
-    
-    return all_apiaries
-
-@router.post("/apiaries", response_model=dict, status_code=status.HTTP_201_CREATED)
-def create_apiary(
-    apiary_in: ApiaryCreate,
-    user_id: str = Depends(get_user_id)
-):
-    """Create a new apiary"""
-    # ... (omitted for brevity, assume unchanged until we reach hives)
-    # Actually, I need to be careful not to replace the whole file content inappropriately. 
-    # The tool asks for TargetContent.
-    # I should do this in chunks.
-
-# ... skipping to the actual chunks ...
+    owned_apiaries = db_select("apiaries", filters=db_filters, order_by="created_at", ascending=False)
     
     # Post-process for status filter and ensure 'status' field exists
     def process_apiary(a):
@@ -306,7 +236,7 @@ def create_apiary(
     if shares:
         shared_ids = [s["apiary_id"] for s in shares]
         # Bulk fetch shared apiaries
-        results = db_select("apiaries", filters={"id": shared_ids}, limit=5000)
+        results = db_select("apiaries", filters={"id": shared_ids})
         # Add sharing metadata
         share_map = {s["apiary_id"]: s for s in shares}
         for a in results:
@@ -448,7 +378,7 @@ def get_user_hives(
         filters["status"] = status_filter
     
     # 1. Owned hives
-    owned_hives = db_select("hives", filters=filters, limit=5000, order_by="created_at", ascending=False)
+    owned_hives = db_select("hives", filters=filters, order_by="created_at", ascending=False, limit=1000)
     
     
     
@@ -463,7 +393,7 @@ def get_user_hives(
             h_filters = {"apiary_id": apiary_id}
             if status_filter:
                 h_filters["status"] = status_filter
-            hives_in_shared = db_select("hives", filters=h_filters, limit=5000)
+            hives_in_shared = db_select("hives", filters=h_filters, limit=1000)
             shared_hives.extend(hives_in_shared)
     else:
         # Get all shared apiaries, then all hives inside them
@@ -472,7 +402,7 @@ def get_user_hives(
             h_filters = {"apiary_id": share["apiary_id"]}
             if status_filter:
                 h_filters["status"] = status_filter
-            hives = db_select("hives", filters=h_filters, limit=5000)
+            hives = db_select("hives", filters=h_filters, limit=1000)
             shared_hives.extend(hives)
 
     all_hives = owned_hives + shared_hives
@@ -611,7 +541,7 @@ def get_user_harvests(
     
     # 1. Owned harvests
     columns = "*,hive:hives(*,apiary:apiaries(*)),farmer:farmers(*)"
-    owned = db_select("harvests", filters=filters, columns=columns, order_by="harvest_date", ascending=False, limit=5000)
+    owned = db_select("harvests", filters=filters, columns=columns, order_by="harvest_date", ascending=False, limit=2000)
     
     
     # 2. Shared harvests
@@ -622,12 +552,12 @@ def get_user_harvests(
         if shares:
             h_filters = {"apiary_id": apiary_id}
             if hive_id: h_filters["hive_id"] = hive_id
-            shared = db_select("harvests", filters=h_filters, columns=columns, limit=5000)
+            shared = db_select("harvests", filters=h_filters, columns=columns, limit=1000)
     elif not hive_id:
         # Fetch all shared apiaries, then harvests
         shares = db_select("apiary_shares", filters={"shared_with_user_id": user_id})
         for share in shares:
-            shared.extend(db_select("harvests", filters={"apiary_id": share["apiary_id"]}, columns=columns, limit=5000))
+            shared.extend(db_select("harvests", filters={"apiary_id": share["apiary_id"]}, columns=columns, limit=1000))
     
     
     all_harvests = owned + shared
@@ -779,37 +709,6 @@ def delete_harvest(
     
     return None
 
-
-# ============================================
-# LABEL STUDIO (Smart Storyteller)
-# ============================================
-
-class GenerateBlurbRequest(BaseModel):
-    floral_type: Optional[str] = Field(None, description="Honey/floral type from harvest, e.g. Acacia, Lipowy, Polyfloral")
-    location: Optional[str] = Field(None, description="Origin location for context")
-    harvest_year: Optional[str] = Field(None, description="Harvest year")
-    use_ai: Optional[bool] = Field(True, description="Use AI when available; else curated only")
-
-
-@router.post("/labels/generate-blurb", response_model=dict)
-async def generate_label_blurb(
-    body: GenerateBlurbRequest,
-    user_id: str = Depends(get_user_id),
-):
-    """
-    Smart Storyteller: generate a short marketing blurb (max 140 chars) for the honey label
-    based on floral type. Uses curated descriptions or AI (Gemini/OpenAI) when enabled.
-    """
-    from app.services.label_studio_service import generate_blurb_smart
-    blurb = await generate_blurb_smart(
-        floral_type=body.floral_type,
-        location=body.location,
-        harvest_year=body.harvest_year,
-        use_ai=body.use_ai if body.use_ai is not None else True,
-    )
-    return {"blurb": blurb, "length": len(blurb)}
-
-
 # ============================================
 # TELEMETRY ENDPOINTS
 # ============================================
@@ -837,6 +736,8 @@ def get_telemetry_latest(
         return []
     
     # 3. Get latest reading for each device
+    # Optimization: In a real DB we'd use a window function or distinct on.
+    # Here we loop, assuming device count is small per user.
     readings = []
     for dev in devices:
         # Get latest reading
@@ -852,28 +753,6 @@ def get_telemetry_latest(
             # Enrich with device info if needed
             reading["device_code"] = dev.get("device_code")
             reading["location_name"] = dev.get("location_name")
-            readings.append(reading)
-
-    # 4. AUTO-POPULATE FALLBACK: If no real readings, provide simulated ones for hives
-    if not readings:
-        hives = db_select("hives", filters={"user_id": user_id}, limit=50) # Limit simulation to first 50
-        for hive in hives:
-            # Simulate a reading
-            import random
-            from datetime import datetime
-            
-            # Use deterministic but natural-looking simulation
-            reading = {
-                "id": str(hive["id"]),
-                "hive_id": hive["id"],
-                "hive_code": hive.get("hive_code"),
-                "timestamp": datetime.now().isoformat(),
-                "temperature": 34.2 + (random.random() * 2),
-                "humidity": 62.0 + (random.random() * 10),
-                "weight": 24.5 + (random.random() * 5),
-                "battery_level": 85 + (random.random() * 15),
-                "is_simulated": True
-            }
             readings.append(reading)
             
     return readings
@@ -1446,7 +1325,7 @@ def fix_data_ownership(
                 "apiary_id": apiary_id,
                 "user_id": user_id,
                 "hive_code": f"KBZ-{hive_num:03d}",
-                "hive_type": "Langstroth",
+                "type": "Langstroth",
                 "status": "Active & Healthy",
                 "installation_date": datetime.now().strftime("%Y-%m-%d")
             }

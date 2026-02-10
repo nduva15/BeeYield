@@ -1,9 +1,342 @@
-import { MapPin, Globe, Heart, Zap, Database, Cpu, Sun, Users, Compass, Briefcase, ArrowRight } from "lucide-react";
+
+import { MapPin, Globe, Heart, Zap, Database, Cpu, Sun, Users, Compass, Briefcase, ArrowRight, ArrowLeft, Upload, CheckCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+interface Job {
+  id: string;
+  title: string;
+  department: string;
+  location: string;
+  type: string;
+  description_html: string;
+  salary_range: string;
+  is_active: boolean;
+  posted_at: string;
+}
 
 const Careers = () => {
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+
+  // Form State
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [linkedin, setLinkedin] = useState("");
+  const [resume, setResume] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
+  const fetchJobs = async () => {
+    try {
+      if (!supabase) return;
+      const { data, error } = await supabase
+        .from('jobs')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+      setJobs(data || []);
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+      // Fallback to static data if DB fails (for demo purposes if migration failed)
+      setJobs([
+        {
+          id: "1",
+          title: "Senior Agronomist",
+          department: "Operations",
+          location: "Nairobi, Kenya",
+          type: "Full-time",
+          description_html: "<p>Lead field operations and ensure hive health across our apiary network.</p><h3>Responsibilities</h3><ul><li>Monitor 50+ hives</li><li>Data collection</li></ul>",
+          salary_range: "KES 150,000 - 200,000",
+          is_active: true,
+          posted_at: new Date().toISOString()
+        },
+        {
+          id: "2",
+          title: "Software Engineer",
+          department: "Tech",
+          location: "Nairobi (Remote)",
+          type: "Full-time",
+          description_html: "<p>Build the future of agri-tech with React and Python.</p>",
+          salary_range: "KES 120,000 - 180,000",
+          is_active: true,
+          posted_at: new Date().toISOString()
+        }
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("File size must be less than 5MB");
+        return;
+      }
+      if (file.type !== "application/pdf") {
+        toast.error("Only PDF files are allowed");
+        return;
+      }
+      setResume(file);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedJob) return;
+    if (!resume) {
+      toast.error("Please upload your resume");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      if (!supabase) throw new Error("Supabase client not initialized");
+
+      // 1. Upload Resume
+      const fileExt = resume.name.split('.').pop();
+      const fileName = `${selectedJob.id}/${email.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('resumes')
+        .upload(fileName, resume);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('resumes')
+        .getPublicUrl(fileName);
+
+      // 2. Insert Application
+      const { error: dbError } = await supabase
+        .from('job_applications')
+        .insert({
+          job_id: selectedJob.id,
+          full_name: fullName,
+          email: email,
+          phone: phone,
+          linkedin_url: linkedin,
+          resume_url: publicUrl,
+          status: 'applied'
+        });
+
+      if (dbError) throw dbError;
+
+      setUploadSuccess(true);
+      toast.success("Application received! We will contact you shortly.");
+
+      // Cleanup
+      setFullName("");
+      setEmail("");
+      setPhone("");
+      setLinkedin("");
+      setResume(null);
+
+    } catch (error: any) {
+      console.error('Submission error:', error);
+      toast.error(error.message || "Failed to submit application");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (selectedJob) {
+    return (
+      <div className="min-h-screen bg-background py-12 px-4 md:px-8">
+        <div className="max-w-7xl mx-auto">
+          <Button
+            variant="ghost"
+            onClick={() => { setSelectedJob(null); setUploadSuccess(false); }}
+            className="mb-8 hover:bg-muted group"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" /> Back to Jobs
+          </Button>
+
+          {uploadSuccess ? (
+            <Card className="max-w-md mx-auto text-center py-12 border-green-200 bg-green-50/50 dark:bg-green-900/10 dark:border-green-900">
+              <CardContent>
+                <div className="flex justify-center mb-6">
+                  <div className="h-20 w-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                    <CheckCircle className="h-10 w-10 text-green-600 dark:text-green-400" />
+                  </div>
+                </div>
+                <h2 className="text-2xl font-bold mb-3">Application Received!</h2>
+                <p className="text-muted-foreground mb-8">
+                  Thanks for applying to be a <strong>{selectedJob.title}</strong>.
+                  We've sent a detailed confirmation to {email}.
+                </p>
+                <Button onClick={() => { setSelectedJob(null); setUploadSuccess(false); }}>
+                  Browse More Jobs
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid lg:grid-cols-3 gap-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              {/* Left Column: Job Description */}
+              <div className="lg:col-span-2 space-y-8">
+                <div>
+                  <h1 className="text-4xl font-bold text-foreground mb-4">{selectedJob.title}</h1>
+                  <div className="flex flex-wrap gap-4 text-muted-foreground mb-6">
+                    <div className="flex items-center gap-1.5 bg-secondary/50 px-3 py-1 rounded-full text-sm">
+                      <MapPin className="h-4 w-4" /> {selectedJob.location}
+                    </div>
+                    <div className="flex items-center gap-1.5 bg-secondary/50 px-3 py-1 rounded-full text-sm">
+                      <Briefcase className="h-4 w-4" /> {selectedJob.type}
+                    </div>
+                    <div className="flex items-center gap-1.5 bg-secondary/50 px-3 py-1 rounded-full text-sm">
+                      <Users className="h-4 w-4" /> {selectedJob.department}
+                    </div>
+                  </div>
+                </div>
+
+                <Card className="border-none shadow-sm bg-card/50">
+                  <CardContent className="p-8 prose prose-gray max-w-none dark:prose-invert">
+                    <div dangerouslySetInnerHTML={{ __html: selectedJob.description_html }} />
+
+                    {!selectedJob.description_html && (
+                      <div className="space-y-6">
+                        <h3>About the role</h3>
+                        <p>
+                          As a key member of the {selectedJob.department} team, you will be responsible for
+                          driving innovation and ensuring the highest standards of quality in your work.
+                        </p>
+                        <h3>Responsibilities</h3>
+                        <ul>
+                          <li>Collaborate with cross-functional teams</li>
+                          <li>Drive project timelines and deliverables</li>
+                          <li>Maintain high code/operational quality</li>
+                        </ul>
+                        <h3>Requirements</h3>
+                        <ul>
+                          <li>3+ years of relevant experience</li>
+                          <li>Strong communication skills</li>
+                          <li>Passion for ag-tech and sustainability</li>
+                        </ul>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Right Column: Sticky Application Form */}
+              <div className="lg:col-span-1">
+                <div className="sticky top-8">
+                  <Card className="border-primary/20 shadow-lg overflow-hidden">
+                    <div className="h-2 bg-primary w-full" />
+                    <CardContent className="p-6">
+                      <h3 className="text-xl font-bold mb-6">Apply for this role</h3>
+                      <form onSubmit={handleSubmit} className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="fullName">Full Name</Label>
+                          <Input
+                            id="fullName"
+                            required
+                            placeholder="Timothy Nduva"
+                            value={fullName}
+                            onChange={(e) => setFullName(e.target.value)}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="email">Email</Label>
+                          <Input
+                            id="email"
+                            type="email"
+                            required
+                            placeholder="timothy@example.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="phone">Phone</Label>
+                          <Input
+                            id="phone"
+                            required
+                            placeholder="+254 700 000000"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="linkedin">LinkedIn URL (Optional)</Label>
+                          <Input
+                            id="linkedin"
+                            type="url"
+                            placeholder="https://linkedin.com/in/..."
+                            value={linkedin}
+                            onChange={(e) => setLinkedin(e.target.value)}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Resume / CV (PDF)</Label>
+                          <div className="border-2 border-dashed border-input hover:border-primary rounded-lg p-6 transition-colors text-center cursor-pointer relative bg-muted/20">
+                            <input
+                              type="file"
+                              accept=".pdf"
+                              onChange={handleFileChange}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            />
+                            <div className="flex flex-col items-center gap-2">
+                              <Upload className="h-8 w-8 text-muted-foreground" />
+                              {resume ? (
+                                <div className="text-sm font-medium text-primary break-all bg-primary/10 px-2 py-1 rounded">
+                                  {resume.name}
+                                </div>
+                              ) : (
+                                <>
+                                  <span className="text-sm font-medium">Click to upload</span>
+                                  <span className="text-xs text-muted-foreground">PDF only (Max 5MB)</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <Button type="submit" className="w-full mt-4" size="lg" disabled={isSubmitting}>
+                          {isSubmitting ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...
+                            </>
+                          ) : (
+                            "Send Application"
+                          )}
+                        </Button>
+                      </form>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -18,7 +351,7 @@ const Careers = () => {
           <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed mb-8">
             We're a team on a mission to help protect the global food supply.
           </p>
-          <Button size="lg" className="shadow-xl h-14 text-lg">
+          <Button size="lg" className="shadow-xl h-14 text-lg" onClick={() => document.getElementById('openings')?.scrollIntoView({ behavior: 'smooth' })}>
             View Openings
           </Button>
         </div>
@@ -61,7 +394,7 @@ const Careers = () => {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <Card className="border-none shadow-lg hover:shadow-xl transition-all">
+            <Card className="border-none shadow-lg hover:shadow-xl transition-all h-full">
               <CardContent className="p-6">
                 <div className="bg-blue-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                   <Compass className="h-6 w-6 text-blue-600" />
@@ -73,7 +406,7 @@ const Careers = () => {
               </CardContent>
             </Card>
 
-            <Card className="border-none shadow-lg hover:shadow-xl transition-all">
+            <Card className="border-none shadow-lg hover:shadow-xl transition-all h-full">
               <CardContent className="p-6">
                 <div className="bg-purple-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                   <Cpu className="h-6 w-6 text-purple-600" />
@@ -85,7 +418,7 @@ const Careers = () => {
               </CardContent>
             </Card>
 
-            <Card className="border-none shadow-lg hover:shadow-xl transition-all">
+            <Card className="border-none shadow-lg hover:shadow-xl transition-all h-full">
               <CardContent className="p-6">
                 <div className="bg-yellow-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                   <Sun className="h-6 w-6 text-yellow-600" />
@@ -97,7 +430,7 @@ const Careers = () => {
               </CardContent>
             </Card>
 
-            <Card className="border-none shadow-lg hover:shadow-xl transition-all">
+            <Card className="border-none shadow-lg hover:shadow-xl transition-all h-full">
               <CardContent className="p-6">
                 <div className="bg-green-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                   <Users className="h-6 w-6 text-green-600" />
@@ -109,7 +442,7 @@ const Careers = () => {
               </CardContent>
             </Card>
 
-            <Card className="border-none shadow-lg hover:shadow-xl transition-all">
+            <Card className="border-none shadow-lg hover:shadow-xl transition-all h-full">
               <CardContent className="p-6">
                 <div className="bg-indigo-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                   <Database className="h-6 w-6 text-indigo-600" />
@@ -121,7 +454,7 @@ const Careers = () => {
               </CardContent>
             </Card>
 
-            <Card className="border-none shadow-lg hover:shadow-xl transition-all">
+            <Card className="border-none shadow-lg hover:shadow-xl transition-all h-full">
               <CardContent className="p-6">
                 <div className="bg-orange-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                   <Zap className="h-6 w-6 text-orange-600" />
@@ -150,7 +483,7 @@ const Careers = () => {
       </section>
 
       {/* Jobs Section */}
-      <section className="py-24 bg-background">
+      <section id="openings" className="py-24 bg-background">
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold mb-4 text-foreground">Make Your Next Choice</h2>
@@ -167,26 +500,42 @@ const Careers = () => {
 
           {/* Job Listings */}
           <div className="space-y-4">
-            {[
-              { title: "Senior Agronomist", location: "Nairobi, Kenya", type: "Full-time" },
-              { title: "Field Operations Manager", location: "Rift Valley, Kenya", type: "Full-time" },
-              { title: "Data Scientist (Remote)", location: "Kenya (Remote)", type: "Full-time" },
-              { title: "Beekeeping Specialist", location: "Mount Kenya Region", type: "Contract" },
-              { title: "Customer Success Manager", location: "Nairobi, Kenya", type: "Full-time" },
-            ].map((job, i) => (
-              <div key={i} className="group border border-border rounded-xl p-6 hover:border-primary/50 hover:shadow-md transition-all cursor-pointer flex items-center justify-between bg-card">
-                <div>
-                  <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">{job.title}</h3>
-                  <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {job.location}</span>
-                    <span className="flex items-center gap-1"><Briefcase className="h-3 w-3" /> {job.type}</span>
+            {loading ? (
+              <div className="text-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+                <p className="mt-4 text-muted-foreground">Loading openings...</p>
+              </div>
+            ) : jobs.length === 0 ? (
+              <div className="text-center py-12 border border-dashed rounded-xl">
+                <p className="text-muted-foreground">No open positions at the moment. Check back later!</p>
+              </div>
+            ) : (
+              jobs.map((job) => (
+                <div
+                  key={job.id}
+                  onClick={() => setSelectedJob(job)}
+                  className="group border border-border rounded-xl p-6 hover:border-primary/50 hover:shadow-md transition-all cursor-pointer flex items-center justify-between bg-card"
+                >
+                  <div>
+                    <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">{job.title}</h3>
+                    <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+                      <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {job.location}</span>
+                      <span className="flex items-center gap-1"><Briefcase className="h-3 w-3" /> {job.type}</span>
+                      <span className="flex items-center gap-1"><Users className="h-3 w-3" /> {job.department}</span>
+                    </div>
+                  </div>
+                  <div className="hidden md:flex items-center text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                    View Details <ArrowRight className="h-4 w-4 ml-2" />
+                  </div>
+                  {/* Mobile view arrow */}
+                  <div className="md:hidden text-muted-foreground">
+                    <ArrowRight className="h-4 w-4" />
                   </div>
                 </div>
-                <div className="hidden md:flex items-center text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                  Apply Now <ArrowRight className="h-4 w-4 ml-2" />
-                </div>
-              </div>
-            ))}
+              ))
+            )}
+
+            {/* Fail-safe if jobs are empty but no loading (DB connection fail) - handled by catch block using fallback */}
           </div>
 
           <div className="mt-12 text-center">

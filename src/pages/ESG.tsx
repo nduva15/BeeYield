@@ -32,7 +32,8 @@ const ESG = () => {
         doc.text('BeeYield', 50, 25);
 
         doc.setFontSize(10);
-        doc.text('Social Impact Report 2024', 50, 32);
+        doc.setTextColor(107, 114, 128);
+        doc.text('Corporate Social Responsibility Report 2024', 50, 32);
         doc.text('Kibwezi, Makueni County, Kenya', 50, 38);
 
         // Title
@@ -93,8 +94,8 @@ const ESG = () => {
         const pillars = [
           "1. Bee Disease Prevention - <15% colony loss rate",
           "2. The 50/50 Harvest Promise - Ethical beekeeping",
-          "3. HoneyChain™ Tracking - Verified journey",
-          "4. Sustainable Technology - IoT data optimization",
+          "3. HoneyChain™ Traceability - 100% verified journey",
+          "4. Sustainable AgriTech - IoT & AI optimization",
           "5. Sustainable Farming - Zero chemical pesticides",
           "6. Women-Led Tech Leadership - 66% women founders"
         ];
@@ -158,7 +159,7 @@ const ESG = () => {
       impact: "Sustainable beekeeping that ensures long-term colony health and productivity"
     },
     {
-      title: "HoneyChain™ Tracking",
+      title: "HoneyChain™ Traceability",
       icon: Database,
       color: "from-blue-500 to-indigo-600",
       initiatives: [
@@ -168,7 +169,7 @@ const ESG = () => {
         "Beekeeper profiles and fair payment records on-chain",
         "Consumer transparency dashboard for complete product visibility"
       ],
-      impact: "Every honey batch is tracked to a specific hive, beekeeper, and harvest date"
+      impact: "100% of honey batches traceable to specific hive, beekeeper, and harvest date"
     },
     {
       title: "Sustainable AgriTech",
@@ -176,7 +177,7 @@ const ESG = () => {
       color: "from-violet-500 to-purple-600",
       initiatives: [
         "Solar-powered IoT hive monitoring systems for off-grid apiaries",
-        "Automated predictive analysis for optimal harvest timing",
+        "Smart predictive analytics for optimal harvest timing",
         "Real-time temperature and humidity sensors protecting colony health",
         "Mobile app for beekeepers with instant hive health alerts",
         "Carbon-neutral technology operations through renewable energy"
@@ -205,7 +206,7 @@ const ESG = () => {
         "Women holding key decision-making roles in technology and strategy",
         "Mentorship programs for young women in STEM and agriculture",
         "Championing gender equality in the African tech ecosystem",
-        "Digital tools and training for rural women in farming"
+        "Driving digital innovation to empower rural women farmers"
       ],
       impact: "Visionary women leaders driving 66% of our founding team's impact"
     }
@@ -232,7 +233,7 @@ const ESG = () => {
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-              Environmental, Social, and Governance practices are the foundation of everything we do at BeeYield. From the semi-arid lands of Kibwezi, Kenya, we're proving that sustainable beekeeping can transform communities and ecosystems.
+              Environmental, Social, and Governance practices aren't just corporate buzzwords for us—they're the foundation of everything we do at BeeYield. From the semi-arid lands of Kibwezi, Kenya, we're proving that sustainable beekeeping can transform communities and ecosystems.
             </p>
 
             <div className="flex flex-wrap justify-center gap-4">
@@ -294,7 +295,7 @@ const ESG = () => {
                 What ESG Means for BeeYield
               </h2>
               <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                At BeeYield, ESG is central to our mission. From bee disease prevention to women's leadership, from sustainable technology to tracking, these six pillars define how we operate.
+                At BeeYield, ESG isn't a checkbox—it's our DNA. From bee disease prevention to women empowerment, from sustainable agritech to full traceability, these six pillars define how we operate and measure success.
               </p>
             </div>
 
@@ -412,7 +413,7 @@ const ESG = () => {
           <div className="max-w-5xl mx-auto text-center">
             <Badge variant="secondary" className="mb-4">Social Impact</Badge>
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Supporting 20+ Local Beekeepers
+              Empowering 20+ Local Beekeepers
             </h2>
             <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">
               Our partner beekeeper program provides training, equipment, and a guaranteed market for honey. Each beekeeper manages 5-15 hives, creating sustainable income for their families while practicing ethical and traceable beekeeping.
@@ -474,7 +475,7 @@ const ESG = () => {
                 <div className="max-w-md text-left">
                   <h4 className="font-bold text-lg mb-2">Women Leading in AgriTech</h4>
                   <p className="text-sm text-muted-foreground">
-                    BeeYield is co-founded by <strong>Carole Nduva</strong> (Chief Growth Officer) and <strong>Agatha Nduva</strong> (Chief IT Head). Their leadership in business and technology infrastructure shows the role of women in Africa's agricultural progress.
+                    BeeYield is proudly co-founded by <strong>Carole Nduva</strong> (Chief Growth Officer) and <strong>Agatha Nduva</strong> (Chief IT Head). Their leadership in business strategy and technology infrastructure proves that women are at the forefront of Africa's digital revolution in agriculture.
                   </p>
                 </div>
               </div>

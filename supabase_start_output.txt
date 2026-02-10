@@ -1,0 +1,1341 @@
+﻿node.exe :  mailpit Skipped - 
+Image is already present 
+locally 
+At C:\Program 
+Files\nodejs\npx.ps1:29 char:3
++   & $NODE_EXE $NPX_CLI_JS 
+$args
++   
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : N 
+   otSpecified: ( mailpit Skip  
+  pe...resent locally :String   
+ ) [], RemoteException
+    + FullyQualifiedErrorId : N 
+   ativeCommandError
+ 
+ storage Skipped - Image is 
+already present locally 
+ studio Skipped - Image is 
+already present locally 
+ analytics Skipped - Image is 
+already present locally 
+ gateway Skipped - Image is 
+already present locally 
+ api Skipped - Image is already 
+present locally 
+ edgeRuntime Skipped - Image is 
+already present locally 
+ vector Skipped - Image is 
+already present locally 
+ db Skipped - Image is already 
+present locally 
+ auth Skipped - Image is 
+already present locally 
+ realtime Skipped - Image is 
+already present locally 
+ imgProxy Skipped - Image is 
+already present locally 
+ pgmeta Skipped - Image is 
+already present locally 
+Starting database...
+Initialising schema...
+Seeding globals from 
+roles.sql...
+Applying migration 2026020811000
+0_core_schema.sql...
+NOTICE (42710): extension 
+"uuid-ossp" already exists, 
+skipping
+NOTICE (00000): policy "Users 
+can view own apiaries" for 
+relation "public.apiaries" does 
+not exist, skipping
+NOTICE (00000): policy "Users 
+can insert own apiaries" for 
+relation "public.apiaries" does 
+not exist, skipping
+NOTICE (00000): policy "Users 
+can update own apiaries" for 
+relation "public.apiaries" does 
+not exist, skipping
+NOTICE (00000): policy "Users 
+can delete own apiaries" for 
+relation "public.apiaries" does 
+not exist, skipping
+NOTICE (00000): policy "Users 
+can view own farmers" for 
+relation "public.farmers" does 
+not exist, skipping
+NOTICE (00000): policy "Users 
+can insert own farmers" for 
+relation "public.farmers" does 
+not exist, skipping
+NOTICE (00000): policy "Users 
+can update own farmers" for 
+relation "public.farmers" does 
+not exist, skipping
+NOTICE (00000): policy "Users 
+can delete own farmers" for 
+relation "public.farmers" does 
+not exist, skipping
+NOTICE (00000): policy "Users 
+can view own harvests" for 
+relation "public.harvests" does 
+not exist, skipping
+NOTICE (00000): policy "Users 
+can insert own harvests" for 
+relation "public.harvests" does 
+not exist, skipping
+NOTICE (00000): policy "Users 
+can update own harvests" for 
+relation "public.harvests" does 
+not exist, skipping
+NOTICE (00000): policy "Users 
+can delete own harvests" for 
+relation "public.harvests" does 
+not exist, skipping
+NOTICE (00000): policy "Users 
+can view own hives" for 
+relation "public.hives" does 
+not exist, skipping
+NOTICE (00000): policy "Users 
+can insert own hives" for 
+relation "public.hives" does 
+not exist, skipping
+NOTICE (00000): policy "Users 
+can update own hives" for 
+relation "public.hives" does 
+not exist, skipping
+NOTICE (00000): policy "Users 
+can delete own hives" for 
+relation "public.hives" does 
+not exist, skipping
+NOTICE (00000): policy "Users 
+can view own inspections" for 
+relation "public.inspections" 
+does not exist, skipping
+NOTICE (00000): policy "Users 
+can insert own inspections" for 
+relation "public.inspections" 
+does not exist, skipping
+NOTICE (00000): policy "Users 
+can update own inspections" for 
+relation "public.inspections" 
+does not exist, skipping
+NOTICE (00000): policy "Users 
+can delete own inspections" for 
+relation "public.inspections" 
+does not exist, skipping
+NOTICE (00000): policy "Users 
+can view own tasks" for 
+relation "public.tasks" does 
+not exist, skipping
+NOTICE (00000): policy "Users 
+can insert own tasks" for 
+relation "public.tasks" does 
+not exist, skipping
+NOTICE (00000): policy "Users 
+can update own tasks" for 
+relation "public.tasks" does 
+not exist, skipping
+NOTICE (00000): policy "Users 
+can delete own tasks" for 
+relation "public.tasks" does 
+not exist, skipping
+NOTICE (00000): policy "Users 
+can view own profile" for 
+relation "public.profiles" does 
+not exist, skipping
+NOTICE (00000): policy "Users 
+can update own profile" for 
+relation "public.profiles" does 
+not exist, skipping
+NOTICE (00000): trigger 
+"on_auth_user_created" for 
+relation "auth.users" does not 
+exist, skipping
+NOTICE (00000): trigger 
+"update_apiaries_updated_at" 
+for relation "public.apiaries" 
+does not exist, skipping
+NOTICE (00000): trigger 
+"update_farmers_updated_at" for 
+relation "public.farmers" does 
+not exist, skipping
+NOTICE (00000): trigger 
+"update_harvests_updated_at" 
+for relation "public.harvests" 
+does not exist, skipping
+NOTICE (00000): trigger 
+"update_hives_updated_at" for 
+relation "public.hives" does 
+not exist, skipping
+NOTICE (00000): trigger 
+"update_inspections_updated_at" 
+for relation 
+"public.inspections" does not 
+exist, skipping
+NOTICE (00000): trigger 
+"update_profiles_updated_at" 
+for relation "public.profiles" 
+does not exist, skipping
+NOTICE (00000): trigger 
+"update_tasks_updated_at" for 
+relation "public.tasks" does 
+not exist, skipping
+Applying migration 2026020811300
+0_missing_form_tables.sql...
+Applying migration 2026020812000
+0_create_exec_sql_rpc.sql...
+Applying migration 2026020813300
+0_create_notes_tables.sql...
+NOTICE (00000): table 
+"note_attachments" does not 
+exist, skipping
+NOTICE (00000): table "notes" 
+does not exist, skipping
+Applying migration 2026020813350
+0_tasks_recurrence_trigger.sql..
+.
+NOTICE (00000): trigger "trigger
+_handle_recurring_tasks_v2" for 
+relation "public.tasks" does 
+not exist, skipping
+NOTICE (00000): policy "Users 
+view own tasks" for relation 
+"public.tasks" does not exist, 
+skipping
+NOTICE (00000): policy "Users 
+insert own tasks" for relation 
+"public.tasks" does not exist, 
+skipping
+NOTICE (00000): policy "Users 
+update own tasks" for relation 
+"public.tasks" does not exist, 
+skipping
+Applying migration 2026020819000
+0_settings_module.sql...
+NOTICE (42701): column 
+"nickname" of relation "hives" 
+already exists, skipping
+Applying migration 2026020819450
+0_create_missing_tables.sql...
+NOTICE (00000): trigger "update_
+apiary_shares_updated_at" for 
+relation "public.apiary_shares" 
+does not exist, skipping
+NOTICE (00000): trigger "update_
+notification_configs_updated_at"
+ for relation 
+"public.notification_configs" 
+does not exist, skipping
+NOTICE (00000): trigger "update_
+user_settings_updated_at" for 
+relation "public.user_settings" 
+does not exist, skipping
+Applying migration 2026020820300
+0_create_devices_module.sql...
+Applying migration 2026020820510
+0_prd_settings_tables.sql...
+NOTICE (00000): trigger "update_
+global_iot_settings_updated_at" 
+for relation 
+"public.global_iot_settings" 
+does not exist, skipping
+NOTICE (00000): trigger "update_
+user_notification_settings_updat
+ed_at" for relation "public.user
+_notification_settings" does 
+not exist, skipping
+Applying migration 2026020821000
+0_create_bluetooth_module.sql...
+Applying migration 2026020822300
+0_measurement_data_module.sql...
+NOTICE (00000): table 
+"disease_detections" does not 
+exist, skipping
+NOTICE (00000): table 
+"land_readings" does not exist, 
+skipping
+NOTICE (00000): table 
+"sensor_readings" does not 
+exist, skipping
+Applying migration 2026020823595
+9_image_analysis_module.sql...
+NOTICE (42701): column 
+"hive_count" of relation 
+"image_analyses" already 
+exists, skipping
+NOTICE (42701): column 
+"pest_count" of relation 
+"image_analyses" already 
+exists, skipping
+NOTICE (00000): policy 
+"image_analyses_select_own" for 
+relation "image_analyses" does 
+not exist, skipping
+NOTICE (00000): policy 
+"image_analyses_insert_own" for 
+relation "image_analyses" does 
+not exist, skipping
+NOTICE (00000): policy 
+"image_analyses_update_own" for 
+relation "image_analyses" does 
+not exist, skipping
+NOTICE (00000): policy 
+"image_analyses_delete_own" for 
+relation "image_analyses" does 
+not exist, skipping
+NOTICE (00000): policy 
+"image_analyses_select_shared" 
+for relation "image_analyses" 
+does not exist, skipping
+NOTICE (00000): policy 
+"image_analyses_admin_all" for 
+relation "image_analyses" does 
+not exist, skipping
+NOTICE (00000): trigger "image_a
+nalyses_updated_at_trigger" for 
+relation "image_analyses" does 
+not exist, skipping
+Applying migration 2026020900000
+0_label_studio.sql...
+Applying migration 2026020900000
+1_reports_and_exports.sql...
+NOTICE (00000): policy "Reports 
+User View" for relation 
+"storage.objects" does not 
+exist, skipping
+NOTICE (00000): policy "Reports 
+User Upload" for relation 
+"storage.objects" does not 
+exist, skipping
+Applying migration 2026020912000
+0_fix_timothy_data.sql...
+NOTICE (00000): Timothy not 
+found in auth.users. Cannot fix 
+data.
+Applying migration 2026020913000
+0_reports_and_requests.sql...
+Applying migration 2026020914000
+0_add_hive_thresholds.sql...
+Applying migration 2026020915000
+0_fix_security_and_linter.sql...
+NOTICE (00000): relation 
+"admin_payment_summary" does 
+not exist, skipping
+NOTICE (00000): relation 
+"admin_tracing_summary" does 
+not exist, skipping
+NOTICE (00000): relation "pollin
+ation_contract_analytics" does 
+not exist, skipping
+NOTICE (00000): relation 
+"active_pollination_contracts" 
+does not exist, skipping
+NOTICE (00000): relation 
+"admin_document_summary" does 
+not exist, skipping
+NOTICE (00000): relation 
+"admin_activity_summary" does 
+not exist, skipping
+NOTICE (00000): relation 
+"yearly_harvest_summary" does 
+not exist, skipping
+NOTICE (00000): policy "Admin 
+full access" for relation 
+"public.farmers" does not 
+exist, skipping
+NOTICE (00000): policy "Admin 
+full access" for relation 
+"public.apiaries" does not 
+exist, skipping
+NOTICE (00000): policy "Admin 
+full access" for relation 
+"public.hives" does not exist, 
+skipping
+NOTICE (00000): policy "Admin 
+full access" for relation 
+"public.donations" does not 
+exist, skipping
+NOTICE (00000): policy "Admin 
+full access" for relation 
+"public.harvests" does not 
+exist, skipping
+NOTICE (00000): policy "Admin 
+full access" for relation 
+"public.contact_submissions" 
+does not exist, skipping
+NOTICE (00000): policy "Admin 
+full access" for relation 
+"public.pollination_requests" 
+does not exist, skipping
+NOTICE (00000): policy "Admin 
+full access" for relation 
+"public.newsletter_subscribers" 
+does not exist, skipping
+NOTICE (00000): policy "Admin 
+full access" for relation "publi
+c.newsletter_subscriptions" 
+does not exist, skipping
+NOTICE (00000): policy "Admin 
+full access" for relation 
+"public.tasks" does not exist, 
+skipping
+NOTICE (00000): policy "Admin 
+full access" for relation 
+"public.inspections" does not 
+exist, skipping
+NOTICE (00000): policy "Admin 
+full access" for relation 
+"public.tracing_history" does 
+not exist, skipping
+NOTICE (00000): policy "Admin 
+full access" for relation 
+"public.profiles" does not 
+exist, skipping
+Applying migration 2026020915300
+0_fix_remaining_linter_issues.sq
+l...
+NOTICE (42P06): schema 
+"extensions" already exists, 
+skipping
+Applying migration 2026020916000
+0_fix_timothy_granular_data.sql.
+..
+NOTICE (00000): User 
+timothynduva349@gmail.com not 
+found. Skipping data fix.
+Applying migration 2026020917000
+0_rls_performance_and_accuracy.s
+ql...
+WARNING (25P01): there is no 
+transaction in progress
+Applying migration 2026020918000
+0_rls_linter_fixes_comprehensive
+.sql...
+Applying migration 2026020919000
+0_rls_final_fixes.sql...
+Applying migration 2026021004000
+0_final_linter_cleanup.sql...
+NOTICE (00000): index 
+"idx_apiaries_code" does not 
+exist, skipping
+NOTICE (00000): index 
+"idx_batches_code" does not 
+exist, skipping
+NOTICE (00000): index 
+"idx_harvests_user" does not 
+exist, skipping
+NOTICE (00000): index 
+"idx_hives_code" does not 
+exist, skipping
+NOTICE (00000): index 
+"tasks_due_date_idx" does not 
+exist, skipping
+NOTICE (00000): index 
+"tasks_user_id_idx" does not 
+exist, skipping
+NOTICE (00000): Skipping 
+spatial_ref_sys: must be owner 
+of table spatial_ref_sys
+Applying migration 2026021005000
+0_security_hardening.sql...
+NOTICE (42P06): schema 
+"extensions" already exists, 
+skipping
+NOTICE (00000): Could not move 
+postgis extension: extension 
+"postgis" does not support SET 
+SCHEMA
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geometryI: must be 
+owner of function 
+public.geometry
+NOTICE (00000): Skipping 
+function security update for 
+publicI.polygonI: must be owner 
+of function public.polygon
+NOTICE (00000): Skipping 
+function security update for 
+publicI.box3d_inI: must be 
+owner of function 
+public.box3d_in
+NOTICE (00000): Skipping 
+function security update for 
+publicI.box3d_outI: must be 
+owner of function 
+public.box3d_out
+NOTICE (00000): Skipping 
+function security update for 
+publicI.box2d_inI: must be 
+owner of function 
+public.box2d_in
+NOTICE (00000): Skipping 
+function security update for 
+publicI.box2d_outI: must be 
+owner of function 
+public.box2d_out
+NOTICE (00000): Skipping 
+function security update for 
+publicI.box2df_inI: must be 
+owner of function 
+public.box2df_in
+NOTICE (00000): Skipping 
+function security update for 
+publicI.box2df_outI: must be 
+owner of function 
+public.box2df_out
+NOTICE (00000): Skipping 
+function security update for 
+publicI.gidx_inI: must be owner 
+of function public.gidx_in
+NOTICE (00000): Skipping 
+function security update for 
+publicI.gidx_outI: must be 
+owner of function 
+public.gidx_out
+NOTICE (00000): Skipping 
+function security update for 
+publicI._postgis_selectivityI: 
+must be owner of function 
+public._postgis_selectivity
+NOTICE (00000): Skipping 
+function security update for pub
+licI._postgis_join_selectivityI:
+ must be owner of function 
+public._postgis_join_selectivity
+NOTICE (00000): Skipping 
+function security update for 
+publicI._postgis_statsI: must 
+be owner of function 
+public._postgis_stats
+NOTICE (00000): Skipping 
+function security update for 
+publicI._postgis_index_extentI: 
+must be owner of function 
+public._postgis_index_extent
+NOTICE (00000): Skipping 
+function security update for pub
+licI.gserialized_gist_sel_2dI: 
+must be owner of function 
+public.gserialized_gist_sel_2d
+NOTICE (00000): Skipping 
+function security update for pub
+licI.gserialized_gist_sel_ndI: 
+must be owner of function 
+public.gserialized_gist_sel_nd
+NOTICE (00000): Skipping 
+function security update for pub
+licI.gserialized_gist_joinsel_2d
+I: must be owner of function pub
+lic.gserialized_gist_joinsel_2d
+NOTICE (00000): Skipping 
+function security update for pub
+licI.gserialized_gist_joinsel_nd
+I: must be owner of function pub
+lic.gserialized_gist_joinsel_nd
+NOTICE (00000): Skipping 
+function security update for 
+publicI._postgis_deprecateI: 
+must be owner of function 
+public._postgis_deprecate
+NOTICE (00000): Skipping 
+function security update for 
+publicI.spheroid_inI: must be 
+owner of function 
+public.spheroid_in
+NOTICE (00000): Skipping 
+function security update for 
+publicI.spheroid_outI: must be 
+owner of function 
+public.spheroid_out
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geometryI: must be 
+owner of function 
+public.geometry
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geometryI: must be 
+owner of function 
+public.geometry
+NOTICE (00000): Skipping 
+function security update for 
+publicI.pointI: must be owner 
+of function public.point
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geometryI: must be 
+owner of function 
+public.geometry
+NOTICE (00000): Skipping 
+function security update for 
+publicI.pathI: must be owner of 
+function public.path
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geomfromewkbI: must be 
+owner of function 
+public.geomfromewkb
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geomfromewktI: must be 
+owner of function 
+public.geomfromewkt
+NOTICE (00000): Skipping 
+function security update for pub
+licI.populate_geometry_columnsI:
+ must be owner of function 
+public.populate_geometry_columns
+NOTICE (00000): Skipping 
+function security update for pub
+licI.populate_geometry_columnsI:
+ must be owner of function 
+public.populate_geometry_columns
+NOTICE (00000): Skipping 
+function security update for 
+publicI.addgeometrycolumnI: 
+must be owner of function 
+public.addgeometrycolumn
+NOTICE (00000): Skipping 
+function security update for 
+publicI.addgeometrycolumnI: 
+must be owner of function 
+public.addgeometrycolumn
+NOTICE (00000): Skipping 
+function security update for 
+publicI.addgeometrycolumnI: 
+must be owner of function 
+public.addgeometrycolumn
+NOTICE (00000): Skipping 
+function security update for 
+publicI.dropgeometrycolumnI: 
+must be owner of function 
+public.dropgeometrycolumn
+NOTICE (00000): Skipping 
+function security update for 
+publicI.dropgeometrycolumnI: 
+must be owner of function 
+public.dropgeometrycolumn
+NOTICE (00000): Skipping 
+function security update for 
+publicI.dropgeometrycolumnI: 
+must be owner of function 
+public.dropgeometrycolumn
+NOTICE (00000): Skipping 
+function security update for 
+publicI.dropgeometrytableI: 
+must be owner of function 
+public.dropgeometrytable
+NOTICE (00000): Skipping 
+function security update for 
+publicI.dropgeometrytableI: 
+must be owner of function 
+public.dropgeometrytable
+NOTICE (00000): Skipping 
+function security update for 
+publicI.dropgeometrytableI: 
+must be owner of function 
+public.dropgeometrytable
+NOTICE (00000): Skipping 
+function security update for 
+publicI.updategeometrysridI: 
+must be owner of function 
+public.updategeometrysrid
+NOTICE (00000): Skipping 
+function security update for 
+publicI.updategeometrysridI: 
+must be owner of function 
+public.updategeometrysrid
+NOTICE (00000): Skipping 
+function security update for 
+publicI.updategeometrysridI: 
+must be owner of function 
+public.updategeometrysrid
+NOTICE (00000): Skipping 
+function security update for 
+publicI.find_sridI: must be 
+owner of function 
+public.find_srid
+NOTICE (00000): Skipping 
+function security update for 
+publicI.get_proj4_from_sridI: 
+must be owner of function 
+public.get_proj4_from_srid
+NOTICE (00000): Skipping 
+function security update for pub
+licI._postgis_scripts_pgsql_vers
+ionI: must be owner of function 
+public._postgis_scripts_pgsql_ve
+rsion
+NOTICE (00000): Skipping 
+function security update for pub
+licI._postgis_pgsql_versionI: 
+must be owner of function 
+public._postgis_pgsql_version
+NOTICE (00000): Skipping 
+function security update for 
+publicI.byteaI: must be owner 
+of function public.bytea
+NOTICE (00000): Skipping 
+function security update for 
+publicI.box2dI: must be owner 
+of function public.box2d
+NOTICE (00000): Skipping 
+function security update for 
+publicI.box3dI: must be owner 
+of function public.box3d
+NOTICE (00000): Skipping 
+function security update for 
+publicI.boxI: must be owner of 
+function public.box
+NOTICE (00000): Skipping 
+function security update for 
+publicI.box2dI: must be owner 
+of function public.box2d
+NOTICE (00000): Skipping 
+function security update for 
+publicI.box3dI: must be owner 
+of function public.box3d
+NOTICE (00000): Skipping 
+function security update for 
+publicI.boxI: must be owner of 
+function public.box
+NOTICE (00000): Skipping 
+function security update for 
+publicI.textI: must be owner of 
+function public.text
+NOTICE (00000): Skipping 
+function security update for 
+publicI.box3dtoboxI: must be 
+owner of function 
+public.box3dtobox
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geometryI: must be 
+owner of function 
+public.geometry
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geometryI: must be 
+owner of function 
+public.geometry
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geometryI: must be 
+owner of function 
+public.geometry
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geometryI: must be 
+owner of function 
+public.geometry
+NOTICE (00000): Skipping 
+function security update for pub
+licI.pgis_geometry_accum_transfn
+I: must be owner of function pub
+lic.pgis_geometry_accum_transfn
+NOTICE (00000): Skipping 
+function security update for pub
+licI.pgis_geometry_accum_transfn
+I: must be owner of function pub
+lic.pgis_geometry_accum_transfn
+NOTICE (00000): Skipping 
+function security update for pub
+licI.pgis_geometry_accum_transfn
+I: must be owner of function pub
+lic.pgis_geometry_accum_transfn
+NOTICE (00000): Skipping 
+function security update for pub
+licI.pgis_geometry_collect_final
+fnI: must be owner of function p
+ublic.pgis_geometry_collect_fina
+lfn
+NOTICE (00000): Skipping 
+function security update for pub
+licI.pgis_geometry_polygonize_fi
+nalfnI: must be owner of 
+function public.pgis_geometry_po
+lygonize_finalfn
+NOTICE (00000): Skipping 
+function security update for pub
+licI.pgis_geometry_clusterinters
+ecting_finalfnI: must be owner 
+of function public.pgis_geometry
+_clusterintersecting_finalfn
+NOTICE (00000): Skipping 
+function security update for pub
+licI.pgis_geometry_clusterwithin
+_finalfnI: must be owner of 
+function public.pgis_geometry_cl
+usterwithin_finalfn
+NOTICE (00000): Skipping 
+function security update for pub
+licI.pgis_geometry_makeline_fina
+lfnI: must be owner of function 
+public.pgis_geometry_makeline_fi
+nalfn
+NOTICE (00000): Skipping 
+function security update for pub
+licI.pgis_geometry_union_paralle
+l_transfnI: must be owner of 
+function public.pgis_geometry_un
+ion_parallel_transfn
+NOTICE (00000): Skipping 
+function security update for pub
+licI.pgis_geometry_union_paralle
+l_transfnI: must be owner of 
+function public.pgis_geometry_un
+ion_parallel_transfn
+NOTICE (00000): Skipping 
+function security update for pub
+licI.pgis_geometry_union_paralle
+l_combinefnI: must be owner of 
+function public.pgis_geometry_un
+ion_parallel_combinefn
+NOTICE (00000): Skipping 
+function security update for pub
+licI.pgis_geometry_union_paralle
+l_serialfnI: must be owner of 
+function public.pgis_geometry_un
+ion_parallel_serialfn
+NOTICE (00000): Skipping 
+function security update for pub
+licI.pgis_geometry_union_paralle
+l_deserialfnI: must be owner of 
+function public.pgis_geometry_un
+ion_parallel_deserialfn
+NOTICE (00000): Skipping 
+function security update for pub
+licI.pgis_geometry_union_paralle
+l_finalfnI: must be owner of 
+function public.pgis_geometry_un
+ion_parallel_finalfn
+NOTICE (00000): Skipping 
+function security update for 
+publicI.equalsI: must be owner 
+of function public.equals
+NOTICE (00000): Skipping 
+function security update for 
+publicI.pgis_asmvt_transfnI: 
+must be owner of function 
+public.pgis_asmvt_transfn
+NOTICE (00000): Skipping 
+function security update for 
+publicI.jsonI: must be owner of 
+function public.json
+NOTICE (00000): Skipping 
+function security update for 
+publicI.jsonbI: must be owner 
+of function public.jsonb
+NOTICE (00000): Skipping 
+function security update for 
+publicI.pgis_asmvt_transfnI: 
+must be owner of function 
+public.pgis_asmvt_transfn
+NOTICE (00000): Skipping 
+function security update for 
+publicI.pgis_asmvt_transfnI: 
+must be owner of function 
+public.pgis_asmvt_transfn
+NOTICE (00000): Skipping 
+function security update for 
+publicI.pgis_asmvt_transfnI: 
+must be owner of function 
+public.pgis_asmvt_transfn
+NOTICE (00000): Skipping 
+function security update for 
+publicI.pgis_asmvt_transfnI: 
+must be owner of function 
+public.pgis_asmvt_transfn
+NOTICE (00000): Skipping 
+function security update for 
+publicI.pgis_asmvt_finalfnI: 
+must be owner of function 
+public.pgis_asmvt_finalfn
+NOTICE (00000): Skipping 
+function security update for 
+publicI.pgis_asmvt_combinefnI: 
+must be owner of function 
+public.pgis_asmvt_combinefn
+NOTICE (00000): Skipping 
+function security update for 
+publicI.pgis_asmvt_serialfnI: 
+must be owner of function 
+public.pgis_asmvt_serialfn
+NOTICE (00000): Skipping 
+function security update for 
+publicI.pgis_asmvt_deserialfnI: 
+must be owner of function 
+public.pgis_asmvt_deserialfn
+NOTICE (00000): Skipping 
+function security update for 
+publicI.pgis_asgeobuf_transfnI: 
+must be owner of function 
+public.pgis_asgeobuf_transfn
+NOTICE (00000): Skipping 
+function security update for 
+publicI.pgis_asgeobuf_transfnI: 
+must be owner of function 
+public.pgis_asgeobuf_transfn
+NOTICE (00000): Skipping 
+function security update for 
+publicI.pgis_asgeobuf_finalfnI: 
+must be owner of function 
+public.pgis_asgeobuf_finalfn
+NOTICE (00000): Skipping 
+function security update for pub
+licI.pgis_asflatgeobuf_transfnI:
+ must be owner of function 
+public.pgis_asflatgeobuf_transfn
+NOTICE (00000): Skipping 
+function security update for pub
+licI.pgis_asflatgeobuf_transfnI:
+ must be owner of function 
+public.pgis_asflatgeobuf_transfn
+NOTICE (00000): Skipping 
+function security update for pub
+licI.pgis_asflatgeobuf_transfnI:
+ must be owner of function 
+public.pgis_asflatgeobuf_transfn
+NOTICE (00000): Skipping 
+function security update for pub
+licI.pgis_asflatgeobuf_finalfnI:
+ must be owner of function 
+public.pgis_asflatgeobuf_finalfn
+NOTICE (00000): Skipping 
+function security update for 
+publicI.unlockrowsI: must be 
+owner of function 
+public.unlockrows
+NOTICE (00000): Skipping 
+function security update for 
+publicI.lockrowI: must be owner 
+of function public.lockrow
+NOTICE (00000): Skipping 
+function security update for 
+publicI.lockrowI: must be owner 
+of function public.lockrow
+NOTICE (00000): Skipping 
+function security update for 
+publicI.lockrowI: must be owner 
+of function public.lockrow
+NOTICE (00000): Skipping 
+function security update for 
+publicI.lockrowI: must be owner 
+of function public.lockrow
+NOTICE (00000): Skipping 
+function security update for 
+publicI.addauthI: must be owner 
+of function public.addauth
+NOTICE (00000): Skipping 
+function security update for 
+publicI.checkauthI: must be 
+owner of function 
+public.checkauth
+NOTICE (00000): Skipping 
+function security update for 
+publicI.checkauthI: must be 
+owner of function 
+public.checkauth
+NOTICE (00000): Skipping 
+function security update for 
+publicI.checkauthtriggerI: must 
+be owner of function 
+public.checkauthtrigger
+NOTICE (00000): Skipping 
+function security update for 
+publicI.gettransactionidI: must 
+be owner of function 
+public.gettransactionid
+NOTICE (00000): Skipping 
+function security update for pub
+licI.enablelongtransactionsI: 
+must be owner of function 
+public.enablelongtransactions
+NOTICE (00000): Skipping 
+function security update for pub
+licI.longtransactionsenabledI: 
+must be owner of function 
+public.longtransactionsenabled
+NOTICE (00000): Skipping 
+function security update for pub
+licI.disablelongtransactionsI: 
+must be owner of function 
+public.disablelongtransactions
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geography_typmod_inI: 
+must be owner of function 
+public.geography_typmod_in
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geography_typmod_outI: 
+must be owner of function 
+public.geography_typmod_out
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geography_inI: must be 
+owner of function 
+public.geography_in
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geography_outI: must be 
+owner of function 
+public.geography_out
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geography_recvI: must 
+be owner of function 
+public.geography_recv
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geography_sendI: must 
+be owner of function 
+public.geography_send
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geography_analyzeI: 
+must be owner of function 
+public.geography_analyze
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geographyI: must be 
+owner of function 
+public.geography
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geographyI: must be 
+owner of function 
+public.geography
+NOTICE (00000): Skipping 
+function security update for 
+publicI.byteaI: must be owner 
+of function public.bytea
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geographyI: must be 
+owner of function 
+public.geography
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geometryI: must be 
+owner of function 
+public.geometry
+NOTICE (00000): Skipping 
+function security update for pub
+licI.geography_gist_consistentI:
+ must be owner of function 
+public.geography_gist_consistent
+NOTICE (00000): Skipping 
+function security update for pub
+licI.geography_gist_compressI: 
+must be owner of function 
+public.geography_gist_compress
+NOTICE (00000): Skipping 
+function security update for pub
+licI.geography_gist_penaltyI: 
+must be owner of function 
+public.geography_gist_penalty
+NOTICE (00000): Skipping 
+function security update for pub
+licI.geography_gist_picksplitI: 
+must be owner of function 
+public.geography_gist_picksplit
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geography_gist_unionI: 
+must be owner of function 
+public.geography_gist_union
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geography_gist_sameI: 
+must be owner of function 
+public.geography_gist_same
+NOTICE (00000): Skipping 
+function security update for pub
+licI.geography_gist_decompressI:
+ must be owner of function 
+public.geography_gist_decompress
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geography_overlapsI: 
+must be owner of function 
+public.geography_overlaps
+NOTICE (00000): Skipping 
+function security update for pub
+licI.geography_distance_knnI: 
+must be owner of function 
+public.geography_distance_knn
+NOTICE (00000): Skipping 
+function security update for pub
+licI.geography_gist_distanceI: 
+must be owner of function 
+public.geography_gist_distance
+NOTICE (00000): Skipping 
+function security update for 
+publicI.overlaps_geogI: must be 
+owner of function 
+public.overlaps_geog
+NOTICE (00000): Skipping 
+function security update for 
+publicI.overlaps_geogI: must be 
+owner of function 
+public.overlaps_geog
+NOTICE (00000): Skipping 
+function security update for 
+publicI.overlaps_geogI: must be 
+owner of function 
+public.overlaps_geog
+NOTICE (00000): Skipping 
+function security update for pub
+licI.geog_brin_inclusion_add_val
+ueI: must be owner of function p
+ublic.geog_brin_inclusion_add_va
+lue
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geography_ltI: must be 
+owner of function 
+public.geography_lt
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geography_leI: must be 
+owner of function 
+public.geography_le
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geography_gtI: must be 
+owner of function 
+public.geography_gt
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geography_geI: must be 
+owner of function 
+public.geography_ge
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geography_eqI: must be 
+owner of function 
+public.geography_eq
+NOTICE (00000): Skipping 
+function security update for 
+publicI.geography_cmpI: must be 
+owner of function 
+public.geography_cmp
+NOTICE (00000): Skipping 
+function security update for 
+publicI.overlaps_ndI: must be 
+owner of function 
+public.overlaps_nd
+NOTICE (00000): Skipping 
+function security update for 
+publicI.contains_2dI: must be 
+owner of function 
+public.contains_2d
+NOTICE (00000): Skipping 
+function security update for 
+publicI.is_contained_2dI: must 
+be owner of function 
+public.is_contained_2d
+NOTICE (00000): Skipping 
+function security update for 
+publicI.overlaps_2dI: must be 
+owner of function 
+public.overlaps_2d
+NOTICE (00000): Skipping 
+function security update for 
+publicI.overlaps_2dI: must be 
+owner of function 
+public.overlaps_2d
+NOTICE (00000): Skipping 
+function security update for 
+publicI.contains_2dI: must be 
+owner of function 
+public.contains_2d
+NOTICE (00000): Skipping 
+function security update for 
+publicI.is_contained_2dI: must 
+be owner of function 
+public.is_contained_2d
+NOTICE (00000): Skipping 
+function security update for 
+publicI.contains_2dI: must be 
+owner of function 
+public.contains_2d
+NOTICE (00000): Skipping 
+function security update for 
+publicI.is_contained_2dI: must 
+be owner of function 
+public.is_contained_2d
+NOTICE (00000): Skipping 
+function security update for 
+publicI.overlaps_2dI: must be 
+owner of function 
+public.overlaps_2d
+NOTICE (00000): Skipping 
+function security update for 
+publicI.overlaps_ndI: must be 
+owner of function 
+public.overlaps_nd
+NOTICE (00000): Skipping 
+function security update for 
+publicI.overlaps_ndI: must be 
+owner of function 
+public.overlaps_nd
+NOTICE (00000): Skipping 
+function security update for pub
+licI.geom2d_brin_inclusion_add_v
+alueI: must be owner of 
+function public.geom2d_brin_incl
+usion_add_value
+NOTICE (00000): Skipping 
+function security update for pub
+licI.geom3d_brin_inclusion_add_v
+alueI: must be owner of 
+function public.geom3d_brin_incl
+usion_add_value
+NOTICE (00000): Skipping 
+function security update for pub
+licI.geom4d_brin_inclusion_add_v
+alueI: must be owner of 
+function public.geom4d_brin_incl
+usion_add_value
+NOTICE (00000): Skipping 
+function security update for pub
+licI.geography_spgist_config_ndI
+: must be owner of function publ
+ic.geography_spgist_config_nd
+NOTICE (00000): Skipping 
+function security update for pub
+licI.geography_spgist_choose_ndI
+: must be owner of function publ
+ic.geography_spgist_choose_nd
+NOTICE (00000): Skipping 
+function security update for pub
+licI.geography_spgist_picksplit_
+ndI: must be owner of function p
+ublic.geography_spgist_picksplit
+_nd
+NOTICE (00000): Skipping 
+function security update for pub
+licI.geography_spgist_inner_cons
+istent_ndI: must be owner of 
+function public.geography_spgist
+_inner_consistent_nd
+NOTICE (00000): Skipping 
+function security update for pub
+licI.geography_spgist_leaf_consi
+stent_ndI: must be owner of 
+function public.geography_spgist
+_leaf_consistent_nd
+NOTICE (00000): Skipping 
+function security update for pub
+licI.geography_spgist_compress_n
+dI: must be owner of function pu
+blic.geography_spgist_compress_n
+d
+Applying migration 2026021006000
+0_content_engine.sql...
+NOTICE (00000): trigger 
+"blog_posts_updated_at" for 
+relation "public.blog_posts" 
+does not exist, skipping
+NOTICE (00000): trigger 
+"blog_chapters_updated_at" for 
+relation "public.blog_chapters" 
+does not exist, skipping
+NOTICE (00000): trigger 
+"seo_metadata_updated_at" for 
+relation "public.seo_metadata" 
+does not exist, skipping
+Applying migration 2026021008000
+0_recruitment_module.sql...
+NOTICE (00000): policy "Public 
+read active jobs" for relation 
+"jobs" does not exist, skipping
+NOTICE (00000): policy "Public 
+apply" for relation 
+"job_applications" does not 
+exist, skipping
+NOTICE (00000): policy "Admins 
+view applications" for relation 
+"job_applications" does not 
+exist, skipping
+NOTICE (00000): policy "Admins 
+update applications" for 
+relation "job_applications" 
+does not exist, skipping
+NOTICE (00000): policy "Public 
+upload resumes" for relation 
+"storage.objects" does not 
+exist, skipping
+NOTICE (00000): Could not 
+create storage policies for 
+resumes bucket: must be owner 
+of table objects
+WARN: no files matched pattern: 
+supabase/seed.sql
+Starting containers...
+WARNING: Analytics on Windows 
+requires Docker daemon exposed 
+on tcp://localhost:2375.
+See https://supabase.com/docs/gu
+ides/local-development/cli/getti
+ng-started?queryGroups=platform&
+platform=windows#running-supabas
+e-locally for more details.
+Waiting for health checks...
+Started supabase local 
+development setup.
+
+Γò¡ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓò«
+Γöé ≡ƒöº Development Tools                 Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+Γöé Studio  Γöé http://127.0.0.1:54323     Γöé
+Γöé Mailpit Γöé http://127.0.0.1:54324     Γöé
+Γöé MCP     Γöé http://127.0.0.1:54321/mcp Γöé
+Γò░ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓò»
+
+Γò¡ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓò«
+Γöé ≡ƒîÉ APIs                                              Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+Γöé Project URL    Γöé http://127.0.0.1:54321              Γöé
+Γöé REST           Γöé http://127.0.0.1:54321/rest/v1      Γöé
+Γöé GraphQL        Γöé http://127.0.0.1:54321/graphql/v1   Γöé
+Γöé Edge Functions Γöé http://127.0.0.1:54321/functions/v1 Γöé
+Γò░ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓò»
+
+Γò¡ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓò«
+Γöé Γ¢ü Database                                                    Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+Γöé URL Γöé postgresql://postgres:postgres@127.0.0.1:54322/postgres Γöé
+Γò░ΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓò»
+
+Γò¡ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓò«
+Γöé ≡ƒöæ Authentication Keys                                       Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+Γöé Publishable Γöé sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH Γöé
+Γöé Secret      Γöé sb_secret_N7UND0UgjKTVK-Uodkm0Hg_xSvEMPvz      Γöé
+Γò░ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓò»
+
+Γò¡ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓò«
+Γöé ≡ƒôª Storage (S3)                                                               Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+Γöé URL        Γöé http://127.0.0.1:54321/storage/v1/s3                             Γöé
+Γöé Access Key Γöé 625729a08b95bf1b7ff351a663f3a23c                                 Γöé
+Γöé Secret Key Γöé 850181e4652dd023b7a98c58ae0d2d34bd487ee0cc3254aed6eda37307425907 Γöé
+Γöé Region     Γöé local                                                            Γöé
+Γò░ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓò»
+
+A new version of Supabase CLI 
+is available: v2.75.0 
+(currently installed v2.72.7)
+We recommend updating regularly 
+for new features and bug fixes: 
+https://supabase.com/docs/guides
+/cli/getting-started#updating-th
+e-supabase-cli

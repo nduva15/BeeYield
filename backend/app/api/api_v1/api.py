@@ -6,11 +6,9 @@ from app.api.api_v1.endpoints import (
     company, auth, traceability, contact, 
     forms, shop, blog, careers, media, 
     services, jobs, analytics, notes, admin, iot, ai,
-    admin_extended, meters, beeyield, pollination, inspections,
-    ai_assistant, settings, requests, usb_hub, bluetooth,
-    measurements, ai_admin, reports, image_analysis
+    admin_extended, meters, beeyield, pollination, inspections, reports,
+    ai_assistant, settings, payments
 )
-
 
 
 api_router = APIRouter()
@@ -20,9 +18,7 @@ api_router.include_router(meters.router, prefix="/meters", tags=["Meters"])
 
 # BeeYield Dashboard (User-specific data)
 api_router.include_router(beeyield.router, prefix="/beeyield", tags=["BeeYield Dashboard"])
-
-# Reports & Exports (background generation, history, download)
-api_router.include_router(reports.router, prefix="/beeyield/reports", tags=["Reports & Exports"])
+api_router.include_router(reports.router, prefix="/beeyield/reports", tags=["BeeYield Reports"])
 
 # Precision Pollination endpoint
 api_router.include_router(pollination.router, prefix="/pollination", tags=["Precision Pollination"])
@@ -36,25 +32,19 @@ api_router.include_router(ai.router, prefix="/ai", tags=["AI"])
 # AI Assistant v2 (comprehensive)
 api_router.include_router(ai_assistant.router, prefix="/assistant", tags=["AI Assistant"])
 
-# AI Admin (infrastructure management)
-api_router.include_router(ai_admin.router, prefix="/ai-admin", tags=["AI Admin"])
-
 # Analytics endpoint
 api_router.include_router(analytics.router, prefix="/analytics", tags=["Analytics"])
 
 # IoT endpoint
 api_router.include_router(iot.router, prefix="/iot", tags=["IoT"])
 
-# Measurements endpoint
-api_router.include_router(measurements.router, prefix="/measurements", tags=["Measurements"])
-
-# Image Analysis (Bee detection, health classification, disease detection)
-api_router.include_router(image_analysis.router, prefix="/image", tags=["Image Analysis"])
-
 # Core business endpoints
 api_router.include_router(company.router, prefix="/company", tags=["Company"])
 api_router.include_router(traceability.router, prefix="/traceability", tags=["Traceability"])
 api_router.include_router(shop.router, prefix="/shop", tags=["Shop"])
+
+# Payments (Stripe)
+api_router.include_router(payments.router, prefix="/payments/stripe", tags=["Payments"])
 
 # Services endpoints
 api_router.include_router(services.router, prefix="/services", tags=["Services"])
@@ -78,17 +68,7 @@ api_router.include_router(auth.router, prefix="/auth", tags=["Auth"])
 api_router.include_router(settings.router, prefix="/settings", tags=["Settings"])
 
 # Notes
-# Notes
 api_router.include_router(notes.router, prefix="/notes", tags=["Notes"])
-
-# User Requests (Support/Traceability)
-api_router.include_router(requests.router, prefix="/requests", tags=["Requests"])
-
-# USB Hub Connection
-api_router.include_router(usb_hub.router, prefix="/hub", tags=["USB Hub"])
-
-# Bluetooth Connection
-api_router.include_router(bluetooth.router, prefix="/bluetooth", tags=["Bluetooth"])
 
 # Admin
 api_router.include_router(admin.router, prefix="/admin", tags=["Admin"])
@@ -150,8 +130,7 @@ def api_root():
             "contact": "/api/v1/contact",
             "notes": "/api/v1/notes",
             "inspections": "/api/v1/inspections",
-            "stats": "/api/v1/stats/impact",
-            "image_analysis": "/api/v1/image"
+            "stats": "/api/v1/stats/impact"
         },
         "docs": "/docs"
     }

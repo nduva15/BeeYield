@@ -70,8 +70,8 @@ const Traceability = () => {
       }).catch(err => console.error("Failed to log trace:", err));
 
       toast({
-        title: "Chain Verified!",
-        description: `Full journey data retrieved for batch ${code}`,
+        title: "Journey Verified!",
+        description: `Full history retrieved for batch ${code}`,
       });
     } catch (error) {
       console.error("Trace error:", error);
@@ -173,15 +173,15 @@ const Traceability = () => {
           <div className="max-w-4xl mx-auto text-center text-neutral-900 space-y-4 sm:space-y-6 md:space-y-8">
             <div className="flex justify-center">
               <Badge className="bg-green-100 text-green-900 border-green-200 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 hover:bg-green-200/80 transition-colors inline-flex items-center font-bold">
-                <ShieldCheck className="mr-1.5 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" /> 100% HoneyChain™ Verified
+                <ShieldCheck className="mr-1.5 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" /> 100% Origin Verified
               </Badge>
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black leading-tight tracking-tighter px-2">
               The Journey of <span className="text-green-700 italic">Every Drop</span>
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed px-4">
-              Transparent. Ethical. Traceable. Search for your jar's batch code to meet your bees,
-              view hive metrics, and verify our 50/50 harvest promise.
+              Transparent. Ethical. Traceable. Scan your jar's QR code to meet your bees,
+              view real-time hive data, and verify our 50/50 harvest promise.
             </p>
           </div>
         </div>
@@ -191,7 +191,7 @@ const Traceability = () => {
       <div className="py-24 -mt-16 relative z-20">
         <div className="container mx-auto px-6 lg:px-12">
           <div className="mx-auto max-w-5xl">
-            <Card className="border-none shadow-2xl overflow-hidden bg-white/95 backdrop-blur-md rounded-[2.5rem]">
+            <Card className="border-none shadow-2xl overflow-hidden bg-white/95 backdrop-blur-md dark:bg-slate-950/95 rounded-[2.5rem]">
               <CardContent className="p-0">
                 {showScanner ? (
                   <div className="p-10">
@@ -208,7 +208,7 @@ const Traceability = () => {
                   </div>
                 ) : (
                   <div className="grid md:grid-cols-2">
-                    <div className="p-10 flex flex-col justify-center border-b md:border-b-0 md:border-r border-slate-100">
+                    <div className="p-10 flex flex-col justify-center border-b md:border-b-0 md:border-r border-slate-100 dark:border-slate-800">
                       <h2 className="mb-4 text-3xl font-black tracking-tight">Manual Verification</h2>
                       <p className="mb-8 text-muted-foreground">
                         Enter the unique batch code found on the bottom or side of your honey jar.
@@ -236,10 +236,10 @@ const Traceability = () => {
                         </Button>
                       </form>
 
-                      <div className="mt-8 pt-8 border-t border-slate-100">
+                      <div className="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800">
                         <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">Try these example codes</p>
                         <div className="flex flex-wrap gap-2">
-                          {["HB-2026-0110-001", "HB-2025-0615-088", "KIB-ACACIAL-26", "KIB-SAV-2026"].map(code => (
+                          {["KIB-ACACIAL-26", "KIB-SAV-2026", "KIB-GOLD-2026"].map(code => (
                             <Button
                               key={code}
                               variant="ghost"
@@ -256,22 +256,22 @@ const Traceability = () => {
                         </div>
                         <div className="flex items-center gap-2 mt-6">
                           <ShieldCheck className="h-4 w-4 text-green-500" />
-                          <span className="text-xs font-bold text-muted-foreground italic">Powered by HoneyChain™ Verification System</span>
+                          <span className="text-xs font-bold text-muted-foreground italic">Verified Harvest Journey</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="p-10 bg-gradient-to-br from-slate-50 to-white flex flex-col items-center justify-center text-center">
-                      <div className="mb-6 w-20 h-20 bg-amber-100 rounded-3xl flex items-center justify-center animate-bounce">
-                        <QrCode className="h-10 w-10 text-amber-600" />
+                    <div className="p-10 bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-950 flex flex-col items-center justify-center text-center">
+                      <div className="mb-6 w-20 h-20 bg-amber-100 dark:bg-amber-900/30 rounded-3xl flex items-center justify-center animate-bounce">
+                        <QrCode className="h-10 w-10 text-amber-600 dark:text-amber-400" />
                       </div>
-                      <h3 className="text-2xl font-black tracking-tight mb-4 text-slate-900">Quick Scan</h3>
+                      <h3 className="text-2xl font-black tracking-tight mb-4 text-slate-900 dark:text-white">Quick Scan</h3>
                       <p className="text-muted-foreground mb-8 text-sm">
-                        Use your smartphone camera to instantly verify authenticity and view the full story.
+                        Use your smartphone camera to instantly verify where your honey came from on our Honey Trail.
                       </p>
                       <Button
                         variant="outline"
-                        className="w-full h-16 border-2 border-amber-500/20 hover:border-amber-500 text-amber-700 font-black rounded-2xl transition-all"
+                        className="w-full h-16 border-2 border-amber-500/20 hover:border-amber-500 text-amber-700 dark:text-amber-400 font-black rounded-2xl transition-all"
                         onClick={() => setShowScanner(true)}
                       >
                         <Zap className="mr-2 h-5 w-5 fill-amber-500" />
@@ -290,22 +290,11 @@ const Traceability = () => {
                   <div className="relative">
                     <div className="absolute inset-0 bg-primary/20 rounded-full blur-[100px] animate-pulse"></div>
 
-                    {/* High-Tech Scanner Visual */}
                     <div className="relative h-48 w-48 mx-auto bg-white rounded-[2.5rem] shadow-2xl flex items-center justify-center border border-primary/10 overflow-hidden group">
                       <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-transparent"></div>
 
-                      {/* Scanning Line */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/30 to-transparent h-12 w-full -translate-y-full animate-[scan_1.5s_ease-in-out_infinite] z-20 shadow-[0_0_20px_rgba(var(--primary-rgb),0.5)]"></div>
-
                       <div className="relative z-10 flex flex-col items-center">
                         <Activity className="h-16 w-16 text-primary animate-pulse" />
-                        <div className="mt-2 flex gap-1">
-                          {[1, 2, 3].map(i => (
-                            <div key={i} className="h-1 w-4 rounded-full bg-primary/20 animate-pulse overflow-hidden">
-                              <div className={`h-full bg-primary animate-[loading-bar_1s_infinite] delay-${i * 100}`} style={{ width: '40%' }}></div>
-                            </div>
-                          ))}
-                        </div>
                       </div>
 
                       {/* Corner Accents */}
@@ -316,27 +305,16 @@ const Traceability = () => {
                     </div>
 
                     <div className="mt-8 space-y-3">
-                      <h3 className="text-3xl font-black tracking-tight text-slate-900 uppercase">Verifying Records</h3>
+                      <h3 className="text-3xl font-black tracking-tight text-slate-900 uppercase">Finding Origin</h3>
                       <p className="text-slate-500 font-bold uppercase tracking-[0.2em] text-[10px]">
-                        Syncing with <span className="text-primary font-black">HoneyChain™</span> Verification System
+                        Retrieving <span className="text-primary font-black">Harvest</span> Details
                       </p>
-                    </div>
-
-                    <div className="mt-8 grid grid-cols-2 gap-3">
-                      <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 text-left">
-                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Batch ID</p>
-                        <p className="text-xs font-mono font-bold text-slate-700">#8,442,109</p>
-                      </div>
-                      <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 text-left">
-                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Verification Hash</p>
-                        <p className="text-xs font-mono font-bold text-slate-700">0x7a...f92e</p>
-                      </div>
                     </div>
 
                     <div className="mt-6 pt-4 border-t border-slate-100">
                       <div className="flex items-center justify-center gap-2 text-green-600 font-black text-[10px] uppercase tracking-widest animate-pulse">
                         <ShieldCheck className="h-3 w-3" />
-                        Signature Match Confirmed
+                        Authenticity Verified
                       </div>
                     </div>
                   </div>
@@ -383,7 +361,7 @@ const Traceability = () => {
                     </div>
 
                     <Badge className="bg-green-100 text-green-900 border-green-200 text-xs px-4 py-2 hover:bg-green-200/80 transition-colors inline-flex items-center font-bold mb-4">
-                      <ShieldCheck className="mr-1.5 h-4 w-4" /> HoneyChain™ Certified Authentic
+                      <ShieldCheck className="mr-1.5 h-4 w-4" /> Certified Authentic Honey
                     </Badge>
 
                     <h2 className="text-3xl font-black text-neutral-900 tracking-tight">Traceability Report</h2>
@@ -391,7 +369,7 @@ const Traceability = () => {
                   </div>
 
                   {/* Mission Story Section */}
-                  <div className="bg-slate-50 rounded-[2.5rem] p-8 md:p-10 mb-12">
+                  <div className="bg-slate-50 dark:bg-slate-900 rounded-[2.5rem] p-8 md:p-10 mb-12">
                     <div className="flex items-center gap-3 mb-6">
                       <div className="h-12 w-12 rounded-2xl bg-orange-100 flex items-center justify-center">
                         <Leaf className="h-6 w-6 text-orange-600" />
@@ -407,7 +385,7 @@ const Traceability = () => {
                         Today, we've grown to <span className="text-green-800 font-black">184 hives across a thriving 5-acre apiary</span>. Our commitment remains radical: we only harvest 50% of the honey our bees produce.
                       </p>
                       <p className="text-neutral-600 font-normal">
-                        Timothy, along with his sisters Agatha and Carole, has grown a modest venture into a technology-driven beekeeping operation—using IoT sensors to ensure transparency, protect the African honey bee, and restore biodiversity in our native Kenya.
+                        Timothy, along with his sisters Agatha and Carole, has transformed a modest venture into a technological edge for beekeeping—using smart sensors and honey tracking to ensure transparency, protect the African honey bee, and restore biodiversity in our native Kenya.
                       </p>
                     </div>
 
@@ -421,9 +399,9 @@ const Traceability = () => {
                   {/* Real-time Hive Metrics (Dashboard Data) */}
                   <div className="mb-12">
                     <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-2xl font-black text-neutral-900 uppercase tracking-tighter">Live Hive Metrics</h3>
+                      <h3 className="text-2xl font-black text-neutral-900 uppercase tracking-tighter">Live Hive Info</h3>
                       <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 font-bold gap-1.5 py-1 px-3">
-                        <Activity className="h-3 w-3 animate-pulse" /> Live IoT Stream
+                        <Activity className="h-3 w-3 animate-pulse" /> Live Smart Stream
                       </Badge>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -556,24 +534,24 @@ const Traceability = () => {
                           </div>
                         </div>
 
-                        {/* Hive Details (Precision Pollination Unit) */}
+                        {/* Hive Details (Precision Pollination Node) */}
                         {traceData?.hive && (
                           <div className="col-span-2 pt-6 border-t border-slate-100 mt-2">
                             <div className="flex items-center justify-between mb-4">
                               <p className="text-[10px] font-black uppercase tracking-widest text-indigo-600 flex items-center gap-1.5">
-                                <Zap className="h-3 w-3" /> Hive Monitoring Unit
+                                <Zap className="h-3 w-3" /> Smart Hive Monitor
                               </p>
                               <Badge variant="outline" className="border-indigo-200 text-indigo-700 text-[10px] font-bold px-2 py-0.5 bg-indigo-50 flex items-center gap-1">
-                                <Activity className="h-2.5 w-2.5 animate-pulse" /> Sync: {traceData.sensor_snapshot?.sync_time || "7m ago"}
+                                <Activity className="h-2.5 w-2.5 animate-pulse" /> Update: {traceData.sensor_snapshot?.sync_time || "7m ago"}
                               </Badge>
                             </div>
 
-                            <div className="bg-indigo-50 rounded-[2.5rem] p-6 text-indigo-900 overflow-hidden relative border border-indigo-100">
+                            <div className="bg-[#1E1B4B] rounded-[2rem] p-6 text-white overflow-hidden relative border border-white/5">
                               {/* Background Pattern */}
                               <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
                                 <svg className="w-full h-full" viewBox="0 0 100 100">
                                   <pattern id="grid-p" width="10" height="10" patternUnits="userSpaceOnUse">
-                                    <path d="M 10 0 L 0 0 0 10" fill="none" stroke="currentColor" strokeWidth="0.5" />
+                                    <path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" strokeWidth="0.5" />
                                   </pattern>
                                   <rect width="100%" height="100%" fill="url(#grid-p)" />
                                 </svg>
@@ -584,24 +562,24 @@ const Traceability = () => {
                                 <div className="flex justify-between items-start mb-6 pb-6 border-b border-white/10">
                                   <div className="flex items-center gap-4">
                                     <div className="relative">
-                                      {/* Aura effect for the unit icon */}
+                                      {/* Aura effect for the node icon */}
                                       <div className="absolute -inset-2 bg-indigo-500/30 rounded-full blur-lg animate-pulse" />
-                                      <div className="h-14 w-14 bg-white/40 backdrop-blur-md rounded-2xl border border-indigo-200 flex items-center justify-center relative z-10 shadow-lg group-hover:bg-white/60 transition-all duration-500">
+                                      <div className="h-14 w-14 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 flex items-center justify-center relative z-10 shadow-lg group-hover:bg-white/20 transition-all duration-500">
                                         <div className="text-center">
-                                          <Cpu className="h-5 w-5 text-indigo-600 mb-0.5 mx-auto" />
-                                          <p className="text-[10px] font-black text-indigo-900 leading-none">{traceData.hive.hive_code}</p>
+                                          <Cpu className="h-5 w-5 text-indigo-300 mb-0.5 mx-auto" />
+                                          <p className="text-[10px] font-black text-white leading-none">{traceData.hive.hive_code}</p>
                                         </div>
                                       </div>
                                     </div>
                                     <div>
                                       <h4 className="text-lg font-black leading-tight tracking-tight flex items-center gap-2">
-                                        Hive Unit <span className="px-1.5 py-0.5 bg-indigo-500 text-[10px] rounded text-white font-mono">{traceData.hive.hive_code.replace(/\D/g, '')}</span>
+                                        Smart Point <span className="px-1.5 py-0.5 bg-indigo-500 text-[10px] rounded text-white font-mono">{traceData.hive.hive_code.replace(/\D/g, '')}</span>
                                       </h4>
                                       <div className="flex items-center gap-2 mt-1">
                                         {traceData.sensor_snapshot?.queen_status === 'present' ? (
                                           <div className="flex items-center gap-1.5 px-2 py-0.5 bg-green-500/10 border border-green-500/20 rounded-full">
                                             <span className="text-[10px] text-green-400 font-bold leading-none">🛡️</span>
-                                            <span className="text-[9px] font-black uppercase tracking-widest text-green-300">Queen Guard Active</span>
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-green-300">Queen Present</span>
                                           </div>
                                         ) : traceData.sensor_snapshot?.queen_status === 'absent' ? (
                                           <div className="flex items-center gap-1.5 px-2 py-0.5 bg-red-500/10 border border-red-500/20 rounded-full">
@@ -617,10 +595,10 @@ const Traceability = () => {
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="text-right glass-panel p-2 rounded-xl bg-white/40 border border-indigo-100">
-                                    <p className="text-[8px] font-black text-indigo-600 uppercase mb-0.5 tracking-widest">Global GPS</p>
-                                    <p className="text-[10px] font-mono font-bold text-indigo-900 mb-0.5">{traceData.sensor_snapshot?.latitude || "-1.2870"}</p>
-                                    <p className="text-[10px] font-mono font-bold text-indigo-900">{traceData.sensor_snapshot?.longitude || "36.8252"}</p>
+                                  <div className="text-right glass-panel p-2 rounded-xl bg-white/5 border border-white/10">
+                                    <p className="text-[8px] font-black text-indigo-300 uppercase mb-0.5 tracking-widest">Global GPS</p>
+                                    <p className="text-[10px] font-mono font-bold text-white mb-0.5">{traceData.sensor_snapshot?.latitude || "-1.2870"}</p>
+                                    <p className="text-[10px] font-mono font-bold text-white">{traceData.sensor_snapshot?.longitude || "36.8252"}</p>
                                   </div>
                                 </div>
 
@@ -714,55 +692,41 @@ const Traceability = () => {
                                     </div>
                                   </div>
 
-                                  {/* Verification Proof */}
+                                  {/* Quality Assurance Block */}
                                   <div className="space-y-2 flex flex-col">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Verification Proof</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Quality Assurance</p>
                                     <div className="bg-indigo-950/40 rounded-2xl p-5 border border-indigo-500/20 flex-1 flex flex-col justify-between">
                                       <div className="space-y-4">
                                         <div>
-                                          <p className="text-[9px] font-black text-indigo-600 uppercase mb-2 tracking-tighter">Record Hash (Permanent Log)</p>
-                                          <div className="p-3 bg-white/60 rounded-xl border border-indigo-100">
-                                            <p className="text-[10px] font-mono text-indigo-700 break-all leading-tight opacity-90">
-                                              {traceData.polygon_tx_hash || `0x${Array.from(traceData.batch_code).map(c => c.charCodeAt(0).toString(16)).join('').slice(0, 12)}...${traceData.batch_code.replace(/[^a-zA-Z0-9]/g, '').slice(-4)}`}
+                                          <p className="text-[9px] font-black text-indigo-400 uppercase mb-2 tracking-tighter">Purity Guarantee</p>
+                                          <div className="p-3 bg-black/40 rounded-xl border border-white/5">
+                                            <p className="text-[10px] font-mono text-indigo-200 break-all leading-tight opacity-90">
+                                              This honey has been tested for purity and origin, meeting BeeYield's highest ethical standards.
                                             </p>
                                           </div>
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-4">
                                           <div>
-                                            <p className="text-[9px] font-black text-indigo-400 uppercase mb-1 tracking-tighter">Confirmations</p>
+                                            <p className="text-[9px] font-black text-indigo-400 uppercase mb-1 tracking-tighter">Batch Grade</p>
                                             <div className="flex items-center gap-2">
                                               <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
-                                              <p className="text-xl font-black text-indigo-900">{(traceData.batch_code.length * 314 + 1024).toLocaleString()}</p>
+                                              <p className="text-xl font-black text-white">Premium</p>
                                             </div>
                                           </div>
-                                          <div className="text-right space-y-1">
-                                            <p className="text-[9px] font-black text-indigo-400 uppercase mb-1 tracking-tighter">Networks</p>
-                                            <div className="flex flex-col gap-1 items-end">
-                                              <Badge className="bg-indigo-500/30 text-indigo-100 border border-indigo-400/20 text-[9px] font-black px-2 py-0.5 whitespace-nowrap">HoneyChain™ 2.0</Badge>
-                                              {traceData.polygon_verified && (
-                                                <a
-                                                  href={traceData.polygon_verification_url || "#"}
-                                                  target="_blank"
-                                                  rel="noopener noreferrer"
-                                                  className="inline-flex"
-                                                >
-                                                  <Badge className="bg-purple-500/30 text-purple-100 border border-purple-400/20 text-[9px] font-black px-2 py-0.5 whitespace-nowrap hover:bg-purple-500/50 transition-colors cursor-pointer">
-                                                    🔗 Polygon ✓
-                                                  </Badge>
-                                                </a>
-                                              )}
-                                            </div>
+                                          <div className="text-right">
+                                            <p className="text-[9px] font-black text-indigo-400 uppercase mb-1 tracking-tighter">Origin</p>
+                                            <Badge className="bg-indigo-500/30 text-indigo-100 border border-indigo-400/20 text-[9px] font-black px-2 py-0.5 whitespace-nowrap">Kibwezi Apiary</Badge>
                                           </div>
                                         </div>
                                       </div>
 
                                       <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
                                         <div className="flex items-center gap-1.5">
-                                          <Lock className="h-3 w-3 text-indigo-400" />
-                                          <span className="text-[9px] font-bold text-indigo-300 uppercase">Secure Link</span>
+                                          <ShieldCheck className="h-3 w-3 text-indigo-400" />
+                                          <span className="text-[9px] font-bold text-indigo-300 uppercase">Verified Origin</span>
                                         </div>
-                                        <span className="text-[9px] font-black text-green-400 uppercase tracking-widest">Verified 256-bit</span>
+                                        <span className="text-[9px] font-black text-green-400 uppercase tracking-widest">100% PURE</span>
                                       </div>
                                     </div>
                                   </div>
@@ -771,15 +735,15 @@ const Traceability = () => {
                                 {/* Footer Stats */}
                                 <div className="flex items-center gap-6 pt-5 border-t border-white/10">
                                   <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
-                                    <span className="text-[9px] font-black text-indigo-400 uppercase tracking-tighter">Status:</span>
-                                    <span className="text-xs font-black text-indigo-900">Verified</span>
+                                    <span className="text-[9px] font-black text-indigo-400 uppercase tracking-tighter">FOB Index:</span>
+                                    <span className="text-xs font-black text-white">{traceData.sensor_snapshot?.fob || "7"}</span>
                                   </div>
                                   <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
-                                    <span className="text-[9px] font-black text-indigo-400 uppercase tracking-tighter">Security:</span>
-                                    <span className="text-xs font-black text-indigo-200">Standard</span>
+                                    <span className="text-[9px] font-black text-indigo-400 uppercase tracking-tighter">Status:</span>
+                                    <span className="text-xs font-black text-indigo-200">Fully Verified</span>
                                   </div>
                                   <div className="flex-1 text-right">
-                                    <p className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em] animate-pulse">Unit: {traceData.batch_code.split('-')[2] || 'H000'}</p>
+                                    <p className="text-[9px] font-black text-indigo-500 uppercase tracking-[0.2em] animate-pulse">Node: {traceData.batch_code.split('-')[2] || 'H000'}</p>
                                   </div>
                                 </div>
                               </div>
@@ -790,7 +754,7 @@ const Traceability = () => {
                     </Card>
 
                     {/* Master Beekeeper Card */}
-                    <Card className="border-none shadow-xl rounded-[2.5rem] bg-indigo-50 text-indigo-900 p-8 relative overflow-hidden h-full">
+                    <Card className="border-none shadow-xl rounded-[2.5rem] bg-[#1E1B4B] text-white p-8 relative overflow-hidden h-full">
                       <h3 className="text-xs font-black uppercase tracking-widest opacity-60 mb-8">Master Beekeeper</h3>
 
                       <div className="flex gap-6 items-start relative z-10 mb-8">
@@ -857,7 +821,7 @@ const Traceability = () => {
                     <div className="flex items-center justify-between mb-8">
                       <h3 className="text-3xl font-black text-neutral-900 tracking-tighter uppercase">The Honey Journey</h3>
                       <Badge variant="outline" className="bg-slate-50 text-slate-500 border-slate-200 font-bold gap-1.5 py-1.5 pl-2 pr-3 hidden sm:flex">
-                        <Lock className="h-3 w-3" /> Verified Batch Records
+                        <Lock className="h-3 w-3" /> Immutable Ledger Records
                       </Badge>
                     </div>
 
@@ -916,7 +880,7 @@ const Traceability = () => {
                           <div className="p-3 bg-green-50 rounded-xl border border-green-100 inline-block">
                             <div className="flex items-center gap-2">
                               <ShieldCheck className="h-4 w-4 text-green-600" />
-                              <span className="text-xs font-bold text-green-800">Precision Scale Verified</span>
+                              <span className="text-xs font-bold text-green-800">Smart Scale Verified</span>
                             </div>
                           </div>
                         </div>

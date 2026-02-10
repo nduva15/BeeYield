@@ -1,0 +1,5 @@
+--- SYSTEM CHECK ---
+Total Apiaries: 1
+APIARY: Kibwezi Main Apiary | ID: f042baec-8334-48ec-85f2-ba75f86d576a | USER: 10c9b5b3-f9c4-47cf-bc6b-c7d6e8e4bce6
+Total Hives: 184
+Apiary ID f042baec-8334-48ec-85f2-ba75f86d576a has 184 hives

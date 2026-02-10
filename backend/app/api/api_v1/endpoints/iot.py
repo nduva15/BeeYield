@@ -47,3 +47,15 @@ def get_dashboard_stats(
     """Get dashboard stats for the logged-in user."""
     user_id = current_user.get("sub")
     return iot_service.get_dashboard_stats(user_id)
+@router.post("/devices", response_model=schemas.IoTDevice)
+def create_device(
+    device_in: schemas.IoTDeviceCreate,
+    current_user: dict = Depends(security.get_current_user)
+):
+    """Create (link) an IoT device to a farmer account."""
+    # For now, we only allow Timothy to add devices in this demo
+    email = current_user.get("email")
+    if email != "timothynduva349@gmail.com":
+         raise HTTPException(status_code=403, detail="Not authorized to link devices")
+         
+    return iot_service.create_device(device_in.dict())

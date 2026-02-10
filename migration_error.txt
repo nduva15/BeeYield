@@ -1,0 +1,1 @@
+{'message': 'column "hive_id" does not exist', 'code': '42703', 'hint': None, 'details': None}

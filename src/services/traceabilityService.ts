@@ -1,5 +1,5 @@
 /**
- * Traceability Service - Powered by BeeYield HoneyChain
+ * Traceability Service - Powered by BeeYield Honey Trail
  */
 import { API_V1_URL } from "./api";
 
@@ -89,11 +89,6 @@ export interface TraceResponse {
     blockchain_verified: boolean;
     verification_url: string;
 
-    // Polygon Blockchain
-    polygon_verified?: boolean;
-    polygon_tx_hash?: string;
-    polygon_verification_url?: string;
-
     // Entities
     farmer?: Farmer;
     apiary?: Apiary;
@@ -129,18 +124,15 @@ export interface ImpactStats {
 const generateMockData = (code: string): TraceResponse => {
     const parts = code.split(/[-_]/);
 
-    // Improved Hive & Year extraction for HoneyChain format: HB-YYYY-MMDD-HIVE
-    const yearPart = parts.find(p => /^(202[0-6])$/.test(p));
-    const detectedYear = yearPart || "2026";
-
+    // Improved hive number extraction: Look for a part that is purely numeric or follows a known pattern
     let hiveNumInt = 101;
-    // Look for the last numeric part as the hive ID, unless it's the year or date
-    const numericParts = parts.filter(p => /^\d+$/.test(p) && p !== detectedYear && p.length !== 4);
+    const numericParts = parts.map(p => p.replace(/\D/g, '')).filter(p => p.length > 0 && p !== "2026" && p !== "2025");
 
+    // The hive number is typically the 3rd part or the largest number before the size
     if (numericParts.length > 0) {
-        // Find a part that looks like a hive ID (1-184)
+        // Find a part that looks like a hive ID (usually 100-184 in our case)
         const possibleHive = numericParts.find(n => parseInt(n) >= 1 && parseInt(n) <= 184);
-        hiveNumInt = possibleHive ? parseInt(possibleHive) : parseInt(numericParts[numericParts.length - 1]);
+        hiveNumInt = possibleHive ? parseInt(possibleHive) : parseInt(numericParts[0]);
     } else {
         let hash = 0;
         for (let i = 0; i < code.length; i++) {
@@ -150,6 +142,7 @@ const generateMockData = (code: string): TraceResponse => {
     }
 
     if (hiveNumInt > 184) hiveNumInt = (hiveNumInt % 184) + 1;
+
     const hiveNumberVal = hiveNumInt.toString().padStart(3, '0');
 
     // SYNCED WITH PrecisionPollinationView.tsx generation logic for 1:1 matching
@@ -186,23 +179,12 @@ const generateMockData = (code: string): TraceResponse => {
     const lat = (baseLat + (row * 0.0005) + ((seed % 10) * 0.00002)).toFixed(4);
     const lng = (baseLng + (col * 0.0008) + ((seed % 10) * 0.00002)).toFixed(4);
 
-    const isAcacia = code.toUpperCase().includes("ACACIA") || code.toUpperCase().includes("HB");
-    const monthPart = parts.find(p => p.length === 4 && /^\d+$/.test(p));
+    const isAcacia = code.toUpperCase().includes("ACACIA");
+    const day = (hiveNumInt % 20) + 10;
+    const harvestDate = `Jan ${day}, 2026`;
 
-    let harvestDate = `Jan 10, ${detectedYear}`;
-    if (monthPart) {
-        const m = parseInt(monthPart.substring(0, 2));
-        const d = parseInt(monthPart.substring(2, 4));
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        harvestDate = `${months[m - 1] || "Jan"} ${d}, ${detectedYear}`;
-    } else if (detectedYear !== "2026") {
-        // Default historical dates if not specified
-        harvestDate = (hiveNumInt % 2 === 0) ? `Jun 15, ${detectedYear}` : `Dec 15, ${detectedYear}`;
-    }
-
-    // HARVEST LOGIC: 60kg total / 30 hives = 2kg per hive (for current)
-    // Historical yields vary: ~1.5kg average in migration
-    const hiveYield = detectedYear === "2026" ? "2.00" : (1.5 + (seed % 10) / 10).toFixed(2);
+    // HARVEST LOGIC: 60kg total / 30 hives = 2kg per hive
+    const hiveYield = "2.00";
 
     // Determine Jar Size and Price Category mapping
     let jarSize = "500g";
@@ -224,13 +206,7 @@ const generateMockData = (code: string): TraceResponse => {
         product_name: isAcacia ? "Premium Acacia Honey" : "Organic Wildflower Honey",
         verified: true,
         blockchain_verified: true,
-        verification_url: `https://chain.beeyield.com/verify/${code}`,
-
-        // Polygon blockchain fields (mock mode)
-        polygon_verified: true,
-        polygon_tx_hash: `0x${Array.from(code).map(c => c.charCodeAt(0).toString(16)).join('').slice(0, 40)}...`,
-        polygon_verification_url: `https://mumbai.polygonscan.com/tx/0x${Array.from(code).map(c => c.charCodeAt(0).toString(16)).join('').slice(0, 64)}`,
-
+        verification_url: `https://trail.beeyield.com/verify/${code}`,
         farmer: {
             farmer_id: "F-TIM-001",
             name: "Timothy Nduva",
@@ -271,9 +247,9 @@ const generateMockData = (code: string): TraceResponse => {
         story_title: "The BeeYield Story",
         story_content: "From 4 hives to 184.",
         impact_stats: {
-            total_honey_kg: detectedYear === "2026" ? "60.00" : (parseInt(detectedYear) * 15 - 30200).toString() + ".00", // Rough growth scale
-            hive_count: detectedYear === "2026" ? "184" : (4 + (parseInt(detectedYear) - 2020) * 40).toString(),
-            harvested_hives: detectedYear === "2026" ? "30" : (detectedYear === "2025" ? "88" : "20"),
+            total_honey_kg: "60.00",
+            hive_count: "184",
+            harvested_hives: "30",
             beekeepers: "1",
             farmers_served: "5",
             acres_pollinated: "5",
@@ -315,7 +291,7 @@ const generateMockData = (code: string): TraceResponse => {
         timeline: [
             {
                 title: "Ready For You",
-                date: detectedYear === "2026" ? "Jan 30, 2026" : `${harvestDate.split(',')[0].split(' ')[0]} 30, ${detectedYear}`,
+                date: "Jan 30, 2026",
                 location: "BeeYield Distribution Center, Nairobi",
                 description: `Bottled and sealed. Batch ${code}. Verified Authentic.`,
                 icon: "CheckCircle2",
@@ -388,76 +364,6 @@ export const getBlockchainStatus = async (): Promise<unknown> => {
         return await response.json();
     } catch (error) {
         console.error("Error fetching blockchain status:", error);
-        return null;
-    }
-};
-
-// ==================== POLYGON BLOCKCHAIN FUNCTIONS ====================
-
-export interface PolygonStatus {
-    network: string;
-    chain_id: number;
-    connected: boolean;
-    api_key_configured: boolean;
-    cached_anchors: number;
-    latest_block?: number;
-    gas_price_gwei?: number;
-}
-
-export interface PolygonVerification {
-    verified: boolean;
-    batch_code: string;
-    data_hash?: string;
-    tx_hash?: string;
-    anchored_at?: string;
-    network?: string;
-    status?: string;
-    verification_url?: string;
-    block_number?: number;
-    confirmations?: number;
-    on_chain_verified?: boolean;
-}
-
-export const getPolygonStatus = async (): Promise<PolygonStatus | null> => {
-    try {
-        const response = await fetch(`${API_V1_URL}/traceability/polygon/status`);
-        if (!response.ok) {
-            throw new Error("Failed to fetch Polygon status");
-        }
-        return await response.json();
-    } catch (error) {
-        console.error("Error fetching Polygon status:", error);
-        return null;
-    }
-};
-
-export const verifyOnPolygon = async (batchCode: string): Promise<PolygonVerification | null> => {
-    try {
-        const response = await fetch(`${API_V1_URL}/traceability/polygon/verify/${batchCode}`);
-        if (!response.ok) {
-            if (response.status === 404) {
-                return { verified: false, batch_code: batchCode };
-            }
-            throw new Error("Failed to verify on Polygon");
-        }
-        return await response.json();
-    } catch (error) {
-        console.error("Error verifying on Polygon:", error);
-        return null;
-    }
-};
-
-export const anchorToPolygon = async (batchCode: string): Promise<PolygonVerification | null> => {
-    try {
-        const response = await fetch(`${API_V1_URL}/traceability/polygon/anchor/${batchCode}`, {
-            method: 'POST'
-        });
-        if (!response.ok) {
-            throw new Error("Failed to anchor to Polygon");
-        }
-        return await response.json();
-    } catch (error) {
-        console.error("Error anchoring to Polygon:", error);
         return null;
     }
 };

@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -37,32 +37,32 @@ const PollinationServices = () => {
         },
         {
             icon: Activity,
-            title: "Hive Health Monitoring",
-            description: "Audio analysis of colony health to detect queen presence and general productivity levels.",
+            title: "Acoustic Hive Wellness",
+            description: "AI analysis of colony sounds to detect queen presence and general hive productivity levels.",
             link: "/precision-pollination"
         },
         {
             icon: Eye,
-            title: "Precision Field Mapping",
+            title: "Smart Field Mapping",
             description: "Visualizing bee distribution across your acreage to ensure uniform pollination coverage.",
             link: "/in-land-pollination"
         },
         {
             icon: Target,
-            title: "Visitation Data",
-            description: "Count bee visits per flower so you can see how pollination is performing and plan harvest.",
+            title: "Visitation Analytics",
+            description: "Quantifying the number of bee visits per flower to optimize total harvest potential.",
             link: "/in-land-pollination"
         },
         {
             icon: Shield,
             title: "Early Disease Detection",
-            description: "Detailed monitoring to identify pathogens like Varroa or AFB before they spread.",
+            description: "Molecular-level monitoring to identify Pathogens like Varroa or AFB before they spread.",
             link: "/diseases"
         },
         {
             icon: BarChart3,
-            title: "Safety Alerts",
-            description: "Instant notifications when environmental threats or hive health drops below safety levels.",
+            title: "Bio-Security Alerts",
+            description: "Instant notifications when environmental threats or hive health dips below safety thresholds.",
             link: "/diseases"
         }
     ];
@@ -96,12 +96,11 @@ const PollinationServices = () => {
                             </Badge>
 
                             <h1 className="text-4xl sm:text-5xl md:text-6xl font-black leading-[1.1] tracking-tighter">
-                                Take Control of Your
-                                <span className="text-amber-500 block">Pollination Today.</span>
+                                BeeYield <span className="text-amber-500 block">Precision Pollination</span>
                             </h1>
 
                             <p className="text-lg sm:text-xl text-neutral-600 max-w-lg mx-auto lg:mx-0 leading-relaxed font-medium">
-                                With BeeYield's research-based, managed pollination solutions for commercial crop growers.
+                                Data-driven pollination solutions for commercial crop growers.
                             </p>
 
                             <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center lg:justify-start">
@@ -177,8 +176,8 @@ const PollinationServices = () => {
                             Provider of Pollination Services
                         </h2>
                         <p className="text-lg sm:text-xl text-neutral-600 font-medium max-w-2xl leading-relaxed">
-                            We drive value by monitoring bee activity in crops to deliver
-                            clear pollination results.
+                            We drive value by tracking and monitoring bee activity in crops to deliver
+                            quality data for quantifiable pollination results.
                         </p>
                     </div>
 
@@ -208,7 +207,7 @@ const PollinationServices = () => {
                         {/* Data Points Card */}
                         <div className="bg-[#FAEFC8] rounded-[2.5rem] p-8 sm:p-10 h-[22rem] sm:h-96 flex flex-col justify-between relative overflow-hidden group transition-transform hover:-translate-y-1 duration-300">
                             <div className="relative z-10">
-                                <h3 className="text-sm font-black text-neutral-800 tracking-widest uppercase mb-4">Metric Logs</h3>
+                                <h3 className="text-sm font-black text-neutral-800 tracking-widest uppercase mb-4">Data Points</h3>
                                 <p className="text-4xl sm:text-5xl font-black text-neutral-900 leading-tight">Growing <br /> Daily</p>
                             </div>
                             <p className="text-neutral-800 font-medium leading-relaxed relative z-10 max-w-[80%]">
@@ -354,7 +353,7 @@ const PollinationServices = () => {
                                             Proactive protection for your apiary. Detect threats in the hive and across the land before they impact your harvest.
                                         </p>
                                         <ul className="space-y-3 pt-2">
-                                            {["Early pathogen detection", "In-Hive & In-Land safety", "Real-time health alerts"].map((feature, i) => (
+                                            {["Early pathogen detection", "In-Hive & In-Land safety", "Automated health alerts"].map((feature, i) => (
                                                 <li key={i} className="flex items-center gap-3 text-sm font-bold">
                                                     <Check className="h-5 w-5 text-red-500" />
                                                     {feature}
@@ -383,7 +382,7 @@ const PollinationServices = () => {
                             The Standard
                         </Badge>
                         <h2 className="text-4xl md:text-6xl font-black text-foreground tracking-tighter">
-                            BEEYIELD <span className="text-amber-600 italic">DIFFERENCE</span>
+                            BEEYIELD <span className="text-amber-600 italic">PRECISION POLLINATION</span>
                         </h2>
                         <p className="text-xl text-muted-foreground max-w-3xl mx-auto font-medium">
                             We bring a complete ecosystem of technology, expertise, and accountability
@@ -414,7 +413,7 @@ const PollinationServices = () => {
                     <div className="mt-32 max-w-5xl mx-auto">
                         <div className="text-center mb-12">
                             <h3 className="text-3xl font-black tracking-tight">Tradition vs. <span className="text-amber-600">Innovation</span></h3>
-                            <p className="text-muted-foreground mt-4 font-medium">Why researched pollination is the only way forward for modern agriculture.</p>
+                            <p className="text-muted-foreground mt-4 font-medium">Why data-driven pollination is the only way forward for modern agriculture.</p>
                         </div>
                         <div className="overflow-hidden rounded-[2.5rem] border border-border shadow-2xl">
                             <table className="w-full text-left border-collapse">
@@ -434,7 +433,7 @@ const PollinationServices = () => {
                                     <tr>
                                         <td className="p-6 font-bold border-b border-border">Placement</td>
                                         <td className="p-6 border-b border-border text-muted-foreground">General proximity to field</td>
-                                        <td className="p-6 border-b border-border font-black text-amber-600">Strategic Hive Placement</td>
+                                        <td className="p-6 border-b border-border font-black text-amber-600">AI-Optimized GPS Targeting</td>
                                     </tr>
                                     <tr>
                                         <td className="p-6 font-bold border-b border-border">Colony Data</td>
@@ -455,7 +454,7 @@ const PollinationServices = () => {
                             </table>
                         </div>
                         <div className="mt-8 text-center italic text-muted-foreground text-sm">
-                            <strong className="font-bold">Bottom line</strong>: While traditional methods rely on hope, BeeYield turns pollination into a predictable, measurable process for growth.
+                            <strong className="font-bold">Bottom line</strong>: While traditional methods rely on hope, BeeYield turns pollination into a predictable, measurable engine for growth.
                         </div>
                     </div>
                 </div>
@@ -515,7 +514,7 @@ const PollinationServices = () => {
                                     How does precision pollination differ from traditional beekeeping?
                                 </AccordionTrigger>
                                 <AccordionContent className="text-muted-foreground leading-relaxed font-medium text-base pb-6">
-                                    Traditional beekeeping is hives near crops and hope. BeeYield's <strong className="font-bold text-foreground">Precision Pollination</strong> puts sensors in every hive and uses placement and weather data so you know colony strength and bee activity during bloom—no guesswork.
+                                    Traditional beekeeping involves placing hives near crops and hoping for the best. BeeYield's <strong className="font-bold text-foreground">Precision Pollination</strong> uses smart sensors inside every hive and optimized placement across the land. We monitor colony health, bee activity, and weather patterns 24/7 to ensure maximum results, taking the guesswork out of the harvest.
                                 </AccordionContent>
                             </AccordionItem>
 
@@ -533,7 +532,7 @@ const PollinationServices = () => {
                                     How many hives do I need for my crop?
                                 </AccordionTrigger>
                                 <AccordionContent className="text-muted-foreground leading-relaxed font-medium text-base pb-6">
-                                    Hive density varies significantly based on the crop type, field layout, and target yield. For example, sunflowers may require 2-3 hives per hectare, while some specialty vegetables need up to 5 hives. Our placement analysis looks at your land geography to determine the perfect density and orientation for your specific needs.
+                                    Hive density varies significantly based on the crop type, field layout, and target yield. For example, sunflowers may require 2-3 hives per hectare, while some specialty vegetables need up to 5 hives. Our precision placement AI analyzes your land geography to determine the perfect density and orientation for your specific needs.
                                 </AccordionContent>
                             </AccordionItem>
 
@@ -560,7 +559,7 @@ const PollinationServices = () => {
                                 "name": "How does precision pollination differ from traditional beekeeping?",
                                 "acceptedAnswer": {
                                     "@type": "Answer",
-                                    "text": "Precision pollination uses in-hive sensors and placement data to monitor colony strength and bee activity 24/7. BeeYield uses real-time field data during bloom instead of relying on proximity alone."
+                                    "text": "Precision pollination uses IoT sensors and AI-optimized hive placement to monitor colony strength and bee activity 24/7. Unlike traditional beekeeping which relies on proximity alone, BeeYield ensures maximum fertilization during the critical bloom phase using real-time field data."
                                 }
                             },
                             {
@@ -568,7 +567,7 @@ const PollinationServices = () => {
                                 "name": "What results can farmers expect with BeeYield?",
                                 "acceptedAnswer": {
                                     "@type": "Answer",
-                                    "text": "Farmers using BeeYield often see about 35% higher crop yield. We provide verifiable data on colony activity—typically 300% more measurable activity than with traditional methods."
+                                    "text": "Farmers using BeeYield typically see an average increase of 35% in crop yield through optimized pollination. We also provide verifiable data showing a 300% increase in measurable colony activity compared to traditional methods."
                                 }
                             },
                             {
@@ -597,7 +596,7 @@ const PollinationServices = () => {
                     </h2>
                     <p className="text-2xl text-neutral-600 max-w-3xl mx-auto font-medium">
                         Join the network of high-yield growers who've stopped guessing
-                        and started growing.
+                        and started growing with data.
                     </p>
                     <div className="flex flex-wrap justify-center gap-6">
                         <Link to="/contact">

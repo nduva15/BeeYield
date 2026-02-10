@@ -57,12 +57,8 @@ All colors MUST be HSL.
     --shadow-soft: 0 4px 20px -2px hsl(48 87% 60% / 0.15);
     --shadow-glow: 0 8px 32px -4px hsl(48 90% 65% / 0.3);
 
-    /* Motion: spring-like easing to avoid generic linear/ease */
+    /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-    --duration-in: 0.35s;
-    --duration-out: 0.25s;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 0 0% 15%;
@@ -75,42 +71,49 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 48 30% 97%;
-    --foreground: 0 0% 10%;
+    --background: 0 0% 8%;
+    --foreground: 48 30% 95%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 10%;
+    --card: 0 0% 12%;
+    --card-foreground: 48 30% 95%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 10%;
+    --popover: 0 0% 12%;
+    --popover-foreground: 48 30% 95%;
 
+    /* BeeYield Logo Yellow/Gold - #F4D03F */
     --primary: 48 87% 60%;
     --primary-foreground: 0 0% 10%;
     --primary-glow: 48 90% 65%;
 
-    --secondary: 153 68% 34%;
+    /* BeeYield Logo Green - #1B9157 */
+    --secondary: 153 60% 42%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 48 30% 92%;
-    --muted-foreground: 0 0% 35%;
+    --muted: 0 0% 18%;
+    --muted-foreground: 48 20% 65%;
 
     --accent: 48 80% 55%;
     --accent-foreground: 0 0% 10%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 48 30% 88%;
-    --input: 48 30% 88%;
+    --border: 0 0% 22%;
+    --input: 0 0% 22%;
     --ring: 48 87% 60%;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 0 0% 15%;
+    /* Custom tokens - BeeYield Logo Colors (Dark Mode) */
+    --honey-light: 48 65% 35%;
+    --honey-dark: 48 90% 65%;
+    --nature-green: 153 58% 42%;
+    --nature-green-light: 153 35% 22%;
+    --sidebar-background: 0 0% 10%;
+    --sidebar-foreground: 48 30% 95%;
     --sidebar-primary: 48 87% 60%;
     --sidebar-primary-foreground: 0 0% 10%;
-    --sidebar-accent: 48 70% 95%;
-    --sidebar-accent-foreground: 48 80% 25%;
-    --sidebar-border: 48 20% 90%;
+    --sidebar-accent: 48 50% 18%;
+    --sidebar-accent-foreground: 48 30% 95%;
+    --sidebar-border: 0 0% 18%;
     --sidebar-ring: 48 87% 60%;
   }
 }
@@ -121,8 +124,9 @@ All colors MUST be HSL.
   }
 
   html {
-    font-family: 'Outfit', 'Inter', ui-sans-serif, system-ui, sans-serif;
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     font-size: 16px;
+    /* Restored to standard size */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -132,68 +136,67 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
     font-family: inherit;
     font-size: 1rem;
-    line-height: 1.5;
+    line-height: 1.6;
   }
 
-  /* Headings: Outfit for a distinct, non-generic look */
+  /* Distinct headings with hierarchy */
   h1,
   h2,
   h3,
   h4,
   h5,
   h6 {
-    font-family: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     font-weight: 700;
-    letter-spacing: -0.03em;
-    line-height: 1.15;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+    margin-bottom: 0.75em;
+    color: var(--foreground);
+    @apply scroll-m-20;
   }
 
   h1 {
-    font-size: 1.5rem;
-    /* text-2xl - As requested: same size as IoT title */
+    font-size: 2.5rem;
   }
 
+  /* 40px */
   h2 {
-    font-size: 1.25rem;
-    /* text-xl */
+    font-size: 2rem;
   }
 
+  /* 32px */
   h3 {
-    font-size: 1.125rem;
-    /* text-lg */
+    font-size: 1.75rem;
   }
 
+  /* 28px */
   h4 {
-    font-size: 1rem;
-    /* text-base */
+    font-size: 1.5rem;
   }
 
+  /* 24px */
   h5 {
-    font-size: 0.875rem;
-    /* text-sm */
+    font-size: 1.25rem;
   }
 
+  /* 20px */
   h6 {
-    font-size: 0.75rem;
-    /* text-xs */
+    font-size: 1rem;
   }
 
-  /* Consistent paragraph and text */
-  p,
-  span,
-  div,
-  label,
-  a {
-    font-family: inherit;
+  /* 16px */
+
+  p {
+    margin-bottom: 1em;
   }
 
-  /* Consistent button and input typography */
+  /* Restore standard element behavior */
   button,
   input,
   select,
   textarea {
-    font-family: 'Outfit', 'Inter', ui-sans-serif, system-ui, sans-serif;
-    font-size: 0.875rem;
+    font-family: inherit;
+    font-size: 1rem;
   }
 }
 
@@ -208,15 +211,17 @@ All colors MUST be HSL.
     @apply py-12 sm:py-16 md:py-20 lg:py-24;
   }
 
-  /* Responsive text sizes for headings */
+  /* Responsive text sizes for headings - small font */
   .hero-title {
-    @apply text-3xl sm:text-4xl md:text-5xl lg:text-6xl;
+    @apply text-base sm:text-lg;
     @apply leading-tight tracking-tight;
+    font-style: normal !important;
   }
 
   .hero-subtitle {
-    @apply text-base sm:text-lg md:text-xl;
+    @apply text-xs sm:text-sm;
     @apply leading-relaxed;
+    font-style: normal !important;
   }
 
   /* Mobile-friendly container padding */

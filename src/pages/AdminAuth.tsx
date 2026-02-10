@@ -54,11 +54,8 @@ const AdminAuth = () => {
                         <Shield className="h-10 w-10 text-primary" />
                     </div>
                     <h1 className="text-4xl font-black text-white tracking-tightest leading-none uppercase">
-                        BeeYield <span className="text-primary italic">Admin</span>
+                        BeeYield <span className="text-primary">Admin Portal</span>
                     </h1>
-                    <p className="text-lg text-muted-foreground font-medium">
-                        Secure gateway for BeeYield administrators.
-                    </p>
                 </div>
 
                 {/* Auth Mode Selector */}
@@ -68,9 +65,10 @@ const AdminAuth = () => {
                         {authMode === 'login' && (
                             <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
                                 <div className="mb-6 flex items-center justify-center gap-2 text-primary font-bold uppercase tracking-widest text-sm">
-                                    <LogIn className="w-4 h-4" /> Gateway Access
+                                    <LogIn className="w-4 h-4" /> Admin Login
                                 </div>
                                 <LoginForm
+                                    variant="admin"
                                     onSuccess={() => navigate(redirectPath)}
                                     // Remove registration switch to prevent public signups
                                     onSwitchToRegister={() => { }}
@@ -96,10 +94,10 @@ const AdminAuth = () => {
                         onClick={() => navigate('/')}
                         className="text-muted-foreground hover:text-primary transition-colors text-sm font-bold uppercase tracking-widest flex items-center justify-center gap-2 mx-auto"
                     >
-                        <Lock className="h-3 w-3" /> Exit Terminal
+                        <Lock className="h-3 w-3" /> Back to Home
                     </button>
-                    <p className="mt-4 text-[10px] text-muted-foreground/50">
-                        Authorized Personnel Only. All access attempts are logged.
+                    <p className="mt-4 text-xs text-muted-foreground/50 uppercase tracking-widest font-bold">
+                        Secure Admin Login
                     </p>
                 </div>
             </div>
