@@ -23,7 +23,8 @@ import {
     Database, Trash2, Edit, Shield, Crown, UserMinus,
     CheckCircle2, XCircle, Clock, AlertTriangle, LayoutDashboard,
     MessageSquare, Bug, Mail, History, TrendingUp, ChevronRight,
-    LogOut, Search, MapPin, Eye, Phone, Leaf, Building2, Share2, CreditCard, FileText, Maximize2, Minus
+    LogOut, Search, MapPin, Eye, Phone, Leaf, Building2, Share2, CreditCard, FileText, Maximize2, Minus,
+    Briefcase, Globe
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -39,6 +40,8 @@ import { DocumentsRegistryTab } from '@/components/admin/tabs/DocumentsRegistryT
 import { PaymentsTab } from '@/components/admin/tabs/PaymentsTab';
 import { AccountsTab } from '@/components/admin/tabs/AccountsTab';
 import { InvoicesTab } from '@/components/admin/tabs/InvoicesTab';
+import { RecruitmentTab } from '@/components/admin/tabs/RecruitmentTab';
+import ContentDashboard from '@/components/beeyield/ContentDashboard';
 
 const AdminDashboard: React.FC = () => {
     const { user, loading: authLoading, signOut } = useAuth();
@@ -944,6 +947,15 @@ const AdminDashboard: React.FC = () => {
                 { id: 'contact', label: 'Contact', icon: MessageSquare },
                 { id: 'newsletter', label: 'Newsletter', icon: Mail },
                 { id: 'documents', label: 'Documents', icon: FileText },
+            ]
+        },
+        {
+            id: 'recruitment',
+            label: 'Recruitment',
+            icon: Briefcase,
+            children: [
+                { id: 'recruitment', label: 'Job Board', icon: Briefcase },
+                { id: 'recruitment', label: 'Applications', icon: Users },
             ]
         },
         { id: 'batches', label: 'Trace Data', icon: Database },
@@ -3235,6 +3247,14 @@ const AdminDashboard: React.FC = () => {
 
                     <TabsContent value="invoices">
                         <InvoicesTab />
+                    </TabsContent>
+
+                    <TabsContent value="content" className="h-[calc(100vh-200px)]">
+                        <ContentDashboard />
+                    </TabsContent>
+
+                    <TabsContent value="recruitment">
+                        <RecruitmentTab />
                     </TabsContent>
                 </Tabs>
             </div>

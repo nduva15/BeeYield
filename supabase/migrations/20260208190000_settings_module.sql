@@ -88,12 +88,15 @@ EXCEPTION
 END $$;
 
 
+-- Ensure hives has nickname column (handling potential migration drift)
+ALTER TABLE IF EXISTS public.hives ADD COLUMN IF NOT EXISTS nickname TEXT;
+
 -- 5. Hive Alert Settings View (The "Join View")
 -- Validates: Returns list of hives with effective settings (merged global + override)
 CREATE OR REPLACE VIEW hive_alert_settings_view AS
 SELECT
   h.id as hive_id,
-  h.name as hive_name,
+  h.nickname as hive_name,
   h.hive_code,
   h.user_id,
   t.id as threshold_id,

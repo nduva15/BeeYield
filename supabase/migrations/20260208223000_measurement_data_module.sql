@@ -54,13 +54,13 @@ ALTER TABLE disease_detections ENABLE ROW LEVEL SECURITY;
 -- 6. Policies (User can only see data for Hives/Apiaries they own)
 DO $$
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_policy WHERE polname = 'Read own sensor data') THEN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Read own sensor data') THEN
         CREATE POLICY "Read own sensor data" ON sensor_readings FOR SELECT USING (auth.uid() = user_id);
     END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_policy WHERE polname = 'Read own land data') THEN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Read own land data') THEN
         CREATE POLICY "Read own land data" ON land_readings FOR SELECT USING (auth.uid() = user_id);
     END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_policy WHERE polname = 'Read own disease data') THEN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Read own disease data') THEN
         CREATE POLICY "Read own disease data" ON disease_detections FOR SELECT USING (auth.uid() = user_id);
     END IF;
 END

@@ -21,15 +21,21 @@ ALTER TABLE public.tasks
     ADD COLUMN IF NOT EXISTS completed_at TIMESTAMP WITH TIME ZONE;
 
 -- Convert existing columns to use the new Enums
+-- Drop default first to avoid casting error
+ALTER TABLE public.tasks ALTER COLUMN priority DROP DEFAULT;
+
 -- Handle existing text values by mapping them to Enum labels
 ALTER TABLE public.tasks 
     ALTER COLUMN priority TYPE task_priority USING (
         CASE 
-            WHEN priority ILIKE 'high' THEN 'High'::task_priority
-            WHEN priority ILIKE 'low' THEN 'Low'::task_priority
+            WHEN priority::text ILIKE 'high' THEN 'High'::task_priority
+            WHEN priority::text ILIKE 'low' THEN 'Low'::task_priority
             ELSE 'Medium'::task_priority
         END
     );
+
+-- Re-apply default with the new Enum type
+ALTER TABLE public.tasks ALTER COLUMN priority SET DEFAULT 'Medium'::task_priority;
 
 ALTER TABLE public.tasks 
     ALTER COLUMN due_date TYPE TIMESTAMP WITH TIME ZONE USING (due_date::TIMESTAMP WITH TIME ZONE);

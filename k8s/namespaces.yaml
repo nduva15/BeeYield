@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: beeyield-prod
+  labels:
+    name: beeyield-prod
+    environment: production
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: beeyield-staging
+  labels:
+    name: beeyield-staging
+    environment: staging
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: beeyield-dev
+  labels:
+    name: beeyield-dev
+    environment: development

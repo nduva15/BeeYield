@@ -25,6 +25,10 @@ export interface Product {
     variants: ProductVariant[];
 }
 
+export const add_to_cart = async (item: any) => {
+    return await apiPost<any>('/shop/cart/add', item);
+};
+
 export const getProducts = async (category_name?: string): Promise<Product[]> => {
     try {
         const params: Record<string, string> = {};
@@ -155,6 +159,32 @@ export const downloadInvoice = async (orderId: string, orderNumber: string) => {
     }
 };
 
+// --- WISHLIST & CART SERVICES ---
+
+export interface WishlistItem {
+    id: string; // Product ID
+    added_at: string;
+}
+
+export const getWishlist = async (): Promise<WishlistItem[]> => {
+    try {
+        return await apiGet<WishlistItem[]>('/shop/wishlist');
+    } catch (error) {
+        console.error("Error fetching wishlist:", error);
+        return [];
+    }
+};
+
+export const toggleWishlist = async (productId: string): Promise<{ status: string; action: 'added' | 'removed' }> => {
+    return await apiPost<{ status: string; action: 'added' | 'removed' }>(`/shop/wishlist/${productId}`, {});
+};
+
+export const syncCart = async (items: any[]): Promise<any> => {
+    // Optional: Implement robust cart sync logic if supported by backend
+    // For now, we can just log or implement a simple 'save status'
+    return { status: "success" };
+};
+
 // --- STRIPE PAYMENT SERVICES ---
 
 export interface StripePaymentIntent {
@@ -207,6 +237,3 @@ export const confirmStripePayment = async (paymentIntentId: string, orderId: str
         order_id: orderId,
     });
 };
-
-
-

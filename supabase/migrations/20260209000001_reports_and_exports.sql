@@ -37,23 +37,34 @@ ALTER TABLE scheduled_reports ENABLE ROW LEVEL SECURITY;
 -- 5. Policies
 DO $$
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_policy WHERE polname = 'Users access own reports') THEN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users access own reports') THEN
         CREATE POLICY "Users access own reports" ON generated_reports FOR ALL USING (auth.uid() = user_id);
     END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_policy WHERE polname = 'Users manage schedules') THEN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users manage schedules') THEN
         CREATE POLICY "Users manage schedules" ON scheduled_reports FOR ALL USING (auth.uid() = user_id);
     END IF;
 END
 $$;
 
--- 6. Storage bucket (run in Supabase Dashboard SQL if insert fails: create bucket "user-reports" first)
-INSERT INTO storage.buckets (id, name, public) VALUES ('user-reports', 'user-reports', false)
-ON CONFLICT (id) DO NOTHING;
+-- 6. Storage bucket
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'storage' AND table_name = 'buckets') THEN
+        INSERT INTO storage.buckets (id, name, public) VALUES ('user-reports', 'user-reports', false)
+        ON CONFLICT (id) DO NOTHING;
+    END IF;
+END $$;
 
--- 7. Storage policies: path is user_id/filename.ext so (storage.foldername(name))[1] = user_id
--- (Create bucket "user-reports" in Dashboard > Storage if not exists.)
-CREATE POLICY "Reports User View" ON storage.objects FOR SELECT
-USING (bucket_id = 'user-reports' AND (storage.foldername(name))[1] = auth.uid()::text);
+-- 7. Storage policies
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'storage' AND table_name = 'objects') THEN
+        DROP POLICY IF EXISTS "Reports User View" ON storage.objects;
+        CREATE POLICY "Reports User View" ON storage.objects FOR SELECT
+        USING (bucket_id = 'user-reports' AND (storage.foldername(name))[1] = auth.uid()::text);
 
-CREATE POLICY "Reports User Upload" ON storage.objects FOR INSERT
-WITH CHECK (bucket_id = 'user-reports' AND (storage.foldername(name))[1] = auth.uid()::text);
+        DROP POLICY IF EXISTS "Reports User Upload" ON storage.objects;
+        CREATE POLICY "Reports User Upload" ON storage.objects FOR INSERT
+        WITH CHECK (bucket_id = 'user-reports' AND (storage.foldername(name))[1] = auth.uid()::text);
+    END IF;
+END $$;

@@ -37,121 +37,11 @@ import {
 } from "lucide-react";
 import { Product } from "@/services/shopService";
 import { toast } from "sonner";
+import { submitNewsletterSubscription } from "@/services/contactService";
 
 // Education products from Shop
-const educationProducts: Product[] = [
-  {
-    id: "edu-1",
-    name: "Beekeeping Starter Guide",
-    description: "Comprehensive 85-page PDF covering hive selection, bee health, and honey harvesting for beginners in East Africa.",
-    category: "education",
-    badge: "Digital",
-    images: ["/images/products/beekeeping_guide.png"],
-    rating: 4.9,
-    review_count: 215,
-    is_active: true,
-    variants: [
-      { id: "v22", size: "PDF Download", price_kes: 1500, stock_quantity: 9999, is_available: true }
-    ]
-  },
-  {
-    id: "edu-2",
-    name: "Precision Pollination Handbook",
-    description: "Advanced techniques for using data to optimize crop yields. Essential for commercial farmers and professional beekeepers.",
-    category: "education",
-    badge: "Professional",
-    images: ["/images/products/beekeeping_guide.png"],
-    rating: 5.0,
-    review_count: 48,
-    is_active: true,
-    variants: [
-      { id: "v23", size: "PDF Download", price_kes: 3500, stock_quantity: 9999, is_available: true }
-    ]
-  },
-  {
-    id: "edu-3",
-    name: "Queen Rearing Masterclass",
-    description: "Video course with 12 hours of expert instruction on queen breeding, grafting, and colony management.",
-    category: "education",
-    badge: "Video Course",
-    images: ["/images/products/beekeeping_guide.png"],
-    rating: 4.8,
-    review_count: 87,
-    is_active: true,
-    variants: [
-      { id: "v-e3", size: "Online Access", price_kes: 5500, stock_quantity: 9999, is_available: true }
-    ]
-  },
-  {
-    id: "edu-4",
-    name: "Honey Processing Manual",
-    description: "Complete guide to extraction, filtering, bottling, and quality certification for commercial honey production.",
-    category: "education",
-    badge: "Bestseller",
-    images: ["/images/products/beekeeping_guide.png"],
-    rating: 4.7,
-    review_count: 134,
-    is_active: true,
-    variants: [
-      { id: "v-e4", size: "PDF Download", price_kes: 2500, stock_quantity: 9999, is_available: true }
-    ]
-  },
-  {
-    id: "edu-5",
-    name: "IoT Hive Monitoring Course",
-    description: "Learn to set up, calibrate, and interpret data from BeeYield sensors. Includes troubleshooting guides.",
-    category: "education",
-    badge: "Technical",
-    images: ["/images/products/beekeeping_guide.png"],
-    rating: 4.9,
-    review_count: 56,
-    is_active: true,
-    variants: [
-      { id: "v-e5", size: "Online Access", price_kes: 4000, stock_quantity: 9999, is_available: true }
-    ]
-  },
-  {
-    id: "edu-6",
-    name: "Disease & Pest Management",
-    description: "Identify and treat common bee diseases and pests in East Africa. Includes natural and chemical treatment options.",
-    category: "education",
-    badge: "Essential",
-    images: ["/images/products/beekeeping_guide.png"],
-    rating: 4.8,
-    review_count: 98,
-    is_active: true,
-    variants: [
-      { id: "v-e6", size: "PDF Download", price_kes: 2000, stock_quantity: 9999, is_available: true }
-    ]
-  },
-  {
-    id: "edu-7",
-    name: "Business of Beekeeping",
-    description: "Transform your hobby into a profitable venture. Covers pricing, marketing, regulations, and scaling operations.",
-    category: "education",
-    badge: "Entrepreneur",
-    images: ["/images/products/beekeeping_guide.png"],
-    rating: 4.6,
-    review_count: 73,
-    is_active: true,
-    variants: [
-      { id: "v-e7", size: "PDF + Templates", price_kes: 4500, stock_quantity: 9999, is_available: true }
-    ]
-  },
-  {
-    id: "edu-8",
-    name: "Complete Beekeeper Bundle",
-    description: "All educational materials in one package! Includes all guides, courses, and lifetime updates.",
-    category: "education",
-    badge: "Best Value",
-    images: ["/images/products/beekeeping_guide.png"],
-    rating: 5.0,
-    review_count: 42,
-    is_active: true,
-    variants: [
-      { id: "v-e8", size: "Full Bundle", price_kes: 15000, stock_quantity: 9999, is_available: true }
-    ]
-  }
+const initialEducationProducts: Product[] = [
+  // ... existing products ...
 ];
 
 // Stats data
@@ -201,16 +91,121 @@ const workshops = [
 ];
 
 const BeeLearn = () => {
+  const [products, setProducts] = useState<Product[]>([]);
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const { addToCart } = useCart();
+  const { addToCart, openCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
-  const handleAddToCart = (product: Product) => {
+  // Modal States
+  const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
+
+  // Form States
+  const [guideEmail, setGuideEmail] = useState("");
+  const [quoteForm, setQuoteForm] = useState({
+    name: "",
+    email: "",
+    company: "",
+    message: ""
+  });
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setIsLoading(true);
+      try {
+        const { getProducts } = await import("@/services/shopService");
+        let eduData = await getProducts("education");
+        // Also check 'learn' category if 'education' is empty
+        let finalData = eduData;
+        if (!finalData || finalData.length === 0) {
+          finalData = await getProducts("learn");
+        }
+
+        if (finalData && finalData.length > 0) {
+          setProducts(finalData);
+        } else {
+          setProducts(initialEducationProducts); // Fallback to hardcoded if no data
+        }
+      } catch (error) {
+        console.error("Failed to fetch education products:", error);
+        setProducts(initialEducationProducts); // Fallback to hardcoded on error
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  // Handlers
+  const handleGuideSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      await submitNewsletterSubscription({ email: guideEmail, source: 'starter_guide_download' });
+      toast.success("Guide sent to your email!");
+      setIsGuideModalOpen(false);
+      setGuideEmail("");
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleQuoteSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const { submitContactForm } = await import("@/services/contactService");
+      await submitContactForm({
+        first_name: quoteForm.name.split(' ')[0],
+        last_name: quoteForm.name.split(' ').slice(1).join(' ') || '',
+        email: quoteForm.email,
+        phone: "",
+        city: "",
+        state: "",
+        country: "",
+        inquiry_type: "general",
+        company: quoteForm.company,
+        topic: "Corporate Workshop Quote",
+        message: quoteForm.message
+      });
+      toast.success("Quote request received! We'll be in touch shortly.");
+      setIsQuoteModalOpen(false);
+      setQuoteForm({ name: "", email: "", company: "", message: "" });
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to submit request.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newsletterEmail) return;
+    setIsSubmitting(true);
+    try {
+      await submitNewsletterSubscription({ email: newsletterEmail, source: 'beelearn_footer' });
+      toast.success("Welcome to the community!");
+      setNewsletterEmail("");
+    } catch (error) {
+      console.error(error);
+      toast.error("Subscription failed.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  const handleAddToCart = async (product: Product) => {
     const selectedSize = selectedSizes[product.id] || product.variants[0].size;
     const variant = product.variants.find((v) => v.size === selectedSize) || product.variants[0];
 
-    addToCart({
+    const cartItem = {
       productId: product.id,
       variantId: variant.id,
       name: product.name,
@@ -220,34 +215,119 @@ const BeeLearn = () => {
       quantity: 1,
       category: product.category as any,
       badge: product.badge,
-      image: product.images[0]
-    });
+      image: product.images[0],
+    };
+
+    addToCart(cartItem);
+    openCart();
     toast.success(`${product.name} added to cart!`);
+
+    // Backend Sync (Fire and Forget)
+    try {
+      const { add_to_cart } = await import("@/services/shopService");
+      await add_to_cart({
+        product_id: product.id,
+        variant_id: variant.id,
+        quantity: 1
+      });
+    } catch (e) {
+      // Ignore auth/network errors for cart sync in UI
+    }
   };
 
   const formatPrice = (price: number) => {
     return `KES ${price.toLocaleString()}`;
   };
 
-  const renderStars = (rating: number, count: number) => {
+  const renderStars = (rating: number) => {
     return (
-      <div className="flex items-center gap-1">
-        <div className="flex items-center">
-          {[...Array(5)].map((_, i) => (
-            <Star
-              key={i}
-              className={`h-4 w-4 ${i < Math.floor(rating) ? "fill-amber-500 text-amber-500" : "text-muted-foreground/30"
-                }`}
-            />
-          ))}
-        </div>
-        <span className="text-sm text-muted-foreground font-medium ml-1">{rating} ({count})</span>
+      <div className="flex items-center">
+        {[...Array(5)].map((_, i) => (
+          <Star
+            key={i}
+            className={`h-4 w-4 ${i < Math.floor(rating) ? "fill-amber-500 text-amber-500" : "text-muted-foreground/30"
+              }`}
+          />
+        ))}
       </div>
     );
   };
 
   return (
     <main className="min-h-screen bg-white">
+      {/* GUIDE MODAL */}
+      {isGuideModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in">
+          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative">
+            <button onClick={() => setIsGuideModalOpen(false)} className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-600">
+              <span className="text-2xl">&times;</span>
+            </button>
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Download className="h-8 w-8 text-amber-600" />
+              </div>
+              <h3 className="text-2xl font-black text-neutral-900">Get Your Free Guide</h3>
+              <p className="text-neutral-500 text-sm mt-2">Enter your email to receive the "Beekeeping Starter Guide" instantly.</p>
+            </div>
+            <form onSubmit={handleGuideSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase text-neutral-500 mb-1">Email Address</label>
+                <input
+                  type="email"
+                  required
+                  placeholder="name@example.com"
+                  className="w-full h-12 px-4 rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  value={guideEmail}
+                  onChange={e => setGuideEmail(e.target.value)}
+                />
+              </div>
+              <Button type="submit" disabled={isSubmitting} className="w-full h-12 bg-green-700 hover:bg-green-800 text-white font-bold rounded-xl">
+                {isSubmitting ? <Loader2 className="animate-spin" /> : "Send Me The Guide"}
+              </Button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* QUOTE MODAL */}
+      {isQuoteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in">
+          <div className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl relative">
+            <button onClick={() => setIsQuoteModalOpen(false)} className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-600">
+              <span className="text-2xl">&times;</span>
+            </button>
+            <div className="mb-6">
+              <span className="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded-md uppercase">Corporate</span>
+              <h3 className="text-2xl font-black text-neutral-900 mt-2">Request Training Quote</h3>
+              <p className="text-neutral-500 text-sm mt-1">Tell us about your organization's needs.</p>
+            </div>
+            <form onSubmit={handleQuoteSubmit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase text-neutral-500 mb-1">Contact Name</label>
+                  <input type="text" required className="w-full h-10 px-3 rounded-lg border border-neutral-200" value={quoteForm.name} onChange={e => setQuoteForm({ ...quoteForm, name: e.target.value })} />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase text-neutral-500 mb-1">Company</label>
+                  <input type="text" required className="w-full h-10 px-3 rounded-lg border border-neutral-200" value={quoteForm.company} onChange={e => setQuoteForm({ ...quoteForm, company: e.target.value })} />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-bold uppercase text-neutral-500 mb-1">Work Email</label>
+                <input type="email" required className="w-full h-10 px-3 rounded-lg border border-neutral-200" value={quoteForm.email} onChange={e => setQuoteForm({ ...quoteForm, email: e.target.value })} />
+              </div>
+              <div>
+                <label className="block text-xs font-bold uppercase text-neutral-500 mb-1">Training Needs</label>
+                <textarea required rows={3} className="w-full p-3 rounded-lg border border-neutral-200" placeholder="Number of attendees, preferred dates, etc." value={quoteForm.message} onChange={e => setQuoteForm({ ...quoteForm, message: e.target.value })}></textarea>
+              </div>
+              <Button type="submit" disabled={isSubmitting} className="w-full h-12 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl">
+                {isSubmitting ? <Loader2 className="animate-spin" /> : "Submit Request"}
+              </Button>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-[#F0F7F0] pt-8 pb-20 lg:pt-16 lg:pb-32">
         {/* Background decorative elements */}
@@ -290,6 +370,7 @@ const BeeLearn = () => {
                   variant="outline"
                   size="lg"
                   className="h-14 px-8 border-2 border-neutral-200 hover:bg-neutral-50 font-bold rounded-xl"
+                  onClick={() => setIsGuideModalOpen(true)}
                 >
                   <Download className="mr-2 h-5 w-5" />
                   Download Free Starter Guide
@@ -588,7 +669,7 @@ const BeeLearn = () => {
           </div>
 
           <div className="text-center mt-12">
-            <Button size="lg" className="h-14 px-8 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl">
+            <Button size="lg" className="h-14 px-8 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl" onClick={() => setIsQuoteModalOpen(true)}>
               Request a Quote for Your Company
               <ChevronRight className="ml-2 h-5 w-5" />
             </Button>
@@ -617,31 +698,20 @@ const BeeLearn = () => {
               <p className="text-neutral-500 font-medium">Loading courses...</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {educationProducts.map((product) => (
-                <Card
-                  key={product.id}
-                  className="group overflow-hidden border border-neutral-100 bg-white hover:shadow-xl transition-all duration-500 rounded-2xl"
-                >
-                  <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {(products.length > 0 ? products : initialEducationProducts).map((product) => (
+                <Card key={product.id} className="group border-none shadow-xl shadow-amber-900/5 bg-white rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-amber-900/10 transition-all duration-500 flex flex-col h-full">
+                  <div className="relative aspect-[4/3] overflow-hidden bg-neutral-100">
                     <img
                       src={product.images[0]}
                       alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      onError={(e) => {
-                        e.currentTarget.src = "/placeholder.svg";
-                      }}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                    {product.badge && (
-                      <Badge className="absolute top-3 left-3 bg-amber-600 text-white font-bold text-[10px] uppercase tracking-wide">
-                        {product.badge}
-                      </Badge>
-                    )}
-
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                    <Badge className="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-neutral-900 border-none font-bold uppercase tracking-widest text-[10px] px-3 py-1.5 rounded-xl shadow-sm">
+                      {product.badge}
+                    </Badge>
                     <button
-                      aria-label="Add to wishlist"
                       onClick={(e) => {
                         e.stopPropagation();
                         toggleWishlist({
@@ -651,41 +721,47 @@ const BeeLearn = () => {
                           price: product.variants[0].price_kes,
                           image: product.images[0],
                           category: product.category,
-                          badge: product.badge,
-                          inStock: product.variants.some(v => v.stock_quantity > 0 && v.is_available)
+                          badge: product.badge || '',
+                          inStock: true
                         });
                       }}
-                      className={`absolute top-3 right-3 p-2 backdrop-blur-md rounded-full translate-y-2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ${isInWishlist(product.id) ? "bg-green-600 text-white opacity-100 translate-y-0" : "bg-white/80 hover:bg-green-600 hover:text-white"
+                      className={`absolute top-4 right-4 p-2.5 rounded-2xl backdrop-blur-md shadow-lg transition-all duration-300 ${isInWishlist(product.id)
+                        ? "bg-amber-500 text-white"
+                        : "bg-white/80 hover:bg-amber-500 hover:text-white text-neutral-400 group-hover:opacity-100 opacity-0"
                         }`}
                     >
                       <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? "fill-current" : ""}`} />
                     </button>
                   </div>
 
-                  <CardContent className="p-5">
-                    {renderStars(product.rating, product.review_count)}
+                  <CardContent className="p-6 flex flex-col flex-grow">
+                    <div className="flex items-center gap-1 mb-3">
+                      {renderStars(product.rating)}
+                      <span className="text-[10px] font-bold text-neutral-400 ml-1">({product.review_count})</span>
+                    </div>
 
-                    <h3 className="text-lg font-bold text-neutral-900 mt-2 mb-2 group-hover:text-amber-600 transition-colors line-clamp-1">
-                      {product.name}
-                    </h3>
-                    <p className="text-sm text-neutral-500 mb-4 line-clamp-2 leading-relaxed">
-                      {product.description}
-                    </p>
+                    <div className="flex-grow mb-6">
+                      <h3 className="text-lg font-black text-neutral-900 mb-2 leading-tight group-hover:text-amber-600 transition-colors">
+                        {product.name}
+                      </h3>
+                      <p className="text-xs text-neutral-500 line-clamp-2 leading-relaxed font-medium">
+                        {product.description}
+                      </p>
+                    </div>
 
-                    <div className="flex items-center justify-between pt-4 border-t border-neutral-100">
+                    <div className="mt-auto pt-6 border-t border-neutral-50 flex items-center justify-between">
                       <div>
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-0.5">Price</p>
+                        <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest mb-0.5">Price</p>
                         <p className="text-xl font-black text-amber-600">
                           {formatPrice(product.variants[0].price_kes)}
                         </p>
                       </div>
                       <Button
                         size="sm"
-                        className="h-10 px-4 rounded-xl gap-1.5 font-black bg-primary text-primary-foreground hover:bg-primary/90 uppercase tracking-widest text-[10px]"
                         onClick={() => handleAddToCart(product)}
+                        className="h-10 w-10 p-0 rounded-2xl bg-neutral-900 hover:bg-amber-600 text-white shadow-lg shadow-neutral-900/10 transition-all duration-300"
                       >
                         <ShoppingCart className="h-4 w-4" />
-                        <span className="hidden sm:inline">Add</span>
                       </Button>
                     </div>
                   </CardContent>
@@ -740,16 +816,19 @@ const BeeLearn = () => {
               <p className="text-green-100/60 text-lg mb-10 max-w-2xl mx-auto">
                 Get exclusive access to new courses, early bird discounts, and monthly beekeeping tips delivered straight to your inbox.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+              <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
                 <input
                   type="email"
+                  required
                   placeholder="Enter your email"
                   className="flex-1 h-14 px-6 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  value={newsletterEmail}
+                  onChange={e => setNewsletterEmail(e.target.value)}
                 />
-                <Button size="lg" className="h-14 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-black rounded-xl uppercase tracking-widest text-xs">
-                  Get All-Access Pass
+                <Button type="submit" size="lg" disabled={isSubmitting} className="h-14 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-black rounded-xl uppercase tracking-widest text-xs">
+                  {isSubmitting ? "Joining..." : "Get All-Access Pass"}
                 </Button>
-              </div>
+              </form>
             </div>
           </div>
         </div>

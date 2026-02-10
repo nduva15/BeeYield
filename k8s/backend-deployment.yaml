@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: beeyield-backend
+  namespace: beeyield
+  labels:
+    app: beeyield-backend
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: beeyield-backend
+  template:
+    metadata:
+      labels:
+        app: beeyield-backend
+        tier: backend
+    spec:
+      initContainers:
+      - name: wait-for-db
+        image: postgres:16-alpine
+        command: ['sh', '-c', 'until pg_isready -h beeyield-postgres -p 5432; do echo waiting for database; sleep 2; done;']
+      containers:
+      - name: backend
+        image: beeyield-backend:latest  # Replace with your image registry/tag
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: PYTHONUNBUFFERED
+          valueFrom:
+            configMapKeyRef:
+              name: beeyield-config
+              key: PYTHONUNBUFFERED
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: beeyield-secrets
+              key: DATABASE_URL
+        - name: SUPABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: beeyield-secrets
+              key: SUPABASE_URL
+        - name: SUPABASE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: beeyield-secrets
+              key: SUPABASE_KEY
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: beeyield-backend
+  namespace: beeyield
+  labels:
+    app: beeyield-backend
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8000
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  selector:
+    app: beeyield-backend

@@ -75,6 +75,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
     const [hives, setHives] = useState<Hive[]>([]);
 
     const filteredHarvests = allHarvests.filter(h => {
+        if (quickYear === 'all') return true;
         const harvestYear = new Date(h.harvest_date).getFullYear().toString();
         return harvestYear === (quickYear || '2026');
     });
@@ -681,11 +682,17 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" className="w-full h-12 rounded-2xl border-gray-200 dark:border-gray-700 justify-between font-medium text-gray-700 dark:text-gray-300">
-                                    {quickYear || "Custom range"}
+                                    {quickYear === 'all' ? "All Time" : (quickYear || "Custom range")}
                                     <ChevronDown className="w-4 h-4 opacity-50" />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] rounded-xl bg-white dark:bg-[#1e1e1e] border-gray-200 dark:border-gray-700">
+                                <DropdownMenuItem
+                                    onClick={() => setQuickYear('all')}
+                                    className="py-3 font-bold text-gray-700 dark:text-gray-300 cursor-pointer focus:bg-[#F4D03F]/5 dark:focus:bg-amber-900/10"
+                                >
+                                    All Time
+                                </DropdownMenuItem>
                                 {[2026, 2025, 2024, 2023, 2022, 2021, 2020].map((year) => (
                                     <DropdownMenuItem
                                         key={year}

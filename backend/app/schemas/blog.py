@@ -18,3 +18,10 @@ class BlogPost(BlogPostCreate):
     read_time_minutes: int
     published_at: Optional[datetime]
     created_at: datetime
+
+class OutlineGenerationRequest(BaseModel):
+    post_id: str
+
+class ChapterGenerationRequest(BaseModel):
+    post_id: str
+    chapter_id: str

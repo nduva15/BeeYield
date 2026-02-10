@@ -62,7 +62,7 @@ interface Product {
   variants: ProductVariant[];
 }
 
-const STATIC_PRODUCTS: Product[] = [
+const initialHoneyProducts: Product[] = [
   {
     id: "h1",
     name: "BeeYield Premium Acacia",
@@ -246,6 +246,14 @@ const HeroSection = () => {
                 Explore the Honey Collection
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-2 border-green-700 text-green-700 hover:bg-green-50 font-black rounded-full px-8 h-12 uppercase tracking-widest text-xs"
+                onClick={() => navigate("/traceability")}
+              >
+                Trace My Honey
+              </Button>
             </div>
           </div>
 
@@ -267,11 +275,11 @@ const HeroSection = () => {
                 </div>
                 <div className="bg-white/95 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-lg border border-neutral-100">
                   <span className="text-2xl font-black text-green-700">20+</span>
-                  <p className="text-[10px] text-neutral-500 font-semibold uppercase">Professional Farmers</p>
+                  <p className="text-[10px] font-semibold text-neutral-500 uppercase">Professional Farmers</p>
                 </div>
                 <div className="bg-white/95 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-lg border border-neutral-100">
                   <span className="text-2xl font-black text-green-700">25+</span>
-                  <p className="text-[10px] text-neutral-500 font-semibold uppercase">Acres Pollinated</p>
+                  <p className="text-[10px] font-semibold text-neutral-500 uppercase">Acres Pollinated</p>
                 </div>
               </div>
             </div>
@@ -283,28 +291,46 @@ const HeroSection = () => {
 };
 
 // Featured Products Section - 3 cards like reference
-const FeaturedProductsSection = ({
-  handleAddToCart,
-  formatPrice,
-}: {
-  handleAddToCart: (product: Product) => void;
-  formatPrice: (price: number) => string;
+const FeaturedProductsSection = ({ handleAddToCart, formatPrice, products }: {
+  handleAddToCart: (p: Product) => void;
+  formatPrice: (p: number) => string;
+  products: Product[];
 }) => {
-  const honeyProducts = STATIC_PRODUCTS.slice(0, 3);
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const featuredProducts = (products.length > 0 ? products : initialHoneyProducts).slice(0, 4);
 
   return (
-    <section className="py-12 bg-white">
+    <section className="py-16 bg-white overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {honeyProducts.map((product) => (
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+          <div className="max-w-xl">
+            <Badge className="bg-amber-100 text-amber-700 mb-4 hover:bg-amber-200 transition-colors uppercase tracking-[0.2em] font-black text-[10px] px-3">
+              Purest Gold
+            </Badge>
+            <h2 className="text-3xl md:text-5xl font-black text-neutral-900 leading-none tracking-tighter uppercase">
+              Featured <span className="text-amber-600 italic">Blossoms</span>
+            </h2>
+          </div>
+          <Button
+            variant="ghost"
+            className="text-neutral-500 hover:text-green-700 font-bold uppercase tracking-widest text-[10px] group"
+            asChild
+          >
+            <Link to="/shop">
+              Shop All Products <ArrowRight className="ml-2 h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </Button>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {featuredProducts.map((product) => (
             <Card
               key={product.id}
               className="group bg-white border border-neutral-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300"
             >
               {/* Product Image */}
               <BrandedProductImage
-                src={product.images[1]} // Using 250g Jar image (index 1)
+                src={product.images[1] || product.images[0]} // Using 250g Jar image (index 1) or first image
                 alt={product.name}
                 category="honey"
                 className="h-48"
@@ -332,7 +358,7 @@ const FeaturedProductsSection = ({
                         name: product.name,
                         description: product.description,
                         price: product.variants[0].price_kes,
-                        image: product.images[1],
+                        image: product.images[1] || product.images[0],
                         category: product.category,
                         badge: product.badge,
                         inStock: true
@@ -473,6 +499,7 @@ const AboutSection = () => {
 
 // Features Section - 3 cards
 const FeaturesSection = () => {
+  const navigate = useNavigate();
   const features = [
     {
       icon: ShieldCheck,
@@ -498,13 +525,22 @@ const FeaturesSection = () => {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="bg-neutral-50 rounded-2xl p-6 text-center hover:bg-neutral-100 transition-colors"
+              className="bg-neutral-50 rounded-2xl p-6 text-center hover:bg-neutral-100 transition-colors flex flex-col items-center"
             >
               <div className="w-14 h-14 mx-auto mb-4 bg-white rounded-xl flex items-center justify-center shadow-sm">
                 <feature.icon className="h-7 w-7 text-green-700" />
               </div>
               <h3 className="text-base font-bold text-neutral-900 mb-2">{feature.title}</h3>
-              <p className="text-sm text-neutral-500">{feature.description}</p>
+              <p className="text-sm text-neutral-500 mb-4">{feature.description}</p>
+              {feature.title === "HoneyChain™ Traceability" && (
+                <Button
+                  variant="link"
+                  className="text-green-700 font-bold p-0 h-auto gap-1 text-xs uppercase tracking-widest"
+                  onClick={() => navigate("/traceability")}
+                >
+                  Verify Now <ArrowRight className="h-3 w-3" />
+                </Button>
+              )}
             </div>
           ))}
         </div>
@@ -735,131 +771,88 @@ const AllProductsSection = ({
   setSelectedSizes,
   handleAddToCart,
   formatPrice,
+  products
 }: {
   selectedSizes: Record<string, string>;
   setSelectedSizes: React.Dispatch<React.SetStateAction<Record<string, string>>>;
   handleAddToCart: (product: Product) => void;
   formatPrice: (price: number) => string;
+  products: Product[];
 }) => {
-  const honeyProducts = STATIC_PRODUCTS;
   const navigate = useNavigate();
-  const { toggleWishlist, isInWishlist } = useWishlist();
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-20 bg-white">
       <div className="container mx-auto px-4 sm:px-6">
-        {/* Section Header */}
-        <div className="text-center mb-12">
-          <Badge variant="outline" className="mb-4 border-green-300 bg-green-50 text-green-700">
-            Our Collection
+        <div className="text-center mb-16">
+          <Badge className="bg-green-100 text-green-700 mb-4 hover:bg-green-200 transition-colors uppercase tracking-[0.2em] font-black text-[10px] px-3">
+            Pure Kibwezi Gold
           </Badge>
-          <h2 className="text-3xl md:text-4xl font-black text-neutral-900 mb-4">
-            All Premium Honey Products
+          <h2 className="text-3xl md:text-5xl font-black text-neutral-900 leading-none tracking-tighter uppercase mb-4">
+            Our Full <span className="text-green-700 italic">Honey</span> Collection
           </h2>
-          <p className="text-neutral-600 max-w-2xl mx-auto">
-            Discover our complete range of pure, traceable honey sourced from the finest apiaries.
+          <p className="text-neutral-500 text-sm max-w-xl mx-auto font-medium">
+            From medicinal Neem to delicate Acacia, discover our range of ethically harvested, 100% raw honey.
           </p>
         </div>
 
-        {/* Products Grid - 4 columns on desktop */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {honeyProducts.map((product) => {
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {(products.length > 0 ? products : initialHoneyProducts).map((product) => {
             const selectedSize = selectedSizes[product.id] || product.variants[0].size;
-            const selectedVariant = product.variants.find((v) => v.size === selectedSize) || product.variants[0];
+            const variantSizeIndex = product.variants.findIndex((v) => v.size === selectedSize);
+            const variant = product.variants[variantSizeIndex] || product.variants[0];
+            const image = product.images[variantSizeIndex + 1] || product.images[0];
 
             return (
               <Card
                 key={product.id}
-                className="group bg-white border border-neutral-200 rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-amber-100/50 transition-all duration-300"
+                className="group border border-neutral-100 rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col h-full"
               >
-                {/* Product Image with Branded UI Overlay */}
-                {(() => {
-                  const variantIndex = product.variants.findIndex(v => v.size === selectedSize);
-                  // The new structure is: 0: Lifestyle, 1: 250g, 2: 500g, 3: 1kg
-                  // So we use variantIndex + 1 to get the specific jar, or fallback to lifestyle
-                  const displayImage = (variantIndex !== -1 && product.images[variantIndex + 1])
-                    ? product.images[variantIndex + 1]
-                    : product.images[0];
+                <div className="relative aspect-square overflow-hidden bg-neutral-50">
+                  <img
+                    src={image}
+                    alt={product.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                  {product.badge && (
+                    <Badge className="absolute top-4 left-4 bg-amber-500 text-white font-black uppercase text-[10px] tracking-widest px-4 py-1.5 rounded-full shadow-lg">
+                      {product.badge}
+                    </Badge>
+                  )}
+                </div>
 
-                  return (
-                    <BrandedProductImage
-                      src={displayImage}
-                      alt={product.name}
-                      category="honey"
-                      badge={product.badge}
-                      className="aspect-square bg-gradient-to-br from-amber-50 to-orange-50"
-                    />
-                  );
-                })()}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const variantIndex = product.variants.findIndex(v => v.size === selectedSize);
-                    const displayImage = (variantIndex !== -1 && product.images[variantIndex + 1])
-                      ? product.images[variantIndex + 1]
-                      : product.images[0];
-
-                    toggleWishlist({
-                      id: product.id,
-                      name: product.name,
-                      description: product.description,
-                      price: selectedVariant.price_kes,
-                      image: displayImage,
-                      category: product.category,
-                      badge: product.badge,
-                      inStock: product.variants.some(v => v.stock_quantity > 0 && v.is_available)
-                    });
-                  }}
-                  className={`absolute top-3 right-3 z-20 p-2 rounded-full transition-all ${isInWishlist(product.id)
-                    ? "opacity-100 bg-amber-500 text-white"
-                    : "opacity-0 group-hover:opacity-100 bg-white/90 hover:bg-amber-500 hover:text-white"
-                    }`}
-                >
-                  <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? "fill-current" : ""}`} />
-                </button>
-
-                <CardContent className="p-4">
-                  {/* Rating */}
-                  <div className="flex items-center gap-1 mb-2">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-3 w-3 ${i < Math.floor(product.rating) ? "fill-amber-400 text-amber-400" : "text-neutral-200"}`}
-                      />
-                    ))}
-                    <span className="text-xs text-neutral-400 ml-1">({product.review_count})</span>
+                <CardContent className="p-6 flex flex-col flex-grow">
+                  <div className="flex-grow space-y-3 mb-6">
+                    <h3 className="text-lg font-black text-neutral-900 leading-tight group-hover:text-amber-600 transition-colors">
+                      {product.name}
+                    </h3>
+                    <p className="text-xs text-neutral-500 line-clamp-2 leading-relaxed font-medium">
+                      {product.description}
+                    </p>
                   </div>
 
-                  {/* Name */}
-                  <h3 className="font-bold text-neutral-900 mb-1 group-hover:text-amber-600 transition-colors text-sm">
-                    {product.name}
-                  </h3>
-                  <p className="text-xs text-neutral-500 line-clamp-2 mb-3">{product.description}</p>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="bg-amber-50 px-3 py-1 rounded-lg border border-amber-100">
+                        <span className="text-amber-700 font-bold text-lg">{formatPrice(variant.price_kes)}</span>
+                      </div>
+                      <Select
+                        value={selectedSize}
+                        onValueChange={(val) => setSelectedSizes(prev => ({ ...prev, [product.id]: val }))}
+                      >
+                        <SelectTrigger className="w-[100px] h-9 text-xs font-bold border-neutral-200 rounded-lg">
+                          <SelectValue placeholder="Size" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {product.variants.map((v) => (
+                            <SelectItem key={v.id} value={v.size} className="text-xs font-bold">
+                              {v.size}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                  {/* Size Selector */}
-                  {product.variants.length > 1 && (
-                    <Select
-                      value={selectedSize}
-                      onValueChange={(value) => setSelectedSizes({ ...selectedSizes, [product.id]: value })}
-                    >
-                      <SelectTrigger className="w-full h-9 mb-3 rounded-lg bg-neutral-50 border-neutral-200 text-xs">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {product.variants.map((v) => (
-                          <SelectItem key={v.id} value={v.size} className="text-xs">
-                            {v.size} — {formatPrice(v.price_kes)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-
-                  {/* Price & Buy */}
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-black text-neutral-900">
-                      {formatPrice(selectedVariant.price_kes)}
-                    </span>
                     <Button
                       size="sm"
                       className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg px-4 h-9 text-[10px] font-black uppercase tracking-widest"
@@ -897,15 +890,31 @@ const AllProductsSection = ({
 // Main HoneyLanding Component
 const HoneyLanding = () => {
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
-  const { addToCart } = useCart();
+  const [products, setProducts] = useState<Product[]>([]);
+  const { addToCart, openCart } = useCart();
 
-  const handleAddToCart = (product: Product) => {
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const { getProducts } = await import("@/services/shopService");
+        const honeyData = await getProducts("honey");
+        if (honeyData && honeyData.length > 0) {
+          setProducts(honeyData);
+        }
+      } catch (error) {
+        console.error("Failed to fetch honey products:", error);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  const handleAddToCart = async (product: Product) => {
     const selectedSize = selectedSizes[product.id] || product.variants[0].size;
     const variantIndex = product.variants.findIndex((v) => v.size === selectedSize);
     const variant = product.variants[variantIndex] || product.variants[0];
-    const image = product.images[variantIndex + 1] || product.images[1];
+    const image = product.images[variantIndex + 1] || product.images[1] || product.images[0];
 
-    addToCart({
+    const cartItem = {
       productId: product.id,
       variantId: variant.id,
       name: product.name,
@@ -916,9 +925,23 @@ const HoneyLanding = () => {
       category: product.category,
       badge: product.badge,
       image: image,
-    });
+    };
 
+    addToCart(cartItem);
+    openCart();
     toast.success(`${product.name} added to cart!`);
+
+    // Backend Sync (Fire and Forget)
+    try {
+      const { add_to_cart } = await import("@/services/shopService");
+      await add_to_cart({
+        product_id: product.id,
+        variant_id: variant.id,
+        quantity: 1
+      });
+    } catch (e) {
+      // Ignore auth/network errors for cart sync in UI
+    }
   };
 
   const formatPrice = (price: number) => `KES ${price.toLocaleString()}`;
@@ -986,6 +1009,7 @@ const HoneyLanding = () => {
       <FeaturedProductsSection
         handleAddToCart={handleAddToCart}
         formatPrice={formatPrice}
+        products={products}
       />
 
       <TestimonialSection />
@@ -997,6 +1021,7 @@ const HoneyLanding = () => {
         setSelectedSizes={setSelectedSizes}
         handleAddToCart={handleAddToCart}
         formatPrice={formatPrice}
+        products={products}
       />
 
       <FlashSaleSection />

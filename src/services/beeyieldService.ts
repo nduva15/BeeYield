@@ -257,6 +257,9 @@ export interface Hive {
     latest_temp?: number;
     latest_humidity?: number;
     latest_weight?: number;
+    temp_threshold_high?: number;
+    temp_threshold_low?: number;
+    weight_drop_threshold?: number;
 }
 
 export interface HiveCreateInput {

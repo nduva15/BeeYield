@@ -1,48 +1,22 @@
-import sys
 import os
-sys.path.append(os.path.dirname(__file__))
 
-from backend.app.db.supabase_db import db_select
-import json
+def search_files(directory, query):
+    matches = []
+    for root, dirs, files in os.walk(directory):
+        if 'node_modules' in dirs:
+            dirs.remove('node_modules')
+        for file in files:
+            if file.endswith(('.ts', '.tsx', '.sql', '.py')):
+                path = os.path.join(root, file)
+                try:
+                    with open(path, 'r', encoding='utf-8') as f:
+                        if query in f.read():
+                            matches.append(path)
+                except Exception:
+                    pass
+    return matches
 
-print("=" * 60)
-print("CHECKING USER DATA")
-print("=" * 60)
-
-# Get all apiaries with user_id
-apiaries = db_select("apiaries", limit=100)
-print(f"\n📍 Total Apiaries: {len(apiaries)}")
-
-# Group by user_id
-user_apiaries = {}
-for apiary in apiaries:
-    user_id = apiary.get('user_id', 'NO_USER_ID')
-    if user_id not in user_apiaries:
-        user_apiaries[user_id] = []
-    user_apiaries[user_id].append(apiary)
-
-for user_id, user_aps in user_apiaries.items():
-    print(f"\n👤 User ID: {user_id}")
-    for ap in user_aps:
-        print(f"   - {ap.get('name')} (ID: {ap.get('id')})")
-        # Count hives for this apiary
-        hives = db_select("hives", filters={"apiary_id": ap.get('id')})
-        print(f"     Hives: {len(hives)}")
-
-# Get all hives
-print("\n" + "=" * 60)
-print("HIVE SUMMARY")
-print("=" * 60)
-all_hives = db_select("hives", limit=500)
-print(f"Total Hives: {len(all_hives)}")
-
-# Group by user_id
-user_hives = {}
-for hive in all_hives:
-    user_id = hive.get('user_id', 'NO_USER_ID')
-    if user_id not in user_hives:
-        user_hives[user_id] = 0
-    user_hives[user_id] += 1
-
-for user_id, count in user_hives.items():
-    print(f"👤 User {user_id}: {count} hives")
+results = search_files('c:\\Users\\aggym\\Downloads\\Honey', 'user_profiles')
+print(f"Found {len(results)} matches for user_profiles.")
+results2 = search_files('c:\\Users\\aggym\\Downloads\\Honey', 'profiles')
+print(f"Found {len(results2)} matches for profiles.")

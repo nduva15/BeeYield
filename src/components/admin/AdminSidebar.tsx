@@ -35,6 +35,11 @@ const defaultNavStructure = [
             { id: 'reports', label: 'Reports', icon: FileText },
         ]
     },
+    {
+        id: 'content',
+        label: 'Content Engine',
+        icon: FileText
+    },
     { id: 'menu-layout', label: 'Menu Layout', icon: Layers },
     { id: 'inbox', label: 'Inbox', icon: Inbox },
     { id: 'file-manager', label: 'Assets', icon: FolderOpen },
