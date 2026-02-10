@@ -579,7 +579,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                     disabled={isAISynthesizing}
                                     className="h-16 px-10 rounded-full bg-white text-black hover:bg-gray-100 font-bold text-sm tracking-wide gap-3"
                                 >
-                                    {isAISynthesizing ? "ANALYZING..." : "GENERATE AI INSIGHTS"}
+                                    {isAISynthesizing ? "ANALYZING..." : t('generate_ai_reports')}
                                 </Button>
                                 <Button variant="ghost" className="h-16 px-8 rounded-full text-white hover:bg-white/5 font-bold text-sm gap-3">
                                     <ExternalLink className="w-5 h-5" />
