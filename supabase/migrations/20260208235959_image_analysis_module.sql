@@ -126,17 +126,32 @@ CREATE POLICY "image_analyses_select_shared" ON image_analyses
         )
     );
 
--- Policy: Admin/superadmin can view all analyses
-DROP POLICY IF EXISTS "image_analyses_admin_all" ON image_analyses;
-CREATE POLICY "image_analyses_admin_all" ON image_analyses
-    FOR ALL TO authenticated
-    USING (
-        EXISTS (
-            SELECT 1 FROM user_profiles 
-            WHERE id = auth.uid() 
-            AND role IN ('admin', 'superadmin')
-        )
-    );
+-- Policy: Admin/superadmin can view all analyses (conditional — table may not exist yet)
+DO $$
+BEGIN
+    DROP POLICY IF EXISTS "image_analyses_admin_all" ON image_analyses;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_profiles') THEN
+        CREATE POLICY "image_analyses_admin_all" ON image_analyses
+            FOR ALL TO authenticated
+            USING (
+                EXISTS (
+                    SELECT 1 FROM user_profiles
+                    WHERE id = auth.uid()
+                    AND role IN ('admin', 'superadmin')
+                )
+            );
+    ELSIF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'role') THEN
+        CREATE POLICY "image_analyses_admin_all" ON image_analyses
+            FOR ALL TO authenticated
+            USING (
+                EXISTS (
+                    SELECT 1 FROM profiles
+                    WHERE id = auth.uid()
+                    AND role IN ('admin', 'superadmin')
+                )
+            );
+    END IF;
+END $$;
 
 -- ============================================
 -- TRIGGER: Auto-update updated_at timestamp

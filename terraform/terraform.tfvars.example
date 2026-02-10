@@ -1,0 +1,26 @@
+environment         = "production"
+aws_region         = "us-east-1"
+cluster_name       = "beeyield-prod"
+cluster_version    = "1.28"
+
+# VPC Configuration
+vpc_cidr = "10.0.0.0/16"
+azs      = ["us-east-1a", "us-east-1b", "us-east-1c"]
+
+# EKS Node Configuration
+node_instance_types = ["t3.large"]
+node_desired_size   = 3
+node_min_size       = 2
+node_max_size       = 10
+
+# Database Configuration
+db_instance_class     = "db.t3.large"
+db_allocated_storage  = 100
+backup_retention_days = 30
+
+# Redis Configuration
+redis_node_type = "cache.t3.small"
+
+# Application Configuration
+domain_name       = "beeyield.com"
+enable_monitoring = true

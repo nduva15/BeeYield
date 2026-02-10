@@ -1,0 +1,78 @@
+# Dependencies
+node_modules
+**/node_modules
+**/__pycache__
+*.pyc
+**/.pytest_cache
+
+# Build outputs
+dist
+build
+.output
+*.egg-info
+
+# Version control
+.git
+.gitignore
+.github
+.gitlab
+
+# IDE and editors
+.vscode
+.idea
+.claude
+.gemini
+.agent
+*.swp
+*.swo
+*~
+
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+backend_log.txt
+frontend_log.txt
+
+# Documentation
+*.md
+!README.md
+docs
+
+# Test files
+coverage
+.nyc_output
+tests
+__tests__
+*.test.ts
+*.test.js
+*.spec.ts
+*.spec.js
+
+# Database and data files
+*.sql
+*.db
+*.sqlite
+data
+supabase
+
+# Scripts and maintenance
+scripts
+*.py
+!backend/**/*.py
+
+# Misc
+*.txt
+!requirements.txt
+*.json.backup
+*.bak
+.DS_Store
+Thumbs.db

@@ -1,8 +1,8 @@
 {
   "metadata": {
     "version": "6.0.0-ELITE",
-    "last_sync": "Mon Feb  9 21:09:27 2026",
-    "total_nodes": 379
+    "last_sync": "Tue Feb 10 02:44:37 2026",
+    "total_nodes": 370
   },
   "dna": {
     "company": "BeeYield",
@@ -55,51 +55,6 @@
       "source": "AdminAuth.tsx",
       "subtopic": "Key Facts",
       "content": "BeeYield. Secure gateway for BeeYield administrators.. Gateway Access. Exit Terminal. Authorized Personnel Only. All access attempts are logged."
-    },
-    {
-      "source": "AdminDashboard.tsx",
-      "subtopic": "Detailed Narrative",
-      "content": "Authenticating Terminal.... Restricted Access. This terminal is for authorized administrators only.. Return Home. Pending. Processing. Shipped. Completed. Cancelled. BeeYield Admin. Global system metrics and analytics. Refresh. Overview. Orders. Traceability. Farmers. Apiaries. Pollination. Contact. Newsletter. Introducing new dashboard! Download now at. BeeYield.io. General Report. Weekly. Monthly. TOTAL ORDERS. PENDING ORDERS. Sales growth this month. GROSS RENTAL VALUE. KES 72,000. BEEKEEPER PROFITS. KES 54,000. Refresh Dashboard. Visitors. Realtime active users. Page per second. System Health. Apiaries Connected. Active Hives. Batches Indexed. Real-Time Report \u2192. Users By Age. Show More. Active. Inactive. Active Users. Verified Farmers. Subscribers. Official Store. Filter by city. 250 Official stores in 21 countries, click the marker to see location details.. Satellite. No apiaries localized on network. Google. Weekly Best Sellers. Sales analysis pending."
-    },
-    {
-      "source": "AdminDashboard.tsx",
-      "subtopic": "Detailed Narrative",
-      "content": "Best seller metrics will appear after order threshold is met.. View More. Farmer Network Expansion. Monitor and support our master beekeepers.. Manage Farmers. Traceability Ledger. View immutable honey production records.. View Ledger. Weekly Top Products. Export to Excel. Export to PDF. Images. Product Name. Status. Actions. Delete. No product inventory synchronized.. 10 per page. 25 per page. 50 per page. Important Notes. Welcome to BeeYield Admin Dashboard. 24 hours ago. This dashboard gives you a complete overview of your beekeeping network metrics. Monitor honey production, track farmer performance, and manage your product inventory all in one place.. View Notes \u2192. Schedules. Add New Schedules. No upcoming inspections. Recent Activities. Show More. No recent network activity. Transactions. No transactions yet. View More \u2192. Recent Orders. View and manage all customer transactions.. Order #. Customer. Status. Actions. No order data synchronized.. PENDING. PROCESSING. SHIPPED."
-    },
-    {
-      "source": "AdminDashboard.tsx",
-      "subtopic": "Detailed Narrative",
-      "content": "COMPLETED. CANCELLED. Order Details. Full transaction manifest.. Order ID. Status. Customer. Shipping Address. Items Manifest. Total Value. Venture Inventory. Manage and deploy products to the digital storefront.. Add New Asset. Populate the matrix with product configurations.. Product Designation. Asset Description. Classification. Initial Reserve. Cancel. Stock Movements. Track inventory additions, removals, and adjustments.. New Movement. Product. Quantity. Reason. No stock movements recorded yet.. Record Movement. Register an addition or removal from product inventory.. Asset Selection. Movement Type. Quantity. Protocol Reasoning. Commit Inventory Update. Honey Chain Blocks. Immutable blockchain ledger of authenticated batches.. Mint Block. Batch Code. Honey Type. Origin. Farmer / Beekeeper. Harvest Date. Block Hash. Actions. No honey batches in the blockchain yet.. View Map. Farmer. Beekeeper. Mint New Ledger Entry."
-    },
-    {
-      "source": "AdminDashboard.tsx",
-      "subtopic": "Detailed Narrative",
-      "content": "This action will finalize the batch data on the irreversible HoneyChain network.. Batch Details. Honey Variety. Harvest Date. Packaged Date. Processing Method. Raw Filtered. Creamed. Pasteurized. Comb Honey. Source Origin. Farmer Name. Contact Phone. Beekeeper Name. Beekeeper ID. County. Region. Apiary Name. Quality Assurance. Color Grade. Water White. Extra White. Extra Light Amber. Light Amber. Dark Amber. Initialize Block Minting. Batch Verification. Batch Code. VERIFIED ON LEDGER. Product Details. Honey Type. Quantity. Processing. Harvest Date. Origin Source. Farmer. Beekeeper. Location. View Map. Contact. Quality Assurance. Moisture. Close Verification. Agricultural Partners. Authenticated network of honey harvesters and growers.. Register Farmer. Farmer. Contact. Location. Experience. Status. Actions. No registered farmers found.. Full Name. Phone Number. Email Address. ID Number. County. Region. Years Experience. Location Details / Ward. Apiary Locations."
-    },
-    {
-      "source": "AdminDashboard.tsx",
-      "subtopic": "Detailed Narrative",
-      "content": "Geospatial management of hive clusters and honey production sites.. Register Apiary. Farmer. Location. Status. Actions. No apiaries registered on the BeeYield grid.. Define production site parameters and associate with agricultural partners.. Apiary Name. County. Region. Assigned Farmer. Latitude. Longitude. Smart Hive Ledger. Inventory and health status of individual colony units.. Deploy Hive. Hive Code. Apiary. Installed. Status. Actions. No hives deployed in the honeycomb network.. Register individual colony components and their mechanical signatures.. Hive Code. Hive Type. Langstroth. Traditional Log. Target Apiary. Installation Date. Health Status. Active & Healthy. Weak Colony. Abandoned. Recently Harvested. Mechanical Notes. Admin Command Circle. Elevate user privileges or terminate access protocols.. Clearance Level. Modify. De-Authenticate. Awaiting New Operator. Initialize authentication protocols. Configure system access and identity parameters.. First Name. Last Name."
-    },
-    {
-      "source": "AdminDashboard.tsx",
-      "subtopic": "Detailed Narrative",
-      "content": "Email Address. Access Password. Clearance Level. Pollination Requests. All incoming pollination service requests from farmers.. Crop Type. Farm Size. Location. Status. Actions. No pollination requests yet.. Pending. Contacted. Completed. Rejected. Service Request. Farmer. Contact. Location. Additional Notes. Contact Submissions. Messages received through the contact form.. Subject. Message. Status. Actions. No contact messages yet.. Replied. Message Details. Location. Company. Farm Details. Farm Name. Apiary Details. Apiary Name. Hive Count. Experience. Reply via Email. Newsletter Subscribers. All email subscribers to the BeeYield newsletter.. Subscribed On. Actions. No subscribers yet.. e.g. Amber Infusion VII. Describe the sensory profile.... Select Product. e.g. New harvest arrival. View Public Blockchain Record. e.g. Acacia Noir. Select Method. e.g. John Doe. e.g. Jane Smith. ID-.... e.g. Kitui. e.g. Mwingi North. e.g. Acacia Grove. Select Color. Timothy Nduva. +254 7XX XXX XXX."
-    },
-    {
-      "source": "AdminDashboard.tsx",
-      "subtopic": "Detailed Narrative",
-      "content": "timothy@beeyield.com. National ID or Passport. Makueni. Eastern. Kibwezi East, Mtito Andei. Brief background about the farmer.... Kibwezi East Cluster A. Makueni. Eastern. Select Partner. HIVE-KIB-001. Select Site. Condition of the box, queen status, etc.. operator@beeyield.com. Select Role. Failed to register farmer on network. bg-yellow-500/10 text-yellow-600 border-yellow-200. bg-blue-500/10 text-blue-600 border-blue-200. bg-purple-500/10 text-purple-600 border-purple-200. bg-green-500/10 text-green-600 border-green-200. bg-red-500/10 text-red-600 border-red-200. text-amber-600 text-xs p-0 h-auto mt-2. rounded-full bg-amber-500 text-white text-xs px-4 h-7. rounded-lg text-xs h-8 gap-2 bg-white. w-2 h-2 rounded-full bg-green-500 animate-pulse. text-xs text-muted-foreground mt-1. absolute top-4 left-4 z-10 flex bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden. bg-amber-600 rounded-2xl p-6 text-white relative overflow-hidden flex flex-col justify-center h-48."
-    },
-    {
-      "source": "AdminDashboard.tsx",
-      "subtopic": "Detailed Narrative",
-      "content": "absolute right-4 top-1/2 transform -translate-y-1/2. absolute right-4 top-1/2 transform -translate-y-1/2. w-8 h-8 rounded-lg bg-amber-500 text-white. text-amber-600 text-xs p-0 h-auto mt-2. flex items-center justify-between mb-4. , !isCurrentMonth &&. , isToday &&. , hasEvent && !isToday &&. text-amber-600 text-xs p-0 h-auto. text-amber-600 text-xs p-0 h-auto mt-4. rounded-xl h-11 bg-muted/50 border-border/50 font-mono text-xs. bg-green-500/10 text-green-600 border-green-200. bg-red-500/10 text-red-600 border-red-200. bg-blue-500/5 text-blue-600 border-blue-200. bg-green-500/10 text-green-600 border-none. bg-amber-500/10 text-amber-600 border-none. Initialize a new beekeeper record on the BeeYield network.. bg-green-500/10 text-green-600 border-green-200. bg-muted text-muted-foreground. Authenticate Site Registration. bg-green-500/10 text-green-600 border-green-200. bg-yellow-500/10 text-yellow-600 border-yellow-200. space-y-6 animate-in slide-in-from-bottom-4 duration-500."
-    },
-    {
-      "source": "AdminDashboard.tsx",
-      "subtopic": "Detailed Narrative",
-      "content": "flex justify-between items-center. text-xl font-bold flex gap-2 items-center. rounded-full text-xs font-bold."
     },
     {
       "source": "AuthCallback.tsx",
@@ -779,7 +734,7 @@
     {
       "source": "HarvestsView.tsx",
       "subtopic": "Key Facts",
-      "content": "Source Hive*. Harvest date. BeeYield HoneyChain\u2122. Batch Code. Acacia. Multi-flower. Forest. Rapeseed. Moisture %. Color Grade. Water White. Extra White. Extra Light Amber. Light Amber. Dark Amber. Seal on HoneyChain\u2122. Immutable traceability record. Cancel. Harvests. PRODUCTIVITY OVERVIEW. Avg Moisture. Total Yield. Organic Status. HoneyChain Seals. Hive / Batch. Apiary. Farmer. Quantity. Honey Type. HoneyChain\u2122. Actions. Verified. Filters. Fine-tune the harvest analytics using the filters below.. Add harvest. LOCATION. All Apiaries. All Hives. PERIOD. QUICK YEAR. Select a year to quickly load its harvest data.. HoneyChain\u2122 Traceability Record. Total Harvest. Honey Type. Moisture Level. Color Grade. Hive Source. HoneyChain Verified. This record has been sealed and secured via IoT node.. Edit Record. Select Hive. Select type. e.g. 17.5. Select Apiary. Select Hive"
+      "content": "Source Hive*. Harvest date. BeeYield HoneyChain\u2122. Batch Code. Acacia. Multi-flower. Forest. Rapeseed. Moisture %. Color Grade. Water White. Extra White. Extra Light Amber. Light Amber. Dark Amber. Seal on HoneyChain\u2122. Immutable traceability record. Cancel. Harvests. PRODUCTIVITY OVERVIEW. Avg Moisture. Total Yield. Organic Status. HoneyChain Seals. Hive / Batch. Apiary. Farmer. Quantity. Honey Type. HoneyChain\u2122. Actions. Verified. Filters. Fine-tune the harvest analytics using the filters below.. Add harvest. LOCATION. All Apiaries. All Hives. PERIOD. QUICK YEAR. All Time. Select a year to quickly load its harvest data.. HoneyChain\u2122 Traceability Record. Total Harvest. Honey Type. Moisture Level. Color Grade. Hive Source. HoneyChain Verified. This record has been sealed and secured via IoT node.. Edit Record. Select Hive. Select type. e.g. 17.5. Select Apiary. Select Hive"
     },
     {
       "source": "HealthGuideView.tsx",

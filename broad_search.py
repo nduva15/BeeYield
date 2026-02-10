@@ -1,27 +1,24 @@
-
 import os
 
-def broad_search():
-    results = []
-    for root, dirs, files in os.walk("c:\\Users\\aggym\\Downloads\\Honey"):
-        if ".git" in root or "node_modules" in root or ".next" in root or "dist" in root:
-            continue
+def search_files(directory, query):
+    matches = []
+    for root, dirs, files in os.walk(directory):
+        if 'node_modules' in dirs:
+            dirs.remove('node_modules')
+        if '.git' in dirs:
+            dirs.remove('.git')
         for file in files:
-            path = os.path.join(root, file)
-            # Skip binary files
-            if file.endswith(('.png', '.jpg', '.jpeg', '.gif', '.ico', '.pdf', '.zip', '.exe', '.dll')):
-                continue
-            try:
-                with open(path, "r", encoding="utf-8", errors="ignore") as f:
-                    content = f.read()
-                    if "Markempai" in content or "markempai" in content:
-                        results.append(path)
-            except Exception as e:
-                pass
-    
-    with open("broad_search_results.txt", "w") as f:
-        for r in results:
-            f.write(f"{r}\n")
+            if file.endswith('.sql'):
+                path = os.path.join(root, file)
+                try:
+                    with open(path, 'r', encoding='utf-8') as f:
+                        if query in f.read():
+                            matches.append(path)
+                except Exception as e:
+                    print(f"Error reading {path}: {e}")
+    return matches
 
-if __name__ == "__main__":
-    broad_search()
+results = search_files('c:\\Users\\aggym\\Downloads\\Honey', 'Admin all access')
+print(f"Found {len(results)} matches:")
+for r in results:
+    print(r)
