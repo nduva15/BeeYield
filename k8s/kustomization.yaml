@@ -1,0 +1,33 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: beeyield
+
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - secrets.yaml
+  - postgres-pvc.yaml
+  - redis-pvc.yaml
+  - postgres-deployment.yaml
+  - redis-deployment.yaml
+  - backend-deployment.yaml
+  - frontend-deployment.yaml
+  - ingress.yaml
+  - hpa.yaml
+  - cronjobs.yaml
+
+# Apply common labels
+commonLabels:
+  app.kubernetes.io/name: beeyield
+  app.kubernetes.io/version: "1.0.0"
+  app.kubernetes.io/managed-by: kustomize
+
+# Image transformations (update these with your registry)
+images:
+  - name: beeyield-frontend
+    newName: your-registry.io/beeyield-frontend
+    newTag: latest
+  - name: beeyield-backend
+    newName: your-registry.io/beeyield-backend
+    newTag: latest

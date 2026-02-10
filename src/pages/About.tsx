@@ -8,17 +8,17 @@ const About = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* 1. Modern Hero Section */}
-      <section className="relative overflow-hidden py-24 sm:py-32 bg-gradient-to-b from-amber-50/50 to-background">
+      <section className="relative overflow-hidden py-24 sm:py-32 bg-gradient-to-b from-amber-50/50 to-background dark:from-amber-950/20 dark:to-background">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
         <div className="container relative mx-auto px-4 text-center">
           <Badge className="mb-6 bg-amber-100 text-amber-800 hover:bg-amber-200 border-amber-200 px-4 py-1.5 text-sm font-medium rounded-full transition-colors">
             Est. 2020 • Kibwezi, Kenya
           </Badge>
           <h1 className="mb-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-            Supporting <span className="text-primary italic">Sustainable</span> Agriculture
+            Cultivating the <span className="text-primary italic">Future</span> of Food
           </h1>
           <p className="mx-auto mb-10 max-w-3xl text-xl text-muted-foreground leading-relaxed">
-            Born from a family's shared vision in rural Kenya, we're on a mission to support pollination through beekeeping, technology, and commitment to the environment.
+            Born from a family's shared vision in rural Kenya, we're on a mission to solve the global pollination crisis through precision pollination, technology, and ecosystem guardianship.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Button size="lg" className="rounded-full px-8" asChild>
@@ -38,7 +38,7 @@ const About = () => {
             <h2 className="text-3xl font-bold mb-4 flex items-center justify-center gap-2">
               <History className="h-8 w-8 text-primary" /> Our Roots & Growth
             </h2>
-            <p className="text-muted-foreground text-lg">From a humble half-acre plot to a leader in beekeeping.</p>
+            <p className="text-muted-foreground text-lg">From a humble half-acre plot to a precision pollination leader.</p>
           </div>
 
           <div className="relative max-w-4xl mx-auto">
@@ -95,8 +95,8 @@ const About = () => {
                   <Target className="h-6 w-6 text-primary" />
                 </div>
                 <div className="sm:w-1/2 order-2 sm:order-2">
-                  <h3 className="text-2xl font-bold text-primary mb-2">Today: Technical Support</h3>
-                  <p className="text-muted-foreground">Growing as a beekeeping leader using technology and research to support pollination.</p>
+                  <h3 className="text-2xl font-bold text-primary mb-2">Today: Smart Technology</h3>
+                  <p className="text-muted-foreground">Evolving into a Precision Pollination leader using advanced technology and data to secure the future of food globally.</p>
                 </div>
               </div>
             </div>
@@ -130,7 +130,7 @@ const About = () => {
             </Card>
 
             {/* Linked Card 2: Impact */}
-            <Card className="group hover:shadow-xl transition-all duration-300 border-none shadow-md bg-green-50/50">
+            <Card className="group hover:shadow-xl transition-all duration-300 border-none shadow-md bg-green-50/50 dark:bg-green-900/10">
               <CardContent className="p-8">
                 <div className="mb-6 inline-block rounded-2xl bg-white p-4 shadow-sm group-hover:scale-110 transition-transform">
                   <Leaf className="h-8 w-8 text-green-600" />
@@ -139,46 +139,46 @@ const About = () => {
                 <p className="text-muted-foreground mb-6 line-clamp-3">
                   From 4 to 184 hives, protecting ecosystems and planting 2,500+ trees. See our environmental footprint.
                 </p>
-                <Link to="/impact" className="inline-flex items-center text-green-700 font-semibold group-hover:translate-x-1 transition-transform">
+                <Link to="/impact" className="inline-flex items-center text-green-700 dark:text-green-400 font-semibold group-hover:translate-x-1 transition-transform">
                   View Impact Report <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </CardContent>
             </Card>
 
             {/* Linked Card 3: Global Hive Network (New) */}
-            <Card className="group hover:shadow-xl transition-all duration-300 border-none shadow-md bg-blue-50/50">
+            <Card className="group hover:shadow-xl transition-all duration-300 border-none shadow-md bg-blue-50/50 dark:bg-blue-900/10">
               <CardContent className="p-8">
                 <div className="mb-6 inline-block rounded-2xl bg-white p-4 shadow-sm group-hover:scale-110 transition-transform">
                   <Globe className="h-8 w-8 text-blue-600" />
                 </div>
                 <h3 className="mb-3 text-2xl font-bold">Global Hive Network</h3>
                 <p className="text-muted-foreground mb-6 line-clamp-3">
-                  Join our effort to save pollinators. Support our beekeeping initiatives, partner with farmers, and be part of the solution.
+                  Join our planetary initiative to save pollinators. Adopt a hive, support farmers, and be part of the solution.
                 </p>
-                <Link to="/global-hive-network" className="inline-flex items-center text-blue-700 font-semibold group-hover:translate-x-1 transition-transform">
+                <Link to="/global-hive-network" className="inline-flex items-center text-blue-700 dark:text-blue-400 font-semibold group-hover:translate-x-1 transition-transform">
                   Join the Network <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </CardContent>
             </Card>
 
             {/* Linked Card 4: Traceability (New) */}
-            <Card className="group hover:shadow-xl transition-all duration-300 border-none shadow-md bg-amber-50/50">
+            <Card className="group hover:shadow-xl transition-all duration-300 border-none shadow-md bg-amber-50/50 dark:bg-amber-900/10">
               <CardContent className="p-8">
                 <div className="mb-6 inline-block rounded-2xl bg-white p-4 shadow-sm group-hover:scale-110 transition-transform">
                   <ShieldCheck className="h-8 w-8 text-amber-600" />
                 </div>
-                <h3 className="mb-3 text-2xl font-bold">HoneyChain™ Traceability</h3>
+                <h3 className="mb-3 text-2xl font-bold">Honey Journey Tracking</h3>
                 <p className="text-muted-foreground mb-6 line-clamp-3">
-                  Track every drop of honey from hive to jar. Verify our 50/50 harvest promise and meet the beekeeper.
+                  Track every drop of honey from hive to jar. See how we care for our bees and meet the beekeeper.
                 </p>
-                <Link to="/traceability" className="inline-flex items-center text-amber-700 font-semibold group-hover:translate-x-1 transition-transform">
+                <Link to="/traceability" className="inline-flex items-center text-amber-700 dark:text-amber-400 font-semibold group-hover:translate-x-1 transition-transform">
                   Trace Your Honey <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </CardContent>
             </Card>
 
             {/* Linked Card 5: Pollination Services (New) */}
-            <Card className="group hover:shadow-xl transition-all duration-300 border-none shadow-md bg-purple-50/50">
+            <Card className="group hover:shadow-xl transition-all duration-300 border-none shadow-md bg-purple-50/50 dark:bg-purple-900/10">
               <CardContent className="p-8">
                 <div className="mb-6 inline-block rounded-2xl bg-white p-4 shadow-sm group-hover:scale-110 transition-transform">
                   <Sprout className="h-8 w-8 text-purple-600" />
@@ -187,21 +187,21 @@ const About = () => {
                 <p className="text-muted-foreground mb-6 line-clamp-3">
                   Boost crop yields with our precision pollination services. Custom solutions for mango, bean, and sisal farmers.
                 </p>
-                <Link to="/pollination-solutions" className="inline-flex items-center text-purple-700 font-semibold group-hover:translate-x-1 transition-transform">
+                <Link to="/pollination-solutions" className="inline-flex items-center text-purple-700 dark:text-purple-400 font-semibold group-hover:translate-x-1 transition-transform">
                   Services for Farmers <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </CardContent>
             </Card>
 
             {/* Linked Card 6: Our Values (New/Modified) */}
-            <Card className="group hover:shadow-xl transition-all duration-300 border-none shadow-md bg-zinc-50">
+            <Card className="group hover:shadow-xl transition-all duration-300 border-none shadow-md bg-zinc-50 dark:bg-zinc-800/10">
               <CardContent className="p-8">
                 <div className="mb-6 inline-block rounded-2xl bg-white p-4 shadow-sm group-hover:scale-110 transition-transform">
                   <Heart className="h-8 w-8 text-red-500" />
                 </div>
                 <h3 className="mb-3 text-2xl font-bold">Our Commitment</h3>
                 <p className="text-muted-foreground mb-6 line-clamp-3">
-                  Our values: sustainability, traceability, and strong local communities.
+                  Read about our core values: Sustainability, Traceability, and Community Empowerment.
                 </p>
                 <Link to="/commitment" className="inline-flex items-center text-foreground font-semibold group-hover:translate-x-1 transition-transform">
                   Our Promise <ArrowRight className="ml-2 h-4 w-4" />
@@ -225,7 +225,7 @@ const About = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-[#F0F7F0] via-transparent to-transparent pointer-events-none flex items-end justify-center pb-20">
           <div className="text-center text-neutral-900 p-4">
             <h2 className="text-3xl md:text-5xl font-bold mb-4">See the BeeYield Difference</h2>
-            <p className="text-lg md:text-xl opacity-80">Watch how we're supporting farmers and pollinators, one hive at a time.</p>
+            <p className="text-lg md:text-xl opacity-80">Watch how we're transforming agriculture, one hive at a time.</p>
           </div>
         </div>
       </div>

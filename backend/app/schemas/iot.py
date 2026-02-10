@@ -16,6 +16,9 @@ class IoTDeviceBase(BaseModel):
     battery_level: Optional[int] = None
     firmware_version: Optional[str] = None
 
+class IoTDeviceCreate(IoTDeviceBase):
+    pass
+
 class IoTDevice(IoTDeviceBase):
     id: str
     created_at: datetime

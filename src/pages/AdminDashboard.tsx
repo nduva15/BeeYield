@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -9,7 +9,6 @@ import {
     HiveInput,
     FarmerInput
 } from '@/services/adminService';
-import { beeyieldService } from '@/services/beeyieldService';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -24,7 +23,8 @@ import {
     Database, Trash2, Edit, Shield, Crown, UserMinus,
     CheckCircle2, XCircle, Clock, AlertTriangle, LayoutDashboard,
     MessageSquare, Bug, Mail, History, TrendingUp, ChevronRight,
-    LogOut, Search, MapPin, Eye, Phone, Leaf, Building2, Share2, CreditCard, FileText, Maximize2, Minus, Globe
+    LogOut, Search, MapPin, Eye, Phone, Leaf, Building2, Share2, CreditCard, FileText, Maximize2, Minus,
+    Briefcase, Globe
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -40,7 +40,9 @@ import { DocumentsRegistryTab } from '@/components/admin/tabs/DocumentsRegistryT
 import { PaymentsTab } from '@/components/admin/tabs/PaymentsTab';
 import { AccountsTab } from '@/components/admin/tabs/AccountsTab';
 import { InvoicesTab } from '@/components/admin/tabs/InvoicesTab';
-import { SupportRequestsTab } from '@/components/admin/tabs/SupportRequestsTab';
+import { RecruitmentTab } from '@/components/admin/tabs/RecruitmentTab';
+import { Container, Grid, Col, Section } from '@/components/ui/layout';
+import ContentDashboard from '@/components/beeyield/ContentDashboard';
 
 const AdminDashboard: React.FC = () => {
     const { user, loading: authLoading, signOut } = useAuth();
@@ -64,7 +66,6 @@ const AdminDashboard: React.FC = () => {
     const [stockMovements, setStockMovements] = useState<any[]>([]);
     const [apiaries, setApiaries] = useState<any[]>([]);
     const [hives, setHives] = useState<any[]>([]);
-    const [supportRequests, setSupportRequests] = useState<any[]>([]);
     const [activeTab, setActiveTab] = useState('overview');
 
     // Loading States
@@ -258,11 +259,6 @@ const AdminDashboard: React.FC = () => {
                     setSubscribers(subscribersData);
                     break;
                 }
-                case 'support': {
-                    const requestsData = await beeyieldService.getRequests();
-                    setSupportRequests(requestsData);
-                    break;
-                }
                 case 'team': {
                     if (isSuperAdmin) {
                         const usersData = await adminService.getUsers();
@@ -372,7 +368,7 @@ const AdminDashboard: React.FC = () => {
                     metadata: { honey_type: batchForm.honey_type }
                 }).catch(() => { });
 
-                toast.success("Batch created and logged");
+                toast.success("Batch record created");
             }
             setIsBatchModalOpen(false);
             setEditingBatchId(null);
@@ -399,7 +395,7 @@ const AdminDashboard: React.FC = () => {
     };
 
     const handleDeleteBatch = async (id: string) => {
-        if (confirm("Permanently remove this batch? This will delete it from the system.")) {
+        if (confirm("Permanently remove this batch history?")) {
             try {
                 await adminService.deleteBatch(id);
 
@@ -632,7 +628,7 @@ const AdminDashboard: React.FC = () => {
                     entity_reference: userForm.email
                 }).catch(() => { });
 
-                toast.success("User added successfully");
+                toast.success("New team member added");
             }
             setIsUserModalOpen(false);
             setEditingUser(null);
@@ -670,7 +666,7 @@ const AdminDashboard: React.FC = () => {
                     metadata: { name: farmerForm.name }
                 }).catch(() => { });
 
-                toast.success("Farmer registered successfully");
+                toast.success("Farmer registration complete");
             }
             setIsFarmerModalOpen(false);
             setEditingFarmer(null);
@@ -681,7 +677,7 @@ const AdminDashboard: React.FC = () => {
             });
             loadAllData();
         } catch (error) {
-            toast.error(editingFarmer ? "Failed to recalibrate profile" : "Failed to register farmer on network");
+            toast.error(editingFarmer ? "Failed to update profile" : "Failed to register farmer");
         }
     };
 
@@ -890,7 +886,7 @@ const AdminDashboard: React.FC = () => {
         return (
             <div className="flex flex-col justify-center items-center h-screen bg-muted/10 space-y-4">
                 <Shield className="h-16 w-16 text-destructive animate-pulse" />
-                <h2 className="text-2xl font-bold">Restricted Access</h2>
+                <h2 className="text-2xl font-black">Restricted Access</h2>
                 <p className="text-muted-foreground">This terminal is for authorized administrators only.</p>
                 <Button onClick={() => navigate('/')} className="rounded-xl px-8 shadow-lg">Return Home</Button>
             </div>
@@ -951,8 +947,16 @@ const AdminDashboard: React.FC = () => {
                 { id: 'pollination', label: 'Pollination', icon: Bug },
                 { id: 'contact', label: 'Contact', icon: MessageSquare },
                 { id: 'newsletter', label: 'Newsletter', icon: Mail },
-                { id: 'support', label: 'Support', icon: MessageSquare },
                 { id: 'documents', label: 'Documents', icon: FileText },
+            ]
+        },
+        {
+            id: 'recruitment',
+            label: 'Recruitment',
+            icon: Briefcase,
+            children: [
+                { id: 'recruitment', label: 'Job Board', icon: Briefcase },
+                { id: 'recruitment', label: 'Applications', icon: Users },
             ]
         },
         { id: 'batches', label: 'Trace Data', icon: Database },
@@ -1009,9 +1013,9 @@ const AdminDashboard: React.FC = () => {
 
                     <TabsContent value="overview" className="space-y-6">
                         {/* Row 1: General Report + Visitors + Users By Age */}
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <Grid cols={12} gap="lg">
                             {/* General Report Section */}
-                            <div className="lg:col-span-4 space-y-4">
+                            <Col span={4} className="space-y-4">
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-lg font-bold text-foreground">General Report</h3>
                                     <select className="text-xs bg-transparent border border-border rounded-lg px-3 py-1.5 text-muted-foreground">
@@ -1022,43 +1026,30 @@ const AdminDashboard: React.FC = () => {
                                 </div>
 
                                 {/* Stats Card */}
-                                <Card className="bg-white border-gray-100 rounded-2xl p-5 shadow-sm">
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
-                                            <CreditCard className="w-6 h-6 text-amber-600" />
-                                        </div>
-                                        <div>
-                                            <p className="text-xs text-muted-foreground uppercase tracking-wide">TOTAL ORDERS</p>
-                                            <p className="text-sm font-medium text-amber-600">{(dashboardStats as any).total_orders || orders.length}</p>
-                                        </div>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <p className="text-[10px] text-muted-foreground uppercase tracking-wide">PENDING ORDERS</p>
-                                        <p className="text-xs text-muted-foreground">{dashboardStats.pendingOrders}</p>
-                                    </div>
-                                </Card>
+                                <AdminMetricCard
+                                    title="Total Orders"
+                                    value={(dashboardStats as any).total_orders || orders.length}
+                                    icon={CreditCard}
+                                    description={`${dashboardStats.pendingOrders} Pending Orders`}
+                                    className="h-auto"
+                                />
 
-                                <Card className="bg-white border-gray-100 rounded-2xl p-5 shadow-sm">
-                                    <p className="text-3xl font-bold text-foreground">KES {dashboardStats.totalRevenue.toLocaleString()}</p>
-                                    <div className="flex gap-4 mt-3 text-xs">
-                                        <div className="flex items-center gap-1">
-                                            <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
-                                            <span className="text-muted-foreground">40%</span>
-                                        </div>
-                                        <div className="flex items-center gap-1">
-                                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                            <span className="text-muted-foreground">Sales growth this month</span>
-                                        </div>
-                                    </div>
-                                    <p className="text-xs text-muted-foreground mt-2">Active Apiaries: {dashboardStats.totalApiaries}</p>
-                                </Card>
+                                <AdminMetricCard
+                                    title="Total Revenue"
+                                    value={`KES ${dashboardStats.totalRevenue.toLocaleString()}`}
+                                    icon={CreditCard}
+                                    trend="40%"
+                                    trendDirection="up"
+                                    description="Sales growth this month"
+                                    className="h-auto"
+                                />
 
                                 <div className="flex gap-3">
-                                    <div className="flex-1 bg-white border border-gray-100 rounded-xl p-3">
+                                    <div className="flex-1 bg-card border border-border rounded-xl p-3">
                                         <p className="text-[10px] text-muted-foreground uppercase">GROSS RENTAL VALUE</p>
                                         <p className="text-sm font-bold">KES 72,000 <span className="text-green-500 text-xs">↑4%</span></p>
                                     </div>
-                                    <div className="flex-1 bg-white border border-gray-100 rounded-xl p-3">
+                                    <div className="flex-1 bg-card border border-border rounded-xl p-3">
                                         <p className="text-[10px] text-muted-foreground uppercase">BEEKEEPER PROFITS</p>
                                         <p className="text-sm font-bold">KES 54,000 <span className="text-green-500 text-xs">↑6%</span></p>
                                     </div>
@@ -1067,13 +1058,13 @@ const AdminDashboard: React.FC = () => {
                                 <Button onClick={loadAllData} className="w-full rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-medium">
                                     <RefreshCw className="w-4 h-4 mr-2" /> Refresh Dashboard
                                 </Button>
-                            </div>
+                            </Col>
 
                             {/* Visitors Section */}
-                            <div className="lg:col-span-4 space-y-4">
+                            <Col span={4} className="space-y-4">
                                 <h3 className="text-lg font-bold text-foreground">Visitors</h3>
 
-                                <Card className="bg-white border-gray-100 rounded-2xl p-5 shadow-sm">
+                                <Card className="bg-card border-border rounded-2xl p-5 shadow-sm">
                                     <div className="flex items-center justify-between mb-4">
                                         <div>
                                             <p className="text-xs text-muted-foreground">Realtime active users</p>
@@ -1123,16 +1114,16 @@ const AdminDashboard: React.FC = () => {
                                         Real-Time Report →
                                     </Button>
                                 </Card>
-                            </div>
+                            </Col>
 
                             {/* Users By Age Section */}
-                            <div className="lg:col-span-4 space-y-4">
+                            <Col span={4} className="space-y-4">
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-lg font-bold text-foreground">Users By Age</h3>
                                     <span className="text-xs text-muted-foreground">Show More</span>
                                 </div>
 
-                                <Card className="bg-white border-gray-100 rounded-2xl p-5 shadow-sm">
+                                <Card className="bg-card border-border rounded-2xl p-5 shadow-sm">
                                     <div className="flex gap-2 mb-4">
                                         <Button size="sm" className="rounded-full bg-amber-500 text-white text-xs px-4 h-7">Active</Button>
                                         <Button size="sm" variant="outline" className="rounded-full text-xs px-4 h-7">Inactive</Button>
@@ -1142,7 +1133,7 @@ const AdminDashboard: React.FC = () => {
                                     <div className="relative w-36 h-36 mx-auto mb-4">
                                         <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
                                             {/* Background circle */}
-                                            <circle cx="50" cy="50" r="40" fill="none" stroke="#e5e7eb" strokeWidth="12" />
+                                            <circle cx="50" cy="50" r="40" fill="none" stroke="#e5e7eb" strokeWidth="12" className="dark:stroke-gray-700" />
                                             {/* Amber segment - 60% */}
                                             <circle cx="50" cy="50" r="40" fill="none" stroke="#f59e0b" strokeWidth="12"
                                                 strokeDasharray="150.8 251.2" strokeLinecap="round" />
@@ -1177,15 +1168,15 @@ const AdminDashboard: React.FC = () => {
                                         </div>
                                     </div>
                                 </Card>
-                            </div>
-                        </div>
+                            </Col>
+                        </Grid>
 
                         {/* Row 2: Map + Weekly Best Sellers */}
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <Grid cols={12} gap="lg">
                             {/* Map Section */}
-                            <div className="lg:col-span-2">
-                                <Card className="bg-white border-gray-100 rounded-2xl overflow-hidden shadow-sm h-full flex flex-col">
-                                    <div className="p-4 border-b border-gray-100 bg-white z-10">
+                            <Col span={8}>
+                                <Card className="bg-card border-border rounded-2xl overflow-hidden shadow-sm h-full flex flex-col">
+                                    <div className="p-4 border-b border-border bg-card z-10">
                                         <div className="flex items-center justify-between">
                                             <h3 className="text-lg font-bold">Official Store</h3>
                                             <div className="flex gap-2">
@@ -1198,7 +1189,7 @@ const AdminDashboard: React.FC = () => {
                                     </div>
 
                                     {/* Interactive Map Styles */}
-                                    <div className="flex-1 relative bg-slate-50 min-h-[350px]">
+                                    <div className="flex-1 relative bg-slate-100 dark:bg-slate-900 min-h-[350px]">
                                         {/* Map Controls */}
                                         <div className="absolute top-4 left-4 z-10 flex bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                                             <button className="px-3 py-1.5 text-xs font-medium hover:bg-gray-50 border-r border-gray-200">Map</button>
@@ -1256,11 +1247,11 @@ const AdminDashboard: React.FC = () => {
                                         <div className="absolute bottom-1 left-2 text-[10px] text-gray-400 font-sans">Google</div>
                                     </div>
                                 </Card>
-                            </div>
+                            </Col>
 
                             {/* Weekly Best Sellers */}
-                            <div className="lg:col-span-1">
-                                <Card className="bg-white border-gray-100 rounded-2xl p-5 shadow-sm h-full flex flex-col">
+                            <Col span={4}>
+                                <Card className="bg-card border-border rounded-2xl p-5 shadow-sm h-full flex flex-col">
                                     <h3 className="text-lg font-bold mb-6">Weekly Best Sellers</h3>
 
                                     <div className="space-y-6 flex-1">
@@ -1275,40 +1266,46 @@ const AdminDashboard: React.FC = () => {
                                         View More
                                     </Button>
                                 </Card>
-                            </div>
-                        </div>
+                            </Col>
+                        </Grid>
 
                         {/* Row 3: Promotional Banners */}
-                        {/* Activity Overview Summary */}
-                        <Card className="bg-amber-600 rounded-2xl p-6 text-white relative overflow-hidden flex flex-col justify-center h-48">
-                            <div className="relative z-10 max-w-xs">
-                                <h3 className="text-lg font-bold mb-1 leading-tight">Farmer Network Expansion</h3>
-                                <p className="text-amber-100 text-xs mb-4">Monitor and support our master beekeepers.</p>
-                                <Button onClick={() => setActiveTab('farmers')} size="sm" className="bg-white text-amber-600 hover:bg-amber-50 rounded-lg font-bold text-xs h-8 px-4">
-                                    Manage Farmers
-                                </Button>
-                            </div>
-                            <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                                <Users className="w-24 h-24 text-amber-400/30" />
-                            </div>
-                        </Card>
+                        <Grid cols={2} gap="lg">
+                            {/* Activity Overview Summary */}
+                            <Col span={1}>
+                                <Card className="bg-amber-600 rounded-2xl p-6 text-white relative overflow-hidden flex flex-col justify-center h-48">
+                                    <div className="relative z-10 max-w-xs">
+                                        <h3 className="text-lg font-bold mb-1 leading-tight">Farmer Network Expansion</h3>
+                                        <p className="text-amber-100 text-xs mb-4">Monitor and support our master beekeepers.</p>
+                                        <Button onClick={() => setActiveTab('farmers')} size="sm" className="bg-white text-amber-600 hover:bg-amber-50 rounded-lg font-bold text-xs h-8 px-4">
+                                            Manage Farmers
+                                        </Button>
+                                    </div>
+                                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                                        <Users className="w-24 h-24 text-amber-400/30" />
+                                    </div>
+                                </Card>
+                            </Col>
+                            <Col span={1}>
 
-                        <Card className="bg-indigo-600 rounded-2xl p-6 text-white relative overflow-hidden flex flex-col justify-center h-48">
-                            <div className="relative z-10 max-w-xs">
-                                <h3 className="text-lg font-bold mb-1 leading-tight">Traceability</h3>
-                                <p className="text-indigo-100 text-xs mb-4">View immutable honey production records.</p>
-                                <Button onClick={() => setActiveTab('batches')} size="sm" className="bg-white text-indigo-600 hover:bg-indigo-50 rounded-lg font-bold text-xs h-8 px-4">
-                                    View Records
-                                </Button>
-                            </div>
-                            <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                                <Database className="w-24 h-24 text-indigo-400/30" />
-                            </div>
-                        </Card>
+                                <Card className="bg-indigo-600 rounded-2xl p-6 text-white relative overflow-hidden flex flex-col justify-center h-48">
+                                    <div className="relative z-10 max-w-xs">
+                                        <h3 className="text-lg font-bold mb-1 leading-tight">Traceability Ledger</h3>
+                                        <p className="text-indigo-100 text-xs mb-4">View immutable honey production records.</p>
+                                        <Button onClick={() => setActiveTab('batches')} size="sm" className="bg-white text-indigo-600 hover:bg-indigo-50 rounded-lg font-bold text-xs h-8 px-4">
+                                            View Ledger
+                                        </Button>
+                                    </div>
+                                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                                        <Database className="w-24 h-24 text-indigo-400/30" />
+                                    </div>
+                                </Card>
+                            </Col>
+                        </Grid>
 
                         {/* Row 4: Weekly Top Products Table */}
-                        <Card className="bg-white border-gray-100 rounded-2xl shadow-sm overflow-hidden">
-                            <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+                        <Card className="bg-card border-border rounded-2xl shadow-sm overflow-hidden">
+                            <div className="p-4 border-b border-border flex items-center justify-between">
                                 <h3 className="text-lg font-bold">Weekly Top Products</h3>
                                 <div className="flex gap-2">
                                     <Button size="sm" variant="outline" className="rounded-lg text-xs h-8 gap-2">
@@ -1332,9 +1329,9 @@ const AdminDashboard: React.FC = () => {
                                 </TableHeader>
                                 <TableBody>
                                     {products.length > 0 ? products.slice(0, 5).map((product, i) => (
-                                        <TableRow key={product.id || i} className="hover:bg-muted/10 border-b border-gray-100">
+                                        <TableRow key={product.id || i} className="hover:bg-muted/10 border-b border-border/50">
                                             <TableCell className="py-3">
-                                                <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden border border-gray-200">
+                                                <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden border border-border">
                                                     {product.images?.[0] ? (
                                                         <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
                                                     ) : (
@@ -1382,7 +1379,7 @@ const AdminDashboard: React.FC = () => {
                             </Table>
 
                             {/* Pagination */}
-                            <div className="p-4 border-t border-gray-100 dark:border-border flex items-center justify-between">
+                            <div className="p-4 border-t border-border flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <Button size="sm" variant="outline" className="w-8 h-8 rounded-lg">&lt;</Button>
                                     <Button size="sm" className="w-8 h-8 rounded-lg bg-amber-500 text-white">1</Button>
@@ -1399,7 +1396,7 @@ const AdminDashboard: React.FC = () => {
                         </Card>
 
                         {/* Row 5: Important Notes */}
-                        <Card className="bg-white border-gray-100 rounded-2xl p-5 shadow-sm">
+                        <Card className="bg-card border-border rounded-2xl p-5 shadow-sm">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-lg font-bold">Important Notes</h3>
                                 <div className="flex gap-2">
@@ -1426,9 +1423,9 @@ const AdminDashboard: React.FC = () => {
                         </Card>
 
                         {/* Row 6: Bottom Widgets - Schedules, Recent Activities, Transactions */}
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <Grid cols={12} gap="lg">
                             {/* Schedules / Calendar */}
-                            <Card className="bg-white border-gray-100 rounded-2xl p-5 shadow-sm">
+                            <Col span={4}><Card className="bg-card border-border rounded-2xl p-5 shadow-sm">
                                 <div className="flex items-center justify-between mb-4">
                                     <h3 className="font-bold">Schedules</h3>
                                     <Button size="sm" variant="outline" className="rounded-lg text-xs h-7 gap-1">
@@ -1453,7 +1450,7 @@ const AdminDashboard: React.FC = () => {
                                                     "py-1.5 rounded-lg",
                                                     !isCurrentMonth && "text-muted-foreground/30",
                                                     isToday && "bg-amber-500 text-white font-bold",
-                                                    hasEvent && !isToday && "bg-amber-100 text-amber-700 font-medium"
+                                                    hasEvent && !isToday && "bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 font-medium"
                                                 )}
                                             >
                                                 {isCurrentMonth ? day : day <= 0 ? 30 + day : day - 30}
@@ -1467,10 +1464,10 @@ const AdminDashboard: React.FC = () => {
                                     <Clock className="w-8 h-8 text-muted-foreground/30 mb-2" />
                                     <p className="text-xs font-medium text-muted-foreground">No upcoming inspections</p>
                                 </div>
-                            </Card>
+                            </Card></Col>
 
                             {/* Recent Activities */}
-                            <Card className="bg-white border-gray-100 rounded-2xl p-5 shadow-sm">
+                            <Col span={4}><Card className="bg-card border-border rounded-2xl p-5 shadow-sm">
                                 <div className="flex items-center justify-between mb-4">
                                     <h3 className="font-bold">Recent Activities</h3>
                                     <Button variant="link" className="text-amber-600 text-xs p-0 h-auto">Show More</Button>
@@ -1505,10 +1502,10 @@ const AdminDashboard: React.FC = () => {
                                         <p className="text-xs text-muted-foreground text-center py-10">No recent network activity</p>
                                     )}
                                 </div>
-                            </Card>
+                            </Card></Col>
 
                             {/* Transactions */}
-                            <Card className="bg-white border-gray-100 rounded-2xl p-5 shadow-sm">
+                            <Col span={4}><Card className="bg-card border-border rounded-2xl p-5 shadow-sm">
                                 <h3 className="font-bold mb-4">Transactions</h3>
 
                                 <div className="space-y-4">
@@ -1541,8 +1538,8 @@ const AdminDashboard: React.FC = () => {
                                 <Button variant="link" className="text-amber-600 text-xs p-0 h-auto mt-4">
                                     View More →
                                 </Button>
-                            </Card>
-                        </div>
+                            </Card></Col>
+                        </Grid>
 
                         {/* Quick Actions Removed */}
                     </TabsContent>
@@ -1563,13 +1560,13 @@ const AdminDashboard: React.FC = () => {
                                     <Table>
                                         <TableHeader>
                                             <TableRow className="border-b border-border bg-muted/20">
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Order #</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Customer</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest text-right">Items</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest text-right">Total (KES)</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Status</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Date</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Order #</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Customer</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Items</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Total (KES)</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -1584,13 +1581,13 @@ const AdminDashboard: React.FC = () => {
                                                             <div className="text-xs text-muted-foreground">{order.customer_email || order.shipping_address?.email}</div>
                                                         </TableCell>
                                                         <TableCell className="px-6 text-right font-medium">{order.items?.length || 0}</TableCell>
-                                                        <TableCell className="px-6 text-right font-bold italic">{order.total_amount?.toLocaleString()}</TableCell>
+                                                        <TableCell className="px-6 text-right font-black italic">{order.total_amount?.toLocaleString()}</TableCell>
                                                         <TableCell className="px-6">
                                                             <Select
                                                                 defaultValue={order.status}
                                                                 onValueChange={(value) => handleUpdateOrderStatus(order.id, value)}
                                                             >
-                                                                <SelectTrigger className="w-[140px] h-9 text-[10px] font-bold uppercase tracking-wider rounded-xl bg-background/50 border-border/50">
+                                                                <SelectTrigger className="w-[140px] h-9 text-[10px] font-black uppercase tracking-wider rounded-xl bg-background/50 border-border/50">
                                                                     <SelectValue />
                                                                 </SelectTrigger>
                                                                 <SelectContent className="rounded-xl border-border/50">
@@ -1635,28 +1632,28 @@ const AdminDashboard: React.FC = () => {
                                     <div className="space-y-6">
                                         <div className="grid grid-cols-2 gap-4 text-sm">
                                             <div className="space-y-1">
-                                                <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Order ID</p>
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Order ID</p>
                                                 <p className="font-mono font-bold">{selectedOrder.order_number || selectedOrder.id}</p>
                                             </div>
                                             <div className="space-y-1">
-                                                <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Status</p>
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Status</p>
                                                 <Badge variant="outline">{selectedOrder.status}</Badge>
                                             </div>
                                             <div className="space-y-1">
-                                                <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Customer</p>
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Customer</p>
                                                 <p className="font-bold">{selectedOrder.shipping_address?.first_name} {selectedOrder.shipping_address?.last_name}</p>
                                                 <p className="text-muted-foreground">{selectedOrder.customer_email}</p>
                                                 <p className="text-muted-foreground">{selectedOrder.shipping_address?.phone}</p>
                                             </div>
                                             <div className="space-y-1">
-                                                <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Shipping Address</p>
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Shipping Address</p>
                                                 <p className="whitespace-pre-wrap">{selectedOrder.shipping_address?.address}, {selectedOrder.shipping_address?.city}</p>
                                                 <p>{selectedOrder.shipping_address?.postal_code}, {selectedOrder.shipping_address?.country}</p>
                                             </div>
                                         </div>
 
                                         <div className="border-t border-border/10 pt-4">
-                                            <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground mb-3">Items Manifest</p>
+                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground mb-3">Items Manifest</p>
                                             <div className="space-y-2">
                                                 {selectedOrder.items?.map((item: any, i: number) => (
                                                     <div key={i} className="flex justify-between items-center bg-muted/30 p-2 rounded-lg">
@@ -1678,7 +1675,7 @@ const AdminDashboard: React.FC = () => {
                                                 <p>Payment Method: {selectedOrder.payment_method || 'Stripe'}</p>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Total Value</p>
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Total Value</p>
                                                 <p className="text-xl font-bold text-primary">KES {selectedOrder.total_amount?.toLocaleString()}</p>
                                             </div>
                                         </div>
@@ -1696,7 +1693,7 @@ const AdminDashboard: React.FC = () => {
                                 <p className="text-muted-foreground font-medium">Manage and deploy products to the digital storefront.</p>
                             </div>
                             <div className="flex gap-2">
-                                <Button onClick={() => { setEditingProduct(null); setIsProductModalOpen(true); }} className="rounded-xl px-6 py-6 shadow-glow hover:scale-105 transition-all bg-primary font-bold uppercase tracking-widest text-xs h-auto">
+                                <Button onClick={() => { setEditingProduct(null); setIsProductModalOpen(true); }} className="rounded-xl px-6 py-6 shadow-glow hover:scale-105 transition-all bg-primary font-black uppercase tracking-widest text-xs h-auto">
                                     <Plus className="mr-2 h-5 w-5" /> Add New Asset
                                 </Button>
                             </div>
@@ -1712,17 +1709,17 @@ const AdminDashboard: React.FC = () => {
                                             <div className="w-full h-full grid place-items-center text-muted-foreground/30"><ShoppingBag className="w-12 h-12" /></div>
                                         )}
                                         <div className="absolute top-3 right-3">
-                                            <Badge className="bg-background/80 backdrop-blur-md text-foreground border-none px-3 py-1 text-[10px] font-bold uppercase tracking-widest">{product.category}</Badge>
+                                            <Badge className="bg-background/80 backdrop-blur-md text-foreground border-none px-3 py-1 text-[10px] font-black uppercase tracking-widest">{product.category}</Badge>
                                         </div>
                                     </div>
                                     <div className="space-y-3">
                                         <div className="flex justify-between items-start gap-2">
-                                            <h3 className="font-bold text-xl leading-none tracking-tight">{product.name}</h3>
+                                            <h3 className="font-black text-xl leading-none tracking-tight">{product.name}</h3>
                                         </div>
                                         <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed h-8">{product.description}</p>
                                         <div className="flex justify-between items-end pt-2">
                                             <div>
-                                                <p className="text-[10px] font-bold uppercase tracking-tighter text-muted-foreground mb-1">MSRP</p>
+                                                <p className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground mb-1">MSRP</p>
                                                 <span className="text-xl font-bold italic text-primary">KES {product.variants?.[0]?.price_kes?.toLocaleString() || 0}</span>
                                             </div>
                                             <div className="flex gap-1">
@@ -1743,42 +1740,42 @@ const AdminDashboard: React.FC = () => {
                         <Dialog open={isProductModalOpen} onOpenChange={setIsProductModalOpen}>
                             <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-md">
                                 <DialogHeader>
-                                    <DialogTitle className="text-3xl font-bold tracking-tighter">{editingProduct ? 'Update Asset' : 'Create New Asset'}</DialogTitle>
-                                    <DialogDescription>Enter product details and configuration.</DialogDescription>
+                                    <DialogTitle className="text-3xl font-black tracking-tighter">{editingProduct ? 'Update Asset' : 'Create New Asset'}</DialogTitle>
+                                    <DialogDescription>Populate the matrix with product configurations.</DialogDescription>
                                 </DialogHeader>
                                 <div className="grid gap-5 py-4">
                                     <div className="space-y-2">
-                                        <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Product Designation</Label>
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Product Designation</Label>
                                         <Input placeholder="e.g. Amber Infusion VII" value={productForm.name} onChange={e => setProductForm({ ...productForm, name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Asset Description</Label>
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Asset Description</Label>
                                         <Textarea placeholder="Describe the sensory profile..." value={productForm.description} onChange={e => setProductForm({ ...productForm, description: e.target.value })} className="rounded-xl min-h-[100px] bg-muted/50 border-border/50" />
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Classification</Label>
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Classification</Label>
                                             <Input value={productForm.category} onChange={e => setProductForm({ ...productForm, category: e.target.value })} className="rounded-xl h-11 bg-muted/50 border-border/50" />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">MSRP (KES)</Label>
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">MSRP (KES)</Label>
                                             <Input type="number" value={productForm.price_kes} onChange={e => setProductForm({ ...productForm, price_kes: parseFloat(e.target.value) })} className="rounded-xl h-11 bg-muted/50 border-border/50" />
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Initial Reserve</Label>
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Initial Reserve</Label>
                                             <Input type="number" value={productForm.stock_quantity} onChange={e => setProductForm({ ...productForm, stock_quantity: parseInt(e.target.value) })} className="rounded-xl h-11 bg-muted/50 border-border/50" />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Product Image (URL)</Label>
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Visual Matrix (URL)</Label>
                                             <Input value={productForm.images} onChange={e => setProductForm({ ...productForm, images: e.target.value })} placeholder="https://..." className="rounded-xl h-11 bg-muted/50 border-border/50 font-mono text-xs" />
                                         </div>
                                     </div>
                                 </div>
                                 <DialogFooter className="gap-2 sm:gap-0">
                                     <Button variant="ghost" onClick={() => setIsProductModalOpen(false)} className="rounded-xl font-bold">Cancel</Button>
-                                    <Button onClick={handleCreateProduct} className="rounded-xl font-bold uppercase tracking-widest text-xs px-8 shadow-glow">{editingProduct ? 'Commit Changes' : 'Initialize Asset'}</Button>
+                                    <Button onClick={handleCreateProduct} className="rounded-xl font-black uppercase tracking-widest text-xs px-8 shadow-glow">{editingProduct ? 'Commit Changes' : 'Initialize Asset'}</Button>
                                 </DialogFooter>
                             </DialogContent>
                         </Dialog>
@@ -1788,16 +1785,16 @@ const AdminDashboard: React.FC = () => {
                             <CardHeader className="border-b border-border bg-muted/30">
                                 <div className="flex justify-between items-center">
                                     <div>
-                                        <CardTitle className="text-xl font-bold flex items-center gap-2">
+                                        <CardTitle className="text-xl font-black flex items-center gap-2">
                                             <History className="w-5 h-5" /> Stock Movements
                                         </CardTitle>
                                         <CardDescription>Track inventory additions, removals, and adjustments.</CardDescription>
                                     </div>
                                     <div className="flex gap-2">
-                                        <Badge className="bg-green-500/10 text-green-600 border-green-200 px-4 py-1.5 rounded-xl font-bold text-[10px]">
+                                        <Badge className="bg-green-500/10 text-green-600 border-green-200 px-4 py-1.5 rounded-xl font-black text-[10px]">
                                             {stockMovements.length} RECORDS
                                         </Badge>
-                                        <Button onClick={() => setIsStockModalOpen(true)} size="sm" className="rounded-xl h-8 px-4 font-bold uppercase tracking-widest text-[10px]">
+                                        <Button onClick={() => setIsStockModalOpen(true)} size="sm" className="rounded-xl h-8 px-4 font-black uppercase tracking-widest text-[10px]">
                                             <Plus className="w-3 h-3 mr-1" /> New Movement
                                         </Button>
                                     </div>
@@ -1808,11 +1805,11 @@ const AdminDashboard: React.FC = () => {
                                     <Table>
                                         <TableHeader>
                                             <TableRow className="border-b border-border bg-muted/20">
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Product</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Type</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest text-right">Quantity</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Reason</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Date</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Product</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Type</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Quantity</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Reason</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -1828,7 +1825,7 @@ const AdminDashboard: React.FC = () => {
                                                                 {mov.type}
                                                             </Badge>
                                                         </TableCell>
-                                                        <TableCell className="px-6 text-right font-bold">{mov.type === 'addition' ? '+' : '-'}{mov.quantity}</TableCell>
+                                                        <TableCell className="px-6 text-right font-black">{mov.type === 'addition' ? '+' : '-'}{mov.quantity}</TableCell>
                                                         <TableCell className="px-6 text-sm text-muted-foreground">{mov.reason || 'N/A'}</TableCell>
                                                         <TableCell className="px-6 text-xs font-mono">{new Date(mov.created_at).toLocaleDateString()}</TableCell>
                                                     </TableRow>
@@ -1844,12 +1841,12 @@ const AdminDashboard: React.FC = () => {
                         <Dialog open={isStockModalOpen} onOpenChange={setIsStockModalOpen}>
                             <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-md">
                                 <DialogHeader>
-                                    <DialogTitle className="text-3xl font-bold tracking-tighter text-foreground">Record Movement</DialogTitle>
+                                    <DialogTitle className="text-3xl font-black tracking-tighter text-foreground">Record Movement</DialogTitle>
                                     <DialogDescription>Register an addition or removal from product inventory.</DialogDescription>
                                 </DialogHeader>
                                 <div className="grid gap-5 py-4">
                                     <div className="space-y-2">
-                                        <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Asset Selection</Label>
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Asset Selection</Label>
                                         <Select value={stockForm.product_id} onValueChange={(val) => setStockForm({ ...stockForm, product_id: val })}>
                                             <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
                                                 <SelectValue placeholder="Select Product" />
@@ -1863,7 +1860,7 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Movement Type</Label>
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Movement Type</Label>
                                             <Select value={stockForm.type} onValueChange={(val) => setStockForm({ ...stockForm, type: val })}>
                                                 <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
                                                     <SelectValue />
@@ -1875,17 +1872,17 @@ const AdminDashboard: React.FC = () => {
                                             </Select>
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Quantity</Label>
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Quantity</Label>
                                             <Input type="number" value={stockForm.quantity} onChange={e => setStockForm({ ...stockForm, quantity: parseInt(e.target.value) || 0 })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Reason</Label>
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Protocol Reasoning</Label>
                                         <Input placeholder="e.g. New harvest arrival" value={stockForm.reason} onChange={e => setStockForm({ ...stockForm, reason: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
                                     </div>
                                 </div>
                                 <DialogFooter>
-                                    <Button onClick={handleCreateStockMovement} className="w-full h-14 rounded-2xl shadow-glow font-bold uppercase tracking-widest transition-all hover:scale-[1.02]">
+                                    <Button onClick={handleCreateStockMovement} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
                                         Commit Inventory Update
                                     </Button>
                                 </DialogFooter>
@@ -1898,12 +1895,12 @@ const AdminDashboard: React.FC = () => {
                         <Card className="bg-card border-border rounded-2xl overflow-hidden shadow-sm">
                             <CardHeader className="border-b border-border bg-muted/30 flex flex-row items-center justify-between">
                                 <div>
-                                    <CardTitle className="text-xl font-bold">Honey Batch Records</CardTitle>
-                                    <CardDescription>View and manage honey batch records.</CardDescription>
+                                    <CardTitle className="text-xl font-bold">Honey Chain Blocks</CardTitle>
+                                    <CardDescription>Immutable blockchain ledger of authenticated batches.</CardDescription>
                                 </div>
                                 <div className="flex gap-2">
-                                    <Button onClick={() => setIsBatchModalOpen(true)} className="rounded-xl font-bold uppercase tracking-widest text-[10px] py-5 bg-honey hover:bg-honey-dark text-black border-none px-6 shadow-glow transition-all active:scale-95">
-                                        <Plus className="mr-2 h-4 w-4" /> Add Batch
+                                    <Button onClick={() => setIsBatchModalOpen(true)} className="rounded-xl font-black uppercase tracking-widest text-[10px] py-5 bg-honey hover:bg-honey-dark text-black border-none px-6 shadow-glow transition-all active:scale-95">
+                                        <Plus className="mr-2 h-4 w-4" /> Mint Block
                                     </Button>
                                 </div>
                             </CardHeader>
@@ -1912,19 +1909,19 @@ const AdminDashboard: React.FC = () => {
                                     <Table>
                                         <TableHeader>
                                             <TableRow className="border-b border-border bg-muted/20">
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Batch Code</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Honey Type</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Origin</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Farmer / Beekeeper</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Harvest Date</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest text-right">Quantity (KG)</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Block Hash</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Actions</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Batch Code</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Honey Type</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Origin</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Farmer / Beekeeper</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Harvest Date</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Quantity (KG)</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Block Hash</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Actions</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
                                             {batches.length === 0 ? (
-                                                <TableRow><TableCell colSpan={8} className="text-center h-48 text-muted-foreground font-medium italic">No honey batches recorded yet.</TableCell></TableRow>
+                                                <TableRow><TableCell colSpan={8} className="text-center h-48 text-muted-foreground font-medium italic">No honey batches in the blockchain yet.</TableCell></TableRow>
                                             ) : (
                                                 batches.map((batch, i) => (
                                                     <TableRow
@@ -1933,7 +1930,7 @@ const AdminDashboard: React.FC = () => {
                                                         onClick={() => handleViewBatch(batch)}
                                                     >
                                                         <TableCell className="px-6">
-                                                            <div className="font-bold text-primary tracking-tighter flex items-center gap-2">
+                                                            <div className="font-black text-primary tracking-tighter flex items-center gap-2">
                                                                 <CheckCircle2 className="w-4 h-4" />
                                                                 {batch.batch_code || `BC-00${i}`}
                                                             </div>
@@ -1978,7 +1975,7 @@ const AdminDashboard: React.FC = () => {
                                                             </div>
                                                         </TableCell>
                                                         <TableCell className="px-6 text-sm tabular-nums">{batch.harvest_date}</TableCell>
-                                                        <TableCell className="px-6 text-right font-bold italic">{batch.quantity_kg}</TableCell>
+                                                        <TableCell className="px-6 text-right font-black italic">{batch.quantity_kg}</TableCell>
                                                         <TableCell className="px-6">
                                                             <div className="flex items-center gap-2 group cursor-help" title={batch.block_hash}>
                                                                 <div className="w-2 h-2 rounded-xl bg-green-500 animate-pulse" />
@@ -2007,7 +2004,7 @@ const AdminDashboard: React.FC = () => {
                                                                             e.stopPropagation();
                                                                             window.open(`/trace?code=${batch.batch_code}`, '_blank');
                                                                         }}
-                                                                        title="View Public Record"
+                                                                        title="View Public Blockchain Record"
                                                                     >
                                                                         <Globe className="h-4 w-4" />
                                                                     </Button>
@@ -2027,32 +2024,32 @@ const AdminDashboard: React.FC = () => {
                         <Dialog open={isBatchModalOpen} onOpenChange={setIsBatchModalOpen}>
                             <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-2xl max-h-[90vh] overflow-y-auto">
                                 <DialogHeader>
-                                    <DialogTitle className="text-2xl font-bold">Create New Batch</DialogTitle>
-                                    <DialogDescription>Enter the details for this honey batch record.</DialogDescription>
+                                    <DialogTitle className="text-2xl font-black">Mint New Ledger Entry</DialogTitle>
+                                    <DialogDescription>This action will finalize the batch data on the irreversible HoneyChain network.</DialogDescription>
                                 </DialogHeader>
                                 <div className="grid gap-6 py-4">
                                     {/* Basic Info */}
                                     <div className="space-y-4">
-                                        <h4 className="font-bold uppercase tracking-widest text-xs text-primary border-b border-white/10 pb-2">Batch Details</h4>
+                                        <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-white/10 pb-2">Batch Details</h4>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Honey Variety</Label>
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Honey Variety</Label>
                                                 <Input value={batchForm.honey_type} onChange={e => setBatchForm({ ...batchForm, honey_type: e.target.value })} placeholder="e.g. Acacia Noir" className="rounded-xl h-11 bg-muted/50" />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Harvest Date</Label>
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Harvest Date</Label>
                                                 <Input type="date" value={batchForm.harvest_date} onChange={e => setBatchForm({ ...batchForm, harvest_date: e.target.value })} className="rounded-xl h-11 bg-muted/50" />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Packaged Date</Label>
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Packaged Date</Label>
                                                 <Input type="date" value={(batchForm as any).packaged_date || ''} onChange={e => setBatchForm({ ...batchForm, packaged_date: e.target.value } as any)} className="rounded-xl h-11 bg-muted/50" />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Harvest Quantity (KG)</Label>
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Harvest Quantity (KG)</Label>
                                                 <Input type="number" value={batchForm.quantity_kg} onChange={e => setBatchForm({ ...batchForm, quantity_kg: parseFloat(e.target.value) })} className="rounded-xl h-11 bg-muted/50" />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Processing Method</Label>
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Processing Method</Label>
                                                 <Select onValueChange={(val) => setBatchForm({ ...batchForm, processing_method: val })} defaultValue={batchForm.processing_method}>
                                                     <SelectTrigger className="rounded-xl h-11 bg-muted/50">
                                                         <SelectValue placeholder="Select Method" />
@@ -2070,10 +2067,10 @@ const AdminDashboard: React.FC = () => {
 
                                     {/* Source Info */}
                                     <div className="space-y-4">
-                                        <h4 className="font-bold uppercase tracking-widest text-xs text-primary border-b border-white/10 pb-2">Source Origin</h4>
+                                        <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-white/10 pb-2">Source Origin</h4>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Farmer Name</Label>
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Farmer Name</Label>
                                                 <Input
                                                     value={(batchForm as any).farmer_name || ''}
                                                     onChange={e => setBatchForm({ ...batchForm, farmer_name: e.target.value } as any)}
@@ -2082,7 +2079,7 @@ const AdminDashboard: React.FC = () => {
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Contact Phone</Label>
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Contact Phone</Label>
                                                 <Input
                                                     value={(batchForm as any).farmer_phone || ''}
                                                     onChange={e => setBatchForm({ ...batchForm, farmer_phone: e.target.value } as any)}
@@ -2091,7 +2088,7 @@ const AdminDashboard: React.FC = () => {
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Beekeeper Name</Label>
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Beekeeper Name</Label>
                                                 <Input
                                                     value={(batchForm as any).beekeeper_name || ''}
                                                     onChange={e => setBatchForm({ ...batchForm, beekeeper_name: e.target.value } as any)}
@@ -2100,7 +2097,7 @@ const AdminDashboard: React.FC = () => {
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Beekeeper ID</Label>
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Beekeeper ID</Label>
                                                 <Input
                                                     value={(batchForm as any).beekeeper_id || ''}
                                                     onChange={e => setBatchForm({ ...batchForm, beekeeper_id: e.target.value } as any)}
@@ -2109,7 +2106,7 @@ const AdminDashboard: React.FC = () => {
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">County</Label>
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">County</Label>
                                                 <Input
                                                     value={(batchForm as any).location_county || ''}
                                                     onChange={e => setBatchForm({ ...batchForm, location_county: e.target.value } as any)}
@@ -2118,7 +2115,7 @@ const AdminDashboard: React.FC = () => {
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Region</Label>
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Region</Label>
                                                 <Input
                                                     value={(batchForm as any).location_region || ''}
                                                     onChange={e => setBatchForm({ ...batchForm, location_region: e.target.value } as any)}
@@ -2127,7 +2124,7 @@ const AdminDashboard: React.FC = () => {
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Apiary Name</Label>
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Apiary Name</Label>
                                                 <Input
                                                     value={(batchForm as any).apiary_name || ''}
                                                     onChange={e => setBatchForm({ ...batchForm, apiary_name: e.target.value } as any)}
@@ -2137,7 +2134,7 @@ const AdminDashboard: React.FC = () => {
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-2">
-                                                    <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Lat</Label>
+                                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Lat</Label>
                                                     <Input
                                                         type="number" step="any"
                                                         value={(batchForm as any).latitude || ''}
@@ -2147,7 +2144,7 @@ const AdminDashboard: React.FC = () => {
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Long</Label>
+                                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Long</Label>
                                                     <Input
                                                         type="number" step="any"
                                                         value={(batchForm as any).longitude || ''}
@@ -2162,10 +2159,10 @@ const AdminDashboard: React.FC = () => {
 
                                     {/* Quality Metrics */}
                                     <div className="space-y-4">
-                                        <h4 className="font-bold uppercase tracking-widest text-xs text-primary border-b border-white/10 pb-2">Quality Assurance</h4>
+                                        <h4 className="font-black uppercase tracking-widest text-xs text-primary border-b border-white/10 pb-2">Quality Assurance</h4>
                                         <div className="grid grid-cols-3 gap-4">
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Grade</Label>
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Grade</Label>
                                                 <Select onValueChange={(val) => setBatchForm({ ...batchForm, quality_grade: val } as any)} defaultValue="A">
                                                     <SelectTrigger className="rounded-xl h-11 bg-muted/50">
                                                         <SelectValue placeholder="Grade" />
@@ -2178,7 +2175,7 @@ const AdminDashboard: React.FC = () => {
                                                 </Select>
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Moisture Level (%)</Label>
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Moisture Level (%)</Label>
                                                 <Input
                                                     type="number"
                                                     step="0.1"
@@ -2189,7 +2186,7 @@ const AdminDashboard: React.FC = () => {
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Color Grade</Label>
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Color Grade</Label>
                                                 <Select onValueChange={(val) => setBatchForm({ ...batchForm, color_grade: val } as any)}>
                                                     <SelectTrigger className="rounded-xl h-11 bg-muted/50">
                                                         <SelectValue placeholder="Select Color" />
@@ -2209,7 +2206,7 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                 </div>
                                 <DialogFooter>
-                                    <Button onClick={handleSaveBatch} className="w-full rounded-2xl py-6 font-bold uppercase tracking-widest text-xs bg-honey hover:bg-honey-dark text-black border-none shadow-glow">Save Batch</Button>
+                                    <Button onClick={handleSaveBatch} className="w-full rounded-2xl py-6 font-black uppercase tracking-widest text-xs bg-honey hover:bg-honey-dark text-black border-none shadow-glow">Initialize Block Minting</Button>
                                 </DialogFooter>
                             </DialogContent>
                         </Dialog>
@@ -2218,12 +2215,12 @@ const AdminDashboard: React.FC = () => {
                         <Dialog open={isBatchDetailsOpen} onOpenChange={setIsBatchDetailsOpen}>
                             <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-2xl max-h-[90vh] overflow-y-auto">
                                 <DialogHeader>
-                                    <DialogTitle className="text-2xl font-bold flex items-center gap-2">
+                                    <DialogTitle className="text-2xl font-black flex items-center gap-2">
                                         <Shield className="w-6 h-6 text-green-500" />
                                         Batch Verification
                                     </DialogTitle>
                                     <DialogDescription className="font-mono text-xs">
-                                        BATCH ID: {selectedBatch?.block_hash}
+                                        BLOCKCHAIN ID: {selectedBatch?.block_hash}
                                     </DialogDescription>
                                 </DialogHeader>
 
@@ -2232,17 +2229,17 @@ const AdminDashboard: React.FC = () => {
                                         {/* Header Status Card */}
                                         <div className="bg-muted/30 p-4 rounded-2xl flex justify-between items-center border border-border/50">
                                             <div>
-                                                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Batch Code</p>
-                                                <p className="text-xl font-bold font-mono text-primary">{selectedBatch.batch_code}</p>
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Batch Code</p>
+                                                <p className="text-xl font-black font-mono text-primary">{selectedBatch.batch_code}</p>
                                             </div>
-                                            <Badge className="bg-green-500/20 text-green-600 px-4 py-1 h-8 rounded-xl font-bold uppercase tracking-widest border-none">
-                                                VERIFIED
+                                            <Badge className="bg-green-500/20 text-green-600 px-4 py-1 h-8 rounded-xl font-black uppercase tracking-widest border-none">
+                                                VERIFIED ON LEDGER
                                             </Badge>
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-8">
                                             <div className="space-y-4">
-                                                <h4 className="font-bold uppercase tracking-widest text-xs border-b border-border/50 pb-2 flex items-center gap-2">
+                                                <h4 className="font-black uppercase tracking-widest text-xs border-b border-border/50 pb-2 flex items-center gap-2">
                                                     <Package className="w-4 h-4" /> Product Details
                                                 </h4>
                                                 <div className="space-y-3">
@@ -2266,7 +2263,7 @@ const AdminDashboard: React.FC = () => {
                                             </div>
 
                                             <div className="space-y-4">
-                                                <h4 className="font-bold uppercase tracking-widest text-xs border-b border-border/50 pb-2 flex items-center gap-2">
+                                                <h4 className="font-black uppercase tracking-widest text-xs border-b border-border/50 pb-2 flex items-center gap-2">
                                                     <Users className="w-4 h-4" /> Origin Source
                                                 </h4>
                                                 <div className="space-y-3">
@@ -2303,21 +2300,21 @@ const AdminDashboard: React.FC = () => {
                                         </div>
 
                                         <div className="space-y-4">
-                                            <h4 className="font-bold uppercase tracking-widest text-xs border-b border-border/50 pb-2 flex items-center gap-2">
+                                            <h4 className="font-black uppercase tracking-widest text-xs border-b border-border/50 pb-2 flex items-center gap-2">
                                                 <Shield className="w-4 h-4" /> Quality Assurance
                                             </h4>
                                             <div className="grid grid-cols-3 gap-4">
                                                 <div className="bg-muted/30 p-3 rounded-xl text-center">
                                                     <p className="text-[10px] uppercase text-muted-foreground font-bold">Grade</p>
-                                                    <p className="text-lg font-bold">{selectedBatch.quality_grade || 'A'}</p>
+                                                    <p className="text-lg font-black">{selectedBatch.quality_grade || 'A'}</p>
                                                 </div>
                                                 <div className="bg-muted/30 p-3 rounded-xl text-center">
                                                     <p className="text-[10px] uppercase text-muted-foreground font-bold">Moisture</p>
-                                                    <p className="text-lg font-bold">{selectedBatch.moisture_content || 0}%</p>
+                                                    <p className="text-lg font-black">{selectedBatch.moisture_content || 0}%</p>
                                                 </div>
                                                 <div className="bg-muted/30 p-3 rounded-xl text-center">
                                                     <p className="text-[10px] uppercase text-muted-foreground font-bold">Color</p>
-                                                    <p className="text-sm font-bold mt-1">{selectedBatch.color_grade || 'N/A'}</p>
+                                                    <p className="text-sm font-black mt-1">{selectedBatch.color_grade || 'N/A'}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -2341,7 +2338,7 @@ const AdminDashboard: React.FC = () => {
                                 <Button
                                     onClick={() => setIsFarmerModalOpen(true)}
                                     variant="outline"
-                                    className="rounded-xl font-bold uppercase tracking-widest text-xs h-auto py-4 border-dashed border-primary/30"
+                                    className="rounded-xl font-black uppercase tracking-widest text-xs h-auto py-4 border-dashed border-primary/30"
                                 >
                                     <Plus className="mr-2 h-4 w-4" /> Register Farmer
                                 </Button>
@@ -2351,12 +2348,12 @@ const AdminDashboard: React.FC = () => {
                                     <Table>
                                         <TableHeader>
                                             <TableRow className="border-b border-border bg-muted/20">
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Farmer</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Contact</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Location</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Experience</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Status</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Farmer</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Contact</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Location</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Experience</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -2367,7 +2364,7 @@ const AdminDashboard: React.FC = () => {
                                                     <TableRow key={farmer.id} className="hover:bg-muted/20 transition-colors border-border/10">
                                                         <TableCell className="px-6">
                                                             <div className="flex items-center gap-3">
-                                                                <div className="w-10 h-10 rounded-xl bg-honey/20 flex items-center justify-center font-bold text-honey">
+                                                                <div className="w-10 h-10 rounded-xl bg-honey/20 flex items-center justify-center font-black text-honey">
                                                                     {farmer.name?.[0]?.toUpperCase() || 'F'}
                                                                 </div>
                                                                 <div className="flex flex-col">
@@ -2417,50 +2414,50 @@ const AdminDashboard: React.FC = () => {
                         <Dialog open={isFarmerModalOpen} onOpenChange={(open) => { setIsFarmerModalOpen(open); if (!open) setEditingFarmer(null); }}>
                             <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-2xl max-h-[90vh] overflow-y-auto">
                                 <DialogHeader>
-                                    <DialogTitle className="text-3xl font-bold tracking-tighter">{editingFarmer ? 'Modify Partner' : 'Register Partner'}</DialogTitle>
-                                    <DialogDescription>{editingFarmer ? 'Update beekeeper details.' : 'Initialize a new beekeeper record.'}</DialogDescription>
+                                    <DialogTitle className="text-3xl font-black tracking-tighter">{editingFarmer ? 'Modify Partner' : 'Register Partner'}</DialogTitle>
+                                    <DialogDescription>{editingFarmer ? 'Update beekeeper credentials and parameters.' : 'Initialize a new beekeeper record on the BeeYield network.'}</DialogDescription>
                                 </DialogHeader>
                                 <div className="grid gap-6 py-4">
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Full Name</Label>
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Full Name</Label>
                                             <Input placeholder="Timothy Nduva" value={farmerForm.name} onChange={e => setFarmerForm({ ...farmerForm, name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Phone Number</Label>
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Phone Number</Label>
                                             <Input placeholder="+254 7XX XXX XXX" value={farmerForm.phone} onChange={e => setFarmerForm({ ...farmerForm, phone: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Email Address</Label>
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Email Address</Label>
                                             <Input type="email" placeholder="timothy@beeyield.com" value={farmerForm.email} onChange={e => setFarmerForm({ ...farmerForm, email: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">ID Number</Label>
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">ID Number</Label>
                                             <Input placeholder="National ID or Passport" value={farmerForm.id_number} onChange={e => setFarmerForm({ ...farmerForm, id_number: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-3 gap-4">
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">County</Label>
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">County</Label>
                                             <Input placeholder="Makueni" value={farmerForm.county} onChange={e => setFarmerForm({ ...farmerForm, county: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Region</Label>
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Region</Label>
                                             <Input placeholder="Eastern" value={farmerForm.region} onChange={e => setFarmerForm({ ...farmerForm, region: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Years Experience</Label>
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Years Experience</Label>
                                             <Input type="number" value={farmerForm.experience_years} onChange={e => setFarmerForm({ ...farmerForm, experience_years: parseInt(e.target.value) || 0 })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Location Details / Ward</Label>
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Location Details / Ward</Label>
                                         <Input placeholder="Kibwezi East, Mtito Andei" value={farmerForm.location_name} onChange={e => setFarmerForm({ ...farmerForm, location_name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">The Beekeeper's Story</Label>
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">The Beekeeper's Story</Label>
                                         <Textarea
                                             placeholder="Brief background about the farmer..."
                                             value={farmerForm.story}
@@ -2470,8 +2467,8 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                 </div>
                                 <DialogFooter>
-                                    <Button onClick={handleSaveFarmer} className="w-full h-14 rounded-2xl shadow-glow font-bold uppercase tracking-widest transition-all hover:scale-[1.02]">
-                                        {editingFarmer ? 'Update Partner Records' : 'Complete Registration'}
+                                    <Button onClick={handleSaveFarmer} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
+                                        {editingFarmer ? 'Update Partner Records' : 'Complete Network Registration'}
                                     </Button>
                                 </DialogFooter>
                             </DialogContent>
@@ -2489,7 +2486,7 @@ const AdminDashboard: React.FC = () => {
                                 <Button
                                     onClick={() => setIsApiaryModalOpen(true)}
                                     variant="outline"
-                                    className="rounded-xl font-bold uppercase tracking-widest text-xs h-auto py-4 border-dashed border-primary/30"
+                                    className="rounded-xl font-black uppercase tracking-widest text-xs h-auto py-4 border-dashed border-primary/30"
                                 >
                                     <Plus className="mr-2 h-4 w-4" /> Register Apiary
                                 </Button>
@@ -2499,12 +2496,12 @@ const AdminDashboard: React.FC = () => {
                                     <Table>
                                         <TableHeader>
                                             <TableRow className="border-b border-border bg-muted/20">
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Name</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Farmer</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Location</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest text-right">Hives</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Status</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Farmer</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Location</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Hives</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -2519,7 +2516,7 @@ const AdminDashboard: React.FC = () => {
                                                             <div className="text-sm font-medium">{apiary.location_name || apiary.county}</div>
                                                             <div className="text-[10px] text-muted-foreground">{apiary.region}</div>
                                                         </TableCell>
-                                                        <TableCell className="px-6 text-right font-bold">
+                                                        <TableCell className="px-6 text-right font-black">
                                                             {hives.filter(h => h.apiary_id === apiary.id).length}
                                                         </TableCell>
                                                         <TableCell className="px-6">
@@ -2550,26 +2547,26 @@ const AdminDashboard: React.FC = () => {
                         <Dialog open={isApiaryModalOpen} onOpenChange={(open) => { setIsApiaryModalOpen(open); if (!open) setEditingApiary(null); }}>
                             <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-xl">
                                 <DialogHeader>
-                                    <DialogTitle className="text-3xl font-bold tracking-tighter">{editingApiary ? 'Update Apiary' : 'Map New Apiary'}</DialogTitle>
-                                    <DialogDescription>Define production site details and associate with partners.</DialogDescription>
+                                    <DialogTitle className="text-3xl font-black tracking-tighter">{editingApiary ? 'Calibrate Apiary' : 'Map New Apiary'}</DialogTitle>
+                                    <DialogDescription>Define production site parameters and associate with agricultural partners.</DialogDescription>
                                 </DialogHeader>
                                 <div className="grid gap-6 py-4">
                                     <div className="space-y-2">
-                                        <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Apiary Name</Label>
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Apiary Name</Label>
                                         <Input placeholder="Kibwezi East Cluster A" value={apiaryForm.name} onChange={e => setApiaryForm({ ...apiaryForm, name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">County</Label>
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">County</Label>
                                             <Input placeholder="Makueni" value={apiaryForm.county} onChange={e => setApiaryForm({ ...apiaryForm, county: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Region</Label>
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Region</Label>
                                             <Input placeholder="Eastern" value={apiaryForm.region} onChange={e => setApiaryForm({ ...apiaryForm, region: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Assigned Farmer</Label>
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Assigned Farmer</Label>
                                         <Select value={apiaryForm.farmer_id} onValueChange={val => setApiaryForm({ ...apiaryForm, farmer_id: val })}>
                                             <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
                                                 <SelectValue placeholder="Select Partner" />
@@ -2583,18 +2580,18 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Latitude</Label>
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Latitude</Label>
                                             <Input type="number" step="any" value={apiaryForm.latitude} onChange={e => setApiaryForm({ ...apiaryForm, latitude: parseFloat(e.target.value) })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Longitude</Label>
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Longitude</Label>
                                             <Input type="number" step="any" value={apiaryForm.longitude} onChange={e => setApiaryForm({ ...apiaryForm, longitude: parseFloat(e.target.value) })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
                                         </div>
                                     </div>
                                 </div>
                                 <DialogFooter>
-                                    <Button onClick={handleSaveApiary} className="w-full h-14 rounded-2xl shadow-glow font-bold uppercase tracking-widest transition-all hover:scale-[1.02]">
-                                        {editingApiary ? 'Update Production Site' : 'Register Site'}
+                                    <Button onClick={handleSaveApiary} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
+                                        {editingApiary ? 'Update Production Site' : 'Authenticate Site Registration'}
                                     </Button>
                                 </DialogFooter>
                             </DialogContent>
@@ -2606,13 +2603,13 @@ const AdminDashboard: React.FC = () => {
                         <Card className="bg-card border-border rounded-2xl overflow-hidden shadow-sm">
                             <CardHeader className="border-b border-border bg-muted/30 flex flex-row items-center justify-between">
                                 <div>
-                                    <CardTitle className="text-xl font-bold">Hive Records</CardTitle>
+                                    <CardTitle className="text-xl font-bold">Smart Hive Ledger</CardTitle>
                                     <CardDescription>Inventory and health status of individual colony units.</CardDescription>
                                 </div>
                                 <Button
                                     onClick={() => setIsHiveModalOpen(true)}
                                     variant="outline"
-                                    className="rounded-xl font-bold uppercase tracking-widest text-xs h-auto py-4 border-dashed border-primary/30"
+                                    className="rounded-xl font-black uppercase tracking-widest text-xs h-auto py-4 border-dashed border-primary/30"
                                 >
                                     <Plus className="mr-2 h-4 w-4" /> Deploy Hive
                                 </Button>
@@ -2622,12 +2619,12 @@ const AdminDashboard: React.FC = () => {
                                     <Table>
                                         <TableHeader>
                                             <TableRow className="border-b border-border bg-muted/20">
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Hive Code</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Apiary</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Type</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Installed</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Status</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Hive Code</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Apiary</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Type</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Installed</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -2668,17 +2665,17 @@ const AdminDashboard: React.FC = () => {
                         <Dialog open={isHiveModalOpen} onOpenChange={(open) => { setIsHiveModalOpen(open); if (!open) setEditingHive(null); }}>
                             <DialogContent className="rounded-3xl border-none shadow-2xl glass max-w-xl">
                                 <DialogHeader>
-                                    <DialogTitle className="text-3xl font-bold tracking-tighter">{editingHive ? 'Sync Hive Sensors' : 'Add New Unit'}</DialogTitle>
-                                    <DialogDescription>Register individual colony components.</DialogDescription>
+                                    <DialogTitle className="text-3xl font-black tracking-tighter">{editingHive ? 'Sync Hive Sensors' : 'Deploy New Unit'}</DialogTitle>
+                                    <DialogDescription>Register individual colony components and their mechanical signatures.</DialogDescription>
                                 </DialogHeader>
                                 <div className="grid gap-6 py-4">
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Hive Code</Label>
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Hive Code</Label>
                                             <Input placeholder="HIVE-KIB-001" value={hiveForm.hive_code} onChange={e => setHiveForm({ ...hiveForm, hive_code: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Hive Type</Label>
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Hive Type</Label>
                                             <Select value={hiveForm.type} onValueChange={val => setHiveForm({ ...hiveForm, type: val })}>
                                                 <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
                                                     <SelectValue />
@@ -2692,7 +2689,7 @@ const AdminDashboard: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Target Apiary</Label>
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Target Apiary</Label>
                                         <Select value={hiveForm.apiary_id} onValueChange={val => setHiveForm({ ...hiveForm, apiary_id: val })}>
                                             <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
                                                 <SelectValue placeholder="Select Site" />
@@ -2706,11 +2703,11 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Installation Date</Label>
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Installation Date</Label>
                                             <Input type="date" value={hiveForm.installation_date} onChange={e => setHiveForm({ ...hiveForm, installation_date: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Health Status</Label>
+                                            <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Health Status</Label>
                                             <Select value={hiveForm.status} onValueChange={val => setHiveForm({ ...hiveForm, status: val })}>
                                                 <SelectTrigger className="rounded-xl h-12 bg-muted/50 border-border/50">
                                                     <SelectValue />
@@ -2725,13 +2722,13 @@ const AdminDashboard: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Mechanical Notes</Label>
+                                        <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Mechanical Notes</Label>
                                         <Textarea placeholder="Condition of the box, queen status, etc." value={hiveForm.notes} onChange={e => setHiveForm({ ...hiveForm, notes: e.target.value })} className="rounded-xl bg-muted/50 border-border/50" />
                                     </div>
                                 </div>
                                 <DialogFooter>
-                                    <Button onClick={handleSaveHive} className="w-full h-14 rounded-2xl shadow-glow font-bold uppercase tracking-widest transition-all hover:scale-[1.02]">
-                                        {editingHive ? 'Sync Unit' : 'Finish Setup'}
+                                    <Button onClick={handleSaveHive} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
+                                        {editingHive ? 'Sync Unit Parameters' : 'Authorize Deployment'}
                                     </Button>
                                 </DialogFooter>
                             </DialogContent>
@@ -2747,9 +2744,9 @@ const AdminDashboard: React.FC = () => {
                                         <h2 className="text-xl font-bold flex gap-2 items-center">
                                             <Shield className="w-6 h-6 text-primary" /> Admin Command Circle
                                         </h2>
-                                        <p className="text-muted-foreground font-medium">Manage user permissions and access.</p>
+                                        <p className="text-muted-foreground font-medium">Elevate user privileges or terminate access protocols.</p>
                                     </div>
-                                    <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-1.5 rounded-xl font-bold text-[10px] tracking-tighter">
+                                    <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-1.5 rounded-xl font-black text-[10px] tracking-tighter">
                                         {systemUsers.length} MEMBERS
                                     </Badge>
                                 </div>
@@ -2759,7 +2756,7 @@ const AdminDashboard: React.FC = () => {
                                         <Card key={userObj.id} className="border-border/50 bg-card/60 backdrop-blur rounded-3xl overflow-hidden hover:shadow-xl transition-all border group">
                                             <CardHeader className="pb-3 relative">
                                                 <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center font-bold text-primary text-xl relative">
+                                                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center font-black text-primary text-xl relative">
                                                         {userObj.email?.[0].toUpperCase()}
                                                         {userObj.role === 'super_admin' && (
                                                             <div className="absolute -top-1 -right-1 bg-yellow-400 text-black rounded-xl p-0.5 shadow-lg border-2 border-background">
@@ -2768,20 +2765,20 @@ const AdminDashboard: React.FC = () => {
                                                         )}
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <CardTitle className="text-lg font-bold truncate">{userObj.first_name || 'Anonymous'} {userObj.last_name || ''}</CardTitle>
+                                                        <CardTitle className="text-lg font-black truncate">{userObj.first_name || 'Anonymous'} {userObj.last_name || ''}</CardTitle>
                                                         <CardDescription className="font-mono text-[10px] truncate opacity-80">{userObj.email}</CardDescription>
                                                     </div>
                                                 </div>
                                             </CardHeader>
                                             <CardContent className="space-y-4">
                                                 <div className="flex justify-between items-center">
-                                                    <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest">Clearance Level</span>
+                                                    <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Clearance Level</span>
                                                     <Select
                                                         defaultValue={userObj.role}
                                                         onValueChange={(value) => handleUpdateUserRole(userObj.id, value)}
                                                         disabled={userObj.role === 'super_admin' && userObj.email === user?.email} // Can't de-rank self if last super admin (mock safety)
                                                     >
-                                                        <SelectTrigger className="w-32 h-8 rounded-xl text-[10px] font-bold uppercase tracking-widest border-none bg-muted/60">
+                                                        <SelectTrigger className="w-32 h-8 rounded-xl text-[10px] font-black uppercase tracking-widest border-none bg-muted/60">
                                                             <SelectValue />
                                                         </SelectTrigger>
                                                         <SelectContent className="rounded-xl">
@@ -2795,14 +2792,14 @@ const AdminDashboard: React.FC = () => {
                                                 <div className="flex gap-2 pt-2">
                                                     <Button
                                                         variant="outline"
-                                                        className="flex-1 rounded-2xl h-10 border-border/50 text-[10px] font-bold uppercase tracking-widest hover:bg-primary/10 hover:text-primary transition-colors"
+                                                        className="flex-1 rounded-2xl h-10 border-border/50 text-[10px] font-black uppercase tracking-widest hover:bg-primary/10 hover:text-primary transition-colors"
                                                         onClick={() => handleEditUser(userObj)}
                                                     >
                                                         <Edit className="h-4 w-4 mr-2" /> Modify
                                                     </Button>
                                                     <Button
                                                         variant="outline"
-                                                        className="flex-1 rounded-2xl h-10 border-border/50 text-[10px] font-bold uppercase tracking-widest hover:bg-destructive/10 hover:text-destructive group-hover:border-destructive/30 transition-colors"
+                                                        className="flex-1 rounded-2xl h-10 border-border/50 text-[10px] font-black uppercase tracking-widest hover:bg-destructive/10 hover:text-destructive group-hover:border-destructive/30 transition-colors"
                                                         onClick={() => handleDeleteUser(userObj.id)}
                                                         disabled={userObj.email === user?.email} // Can't delete self
                                                     >
@@ -2820,8 +2817,8 @@ const AdminDashboard: React.FC = () => {
                                         className="border-dashed border-2 border-border bg-transparent rounded-3xl flex flex-col items-center justify-center p-8 text-muted-foreground hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition-all group h-full min-h-[160px]"
                                     >
                                         <Users className="h-10 w-10 mb-4 group-hover:scale-110 transition-transform text-muted-foreground/40 group-hover:text-primary/40" />
-                                        <h3 className="font-bold uppercase tracking-widest text-xs">Awaiting New Operator</h3>
-                                        <p className="text-[10px] font-medium text-center mt-2 opacity-60">Set up user authentication</p>
+                                        <h3 className="font-black uppercase tracking-widest text-xs">Awaiting New Operator</h3>
+                                        <p className="text-[10px] font-medium text-center mt-2 opacity-60">Initialize authentication protocols</p>
                                     </Card>
                                 </div>
 
@@ -2829,32 +2826,32 @@ const AdminDashboard: React.FC = () => {
                                 <Dialog open={isUserModalOpen} onOpenChange={setIsUserModalOpen}>
                                     <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-md">
                                         <DialogHeader>
-                                            <DialogTitle className="text-3xl font-bold tracking-tighter">{editingUser ? 'Modify Operator' : 'Initialize Operator'}</DialogTitle>
+                                            <DialogTitle className="text-3xl font-black tracking-tighter">{editingUser ? 'Modify Operator' : 'Initialize Operator'}</DialogTitle>
                                             <DialogDescription>Configure system access and identity parameters.</DialogDescription>
                                         </DialogHeader>
                                         <div className="grid gap-5 py-4">
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-2">
-                                                    <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">First Name</Label>
+                                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">First Name</Label>
                                                     <Input placeholder="John" value={userForm.first_name} onChange={e => setUserForm({ ...userForm, first_name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Last Name</Label>
+                                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Last Name</Label>
                                                     <Input placeholder="Doe" value={userForm.last_name} onChange={e => setUserForm({ ...userForm, last_name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
                                                 </div>
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Email Address</Label>
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Email Address</Label>
                                                 <Input type="email" placeholder="operator@beeyield.com" value={userForm.email} onChange={e => setUserForm({ ...userForm, email: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
                                             </div>
                                             {!editingUser && (
                                                 <div className="space-y-2">
-                                                    <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Access Password</Label>
+                                                    <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Access Password</Label>
                                                     <Input type="password" placeholder="••••••••" value={userForm.password} onChange={e => setUserForm({ ...userForm, password: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
                                                 </div>
                                             )}
                                             <div className="space-y-2">
-                                                <Label className="uppercase text-[10px] font-bold tracking-widest ml-1">Clearance Level</Label>
+                                                <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Clearance Level</Label>
                                                 <Select value={userForm.role} onValueChange={(val) => setUserForm({ ...userForm, role: val })}>
                                                     <SelectTrigger className="w-full h-12 rounded-xl bg-muted/50 border-border/50">
                                                         <SelectValue placeholder="Select Role" />
@@ -2868,7 +2865,7 @@ const AdminDashboard: React.FC = () => {
                                             </div>
                                         </div>
                                         <DialogFooter>
-                                            <Button onClick={handleSaveUser} className="w-full h-14 rounded-2xl shadow-glow font-bold uppercase tracking-widest transition-all hover:scale-[1.02]">
+                                            <Button onClick={handleSaveUser} className="w-full h-14 rounded-2xl shadow-glow font-black uppercase tracking-widest transition-all hover:scale-[1.02]">
                                                 {editingUser ? 'Update Operator' : 'Finalize Authentication'}
                                             </Button>
                                         </DialogFooter>
@@ -2885,10 +2882,10 @@ const AdminDashboard: React.FC = () => {
                             <CardHeader className="border-b border-border bg-muted/30">
                                 <div className="flex justify-between items-center">
                                     <div>
-                                        <CardTitle className="text-2xl font-bold">Pollination Requests</CardTitle>
+                                        <CardTitle className="text-2xl font-black">Pollination Requests</CardTitle>
                                         <CardDescription>All incoming pollination service requests from farmers.</CardDescription>
                                     </div>
-                                    <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-1.5 rounded-xl font-bold text-[10px]">
+                                    <Badge className="bg-primary/10 text-primary border-primary/20 px-4 py-1.5 rounded-xl font-black text-[10px]">
                                         {pollinationRequests.length} REQUESTS
                                     </Badge>
                                 </div>
@@ -2898,15 +2895,15 @@ const AdminDashboard: React.FC = () => {
                                     <Table>
                                         <TableHeader>
                                             <TableRow className="border-b border-border bg-muted/20">
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Name</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Email</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Phone</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Crop Type</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Farm Size</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Location</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Date</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Status</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Email</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Phone</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Crop Type</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Farm Size</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Location</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -2924,7 +2921,7 @@ const AdminDashboard: React.FC = () => {
                                                         <TableCell className="px-6 text-xs font-mono">{new Date(req.created_at).toLocaleDateString()}</TableCell>
                                                         <TableCell className="px-6">
                                                             <Select defaultValue={req.status || 'pending'} onValueChange={(val) => adminService.updatePollinationRequestStatus(req.id, val).then(() => { toast.success('Status updated'); loadAllData(); })}>
-                                                                <SelectTrigger className="h-8 w-[120px] rounded-xl text-[10px] font-bold uppercase"><SelectValue /></SelectTrigger>
+                                                                <SelectTrigger className="h-8 w-[120px] rounded-xl text-[10px] font-black uppercase"><SelectValue /></SelectTrigger>
                                                                 <SelectContent>
                                                                     <SelectItem value="pending">Pending</SelectItem>
                                                                     <SelectItem value="contacted">Contacted</SelectItem>
@@ -2956,7 +2953,7 @@ const AdminDashboard: React.FC = () => {
                         <Dialog open={isPollinationDetailsOpen} onOpenChange={setIsPollinationDetailsOpen}>
                             <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-md">
                                 <DialogHeader>
-                                    <DialogTitle className="text-2xl font-bold flex gap-2 items-center">
+                                    <DialogTitle className="text-2xl font-black flex gap-2 items-center">
                                         <Bug className="w-6 h-6 text-primary" /> Service Request
                                     </DialogTitle>
                                 </DialogHeader>
@@ -2964,31 +2961,31 @@ const AdminDashboard: React.FC = () => {
                                     <div className="space-y-4">
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-1">
-                                                <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Farmer</p>
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Farmer</p>
                                                 <p className="font-bold">{selectedPollination.name || selectedPollination.first_name}</p>
                                             </div>
                                             <div className="space-y-1">
-                                                <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Contact</p>
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Contact</p>
                                                 <p className="text-xs">{selectedPollination.email}</p>
                                                 <p className="text-xs font-mono">{selectedPollination.phone}</p>
                                             </div>
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-1">
-                                                <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Crop</p>
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Crop</p>
                                                 <Badge variant="secondary">{selectedPollination.crop_type || selectedPollination.crop}</Badge>
                                             </div>
                                             <div className="space-y-1">
-                                                <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Size</p>
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Size</p>
                                                 <p className="font-bold">{selectedPollination.farm_size || selectedPollination.acreage} Acres</p>
                                             </div>
                                         </div>
                                         <div className="space-y-1">
-                                            <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Location</p>
+                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Location</p>
                                             <p className="font-medium">{selectedPollination.location || selectedPollination.county}</p>
                                         </div>
                                         <div className="space-y-1 pt-2 border-t border-border/10">
-                                            <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Additional Notes</p>
+                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Additional Notes</p>
                                             <p className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-xl italic">
                                                 "{selectedPollination.notes || selectedPollination.message || 'No additional notes provided.'}"
                                             </p>
@@ -3005,10 +3002,10 @@ const AdminDashboard: React.FC = () => {
                             <CardHeader className="border-b border-border bg-muted/30">
                                 <div className="flex justify-between items-center">
                                     <div>
-                                        <CardTitle className="text-2xl font-bold">Contact Submissions</CardTitle>
+                                        <CardTitle className="text-2xl font-black">Contact Submissions</CardTitle>
                                         <CardDescription>Messages received through the contact form.</CardDescription>
                                     </div>
-                                    <Badge className="bg-amber-500/10 text-amber-600 border-amber-200 px-4 py-1.5 rounded-xl font-bold text-[10px]">
+                                    <Badge className="bg-amber-500/10 text-amber-600 border-amber-200 px-4 py-1.5 rounded-xl font-black text-[10px]">
                                         {contacts.length} MESSAGES
                                     </Badge>
                                 </div>
@@ -3018,13 +3015,13 @@ const AdminDashboard: React.FC = () => {
                                     <Table>
                                         <TableHeader>
                                             <TableRow className="border-b border-border bg-muted/20">
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Name</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Email</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Subject</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest max-w-md">Message</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Date</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Status</TableHead>
-                                                <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Email</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Subject</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest max-w-md">Message</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Date</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Status</TableHead>
+                                                <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -3040,7 +3037,7 @@ const AdminDashboard: React.FC = () => {
                                                         <TableCell className="px-6 text-xs font-mono">{new Date(contact.created_at).toLocaleDateString()}</TableCell>
                                                         <TableCell className="px-6">
                                                             <Select defaultValue={contact.status || 'new'} onValueChange={(val) => adminService.updateContactRequestStatus(contact.id, val).then(() => { toast.success('Status updated'); loadAllData(); })}>
-                                                                <SelectTrigger className="h-8 w-[100px] rounded-xl text-[10px] font-bold uppercase"><SelectValue /></SelectTrigger>
+                                                                <SelectTrigger className="h-8 w-[100px] rounded-xl text-[10px] font-black uppercase"><SelectValue /></SelectTrigger>
                                                                 <SelectContent>
                                                                     <SelectItem value="new">New</SelectItem>
                                                                     <SelectItem value="read">Read</SelectItem>
@@ -3071,7 +3068,7 @@ const AdminDashboard: React.FC = () => {
                         <Dialog open={isContactDetailsOpen} onOpenChange={setIsContactDetailsOpen}>
                             <DialogContent className="rounded-3xl border-none shadow-2xl glass sm:max-w-xl max-h-[85vh] overflow-y-auto">
                                 <DialogHeader>
-                                    <DialogTitle className="text-2xl font-bold flex gap-2 items-center">
+                                    <DialogTitle className="text-2xl font-black flex gap-2 items-center">
                                         <MessageSquare className="w-6 h-6 text-primary" /> Message Details
                                     </DialogTitle>
                                 </DialogHeader>
@@ -3106,7 +3103,7 @@ const AdminDashboard: React.FC = () => {
                                         <div className="grid grid-cols-2 gap-4">
                                             {(selectedContact.city || selectedContact.state || selectedContact.country) && (
                                                 <div className="space-y-1">
-                                                    <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Location</p>
+                                                    <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Location</p>
                                                     <p className="text-sm font-medium">
                                                         {[selectedContact.city, selectedContact.state, selectedContact.country].filter(Boolean).join(', ')}
                                                     </p>
@@ -3114,7 +3111,7 @@ const AdminDashboard: React.FC = () => {
                                             )}
                                             {selectedContact.company && (
                                                 <div className="space-y-1">
-                                                    <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Company</p>
+                                                    <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Company</p>
                                                     <p className="text-sm font-medium">{selectedContact.company}</p>
                                                 </div>
                                             )}
@@ -3123,7 +3120,7 @@ const AdminDashboard: React.FC = () => {
                                         {/* Grower Specifics */}
                                         {(selectedContact.farm_name || selectedContact.crop_type) && (
                                             <div className="bg-muted/30 p-3 rounded-xl space-y-3">
-                                                <p className="text-[10px] uppercase font-bold tracking-widest text-primary flex items-center gap-2">
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2">
                                                     <Leaf className="w-3 h-3" /> Farm Details
                                                 </p>
                                                 <div className="grid grid-cols-2 gap-4 text-sm">
@@ -3143,7 +3140,7 @@ const AdminDashboard: React.FC = () => {
                                         {/* Beekeeper Specifics */}
                                         {(selectedContact.apiary_name || selectedContact.hive_count) && (
                                             <div className="bg-muted/30 p-3 rounded-xl space-y-3">
-                                                <p className="text-[10px] uppercase font-bold tracking-widest text-primary flex items-center gap-2">
+                                                <p className="text-[10px] uppercase font-black tracking-widest text-primary flex items-center gap-2">
                                                     <Database className="w-3 h-3" /> Apiary Details
                                                 </p>
                                                 <div className="grid grid-cols-2 gap-4 text-sm">
@@ -3162,7 +3159,7 @@ const AdminDashboard: React.FC = () => {
 
                                         {/* Message Body */}
                                         <div className="space-y-2">
-                                            <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
+                                            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">
                                                 {selectedContact.topic || selectedContact.subject || 'Message'}
                                             </p>
                                             <div className="bg-muted/20 p-4 rounded-xl border border-border/50">
@@ -3185,17 +3182,17 @@ const AdminDashboard: React.FC = () => {
                     <TabsContent value="newsletter" className="space-y-6">
                         <Card className="border-none shadow-2xl glass bg-background/50 rounded-3xl overflow-hidden">
                             <CardHeader className="bg-muted/30 border-b border-border/10">
-                                <CardTitle className="text-2xl font-bold">Newsletter Subscribers</CardTitle>
+                                <CardTitle className="text-2xl font-black">Newsletter Subscribers</CardTitle>
                                 <CardDescription>All email subscribers to the BeeYield newsletter.</CardDescription>
                             </CardHeader>
                             <CardContent className="p-0">
                                 <Table>
                                     <TableHeader>
                                         <TableRow className="bg-muted/20 border-border/10">
-                                            <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Email</TableHead>
-                                            <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Name</TableHead>
-                                            <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Subscribed On</TableHead>
-                                            <TableHead className="py-4 px-6 font-bold uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Email</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Name</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest">Subscribed On</TableHead>
+                                            <TableHead className="py-4 px-6 font-black uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -3246,14 +3243,12 @@ const AdminDashboard: React.FC = () => {
                         <InvoicesTab />
                     </TabsContent>
 
-                    {/* --- SUPPORT TAB --- */}
-                    <TabsContent value="support" className="space-y-6">
-                        <SupportRequestsTab />
+                    <TabsContent value="content" className="h-[calc(100vh-200px)]">
+                        <ContentDashboard />
                     </TabsContent>
 
-                    {/* --- BATCHES TAB --- */}
-                    <TabsContent value="batches" className="space-y-6">
-                        <TracingHistoryTab />
+                    <TabsContent value="recruitment">
+                        <RecruitmentTab />
                     </TabsContent>
                 </Tabs>
             </div>

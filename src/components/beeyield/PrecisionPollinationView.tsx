@@ -31,8 +31,7 @@ import {
     AlertCircle,
     FileText,
     Waves,
-    Loader2,
-    Box
+    Loader2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -132,7 +131,7 @@ const generateFallbackHives = (hiveCount: number): HiveData[] => {
 const StatCard = ({ label, value, colorClass }: { label: string, value: number | string, colorClass: string }) => (
     <div className="bg-white dark:bg-[#111111] p-4 rounded-sm border border-gray-100 dark:border-white/5 shadow-sm relative overflow-hidden h-24 flex flex-col justify-between">
         <div className={cn("absolute top-0 left-0 w-full h-[3px]", colorClass)} />
-        <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{label}</p>
+        <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{label}</p>
         <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">{value}</p>
     </div>
 );
@@ -153,15 +152,15 @@ const SensorCard = ({ label, value, unit, icon: Icon, color, trend, trendValue, 
                 <Icon className="w-4 h-4 text-white" />
             </div>
             <div>
-                <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider leading-none mb-1">{label}</p>
+                <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider leading-none mb-1">{label}</p>
                 <h4 className="text-lg font-bold text-gray-800 dark:text-gray-200">
-                    {value}<span className="text-xs ml-0.5 opacity-50">{unit}</span>
+                    {value}<span className="text-sm ml-0.5 opacity-50">{unit}</span>
                 </h4>
             </div>
         </div>
         {trend && (
             <div className={cn(
-                "px-2 py-1 rounded text-[10px] font-bold uppercase",
+                "px-2 py-1 rounded text-xs font-bold uppercase",
                 trend === 'up' ? "bg-[#1B9157]/10 text-[#1B9157]" : trend === 'down' ? "bg-red-500/10 text-red-500" : "bg-gray-100 text-gray-500 dark:bg-white/5"
             )}>
                 {trend === 'up' ? '▲' : trend === 'down' ? '▼' : '•'} {trendValue}
@@ -227,11 +226,13 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                 // 3. Setup Hive/Sensor Data
                 if (sensorData && sensorData.length > 0) {
                     setUsingRealData(true);
+
                     const mappedHives: HiveData[] = sensorData.map((h: any, i: number) => {
                         const row = Math.floor(i / 10);
                         const col = i % 10;
+
                         return {
-                            id: h.hive_id,
+                            id: h.hive_code,
                             name: h.hive_code,
                             location: {
                                 lat: h.location?.lat || (-1.2921 + (row * 0.0005)),
@@ -239,7 +240,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                             },
                             x: 5 + (col * 9) + Math.random() * 3,
                             y: 10 + (row * 15) + Math.random() * 5,
-                            status: h.status.toLowerCase() as any,
+                            status: h.status.toLowerCase(),
                             sensors: {
                                 acoustics: {
                                     value: h.sensors.acoustics.value,
@@ -257,9 +258,9 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                                     trendValue: h.sensors.humidity.trendValue
                                 },
                                 flightActivity: {
-                                    value: h.sensors.flight_activity?.value || h.sensors.flightActivity?.value || 0,
-                                    trend: h.sensors.flight_activity?.trend || h.sensors.flightActivity?.trend || 'stable',
-                                    trendValue: h.sensors.flight_activity?.trendValue || h.sensors.flightActivity?.trendValue || 'Stable'
+                                    value: h.sensors.flight_activity.value,
+                                    trend: h.sensors.flight_activity.trend,
+                                    trendValue: h.sensors.flight_activity.trendValue
                                 }
                             },
                             framesOfBees: h.frames_of_bees,
@@ -267,6 +268,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                             lastSync: h.last_sync
                         };
                     });
+
                     setHives(mappedHives);
                     setHiveCount(mappedHives.length);
                 } else {
@@ -283,7 +285,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                             const status = (temp < 32 || temp > 38) ? 'critical' : (temp < 33 || temp > 36) ? 'warning' : 'healthy';
 
                             return {
-                                id: h.id,
+                                id: h.hive_code,
                                 name: h.hive_code,
                                 location: {
                                     lat: h.apiary?.latitude || (-1.2921 + (row * 0.0005)),
@@ -291,7 +293,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                                 },
                                 x: 5 + (col * 9) + Math.random() * 3,
                                 y: 10 + (row * 15) + Math.random() * 5,
-                                status: status as any,
+                                status: status,
                                 sensors: {
                                     acoustics: { value: 235 + Math.random() * 30, trend: 'stable', trendValue: 'Stable' },
                                     temperature: { value: parseFloat(temp.toFixed(1)), trend: 'stable', trendValue: 'Stable' },
@@ -399,16 +401,16 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
             {/* Header matches MyDevicesView exactly */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center px-2 mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
+                    <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                         {t('precision_pollination_title')}
                     </h1>
-                    <p className="text-xs font-semibold text-slate-400 mt-1">
+                    <p className="text-base font-semibold text-slate-400 dark:text-slate-500 mt-1">
                         {t('precision_pollination_subtitle')}
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2 bg-white dark:bg-[#111111] rounded-lg border border-gray-100 dark:border-white/5 px-3 py-2">
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Contract:</span>
+                        <span className="text-sm font-bold text-gray-400 uppercase tracking-wider">Contract:</span>
                         <Select value={String(hiveCount)} onValueChange={(v) => setHiveCount(Number(v))}>
                             <SelectTrigger className="h-6 w-16 rounded border-none bg-slate-50 dark:bg-white/5 font-bold text-sm p-1">
                                 <SelectValue />
@@ -419,9 +421,9 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                                 ))}
                             </SelectContent>
                         </Select>
-                        <span className="text-[10px] font-bold text-gray-400 uppercase">Hives</span>
+                        <span className="text-sm font-bold text-gray-400 uppercase">Hives</span>
                     </div>
-                    <Badge className="h-9 px-4 rounded-full bg-[#1B9157]/10 text-[#1B9157] font-bold text-[10px] uppercase tracking-wider border-none">
+                    <Badge className="h-9 px-4 rounded-full bg-[#1B9157]/10 text-[#1B9157] font-bold text-xs uppercase tracking-wider border-none">
                         <ShieldCheck className="w-3 h-3 mr-1.5" /> Live
                     </Badge>
                 </div>
@@ -442,10 +444,10 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                 {/* Left Column - Fixed Widths */}
                 <div className="lg:col-span-4 flex flex-col gap-6 h-full">
                     {/* Pollination Calculator */}
-                    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex-none">
+                    <div className="bg-white dark:bg-[#111111] rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm p-6 flex-none">
                         <div className="flex items-center gap-2 mb-6">
-                            <Calculator className="w-4 h-4 text-green-600" />
-                            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Pollination Calculator</h3>
+                            <Calculator className="w-4 h-4 text-[#1B9157]" />
+                            <h3 className="text-sm font-black text-slate-800 dark:text-slate-200 uppercase tracking-widest">Calculator</h3>
                         </div>
                         <div className="space-y-5">
                             <div className="space-y-1.5">
@@ -498,12 +500,12 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
 
                         <Separator className="my-5 bg-gray-100 dark:bg-white/5" />
 
-                        {/* BeeYield Assistant Integration */}
-                        <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                        {/* BeeYield AI - Integrated into Calculator Card */}
+                        <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
                             <div className="flex items-center justify-between mb-3">
                                 <div className="flex items-center gap-2">
-                                    <Bot className="w-4 h-4 text-amber-500" />
-                                    <h4 className="text-[10px] font-bold uppercase tracking-wider text-slate-700">BeeYield Assistant</h4>
+                                    <Bot className="w-4 h-4 text-[#F4D03F]" />
+                                    <h4 className="text-sm font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">BeeYield AI</h4>
                                 </div>
                                 <div className="flex items-center gap-1.5">
                                     <div className="relative flex h-2 w-2">
@@ -561,122 +563,80 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                         </Button>
                     </div>
 
-                    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col flex-1 min-h-[250px]">
-                        <div className="p-4 border-b border-slate-50 flex items-center justify-between shrink-0">
+                    {/* Hive Fleet - Fills remaining height */}
+                    <div className="bg-white dark:bg-[#111111] rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm overflow-hidden flex flex-col flex-1 min-h-[250px]">
+                        <div className="p-4 border-b border-gray-50 dark:border-white/5 flex items-center justify-between shrink-0">
                             <div className="flex items-center gap-2">
-                                <Hexagon className="w-4 h-4 text-amber-500" />
-                                <h3 className="text-[10px] font-bold uppercase tracking-wider text-slate-700">Hive Network</h3>
+                                <Hexagon className="w-4 h-4 text-[#F4D03F]" />
+                                <h3 className="text-xs font-black uppercase tracking-tight text-slate-700 dark:text-slate-300">Hive Fleet</h3>
                             </div>
                             <div className="flex gap-1">
-                                <Button
-                                    variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                                    size="sm"
-                                    className={cn("h-6 w-6 p-0", viewMode === 'grid' && "bg-[#F4D03F] text-black hover:bg-[#F4D03F]/80")}
-                                    onClick={() => setViewMode('grid')}
-                                >
+                                <Button variant={viewMode === 'grid' ? 'default' : 'ghost'} size="sm" className="h-6 w-6 p-0" onClick={() => setViewMode('grid')}>
                                     <LayoutGrid className="w-3 h-3" />
                                 </Button>
-                                <Button
-                                    variant={viewMode === 'list' ? 'default' : 'ghost'}
-                                    size="sm"
-                                    className={cn("h-6 w-6 p-0", viewMode === 'list' && "bg-[#F4D03F] text-black hover:bg-[#F4D03F]/80")}
-                                    onClick={() => setViewMode('list')}
-                                >
+                                <Button variant={viewMode === 'list' ? 'default' : 'ghost'} size="sm" className="h-6 w-6 p-0" onClick={() => setViewMode('list')}>
                                     <List className="w-3 h-3" />
                                 </Button>
                             </div>
                         </div>
                         <div className="p-3 overflow-y-auto flex-1 custom-scrollbar">
-                            {hives.length === 0 ? (
-                                <div className="h-full flex flex-col items-center justify-center text-center p-4">
-                                    <Box className="w-8 h-8 text-gray-200 mb-2" />
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">No hives found</p>
-                                    <Button
-                                        variant="link"
-                                        size="sm"
-                                        onClick={() => onTabChange('beeyield')}
-                                        className="text-[10px] text-[#1B9157] font-bold h-auto p-0 mt-1"
-                                    >
-                                        Add Hives in Hives Tab
-                                    </Button>
+                            {viewMode === 'grid' ? (
+                                <div className="grid grid-cols-6 gap-1.5">
+                                    {hives.map(hive => (
+                                        <button
+                                            key={hive.id}
+                                            onClick={() => setSelectedHiveId(hive.id)}
+                                            className={cn(
+                                                "aspect-square rounded flex items-center justify-center text-[8px] font-bold text-white transition-all hover:scale-110",
+                                                getStatusColor(hive.status),
+                                                selectedHiveId === hive.id && "ring-2 ring-offset-1 ring-[#F4D03F]"
+                                            )}
+                                            title={`${hive.name} - ${hive.status}`}
+                                        >
+                                            {hive.id.split('-')[1]}
+                                        </button>
+                                    ))}
                                 </div>
                             ) : (
-                                viewMode === 'grid' ? (
-                                    <div className="grid grid-cols-6 gap-1.5">
-                                        {hives.map(hive => (
-                                            <button
-                                                key={hive.id}
-                                                onClick={() => {
-                                                    setSelectedHiveId(hive.id);
-                                                    // Optional: scroll sensor hub into view on mobile
-                                                    const hub = document.getElementById('iot-sensory-hub');
-                                                    if (hub && window.innerWidth < 1024) hub.scrollIntoView({ behavior: 'smooth' });
-                                                }}
-                                                className={cn(
-                                                    "aspect-square rounded flex items-center justify-center text-[8px] font-bold text-white transition-all hover:scale-110",
-                                                    getStatusColor(hive.status),
-                                                    selectedHiveId === hive.id && "ring-2 ring-offset-1 ring-[#F4D03F]"
-                                                )}
-                                                title={`${hive.name} - ${hive.status}`}
-                                            >
-                                                {hive.id.length > 5 ? hive.id.slice(-3) : hive.id.split('-')[1] || hive.id}
-                                            </button>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <div className="space-y-1">
-                                        {hives.map(hive => (
-                                            <button
-                                                key={hive.id}
-                                                onClick={() => {
-                                                    setSelectedHiveId(hive.id);
-                                                    const hub = document.getElementById('iot-sensory-hub');
-                                                    if (hub && window.innerWidth < 1024) hub.scrollIntoView({ behavior: 'smooth' });
-                                                }}
-                                                className={cn(
-                                                    "w-full flex items-center justify-between p-2 rounded-lg text-left transition-all",
-                                                    selectedHiveId === hive.id ? "bg-[#F4D03F]/10 border border-[#F4D03F]/20" : "hover:bg-slate-50 dark:hover:bg-white/5 border border-transparent"
-                                                )}
-                                            >
-                                                <div className="flex items-center gap-2 overflow-hidden">
-                                                    <div className={cn("w-2 h-2 rounded-full shrink-0", getStatusColor(hive.status))} />
-                                                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate">{hive.name}</span>
-                                                </div>
-                                                <span className="text-[10px] font-bold text-gray-400 shrink-0">{hive.sensors.flightActivity.value} VPM</span>
-                                            </button>
-                                        ))}
-                                    </div>
-                                )
+                                <div className="space-y-1">
+                                    {hives.slice(0, 10).map(hive => (
+                                        <button
+                                            key={hive.id}
+                                            onClick={() => setSelectedHiveId(hive.id)}
+                                            className={cn(
+                                                "w-full flex items-center justify-between p-2 rounded-lg text-left transition-all",
+                                                selectedHiveId === hive.id ? "bg-[#F4D03F]/10" : "hover:bg-slate-50 dark:hover:bg-white/5"
+                                            )}
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                <div className={cn("w-2 h-2 rounded-full", getStatusColor(hive.status))} />
+                                                <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{hive.name}</span>
+                                            </div>
+                                            <span className="text-[10px] font-bold text-gray-400">{hive.sensors.flightActivity.value} VPM</span>
+                                        </button>
+                                    ))}
+                                    {hives.length > 10 && (
+                                        <p className="text-center text-[10px] font-bold text-gray-400 py-2">+{hives.length - 10} more</p>
+                                    )}
+                                </div>
                             )}
                         </div>
-                        {hives.length > 0 && (
-                            <div className="p-3 border-t border-gray-50 dark:border-white/5 bg-slate-50/50 dark:bg-white/5 shrink-0">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="w-full text-[10px] font-bold uppercase h-8 border-gray-200 dark:border-white/10"
-                                    onClick={() => onTabChange('beeyield')}
-                                >
-                                    Manage Hives <ChevronRight className="w-3 h-3 ml-1" />
-                                </Button>
-                            </div>
-                        )}
                     </div>
                 </div>
 
                 {/* Right Column */}
                 <div className="lg:col-span-8 flex flex-col gap-6 h-full">
-                    {/* Sensory Hub */}
-                    <div id="iot-sensory-hub" className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex-none">
+                    {/* IoT Sensory Hub */}
+                    <div className="bg-white dark:bg-[#111111] rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm p-6 flex-none">
                         <div className="flex justify-between items-center mb-5">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
-                                    <Cpu className="w-5 h-5 text-amber-500" />
+                                <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center">
+                                    <Cpu className="w-5 h-5 text-[#F4D03F]" />
                                 </div>
                                 <div>
-                                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">Hive Monitoring Hub</h3>
-                                    <p className="text-[10px] text-slate-400 font-bold">
-                                        {selectedHive ? `${selectedHive.name} • ${selectedHive.lastSync}` : `Average for ${hives.length} hives`}
+                                    <h3 className="text-sm font-black uppercase tracking-tight text-slate-800 dark:text-slate-200">{t('iot_sensory_hub')}</h3>
+                                    <p className="text-[10px] text-gray-400 font-semibold">
+                                        {selectedHive ? `${selectedHive.name} • ${selectedHive.lastSync}` : `Average of ${hives.length} hives`}
                                     </p>
                                 </div>
                             </div>
@@ -852,9 +812,9 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                                 <h4 className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">{t('hive_placement_title')}</h4>
                             </div>
                             <div className="flex gap-2">
-                                <Badge className="bg-[#1B9157]/10 text-[#1B9157] text-[9px] font-bold py-0.5 border-none">{results.healthyHives} Healthy</Badge>
-                                <Badge className="bg-[#F4D03F]/10 text-[#9a7f1e] text-[9px] font-bold py-0.5 border-none">{results.warningHives} Warning</Badge>
-                                <Badge className="bg-red-500/10 text-red-500 text-[9px] font-bold py-0.5 border-none">{results.criticalHives} Critical</Badge>
+                                <Badge className="bg-[#1B9157]/10 text-[#1B9157] text-xs font-bold py-0.5 border-none">{results.healthyHives} Healthy</Badge>
+                                <Badge className="bg-[#F4D03F]/10 text-[#9a7f1e] text-xs font-bold py-0.5 border-none">{results.warningHives} Warning</Badge>
+                                <Badge className="bg-red-500/10 text-red-500 text-xs font-bold py-0.5 border-none">{results.criticalHives} Critical</Badge>
                             </div>
                         </div>
 
@@ -1017,8 +977,8 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                         <div className="p-1 px-3 bg-slate-900 rounded-xl flex items-center gap-2 cursor-pointer hover:bg-slate-800 transition-colors w-full">
                             <FileText className="w-4 h-4 text-[#F4D03F]" />
                             <div className="flex flex-col">
-                                <span className="text-[8px] font-black text-white/50 uppercase tracking-widest">Full Report</span>
-                                <span className="text-[10px] font-bold text-[#F4D03F]">DOWNLOAD PDF</span>
+                                <span className="text-xs font-black text-white/50 uppercase tracking-widest">Full Report</span>
+                                <span className="text-sm font-bold text-[#F4D03F]">DOWNLOAD PDF</span>
                             </div>
                         </div>
                     </div>

@@ -39,33 +39,33 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
 
             {/* Header Section */}
             <div className="space-y-1">
-                <h1 className="text-2xl font-bold text-green-700 tracking-tight">
-                    Agro Intelligence
+                <h1 className="text-3xl font-bold text-[#1B9157] dark:text-[#F4D03F] tracking-tight">
+                    BeeYield Insights
                 </h1>
-                <p className="text-slate-500 font-medium text-xs">
-                    Advanced field monitoring - Satellite and field data
+                <p className="text-gray-500 dark:text-gray-400 font-medium">
+                    Moving agriculture forward - Data + Insights + Farming | Secure Intelligence Interface
                 </p>
             </div>
             {/* ... (rest of the content) */}
 
             {/* Hero Card */}
-            <Card className="rounded-2xl border border-amber-100 shadow-sm bg-white overflow-hidden border-l-4 border-l-amber-400">
+            <Card className="rounded-[1.5rem] border border-[#F4D03F]/20 shadow-sm bg-white dark:bg-[#141414] overflow-hidden border-l-4 border-l-[#F4D03F]">
                 <CardContent className="p-8">
-                    <h2 className="text-lg font-bold text-green-700 mb-2">
-                        Integrated field monitoring for better yield insights.
+                    <h2 className="text-xl font-bold text-[#1B9157] dark:text-white mb-2">
+                        We don't just monitor fields. We understand crops, climate and pollinators - together.
                     </h2>
-                    <p className="text-slate-500 mb-6 text-sm">
-                        Workflows that connect satellite imagery with hive data for deeper insights.
+                    <p className="text-gray-500 dark:text-gray-400 mb-6 text-sm">
+                        Simple workflows that connect satellite images, reports, and beekeeper data.
                     </p>
                     <div className="flex flex-wrap gap-2">
-                        <Badge variant="secondary" className="bg-green-50 text-green-700 font-bold px-4 py-1.5 rounded-full border-0">
+                        <Badge variant="secondary" className="bg-[#1B9157]/10 text-[#1B9157] hover:bg-[#1B9157]/20 dark:bg-[#1B9157]/30 dark:text-[#1B9157] px-4 py-1.5 rounded-full font-semibold border-0">
                             Satellite Data
                         </Badge>
-                        <Badge variant="secondary" className="bg-amber-50 text-amber-700 font-bold px-4 py-1.5 rounded-full border-0">
-                            Data Analysis
+                        <Badge variant="secondary" className="bg-[#F4D03F]/10 text-[#7a6820] hover:bg-[#F4D03F]/20 dark:bg-[#F4D03F]/30 dark:text-[#F4D03F] px-4 py-1.5 rounded-full font-semibold border-0">
+                            Insights + Agronomy
                         </Badge>
-                        <Badge variant="secondary" className="bg-green-50 text-green-700 font-bold px-4 py-1.5 rounded-full border-0">
-                            Pollination Metrics
+                        <Badge variant="secondary" className="bg-[#1B9157]/10 text-[#1B9157] hover:bg-[#1B9157]/20 dark:bg-[#1B9157]/30 dark:text-[#1B9157] px-4 py-1.5 rounded-full font-semibold border-0">
+                            Pollinators
                         </Badge>
                     </div>
                 </CardContent>
@@ -79,8 +79,8 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
                     {[
-                        "BeeYield Analysis",
-                        "BeeYield Data",
+                        "BeeYield Intelligence",
+                        "BeeYield Intelligence",
                         "Field Management",
                         "Field status",
                         "Saved reports",
@@ -110,25 +110,25 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
             {/* Agro Intelligence Layer Flow */}
             <div className="space-y-4">
                 <div className="space-y-1">
-                    <h3 className="text-lg font-bold text-slate-800">Field Data Process</h3>
-                    <p className="text-xs text-slate-400 font-medium">From sensor data to actionable insights</p>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">BeeYield Insight Layer</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">From satellites to choices</p>
                 </div>
-                <div className="p-6 bg-white rounded-3xl border border-slate-100 shadow-sm flex flex-col items-center">
+                <div className="p-6 bg-white dark:bg-[#141414] rounded-[2rem] border border-[#F4D03F]/20 dark:border-[#F4D03F]/10 shadow-sm flex flex-col items-center">
                     <div className="flex flex-col lg:flex-row items-center gap-4 w-full overflow-x-auto pb-2">
-                        <div className="flex-1 min-w-[180px] bg-amber-50 px-6 py-4 rounded-xl border border-amber-100 font-bold text-xs text-amber-700 shadow-sm flex justify-between items-center group cursor-pointer hover:bg-amber-100 transition-colors">
-                            Source Data <span className="text-amber-500 group-hover:translate-x-1 transition-transform">→</span>
+                        <div className="flex-1 min-w-[180px] bg-[#F4D03F]/5 dark:bg-[#F4D03F]/10 px-6 py-4 rounded-2xl border border-[#F4D03F]/20 dark:border-[#F4D03F]/20 font-bold text-sm text-[#7a6820] dark:text-[#F4D03F] shadow-sm flex justify-between items-center group cursor-pointer hover:bg-[#F4D03F]/10 transition-colors">
+                            Satellite Data <span className="text-[#F4D03F] group-hover:translate-x-1 transition-transform">→</span>
                         </div>
-                        <div className="flex-1 min-w-[180px] bg-green-50 px-6 py-4 rounded-xl border border-green-100 font-bold text-xs text-green-700 shadow-sm flex justify-between items-center group cursor-pointer hover:bg-green-100 transition-colors">
-                            Processing Layer <span className="text-green-600 group-hover:translate-x-1 transition-transform">→</span>
+                        <div className="flex-1 min-w-[180px] bg-[#1B9157]/5 dark:bg-[#1B9157]/10 px-6 py-4 rounded-2xl border border-[#1B9157]/20 dark:border-[#1B9157]/20 font-bold text-sm text-[#1B9157] dark:text-[#1B9157] shadow-sm flex justify-between items-center group cursor-pointer hover:bg-[#1B9157]/10 transition-colors">
+                            BeeYield Insight Layer <span className="text-[#1B9157] group-hover:translate-x-1 transition-transform">→</span>
                         </div>
-                        <div className="flex-1 min-w-[180px] bg-amber-50 px-6 py-4 rounded-xl border border-amber-100 font-bold text-xs text-amber-700 shadow-sm flex justify-between items-center group cursor-pointer hover:bg-amber-100 transition-colors">
-                            Analysis Models <span className="text-amber-500 group-hover:translate-x-1 transition-transform">→</span>
+                        <div className="flex-1 min-w-[180px] bg-[#F4D03F]/5 dark:bg-[#F4D03F]/10 px-6 py-4 rounded-2xl border border-[#F4D03F]/20 dark:border-[#F4D03F]/20 font-bold text-sm text-[#7a6820] dark:text-[#F4D03F] shadow-sm flex justify-between items-center group cursor-pointer hover:bg-[#F4D03F]/10 transition-colors">
+                            Predictive Models <span className="text-[#F4D03F] group-hover:translate-x-1 transition-transform">→</span>
                         </div>
-                        <div className="flex-1 min-w-[180px] bg-green-50 px-6 py-4 rounded-xl border border-green-100 font-bold text-xs text-green-700 shadow-sm flex justify-between items-center group cursor-pointer hover:bg-green-100 transition-colors">
-                            Visual Dashboard <span className="text-green-600 group-hover:translate-x-1 transition-transform">→</span>
+                        <div className="flex-1 min-w-[180px] bg-[#1B9157]/5 dark:bg-[#1B9157]/10 px-6 py-4 rounded-2xl border border-[#1B9157]/20 dark:border-[#1B9157]/20 font-bold text-sm text-[#1B9157] dark:text-[#1B9157] shadow-sm flex justify-between items-center group cursor-pointer hover:bg-[#1B9157]/10 transition-colors">
+                            BeeYield Dashboard <span className="text-[#1B9157] group-hover:translate-x-1 transition-transform">→</span>
                         </div>
-                        <div className="flex-1 min-w-[180px] bg-amber-500 px-6 py-4 rounded-xl border border-amber-500 font-bold text-xs text-white shadow-md flex justify-center items-center group cursor-pointer transition-transform hover:scale-105 text-center">
-                            Final Reports & Alerts
+                        <div className="flex-1 min-w-[180px] bg-[#F4D03F] px-6 py-4 rounded-2xl border border-[#F4D03F] font-bold text-sm text-[#1A1A1A] shadow-md flex justify-center items-center group cursor-pointer transition-transform hover:scale-105 text-center">
+                            Decisions / Reports / Alerts
                         </div>
                     </div>
                 </div>
@@ -160,7 +160,7 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
                                 <span>Change history and boundary versioning.</span>
                             </li>
                         </ul>
-                        <p className="text-xs text-[#1B9157]/60 mt-4 italic">Leaflet Draw + GeoJSON/PostGIS ready.</p>
+                        <p className="text-xs text-[#1B9157]/60 mt-4 italic">Map tools ready.</p>
                     </CardContent>
                 </Card>
 
@@ -185,7 +185,7 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
                             </li>
                             <li className="flex gap-2 items-start">
                                 <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />
-                                <span>Cloud masking using SCL.</span>
+                                <span>Cloud cleaning for clear views.</span>
                             </li>
                         </ul>
                     </CardContent>
@@ -204,7 +204,7 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
                     <CardContent className="space-y-3">
                         <li className="flex gap-2 items-start">
                             <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#1B9157] shrink-0" />
-                            <span className="font-bold text-[#1B9157]">Nectar Index: -/10</span>
+                            <span className="font-bold text-[#1B9157]">Nectar Flow Index: -/10</span>
                         </li>
                         <li className="flex gap-2 items-start">
                             <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#1B9157] shrink-0" />
@@ -212,19 +212,19 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
                         </li>
                         <li className="flex gap-2 items-start">
                             <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />
-                            <span>Nitrogen stress monitoring.</span>
+                            <span>NDRE - nitrogen stress.</span>
                         </li>
                         <li className="flex gap-2 items-start">
                             <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />
-                            <span>Biomass signal.</span>
+                            <span>EVI - biomass signal.</span>
                         </li>
                         <li className="flex gap-2 items-start">
                             <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />
-                            <span>Moisture status.</span>
+                            <span>Moisture index - drough signal.</span>
                         </li>
                         <li className="flex gap-2 items-start">
                             <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />
-                            <span>Yield estimate.</span>
+                            <span>Yield proxy.</span>
                         </li>
                     </CardContent>
                 </Card>
@@ -242,7 +242,7 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
                         <ul className="space-y-3 text-sm text-gray-600 dark:text-gray-300">
                             <li className="flex gap-2 items-start">
                                 <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />
-                                <span>K-means / DBSCAN on NDVI.</span>
+                                <span>Smart field grouping.</span>
                             </li>
                             <li className="flex gap-2 items-start">
                                 <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />
@@ -263,8 +263,8 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
                 {/* Crop Intelligence Engine */}
                 <Card className="rounded-[2rem] border-none shadow-sm bg-white dark:bg-[#141414] overflow-hidden">
                     <CardHeader>
-                        <CardTitle className="text-lg font-bold">Crop Performance Engine</CardTitle>
-                        <p className="text-xs text-gray-400 font-medium">Forecasting, anomalies, health.</p>
+                        <CardTitle className="text-lg font-bold">Crop Analysis Hub</CardTitle>
+                        <p className="text-xs text-gray-400 font-medium">Forecasting, alerts, growth cycles.</p>
                     </CardHeader>
                     <CardContent className="space-y-3">
                         <ul className="space-y-3 text-sm text-gray-600 dark:text-gray-300">
@@ -278,7 +278,7 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
                             </li>
                             <li className="flex gap-2 items-start">
                                 <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />
-                                <span>Phenology: start, peak biomass, senescence.</span>
+                                <span>Growth cycles: start, peak growth, harvest ready.</span>
                             </li>
                         </ul>
                     </CardContent>
@@ -316,29 +316,29 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
             {/* Story of the field Footer */}
             <div className="space-y-4">
                 <div className="space-y-1">
-                    <h3 className="text-lg font-bold text-slate-800">Field Insights</h3>
-                    <p className="text-xs text-slate-400 font-medium">Select a field to view details.</p>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">Story of the field</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Click a field to see the season narrative.</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <Card className="p-4 rounded-xl border-none bg-green-50 flex flex-col justify-between h-28 border-l-4 border-l-green-600">
-                        <p className="text-[10px] font-bold text-green-700 uppercase tracking-wider">Weather Resilience</p>
-                        <p className="text-2xl font-bold text-slate-800 mt-1">- %</p>
-                        <Badge className="w-fit bg-slate-200 text-slate-500 border-none text-[8px] font-bold">PENDING</Badge>
+                    <Card className="p-4 rounded-2xl border-none bg-[#1B9157]/5 dark:bg-[#1B9157]/10 flex flex-col justify-between h-28 border-l-4 border-l-[#1B9157]">
+                        <p className="text-[10px] font-black text-[#1B9157] uppercase tracking-widest">Weather Resilience</p>
+                        <p className="text-2xl font-black text-slate-800 dark:text-white mt-1">- %</p>
+                        <Badge className="w-fit bg-gray-500/20 text-gray-600 border-none text-[8px] font-black">PENDING</Badge>
                     </Card>
-                    <Card className="p-4 rounded-xl border-none bg-amber-50 flex flex-col justify-between h-28 border-l-4 border-l-amber-500">
-                        <p className="text-[10px] font-bold text-amber-700 uppercase tracking-wider">Growth Status</p>
-                        <p className="text-2xl font-bold text-slate-800 mt-1">-<span className="text-xs"> Days</span></p>
-                        <Badge className="w-fit bg-slate-200 text-slate-500 border-none text-[8px] font-bold">ANALYZING</Badge>
+                    <Card className="p-4 rounded-2xl border-none bg-[#F4D03F]/5 dark:bg-[#F4D03F]/10 flex flex-col justify-between h-28 border-l-4 border-l-[#F4D03F]">
+                        <p className="text-[10px] font-black text-[#7a6820] dark:text-[#F4D03F] uppercase tracking-widest">Crop-Sync Delay</p>
+                        <p className="text-2xl font-black text-slate-800 dark:text-white mt-1">-<span className="text-xs"> Days</span></p>
+                        <Badge className="w-fit bg-gray-500/20 text-gray-600 border-none text-[8px] font-black">CALCULATING</Badge>
                     </Card>
-                    <Card className="p-4 rounded-xl border-none bg-blue-50 flex flex-col justify-between h-28 border-l-4 border-l-blue-500">
-                        <p className="text-[10px] font-bold text-blue-700 uppercase tracking-wider">Moisture Status</p>
-                        <p className="text-2xl font-bold text-slate-800 mt-1">- %</p>
-                        <Badge className="w-fit bg-slate-200 text-slate-500 border-none text-[8px] font-bold">READY</Badge>
+                    <Card className="p-4 rounded-2xl border-none bg-blue-50 dark:bg-blue-900/10 flex flex-col justify-between h-28 border-l-4 border-l-blue-500">
+                        <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Moisture Saturation</p>
+                        <p className="text-2xl font-black text-slate-800 dark:text-white mt-1">- %</p>
+                        <Badge className="w-fit bg-gray-500/20 text-gray-600 border-none text-[8px] font-black">INITIALIZING</Badge>
                     </Card>
-                    <Card className="p-4 rounded-xl border-none bg-indigo-50 flex flex-col justify-between h-28 border-l-4 border-l-indigo-500">
-                        <p className="text-[10px] font-bold text-indigo-700 uppercase tracking-wider">Environmental Impact</p>
-                        <p className="text-2xl font-bold text-slate-800 mt-1">-<span className="text-xs"> tCO2e</span></p>
-                        <Badge className="w-fit bg-slate-200 text-slate-500 border-none text-[8px] font-bold">COLLECTING</Badge>
+                    <Card className="p-4 rounded-2xl border-none bg-indigo-50 dark:bg-indigo-900/10 flex flex-col justify-between h-28 border-l-4 border-l-indigo-500">
+                        <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">Carbon Footprint</p>
+                        <p className="text-2xl font-black text-slate-800 dark:text-white mt-1">-<span className="text-xs"> Carbon score</span></p>
+                        <Badge className="w-fit bg-gray-500/20 text-gray-600 border-none text-[8px] font-black">COLLECTING</Badge>
                     </Card>
                 </div>
             </div>

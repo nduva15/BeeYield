@@ -12,6 +12,7 @@ def register_farmer(farmer_in: schemas.FarmerCreate) -> dict[str, Any]:
     """Register a farmer in DB and Blockchain"""
     data = farmer_in.dict()
     data['farmer_id'] = f"F-{str(uuid.uuid4())[:8].upper()}" if not data.get('farmer_id') else data.get('farmer_id')
+    data['id'] = str(uuid.uuid4()) if not data.get('id') else data.get('id')
     data['registration_date'] = datetime.utcnow().isoformat()
     
     # 1. Blockchain
@@ -25,17 +26,31 @@ def register_farmer(farmer_in: schemas.FarmerCreate) -> dict[str, Any]:
     
     return data
 
-def register_apiary(apiary_in: schemas.ApiaryCreate) -> dict[str, Any]:
+def register_apiary(apiary_in: Any) -> dict[str, Any]:
     """Register an apiary"""
-    data = apiary_in.dict()
+    # Handle both Pydantic models and raw dicts
+    data = apiary_in.dict() if hasattr(apiary_in, 'dict') else dict(apiary_in)
+    
     if isinstance(data.get('established_date'), date):
         data['established_date'] = data['established_date'].isoformat()
-    data['apiary_id'] = str(uuid.uuid4())
+    
+    if not data.get('apiary_id'):
+        data['apiary_id'] = str(uuid.uuid4())
+    data['id'] = data['apiary_id']
+        
+    # CRITICAL: Ensure apiary_code exists to avoid NOT NULL violation
+    if not data.get('apiary_code'):
+        data['apiary_code'] = f"APY-{str(uuid.uuid4())[:8].upper()}"
     
     block = honey_blockchain.register_apiary(data)
     data['blockchain_hash'] = block.hash
     
-    db_insert("apiaries", data)
+    res = db_insert("apiaries", data)
+    if not res.get("success"):
+        print(f"ERROR: Apiary DB insertion failed: {res.get('error')}")
+        # We don't raise here to allow blockchain-only registration if DB is down
+        # but in a real app we might want to transactions
+        
     return data
 
 def register_hive(hive_in: schemas.HiveCreate) -> dict[str, Any]:
@@ -43,7 +58,9 @@ def register_hive(hive_in: schemas.HiveCreate) -> dict[str, Any]:
     data = hive_in.dict()
     if isinstance(data.get('installation_date'), date):
         data['installation_date'] = data['installation_date'].isoformat()
-    data['hive_id'] = str(uuid.uuid4())
+    if not data.get('hive_id'):
+        data['hive_id'] = str(uuid.uuid4())
+    data['id'] = data['hive_id']
     data['status'] = 'ACTIVE'
     
     block = honey_blockchain.register_hive(data)

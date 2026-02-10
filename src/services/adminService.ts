@@ -151,7 +151,6 @@ export interface InvoiceRecord {
 
 export const adminService = {
     // ============== SEEDING ==============
-    // Seeding via Supabase directly (Frontend logic)
     seedShopContent: async () => {
         return { success: true, productCount: 0 };
     },
@@ -164,7 +163,6 @@ export const adminService = {
         return { success: true, apiaryCount: 0, hiveCount: 0 };
     },
 
-    // ============== ORDERS ==============
     // ============== ORDERS ==============
     getOrders: async () => {
         try {
@@ -230,7 +228,6 @@ export const adminService = {
     },
 
     // ============== PRODUCTS ==============
-    // ============== PRODUCTS ==============
     getProducts: async () => {
         try {
             return await apiGet<any[]>('/admin/products');
@@ -266,7 +263,6 @@ export const adminService = {
                 const variantsWithId = variants.map((v: any) => ({ ...v, product_id: data.id }));
                 await supabase.from('product_variants').insert(variantsWithId);
             } else if (data && (productData as any).price_kes) {
-                // Support for old flat structure if needed
                 await supabase.from('product_variants').insert({
                     product_id: data.id,
                     size: "Standard",
@@ -291,7 +287,6 @@ export const adminService = {
         if (error) throw error;
 
         if (variants) {
-            // Simplified: delete old and insert new or just update first
             await supabase.from('product_variants').delete().eq('product_id', id);
             const variantsWithId = variants.map((v: any) => ({ ...v, product_id: id }));
             await supabase.from('product_variants').insert(variantsWithId);
@@ -318,7 +313,6 @@ export const adminService = {
             console.error("Failed to fetch batches via API, falling back to direct Supabase", error);
             if (!supabase) throw new Error("Supabase not initialized");
 
-            // Try honey_batches first
             const { data, error: sbError } = await supabase
                 .from('honey_batches' as any)
                 .select('*')
@@ -326,7 +320,6 @@ export const adminService = {
 
             if (!sbError) return data || [];
 
-            // Try batches second (fallback for different schema versions)
             const { data: bData, error: bError } = await supabase
                 .from('batches' as any)
                 .select('*')
@@ -346,7 +339,6 @@ export const adminService = {
         } catch (error) {
             console.error("Failed to create batch via API, falling back to direct Supabase", error);
             if (!supabase) throw new Error("Supabase not initialized");
-            // Generate a code if missing
             if (!batchData.batch_code) {
                 batchData.batch_code = `BC-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
             }
@@ -590,17 +582,36 @@ export const adminService = {
         }
     },
 
+    createUser: async (userData: any) => {
+        try {
+            return await apiPost<any>('/admin/users', userData);
+        } catch (error: any) {
+            console.error("Failed to create user via API", error);
+            throw error;
+        }
+    },
+
+    updateUser: async (userId: string, userData: any) => {
+        try {
+            return await apiPut<any>(`/admin/users/${userId}`, userData);
+        } catch (error) {
+            console.error("Failed to update user via API", error);
+            if (!supabase) throw new Error("Supabase not initialized");
+            const { data, error: sbError } = await supabase.from('profiles').update(userData).eq('id', userId).select().single();
+            if (sbError) throw sbError;
+            return data;
+        }
+    },
+
     // ============== DASHBOARD STATS ==============
     getDashboardStats: async () => {
         try {
-            // Priority 1: Use backend API for stats (it handles smart fallbacks and blockchain sync)
             return await apiGet<any>('/admin/stats');
         } catch (error) {
             console.error("Failed to fetch dashboard stats via API, falling back to multi-query Supabase:", error);
             if (!supabase) return null;
 
             try {
-                // Priority 2: Direct Supabase multi-query with resilience
                 const batchTable = 'honey_batches';
                 const { error: probeError } = await supabase.from(batchTable).select('id').limit(1);
                 const actualBatchTable = probeError ? 'batches' : batchTable;
@@ -638,7 +649,6 @@ export const adminService = {
                 const pendingOrders = (ordersData || [])
                     .filter(o => o.status === 'pending').length;
 
-                // Product counts per category
                 const honeyProducts = (productsData || []).filter(p => p.category?.toLowerCase() === 'honey').length;
                 const learnProducts = (productsData || []).filter(p => p.category?.toLowerCase() === 'learn').length;
                 const sensorProducts = (productsData || []).filter(p => p.category?.toLowerCase().includes('sensor')).length;
@@ -675,15 +685,10 @@ export const adminService = {
     // ============== APIARIES ==============
     getApiaries: async () => {
         if (!supabase) throw new Error("Supabase not initialized");
-        console.log("Fetching apiaries...");
         const { data, error } = await supabase.from('apiaries')
             .select('*, farmers(name)')
             .order('created_at', { ascending: false });
-        if (error) {
-            console.error("Error fetching apiaries:", error);
-            throw error;
-        }
-        console.log(`Fetched ${data?.length || 0} apiaries`);
+        if (error) throw error;
         return data || [];
     },
 
@@ -728,17 +733,12 @@ export const adminService = {
     // ============== HIVES ==============
     getHives: async (apiaryId?: string) => {
         if (!supabase) throw new Error("Supabase not initialized");
-        console.log(`Fetching hives (apiaryId: ${apiaryId || 'all'})...`);
         let query = supabase.from('hives').select('*, apiaries(name)');
         if (apiaryId) {
             query = query.eq('apiary_id', apiaryId);
         }
         const { data, error } = await query.order('created_at', { ascending: false });
-        if (error) {
-            console.error("Error fetching hives:", error);
-            throw error;
-        }
-        console.log(`Fetched ${data?.length || 0} hives`);
+        if (error) throw error;
         return data || [];
     },
 
@@ -780,29 +780,83 @@ export const adminService = {
         return { success: true };
     },
 
-    createUser: async (userData: any) => {
-        try {
-            return await apiPost<any>('/admin/users', userData);
-        } catch (error: any) {
-            console.error("Failed to create user via API", error);
-            throw error;
-        }
+    // ============== RECRUITMENT ==============
+    getJobs: async () => {
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { data, error } = await supabase
+            .from('jobs')
+            .select('*')
+            .order('created_at', { ascending: false });
+        if (error) throw error;
+        return data || [];
     },
 
-    updateUser: async (userId: string, userData: any) => {
-        try {
-            return await apiPut<any>(`/admin/users/${userId}`, userData);
-        } catch (error) {
-            console.error("Failed to update user via API", error);
-            if (!supabase) throw new Error("Supabase not initialized");
-            const { data, error: sbError } = await supabase.from('profiles').update(userData).eq('id', userId).select().single();
-            if (sbError) throw sbError;
-            return data;
-        }
+    createJob: async (jobData: any) => {
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { data, error } = await supabase
+            .from('jobs')
+            .insert(jobData)
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
+    },
+
+    updateJob: async (id: string, jobData: any) => {
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { data, error } = await supabase
+            .from('jobs')
+            .update(jobData)
+            .eq('id', id)
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
+    },
+
+    deleteJob: async (id: string) => {
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { error } = await supabase
+            .from('jobs')
+            .delete()
+            .eq('id', id);
+        if (error) throw error;
+        return { success: true };
+    },
+
+    getApplications: async () => {
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { data, error } = await supabase
+            .from('job_applications')
+            .select('*, jobs(title)')
+            .order('created_at', { ascending: false });
+        if (error) throw error;
+        return data || [];
+    },
+
+    updateApplicationStatus: async (id: string, status: string) => {
+        if (!supabase) throw new Error("Supabase not initialized");
+        const { data, error } = await supabase
+            .from('job_applications')
+            .update({ status })
+            .eq('id', id)
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
+    },
+
+    getResumeSignedUrl: async (resumePath: string) => {
+        if (!supabase) throw new Error("Supabase not initialized");
+        // resumePath should be the filename or full path in the bucket
+        const { data, error } = await supabase.storage
+            .from('resumes')
+            .createSignedUrl(resumePath, 3600); // 1 hour expiry
+        if (error) throw error;
+        return data.signedUrl;
     },
 
     // ============== EXTENDED DASHBOARD ==============
-
     getActivityLogs: async (filters: any = {}) => {
         const queryParams = new URLSearchParams(filters).toString();
         return await apiGet<ActivityLog[]>(`/admin/activity-logs?${queryParams}`);
@@ -862,7 +916,6 @@ export const adminService = {
     },
 
     // ============== LOGGING METHODS ==============
-
     logActivity: async (activity: any) => {
         return await apiPost<any>('/admin/activity-logs', activity);
     },
@@ -872,7 +925,6 @@ export const adminService = {
     },
 
     logTrace: async (trace: any) => {
-        // This is a public endpoint on the backend
         return await apiPost<any>('/admin/tracing-history', trace);
     },
 

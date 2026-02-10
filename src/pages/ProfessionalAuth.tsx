@@ -29,16 +29,6 @@ const ProfessionalAuth: React.FC = () => {
     const [authMode, setAuthMode] = useState<AuthMode>('login');
 
     useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        if (params.get('error') === 'account_required') {
-            toast.error('Dashboard Profile Required', {
-                description: 'You have a Shop account, but you must register/deploy your Professional Profile to access the BeeYield Dashboard.'
-            });
-            setAuthMode('register');
-        }
-    }, [location.search]);
-
-    useEffect(() => {
         if (user && !authLoading) {
             navigate('/beeyield-dashboard');
         }
@@ -49,7 +39,7 @@ const ProfessionalAuth: React.FC = () => {
             <div className="min-h-screen bg-zinc-50 flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
                     <Activity className="h-8 w-8 text-primary animate-pulse" />
-                    <span className="text-zinc-400 font-mono text-xs tracking-widest uppercase">Initializing...</span>
+                    <span className="text-zinc-400 font-mono text-xs tracking-widest uppercase">Initializing Protocol...</span>
                 </div>
             </div>
         );
@@ -71,16 +61,16 @@ const ProfessionalAuth: React.FC = () => {
                             <Hexagon className="h-6 w-6 text-primary" />
                         </div>
                         <div>
-                            <h1 className="text-lg font-bold tracking-tighter leading-none text-zinc-900">BEEYIELD <span className="text-primary">PRO</span></h1>
-                            <p className="text-xs text-zinc-400 leading-none mt-1 font-bold tracking-wider">HIVE MANAGEMENT SYSTEM</p>
+                            <h1 className="text-2xl font-black tracking-tighter leading-none text-zinc-900">BEEYIELD <span className="text-primary">PROFESSIONAL</span></h1>
+                            <p className="text-sm text-zinc-500 leading-none mt-1 font-bold tracking-wider uppercase">Professional Dashboard</p>
                         </div>
                     </div>
 
                     <button
                         onClick={() => navigate('/')}
-                        className="flex items-center gap-2 text-xs text-zinc-400 hover:text-zinc-900 transition-colors font-bold uppercase tracking-widest"
+                        className="flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900 transition-colors font-bold uppercase tracking-widest"
                     >
-                        <ArrowLeft className="h-4 w-4" /> Exit to Public Site
+                        <ArrowLeft className="h-4 w-4" /> Back to Home
                     </button>
                 </div>
 
@@ -92,21 +82,21 @@ const ProfessionalAuth: React.FC = () => {
                             <div className="space-y-6">
                                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
                                     <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                                    <span className="text-xs font-bold text-primary tracking-widest uppercase">System Operational</span>
+                                    <span className="text-sm font-bold text-primary tracking-widest uppercase">Online</span>
                                 </div>
                                 <h2 className="text-6xl font-black tracking-tighter leading-tight text-zinc-900">
                                     Professional <br />
-                                    <span className="text-primary italic">Dashboard</span> <br />
-                                    Access
+                                    <span className="text-primary">Tools</span> <br />
+                                    Interface
                                 </h2>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 {[
-                                    { icon: Bot, label: 'Health Analysis', desc: 'Predictive hive management' },
-                                    { icon: Activity, label: 'Live Data', desc: 'Real-time sensor telemetry' },
-                                    { icon: Shield, label: 'Data Security', desc: 'Secure information storage' },
-                                    { icon: Database, label: 'Apiary Control', desc: 'Scalable apiary management' }
+                                    { icon: Bot, label: 'Smart Insights', desc: 'Predicting hive needs' },
+                                    { icon: Activity, label: 'Live Tracking', desc: 'Real-time hive data' },
+                                    { icon: Shield, label: 'Secure Support', desc: 'Safe data protection' },
+                                    { icon: Database, label: 'Fleet Management', desc: 'Easy hive organization' }
                                 ].map((item, i) => (
                                     <div key={i} className="p-6 rounded-2xl bg-white border border-zinc-200 hover:border-primary/50 transition-all group shadow-sm hover:shadow-md">
                                         <item.icon className="h-6 w-6 text-zinc-400 group-hover:text-primary mb-4 transition-colors" />
@@ -114,14 +104,6 @@ const ProfessionalAuth: React.FC = () => {
                                         <p className="text-xs text-zinc-500 leading-relaxed">{item.desc}</p>
                                     </div>
                                 ))}
-                            </div>
-
-                            <div className="p-6 rounded-2xl bg-white border border-zinc-200 flex items-center gap-4 shadow-sm">
-                                <Terminal className="h-5 w-5 text-zinc-400" />
-                                <div className="font-mono text-xs text-zinc-400 overflow-hidden whitespace-nowrap">
-                                    <p className="animate-typing">Connected to BeeYield Hub</p>
-                                    <p className="opacity-50 tracking-tighter">System ready. Initializing session...</p>
-                                </div>
                             </div>
                         </div>
 
@@ -135,23 +117,23 @@ const ProfessionalAuth: React.FC = () => {
                                                 onClick={() => setAuthMode('login')}
                                                 className={`px-6 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${authMode === 'login' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-900'}`}
                                             >
-                                                Sign In
+                                                Login
                                             </button>
                                             <button
                                                 onClick={() => setAuthMode('register')}
                                                 className={`px-6 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${authMode === 'register' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-900'}`}
                                             >
-                                                Register
+                                                Sign Up
                                             </button>
                                         </div>
                                         <Lock className="h-4 w-4 text-zinc-300" />
                                     </div>
 
                                     <h3 className="text-2xl font-black tracking-tightest text-zinc-900">
-                                        {authMode === 'login' ? 'SIGN IN' : authMode === 'register' ? 'CREATE ACCOUNT' : 'RESET PASSWORD'}
+                                        {authMode === 'login' ? 'Welcome Back' : authMode === 'register' ? 'Join Us' : 'Reset Password'}
                                     </h3>
                                     <p className="text-xs text-zinc-400 font-bold uppercase tracking-[0.2em] mt-2">
-                                        {authMode === 'login' ? 'Enter credentials to access your account' : 'Register your professional account'}
+                                        {authMode === 'login' ? 'Please login to continue' : 'Create your professional account'}
                                     </p>
                                 </div>
 
@@ -161,6 +143,7 @@ const ProfessionalAuth: React.FC = () => {
                                             <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                                                 <div className="pro-auth-forms">
                                                     <LoginForm
+                                                        variant="professional"
                                                         onSuccess={() => navigate('/beeyield-dashboard')}
                                                         onSwitchToRegister={() => setAuthMode('register')}
                                                         onForgotPassword={() => setAuthMode('forgot-password')}
@@ -199,10 +182,10 @@ const ProfessionalAuth: React.FC = () => {
                                     <div className="mt-12 pt-8 border-t border-zinc-100 flex flex-col items-center gap-4 text-center">
                                         <div className="flex gap-4">
                                             <div className="flex items-center gap-2 text-xs font-bold text-zinc-300 uppercase tracking-[0.3em]">
-                                                <Shield className="h-3 w-3" /> SECURE DATA
+                                                <Shield className="h-3 w-3" /> Secure
                                             </div>
                                             <div className="flex items-center gap-2 text-xs font-bold text-zinc-300 uppercase tracking-[0.3em]">
-                                                <Lock className="h-3 w-3" /> VERIFIED
+                                                <Lock className="h-3 w-3" /> Encrypted
                                             </div>
                                         </div>
                                     </div>
@@ -214,17 +197,15 @@ const ProfessionalAuth: React.FC = () => {
 
                 {/* Cyber Footer (Light Version) */}
                 <div className="py-8 border-t border-zinc-200 flex items-center justify-between text-xs font-bold text-zinc-400 uppercase tracking-[0.3em]">
-                    <p>© 2026 BEEYIELD PROFESSIONAL DASHBOARD</p>
+                    <p>© 2026 BeeYield</p>
                     <div className="flex gap-8">
-                        <span>LAT: 1.2921 N</span>
-                        <span>LONG: 36.8219 E</span>
-                        <span className="text-primary/60 font-black">Secure Connection Established</span>
+                        <span className="text-primary/60 font-black">Connected</span>
                     </div>
                 </div>
-            </div >
+            </div>
 
 
-        </div >
+        </div>
     );
 };
 

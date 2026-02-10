@@ -40,15 +40,8 @@ import {
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { beeyieldService, Harvest, Apiary, Hive } from '@/services/beeyieldService';
+import { beeyieldService, Harvest, HarvestCreateInput, Apiary, Hive } from '@/services/beeyieldService';
 import { Loader2, Trash2 } from 'lucide-react';
-import {
-    useHarvests,
-    useCreateHarvest,
-    useUpdateHarvest,
-    useDeleteHarvest
-} from '@/hooks/useHarvests';
-import { useApiaries, useHives } from '@/hooks/useHives';
 
 import Logo from '@/assets/Logo.png';
 
@@ -58,52 +51,62 @@ interface HarvestsViewProps {
 
 const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
     const [isAddingHarvest, setIsAddingHarvest] = useState(false);
-    const [harvestDate, setHarvestDate] = useState<Date>(new Date());
+    const [date, setDate] = useState<Date>(new Date());
+    const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
 
     // Filter states
     const [selectedPlace, setSelectedPlace] = useState<string>('');
     const [selectedHive, setSelectedHive] = useState<string>('');
-    const [quickYear, setQuickYear] = useState<string>(new Date().getFullYear().toString());
+    const [quickYear, setQuickYear] = useState<string>('all');
     const [selectedHarvest, setSelectedHarvest] = useState<Harvest | null>(null);
 
     // Form states
     const [amount, setAmount] = useState('');
     const [honeyType, setHoneyType] = useState('');
-    const [batchId, setBatchId] = useState('');
+    const [batchCode, setBatchCode] = useState(`BY-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`);
     const [moisture, setMoisture] = useState('');
     const [colorGrade, setColorGrade] = useState('');
     const [sealOnHoneyChain, setSealOnHoneyChain] = useState(true);
 
-    // TanStack Query Hooks
-    const { data: allHarvests = [], isLoading: isHarvestsLoading } = useHarvests();
-    const { data: apiaries = [], isLoading: isApiariesLoading } = useApiaries();
-    const { data: hives = [], isLoading: isHivesLoading } = useHives(selectedPlace || undefined);
-
-    const createHarvestMutation = useCreateHarvest();
-    const updateHarvestMutation = useUpdateHarvest();
-    const deleteHarvestMutation = useDeleteHarvest();
-
-    const isLoading = isHarvestsLoading || isApiariesLoading;
+    // Live data from Supabase
+    const [allHarvests, setAllHarvests] = useState<Harvest[]>([]);
+    const [apiaries, setApiaries] = useState<Apiary[]>([]);
+    const [hives, setHives] = useState<Hive[]>([]);
 
     const filteredHarvests = allHarvests.filter(h => {
+        if (quickYear === 'all') return true;
         const harvestYear = new Date(h.harvest_date).getFullYear().toString();
-        const yearMatch = harvestYear === (quickYear || '2026');
-        const placeMatch = !selectedPlace || h.apiary?.id === selectedPlace || h.hive?.apiary?.id === selectedPlace;
-        const hiveMatch = !selectedHive || h.hive_id === selectedHive;
-        return yearMatch && placeMatch && hiveMatch;
+        return harvestYear === (quickYear || '2026');
     });
 
     const [editingHarvest, setEditingHarvest] = useState<Harvest | null>(null);
 
+    // Fetch data on mount
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true);
+            const [harvestsData, apiariesData, hivesData] = await Promise.all([
+                beeyieldService.getHarvests(),
+                beeyieldService.getApiaries(),
+                beeyieldService.getHives()
+            ]);
+            setAllHarvests(harvestsData);
+            setApiaries(apiariesData);
+            setHives(hivesData);
+            setIsLoading(false);
+        };
+        fetchData();
+    }, []);
+
     const resetForm = () => {
         setAmount('');
-        setBatchId('');
+        setBatchCode(`BY-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`);
         setHoneyType('');
         setMoisture('');
         setColorGrade('');
         setSealOnHoneyChain(true);
-        setHarvestDate(new Date());
+        setDate(new Date());
         setSelectedHive('');
         setEditingHarvest(null);
     };
@@ -112,11 +115,11 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
         setEditingHarvest(harvest);
         setAmount(harvest.quantity_kg.toString());
         setHoneyType(harvest.honey_type || '');
-        setBatchId(harvest.batch_code || '');
+        setBatchCode(harvest.batch_code || '');
         setMoisture(harvest.moisture_content_percent?.toString() || '');
         setColorGrade(harvest.color_grade || '');
         setSealOnHoneyChain(harvest.is_verified || false);
-        setHarvestDate(new Date(harvest.harvest_date));
+        setDate(new Date(harvest.harvest_date));
         setSelectedHive(harvest.hive_id || '');
 
         setIsAddingHarvest(true);
@@ -124,76 +127,81 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
         setSelectedHarvest(null);
     };
 
-    // Auto-generate Batch ID for new harvests
-    useEffect(() => {
-        if (!editingHarvest && selectedHive && harvestDate) {
-            const hive = hives.find(h => h.id === selectedHive);
-            if (hive) {
-                const dateStr = format(harvestDate, 'yyyyMMdd');
-                const randomPart = Math.floor(1000 + Math.random() * 9000);
-                setBatchId(`HB-${dateStr}-${hive.hive_code}-${randomPart}`);
-            }
-        }
-    }, [selectedHive, harvestDate, hives, editingHarvest]);
-
     const handleSave = async () => {
         if (!amount || parseFloat(amount) <= 0) {
             toast.error('Please enter a valid harvest amount');
             return;
         }
 
+        setIsSaving(true);
+
         if (!selectedHive) {
             toast.error('Please select a source hive');
+            setIsSaving(false);
             return;
         }
 
         const selectedHiveData = hives.find(h => h.id === selectedHive);
         if (!selectedHiveData) {
             toast.error('Selected hive not found in records');
+            setIsSaving(false);
             return;
         }
 
         const harvestInput: any = {
             hive_id: selectedHive,
             apiary_id: selectedHiveData.apiary_id,
-            harvest_date: harvestDate.toISOString().split('T')[0],
+            harvest_date: date.toISOString().split('T')[0],
             quantity_kg: parseFloat(amount),
             quantity_left_for_bees_kg: parseFloat(amount), // 50/50 rule
             honey_type: honeyType || 'Wildflower',
-            batch_code: batchId,
+            batch_code: batchCode,
             moisture_content_percent: parseFloat(moisture) || 17.5,
             color_grade: colorGrade || 'Light Amber',
             is_verified: sealOnHoneyChain,
         };
 
-        setIsSaving(true);
-        try {
-            if (editingHarvest) {
-                await updateHarvestMutation.mutateAsync({ id: editingHarvest.id, data: harvestInput });
+        if (editingHarvest) {
+            const { data, error } = await beeyieldService.updateHarvest(editingHarvest.id, harvestInput);
+            if (data && !error) {
+                setAllHarvests(allHarvests.map(h => h.id === editingHarvest.id ? { ...h, ...data } : h));
                 setIsAddingHarvest(false);
                 resetForm();
-            } else {
-                await createHarvestMutation.mutateAsync(harvestInput);
-                setIsAddingHarvest(false);
-                resetForm();
+                toast.success('Harvest record updated');
             }
-        } catch (error) {
-            console.error('Save harvest error:', error);
-        } finally {
-            setIsSaving(false);
+        } else {
+            // New harvest requires apiary_id and hive_id logic fallback
+            if (!harvestInput.apiary_id && harvestInput.hive_id) {
+                const linkedHive = hives.find(h => h.id === harvestInput.hive_id);
+                if (linkedHive) harvestInput.apiary_id = linkedHive.apiary_id;
+            }
+
+            if (!harvestInput.apiary_id && !harvestInput.hive_id) {
+                toast.error('Please select a hive or apiary');
+                setIsSaving(false);
+                return;
+            }
+
+            const { data, error } = await beeyieldService.createHarvest(harvestInput);
+            if (data && !error) {
+                setAllHarvests([data, ...allHarvests]);
+                setIsAddingHarvest(false);
+                resetForm();
+                toast.success('Harvest record created');
+            }
         }
+        setIsSaving(false);
     };
 
     const handleDelete = async (id: string) => {
         if (!confirm('Are you sure you want to delete this harvest record?')) return;
-        try {
-            await deleteHarvestMutation.mutateAsync(id);
+        const { error } = await beeyieldService.deleteHarvest(id);
+        if (!error) {
+            setAllHarvests(allHarvests.filter(h => h.id !== id));
+            toast.success('Harvest record deleted');
             if (selectedHarvest?.id === id) setSelectedHarvest(null);
-        } catch (error) {
-            console.error('Delete harvest error:', error);
         }
     };
-
 
     if (isAddingHarvest) {
         return (
@@ -239,10 +247,10 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                                 <Label className="text-gray-600 dark:text-gray-400 font-normal">Harvest date</Label>
                                 <div className="relative">
                                     <Input
-                                        value={format(harvestDate, 'yyyy-MM-dd')}
+                                        value={format(date, 'M/d/yyyy')}
                                         onChange={(e) => {
                                             const d = new Date(e.target.value);
-                                            if (!isNaN(d.getTime())) setHarvestDate(d);
+                                            if (!isNaN(d.getTime())) setDate(d);
                                         }}
                                         type="date"
                                         className="h-12 bg-white dark:bg-[#2a2a2a] border-gray-200 dark:border-gray-700 rounded-xl text-lg pr-10"
@@ -265,8 +273,8 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                                             <div className="relative">
                                                 <Database className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400" />
                                                 <Input
-                                                    value={batchId}
-                                                    onChange={(e) => setBatchId(e.target.value)}
+                                                    value={batchCode}
+                                                    onChange={(e) => setBatchCode(e.target.value)}
                                                     className="h-10 pl-8 bg-white dark:bg-[#2a2a2a] border-gray-200 dark:border-gray-700 rounded-lg text-sm font-mono"
                                                 />
                                             </div>
@@ -369,32 +377,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-12 relative">
 
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">Harvests</h1>
-
-                <div className="flex items-center gap-4 bg-white dark:bg-gray-800 p-2 pl-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
-                    <div className="flex flex-col">
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Yearly Aggregate</span>
-                        <div className="flex items-baseline gap-1">
-                            <span className="text-xl font-black text-[#F4D03F]">
-                                {allHarvests
-                                    .filter(h => new Date(h.harvest_date).getFullYear() === new Date().getFullYear())
-                                    .reduce((sum, h) => sum + (h.quantity_kg || 0), 0)
-                                    .toFixed(1)}
-                            </span>
-                            <span className="text-[10px] font-bold text-gray-400">kg</span>
-                        </div>
-                    </div>
-                    <div className="w-px h-8 bg-gray-100 dark:bg-gray-700 mx-2"></div>
-                    <Button
-                        onClick={() => { resetForm(); setIsAddingHarvest(true); }}
-                        className="bg-[#F4D03F] hover:bg-[#D4AF37] text-white rounded-xl h-10 px-4 font-bold transition-all"
-                    >
-                        <Plus className="w-4 h-4 mr-2" />
-                        Quick Add
-                    </Button>
-                </div>
-            </div>
+            <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">Harvests</h1>
 
             {/* Productivity Overview Card */}
             <Card className="rounded-[2rem] border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm overflow-hidden p-1">
@@ -402,10 +385,10 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                     <div className="flex justify-between items-start mb-6">
                         <div>
                             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">PRODUCTIVITY OVERVIEW</p>
-                            <h2 className="text-4xl font-bold text-gray-900 dark:text-white">{quickYear || "2026"}</h2>
+                            <h2 className="text-4xl font-bold text-gray-900 dark:text-white">{quickYear === 'all' ? "All Time" : (quickYear || "2026")}</h2>
                         </div>
                         <div className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-bold text-sm">
-                            {quickYear || "2026"}
+                            {quickYear === 'all' ? "All Time" : (quickYear || "2026")}
                         </div>
                     </div>
 
@@ -699,11 +682,17 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" className="w-full h-12 rounded-2xl border-gray-200 dark:border-gray-700 justify-between font-medium text-gray-700 dark:text-gray-300">
-                                    {quickYear || "Custom range"}
+                                    {quickYear === 'all' ? "All Time" : (quickYear || "Custom range")}
                                     <ChevronDown className="w-4 h-4 opacity-50" />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] rounded-xl bg-white dark:bg-[#1e1e1e] border-gray-200 dark:border-gray-700">
+                                <DropdownMenuItem
+                                    onClick={() => setQuickYear('all')}
+                                    className="py-3 font-bold text-gray-700 dark:text-gray-300 cursor-pointer focus:bg-[#F4D03F]/5 dark:focus:bg-amber-900/10"
+                                >
+                                    All Time
+                                </DropdownMenuItem>
                                 {[2026, 2025, 2024, 2023, 2022, 2021, 2020].map((year) => (
                                     <DropdownMenuItem
                                         key={year}

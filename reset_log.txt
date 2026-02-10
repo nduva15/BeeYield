@@ -1,0 +1,23 @@
+﻿node.exe : Resetting local 
+database...
+At C:\Program 
+Files\nodejs\npx.ps1:29 char:3
++   & $NODE_EXE $NPX_CLI_JS 
+$args
++   
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : N 
+   otSpecified: (Resetting loc  
+  al database...:String) [],    
+ RemoteException
+    + FullyQualifiedErrorId : N 
+   ativeCommandError
+ 
+failed to remove container: 
+Error response from daemon: 
+removal of container 
+supabase_db_Honey is already in 
+progress
+Try rerunning the command with 
+--debug to troubleshoot the 
+error.

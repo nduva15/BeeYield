@@ -53,3 +53,18 @@ def get_dashboard_stats(user_id: str) -> Dict[str, Any]:
         "avgHiveWeight": round(avg_weight, 1),
         "healthScore": round(health_score)
     }
+def create_device(data: Dict[str, Any]) -> Dict[str, Any]:
+    # Ensure mandatory fields
+    if "status" not in data:
+        data["status"] = "active"
+    if "battery_level" not in data:
+        data["battery_level"] = 100
+    if "firmware_version" not in data:
+        data["firmware_version"] = "1.0.0"
+    if "last_ping" not in data:
+        data["last_ping"] = datetime.utcnow().isoformat()
+        
+    result = db_insert("iot_devices", data)
+    if result.get("success"):
+        return result["data"][0] if result.get("data") else data
+    return data

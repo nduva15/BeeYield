@@ -117,7 +117,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
 
     // State for modules
     const [modules, setModules] = useState([
-        { id: 'beeyield', icon: Sparkles, label: 'BeeYield AI', desc: t('beeyield_desc'), enabled: true, priority: true },
+        { id: 'beeyield', icon: Sparkles, label: 'BeeYield System', desc: t('beeyield_desc'), enabled: true, priority: true },
         { id: 'iot', icon: Settings2, label: 'IoT Core', desc: t('iot_desc'), enabled: true },
         { id: 'traceability', icon: HelpCircle, label: 'Traceability', desc: t('traceability_desc'), enabled: true },
         { id: 'training', icon: BookOpen, label: 'Learning Hub', desc: t('training_desc'), enabled: false },

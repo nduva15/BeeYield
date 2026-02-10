@@ -282,11 +282,19 @@ def subscribe_newsletter(
     try:
         # Wrap email in a try-except to ensure we return success if DB/Offline worked
         try:
+            subject = "Welcome to the BeeYield Hive! 🐝"
+            body = f"Hi {request_in.first_name or 'there'},\n\nThanks for subscribing to our newsletter! You'll now be the first to know about our latest updates, honey harvests, and pollination insights.\n\nStay buzzing,\nThe BeeYield Team"
+            
+            # Special content for starter guide download
+            if request_in.source == 'starter_guide_download':
+                subject = "Your Free Beekeeping Starter Guide 🐝"
+                body = f"Hi {request_in.first_name or 'there'},\n\nThank you for requesting our Beekeeping Starter Guide! Attached (simulated) is your comprehensive 85-page PDF covering hive selection, bee health, and honey harvesting.\n\nDownload Link: https://assets.beeyield.com/guides/beekeeping-starter-guide.pdf\n\nWe hope this helps you start your journey into sustainable beekeeping!\n\nStay buzzing,\nThe BeeYield Team"
+
             background_tasks.add_task(
                 email.send_email,
                 request_in.email,
-                "Welcome to the BeeYield Hive! 🐝",
-                f"Hi {request_in.first_name or 'there'},\n\nThanks for subscribing to our newsletter! You'll now be the first to know about our latest updates, honey harvests, and pollination insights.\n\nStay buzzing,\nThe BeeYield Team"
+                subject,
+                body
             )
         except Exception as email_err:
             print(f"⚠️ Newsletter Email Notification failed (Non-critical): {email_err}")

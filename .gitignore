@@ -9,6 +9,7 @@ lerna-debug.log*
 
 # Dependencies
 node_modules
+vendor
 .pnpm-store
 
 # Environment
@@ -21,6 +22,7 @@ node_modules
 backend/.env
 
 # Editor / OS
+.vscode
 .vscode/*
 !.vscode/extensions.json
 .idea

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ChevronDown, ShoppingBag, User, Shield, LogIn, UserPlus, LogOut, LayoutDashboard, HardDrive } from "lucide-react";
+import { Menu, X, ChevronDown, ShoppingBag, User, Shield, LogIn, UserPlus } from "lucide-react";
 import { Button } from "./ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/contexts/CartContext";
@@ -70,7 +70,7 @@ const Header = () => {
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="focus:bg-primary/80 focus:text-primary-foreground">
                 <Link to="/in-land-pollination" className="w-full cursor-pointer px-4 py-3 text-base font-medium text-primary-foreground hover:bg-primary/80 rounded-lg">
-                  In-Land Pollination Insights Platform
+                  In-Land Pollination Insights
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="focus:bg-primary/80 focus:text-primary-foreground">
@@ -97,12 +97,11 @@ const Header = () => {
           </Link>
         </div>
 
-        {/* Right side - Actions (all devices) */}
-        <div className="flex items-center space-x-1 sm:space-x-3 lg:space-x-4">
-          {/* Permanent BeeYield Dashboard Shortcut */}
+        {/* Right side - Traceability Button & Menu (all devices) */}
+        <div className="flex items-center space-x-2 sm:space-x-4">
           <Link
             to="/beeyield-dashboard"
-            className="p-2 hover:bg-muted rounded-full transition-all active:scale-90 group flex items-center justify-center"
+            className="p-2 hover:bg-muted rounded-full transition-all active:scale-90 group mr-1 flex items-center justify-center"
             title="BeeYield Dashboard"
           >
             <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
@@ -157,62 +156,6 @@ const Header = () => {
 
           {/* Menu Panel */}
           <div className="fixed right-2 sm:right-4 top-14 sm:top-16 z-50 w-[calc(100%-1rem)] sm:w-80 max-h-[calc(100vh-4rem)] overflow-y-auto rounded-2xl bg-primary p-4 sm:p-6 shadow-xl animate-in fade-in slide-in-from-top-2">
-            {/* User Account Section */}
-            <div className="flex flex-col space-y-1 pb-4 border-b border-primary-foreground/20">
-              <span className="text-xs uppercase tracking-wider text-primary-foreground/60 px-3 py-1 font-medium">User Account</span>
-              {user ? (
-                <>
-                  <div className="px-3 py-2 mb-2">
-                    <p className="text-[10px] font-medium text-primary-foreground/60 uppercase tracking-wider">Authenticated as</p>
-                    <p className="text-sm font-bold text-primary-foreground truncate">{user.email}</p>
-                  </div>
-                  <Link
-                    to="/my-account"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center gap-2 px-3 py-2.5 rounded-lg hover:bg-primary-foreground/10 text-primary-foreground transition-colors group"
-                  >
-                    <LayoutDashboard className="h-4 w-4 group-hover:scale-110 transition-transform" />
-                    <span className="text-sm font-semibold">My Buyer Account</span>
-                  </Link>
-                  <Link
-                    to="/beeyield-dashboard"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center gap-2 px-3 py-2.5 rounded-lg hover:bg-primary-foreground/10 text-primary-foreground transition-colors group"
-                  >
-                    <Shield className="h-4 w-4 group-hover:scale-110 transition-transform" />
-                    <span className="text-sm font-semibold">BeeYield Dashboard</span>
-                  </Link>
-                  <Link
-                    to="/my-devices"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center gap-2 px-3 py-2.5 rounded-lg hover:bg-primary-foreground/10 text-primary-foreground transition-colors group"
-                  >
-                    <HardDrive className="h-4 w-4 group-hover:scale-110 transition-transform" />
-                    <span className="text-sm font-semibold">My Devices</span>
-                  </Link>
-                  <button
-                    onClick={() => {
-                      signOut();
-                      setIsMenuOpen(false);
-                    }}
-                    className="flex items-center gap-2 px-3 py-2.5 rounded-lg hover:bg-red-500/20 text-red-200 transition-colors w-full text-left group"
-                  >
-                    <LogOut className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    <span className="text-sm font-bold">Sign Out</span>
-                  </button>
-                </>
-              ) : (
-                <Link
-                  to="/login"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-white/10 hover:bg-white/20 text-yellow-300 border border-yellow-300/30 transition-colors group"
-                >
-                  <LogIn className="h-4 w-4 group-hover:scale-110 transition-transform" />
-                  <span className="text-sm font-black uppercase tracking-widest">Sign In / Register</span>
-                </Link>
-              )}
-            </div>
-
             {/* Main Navigation Section */}
             <div className="flex flex-col space-y-1 pb-4 border-b border-primary-foreground/20">
               <span className="text-xs uppercase tracking-wider text-primary-foreground/60 px-3 py-1 font-medium">Main Navigation</span>
@@ -238,7 +181,7 @@ const Header = () => {
                     className={`text-sm font-medium hover:bg-primary-foreground/10 rounded-lg px-3 py-2 transition-colors ${isActive("/precision-pollination") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground/90"
                       }`}
                   >
-                    In-Hive Precision Pollination
+                    Hive Monitoring
                   </Link>
                   <Link
                     to="/in-land-pollination"
@@ -246,7 +189,7 @@ const Header = () => {
                     className={`text-sm font-medium hover:bg-primary-foreground/10 rounded-lg px-3 py-2 transition-colors ${isActive("/in-land-pollination") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground/90"
                       }`}
                   >
-                    In-Land Pollination Insights
+                    Land Analysis
                   </Link>
                   <Link
                     to="/diseases"
@@ -279,6 +222,16 @@ const Header = () => {
 
             {/* Secondary Links Section */}
             <div className="flex flex-col space-y-1 pt-4">
+              <span className="text-xs uppercase tracking-wider text-primary-foreground/60 px-3 py-1 font-medium mt-2">My Dashboard</span>
+              <Link
+                to="/beeyield-dashboard"
+                onClick={() => setIsMenuOpen(false)}
+                className={`text-sm sm:text-base font-black hover:bg-white/20 rounded-lg px-3 py-2.5 sm:py-3 transition-colors bg-white/10 text-yellow-300 border border-yellow-300/30 flex items-center justify-between mb-2 ${isActive("/beeyield-dashboard") ? "ring-2 ring-yellow-300" : ""}`}
+              >
+                Dashboard
+                <Shield className="h-4 w-4" />
+              </Link>
+
               <span className="text-xs uppercase tracking-wider text-primary-foreground/60 px-3 py-1 font-medium mt-2">More</span>
 
               {menuLinks.map((link) => (
