@@ -6,7 +6,7 @@ from app.api.api_v1.endpoints import (
     company, auth, traceability, contact, 
     forms, shop, blog, careers, media, 
     services, jobs, analytics, notes, admin, iot, ai,
-    admin_extended, meters, beeyield, pollination, inspections,
+    admin_extended, meters, beeyield, pollination, inspections, reports,
     ai_assistant, settings, payments
 )
 
@@ -18,6 +18,7 @@ api_router.include_router(meters.router, prefix="/meters", tags=["Meters"])
 
 # BeeYield Dashboard (User-specific data)
 api_router.include_router(beeyield.router, prefix="/beeyield", tags=["BeeYield Dashboard"])
+api_router.include_router(reports.router, prefix="/beeyield/reports", tags=["BeeYield Reports"])
 
 # Precision Pollination endpoint
 api_router.include_router(pollination.router, prefix="/pollination", tags=["Precision Pollination"])

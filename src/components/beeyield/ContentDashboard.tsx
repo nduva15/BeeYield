@@ -222,7 +222,7 @@ const ContentDashboard = () => {
                 <Card className="bg-primary/10 border-primary/20">
                     <CardHeader className="py-4 flex flex-row items-center justify-between">
                         <div>
-                            <CardTitle className="text-sm font-medium text-primary">Content Engine</CardTitle>
+                            <CardTitle className="text-sm font-medium text-primary">Content Hub</CardTitle>
                             <div className="text-sm font-bold mt-1 text-primary">Active</div>
                         </div>
                         <Button onClick={handleCreatePost} size="sm">
@@ -268,7 +268,7 @@ const ContentDashboard = () => {
             <ScrollArea className="flex-1">
                 <div className="flex gap-4 pb-6 min-w-[1200px]">
                     <KanbanColumn
-                        title="Idea Backlog"
+                        title="Idea List"
                         status="idea"
                         posts={filteredPosts.filter(p => p.status === 'idea')}
                         onDragStart={handleDragStart}
@@ -276,7 +276,7 @@ const ContentDashboard = () => {
                         onEdit_={handleEditPost}
                     />
                     <KanbanColumn
-                        title="Writing (AI Assist)"
+                        title="Writing (Helper)"
                         status="writing"
                         posts={filteredPosts.filter(p => p.status === 'writing')}
                         onDragStart={handleDragStart}
@@ -284,7 +284,7 @@ const ContentDashboard = () => {
                         onEdit_={handleEditPost}
                     />
                     <KanbanColumn
-                        title="SEO & AEO Review"
+                        title="Review"
                         status="seo_review"
                         posts={filteredPosts.filter(p => p.status === 'seo_review')}
                         onDragStart={handleDragStart}

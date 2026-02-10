@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     FileText, Download, Grid3X3, Box, Check, LayoutGrid, FileInput,
     Calendar, History, Plus, Bell, MoreVertical, ExternalLink,
-    AlertCircle, CheckCircle2, Clock, Sparkles, X, Trash2, Shield
+    AlertCircle, CheckCircle2, Clock, Sparkles, X, Trash2, Shield, Loader2, Bot
 } from 'lucide-react';
 import { beeyieldService, Apiary, Hive, GeneratedReport, ScheduledReport } from '@/services/beeyieldService';
 import { cn } from '@/lib/utils';
@@ -27,6 +27,8 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [isAISynthesizing, setIsAISynthesizing] = useState(false);
     const [genProgress, setGenProgress] = useState(0);
+
+    const [isLoading, setIsLoading] = useState(true);
 
     const [reports, setReports] = useState<GeneratedReport[]>([]);
     const [schedules, setSchedules] = useState<ScheduledReport[]>([]);
@@ -60,6 +62,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
     });
 
     const loadData = async () => {
+        setIsLoading(true);
         try {
             const [apiariesData, hivesData, reportsData, schedulesData] = await Promise.all([
                 beeyieldService.getApiaries(),
@@ -74,6 +77,8 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
         } catch (error) {
             console.error('Failed to load data for reports', error);
             toast.error('Sync failed');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -231,6 +236,21 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
 
     const currentPlace = apiaries.find(a => a.id === selectedPlace);
 
+    if (isLoading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[500px] space-y-6">
+                <div className="relative">
+                    <div className="w-20 h-20 border-4 border-[#1B9157]/10 rounded-full" />
+                    <Loader2 className="w-20 h-20 text-[#1B9157] animate-spin absolute inset-0" />
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                    <p className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">Synchronizing Reports</p>
+                    <p className="text-sm text-gray-500 font-medium font-mono">NEURAL HIVE LINK ACTIVE</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-12 animate-in fade-in duration-700 pb-20 px-2 lg:px-4">
 
@@ -242,22 +262,22 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                             <History className="w-6 h-6 text-[#F4D03F]" strokeWidth={2.5} />
                         </div>
                         <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight leading-none">
-                            Reports & Exports
+                            {t('reports_title')}
                         </h1>
                     </div>
                     <p className="text-gray-500 dark:text-gray-400 text-lg max-w-2xl">
-                        Synthesize your apiculture data into actionable insights and professional documents.
+                        {t('reports_desc')}
                     </p>
                 </div>
 
                 <div className="flex items-center gap-8 bg-white dark:bg-[#09090b] p-6 rounded-[2rem] border border-gray-100 dark:border-[#1e1e1e] shadow-sm">
                     <div className="flex flex-col">
-                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Reports</span>
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{t('total_reports')}</span>
                         <span className="text-2xl font-bold text-gray-900 dark:text-white">{reports.length}</span>
                     </div>
                     <div className="w-px h-10 bg-gray-100 dark:bg-gray-800" />
                     <div className="flex flex-col">
-                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Schedules</span>
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{t('schedules')}</span>
                         <span className="text-2xl font-bold text-[#10B981]">{schedules.filter(s => s.is_active).length}</span>
                     </div>
                 </div>
@@ -291,7 +311,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                             <div className="space-y-6">
                                 <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.25em] flex items-center gap-3">
                                     <Grid3X3 className="w-4 h-4" />
-                                    Define Report Content
+                                    {t('define_content')}
                                 </h3>
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                     {sectionOptions.map((section) => (
@@ -329,7 +349,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                             <div className="space-y-6">
                                 <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.25em] flex items-center gap-3">
                                     <Clock className="w-4 h-4" />
-                                    Temporal Scope
+                                    {t('temporal_scope')}
                                 </h3>
                                 <div className="flex flex-wrap gap-3">
                                     {['7', '30', '90', '365'].map((days) => (
@@ -343,7 +363,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                                     : "bg-white dark:bg-[#1e1e1e] text-gray-600 border-gray-100 dark:border-[#1e1e1e] hover:border-[#F4D03F]"
                                             )}
                                         >
-                                            Last {days === '365' ? 'Year' : `${days} Days`}
+                                            {days === '365' ? t('last_year') : t(`last_${days}_days`)}
                                         </button>
                                     ))}
                                 </div>
@@ -354,7 +374,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                         <div className="lg:col-span-4 space-y-10">
                             <div className="bg-[#F8FAFC] dark:bg-[#111111] rounded-[2.5rem] p-8 space-y-8 border border-gray-100 dark:border-[#1e1e1e]">
                                 <div className="space-y-4">
-                                    <h4 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-wider">Export Format</h4>
+                                    <h4 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-wider">{t('export_format')}</h4>
                                     <div className="grid grid-cols-2 gap-3">
                                         <button
                                             onClick={() => setSelectedFormat('PDF')}
@@ -409,16 +429,16 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                         <Bell className="w-5 h-5 text-amber-600" />
                                     </div>
                                     <div className="space-y-2">
-                                        <h4 className="text-sm font-bold text-amber-900 dark:text-amber-400">Automated Reports</h4>
+                                        <h4 className="text-sm font-bold text-amber-900 dark:text-amber-400">{t('scheduled_reports')}</h4>
                                         <p className="text-xs text-amber-800/60 dark:text-amber-500/60 leading-relaxed font-medium">
-                                            Setup weekly summaries to be sent directly to your email.
+                                            {t('create_first_schedule')}
                                         </p>
                                         <Button
                                             onClick={() => setIsScheduleModalOpen(true)}
                                             variant="link"
                                             className="px-0 h-auto text-amber-600 dark:text-amber-400 font-bold text-xs p-0 mt-2"
                                         >
-                                            CONFIGURE SCHEDULE →
+                                            {t('add_schedule')} →
                                         </Button>
                                     </div>
                                 </div>
@@ -435,7 +455,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                     <div className="flex items-center justify-between px-2">
                         <div className="flex items-center gap-3">
                             <History className="w-5 h-5 text-[#F4D03F]" />
-                            <h3 className="text-xl font-bold text-[#0F172A] dark:text-white">Export History</h3>
+                            <h3 className="text-xl font-bold text-[#0F172A] dark:text-white">{t('export_history')}</h3>
                         </div>
                         <Button variant="ghost" className="text-[#F4D03F] font-bold text-sm">View All</Button>
                     </div>
@@ -444,7 +464,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                         {reports.length === 0 ? (
                             <div className="py-12 bg-gray-50/50 dark:bg-[#1e1e1e]/10 border-2 border-dashed border-gray-100 dark:border-[#1e1e1e] rounded-[2rem] flex flex-col items-center justify-center text-gray-500 italic text-sm">
                                 <History className="w-8 h-8 opacity-20 mb-3" />
-                                No recent exports found.
+                                {t('no_exports')}
                             </div>
                         ) : (
                             reports.slice(0, 5).map((report) => (
@@ -484,14 +504,14 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                     <div className="flex items-center justify-between px-2">
                         <div className="flex items-center gap-3">
                             <Calendar className="w-5 h-5 text-[#F4D03F]" />
-                            <h3 className="text-xl font-bold text-[#0F172A] dark:text-white">Active Schedules</h3>
+                            <h3 className="text-xl font-bold text-[#0F172A] dark:text-white">{t('scheduled_reports')}</h3>
                         </div>
                         <Button
                             onClick={() => setIsScheduleModalOpen(true)}
                             className="bg-[#F4D03F] text-black hover:bg-[#E2BC1F] rounded-full px-5 h-9 font-bold text-xs gap-2"
                         >
                             <Plus className="w-4 h-4" />
-                            NEW SCHEDULE
+                            {t('add_schedule')}
                         </Button>
                     </div>
 
@@ -499,7 +519,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                         {schedules.length === 0 ? (
                             <div className="py-12 bg-gray-50/50 dark:bg-[#1e1e1e]/10 border-2 border-dashed border-gray-100 dark:border-[#1e1e1e] rounded-[2rem] flex flex-col items-center justify-center text-gray-500 italic text-sm">
                                 <Calendar className="w-8 h-8 opacity-20 mb-3" />
-                                No active report schedules.
+                                {t('no_schedules')}
                             </div>
                         ) : (
                             schedules.map((schedule) => (

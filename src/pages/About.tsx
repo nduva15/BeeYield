@@ -95,8 +95,8 @@ const About = () => {
                   <Target className="h-6 w-6 text-primary" />
                 </div>
                 <div className="sm:w-1/2 order-2 sm:order-2">
-                  <h3 className="text-2xl font-bold text-primary mb-2">Today: Precision Tech</h3>
-                  <p className="text-muted-foreground">Evolving into a Precision Pollination leader using IoT, Data, and AI to secure the future of food globally.</p>
+                  <h3 className="text-2xl font-bold text-primary mb-2">Today: Smart Technology</h3>
+                  <p className="text-muted-foreground">Evolving into a Precision Pollination leader using advanced technology and data to secure the future of food globally.</p>
                 </div>
               </div>
             </div>
@@ -167,9 +167,9 @@ const About = () => {
                 <div className="mb-6 inline-block rounded-2xl bg-white p-4 shadow-sm group-hover:scale-110 transition-transform">
                   <ShieldCheck className="h-8 w-8 text-amber-600" />
                 </div>
-                <h3 className="mb-3 text-2xl font-bold">HoneyChain™ Traceability</h3>
+                <h3 className="mb-3 text-2xl font-bold">Honey Journey Tracking</h3>
                 <p className="text-muted-foreground mb-6 line-clamp-3">
-                  Track every drop of honey from hive to jar. Verify our 50/50 harvest promise and meet the beekeeper.
+                  Track every drop of honey from hive to jar. See how we care for our bees and meet the beekeeper.
                 </p>
                 <Link to="/traceability" className="inline-flex items-center text-amber-700 dark:text-amber-400 font-semibold group-hover:translate-x-1 transition-transform">
                   Trace Your Honey <ArrowRight className="ml-2 h-4 w-4" />

@@ -58,7 +58,7 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
     // Filter states
     const [selectedPlace, setSelectedPlace] = useState<string>('');
     const [selectedHive, setSelectedHive] = useState<string>('');
-    const [quickYear, setQuickYear] = useState<string>('2026');
+    const [quickYear, setQuickYear] = useState<string>('all');
     const [selectedHarvest, setSelectedHarvest] = useState<Harvest | null>(null);
 
     // Form states
@@ -385,10 +385,10 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                     <div className="flex justify-between items-start mb-6">
                         <div>
                             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">PRODUCTIVITY OVERVIEW</p>
-                            <h2 className="text-4xl font-bold text-gray-900 dark:text-white">{quickYear || "2026"}</h2>
+                            <h2 className="text-4xl font-bold text-gray-900 dark:text-white">{quickYear === 'all' ? "All Time" : (quickYear || "2026")}</h2>
                         </div>
                         <div className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-bold text-sm">
-                            {quickYear || "2026"}
+                            {quickYear === 'all' ? "All Time" : (quickYear || "2026")}
                         </div>
                     </div>
 

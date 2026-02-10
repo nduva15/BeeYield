@@ -131,7 +131,7 @@ const generateFallbackHives = (hiveCount: number): HiveData[] => {
 const StatCard = ({ label, value, colorClass }: { label: string, value: number | string, colorClass: string }) => (
     <div className="bg-white dark:bg-[#111111] p-4 rounded-sm border border-gray-100 dark:border-white/5 shadow-sm relative overflow-hidden h-24 flex flex-col justify-between">
         <div className={cn("absolute top-0 left-0 w-full h-[3px]", colorClass)} />
-        <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{label}</p>
+        <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{label}</p>
         <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">{value}</p>
     </div>
 );
@@ -152,15 +152,15 @@ const SensorCard = ({ label, value, unit, icon: Icon, color, trend, trendValue, 
                 <Icon className="w-4 h-4 text-white" />
             </div>
             <div>
-                <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider leading-none mb-1">{label}</p>
+                <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider leading-none mb-1">{label}</p>
                 <h4 className="text-lg font-bold text-gray-800 dark:text-gray-200">
-                    {value}<span className="text-xs ml-0.5 opacity-50">{unit}</span>
+                    {value}<span className="text-sm ml-0.5 opacity-50">{unit}</span>
                 </h4>
             </div>
         </div>
         {trend && (
             <div className={cn(
-                "px-2 py-1 rounded text-[10px] font-bold uppercase",
+                "px-2 py-1 rounded text-xs font-bold uppercase",
                 trend === 'up' ? "bg-[#1B9157]/10 text-[#1B9157]" : trend === 'down' ? "bg-red-500/10 text-red-500" : "bg-gray-100 text-gray-500 dark:bg-white/5"
             )}>
                 {trend === 'up' ? '▲' : trend === 'down' ? '▼' : '•'} {trendValue}
@@ -404,13 +404,13 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                     <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                         {t('precision_pollination_title')}
                     </h1>
-                    <p className="text-sm font-semibold text-slate-400 dark:text-slate-500 mt-1">
+                    <p className="text-base font-semibold text-slate-400 dark:text-slate-500 mt-1">
                         {t('precision_pollination_subtitle')}
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2 bg-white dark:bg-[#111111] rounded-lg border border-gray-100 dark:border-white/5 px-3 py-2">
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Contract:</span>
+                        <span className="text-sm font-bold text-gray-400 uppercase tracking-wider">Contract:</span>
                         <Select value={String(hiveCount)} onValueChange={(v) => setHiveCount(Number(v))}>
                             <SelectTrigger className="h-6 w-16 rounded border-none bg-slate-50 dark:bg-white/5 font-bold text-sm p-1">
                                 <SelectValue />
@@ -421,9 +421,9 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                                 ))}
                             </SelectContent>
                         </Select>
-                        <span className="text-[10px] font-bold text-gray-400 uppercase">Hives</span>
+                        <span className="text-sm font-bold text-gray-400 uppercase">Hives</span>
                     </div>
-                    <Badge className="h-9 px-4 rounded-full bg-[#1B9157]/10 text-[#1B9157] font-bold text-[10px] uppercase tracking-wider border-none">
+                    <Badge className="h-9 px-4 rounded-full bg-[#1B9157]/10 text-[#1B9157] font-bold text-xs uppercase tracking-wider border-none">
                         <ShieldCheck className="w-3 h-3 mr-1.5" /> Live
                     </Badge>
                 </div>
@@ -447,7 +447,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                     <div className="bg-white dark:bg-[#111111] rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm p-6 flex-none">
                         <div className="flex items-center gap-2 mb-6">
                             <Calculator className="w-4 h-4 text-[#1B9157]" />
-                            <h3 className="text-sm font-black text-slate-800 dark:text-slate-200 uppercase tracking-tight">Pollination Calculator</h3>
+                            <h3 className="text-sm font-black text-slate-800 dark:text-slate-200 uppercase tracking-widest">Calculator</h3>
                         </div>
                         <div className="space-y-5">
                             <div className="space-y-1.5">
@@ -505,7 +505,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                             <div className="flex items-center justify-between mb-3">
                                 <div className="flex items-center gap-2">
                                     <Bot className="w-4 h-4 text-[#F4D03F]" />
-                                    <h4 className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">BeeYield AI</h4>
+                                    <h4 className="text-sm font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">BeeYield AI</h4>
                                 </div>
                                 <div className="flex items-center gap-1.5">
                                     <div className="relative flex h-2 w-2">
@@ -812,9 +812,9 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                                 <h4 className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">{t('hive_placement_title')}</h4>
                             </div>
                             <div className="flex gap-2">
-                                <Badge className="bg-[#1B9157]/10 text-[#1B9157] text-[9px] font-bold py-0.5 border-none">{results.healthyHives} Healthy</Badge>
-                                <Badge className="bg-[#F4D03F]/10 text-[#9a7f1e] text-[9px] font-bold py-0.5 border-none">{results.warningHives} Warning</Badge>
-                                <Badge className="bg-red-500/10 text-red-500 text-[9px] font-bold py-0.5 border-none">{results.criticalHives} Critical</Badge>
+                                <Badge className="bg-[#1B9157]/10 text-[#1B9157] text-xs font-bold py-0.5 border-none">{results.healthyHives} Healthy</Badge>
+                                <Badge className="bg-[#F4D03F]/10 text-[#9a7f1e] text-xs font-bold py-0.5 border-none">{results.warningHives} Warning</Badge>
+                                <Badge className="bg-red-500/10 text-red-500 text-xs font-bold py-0.5 border-none">{results.criticalHives} Critical</Badge>
                             </div>
                         </div>
 
@@ -977,8 +977,8 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                         <div className="p-1 px-3 bg-slate-900 rounded-xl flex items-center gap-2 cursor-pointer hover:bg-slate-800 transition-colors w-full">
                             <FileText className="w-4 h-4 text-[#F4D03F]" />
                             <div className="flex flex-col">
-                                <span className="text-[8px] font-black text-white/50 uppercase tracking-widest">Full Report</span>
-                                <span className="text-[10px] font-bold text-[#F4D03F]">DOWNLOAD PDF</span>
+                                <span className="text-xs font-black text-white/50 uppercase tracking-widest">Full Report</span>
+                                <span className="text-sm font-bold text-[#F4D03F]">DOWNLOAD PDF</span>
                             </div>
                         </div>
                     </div>

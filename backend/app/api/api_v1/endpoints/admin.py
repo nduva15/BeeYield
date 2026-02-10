@@ -272,7 +272,8 @@ def create_user(
             "user_metadata": {
                 "first_name": user_in.first_name,
                 "last_name": user_in.last_name,
-                "role": user_in.role
+                "role": user_in.role,
+                "full_name": f"{user_in.first_name} {user_in.last_name}".strip()
             },
             "email_confirm": True
         })
@@ -285,10 +286,19 @@ def create_user(
              raise HTTPException(status_code=400, detail="Failed to create user in auth")
             
         profile_data = {
-            "id": user_id, "email": user_in.email, "first_name": user_in.first_name,
-            "last_name": user_in.last_name, "role": user_in.role
+            "id": user_id, 
+            "email": user_in.email, 
+            "first_name": user_in.first_name,
+            "last_name": user_in.last_name,
+            "full_name": f"{user_in.first_name} {user_in.last_name}".strip(),
+            "role": user_in.role
         }
-        db_insert("profiles", profile_data)
+        res = db_insert("profiles", profile_data)
+        if not res.get("success"):
+            # Check if it's just a duplicate (common if trigger already ran)
+            if "duplicate key" not in res.get("error", "").lower():
+                print(f"Warning: Profile insertion failed: {res.get('error')}")
+                # We don't raise here because auth was successful, but we log it
         
         return {"status": "success", "user_id": user_id}
 
@@ -611,6 +621,22 @@ def create_apiary_admin(
     apiary_in: dict[str, Any],
     current_admin: dict = Depends(check_admin_role)
 ):
+    # If the input is a dict, we need to handle it or convert to schema
+    from app.schemas import traceability as schemas
+    if isinstance(apiary_in, dict):
+        # Ensure apiary_code is present or generate it
+        if not apiary_in.get('apiary_code'):
+            import uuid
+            apiary_in['apiary_code'] = f"APY-{str(uuid.uuid4())[:8].upper()}"
+        
+        # If it's a raw dict from admin panel, it might need conversion to schema or just direct register
+        try:
+            apiary_obj = schemas.ApiaryCreate(**apiary_in)
+            return traceability_service.register_apiary(apiary_obj)
+        except Exception as e:
+            # Fallback for partial data if schema validation fails
+            return traceability_service.register_apiary(apiary_in)
+    
     return traceability_service.register_apiary(apiary_in)
 
 @router.get("/hives", response_model=list[dict[str, Any]])

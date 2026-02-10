@@ -40,19 +40,13 @@ END;
 $admin_check$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, auth;
 
 -- Simplified version for stability
+-- Simplified version for stability
 CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS BOOLEAN AS $admin_check$
 BEGIN
     RETURN EXISTS (
         SELECT 1 FROM public.profiles
         WHERE id = (SELECT auth.uid()) AND role IN ('admin', 'super_admin', 'superadmin')
-    ) OR (
-        EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_profiles')
-        AND
-        EXISTS (
-            SELECT 1 FROM public.user_profiles
-            WHERE id = (SELECT auth.uid()) AND role IN ('admin', 'super_admin', 'superadmin')
-        )
     );
 END;
 $admin_check$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, auth;

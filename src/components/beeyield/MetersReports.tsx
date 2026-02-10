@@ -273,16 +273,16 @@ const MetersReports: React.FC = () => {
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
-            <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">Reports</h1>
+            <h1 className="text-4xl font-bold text-[#0F172A] dark:text-white tracking-tight">Reports</h1>
 
             {/* Header Summary */}
             <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm">
                 <CardHeader>
                     <div className="flex items-center gap-2">
                         <Activity className="w-5 h-5 text-[#1B9157]" />
-                        <CardTitle>Ready summaries for administrators</CardTitle>
+                        <CardTitle>Administrator Summaries</CardTitle>
                     </div>
-                    <CardDescription>Export PDF/XLS without heavy OMS workflows.</CardDescription>
+                    <CardDescription>Quickly export system reports.</CardDescription>
                 </CardHeader>
             </Card>
 
@@ -294,9 +294,9 @@ const MetersReports: React.FC = () => {
                             <FileText className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                             <h3 className="font-bold text-lg">Monthly report</h3>
                         </div>
-                        <p className="text-sm text-gray-500">Usage and cost summary</p>
+                        <p className="text-base text-gray-500">Usage and cost summary</p>
                         <div className="flex items-center justify-between mt-4">
-                            <span className="text-xs text-gray-400">Today 09:20</span>
+                            <span className="text-sm text-gray-400">Today 09:20</span>
                             <div className="flex gap-2">
                                 <Button variant="secondary" size="sm" onClick={() => handleGenerate('Monthly report')} disabled={loading === 'Monthly report'}>
                                     {loading === 'Monthly report' ? 'Generating...' : 'Generate report'}
@@ -315,9 +315,9 @@ const MetersReports: React.FC = () => {
                             <BarChart className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                             <h3 className="font-bold text-lg">Anomalies report</h3>
                         </div>
-                        <p className="text-sm text-gray-500">List of deviations and alarms</p>
+                        <p className="text-base text-gray-500">List of deviations and alarms</p>
                         <div className="flex items-center justify-between mt-4">
-                            <span className="text-xs text-gray-400">Yesterday 18:05</span>
+                            <span className="text-sm text-gray-400">Yesterday 18:05</span>
                             <div className="flex gap-2">
                                 <Button variant="secondary" size="sm" onClick={() => handleGenerate('Anomalies report')} disabled={loading === 'Anomalies report'}>
                                     {loading === 'Anomalies report' ? 'Generating...' : 'Generate report'}
@@ -336,9 +336,9 @@ const MetersReports: React.FC = () => {
                             <DollarSign className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                             <h3 className="font-bold text-lg">Cost report</h3>
                         </div>
-                        <p className="text-sm text-gray-500">Estimated costs by medium</p>
+                        <p className="text-base text-gray-500">Estimated costs by medium</p>
                         <div className="flex items-center justify-between mt-4">
-                            <span className="text-xs text-gray-400">Yesterday 14:12</span>
+                            <span className="text-sm text-gray-400">Yesterday 14:12</span>
                             <div className="flex gap-2">
                                 <Button variant="secondary" size="sm" onClick={() => handleGenerate('Cost report')} disabled={loading === 'Cost report'}>
                                     {loading === 'Cost report' ? 'Generating...' : 'Generate report'}
@@ -365,7 +365,7 @@ const MetersReports: React.FC = () => {
                             <div key={report.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                                 <div>
                                     <h4 className="font-semibold text-gray-900 dark:text-white">{report.name}</h4>
-                                    <p className="text-xs text-gray-500">{report.date}</p>
+                                    <p className="text-sm text-gray-500">{report.date}</p>
                                 </div>
                                 <Button variant="secondary" size="sm" onClick={() => handleDownload(report.name, report.data)} disabled={downloading === report.name}>
                                     {downloading === report.name ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Download className="w-4 h-4 mr-1" />Download</>}

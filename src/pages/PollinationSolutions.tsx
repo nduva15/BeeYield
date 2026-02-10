@@ -201,7 +201,7 @@ const PollinationSolutions = () => {
                 <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
                   <Cpu className="h-5 w-5 text-primary" />
                 </div>
-                <span className="font-bold text-lg">Intelligent Hives</span>
+                <span className="font-bold text-lg">Smart Hives</span>
               </div>
             </div>
           </div>
@@ -234,7 +234,7 @@ const PollinationSolutions = () => {
                 <BarChart3 className="h-6 w-6 text-primary" />
               </div>
               <h3 className="text-xl font-bold mb-3 text-foreground">Analyze</h3>
-              <p className="text-muted-foreground">Correlate colony strength with yield outcomes using AI models.</p>
+              <p className="text-muted-foreground">See how hive strength affects your crop yield.</p>
             </div>
             <div className="bg-card p-8 rounded-2xl shadow-sm border border-border">
               <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-6">

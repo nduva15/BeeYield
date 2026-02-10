@@ -374,15 +374,15 @@ export class LocalIntelligenceService {
 
         // 4. Handle generic conversational greetings/questions
         if (lowerMsg.includes('hello') || lowerMsg.includes('hi ') || lowerMsg.includes('hey')) {
-            return "Hello! I am the BeeYield Intelligence System (v2026.1). I am online and ready to assist with Hive Health, Disease Diagnostics, Harvest Protocols, and Precision Pollination data. How can I help?";
+            return "Hello! I am your BeeYield Helper. I'm here to help with hive health, diseases, honey harvesting, and pollination. How can I help?";
         }
 
         if (lowerMsg.includes('help')) {
-            return "I can help with:\n- **Diseases**: Varroa, AFB, EFB, Nosema...\n- **Bees**: Lifecycle, Queens, Drones...\n- **Honey**: Types (Acacia, Manuka...), properties...\n- **Management**: Seasonal calendars...\n- **Pollination**: Stocking rates, crop needs.";
+            return "I can help with:\n- **Diseases**: Varroa, AFB, EFB, Nosema...\n- **Bees**: Lifecycle, Queens, Drones...\n- **Honey**: Types (Acacia, Manuka...), properties...\n- **Management**: Seasonal calendars...\n- **Pollination**: Hives per acre, crop needs.";
         }
 
         // 5. Ultimate fallback
-        return "I am accessing the BeeYield Cloud Knowledgebase. I have retrieved your query referencing our deep-learning nodes. Please specify: are you asking about **Varroa Mites**, **Seasonal Management**, **Honey Processing**, or **Pollination Rates**?";
+        return "I'm checking our beekeeping guides to help with your question. Are you asking about **Varroa Mites**, **Seasonal Management**, **Honey Processing**, or **Pollination Rates**?";
     }
 }
 

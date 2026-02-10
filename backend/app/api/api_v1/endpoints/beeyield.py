@@ -378,7 +378,7 @@ def get_user_hives(
         filters["status"] = status_filter
     
     # 1. Owned hives
-    owned_hives = db_select("hives", filters=filters, order_by="created_at", ascending=False)
+    owned_hives = db_select("hives", filters=filters, order_by="created_at", ascending=False, limit=1000)
     
     
     
@@ -393,7 +393,7 @@ def get_user_hives(
             h_filters = {"apiary_id": apiary_id}
             if status_filter:
                 h_filters["status"] = status_filter
-            hives_in_shared = db_select("hives", filters=h_filters)
+            hives_in_shared = db_select("hives", filters=h_filters, limit=1000)
             shared_hives.extend(hives_in_shared)
     else:
         # Get all shared apiaries, then all hives inside them
@@ -402,7 +402,7 @@ def get_user_hives(
             h_filters = {"apiary_id": share["apiary_id"]}
             if status_filter:
                 h_filters["status"] = status_filter
-            hives = db_select("hives", filters=h_filters)
+            hives = db_select("hives", filters=h_filters, limit=1000)
             shared_hives.extend(hives)
 
     all_hives = owned_hives + shared_hives
@@ -541,7 +541,7 @@ def get_user_harvests(
     
     # 1. Owned harvests
     columns = "*,hive:hives(*,apiary:apiaries(*)),farmer:farmers(*)"
-    owned = db_select("harvests", filters=filters, columns=columns, order_by="harvest_date", ascending=False)
+    owned = db_select("harvests", filters=filters, columns=columns, order_by="harvest_date", ascending=False, limit=2000)
     
     
     # 2. Shared harvests
@@ -552,12 +552,12 @@ def get_user_harvests(
         if shares:
             h_filters = {"apiary_id": apiary_id}
             if hive_id: h_filters["hive_id"] = hive_id
-            shared = db_select("harvests", filters=h_filters, columns=columns)
+            shared = db_select("harvests", filters=h_filters, columns=columns, limit=1000)
     elif not hive_id:
         # Fetch all shared apiaries, then harvests
         shares = db_select("apiary_shares", filters={"shared_with_user_id": user_id})
         for share in shares:
-            shared.extend(db_select("harvests", filters={"apiary_id": share["apiary_id"]}, columns=columns))
+            shared.extend(db_select("harvests", filters={"apiary_id": share["apiary_id"]}, columns=columns, limit=1000))
     
     
     all_harvests = owned + shared

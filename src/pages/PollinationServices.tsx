@@ -43,7 +43,7 @@ const PollinationServices = () => {
         },
         {
             icon: Eye,
-            title: "Precision Field Mapping",
+            title: "Smart Field Mapping",
             description: "Visualizing bee distribution across your acreage to ensure uniform pollination coverage.",
             link: "/in-land-pollination"
         },
@@ -96,12 +96,11 @@ const PollinationServices = () => {
                             </Badge>
 
                             <h1 className="text-4xl sm:text-5xl md:text-6xl font-black leading-[1.1] tracking-tighter">
-                                Take Control of Your
-                                <span className="text-amber-500 block">Pollination Today.</span>
+                                BeeYield <span className="text-amber-500 block">Precision Pollination</span>
                             </h1>
 
                             <p className="text-lg sm:text-xl text-neutral-600 max-w-lg mx-auto lg:mx-0 leading-relaxed font-medium">
-                                With BeeYield's data-driven, managed pollination solutions for commercial crop growers.
+                                Data-driven pollination solutions for commercial crop growers.
                             </p>
 
                             <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center lg:justify-start">
@@ -383,7 +382,7 @@ const PollinationServices = () => {
                             The Standard
                         </Badge>
                         <h2 className="text-4xl md:text-6xl font-black text-foreground tracking-tighter">
-                            BEEYIELD <span className="text-amber-600 italic">DIFFERENCE</span>
+                            BEEYIELD <span className="text-amber-600 italic">PRECISION POLLINATION</span>
                         </h2>
                         <p className="text-xl text-muted-foreground max-w-3xl mx-auto font-medium">
                             We bring a complete ecosystem of technology, expertise, and accountability
@@ -515,7 +514,7 @@ const PollinationServices = () => {
                                     How does precision pollination differ from traditional beekeeping?
                                 </AccordionTrigger>
                                 <AccordionContent className="text-muted-foreground leading-relaxed font-medium text-base pb-6">
-                                    Traditional beekeeping involves placing hives near crops and hoping for the best. BeeYield's <strong className="font-bold text-foreground">Precision Pollination</strong> uses IoT sensors inside every hive and AI-optimized placement across the land. We monitor colony strength, bee activity, and weather patterns 24/7 to ensure maximum fertilization during the critical bloom phase, taking the guesswork out of the harvest.
+                                    Traditional beekeeping involves placing hives near crops and hoping for the best. BeeYield's <strong className="font-bold text-foreground">Precision Pollination</strong> uses smart sensors inside every hive and optimized placement across the land. We monitor colony health, bee activity, and weather patterns 24/7 to ensure maximum results, taking the guesswork out of the harvest.
                                 </AccordionContent>
                             </AccordionItem>
 

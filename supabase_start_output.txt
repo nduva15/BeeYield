@@ -1,5 +1,6 @@
-﻿node.exe :  db Skipped - Image 
-is already present locally 
+﻿node.exe :  mailpit Skipped - 
+Image is already present 
+locally 
 At C:\Program 
 Files\nodejs\npx.ps1:29 char:3
 +   & $NODE_EXE $NPX_CLI_JS 
@@ -7,35 +8,35 @@ $args
 +   
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     + CategoryInfo          : N 
-   otSpecified: ( db Skipped -  
-   I...resent locally :String   
+   otSpecified: ( mailpit Skip  
+  pe...resent locally :String   
  ) [], RemoteException
     + FullyQualifiedErrorId : N 
    ativeCommandError
  
+ storage Skipped - Image is 
+already present locally 
+ studio Skipped - Image is 
+already present locally 
  analytics Skipped - Image is 
 already present locally 
+ gateway Skipped - Image is 
+already present locally 
  api Skipped - Image is already 
+present locally 
+ edgeRuntime Skipped - Image is 
+already present locally 
+ vector Skipped - Image is 
+already present locally 
+ db Skipped - Image is already 
 present locally 
  auth Skipped - Image is 
 already present locally 
  realtime Skipped - Image is 
 already present locally 
- storage Skipped - Image is 
-already present locally 
  imgProxy Skipped - Image is 
 already present locally 
- gateway Skipped - Image is 
-already present locally 
- edgeRuntime Skipped - Image is 
-already present locally 
  pgmeta Skipped - Image is 
-already present locally 
- mailpit Skipped - Image is 
-already present locally 
- studio Skipped - Image is 
-already present locally 
- vector Skipped - Image is 
 already present locally 
 Starting database...
 Initialising schema...
@@ -183,6 +184,8 @@ NOTICE (00000): trigger
 "update_tasks_updated_at" for 
 relation "public.tasks" does 
 not exist, skipping
+Applying migration 2026020811300
+0_missing_form_tables.sql...
 Applying migration 2026020812000
 0_create_exec_sql_rpc.sql...
 Applying migration 2026020813300
@@ -258,8 +261,8 @@ skipping
 NOTICE (00000): table 
 "sensor_readings" does not 
 exist, skipping
-Applying migration 2026020824000
-0_image_analysis_module.sql...
+Applying migration 2026020823595
+9_image_analysis_module.sql...
 NOTICE (42701): column 
 "hive_count" of relation 
 "image_analyses" already 
@@ -354,8 +357,28 @@ full access" for relation
 skipping
 NOTICE (00000): policy "Admin 
 full access" for relation 
+"public.donations" does not 
+exist, skipping
+NOTICE (00000): policy "Admin 
+full access" for relation 
 "public.harvests" does not 
 exist, skipping
+NOTICE (00000): policy "Admin 
+full access" for relation 
+"public.contact_submissions" 
+does not exist, skipping
+NOTICE (00000): policy "Admin 
+full access" for relation 
+"public.pollination_requests" 
+does not exist, skipping
+NOTICE (00000): policy "Admin 
+full access" for relation 
+"public.newsletter_subscribers" 
+does not exist, skipping
+NOTICE (00000): policy "Admin 
+full access" for relation "publi
+c.newsletter_subscriptions" 
+does not exist, skipping
 NOTICE (00000): policy "Admin 
 full access" for relation 
 "public.tasks" does not exist, 
@@ -364,6 +387,10 @@ NOTICE (00000): policy "Admin
 full access" for relation 
 "public.inspections" does not 
 exist, skipping
+NOTICE (00000): policy "Admin 
+full access" for relation 
+"public.tracing_history" does 
+not exist, skipping
 NOTICE (00000): policy "Admin 
 full access" for relation 
 "public.profiles" does not 
@@ -1246,16 +1273,69 @@ NOTICE (00000): policy "Public
 upload resumes" for relation 
 "storage.objects" does not 
 exist, skipping
-Stopping containers...
-ERROR: must be owner of table 
-objects (SQLSTATE 42501)  
-At statement: 15                
-                        
-CREATE POLICY "Public upload 
-resumes" ON storage.objects
-FOR INSERT WITH CHECK 
-(bucket_id = 'resumes')         
-  
-Try rerunning the command with 
---debug to troubleshoot the 
-error.
+NOTICE (00000): Could not 
+create storage policies for 
+resumes bucket: must be owner 
+of table objects
+WARN: no files matched pattern: 
+supabase/seed.sql
+Starting containers...
+WARNING: Analytics on Windows 
+requires Docker daemon exposed 
+on tcp://localhost:2375.
+See https://supabase.com/docs/gu
+ides/local-development/cli/getti
+ng-started?queryGroups=platform&
+platform=windows#running-supabas
+e-locally for more details.
+Waiting for health checks...
+Started supabase local 
+development setup.
+
+Γò¡ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓò«
+Γöé ≡ƒöº Development Tools                 Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+Γöé Studio  Γöé http://127.0.0.1:54323     Γöé
+Γöé Mailpit Γöé http://127.0.0.1:54324     Γöé
+Γöé MCP     Γöé http://127.0.0.1:54321/mcp Γöé
+Γò░ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓò»
+
+Γò¡ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓò«
+Γöé ≡ƒîÉ APIs                                              Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+Γöé Project URL    Γöé http://127.0.0.1:54321              Γöé
+Γöé REST           Γöé http://127.0.0.1:54321/rest/v1      Γöé
+Γöé GraphQL        Γöé http://127.0.0.1:54321/graphql/v1   Γöé
+Γöé Edge Functions Γöé http://127.0.0.1:54321/functions/v1 Γöé
+Γò░ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓò»
+
+Γò¡ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓò«
+Γöé Γ¢ü Database                                                    Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+Γöé URL Γöé postgresql://postgres:postgres@127.0.0.1:54322/postgres Γöé
+Γò░ΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓò»
+
+Γò¡ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓò«
+Γöé ≡ƒöæ Authentication Keys                                       Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+Γöé Publishable Γöé sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH Γöé
+Γöé Secret      Γöé sb_secret_N7UND0UgjKTVK-Uodkm0Hg_xSvEMPvz      Γöé
+Γò░ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓò»
+
+Γò¡ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓò«
+Γöé ≡ƒôª Storage (S3)                                                               Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+Γöé URL        Γöé http://127.0.0.1:54321/storage/v1/s3                             Γöé
+Γöé Access Key Γöé 625729a08b95bf1b7ff351a663f3a23c                                 Γöé
+Γöé Secret Key Γöé 850181e4652dd023b7a98c58ae0d2d34bd487ee0cc3254aed6eda37307425907 Γöé
+Γöé Region     Γöé local                                                            Γöé
+Γò░ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓò»
+
+A new version of Supabase CLI 
+is available: v2.75.0 
+(currently installed v2.72.7)
+We recommend updating regularly 
+for new features and bug fixes: 
+https://supabase.com/docs/guides
+/cli/getting-started#updating-th
+e-supabase-cli

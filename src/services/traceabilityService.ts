@@ -1,5 +1,5 @@
 /**
- * Traceability Service - Powered by BeeYield HoneyChain
+ * Traceability Service - Powered by BeeYield Honey Trail
  */
 import { API_V1_URL } from "./api";
 
@@ -206,7 +206,7 @@ const generateMockData = (code: string): TraceResponse => {
         product_name: isAcacia ? "Premium Acacia Honey" : "Organic Wildflower Honey",
         verified: true,
         blockchain_verified: true,
-        verification_url: `https://chain.beeyield.com/verify/${code}`,
+        verification_url: `https://trail.beeyield.com/verify/${code}`,
         farmer: {
             farmer_id: "F-TIM-001",
             name: "Timothy Nduva",

@@ -95,7 +95,7 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                                     {t('dashboard_title')}
                                 </h1>
                                 <span className="text-[11px] font-semibold text-[#1B9157] tracking-[0.02em] uppercase">
-                                    {isAdmin ? t('admin_core') : t('main_hub')}
+                                    {isAdmin ? 'Admin' : 'Dashboard'}
                                 </span>
                             </div>
                         </motion.div>
@@ -115,11 +115,11 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                     <input
                         type="text"
                         placeholder={t('quick_search')}
-                        className="w-full bg-[#F5F5F5] border border-[#E5E5E5] rounded-2xl py-2.5 pl-10 pr-12 text-[13px] text-[#171717] placeholder:text-[#A3A3A3] focus:outline-none focus:ring-1 focus:ring-[#F4D03F] focus:border-[#F4D03F] focus:bg-white transition-all shadow-inner"
+                        className="w-full bg-[#F5F5F5] border border-[#E5E5E5] rounded-2xl py-2.5 pl-10 pr-12 text-sm text-[#171717] placeholder:text-[#A3A3A3] focus:outline-none focus:ring-1 focus:ring-[#F4D03F] focus:border-[#F4D03F] focus:bg-white transition-all shadow-inner"
                         readOnly
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                        <kbd className="px-1.5 py-0.5 rounded border border-[#E5E5E5] bg-white text-[10px] text-[#737373] font-sans shadow-sm">⌘K</kbd>
+                        <kbd className="px-1.5 py-0.5 rounded border border-[#E5E5E5] bg-white text-xs text-[#737373] font-sans shadow-sm">⌘K</kbd>
                     </div>
                 </motion.div>
             </div>
@@ -128,8 +128,8 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
             <div className="flex-1 px-4 space-y-8 overflow-y-auto custom-scrollbar-modern pb-6">
                 <div>
                     <motion.div variants={itemVariants} className="px-4 pb-3">
-                        <span className="text-[9px] font-bold text-[#D4D4D4] uppercase tracking-[0.15em]">
-                            {t('intelligence_explorer')}
+                        <span className="text-xs font-bold text-[#D4D4D4] uppercase tracking-widest">
+                            Menu
                         </span>
                     </motion.div>
 
@@ -286,7 +286,7 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
                             <div className="absolute inset-0 rounded-full bg-[#1B9157] animate-ping opacity-20" />
                         </div>
                         <span className="text-[10px] font-black text-[#1B9157] uppercase tracking-[0.1em] group-hover:tracking-[0.15em] transition-all">
-                            {t('system_normal')}
+                            Online
                         </span>
                     </motion.div>
                 </div>
