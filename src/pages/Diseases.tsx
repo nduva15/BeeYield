@@ -496,7 +496,7 @@ const Diseases = () => {
 
                                 <div className="mt-8 pt-8 border-t border-border">
                                     <p className="text-sm text-muted-foreground text-center">
-                                        <a href="#" className="hover:underline">Privacy Policy</a> • <a href="#" className="hover:underline">Terms of Service</a>
+                                        <a href="/privacy" className="hover:underline">Privacy Policy</a> • <a href="/terms" className="hover:underline">Terms of Service</a>
                                     </p>
                                 </div>
                             </div>

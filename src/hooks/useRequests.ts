@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { beeyieldService, SupportRequest, SupportRequestCreate, RequestComment } from '@/services/beeyieldService';
+import { beeyieldService, Request, RequestCreateInput } from '@/services/beeyieldService';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const requestKeys = {
     all: ['requests'] as const,
@@ -11,30 +12,34 @@ export const requestKeys = {
 };
 
 export function useRequests() {
+    const { user, beeyieldUser } = useAuth();
+    const userId = beeyieldUser?.id || user?.id;
+
     return useQuery({
-        queryKey: requestKeys.lists(),
-        queryFn: () => beeyieldService.getRequests(),
+        queryKey: [...requestKeys.lists(), userId],
+        queryFn: async () => {
+            const data = await beeyieldService.getRequests();
+            if (!userId) return data;
+            return data.filter(r => !r.user_id || r.user_id === userId);
+        },
         staleTime: 1000 * 30, // 30 seconds
     });
 }
 
 export function useRequestDetail(id: string) {
+    const { user, beeyieldUser } = useAuth();
+    const userId = beeyieldUser?.id || user?.id;
+
     return useQuery({
-        queryKey: requestKeys.detail(id),
+        queryKey: [...requestKeys.detail(id), userId],
         queryFn: async () => {
             const requests = await beeyieldService.getRequests();
-            return requests.find(r => r.id === id) || null;
+            const found = requests.find(r => r.id === id);
+            if (!found) return null;
+            if (userId && found.user_id && found.user_id !== userId) return null;
+            return found;
         },
         enabled: !!id,
-    });
-}
-
-export function useRequestComments(requestId: string) {
-    return useQuery({
-        queryKey: requestKeys.comments(requestId),
-        queryFn: () => beeyieldService.getRequestComments(requestId),
-        enabled: !!requestId,
-        refetchInterval: 1000 * 10, // Poll comments every 10s for "real-time" feel
     });
 }
 
@@ -42,23 +47,11 @@ export function useCreateRequest() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (input: SupportRequestCreate) => beeyieldService.createRequest(input),
+        mutationFn: (input: RequestCreateInput) => beeyieldService.createRequest(input),
         onSuccess: (response) => {
             if (response.data) {
                 queryClient.invalidateQueries({ queryKey: requestKeys.lists() });
             }
-        },
-    });
-}
-
-export function useAddComment() {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: ({ requestId, message }: { requestId: string; message: string }) =>
-            beeyieldService.addRequestComment(requestId, message),
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: requestKeys.comments(variables.requestId) });
         },
     });
 }

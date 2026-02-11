@@ -39,7 +39,7 @@ const Container = React.forwardRef<HTMLDivElement, ContainerProps>(
         return (
             <Component
                 ref={ref}
-                className={cn(containerVariants({ size, padding, className }))}
+                className={cn(containerVariants({ size, padding }), className)}
                 {...props}
             />
         );
@@ -82,7 +82,7 @@ const Section = React.forwardRef<HTMLDivElement, SectionProps>(
         return (
             <Component
                 ref={ref}
-                className={cn(sectionVariants({ spacing, bg, className }))}
+                className={cn(sectionVariants({ spacing, bg }), className)}
                 {...props}
             />
         );
@@ -133,7 +133,7 @@ const Grid = React.forwardRef<HTMLDivElement, GridProps>(
         return (
             <div
                 ref={ref}
-                className={cn(gridVariants({ cols, gap, align, className }))}
+                className={cn(gridVariants({ cols, gap, align }), className)}
                 {...props}
             />
         );
@@ -176,7 +176,7 @@ const Col = React.forwardRef<HTMLDivElement, ColProps>(
         return (
             <div
                 ref={ref}
-                className={cn(colVariants({ span, className }))}
+                className={cn(colVariants({ span }), className)}
                 {...props}
             />
         );

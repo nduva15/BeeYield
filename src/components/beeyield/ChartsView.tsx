@@ -28,22 +28,22 @@ const ChartsView: React.FC = () => {
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
             {/* Filters Section */}
-            <Card className="rounded-[2.5rem] border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm">
+            <Card className="rounded-[2.5rem] border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm">
                 <CardContent className="p-8">
                     <h3 className="text-sm font-extrabold text-[#091E42] dark:text-white mb-6">Filters</h3>
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
                         <div className="space-y-3">
-                            <label className="text-[13px] text-slate-400 font-bold">Building / apartment</label>
+                            <label className="text-[13px] text-slate-400 font-bold">Area</label>
                             <Input
                                 defaultValue="Kibwezi Main Area A"
-                                className="rounded-xl border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] h-11 text-[13px] font-semibold text-slate-300"
+                                className="rounded-xl border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 h-11 text-[13px] font-semibold text-slate-600 dark:text-slate-800"
                             />
                         </div>
                         <div className="space-y-3">
-                            <label className="text-[13px] text-slate-400 font-bold">Medium</label>
+                            <label className="text-[13px] text-slate-400 font-bold">Type</label>
                             <Select defaultValue="water">
-                                <SelectTrigger className="rounded-xl border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] h-11 text-[13px] font-semibold text-slate-300">
-                                    <SelectValue placeholder="Select medium" />
+                                <SelectTrigger className="rounded-xl border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 h-11 text-[13px] font-semibold text-slate-600 dark:text-slate-800">
+                                    <SelectValue placeholder="Select type" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="water">Water</SelectItem>
@@ -53,9 +53,9 @@ const ChartsView: React.FC = () => {
                             </Select>
                         </div>
                         <div className="space-y-3">
-                            <label className="text-[13px] text-slate-400 font-bold">Date range</label>
+                            <label className="text-[13px] text-slate-400 font-bold">Time period</label>
                             <Select defaultValue="7days">
-                                <SelectTrigger className="rounded-xl border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] h-11 text-[13px] font-semibold text-slate-300">
+                                <SelectTrigger className="rounded-xl border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 h-11 text-[13px] font-semibold text-slate-600 dark:text-slate-800">
                                     <SelectValue placeholder="Select range" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -65,23 +65,23 @@ const ChartsView: React.FC = () => {
                             </Select>
                         </div>
                         <div className="space-y-3">
-                            <label className="text-[13px] text-slate-400 font-bold">Compare</label>
+                            <label className="text-[13px] text-slate-400 font-bold">Compare with</label>
                             <Select defaultValue="main">
-                                <SelectTrigger className="rounded-xl border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] h-11 text-[13px] font-semibold text-slate-300">
+                                <SelectTrigger className="rounded-xl border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 h-11 text-[13px] font-semibold text-slate-600 dark:text-slate-800">
                                     <SelectValue placeholder="Select comparison" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="main">Main meter</SelectItem>
+                                    <SelectItem value="main">Main area</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
                         <div className="space-y-3">
                             <label className="text-[13px] text-slate-400 font-bold">Export</label>
                             <div className="flex gap-2">
-                                <Button variant="outline" className="flex-1 rounded-xl h-11 border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] gap-2 font-bold text-[11px] text-slate-900 dark:text-white uppercase shadow-none hover:bg-slate-50 transition-colors">
+                                <Button variant="outline" className="flex-1 rounded-xl h-11 border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 gap-2 font-bold text-[11px] text-slate-900 dark:text-slate-800 uppercase shadow-none hover:bg-slate-50 transition-colors">
                                     <FileText className="w-4 h-4" /> CSV
                                 </Button>
-                                <Button variant="outline" className="flex-1 rounded-xl h-11 border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] gap-2 font-bold text-[11px] text-slate-900 dark:text-white uppercase shadow-none hover:bg-slate-50 transition-colors">
+                                <Button variant="outline" className="flex-1 rounded-xl h-11 border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 gap-2 font-bold text-[11px] text-slate-900 dark:text-slate-800 uppercase shadow-none hover:bg-slate-50 transition-colors">
                                     <FileSpreadsheet className="w-4 h-4" /> XLS
                                 </Button>
                             </div>
@@ -90,17 +90,15 @@ const ChartsView: React.FC = () => {
                 </CardContent>
             </Card>
 
-
-
             {/* Charts Section */}
-            <Card className="rounded-[2.5rem] border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm overflow-hidden min-h-[500px]">
-                <div className="px-8 py-6 border-b border-gray-50 dark:border-gray-900 flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5 text-slate-900 dark:text-white" />
-                    <h3 className="text-sm font-extrabold text-[#091E42] dark:text-white">Charts</h3>
+            <Card className="rounded-[2.5rem] border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm overflow-hidden min-h-[500px]">
+                <div className="p-6 border-b border-gray-50 dark:border-gray-900 flex items-center gap-2">
+                    <Search className="w-4 h-4 text-gray-400" />
+                    <p className="text-xs font-medium text-gray-400">Usage trend</p>
                 </div>
                 <CardContent className="p-8">
                     <div className="mb-6">
-                        <p className="text-[13px] font-medium text-slate-400">Usage trend with highlighted anomalies</p>
+                        <p className="text-[13px] font-medium text-slate-400">Usage over time with issues marked</p>
                     </div>
                     <div className="h-[350px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
@@ -142,20 +140,20 @@ const ChartsView: React.FC = () => {
                 </CardContent>
             </Card>
 
-            {/* Bottom Grid: Anomalies & Insights */}
+            {/* Bottom Grid: Issues & Insights */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Detected Anomalies */}
+                {/* System issues */}
                 <div className="space-y-4">
-                    <h3 className="text-[15px] font-extrabold text-[#091E42] dark:text-white px-2">Detected anomalies</h3>
-                    <Card className="rounded-[2.5rem] border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm">
+                    <h3 className="text-[15px] font-extrabold text-[#091E42] dark:text-white px-2">System issues</h3>
+                    <Card className="rounded-[2.5rem] border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm">
                         <CardContent className="p-4 space-y-3">
                             {/* Spike Alert */}
                             <div className="p-5 rounded-3xl border border-gray-50 flex items-center justify-between">
                                 <div className="space-y-1">
-                                    <h4 className="text-[15px] font-extrabold text-[#091E42]">Sudden use of spike</h4>
+                                    <h4 className="text-[15px] font-extrabold text-[#091E42]">Sudden usage jump</h4>
                                     <p className="text-[13px] text-slate-400 font-medium">Kibwezi Main Area C · 3 hours</p>
                                 </div>
-                                <div className="bg-[#FFF1F2] dark:bg-[#FFF1F210] px-3.5 py-1 rounded-full flex items-center gap-2">
+                                <div className="bg-[#FFF1F2] px-3.5 py-1 rounded-full flex items-center gap-2">
                                     <div className="w-2.5 h-2.5 rounded-full bg-[#E11D48]" />
                                     <span className="text-[10px] font-extrabold text-[#E11D48] tracking-widest uppercase">Alert</span>
                                 </div>
@@ -163,10 +161,10 @@ const ChartsView: React.FC = () => {
                             {/* Drop Warning */}
                             <div className="p-5 rounded-3xl border border-gray-50 flex items-center justify-between">
                                 <div className="space-y-1">
-                                    <h4 className="text-[15px] font-extrabold text-[#091E42]">Unnatural drop</h4>
+                                    <h4 className="text-[15px] font-extrabold text-[#091E42]">Unexpected drop</h4>
                                     <p className="text-[13px] text-slate-400 font-medium">Kibwezi Main Area B · 12 hours</p>
                                 </div>
-                                <div className="bg-[#FFFBEB] dark:bg-[#FFFBEB10] px-3.5 py-1 rounded-full flex items-center gap-2">
+                                <div className="bg-[#FFFBEB] px-3.5 py-1 rounded-full flex items-center gap-2">
                                     <div className="w-2.5 h-2.5 rounded-full bg-[#D97706]" />
                                     <span className="text-[10px] font-extrabold text-[#D97706] tracking-widest uppercase">Warning</span>
                                 </div>
@@ -179,27 +177,27 @@ const ChartsView: React.FC = () => {
                 <div className="space-y-4">
                     <div className="flex items-center gap-2 px-2">
                         <TrendingUp className="w-5 h-5 text-slate-900" />
-                        <h3 className="text-[15px] font-extrabold text-[#091E42] dark:text-white">Insights</h3>
+                        <h3 className="text-[15px] font-extrabold text-[#091E42] dark:text-white">Quick tips</h3>
                     </div>
-                    <Card className="rounded-[2.5rem] border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm">
+                    <Card className="rounded-[2.5rem] border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm">
                         <CardContent className="p-4 space-y-3">
                             {/* Usage Peak */}
                             <div className="p-5 rounded-3xl border border-gray-50 flex items-center justify-between">
                                 <div className="space-y-1">
-                                    <h4 className="text-[15px] font-extrabold text-[#091E42]">Usage peak</h4>
+                                    <h4 className="text-[15px] font-extrabold text-[#091E42]">Highest usage</h4>
                                     <p className="text-[13px] text-slate-400 font-medium">Highest hour</p>
                                 </div>
-                                <div className="bg-slate-50 dark:bg-gray-900 px-4 py-2 rounded-xl border border-slate-100 dark:border-gray-800">
+                                <div className="bg-slate-50 dark:bg-slate-100 px-4 py-2 rounded-xl border border-slate-100 dark:border-slate-200">
                                     <span className="text-[13px] font-extrabold text-[#091E42]">+18%</span>
                                 </div>
                             </div>
                             {/* Usage Dip */}
                             <div className="p-5 rounded-3xl border border-gray-50 flex items-center justify-between">
                                 <div className="space-y-1">
-                                    <h4 className="text-[15px] font-extrabold text-[#091E42]">Usage dip</h4>
+                                    <h4 className="text-[15px] font-extrabold text-[#091E42]">Lowest usage</h4>
                                     <p className="text-[13px] text-slate-400 font-medium">Lowest day of week</p>
                                 </div>
-                                <div className="bg-slate-50 dark:bg-gray-900 px-4 py-2 rounded-xl border border-slate-100 dark:border-gray-800">
+                                <div className="bg-slate-50 dark:bg-slate-100 px-4 py-2 rounded-xl border border-slate-100 dark:border-slate-200">
                                     <span className="text-[13px] font-extrabold text-[#091E42]">-9%</span>
                                 </div>
                             </div>

@@ -25,14 +25,15 @@ type AuthMode = 'login' | 'register' | 'forgot-password';
 const ProfessionalAuth: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { user, loading: authLoading } = useAuth();
+    const { user, loading: authLoading, beeyieldUser } = useAuth();
     const [authMode, setAuthMode] = useState<AuthMode>('login');
 
     useEffect(() => {
-        if (user && !authLoading) {
+        // Redirect to dashboard if user is authenticated (check both path-based user and beeyield-specific user)
+        if ((user || beeyieldUser) && !authLoading) {
             navigate('/beeyield-dashboard');
         }
-    }, [user, authLoading, navigate]);
+    }, [user, beeyieldUser, authLoading, navigate]);
 
     if (authLoading) {
         return (
@@ -172,6 +173,7 @@ const ProfessionalAuth: React.FC = () => {
                                             <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                                                 <div className="pro-auth-forms">
                                                     <ForgotPasswordForm
+                                                        variant="professional"
                                                         onBackToLogin={() => setAuthMode('login')}
                                                     />
                                                 </div>

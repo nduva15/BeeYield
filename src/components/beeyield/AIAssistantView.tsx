@@ -282,11 +282,11 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                 {/* Pattern Overlay */}
                 <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
                     <svg className="w-full h-full" viewBox="0 0 100 100">
-                        <pattern id="neural-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                        <pattern id="hive-grid" width="20" height="20" patternUnits="userSpaceOnUse">
                             <circle cx="1" cy="1" r="0.5" fill="white" />
                             <path d="M 20 0 L 0 0 0 20" fill="none" stroke="white" strokeWidth="0.1" />
                         </pattern>
-                        <rect width="100%" height="100%" fill="url(#neural-grid)" />
+                        <rect width="100%" height="100%" fill="url(#hive-grid)" />
                     </svg>
                 </div>
 
@@ -294,7 +294,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                     <div className="space-y-6 max-w-2xl">
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full">
                             <Zap className="h-3 w-3 text-primary" />
-                            <span className="text-xs font-black text-primary uppercase tracking-[0.2em]">Verified Hub</span>
+                            <span className="text-xs font-black text-primary uppercase tracking-[0.2em]">BeeYield AI</span>
                         </div>
                         <h2 className="text-4xl lg:text-5xl font-black text-white uppercase tracking-tight leading-[1.1]">
                             {t('ai_hub_intelligence')}
@@ -409,7 +409,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                                 </div>
                                 <div>
                                     <h3 className="font-black text-2xl text-gray-900 dark:text-white uppercase tracking-tighter">
-                                        BeeYield Helper
+                                        BeeYield AI
                                     </h3>
                                 </div>
                                 <p className="text-xs text-amber-500 font-black uppercase tracking-[0.2em] flex items-center gap-2">
@@ -417,7 +417,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                                         "w-2 h-2 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)] animate-[pulse-fast_1s_infinite]",
                                         systemStatus.status === 'healthy' ? "bg-green-500" : "bg-amber-500"
                                     )} />
-                                    {systemStatus.status === 'healthy' ? t('neural_core_synchronized') : t('neural_core_online')}
+                                    {systemStatus.status === 'healthy' ? t('system_status_synchronized') : t('system_status_online')}
                                 </p>
                             </div>
                         </div>
@@ -500,7 +500,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                                                     "max-w-[80%] p-7 rounded-[2.25rem] shadow-lg relative overflow-hidden",
                                                     message.role === 'user'
                                                         ? "bg-primary text-black font-semibold rounded-br-none"
-                                                        : "bg-white/80 backdrop-blur-xl dark:bg-[#1e1e1e] text-gray-800 dark:text-gray-200 font-medium rounded-bl-none border border-white/40 dark:border-gray-800 shadow-xl"
+                                                        : "bg-white/80 backdrop-blur-xl dark:bg-slate-50 text-gray-800 dark:text-slate-900 font-medium rounded-bl-none border border-white/40 dark:border-slate-200 shadow-xl"
                                                 )}
                                             >
                                                 {message.role === 'assistant' && (
@@ -604,7 +604,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                                     onChange={(e) => setInputValue(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                                     placeholder={t('ask_ai_placeholder')}
-                                    className="w-full h-16 pl-6 pr-16 rounded-3xl bg-gray-50 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 focus-visible:ring-[#F4D03F]/20 border-[#F4D03F]/20 transition-all text-base font-medium"
+                                    className="w-full h-16 pl-6 pr-16 rounded-3xl bg-gray-50 dark:bg-slate-50 border-gray-100 dark:border-slate-200 focus-visible:ring-[#F4D03F]/20 border-[#F4D03F]/20 transition-all text-base font-medium"
                                 />
                                 <Button
                                     id="send-ai-message"
@@ -623,7 +623,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
             {/* Terms and Regulations Footer */}
             <div className="mt-8 text-center bg-white dark:bg-[#141414] py-4 rounded-3xl border border-gray-50 dark:border-[#1e1e1e] shadow-sm">
                 <p className="text-xs font-bold text-gray-400 flex items-center justify-center gap-1">
-                    {t('ai_terms_agree')}{' '}
+                    By chatting, you agree to our terms.
                     <a href="#" className="text-amber-500 hover:underline">
                         {t('terms_regulations')}
                     </a>

@@ -88,12 +88,17 @@ export interface IoTDeviceCreateInput {
 export interface SensorReading {
     id: string;
     device_id: string;
+    hive_id?: string;
     sensor_type: 'infield' | 'inland' | 'disease';
     timestamp: string;
     status: string;
     readings: InfieldReadings | InlandReadings | DiseaseReadings;
     signal_strength?: number;
     battery_level?: number;
+    // Flat accessors for common fields
+    temperature?: number;
+    humidity?: number;
+    weight?: number;
 }
 
 export interface DashboardStats {
@@ -240,6 +245,7 @@ export interface ApiaryCreateInput {
 // ========== HIVE TYPES ==========
 export interface Hive {
     id: string;
+    user_id?: string | null;
     apiary_id?: string | null;
     farmer_id?: string | null;
     hive_code: string;
@@ -318,6 +324,7 @@ export interface HarvestCreateInput {
 // ========== TASK TYPES ==========
 export interface Task {
     id: string;
+    user_id?: string;
     title: string;
     description?: string;
     status: 'pending' | 'completed' | 'in_progress';
@@ -343,6 +350,31 @@ export interface TaskCreateInput {
     apiary_id?: string;
     hive_id?: string;
     is_completed?: boolean;
+}
+
+// ========== NOTE TYPES ==========
+export interface Note {
+    id: string;
+    user_id: string;
+    apiary_id?: string;
+    hive_id?: string;
+    title?: string;
+    content?: string;
+    category?: string;
+    priority: 'low' | 'medium' | 'high';
+    note_date: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface NoteCreateInput {
+    apiary_id?: string;
+    hive_id?: string;
+    title?: string;
+    content?: string;
+    category?: string;
+    priority?: 'low' | 'medium' | 'high';
+    note_date?: string;
 }
 
 // ========== INSPECTION TYPES ==========
@@ -1124,6 +1156,38 @@ export const beeyieldService = {
         }
     },
 
+    // ========== BLUETOOTH DEVICES ==========
+    async getBluetoothDevices(): Promise<any[]> {
+        try {
+            return await apiGet<any[]>('/beeyield/bluetooth/devices', {});
+        } catch (error) {
+            console.error('Error fetching bluetooth devices:', error);
+            return [];
+        }
+    },
+
+    async registerBluetoothDevice(input: any): Promise<any> {
+        try {
+            const data = await apiPost<any>('/beeyield/bluetooth/devices', input);
+            toast.success('Bluetooth device registered');
+            return data;
+        } catch (error) {
+            console.error('Error registering bluetooth device:', error);
+            toast.error('Failed to register device');
+            return null;
+        }
+    },
+
+    async uploadBluetoothReadings(readings: any[]): Promise<any> {
+        try {
+            const data = await apiPost<any>('/beeyield/bluetooth/sync', { readings });
+            return data;
+        } catch (error) {
+            console.error('Error uploading readings:', error);
+            throw error;
+        }
+    },
+
     // ========== IOT DEVICES ==========
     async getIotDevices(): Promise<any[]> {
         try {
@@ -1279,6 +1343,67 @@ export const beeyieldService = {
             return await apiGet<any[]>('/beeyield/analytics/vision', params);
         } catch (error) {
             console.error('Error fetching image detections:', error);
+            return [];
+        }
+    },
+
+    // ========== NOTES ==========
+    async getNotes(): Promise<Note[]> {
+        try {
+            return await apiGet<Note[]>('/beeyield/notes', {});
+        } catch (error) {
+            console.error('Error fetching notes:', error);
+            return [];
+        }
+    },
+
+    async createNote(input: NoteCreateInput): Promise<{ data: Note | null; error: any }> {
+        try {
+            const data = await apiPost<Note>('/beeyield/notes', input);
+            toast.success('Note added successfully');
+            return { data, error: null };
+        } catch (error) {
+            console.error('Error creating note:', error);
+            toast.error('Failed to create note');
+            return { data: null, error };
+        }
+    },
+
+    async updateNote(id: string, updates: Partial<NoteCreateInput>): Promise<{ data: Note | null; error: any }> {
+        try {
+            const data = await apiPut<Note>(`/beeyield/notes/${id}`, updates);
+            toast.success('Note updated');
+            return { data, error: null };
+        } catch (error) {
+            console.error('Error updating note:', error);
+            toast.error('Failed to update note');
+            return { data: null, error };
+        }
+    },
+
+    async deleteNote(id: string): Promise<{ error: any }> {
+        try {
+            await apiDelete(`/beeyield/notes/${id}`);
+            toast.success('Note deleted');
+            return { error: null };
+        } catch (error) {
+            console.error('Error deleting note:', error);
+            toast.error('Failed to delete note');
+            return { error };
+        }
+    },
+
+    // ========== ANALYTICS ==========
+    async getComparisonData(params: {
+        medium: string;
+        range: string;
+        apiary_id?: string;
+        user_id?: string;
+    }): Promise<any[]> {
+        try {
+            return await apiGet<any[]>('/beeyield/analytics/comparisons', params);
+        } catch (error) {
+            console.error('Error fetching comparison data:', error);
             return [];
         }
     },

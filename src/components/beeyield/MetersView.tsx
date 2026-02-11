@@ -58,7 +58,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
     const [usageFilter, setUsageFilter] = useState<'Water' | 'Heat' | 'Energy' | 'Other'>('Water');
     const [aiMessage, setAiMessage] = useState('');
     const [chatMessages, setChatMessages] = useState([
-        { role: 'assistant', content: 'Syncing with grid telemetry. How can I assist with your utility operations today?' },
+        { role: 'assistant', content: 'Checking system status... How can I help you today?' },
     ]);
 
     useEffect(() => {
@@ -130,7 +130,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
         return (
             <div className="flex flex-col items-center justify-center min-h-[500px] space-y-6">
                 <div className="w-16 h-16 border-4 border-amber-100 border-t-[#FF9100] rounded-full animate-spin" />
-                <p className="text-slate-400 font-black text-[10px] uppercase tracking-[0.3em]">Calibrating Sensors</p>
+                <p className="text-slate-400 font-black text-[10px] uppercase tracking-[0.3em]">Checking your Hubs</p>
             </div>
         );
     }
@@ -139,9 +139,9 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
         <div className="space-y-10 animate-in fade-in duration-500 pb-12">
             <div>
                 <h1 className="text-[3rem] font-black text-slate-800 tracking-tighter leading-none">
-                    Resource Analytics
+                    Usage & Stats
                 </h1>
-                <p className="text-slate-500 mt-2 font-medium">Monitoring water, energy, and thermal efficiency across the network.</p>
+                <p className="text-slate-500 mt-2 font-medium">Check your water, energy, and system health here.</p>
             </div>
 
             {/* Usage Stats Cards */}
@@ -152,7 +152,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                     const alertCount = meters.filter(m => m.meter_type === medium && m.has_alarm).length;
 
                     return (
-                        <Card key={medium} className="rounded-[2rem] border-none bg-white shadow-xl shadow-slate-200/40 p-8 group relative overflow-hidden">
+                        <Card key={medium} className="rounded-[2rem] border-none bg-white dark:bg-slate-50 shadow-xl shadow-slate-200/40 p-8 group relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-24 h-24 bg-slate-50 rounded-full -mr-12 -mt-12 transition-transform group-hover:scale-110" />
 
                             <div className="flex items-start justify-between relative z-10">
@@ -165,7 +165,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                 </div>
                                 <div className={cn("px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider",
                                     alertCount > 0 ? "bg-red-50 text-red-600" : "bg-green-50 text-green-600")}>
-                                    {alertCount > 0 ? 'ALERTS' : 'NOMINAL'}
+                                    {alertCount > 0 ? 'ALERTS' : 'NORMAL'}
                                 </div>
                             </div>
 
@@ -174,7 +174,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                     <span className="text-3xl font-black text-slate-800">{total}</span>
                                     <span className="text-sm font-bold text-slate-400">{unit}</span>
                                 </div>
-                                <p className="text-[10px] text-slate-400 mt-2 uppercase font-black tracking-widest">Aggregate Flow</p>
+                                <p className="text-[10px] text-slate-400 mt-2 uppercase font-black tracking-widest">Total Usage</p>
                             </div>
                         </Card>
                     );
@@ -186,7 +186,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                             <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center">
                                 <AlertTriangle className="w-6 h-6 text-amber-400" />
                             </div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ecosystem</p>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Network</p>
                         </div>
                     </div>
                     <div className="mt-8">
@@ -194,7 +194,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                             <span className="text-4xl font-black">{activeAlarmsCount}</span>
                             <span className="text-xs font-bold text-[#FF9100] uppercase tracking-widest">Active Alerts</span>
                         </div>
-                        <p className="text-[10px] text-slate-400 mt-2 uppercase font-black tracking-widest">Immediate action required</p>
+                        <p className="text-[10px] text-slate-400 mt-2 uppercase font-black tracking-widest">Needs attention</p>
                     </div>
                 </Card>
             </div>
@@ -208,8 +208,8 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                 <TrendingUp className="w-6 h-6 text-[#FF9100]" />
                             </div>
                             <div>
-                                <h3 className="text-2xl font-black text-slate-800 tracking-tight leading-none">Usage Trajectory</h3>
-                                <p className="text-slate-400 text-sm font-medium mt-1">Combined sensor telemetry for the past 14 days.</p>
+                                <h3 className="text-2xl font-black text-slate-800 tracking-tight leading-none">Activity trend</h3>
+                                <p className="text-slate-400 text-sm font-medium mt-1">Your usage records from the last two weeks.</p>
                             </div>
                         </div>
                         <div className="flex bg-slate-50 border border-slate-100 rounded-2xl p-1 gap-1">
@@ -247,14 +247,14 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                     </div>
                 </Card>
 
-                <Card className="lg:col-span-5 rounded-[2.5rem] border-none bg-white shadow-xl shadow-slate-200/40 p-10 flex flex-col items-center justify-center text-center relative overflow-hidden group">
+                <Card className="lg:col-span-12 rounded-[2.5rem] border-none bg-white dark:bg-slate-50 shadow-xl shadow-slate-200/40 p-10 overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-2 bg-[#1B9157]/20" />
                     <div className="w-20 h-20 bg-[#1B9157]/10 rounded-[2rem] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                         <Bot className="w-10 h-10 text-[#1B9157]" />
                     </div>
-                    <h3 className="text-2xl font-black text-slate-800 tracking-tight leading-none">Expert Oracle</h3>
+                    <h3 className="text-2xl font-black text-slate-800 tracking-tight leading-none">Smart tips</h3>
                     <p className="text-slate-400 font-medium text-sm mt-3 px-6">
-                        Real-time diagnostics and efficiency recommendations powered by BeeHUB Analytics.
+                        Simple suggestions to help you save and improve.
                     </p>
 
                     <div className="mt-10 w-full bg-slate-50 rounded-[2rem] p-6 text-left">
@@ -267,8 +267,8 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
 
                     <div className="mt-6 w-full flex gap-3">
                         <Input
-                            placeholder="Query network..."
-                            className="h-14 rounded-2xl border-none bg-slate-50 text-xs font-black px-6"
+                            placeholder="Ask System Assistant..."
+                            className="h-14 rounded-2xl border-none bg-slate-50 dark:bg-slate-100 text-xs font-black px-6"
                         />
                         <Button className="h-14 w-14 rounded-2xl bg-[#FF9100] hover:bg-[#F57C00] text-white shadow-xl shadow-amber-500/20">
                             <Send className="w-5 h-5" />
@@ -279,8 +279,8 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                 <Card className="lg:col-span-7 rounded-[2.5rem] border-none bg-white shadow-xl shadow-slate-200/40 p-10">
                     <div className="flex items-center justify-between mb-8">
                         <div>
-                            <h3 className="text-2xl font-black text-slate-800 tracking-tight leading-none">Event Log</h3>
-                            <p className="text-slate-400 text-xs font-black uppercase mt-1 tracking-widest">Telemetry Stream</p>
+                            <h3 className="text-2xl font-black text-slate-800 tracking-tight leading-none">Recent updates</h3>
+                            <p className="text-slate-400 text-xs font-black uppercase mt-1 tracking-widest">Live feed</p>
                         </div>
                         <Button variant="ghost" className="text-[10px] font-black text-[#1B9157] tracking-widest uppercase" onClick={() => onTabChange('meters-alarms')}>Logs Archive</Button>
                     </div>

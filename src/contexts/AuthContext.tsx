@@ -77,20 +77,39 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Determine current backend based on path
     const getActiveBackendFromPath = (): AuthBackend => {
         const path = window.location.pathname;
-        if (path.includes('/ceba')) return 'ceba';
+        if (path.includes('/ceba') || path.startsWith('/admin')) return 'ceba';
         if (path.includes('/beeyield')) return 'beeyield';
         return 'shop';
     };
 
     const [activeBackend, setActiveBackend] = useState<AuthBackend>(getActiveBackendFromPath());
 
+    // Keep activeBackend in sync with URL on ALL navigation types
+    // React Router's navigate() doesn't fire popstate, so we also observe DOM changes
     useEffect(() => {
-        const handlePathChange = () => {
-            setActiveBackend(getActiveBackendFromPath());
+        const syncBackend = () => {
+            const newBackend = getActiveBackendFromPath();
+            setActiveBackend(prev => prev !== newBackend ? newBackend : prev);
         };
-        window.addEventListener('popstate', handlePathChange);
-        // Also listen for custom events or just check periodically if mutation occurs
-        return () => window.removeEventListener('popstate', handlePathChange);
+
+        // popstate covers browser back/forward
+        window.addEventListener('popstate', syncBackend);
+
+        // MutationObserver on <title> or body to detect SPA route changes
+        let observer: MutationObserver | null = null;
+        try {
+            observer = new MutationObserver(syncBackend);
+            observer.observe(document.body, { childList: true, subtree: true });
+        } catch { /* noop if observer unavailable */ }
+
+        // Also run a short interval as a fallback (cheap because it only does a string check)
+        const interval = setInterval(syncBackend, 500);
+
+        return () => {
+            window.removeEventListener('popstate', syncBackend);
+            observer?.disconnect();
+            clearInterval(interval);
+        };
     }, []);
 
     const getClient = (backend?: AuthBackend): SupabaseClient => {
@@ -104,51 +123,57 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const initAuth = async () => {
             setLoading(true);
             try {
-                // Initial sessions
+                // Initial sessions - handle each independently so one failure doesn't block others
                 const [shopRes, beeyieldRes, cebaRes] = await Promise.all([
-                    supabaseShop?.auth.getSession(),
-                    supabaseBeeYield?.auth.getSession(),
-                    supabaseCEBA?.auth.getSession()
+                    supabaseShop?.auth.getSession().catch(() => null),
+                    supabaseBeeYield?.auth.getSession().catch(() => null),
+                    supabaseCEBA?.auth.getSession().catch(() => null)
                 ]);
 
-                setShopSession(shopRes?.data.session ?? null);
-                setShopUser(shopRes?.data.session?.user ?? null);
+                setShopSession(shopRes?.data?.session ?? null);
+                setShopUser(shopRes?.data?.session?.user ?? null);
 
-                setBeeyieldSession(beeyieldRes?.data.session ?? null);
-                setBeeyieldUser(beeyieldRes?.data.session?.user ?? null);
+                setBeeyieldSession(beeyieldRes?.data?.session ?? null);
+                setBeeyieldUser(beeyieldRes?.data?.session?.user ?? null);
 
-                setCebaSession(cebaRes?.data.session ?? null);
-                setCebaUser(cebaRes?.data.session?.user ?? null);
+                setCebaSession(cebaRes?.data?.session ?? null);
+                setCebaUser(cebaRes?.data?.session?.user ?? null);
+            } catch (err) {
+                console.error('Auth initialization error:', err);
             } finally {
                 setLoading(false);
             }
         };
 
-        if (supabaseShop && supabaseBeeYield && supabaseCEBA) {
-            initAuth();
+        // Initialize even if some clients are null - at least initialize those that exist
+        initAuth();
 
-            // Listen for changes on all backends
-            const shopSub = supabaseShop.auth.onAuthStateChange((_event, session) => {
+        const subscriptions: Array<{ data: { subscription: { unsubscribe: () => void } } }> = [];
+
+        if (supabaseShop) {
+            subscriptions.push(supabaseShop.auth.onAuthStateChange((_event, session) => {
                 setShopSession(session);
                 setShopUser(session?.user ?? null);
-            });
+            }));
+        }
 
-            const beeyieldSub = supabaseBeeYield.auth.onAuthStateChange((_event, session) => {
+        if (supabaseBeeYield) {
+            subscriptions.push(supabaseBeeYield.auth.onAuthStateChange((_event, session) => {
                 setBeeyieldSession(session);
                 setBeeyieldUser(session?.user ?? null);
-            });
+            }));
+        }
 
-            const cebaSub = supabaseCEBA.auth.onAuthStateChange((_event, session) => {
+        if (supabaseCEBA) {
+            subscriptions.push(supabaseCEBA.auth.onAuthStateChange((_event, session) => {
                 setCebaSession(session);
                 setCebaUser(session?.user ?? null);
-            });
-
-            return () => {
-                shopSub.data.subscription.unsubscribe();
-                beeyieldSub.data.subscription.unsubscribe();
-                cebaSub.data.subscription.unsubscribe();
-            };
+            }));
         }
+
+        return () => {
+            subscriptions.forEach(sub => sub.data.subscription.unsubscribe());
+        };
     }, []);
 
     // Derived user/session for backward compatibility

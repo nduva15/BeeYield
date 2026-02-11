@@ -24,22 +24,22 @@ const ConsumptionView: React.FC = () => {
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
             {/* Filters Section */}
-            <Card className="rounded-3xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm">
+            <Card className="rounded-3xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm">
                 <CardContent className="p-6">
                     <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-4">Filters</h3>
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                         <div className="space-y-1.5">
-                            <label className="text-xs text-gray-400 font-medium">Building / apartment</label>
+                            <label className="text-xs text-slate-400 font-bold">Area</label>
                             <Input
                                 defaultValue="Kibwezi Main Area A"
-                                className="rounded-xl border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] h-10 text-sm font-medium"
+                                className="rounded-xl border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 h-10 text-sm font-bold text-slate-600 dark:text-slate-800"
                             />
                         </div>
                         <div className="space-y-1.5">
-                            <label className="text-xs text-gray-400 font-medium">Medium</label>
+                            <label className="text-xs text-slate-400 font-bold">Type</label>
                             <Select defaultValue="water">
-                                <SelectTrigger className="rounded-xl border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] h-10 text-sm font-medium">
-                                    <SelectValue placeholder="Select medium" />
+                                <SelectTrigger className="rounded-xl border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 h-10 text-sm font-bold text-slate-600 dark:text-slate-800">
+                                    <SelectValue placeholder="Select type" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="water">Water</SelectItem>
@@ -49,9 +49,9 @@ const ConsumptionView: React.FC = () => {
                             </Select>
                         </div>
                         <div className="space-y-1.5">
-                            <label className="text-xs text-gray-400 font-medium">Date range</label>
+                            <label className="text-xs text-gray-400 font-bold">Time period</label>
                             <Select defaultValue="7days">
-                                <SelectTrigger className="rounded-xl border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] h-10 text-sm font-medium">
+                                <SelectTrigger className="rounded-xl border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 h-10 text-sm font-bold">
                                     <SelectValue placeholder="Select range" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -61,23 +61,23 @@ const ConsumptionView: React.FC = () => {
                             </Select>
                         </div>
                         <div className="space-y-1.5">
-                            <label className="text-xs text-gray-400 font-medium">Compare</label>
+                            <label className="text-xs text-slate-400 font-bold">Compare with</label>
                             <Select defaultValue="main">
-                                <SelectTrigger className="rounded-xl border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] h-10 text-sm font-medium">
+                                <SelectTrigger className="rounded-xl border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 h-10 text-sm font-bold text-slate-600 dark:text-slate-800">
                                     <SelectValue placeholder="Select comparison" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="main">Main meter</SelectItem>
+                                    <SelectItem value="main">Main area</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
                         <div className="space-y-1.5">
-                            <label className="text-xs text-gray-400 font-medium">Export</label>
+                            <label className="text-xs text-slate-400 font-bold">Export</label>
                             <div className="flex gap-2">
-                                <Button variant="outline" className="flex-1 rounded-xl h-10 border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] gap-2 font-bold text-[10px] uppercase">
+                                <Button variant="outline" className="flex-1 rounded-xl h-10 border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 gap-2 font-bold text-[10px] uppercase text-slate-900 dark:text-slate-800">
                                     <FileText className="w-3.5 h-3.5" /> CSV
                                 </Button>
-                                <Button variant="outline" className="flex-1 rounded-xl h-10 border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] gap-2 font-bold text-[10px] uppercase">
+                                <Button variant="outline" className="flex-1 rounded-xl h-10 border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 gap-2 font-bold text-[10px] uppercase text-slate-900 dark:text-slate-800">
                                     <FileSpreadsheet className="w-3.5 h-3.5" /> XLS
                                 </Button>
                             </div>
@@ -88,10 +88,10 @@ const ConsumptionView: React.FC = () => {
 
 
             {/* Chart Section */}
-            <Card className="rounded-3xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm overflow-hidden min-h-[500px]">
+            <Card className="rounded-3xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm overflow-hidden min-h-[500px]">
                 <div className="p-6 border-b border-gray-50 dark:border-gray-900 flex items-center gap-2">
                     <Search className="w-4 h-4 text-gray-400" />
-                    <p className="text-xs font-medium text-gray-400">Usage by medium</p>
+                    <p className="text-xs font-medium text-gray-400">Usage by type</p>
                 </div>
                 <CardContent className="p-8">
                     <div className="h-[400px] w-full">
@@ -134,16 +134,16 @@ const ConsumptionView: React.FC = () => {
 
             {/* Summary Section */}
             <div className="space-y-4">
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white px-2">Consumption summary</h3>
-                <Card className="rounded-3xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm divide-y divide-gray-50 dark:divide-gray-900">
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white px-2">Usage summary</h3>
+                <Card className="rounded-3xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm divide-y divide-gray-50 dark:divide-slate-200">
                     {summaryItems.map((item, idx) => (
                         <div key={idx} className="p-5 flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-bold text-gray-900 dark:text-white">{item.label}</p>
+                                <p className="text-sm font-bold text-gray-900 dark:text-slate-800">{item.label}</p>
                                 <p className="text-[10px] text-gray-400 font-medium">{item.subtext}</p>
                             </div>
-                            <div className="bg-gray-50 dark:bg-gray-900/50 px-3 py-1.5 rounded-lg border border-gray-100 dark:border-gray-800">
-                                <p className="text-xs font-bold text-gray-900 dark:text-white">{item.value}</p>
+                            <div className="bg-gray-50 dark:bg-slate-100 px-3 py-1.5 rounded-lg border border-gray-100 dark:border-slate-200">
+                                <p className="text-xs font-bold text-gray-900 dark:text-slate-800">{item.value}</p>
                             </div>
                         </div>
                     ))}

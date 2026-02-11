@@ -3,6 +3,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 
+import { SUPER_ADMIN_EMAIL } from '@/config/constants';
+
 interface AuthGuardProps {
     children: React.ReactNode;
     requireAdmin?: boolean;
@@ -23,15 +25,22 @@ const AuthGuard: React.FC<AuthGuardProps> = ({
     const location = useLocation();
 
     const userRole = user?.user_metadata?.role || 'user';
-    const isSuperAdminEmail = ['timothynduva349@gmail.com'].includes(user?.email?.toLowerCase() || '');
+    const isSuperAdminEmail = [SUPER_ADMIN_EMAIL].includes(user?.email?.toLowerCase() || '');
     const isAdmin = userRole === 'admin' || userRole === 'super_admin' || isSuperAdminEmail;
     const isSuperAdmin = userRole === 'super_admin' || isSuperAdminEmail;
 
     useEffect(() => {
         if (!loading) {
             if (!user) {
-                // Not logged in -> redirect to login with return path
-                navigate('/login', { state: { from: location.pathname }, replace: true });
+                // Not logged in -> redirect to correct login based on path
+                const path = location.pathname;
+                let loginPath = '/login';
+                if (path.startsWith('/admin') || path.startsWith('/ceba')) {
+                    loginPath = '/ceba/login';
+                } else if (path.includes('beeyield')) {
+                    loginPath = '/beeyield-login';
+                }
+                navigate(loginPath, { state: { from: location.pathname }, replace: true });
             } else if (requireSuperAdmin && !isSuperAdmin) {
                 // Not super admin -> redirect to admin dashboard
                 navigate('/admin', { replace: true });

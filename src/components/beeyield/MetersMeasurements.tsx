@@ -45,7 +45,7 @@ const MetersMeasurements: React.FC<MetersMeasurementsProps> = ({ onTabChange, ac
                 return <ComparisonsView />;
             case 'meters-import':
                 return (
-                    <div className="flex flex-col items-center justify-center py-24 bg-white dark:bg-[#09090b] rounded-[1.5rem] border border-dashed border-slate-200 dark:border-gray-800">
+                    <div className="flex flex-col items-center justify-center py-24 bg-white dark:bg-slate-50 rounded-[1.5rem] border border-dashed border-slate-200 dark:border-slate-200">
                         <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">File Import view under construction</p>
                     </div>
                 );
@@ -71,7 +71,7 @@ const MetersMeasurements: React.FC<MetersMeasurementsProps> = ({ onTabChange, ac
                                 "p-5 rounded-2xl border cursor-pointer transition-all duration-200",
                                 isActive
                                     ? "bg-[#FFF9E5]/60 border-[#F4D03F] dark:bg-[#F4D03F]/10 dark:border-[#F4D03F]"
-                                    : "bg-white dark:bg-[#09090b] border-gray-100 dark:border-gray-800 hover:border-[#F4D03F]/50 hover:shadow-md"
+                                    : "bg-white dark:bg-slate-50 border-gray-100 dark:border-slate-200 hover:border-[#F4D03F]/50 hover:shadow-md"
                             )}
                         >
                             <h3 className={cn(

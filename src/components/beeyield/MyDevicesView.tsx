@@ -177,7 +177,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
     return (
         <div className="space-y-6 pb-20 -mt-2">
             <div>
-                <h1 className="text-3xl font-black text-slate-900 dark:text-white px-2 mb-8 tracking-tight">My devices</h1>
+                <h1 className="text-3xl font-black text-slate-900 dark:text-white px-2 mb-8 tracking-tight">Devices</h1>
             </div>
 
             {/* Stats Row 1 */}
@@ -197,8 +197,8 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
 
             {/* Attention Needed Section */}
             <div className="mt-8 bg-slate-50/50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/10 p-6">
-                <h3 className="text-sm font-black text-slate-800 dark:text-slate-200 tracking-tight">{t('attention_needed')}</h3>
-                <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 mt-1">{t('attention_subtitle')}</p>
+                <h3 className="text-sm font-black text-slate-800 dark:text-slate-200 tracking-tight">Needs attention</h3>
+                <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 mt-1">Check these devices to stay connected.</p>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
                     <AlertCard label={t('no_measurement_5d')} value={noMeasurement5d} colorClass="bg-red-500" />
@@ -214,14 +214,14 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
             <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4">
                 {[
                     {
-                        label: 'Active Devices',
+                        label: 'Online Hubs',
                         value: `${localDevices.filter(d => d.status === 'active').length}/${localDevices.length}`,
                         icon: CheckCircle2,
                         color: 'text-emerald-500',
                         bg: 'bg-emerald-50 dark:bg-emerald-900/10'
                     },
                     {
-                        label: 'Avg Signal Quality',
+                        label: 'Signal status',
                         value: (() => {
                             const strengths = localDevices.map(d => parseInt(getSignalStrength(d.id))).filter(s => !isNaN(s));
                             if (strengths.length === 0) return '-';
@@ -233,14 +233,14 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                         bg: 'bg-blue-50 dark:bg-blue-900/10'
                     },
                     {
-                        label: 'Network Uptime',
+                        label: 'System uptime',
                         value: localDevices.length > 0 ? '99.9%' : '-',
                         icon: Clock,
                         color: 'text-[#F4D03F]',
                         bg: 'bg-[#F4D03F]/10 dark:bg-[#F4D03F]/20'
                     },
                     {
-                        label: 'Critical Alerts',
+                        label: 'Recent alerts',
                         value: lowBattery.toString(),
                         icon: AlertCircle,
                         color: 'text-slate-400',
@@ -328,8 +328,8 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                                 {showShortId && <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap pl-8">{t('table_device_id')}</th>}
                                 <th className={cn("text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap", !showShortId && "pl-8")}>{t('table_status')}</th>
                                 <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">{t('table_battery')}</th>
-                                <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">{t('table_signal')}</th>
-                                <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">Signal Quality</th>
+                                <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">Signal</th>
+                                <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">Status</th>
                                 <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">Uptime</th>
                                 <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">{t('table_last_ago')}</th>
                                 <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">{t('table_apiary')}</th>
@@ -346,7 +346,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                             {filteredDevices.length === 0 ? (
                                 <tr>
                                     <td colSpan={11} className="py-24 text-center text-slate-400 font-bold uppercase tracking-widest text-xs">
-                                        No hardware units detected
+                                        No devices found
                                     </td>
                                 </tr>
                             ) : (
@@ -373,7 +373,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                                         </td>}
                                         <td className="py-4 text-right pr-4">
                                             <div className="flex justify-end gap-2">
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600" title="Diagnostic Report">
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600" title="Get help">
                                                     <FileSearch className="w-4 h-4" />
                                                 </Button>
                                                 <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-[#F4D03F]/10 text-[#F4D03F]" title="Settings">

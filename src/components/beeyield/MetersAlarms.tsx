@@ -39,9 +39,9 @@ const MetersAlarms: React.FC = () => {
 
     const getMeterInfo = (meterId: string) => {
         const meter = meters.find(m => m.id === meterId);
-        if (!meter) return 'Unknown Meter';
+        if (!meter) return 'Unknown Sensor';
         const building = buildings.find(b => b.id === meter.building_id);
-        return `${meter.meter_number} - ${building?.name || 'Unknown Building'}`;
+        return `${meter.meter_number} - ${building?.name || 'Unknown Apiary'}`;
     };
 
     const getSeverityStyles = (severity: string) => {
@@ -70,14 +70,14 @@ const MetersAlarms: React.FC = () => {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-10">
-            <h1 className="text-[2.5rem] font-bold text-[#1B9157] dark:text-[#F4D03F] tracking-tight">Alarms & events</h1>
+            <h1 className="text-[2.5rem] font-bold text-[#1B9157] dark:text-[#F4D03F] tracking-tight">System Updates</h1>
 
             {/* Top Notifications Section */}
-            <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm overflow-hidden border-t-4 border-t-[#F4D03F]">
+            <Card className="rounded-2xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm overflow-hidden border-t-4 border-t-[#F4D03F]">
                 <CardHeader className="pb-4">
                     <div className="flex items-center gap-2 mb-2">
                         <Bell className="w-5 h-5 text-[#1B9157] dark:text-[#F4D03F]" fill="currentColor" />
-                        <CardTitle className="text-lg font-bold text-[#1B9157] dark:text-[#F4D03F]">Real-time system notifications</CardTitle>
+                        <CardTitle className="text-lg font-bold text-[#1B9157] dark:text-[#F4D03F]">Latest alerts</CardTitle>
                     </div>
                 </CardHeader>
                 <CardContent className="p-0">
@@ -107,14 +107,14 @@ const MetersAlarms: React.FC = () => {
                                                 {event.is_resolved ? 'RESOLVED' : 'ACTIVE'}
                                             </Badge>
                                         </div>
-                                        <Button variant="ghost" size="sm" className="hidden md:flex text-xs font-bold text-[#1B9157]">Assign ticket</Button>
+                                        <Button variant="ghost" size="sm" className="hidden md:flex text-xs font-bold text-[#1B9157]">Start fix</Button>
                                     </div>
                                 </div>
                             ))
                         )}
                         <div className="p-4 bg-gray-50/50 dark:bg-gray-900/20 text-center">
                             <span className="text-xs font-bold text-[#1B9157] hover:text-[#1B9157]/80 uppercase tracking-widest cursor-pointer transition-colors">
-                                Archive
+                                View history
                             </span>
                         </div>
                     </div>
@@ -123,10 +123,10 @@ const MetersAlarms: React.FC = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Stats Card */}
-                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm">
+                <Card className="rounded-2xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm">
                     <CardHeader>
-                        <CardTitle className="text-lg font-bold text-[#1B9157]">Statistics</CardTitle>
-                        <CardDescription>Event distribution by severity</CardDescription>
+                        <CardTitle className="text-lg font-bold text-[#1B9157]">Summary</CardTitle>
+                        <CardDescription>Alert counts by urgency</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
@@ -137,10 +137,10 @@ const MetersAlarms: React.FC = () => {
                                 return (
                                     <div key={s} className="space-y-1.5">
                                         <div className="flex justify-between text-xs font-bold">
-                                            <span>{s}</span>
+                                            <span>Priority</span>
                                             <span>{count}</span>
                                         </div>
-                                        <div className="h-2 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                        <div className="h-2 w-full bg-gray-100 dark:bg-slate-200 rounded-full overflow-hidden">
                                             <div
                                                 className={cn("h-full transition-all duration-1000",
                                                     s === 'Critical' ? "bg-red-500" : s === 'Warning' ? "bg-amber-500" : "bg-blue-500"
@@ -156,19 +156,19 @@ const MetersAlarms: React.FC = () => {
                 </Card>
 
                 {/* Info Card */}
-                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm">
+                <Card className="rounded-2xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm">
                     <CardHeader>
-                        <CardTitle className="text-lg font-bold text-[#1B9157]">Workflow Status</CardTitle>
+                        <CardTitle className="text-lg font-bold text-[#1B9157]">System Health</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="p-4 rounded-xl bg-green-50/50 border border-green-100 flex items-center justify-between">
                             <div>
-                                <h4 className="text-xs font-bold text-green-700">All Critical Resolved</h4>
-                                <p className="text-[10px] text-green-600 mt-1">Excellent response time in last 24h.</p>
+                                <h4 className="text-xs font-bold text-green-700">All urgent issues fixed</h4>
+                                <p className="text-[10px] text-green-600 mt-1">Great work on fixing things quickly.</p>
                             </div>
                             <CheckCircle2 className="w-5 h-5 text-green-500" />
                         </div>
-                        <Button className="w-full h-11 rounded-xl bg-gray-900 text-white font-bold text-xs">Run Diagnostic</Button>
+                        <Button className="w-full h-11 rounded-xl bg-gray-900 text-white font-bold text-xs">Check system</Button>
                     </CardContent>
                 </Card>
             </div>

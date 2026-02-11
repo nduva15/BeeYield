@@ -64,14 +64,14 @@ const MetersSettings: React.FC = () => {
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
-            <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">Settings</h1>
+            <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-[#F4D03F] tracking-tight">Settings</h1>
 
             {/* Meter Rules and Preferences */}
-            <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm">
+            <Card className="rounded-2xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm">
                 <CardHeader>
                     <div className="flex items-center gap-2">
                         <Settings2 className="w-5 h-5 text-[#1B9157]" />
-                        <CardTitle>Meter rules and preferences</CardTitle>
+                        <CardTitle>Sensor rules and preferences</CardTitle>
                     </div>
                     <CardDescription>Configure alarms, thresholds and integrations.</CardDescription>
                 </CardHeader>
@@ -79,7 +79,7 @@ const MetersSettings: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Notifications */}
-                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm">
+                <Card className="rounded-2xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm">
                     <CardHeader>
                         <div className="flex items-center gap-2">
                             <Bell className="w-5 h-5 text-[#1B9157]" />
@@ -90,7 +90,7 @@ const MetersSettings: React.FC = () => {
                         {notificationSettings.map((item) => (
                             <div key={item.id} className="flex items-center justify-between">
                                 <div className="space-y-0.5">
-                                    <div className="font-medium text-gray-900 dark:text-gray-100">{item.title}</div>
+                                    <div className="font-medium text-gray-900 dark:text-slate-800">{item.title}</div>
                                     <div className="text-sm text-gray-500">{item.value}</div>
                                 </div>
                                 <Button variant="outline" size="sm" onClick={() => handleEdit('notification', item.id, item.value)}>
@@ -102,7 +102,7 @@ const MetersSettings: React.FC = () => {
                 </Card>
 
                 {/* Alert Thresholds */}
-                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm">
+                <Card className="rounded-2xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm">
                     <CardHeader>
                         <div className="flex items-center gap-2">
                             <Shield className="w-5 h-5 text-[#1B9157]" />
@@ -113,7 +113,7 @@ const MetersSettings: React.FC = () => {
                         {thresholdSettings.map((item) => (
                             <div key={item.id} className="flex items-center justify-between">
                                 <div className="space-y-0.5">
-                                    <div className="font-medium text-gray-900 dark:text-gray-100">{item.title}</div>
+                                    <div className="font-medium text-gray-900 dark:text-slate-800">{item.title}</div>
                                     <div className="text-sm text-gray-500">{item.value}</div>
                                 </div>
                                 <Button variant="outline" size="sm" onClick={() => handleEdit('threshold', item.id, item.value)}>
@@ -126,7 +126,7 @@ const MetersSettings: React.FC = () => {
             </div>
 
             {/* Integrations */}
-            <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm">
+            <Card className="rounded-2xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm">
                 <CardHeader>
                     <div className="flex items-center gap-2">
                         <Plug className="w-5 h-5 text-[#1B9157]" />
