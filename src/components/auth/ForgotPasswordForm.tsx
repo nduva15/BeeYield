@@ -8,9 +8,13 @@ import { Loader2, Mail, ArrowLeft, CheckCircle } from 'lucide-react';
 
 interface ForgotPasswordFormProps {
     onBackToLogin?: () => void;
+    variant?: 'admin' | 'shop' | 'professional';
 }
 
-const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBackToLogin }) => {
+const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
+    onBackToLogin,
+    variant = 'shop'
+}) => {
     const { resetPassword } = useAuth();
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
@@ -20,7 +24,14 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBackToLogin }
         e.preventDefault();
         setLoading(true);
 
-        const { error } = await resetPassword(email);
+        const backendMap: Record<string, 'shop' | 'beeyield' | 'ceba'> = {
+            'shop': 'shop',
+            'professional': 'beeyield',
+            'admin': 'ceba'
+        };
+        const activeBackend = backendMap[variant] || 'shop';
+
+        const { error } = await resetPassword(email, activeBackend);
 
         if (error) {
             toast.error('Password reset failed', { description: error.message });

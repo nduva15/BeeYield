@@ -20,6 +20,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import logoAsset from '@/assets/Logo.png';
+import { useAuth } from '@/contexts/AuthContext';
 
 export function UsbHubDashboard() {
     const [device, setDevice] = useState<USBDevice | null>(null);
@@ -42,6 +43,8 @@ export function UsbHubDashboard() {
 }`);
 
     const queryClient = useQueryClient();
+    const { user, beeyieldUser } = useAuth();
+    const userId = beeyieldUser?.id || user?.id;
 
     const scrollToBottom = () => {
         logsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -76,7 +79,8 @@ export function UsbHubDashboard() {
             const payload = {
                 serial_number: usbDevice.serialNumber || 'UNKNOWN-SN',
                 firmware_version: '1.2.0',
-                config_json: { sample_rate: 300 }
+                config_json: { sample_rate: 300 },
+                user_id: userId
             };
             await axios.post('/api/v1/hub/handshake', payload);
             queryClient.invalidateQueries({ queryKey: ['hub-devices'] });
@@ -114,13 +118,15 @@ export function UsbHubDashboard() {
 
             const sessionRes = await axios.post('/api/v1/hub/sync/start', {
                 hub_sn: device.serialNumber || 'UNKNOWN-SN',
-                records_count: 0
+                records_count: 0,
+                user_id: userId
             });
 
             await axios.post('/api/v1/hub/sync/complete', {
                 session_id: sessionRes.data.id,
                 status: 'success',
-                duration_sec: 5
+                duration_sec: 5,
+                user_id: userId
             });
 
             addLog("Firmware update successful. Rebooting hub...");

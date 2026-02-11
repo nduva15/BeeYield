@@ -91,6 +91,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
 
         // Store current path so callback knows where to return
         localStorage.setItem('authReturnTo', window.location.pathname);
+        localStorage.setItem('authBackend', activeBackend);
 
         const { error } = await signInWithGoogle({
             role: defaultRole,

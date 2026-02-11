@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { beeyieldService, Apiary, Hive } from '@/services/beeyieldService';
+import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Wifi, Shield, Zap, Bluetooth as BluetoothIcon, Usb, Grid3X3, Box, Bell, Settings, ChevronDown, Check, X, AlertTriangle, Search, Info } from 'lucide-react';
+import { Wifi, Shield, Zap, Bluetooth as BluetoothIcon, Usb, Grid3X3, Box, Bell, Settings, ChevronDown, Check, X, AlertTriangle, Search, Info, Loader2 } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog"
+import { toast } from 'sonner';
+import { UsbHubDashboard } from './UsbHubDashboard';
+
 
 // Common View Wrapper
 const ViewLayout = ({ title, subtitle, icon: Icon, onTabChange, showIcon = true, children }: { title: string, subtitle?: string, icon?: any, onTabChange?: (tab: string) => void, showIcon?: boolean, children: React.ReactNode }) => (
@@ -219,17 +223,24 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
     const [apiaries, setApiaries] = useState<Apiary[]>([]);
     const [hives, setHives] = useState<Hive[]>([]);
 
+    const { user, beeyieldUser } = useAuth();
+    const userId = beeyieldUser?.id || user?.id;
+
     useEffect(() => {
         const loadInitialData = async () => {
             const apiariesData = await beeyieldService.getApiaries();
-            setApiaries(apiariesData);
-            if (apiariesData.length > 0) {
-                const hivesData = await beeyieldService.getHives();
+            const hivesData = await beeyieldService.getHives();
+
+            if (userId) {
+                setApiaries(apiariesData.filter(a => !a.user_id || a.user_id === userId));
+                setHives(hivesData.filter(h => !h.user_id || h.user_id === userId));
+            } else {
+                setApiaries(apiariesData);
                 setHives(hivesData);
             }
         };
         loadInitialData();
-    }, []);
+    }, [userId]);
 
     useEffect(() => {
         if (selectedPlace && selectedPlace !== 'none') {
@@ -390,19 +401,24 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
 };
 
 
-import { UsbHubDashboard } from './UsbHubDashboard';
-
 // Bluetooth View
 export const BluetoothView: React.FC<RemainingViewProps> = ({ onTabChange }) => {
     const [devices, setDevices] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [isScanning, setIsScanning] = useState(false);
 
+    const { user, beeyieldUser } = useAuth();
+    const userId = beeyieldUser?.id || user?.id;
+
     const fetchDevices = async () => {
         setLoading(true);
         try {
             const data = await beeyieldService.getPairedUsbDevices();
-            setDevices(data || []);
+            if (userId) {
+                setDevices(data.filter(d => !d.user_id || d.user_id === userId));
+            } else {
+                setDevices(data || []);
+            }
         } catch (err) {
             console.error('Error fetching devices:', err);
         } finally {
@@ -412,7 +428,7 @@ export const BluetoothView: React.FC<RemainingViewProps> = ({ onTabChange }) => 
 
     useEffect(() => {
         fetchDevices();
-    }, []);
+    }, [userId]);
 
     const handlePairing = async () => {
         setIsScanning(true);

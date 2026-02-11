@@ -71,14 +71,14 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 0 0% 8%;
-    --foreground: 48 30% 95%;
+    --background: 48 40% 98%;
+    --foreground: 0 0% 12%;
 
-    --card: 0 0% 12%;
-    --card-foreground: 48 30% 95%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 12%;
 
-    --popover: 0 0% 12%;
-    --popover-foreground: 48 30% 95%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 12%;
 
     /* BeeYield Logo Yellow/Gold - #F4D03F */
     --primary: 48 87% 60%;
@@ -89,8 +89,8 @@ All colors MUST be HSL.
     --secondary: 153 60% 42%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 0 0% 18%;
-    --muted-foreground: 48 20% 65%;
+    --muted: 48 30% 94%;
+    --muted-foreground: 0 0% 40%;
 
     --accent: 48 80% 55%;
     --accent-foreground: 0 0% 10%;
@@ -98,22 +98,22 @@ All colors MUST be HSL.
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 0 0% 22%;
-    --input: 0 0% 22%;
+    --border: 48 20% 90%;
+    --input: 48 20% 90%;
     --ring: 48 87% 60%;
 
-    /* Custom tokens - BeeYield Logo Colors (Dark Mode) */
-    --honey-light: 48 65% 35%;
-    --honey-dark: 48 90% 65%;
-    --nature-green: 153 58% 42%;
-    --nature-green-light: 153 35% 22%;
-    --sidebar-background: 0 0% 10%;
-    --sidebar-foreground: 48 30% 95%;
+    /* Custom tokens - BeeYield Logo Colors */
+    --honey-light: 48 85% 90%;
+    --honey-dark: 48 75% 50%;
+    --nature-green: 153 68% 34%;
+    --nature-green-light: 153 50% 90%;
+    --sidebar-background: 48 30% 97%;
+    --sidebar-foreground: 0 0% 15%;
     --sidebar-primary: 48 87% 60%;
     --sidebar-primary-foreground: 0 0% 10%;
-    --sidebar-accent: 48 50% 18%;
-    --sidebar-accent-foreground: 48 30% 95%;
-    --sidebar-border: 0 0% 18%;
+    --sidebar-accent: 48 70% 95%;
+    --sidebar-accent-foreground: 48 80% 25%;
+    --sidebar-border: 48 20% 90%;
     --sidebar-ring: 48 87% 60%;
   }
 }

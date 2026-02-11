@@ -15,6 +15,7 @@ import { beeyieldService, Apiary, Hive, GeneratedReport, ScheduledReport } from 
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ReportsExportsViewProps {
     onTabChange?: (tab: string, message?: string) => void;
@@ -22,6 +23,9 @@ interface ReportsExportsViewProps {
 
 const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
     const { t } = useLanguage();
+    const { user, beeyieldUser } = useAuth();
+    const userId = beeyieldUser?.id || user?.id;
+
     const [reportScope, setReportScope] = useState('30');
     const [selectedFormat, setSelectedFormat] = useState<'PDF' | 'XLSX'>('PDF');
     const [isGenerating, setIsGenerating] = useState(false);
@@ -70,10 +74,18 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                 beeyieldService.getGeneratedReports(),
                 beeyieldService.getScheduledReports()
             ]);
-            setApiaries(apiariesData || []);
-            setHives(hivesData || []);
-            setReports(reportsData || []);
-            setSchedules(schedulesData || []);
+
+            if (userId) {
+                setApiaries(apiariesData.filter(a => !a.user_id || a.user_id === userId));
+                setHives(hivesData.filter(h => !h.user_id || h.user_id === userId));
+                setReports(reportsData.filter(r => !r.user_id || r.user_id === userId));
+                setSchedules(schedulesData.filter(s => !s.user_id || s.user_id === userId));
+            } else {
+                setApiaries(apiariesData || []);
+                setHives(hivesData || []);
+                setReports(reportsData || []);
+                setSchedules(schedulesData || []);
+            }
         } catch (error) {
             console.error('Failed to load data for reports', error);
             toast.error('Sync failed');
@@ -84,7 +96,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
 
     useEffect(() => {
         loadData();
-    }, []);
+    }, [userId]);
 
     const handleGenerateReport = async () => {
         if (isGenerating) return;
@@ -105,14 +117,16 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
 
             const { data, error } = await beeyieldService.generateReport({
                 report_type: 'full_summary',
+                user_id: userId || undefined,
                 parameters: {
                     scope_days: parseInt(reportScope),
                     sections: Object.keys(sections).filter(k => sections[k as keyof typeof sections]),
                     place_id: selectedPlace || undefined,
-                    hive_id: selectedHive || undefined
+                    hive_id: selectedHive || undefined,
+                    user_id: userId
                 },
                 file_format: selectedFormat
-            });
+            } as any);
 
             clearInterval(interval);
             setGenProgress(100);
@@ -151,14 +165,16 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
         try {
             const { data, error } = await beeyieldService.generateReport({
                 report_type: 'ai_analysis',
+                user_id: userId || undefined,
                 parameters: {
                     analysis_mode: 'deep_scan',
                     place_id: selectedPlace || undefined,
                     hive_id: selectedHive || undefined,
-                    historical_scope_days: 365
+                    historical_scope_days: 365,
+                    user_id: userId
                 },
                 file_format: 'PDF'
-            });
+            } as any);
 
             if (error) throw error;
 
@@ -186,11 +202,13 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
         try {
             const { error } = await beeyieldService.createScheduledReport({
                 ...newSchedule,
+                user_id: userId || undefined,
                 report_config: {
                     sections: Object.keys(sections).filter(k => sections[k as keyof typeof sections]),
-                    scope_days: 30
+                    scope_days: 30,
+                    user_id: userId
                 }
-            });
+            } as any);
 
             if (error) throw error;
 
@@ -245,7 +263,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                 </div>
                 <div className="flex flex-col items-center gap-2">
                     <p className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">Synchronizing Reports</p>
-                    <p className="text-sm text-gray-500 font-medium font-mono">NEURAL HIVE LINK ACTIVE</p>
+                    <p className="text-sm text-gray-500 font-medium font-mono">SECURE SYSTEM LINK ACTIVE</p>
                 </div>
             </div>
         );
@@ -284,7 +302,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
             </div>
 
             {/* Main Configuration Card */}
-            <Card className="rounded-[3rem] border-none bg-white dark:bg-[#09090b] shadow-2xl shadow-gray-200/50 dark:shadow-black/20 overflow-hidden relative">
+            <Card className="rounded-[3rem] border-none bg-white dark:bg-slate-50 shadow-2xl shadow-gray-200/50 dark:shadow-slate-200/50 overflow-hidden relative">
                 {isGenerating && (
                     <motion.div
                         initial={{ height: 0 }}
@@ -418,7 +436,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                         GENERATE SUMMARY
                                     </Button>
                                     <p className="text-[10px] text-center text-gray-400 font-bold uppercase tracking-widest">
-                                        Powered by BeeYield Intelligence™
+                                        Powered by BeeYield Analysis
                                     </p>
                                 </div>
                             </div>
@@ -556,7 +574,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
 
             {/* Bottom Section: AI Insights (Premium) */}
             <div className="pt-10">
-                <Card className="rounded-[4rem] border-none bg-gradient-to-br from-[#0F172A] to-[#1E293B] dark:from-[#000000] dark:to-[#09090b] p-12 lg:p-20 relative overflow-hidden group">
+                <Card className="rounded-[4rem] border-none bg-gradient-to-br from-[#1B9157] to-[#10B981] dark:from-[#1B9157] dark:to-[#10B981] p-12 lg:p-20 relative overflow-hidden group">
                     {/* Decorative Elements */}
                     <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-[120px] -mr-48 -mt-48 animate-pulse" />
                     <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-500/10 rounded-full blur-[100px] -ml-32 -mb-32" />
@@ -565,10 +583,10 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                         <div className="lg:col-span-1 space-y-8 max-w-xl">
                             <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
                                 <Sparkles className="w-4 h-4 text-amber-400" />
-                                <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Artificial Intelligence</span>
+                                <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">BeeYield Insights</span>
                             </div>
                             <h2 className="text-[3.5rem] font-bold text-white tracking-tight leading-[0.95] mb-6">
-                                Precision AI <br />Synthesis
+                                Advanced Data <br />Insights
                             </h2>
                             <p className="text-gray-400 text-lg leading-relaxed">
                                 Beyond simple exports, BeeYield AI analyzes your historical data to predict harvest weights, detect early disease markers, and suggest foraging improvements.

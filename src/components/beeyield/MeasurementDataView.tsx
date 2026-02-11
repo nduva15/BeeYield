@@ -58,17 +58,17 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
                     <p className="text-gray-500 dark:text-gray-400 mt-1">Historical and real-time sensor analytics.</p>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" className="rounded-xl border-slate-200 dark:border-white/10 hover:border-[#1B9157] gap-2 font-bold h-11 px-5 shadow-sm">
+                    <Button variant="outline" className="rounded-xl border-slate-200 dark:border-slate-200 hover:border-[#1B9157] gap-2 font-bold h-11 px-5 shadow-sm">
                         <FileText className="w-4 h-4 text-[#1B9157]" /> Export PDF
                     </Button>
-                    <Button variant="outline" className="rounded-xl border-slate-200 dark:border-white/10 hover:border-[#F4D03F] gap-2 font-bold h-11 px-5 shadow-sm">
+                    <Button variant="outline" className="rounded-xl border-slate-200 dark:border-slate-200 hover:border-[#F4D03F] gap-2 font-bold h-11 px-5 shadow-sm">
                         <Download className="w-4 h-4 text-[#F4D03F]" /> Export CSV
                     </Button>
                     <Select value={timeRange} onValueChange={setTimeRange}>
                         <SelectTrigger className="w-[180px] h-11 rounded-xl">
                             <SelectValue placeholder="Time Range" />
                         </SelectTrigger>
-                        <SelectContent className="bg-white dark:bg-[#09090b]">
+                        <SelectContent className="bg-white dark:bg-slate-50">
                             <SelectItem value="24h">Last 24 Hours</SelectItem>
                             <SelectItem value="7d">Last 7 Days</SelectItem>
                             <SelectItem value="30d">Last 30 Days</SelectItem>
@@ -85,7 +85,7 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
                     { label: 'Current Weight', value: `${latest.weight}kg`, icon: Weight, color: 'text-[#1B9157]', bg: 'bg-[#1B9157]/10 dark:bg-[#1B9157]/20' },
                     { label: 'Acoustic Signature', value: `${latest.acoustics}Hz`, icon: Zap, color: 'text-[#F4D03F]', bg: 'bg-[#F4D03F]/10 dark:bg-[#F4D03F]/20' },
                 ].map((stat) => (
-                    <Card key={stat.label} className="rounded-3xl border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm hover:border-[#F4D03F]/30 transition-colors">
+                    <Card key={stat.label} className="rounded-3xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm hover:border-[#F4D03F]/30 transition-colors">
                         <CardContent className="p-6">
                             <div className="flex items-center gap-4">
                                 <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center", stat.bg)}>
@@ -102,7 +102,7 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
             </div>
 
             {/* Main Chart Area */}
-            <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm overflow-hidden">
+            <Card className="rounded-[2.5rem] border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm overflow-hidden">
                 <CardContent className="p-8">
                     <div className="flex justify-between items-center mb-8">
                         <h3 className="text-xl font-bold text-[#1B9157]">Thermal Stability Trend</h3>
@@ -155,7 +155,7 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
             </Card>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm p-8">
+                <Card className="rounded-[2.5rem] border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm p-8">
                     <h3 className="text-xl font-bold mb-6">Colony Weight (kg)</h3>
                     <div className="h-[250px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
@@ -170,7 +170,7 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
                     </div>
                 </Card>
 
-                <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-sm p-8">
+                <Card className="rounded-[2.5rem] border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm p-8">
                     <div className="flex justify-between items-center mb-6">
                         <h3 className="text-xl font-bold">In-Hive Humidity (%)</h3>
                         <Badge className="bg-[#1B9157]/10 text-[#1B9157] border-none font-black text-[10px] uppercase">Stable</Badge>

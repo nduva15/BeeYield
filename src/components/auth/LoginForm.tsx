@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Loader2, Mail, Lock, Shield } from 'lucide-react';
+import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 
 interface LoginFormProps {
     onSuccess?: () => void;
@@ -60,7 +61,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
             // 1. Role Enforcement for Admin Variant
             if (variant === 'admin') {
                 const userRole = loggedInUser?.user_metadata?.role || 'user';
-                const isSuperAdminEmail = ['timothynduva349@gmail.com'].includes(loggedInUser?.email?.toLowerCase() || '');
+                const isSuperAdminEmail = [SUPER_ADMIN_EMAIL].includes(loggedInUser?.email?.toLowerCase() || '');
                 const isAdmin = userRole === 'admin' || userRole === 'super_admin' || isSuperAdminEmail;
 
                 if (!isAdmin) {
@@ -74,10 +75,9 @@ const LoginForm: React.FC<LoginFormProps> = ({
             }
 
             // 2. Prevent Admins from using the Shop login (if variant is shop)
-            // This satisfy the "no connections" / "keep them different" requirement
             if (variant === 'shop') {
                 const userRole = loggedInUser?.user_metadata?.role || 'user';
-                const isSuperAdminEmail = ['timothynduva349@gmail.com'].includes(loggedInUser?.email?.toLowerCase() || '');
+                const isSuperAdminEmail = [SUPER_ADMIN_EMAIL].includes(loggedInUser?.email?.toLowerCase() || '');
                 const isAdmin = userRole === 'admin' || userRole === 'super_admin' || isSuperAdminEmail;
 
                 if (isAdmin) {
@@ -90,27 +90,28 @@ const LoginForm: React.FC<LoginFormProps> = ({
                 }
             }
 
-            // 3. Metadata Requirement Check (Existing logic)
-            if (requireMetadata) {
-                const missingMetadata = Object.entries(requireMetadata).some(
-                    ([key, value]) => {
-                        if (loggedInUser?.email === 'timothynduva349@gmail.com') return false;
-                        return !loggedInUser || loggedInUser.user_metadata?.[key] !== value;
+            // 3. Auto-set required metadata if missing (instead of blocking login)
+            // This ensures users who signed up via shop can still access BeeYield dashboard
+            if (requireMetadata && loggedInUser) {
+                const missingKeys: Record<string, any> = {};
+                for (const [key, value] of Object.entries(requireMetadata)) {
+                    if (loggedInUser.user_metadata?.[key] !== value) {
+                        missingKeys[key] = value;
                     }
-                );
-
-                if (missingMetadata) {
-                    await signOut(activeBackend);
-                    toast.error('Account Required', {
-                        description: 'No account found for this email. Please Sign Up to continue.'
-                    });
-                    setLoading(false);
-                    return;
+                }
+                if (Object.keys(missingKeys).length > 0) {
+                    try {
+                        await supabaseInstance.auth.updateUser({
+                            data: { ...loggedInUser.user_metadata, ...missingKeys }
+                        });
+                    } catch (metaErr) {
+                        console.warn('Could not auto-set metadata:', metaErr);
+                    }
                 }
             }
 
             const fullName = (loggedInUser?.user_metadata?.full_name || loggedInUser?.user_metadata?.name) ||
-                (loggedInUser?.user_metadata?.first_name ? `${loggedInUser.first_name} ${loggedInUser.last_name || ''}`.trim() : null) ||
+                (loggedInUser?.user_metadata?.first_name ? `${loggedInUser.user_metadata.first_name} ${loggedInUser.user_metadata.last_name || ''}`.trim() : null) ||
                 'User';
 
             toast.success(`Welcome ${fullName}! 🎉`);
@@ -175,6 +176,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
 
         // Store current path and metadata requirements so callback knows where to return and what to verify
         localStorage.setItem('authReturnTo', window.location.pathname);
+        localStorage.setItem('authBackend', activeBackend);
         if (requireMetadata) {
             localStorage.setItem('authRequireMetadata', JSON.stringify(requireMetadata));
         } else {
@@ -349,7 +351,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
                 )}
             </Button>
 
-            {onSwitchToRegister && !isAdminVariant && (
+            {onSwitchToRegister && (
                 <p className="text-center text-sm text-muted-foreground">
                     Don't have an account?{' '}
                     <button

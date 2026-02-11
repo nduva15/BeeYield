@@ -43,6 +43,7 @@ import { InvoicesTab } from '@/components/admin/tabs/InvoicesTab';
 import { RecruitmentTab } from '@/components/admin/tabs/RecruitmentTab';
 import { Container, Grid, Col, Section } from '@/components/ui/layout';
 import ContentDashboard from '@/components/beeyield/ContentDashboard';
+import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 
 const AdminDashboard: React.FC = () => {
     const { user, loading: authLoading, signOut } = useAuth();
@@ -50,7 +51,7 @@ const AdminDashboard: React.FC = () => {
 
     // Role check
     const userRole = user?.user_metadata?.role || 'user';
-    const isSuperAdminEmail = ['timothynduva349@gmail.com'].includes(user?.email?.toLowerCase() || '');
+    const isSuperAdminEmail = [SUPER_ADMIN_EMAIL].includes(user?.email?.toLowerCase() || '');
     const isAdmin = userRole === 'admin' || userRole === 'super_admin' || isSuperAdminEmail;
     const isSuperAdmin = userRole === 'super_admin' || isSuperAdminEmail;
 
@@ -195,7 +196,7 @@ const AdminDashboard: React.FC = () => {
     const loadTabData = async (tab: string) => {
         // Individual tab loading logic
         try {
-            console.log(`[Admin] Loading data for tab: ${tab}`);
+            // console.log(`[Admin] Loading data for tab: ${tab}`);
             switch (tab) {
                 case 'orders': {
                     const ordersData = await adminService.getOrders();

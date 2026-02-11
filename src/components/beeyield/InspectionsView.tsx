@@ -38,6 +38,7 @@ import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
 import { beeyieldService, Apiary, Hive, Inspection } from '@/services/beeyieldService';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface InspectionsViewProps {
     onTabChange: (tab: string) => void;
@@ -103,6 +104,9 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
 
     const [isSaving, setIsSaving] = useState(false);
 
+    const { user, beeyieldUser } = useAuth();
+    const userId = beeyieldUser?.id || user?.id;
+
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
@@ -112,9 +116,21 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                     beeyieldService.getHives(),
                     beeyieldService.getInspections()
                 ]);
-                setApiaries(apiariesData);
-                setHives(hivesData);
-                setInspections(inspectionsData);
+
+                if (userId) {
+                    const filteredApiaries = apiariesData.filter(a => !a.user_id || a.user_id === userId);
+                    const filteredHives = hivesData.filter(h => !h.user_id || h.user_id === userId);
+                    const userHiveIds = new Set(filteredHives.map(h => h.id));
+                    const filteredInspections = inspectionsData.filter(i => userHiveIds.has(i.hive_id));
+
+                    setApiaries(filteredApiaries);
+                    setHives(filteredHives);
+                    setInspections(filteredInspections);
+                } else {
+                    setApiaries(apiariesData);
+                    setHives(hivesData);
+                    setInspections(inspectionsData);
+                }
             } catch (error) {
                 console.error("Error loading data", error);
                 toast.error("Failed to load dashboard data");
@@ -123,7 +139,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
             }
         };
         fetchData();
-    }, []);
+    }, [userId]);
 
 
 

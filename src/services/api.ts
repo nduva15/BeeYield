@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabaseShop, supabaseBeeYield, supabaseCEBA } from '@/lib/supabase';
 
 // Use environment variable for the API base URL
 const isDev = import.meta.env.DEV;
@@ -11,13 +11,31 @@ export const API_V1_URL = API_BASE_URL.includes("/api/v1")
     : `${API_BASE_URL}/api/v1`;
 
 /**
+ * Get the active Supabase client based on URL path
+ */
+function getActiveClient() {
+    if (typeof window === 'undefined') return supabaseShop;
+    const path = window.location.pathname;
+    // Special handling for admin/ceba paths
+    if (path.includes('/ceba') || path.startsWith('/admin')) {
+        return supabaseCEBA || supabaseShop;
+    }
+    // Special handling for beeyield
+    if (path.includes('beeyield')) {
+        return supabaseBeeYield || supabaseShop;
+    }
+    return supabaseShop;
+}
+
+/**
  * Get authentication headers from Supabase session
  */
 export async function getAuthHeaders(): Promise<Record<string, string>> {
-    if (!supabase) return {};
+    const client = getActiveClient();
+    if (!client) return {};
 
     try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session } } = await client.auth.getSession();
         if (session?.access_token) {
             return {
                 'Authorization': `Bearer ${session.access_token}`

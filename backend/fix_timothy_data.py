@@ -8,15 +8,18 @@ from supabase import create_client, Client
 
 # Add backend to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "backend")))
+# Look for .env in current dir and backend dir
+load_dotenv(dotenv_path=".env")
 load_dotenv(dotenv_path="backend/.env")
 
 url = os.getenv("VITE_SUPABASE_URL") or os.getenv("SUPABASE_URL")
-key = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SUPABASE_KEY")
+key = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SUPABASE_KEY") or os.getenv("VITE_SUPABASE_ANON_KEY")
 
 if not url or not key:
-    print("Error: Supabase credentials not found.")
+    print(f"Error: Supabase credentials not found. URL: {url}, KEY: {key[:10] if key else 'None'}...")
     sys.exit(1)
 
+print(f"Connecting to: {url}")
 supabase: Client = create_client(url, key)
 
 def fix_timothy_data():
@@ -134,29 +137,51 @@ def fix_timothy_data():
     # 4. FIX HARVESTS
     print("\n[HARVESTS] Fixing historical data...")
     
-    # Define Harvests Data
-    harvests = [
-        # 2020: 13kg
-        {"quantity_kg": 6.5,  "harvest_date": '2020-06-15', "honey_type": 'Wildflower', "notes": 'Legacy Sync - First harvest', "batch_code": 'BY-2020-001', "moisture_content_percent": 17.5, "color_grade": "Amber"},
-        {"quantity_kg": 6.5,  "harvest_date": '2020-12-15', "honey_type": 'Forest', "notes": 'Legacy Sync - Winter harvest', "batch_code": 'BY-2020-002', "moisture_content_percent": 17.2, "color_grade": "Dark Amber"},
-        # 2021: 60kg
-        {"quantity_kg": 30,   "harvest_date": '2021-06-15', "honey_type": 'Wildflower', "notes": 'Legacy Sync - Summer harvest', "batch_code": 'BY-2021-001', "moisture_content_percent": 17.4, "color_grade": "Light Amber"},
-        {"quantity_kg": 30,   "harvest_date": '2021-12-15', "honey_type": 'Forest', "notes": 'Legacy Sync - Winter harvest', "batch_code": 'BY-2021-002', "moisture_content_percent": 17.6, "color_grade": "Amber"},
-        # 2022: 55kg
-        {"quantity_kg": 27.5, "harvest_date": '2022-06-15', "honey_type": 'Wildflower', "notes": 'Legacy Sync - Summer harvest', "batch_code": 'BY-2022-001', "moisture_content_percent": 17.1, "color_grade": "Extra Light Amber"},
-        {"quantity_kg": 27.5, "harvest_date": '2022-12-15', "honey_type": 'Forest', "notes": 'Legacy Sync - Winter harvest', "batch_code": 'BY-2022-002', "moisture_content_percent": 17.3, "color_grade": "Amber"},
-        # 2023: 105kg
-        {"quantity_kg": 52.5, "harvest_date": '2023-06-15', "honey_type": 'Wildflower', "notes": 'Legacy Sync - Summer harvest', "batch_code": 'BY-2023-001', "moisture_content_percent": 17.0, "color_grade": "Water White"},
-        {"quantity_kg": 52.5, "harvest_date": '2023-12-15', "honey_type": 'Forest', "notes": 'Legacy Sync - Winter harvest', "batch_code": 'BY-2023-002', "moisture_content_percent": 17.8, "color_grade": "Amber"},
-        # 2024: 250kg
-        {"quantity_kg": 125,  "harvest_date": '2024-06-15', "honey_type": 'Wildflower', "notes": 'Legacy Sync - Summer harvest', "batch_code": 'BY-2024-001', "moisture_content_percent": 16.9, "color_grade": "Extra White"},
-        {"quantity_kg": 125,  "harvest_date": '2024-12-15', "honey_type": 'Forest', "notes": 'Legacy Sync - Winter harvest', "batch_code": 'BY-2024-002', "moisture_content_percent": 17.5, "color_grade": "Amber"},
-        # 2025: 300kg
-        {"quantity_kg": 150,  "harvest_date": '2025-06-15', "honey_type": 'Wildflower', "notes": 'Legacy Sync - Summer harvest', "batch_code": 'BY-2025-001', "moisture_content_percent": 17.2, "color_grade": "Light Amber"},
-        {"quantity_kg": 150,  "harvest_date": '2025-12-15', "honey_type": 'Forest', "notes": 'Legacy Sync - Winter harvest', "batch_code": 'BY-2025-002', "moisture_content_percent": 17.4, "color_grade": "Dark Amber"},
-        # 2026: 60kg
-        {"quantity_kg": 60,   "harvest_date": '2026-01-10', "honey_type": 'Early Spring', "notes": 'Current Year - Jan Harvest', "batch_code": 'BY-2026-001', "moisture_content_percent": 17.5, "color_grade": "Extra Light Amber"},
-    ]
+    # Get all hives to create per-hive batches
+    res_hives = supabase.table("hives").select("id, hive_code").eq("user_id", user_id).execute()
+    all_user_hives = res_hives.data
+    
+    # 2020 Harvest: 943kg total
+    # 943 / 184 = 5.125 kg per hive
+    print(f"  Generating 2020 harvests (943kg total across {len(all_user_hives)} hives)...")
+    
+    harvests_to_insert = []
+    
+    # 2020 Data
+    for i, hive in enumerate(all_user_hives):
+        h_date = "2020-06-15"
+        h_code = hive['hive_code'].replace("-", "").upper()[-4:]
+        batch_code = f"BY-20200615-{h_code}"
+        
+        harvests_to_insert.append({
+            "user_id": user_id,
+            "apiary_id": apiary_id,
+            "hive_id": hive['id'],
+            "quantity_kg": 5.125,
+            "harvest_date": h_date,
+            "honey_type": 'Wildflower',
+            "notes": 'Legacy Sync - 2020 943kg Audit',
+            "batch_code": batch_code,
+            "moisture_content_percent": 17.5,
+            "color_grade": "Amber",
+            "is_verified": True
+        })
+
+    # Other Years (Summarized or sample)
+    # 2026: 60kg (Fixed to Jan 3-10 period)
+    harvests_to_insert.append({
+        "user_id": user_id,
+        "apiary_id": apiary_id,
+        "hive_id": all_user_hives[0]['id'],
+        "quantity_kg": 60,
+        "harvest_date": '2026-01-05',
+        "honey_type": 'Early Spring',
+        "notes": 'Current Year - Jan Harvest Window',
+        "batch_code": f"BY-20260105-{all_user_hives[0]['hive_code'].replace('-', '').upper()[-4:]}",
+        "moisture_content_percent": 17.5,
+        "color_grade": "Extra Light Amber",
+        "is_verified": True
+    })
 
     # Delete existing Legacy Sync harvests to avoid duplicates
     try:
@@ -167,32 +192,26 @@ def fix_timothy_data():
     except Exception as e:
         print(f"  Error clearing old data: {e}")
 
-    # Insert new
+    # Insert in batches
     count = 0
-    for h in harvests:
+    batch_size = 50
+    for i in range(0, len(harvests_to_insert), batch_size):
+        batch = harvests_to_insert[i:i+batch_size]
         try:
-            # Common fields
-            h["user_id"] = user_id
-            h["apiary_id"] = apiary_id
-            h["hive_id"] = hive_id
-            h["is_verified"] = True
-            
-            # Try insert
-            supabase.table("harvests").insert(h).execute()
-            count += 1
+            supabase.table("harvests").insert(batch).execute()
+            count += len(batch)
+            print(f"    Inserted batch of {len(batch)} harvests...")
         except Exception as e:
-            print(f"  Error inserting harvest {h['batch_code']}: {e}")
-            # Fallback if column name 'quantity_kg' is wrong -> try 'weight_kg'
-            if 'quantity_kg' in str(e) or 'does not exist' in str(e):
-                print("  Retrying with weight_kg...")
+            print(f"    Error inserting batch: {e}")
+            # Individual fallback if batch fails
+            for h in batch:
                 try:
-                    h["weight_kg"] = h.pop("quantity_kg")
                     supabase.table("harvests").insert(h).execute()
                     count += 1
-                except Exception as e2:
-                    print(f"  Retry failed: {e2}")
+                except:
+                    pass
 
-    print(f"  Inserted {count} harvest records.")
+    print(f"  Inserted {count} total harvest records.")
     print("\n=== DONE ===")
 
 if __name__ == "__main__":

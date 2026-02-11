@@ -39,6 +39,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { beeyieldService, Apiary, Hive, Task } from '@/services/beeyieldService';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface MyTaskViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -78,6 +79,8 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
     const [apiaries, setApiaries] = useState<Apiary[]>([]);
     const [hives, setHives] = useState<Hive[]>([]);
     const [tasks, setTasks] = useState<Task[]>([]);
+    const { user, beeyieldUser } = useAuth();
+    const userId = beeyieldUser?.id || user?.id;
 
     // Clock UI State
     const [isClockMinutes, setIsClockMinutes] = useState(false);
@@ -93,9 +96,15 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                     beeyieldService.getTasks()
                 ]);
 
-                setApiaries(apiariesData);
-                setHives(hivesData);
-                setTasks(tasksData);
+                if (userId) {
+                    setApiaries(apiariesData.filter(a => !a.user_id || a.user_id === userId));
+                    setHives(hivesData.filter(h => !h.user_id || h.user_id === userId));
+                    setTasks(tasksData.filter(t => !t.user_id || t.user_id === userId));
+                } else {
+                    setApiaries(apiariesData);
+                    setHives(hivesData);
+                    setTasks(tasksData);
+                }
             } catch (error) {
                 console.error("Error fetching data", error);
                 toast.error(t('error_load_apiary'));
@@ -107,7 +116,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
             onInitialActionConsumed?.();
         }
         fetchAllData();
-    }, [initialAction]);
+    }, [initialAction, userId]);
 
     const generateCalendarDays = () => {
         const monthStart = startOfMonth(currentDate);

@@ -1,12 +1,15 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
+import { supabaseShop, supabaseBeeYield, supabaseCEBA } from '@/lib/supabase';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 
 /**
  * Auth Callback Page
  * Handles the redirect from OAuth providers (Google, etc.)
- * Supabase automatically handles the token exchange, we just need to redirect.
+ * Supabase automatically handles the token exchange via hash fragment parsing.
+ * We must use the correct client instance to pick up the session.
  */
 const AuthCallback = () => {
     const navigate = useNavigate();
@@ -14,13 +17,30 @@ const AuthCallback = () => {
     useEffect(() => {
         const handleAuthCallback = async () => {
             try {
-                // Supabase handles the token exchange automatically
-                // We just need to wait for it and redirect
-                if (!supabase) {
+                // Determine which backend initiated the auth
+                const storedBackend = localStorage.getItem('authBackend') as 'shop' | 'beeyield' | 'ceba' || 'shop';
+                localStorage.removeItem('authBackend'); // Remove after reading
+
+                // Dynamically import clients to avoid circular deps if any
+                // Note: The initial import at the top of the file is still there,
+                // but this dynamic import ensures we have the latest references if needed,
+                // and aligns with the instruction's intent to re-import.
+                const { supabaseShop, supabaseBeeYield, supabaseCEBA } = await import('@/lib/supabase');
+                const clients = {
+                    shop: supabaseShop,
+                    beeyield: supabaseBeeYield,
+                    ceba: supabaseCEBA
+                };
+                const activeClient = clients[storedBackend] || supabaseShop;
+
+                if (!activeClient) {
                     navigate('/login?error=client_init_failed');
                     return;
                 }
-                const { data: { session }, error } = await supabase.auth.getSession();
+
+                // Supabase handles the token exchange automatically upon getSession()
+                // It parses the URL hash fragment to extract the access_token.
+                const { data: { session }, error } = await activeClient.auth.getSession();
 
                 if (error) {
                     console.error('Auth callback error:', error);
@@ -30,29 +50,32 @@ const AuthCallback = () => {
 
                 if (session) {
                     // Fetch the user data to get the name for the toast
-                    const { data: { user } } = await supabase.auth.getUser();
+                    const { data: { user } } = await activeClient.auth.getUser();
 
-                    // Metadata Validation Check
+                    // Metadata Handling: Auto-Update instead of blocking
                     const requireMetadataStr = localStorage.getItem('authRequireMetadata');
                     if (requireMetadataStr && user) {
                         try {
                             const requireMetadata = JSON.parse(requireMetadataStr);
-                            const missingMetadata = Object.entries(requireMetadata).some(
-                                ([key, value]) => {
-                                    // Skip metadata check for Timothy's primary account
-                                    if (user.email === 'timothynduva349@gmail.com') return false;
-                                    return user.user_metadata?.[key] !== value;
-                                }
-                            );
+                            const missingMetadata: Record<string, any> = {};
 
-                            if (missingMetadata) {
-                                await supabase.auth.signOut();
-                                localStorage.removeItem('authRequireMetadata');
-                                navigate('/beeyield-login?error=account_required', { replace: true });
-                                return;
+                            Object.entries(requireMetadata).forEach(([key, value]) => {
+                                // Skip update for Timothy's primary account
+                                if (user.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase()) return;
+
+                                if (user.user_metadata?.[key] !== value) {
+                                    missingMetadata[key] = value;
+                                }
+                            });
+
+                            if (Object.keys(missingMetadata).length > 0) {
+                                console.debug('Auto-adding missing metadata:', missingMetadata);
+                                await activeClient.auth.updateUser({
+                                    data: { ...user.user_metadata, ...missingMetadata }
+                                });
                             }
                         } catch (e) {
-                            console.error('Error parsing requireMetadata:', e);
+                            console.error('Error handling requireMetadata:', e);
                         }
                     }
                     localStorage.removeItem('authRequireMetadata');
@@ -61,11 +84,9 @@ const AuthCallback = () => {
                         (user?.user_metadata?.first_name ? `${user.user_metadata.first_name} ${user.user_metadata.last_name || ''}`.trim() : null) ||
                         'Client';
 
-                    import('sonner').then(({ toast }) => {
-                        toast.success(`Welcome back, ${fullName}! 🎉`);
-                    });
+                    toast.success(`Welcome back, ${fullName}! 🎉`);
 
-                    // Successfully authenticated, redirect to home or intended destination
+                    // Successfully authenticated, redirect to intended destination
                     const returnTo = localStorage.getItem('authReturnTo') || '/';
                     localStorage.removeItem('authReturnTo');
 
@@ -74,12 +95,14 @@ const AuthCallback = () => {
                         navigate(returnTo, { replace: true });
                     }, 500);
                 } else {
-                    // No session, redirect to login
+                    // No session found in hash or storage
+                    // It's possible the hash was cleared or invalid
+                    console.warn('No session found after callback');
                     navigate('/login', { replace: true });
                 }
             } catch (err) {
-                console.error('Auth callback error:', err);
-                navigate('/login?error=auth_failed', { replace: true });
+                console.error('Auth callback exception:', err);
+                navigate('/login?error=auth_exception', { replace: true });
             }
         };
 

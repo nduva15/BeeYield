@@ -48,21 +48,21 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
     }[type];
 
     const buildings = [
-        { name: 'Lipowa 12', address: 'ul. Lipowa 12 · Lodz - Widzew', meters: 1, apartments: 1, coords: '51.7516, 19.4572' },
-        { name: 'Jana Pawla II 43', address: 'ul. Jana Pawla II 43 · Lodz Srodmiescie', meters: 1, apartments: 0, coords: '51.7618, 19.4561' },
-        { name: 'Dabrowskiego 55', address: 'ul. Dabrowskiego 55 Kalisz - Polnoc', meters: 2, apartments: 0, coords: '51.7643, 18.0915' },
-        { name: 'Zwirki 3', address: 'ul. Zwirki 3 · Lodz - Gorna', meters: 2, apartments: 2, coords: '51.7533, 19.4726' },
-        { name: 'Kosciuszki 4', address: 'ul. Kosciuszki 4 · Kalisz Centrum', meters: 2, apartments: 3, coords: '51.7606, 18.0910' },
-        { name: 'Zielona 5', address: 'ul. Zielona 5 · Lodz Polesie', meters: 1, apartments: 3, coords: '51.7658, 19.4454' },
-        { name: 'Wspolna 10', address: 'ul. Wspolna 10 · Lodz Widzew', meters: 1, apartments: 3, coords: '51.7560, 19.4732' },
+        { name: 'Kibwezi North', address: 'Plot 12A · Makueni - Kibwezi', meters: 1, apartments: 1, coords: '-2.4168, 37.9572' },
+        { name: 'Kibwezi East', address: 'Ranch 43 · Makueni Kibwezi', meters: 1, apartments: 0, coords: '-2.4218, 37.9661' },
+        { name: 'Kilifi Coast', address: 'Grove 55 · Kilifi - North', meters: 2, apartments: 0, coords: '-3.6343, 39.8515' },
+        { name: 'Emali West', address: 'Zone 3 · Makueni - Emali', meters: 2, apartments: 2, coords: '-2.0533, 37.4626' },
+        { name: 'Voi Highlands', address: 'Plot 4 · Taita Taveta', meters: 2, apartments: 3, coords: '-3.3906, 38.5610' },
+        { name: 'Nanyuki Belt', address: 'Field 5 · Laikipia Central', meters: 1, apartments: 3, coords: '0.0158, 37.0754' },
+        { name: 'Machakos Hub', address: 'Plot 10 · Machakos Central', meters: 1, apartments: 3, coords: '-1.5160, 37.2632' },
     ];
 
     const apartments = [
-        { id: 1, name: 'ul. Lipowa 12 - Apartment 12', location: 'Lodz - Widzew', meters: 1 },
-        { id: 2, name: 'ul. Zwirki 3 - Apartment 21', location: 'Lodz - Gorna', meters: 1 },
-        { id: 3, name: 'ul. Zwirki 3 - Apartment 22', location: 'Lodz - Gorna', meters: 1 },
-        { id: 4, name: 'ul. Kosciuszki 4 - Apartment 3', location: 'Kalisz - Centrum', meters: 1 },
-        { id: 5, name: 'ul. Kosciuszki 4 - Apartment 4', location: 'Kalisz - Centrum', meters: 1 },
+        { id: 1, name: 'Kibwezi North - Hive 12', location: 'Section A', meters: 1 },
+        { id: 2, name: 'Emali West - Hive 21', location: 'Section B', meters: 1 },
+        { id: 3, name: 'Emali West - Hive 22', location: 'Section B', meters: 1 },
+        { id: 4, name: 'Voi Highlands - Hive 3', location: 'Upper Hill', meters: 1 },
+        { id: 5, name: 'Voi Highlands - Hive 4', location: 'Upper Hill', meters: 1 },
     ];
 
     const meters = [
@@ -105,13 +105,13 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
     ];
 
     const [columns, setColumns] = useState([
-        { id: 'serial', label: 'Meter number', checked: true },
-        { id: 'medium', label: 'Medium', checked: true },
-        { id: 'building', label: 'Building address', checked: true },
-        { id: 'apartment', label: 'Apartment', checked: true },
-        { id: 'status', label: 'Status', checked: true },
-        { id: 'readings', label: 'Last reading', checked: true },
-        { id: 'alarm', label: 'Alarm', checked: true },
+        { id: 'serial', label: 'Sensor ID', checked: true },
+        { id: 'medium', label: 'Type', checked: true },
+        { id: 'building', label: 'Apiary/Zone', checked: true },
+        { id: 'apartment', label: 'Hive/Unit', checked: true },
+        { id: 'status', label: 'Health', checked: true },
+        { id: 'readings', label: 'Last Reading', checked: true },
+        { id: 'alarm', label: 'Alert', checked: true },
     ]);
 
     const toggleColumn = (id: string) => {
@@ -229,17 +229,17 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
 
             {/* Buildings Collapsible */}
             <Collapsible open={isBuildingsOpen} onOpenChange={setIsBuildingsOpen} className="w-full">
-                <Card className="rounded-[2rem] border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden bg-white dark:bg-[#09090b]">
+                <Card className="rounded-[2rem] border-gray-100 dark:border-slate-200 shadow-sm overflow-hidden bg-white dark:bg-slate-50">
                     <div className="p-6 flex items-center justify-between border-b border-gray-50 dark:border-gray-800/50">
                         <div>
                             <h2 className="text-xl font-bold flex items-center gap-2">
                                 <Building2 className="w-5 h-5 text-gray-400" />
-                                Buildings
+                                Apiaries
                             </h2>
                             <p className="text-xs text-slate-400 mt-0.5">Overview of addresses with meter counts</p>
                         </div>
                         <CollapsibleTrigger asChild>
-                            <Button variant="ghost" size="sm" className="text-gray-400 font-bold uppercase tracking-widest text-[10px] hover:bg-gray-50 dark:hover:bg-zinc-900 rounded-full">
+                            <Button variant="ghost" size="sm" className="text-gray-400 font-bold uppercase tracking-widest text-[10px] hover:bg-gray-50 dark:hover:bg-slate-100 rounded-full">
                                 {isBuildingsOpen ? <><ChevronUp className="w-4 h-4 mr-1" /> Collapse</> : <><ChevronDown className="w-4 h-4 mr-1" /> Expand</>}
                             </Button>
                         </CollapsibleTrigger>
@@ -248,22 +248,22 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                         <CardContent className="p-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                                 {buildings.map((building, i) => (
-                                    <div key={i} className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow group">
+                                    <div key={i} className="bg-white dark:bg-slate-100 border border-gray-100 dark:border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow group">
                                         <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-1">{building.name}</h4>
                                         <p className="text-[10px] text-gray-500 leading-tight mb-3 min-h-[2.5em]">{building.address}</p>
 
                                         <div className="flex gap-2 mb-3">
-                                            <Badge variant="secondary" className="bg-gray-50 dark:bg-zinc-800 text-gray-600 dark:text-gray-300 text-[9px] px-1.5 h-5 font-medium border-0 rounded-md">
-                                                Meters: {building.meters}
+                                            <Badge variant="secondary" className="bg-gray-50 dark:bg-slate-200 text-gray-600 dark:text-gray-700 text-[9px] px-1.5 h-5 font-medium border-0 rounded-md">
+                                                Sensors: {building.meters}
                                             </Badge>
-                                            <Badge variant="secondary" className="bg-gray-50 dark:bg-zinc-800 text-gray-600 dark:text-gray-300 text-[9px] px-1.5 h-5 font-medium border-0 rounded-md">
-                                                Apartments: {building.apartments}
+                                            <Badge variant="secondary" className="bg-gray-50 dark:bg-slate-200 text-gray-600 dark:text-gray-700 text-[9px] px-1.5 h-5 font-medium border-0 rounded-md">
+                                                Hives: {building.apartments}
                                             </Badge>
                                         </div>
 
                                         <div className="space-y-1">
                                             <p className="text-[9px] text-gray-400 font-mono">Coordinates: {building.coords}</p>
-                                            <button className="text-[10px] text-[#2563EB] font-bold hover:underline block text-left">Open building</button>
+                                            <button className="text-[10px] text-[#2563EB] font-bold hover:underline block text-left">Open apiary</button>
                                             <button className="text-[10px] text-gray-400 font-bold hover:text-gray-600 block text-left">Show on map</button>
                                         </div>
                                     </div>
@@ -281,7 +281,7 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                         <div>
                             <h2 className="text-xl font-bold flex items-center gap-2">
                                 <Home className="w-5 h-5 text-gray-400" />
-                                Apartments
+                                Hives / Units
                             </h2>
                             <p className="text-xs text-slate-400 mt-0.5">Apartment list with assigned meters</p>
                         </div>
@@ -297,11 +297,11 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                                 {apartments.map((apt) => (
                                     <div key={apt.id} className="p-4 flex items-center justify-between hover:bg-gray-50/50 dark:hover:bg-zinc-900/50 transition-colors">
                                         <div>
-                                            <h4 className="text-sm font-bold text-gray-900 dark:text-white">{apt.name}</h4>
+                                            <h4 className="text-sm font-bold text-gray-900 dark:text-slate-800">{apt.name}</h4>
                                             <p className="text-xs text-gray-400 mt-0.5">{apt.location}</p>
                                         </div>
-                                        <Badge variant="secondary" className="bg-gray-50 dark:bg-zinc-800 text-gray-500 dark:text-gray-400 text-[10px] px-2 py-0.5 border-0 font-medium">
-                                            Meters: {apt.meters}
+                                        <Badge variant="secondary" className="bg-gray-50 dark:bg-slate-200 text-gray-500 dark:text-slate-600 text-[10px] px-2 py-0.5 border-0 font-medium">
+                                            Sensors: {apt.meters}
                                         </Badge>
                                     </div>
                                 ))}
@@ -312,12 +312,12 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
             </Collapsible>
 
             {/* Filters */}
-            <Card className="rounded-[1.5rem] border-gray-100 dark:border-gray-800 shadow-sm bg-white dark:bg-[#09090b] p-5">
+            <Card className="rounded-[1.5rem] border-gray-100 dark:border-slate-200 shadow-sm bg-white dark:bg-slate-50 p-5">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                     <div className="space-y-1.5">
-                        <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Medium</label>
-                        <div className="flex gap-2 p-1 bg-gray-50 dark:bg-zinc-900 rounded-xl">
-                            <Button variant="ghost" size="icon" className={cn("rounded-lg h-9 w-9 transition-all", type === 'heat' && "bg-white shadow-sm dark:bg-zinc-800")} onClick={() => onTabChange('meters-heat')}>
+                        <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Type</label>
+                        <div className="flex gap-2 p-1 bg-gray-50 dark:bg-slate-100 rounded-xl">
+                            <Button variant="ghost" size="icon" className={cn("rounded-lg h-9 w-9 transition-all", type === 'heat' && "bg-white shadow-sm dark:bg-slate-50")} onClick={() => onTabChange('meters-heat')}>
                                 <Flame className={cn("w-4 h-4", type === 'heat' ? "text-orange-500" : "text-gray-400")} />
                             </Button>
                             <Button variant="ghost" size="icon" className={cn("rounded-lg h-9 w-9 transition-all", type === 'water' && "bg-white shadow-sm dark:bg-zinc-800")} onClick={() => onTabChange('meters-water')}>
@@ -330,30 +330,30 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Building</label>
+                        <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Apiary</label>
                         <div className="relative">
                             <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-                            <select className="w-full h-9 pl-9 pr-4 bg-gray-50 dark:bg-zinc-900 border-none rounded-xl text-[11px] font-medium appearance-none cursor-pointer">
-                                <option>All buildings</option>
+                            <select className="w-full h-9 pl-9 pr-4 bg-gray-50 dark:bg-slate-100 border-none rounded-xl text-[11px] font-medium appearance-none cursor-pointer">
+                                <option>All apiaries</option>
                             </select>
                         </div>
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Apartment</label>
+                        <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Hive</label>
                         <div className="relative">
                             <Home className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-                            <select className="w-full h-9 pl-9 pr-4 bg-gray-50 dark:bg-zinc-900 border-none rounded-xl text-[11px] font-medium appearance-none cursor-pointer">
-                                <option>All apartments</option>
+                            <select className="w-full h-9 pl-9 pr-4 bg-gray-50 dark:bg-slate-100 border-none rounded-xl text-[11px] font-medium appearance-none cursor-pointer">
+                                <option>All hives</option>
                             </select>
                         </div>
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Status</label>
+                        <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Health</label>
                         <div className="relative">
                             <Activity className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-                            <select className="w-full h-9 pl-9 pr-4 bg-gray-50 dark:bg-zinc-900 border-none rounded-xl text-[11px] font-medium appearance-none cursor-pointer">
+                            <select className="w-full h-9 pl-9 pr-4 bg-gray-50 dark:bg-slate-100 border-none rounded-xl text-[11px] font-medium appearance-none cursor-pointer">
                                 <option>All statuses</option>
                             </select>
                         </div>
@@ -363,7 +363,7 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                         <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Reading level</label>
                         <div className="relative">
                             <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-                            <select className="w-full h-9 pl-9 pr-4 bg-gray-50 dark:bg-zinc-900 border-none rounded-xl text-[11px] font-medium appearance-none cursor-pointer">
+                            <select className="w-full h-9 pl-9 pr-4 bg-gray-50 dark:bg-slate-100 border-none rounded-xl text-[11px] font-medium appearance-none cursor-pointer">
                                 <option>All levels</option>
                             </select>
                         </div>
@@ -374,8 +374,8 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                             <Input
-                                placeholder="Meter ID / address..."
-                                className="h-9 pl-9 bg-gray-50 dark:bg-zinc-900 border-none rounded-xl text-[11px]"
+                                placeholder="Sensor ID / address..."
+                                className="h-9 pl-9 bg-gray-50 dark:bg-slate-100 border-none rounded-xl text-[11px]"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
@@ -386,7 +386,7 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
 
             {/* Export Collapsible */}
             <Collapsible open={isExportOpen} onOpenChange={setIsExportOpen} className="w-full">
-                <Card className="rounded-[2rem] border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden bg-white dark:bg-[#09090b]">
+                <Card className="rounded-[2rem] border-gray-100 dark:border-slate-200 shadow-sm overflow-hidden bg-white dark:bg-slate-50">
                     <div className="p-6 flex items-center justify-between border-b border-gray-50 dark:border-gray-800/50">
                         <div>
                             <h2 className="text-xl font-bold flex items-center gap-2">
@@ -428,7 +428,7 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                                         <Button onClick={exportToPDF} className="bg-[#091E42] hover:bg-[#1a2b4a] text-white rounded-xl h-12 flex-1 min-w-[150px] font-bold">
                                             <FileText className="w-4 h-4 mr-2" /> Export PDF
                                         </Button>
-                                        <Button onClick={exportToXLS} variant="outline" className="border-gray-200 dark:border-gray-800 rounded-xl h-12 flex-1 min-w-[150px] font-bold hover:bg-gray-50 dark:hover:bg-zinc-900">
+                                        <Button onClick={exportToXLS} variant="outline" className="border-gray-200 dark:border-slate-200 rounded-xl h-12 flex-1 min-w-[150px] font-bold hover:bg-gray-50 dark:hover:bg-slate-100">
                                             <Layers className="w-4 h-4 mr-2 text-[#1B9157]" /> Export XLS
                                         </Button>
                                     </div>
@@ -441,24 +441,24 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
             </Collapsible>
 
             {/* Meters Table */}
-            <Card className="rounded-[2rem] border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden bg-white dark:bg-[#09090b]">
+            <Card className="rounded-[2rem] border-gray-100 dark:border-slate-200 shadow-sm overflow-hidden bg-white dark:bg-slate-50">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>
-                            <tr className="border-b border-gray-50 dark:border-gray-800">
-                                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Meter Type</th>
-                                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Address</th>
-                                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Apartment</th>
-                                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Meter Number</th>
+                            <tr className="border-b border-gray-50 dark:border-slate-200">
+                                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Sensor Type</th>
+                                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Apiary/Zone</th>
+                                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Hive/Unit</th>
+                                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Sensor ID</th>
                                 <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Last Reading</th>
-                                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Status</th>
-                                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Alarm</th>
+                                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Health</th>
+                                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Alert</th>
                                 <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-wider text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">
                             {meters.map((meter) => (
-                                <tr key={meter.id} className="hover:bg-gray-50/30 dark:hover:bg-zinc-900/30 transition-colors group">
+                                <tr key={meter.id} className="hover:bg-gray-50/30 dark:hover:bg-slate-100/30 transition-colors group">
                                     <td className="px-6 py-4">
                                         <Badge variant="outline" className={cn(
                                             "border-0 rounded-lg gap-1.5 pl-1 pr-2 py-1 text-[10px] font-bold uppercase",
@@ -468,11 +468,11 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                                         </Badge>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <p className="text-xs font-bold text-gray-900 dark:text-white">{meter.building}</p>
+                                        <p className="text-xs font-bold text-gray-900 dark:text-slate-800">{meter.building}</p>
                                         <p className="text-[10px] text-gray-400 mt-0.5">{meter.location}</p>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <p className="text-xs font-medium text-gray-600 dark:text-gray-300">{meter.apartment}</p>
+                                        <p className="text-xs font-medium text-gray-600 dark:text-slate-700">{meter.apartment}</p>
                                     </td>
                                     <td className="px-6 py-4">
                                         <p className="text-xs font-mono text-gray-700 dark:text-gray-200">{meter.serial}</p>

@@ -19,17 +19,17 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
     const [loading, setLoading] = useState(true);
 
     const consumptionData = [
-        { label: 'Electricity usage', value: '12,483 kWh', subtext: 'last month', icon: Zap },
+        { label: 'Energy usage', value: '12,483 Units', subtext: 'last month', icon: Zap },
         { label: 'Water usage', value: '3,842 m3', subtext: 'last month', icon: Droplet },
-        { label: 'Heat usage', value: '1,203 GJ', subtext: 'last month', icon: Flame },
+        { label: 'Heat/Fuel usage', value: '1,203 GJ', subtext: 'last month', icon: Flame },
     ];
 
     const [columns, setColumns] = useState([
-        'Meter ID',
-        'Meter number',
-        'Building address',
-        'Apartment',
-        'Status',
+        'Sensor ID',
+        'Device number',
+        'Apiary address',
+        'Hive / Unit',
+        'Level',
         'Reading'
     ]);
 
@@ -52,30 +52,30 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
             {/* Header */}
-            <h1 className="text-[2.5rem] font-bold text-[#1B9157] dark:text-[#F4D03F] tracking-tight">Payments & settlements</h1>
+            <h1 className="text-[2.5rem] font-bold text-[#1B9157] dark:text-[#F4D03F] tracking-tight">Payments</h1>
 
             {/* Consumption Summary */}
-            <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm border-t-4 border-t-[#F4D03F]">
+            <Card className="rounded-2xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm border-t-4 border-t-[#F4D03F]">
                 <CardHeader className="pb-4">
                     <div className="flex items-center gap-2">
                         <CreditCard className="w-5 h-5 text-[#1B9157]" />
-                        <CardTitle className="text-lg font-bold text-[#1B9157]">Consumption summary</CardTitle>
+                        <CardTitle className="text-lg font-bold text-[#1B9157]">Usage summary</CardTitle>
                     </div>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-0">
                     {consumptionData.map((item, idx) => (
                         <div key={idx} className={cn(
-                            "flex items-end justify-between p-4 rounded-xl bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800",
+                            "flex items-end justify-between p-4 rounded-xl bg-gray-50 dark:bg-slate-100 border border-gray-100 dark:border-slate-200",
                             idx !== consumptionData.length - 1 && "md:border-r-0 md:bg-transparent md:border-0 md:p-0 md:pb-4 md:border-b-0"
                         )}>
                             <div className="w-full relative">
                                 <p className="text-sm font-medium text-gray-500 mb-1">{item.label}</p>
                                 <div className="flex items-baseline justify-between w-full">
-                                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">{item.value}</h3>
+                                    <h3 className="text-xl font-bold text-gray-900 dark:text-slate-800">{item.value}</h3>
                                     <span className="text-xs text-gray-400">{item.subtext}</span>
                                 </div>
                                 {idx < consumptionData.length - 1 && (
-                                    <div className="hidden md:block absolute right-[-13px] top-2 bottom-2 w-[1px] bg-gray-200 dark:bg-gray-800" />
+                                    <div className="hidden md:block absolute right-[-13px] top-2 bottom-2 w-[1px] bg-gray-200 dark:bg-slate-200" />
                                 )}
                             </div>
                         </div>
@@ -84,18 +84,18 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
             </Card>
 
             {/* Export to billing system */}
-            <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm border-t-4 border-t-[#F4D03F]">
+            <Card className="rounded-2xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm border-t-4 border-t-[#F4D03F]">
                 <CardHeader className="pb-4">
                     <div className="flex items-center gap-2">
                         <FileText className="w-5 h-5 text-[#1B9157]" />
-                        <CardTitle className="text-lg font-bold text-[#1B9157]">Export to billing system</CardTitle>
+                        <CardTitle className="text-lg font-bold text-[#1B9157]">Download for payments</CardTitle>
                     </div>
                     <CardDescription className="text-gray-500">
-                        Prepare a data package for settlements.
+                        Get your data ready for payment.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 pt-0">
-                    <p className="text-sm text-gray-500">Choose export columns and their order.</p>
+                    <p className="text-sm text-gray-500">Pick which columns to include and their order.</p>
                     <Button
                         variant="outline"
                         onClick={() => {
@@ -111,10 +111,10 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
             </Card>
 
             {/* Sample billing rates */}
-            <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm border-t-4 border-t-[#F4D03F]">
+            <Card className="rounded-2xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm border-t-4 border-t-[#F4D03F]">
                 <CardHeader className="pb-4">
-                    <CardTitle className="text-lg font-bold text-[#1B9157]">Sample billing rates</CardTitle>
-                    <CardDescription className="text-gray-500">Assign rates per medium for settlements.</CardDescription>
+                    <CardTitle className="text-lg font-bold text-[#1B9157]">Set prices</CardTitle>
+                    <CardDescription className="text-gray-500">Assign prices to Different types.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6 pt-0">
                     <div className="space-y-4">
@@ -126,15 +126,15 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                             <p className="text-center py-8 text-gray-400 text-sm">No billing rates configured.</p>
                         ) : (
                             rates.map((item) => (
-                                <div key={item.id} className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800">
+                                <div key={item.id} className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-slate-100 border border-gray-100 dark:border-slate-200">
                                     <div className="flex items-center gap-4">
-                                        <div className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
+                                        <div className="p-2 bg-white dark:bg-slate-50 rounded-lg shadow-sm border border-gray-100 dark:border-slate-200">
                                             {item.meter_type === 'Water' && <Droplet className="w-4 h-4 text-blue-500" />}
                                             {item.meter_type === 'Heat' && <Flame className="w-4 h-4 text-orange-500" />}
                                             {item.meter_type === 'Energy' && <Zap className="w-4 h-4 text-yellow-500" />}
                                         </div>
                                         <div>
-                                            <h4 className="text-sm font-bold text-gray-900 dark:text-white capitalize">{item.meter_type}</h4>
+                                            <h4 className="text-sm font-bold text-gray-900 dark:text-slate-800 capitalize">{item.meter_type}</h4>
                                             <p className="text-xs text-gray-400">{item.description || 'Standard rate'}</p>
                                         </div>
                                     </div>
@@ -150,12 +150,12 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                         )}
                     </div>
 
-                    <div className="pt-4 border-t border-gray-50 dark:border-gray-800 flex flex-col gap-6">
+                    <div className="pt-4 border-t border-gray-50 dark:border-slate-200 flex flex-col gap-6">
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                             <div className="space-y-1.5">
-                                <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Medium</label>
+                                <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Type</label>
                                 <Select defaultValue="water">
-                                    <SelectTrigger className="h-10 rounded-xl border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 text-xs">
+                                    <SelectTrigger className="h-10 rounded-xl border-gray-100 dark:border-slate-200 bg-gray-50/50 dark:bg-slate-100 text-xs text-slate-800">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -167,12 +167,12 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                                 </Select>
                             </div>
                             <div className="space-y-1.5">
-                                <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Rate (KES)</label>
-                                <Input type="number" placeholder="0.00" className="h-10 rounded-xl border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 text-xs" />
+                                <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Price (KES)</label>
+                                <Input type="number" placeholder="0.00" className="h-10 rounded-xl border-gray-100 dark:border-slate-200 bg-gray-50/50 dark:bg-slate-100 text-xs text-slate-800" />
                             </div>
                             <div className="space-y-1.5">
                                 <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Description</label>
-                                <Input placeholder="Comment..." className="h-10 rounded-xl border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 text-xs" />
+                                <Input placeholder="Comment..." className="h-10 rounded-xl border-gray-100 dark:border-slate-200 bg-gray-50/50 dark:bg-slate-100 text-xs text-slate-800" />
                             </div>
                             <div className="flex items-end">
                                 <Button
@@ -182,24 +182,24 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
                                     }}
                                     className="w-full h-10 rounded-xl bg-[#F4D03F] hover:bg-[#EBC42F] text-black font-bold text-xs gap-2 shadow-sm"
                                 >
-                                    <Plus className="w-4 h-4" /> Add rate
+                                    <Plus className="w-4 h-4" /> Add price
                                 </Button>
                             </div>
                         </div>
 
                         {/* Drag and Drop Columns */}
                         <div className="space-y-4">
-                            <h4 className="text-sm font-bold text-gray-900 dark:text-white">Export columns order</h4>
+                            <h4 className="text-sm font-bold text-gray-900 dark:text-slate-800">Export columns order</h4>
                             <Reorder.Group axis="y" values={columns} onReorder={setColumns} className="space-y-2">
                                 {columns.map((column) => (
                                     <Reorder.Item
                                         key={column}
                                         value={column}
-                                        className="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 shadow-sm cursor-grab active:cursor-grabbing"
+                                        className="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-slate-50 border border-gray-100 dark:border-slate-200 shadow-sm cursor-grab active:cursor-grabbing"
                                     >
                                         <div className="flex items-center gap-3">
                                             <GripVertical className="w-4 h-4 text-gray-400" />
-                                            <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{column}</span>
+                                            <span className="text-xs font-semibold text-gray-700 dark:text-slate-700">{column}</span>
                                         </div>
                                     </Reorder.Item>
                                 ))}

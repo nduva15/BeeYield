@@ -490,7 +490,7 @@ const Contact = () => {
                     onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
                   />
                   <Label htmlFor="terms" className="text-sm font-medium leading-none text-muted-foreground cursor-pointer">
-                    I agree with the <a href="#" className="text-primary hover:underline">Terms and Conditions</a> and <a href="#" className="text-primary hover:underline">Privacy Policy</a>
+                    I agree with the <a href="/terms" className="text-primary hover:underline">Terms and Conditions</a> and <a href="/privacy" className="text-primary hover:underline">Privacy Policy</a>
                   </Label>
                 </div>
 

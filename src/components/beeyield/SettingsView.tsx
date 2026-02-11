@@ -117,11 +117,11 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
 
     // State for modules
     const [modules, setModules] = useState([
-        { id: 'beeyield', icon: Sparkles, label: 'BeeYield System', desc: t('beeyield_desc'), enabled: true, priority: true },
-        { id: 'iot', icon: Settings2, label: 'IoT Core', desc: t('iot_desc'), enabled: true },
-        { id: 'traceability', icon: HelpCircle, label: 'Traceability', desc: t('traceability_desc'), enabled: true },
-        { id: 'training', icon: BookOpen, label: 'Learning Hub', desc: t('training_desc'), enabled: false },
-        { id: 'marketplace', icon: Briefcase, label: 'Marketplace', desc: t('marketplace_desc'), enabled: false },
+        { id: 'beeyield', icon: Sparkles, label: 'System Settings', desc: 'Main app settings', enabled: true, priority: true },
+        { id: 'iot', icon: Settings2, label: 'Sensors', desc: 'Manage your hive devices', enabled: true },
+        { id: 'traceability', icon: HelpCircle, label: 'History', desc: 'Track your honey journey', enabled: true },
+        { id: 'training', icon: BookOpen, label: 'Learning Hub', desc: 'Guides and tips', enabled: false },
+        { id: 'marketplace', icon: Briefcase, label: 'Marketplace', desc: 'Buy and sell products', enabled: false },
     ]);
 
     const userMetadata = user?.user_metadata || {};
@@ -466,9 +466,9 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                             <CardHeader className="p-10 pb-4">
                                 <CardTitle className="text-2xl font-black leading-tight flex items-center gap-2">
                                     <Thermometer className="w-6 h-6" />
-                                    {t('iot_thresholds') || 'IoT Alert Thresholds'}
+                                    Sensor alerts
                                 </CardTitle>
-                                <p className="text-sm text-gray-400 font-medium pt-2">Global default thresholds for your smart sensors. These apply to all hives unless overridden.</p>
+                                <p className="text-sm text-gray-400 font-medium pt-2">Set rules for your hive sensors to get notified.</p>
                             </CardHeader>
                             <CardContent className="p-10 pt-0 space-y-10">
                                 {/* Temperature Slider */}
@@ -546,9 +546,9 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                             <CardHeader className="p-10 pb-4 text-white bg-[#171717]">
                                 <CardTitle className="text-2xl font-black leading-tight flex items-center gap-2">
                                     <BellRing className="w-6 h-6 text-[#F4D03F]" />
-                                    {t('live_notifications') || 'Live Notifications'}
+                                    Notifications
                                 </CardTitle>
-                                <p className="text-sm text-gray-400 font-medium pt-2">Manage how the HiveIQ engine communicates with you.</p>
+                                <p className="text-sm text-gray-400 font-medium pt-2">Manage how the system talks to you.</p>
                             </CardHeader>
                             <CardContent className="p-10 space-y-8">
                                 {/* Master Switches */}
@@ -579,7 +579,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
 
                                 {/* Granular Event Toggles */}
                                 <div className="space-y-4">
-                                    <h4 className="text-[11px] font-black text-[#A3A3A3] uppercase tracking-[0.2em] mb-6">Automated Event Alerts</h4>
+                                    <h4 className="text-[11px] font-black text-[#A3A3A3] uppercase tracking-[0.2em] mb-6">Automated Alerts</h4>
 
                                     <div className="flex items-center justify-between p-5 bg-white dark:bg-[#09090b] rounded-2xl border border-gray-100 dark:border-gray-800 hover:shadow-md transition-all group">
                                         <div className="flex items-center gap-4">
@@ -587,8 +587,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                 <Zap className="w-5 h-5" />
                                             </div>
                                             <div className="flex flex-col">
-                                                <span className="text-sm font-bold">Swarm Detection</span>
-                                                <span className="text-[11px] text-gray-400">Notify if rapid weight loss is detected</span>
+                                                <span className="text-sm font-bold">Swarm Alert</span>
+                                                <span className="text-[11px] text-gray-400">Notify me if bees might be swarming</span>
                                             </div>
                                         </div>
                                         <Switch
@@ -603,8 +603,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                 <Shield className="w-5 h-5" />
                                             </div>
                                             <div className="flex flex-col">
-                                                <span className="text-sm font-bold">Theft / Disturbance</span>
-                                                <span className="text-[11px] text-gray-400">Accelerometer & tilt sensor alerts</span>
+                                                <span className="text-sm font-bold">Theft alert</span>
+                                                <span className="text-[11px] text-gray-400">Alert if the hive is moved</span>
                                             </div>
                                         </div>
                                         <Switch
@@ -619,8 +619,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                 <Smartphone className="w-5 h-5" />
                                             </div>
                                             <div className="flex flex-col">
-                                                <span className="text-sm font-bold">Low Battery</span>
-                                                <span className="text-[11px] text-gray-400">Battery levels below 15%</span>
+                                                <span className="text-sm font-bold">Battery alert</span>
+                                                <span className="text-[11px] text-gray-400">Alert if battery is low</span>
                                             </div>
                                         </div>
                                         <Switch

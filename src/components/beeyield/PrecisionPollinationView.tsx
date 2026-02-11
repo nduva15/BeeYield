@@ -404,10 +404,10 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center px-2 mb-8">
                 <div>
                     <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-                        {t('precision_pollination_title')}
+                        Pollination Summary
                     </h1>
                     <p className="text-base font-semibold text-slate-400 dark:text-slate-500 mt-1">
-                        {t('precision_pollination_subtitle')}
+                        Tracking bee activity and health across your farm.
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -433,7 +433,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
 
             {/* Stats Row */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                <StatCard label="Target FPA" value={results.targetFPA} colorClass="bg-[#F4D03F]" />
+                <StatCard label="Target Activity" value={results.targetFPA} colorClass="bg-[#F4D03F]" />
                 <StatCard label="Active Hives" value={hives.length} colorClass="bg-[#1B9157]" />
                 <StatCard label="Warnings" value={results.warningHives} colorClass="bg-[#F4D03F]" />
                 <StatCard label="Critical" value={results.criticalHives} colorClass="bg-red-500" />
@@ -445,12 +445,12 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                 <div className="flex items-center gap-3 mb-4 px-1">
                     <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#F4D03F]/30 to-transparent" />
                     <h2 className="text-xs font-black uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 whitespace-nowrap">
-                        Three Paths to Pollination
+                        Our Pollination Steps
                     </h2>
                     <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#F4D03F]/30 to-transparent" />
                 </div>
                 <p className="text-center text-[11px] font-semibold text-slate-400 dark:text-slate-500 -mt-2 mb-5">
-                    Complete pollination management: Inland Pollination, In-Hive Pollination, and Disease Monitoring.
+                    Helping you manage everything: Farm pollination, Hive health, and Alerts.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {/* Path 1: Inland Pollination */}
@@ -466,26 +466,26 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                                 <Flower2 className="w-5 h-5 text-[#1B9157]" />
                             </div>
                             <div>
-                                <h3 className="text-sm font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Inland Pollination</h3>
-                                <p className="text-[10px] font-semibold text-gray-400">Field Coverage & Efficiency</p>
+                                <h3 className="text-sm font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Farm Pollination</h3>
+                                <p className="text-[10px] font-semibold text-gray-400">Coverage & Results</p>
                             </div>
                         </div>
                         <div className="space-y-2.5 mb-5">
                             <div className="flex items-center gap-2">
                                 <div className="w-1 h-1 rounded-full bg-[#1B9157]" />
-                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Foraging radius & flight mapping</span>
+                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Bee range & flight maps</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="w-1 h-1 rounded-full bg-[#1B9157]" />
-                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Crop-specific FPA targeting</span>
+                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Crop activity goals</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="w-1 h-1 rounded-full bg-[#1B9157]" />
-                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Hive placement optimization</span>
+                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Best hive placement</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="w-1 h-1 rounded-full bg-[#1B9157]" />
-                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Weather-adjusted pollination yield</span>
+                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Weather-checked results</span>
                             </div>
                         </div>
                         <div className="flex items-center justify-between">
@@ -510,26 +510,26 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                                 <Hexagon className="w-5 h-5 text-[#F4D03F]" />
                             </div>
                             <div>
-                                <h3 className="text-sm font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">In-Hive Pollination</h3>
-                                <p className="text-[10px] font-semibold text-gray-400">Colony Optimization</p>
+                                <h3 className="text-sm font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Inside the Hive</h3>
+                                <p className="text-[10px] font-semibold text-gray-400">Health checks</p>
                             </div>
                         </div>
                         <div className="space-y-2.5 mb-5">
                             <div className="flex items-center gap-2">
                                 <div className="w-1 h-1 rounded-full bg-[#F4D03F]" />
-                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Temperature & humidity regulation</span>
+                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Temperature & humidity checks</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="w-1 h-1 rounded-full bg-[#F4D03F]" />
-                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Acoustic health monitoring</span>
+                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Sound-based health checks</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="w-1 h-1 rounded-full bg-[#F4D03F]" />
-                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Queen presence detection</span>
+                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Queen status</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="w-1 h-1 rounded-full bg-[#F4D03F]" />
-                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Colony strength (FOB) tracking</span>
+                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Hive strength tracking</span>
                             </div>
                         </div>
                         <div className="flex items-center justify-between">
@@ -554,26 +554,26 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                                 <Bug className="w-5 h-5 text-red-500" />
                             </div>
                             <div>
-                                <h3 className="text-sm font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Diseases</h3>
-                                <p className="text-[10px] font-semibold text-gray-400">Detection & Prevention</p>
+                                <h3 className="text-sm font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Health alerts</h3>
+                                <p className="text-[10px] font-semibold text-gray-400">Stay safe</p>
                             </div>
                         </div>
                         <div className="space-y-2.5 mb-5">
                             <div className="flex items-center gap-2">
                                 <div className="w-1 h-1 rounded-full bg-red-500" />
-                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Varroa mite pressure tracking</span>
+                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Pest pressure tracking</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="w-1 h-1 rounded-full bg-red-500" />
-                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Pesticide contamination alerts</span>
+                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Chemical alerts</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="w-1 h-1 rounded-full bg-red-500" />
-                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Brood disease early detection</span>
+                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Disease early detection</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="w-1 h-1 rounded-full bg-red-500" />
-                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">AI-powered health diagnostics</span>
+                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Smart health checks</span>
                             </div>
                         </div>
                         <div className="flex items-center justify-between">
@@ -596,7 +596,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                     <div className="bg-white dark:bg-[#111111] rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm p-6 flex-none">
                         <div className="flex items-center gap-2 mb-6">
                             <Calculator className="w-4 h-4 text-[#1B9157]" />
-                            <h3 className="text-sm font-black text-slate-800 dark:text-slate-200 uppercase tracking-widest">Calculator</h3>
+                            <h3 className="text-sm font-black text-slate-800 dark:text-slate-200 uppercase tracking-widest">Tool</h3>
                         </div>
                         <div className="space-y-5">
                             <div className="space-y-1.5">
@@ -625,7 +625,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
 
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center">
-                                    <Label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Colony Strength (FOB)</Label>
+                                    <Label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Hive strength</Label>
                                     <span className="text-sm font-bold text-[#1B9157]">{avgFrames} Frames</span>
                                 </div>
                                 <div className="relative h-2 w-full bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
@@ -667,7 +667,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                             </div>
                             <div className="space-y-2">
                                 <p className="text-[10px] font-medium text-slate-600 dark:text-slate-400 leading-relaxed">
-                                    <span className="font-bold text-[#1B9157]">Suggestion:</span> Based on recent acoustic patterns, relocating Hive 4 closer to the central crop area could improve pollination coverage by <span className="font-bold text-slate-800 dark:text-white">~12%</span>.
+                                    <span className="font-bold text-[#1B9157]">Suggestion:</span> Moving Hive 4 closer to the center could help your crops more by <span className="font-bold text-slate-800 dark:text-white">~12%</span>.
                                 </p>
                             </div>
                         </div>
@@ -718,7 +718,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                         <div className="p-4 border-b border-gray-50 dark:border-white/5 flex items-center justify-between shrink-0">
                             <div className="flex items-center gap-2">
                                 <Hexagon className="w-4 h-4 text-[#F4D03F]" />
-                                <h3 className="text-xs font-black uppercase tracking-tight text-slate-700 dark:text-slate-300">Hive Fleet</h3>
+                                <h3 className="text-xs font-black uppercase tracking-tight text-slate-700 dark:text-slate-300">Your hives</h3>
                             </div>
                             <div className="flex gap-1">
                                 <Button variant={viewMode === 'grid' ? 'default' : 'ghost'} size="sm" className="h-6 w-6 p-0" onClick={() => setViewMode('grid')}>
@@ -762,7 +762,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                                                 <div className={cn("w-2 h-2 rounded-full", getStatusColor(hive.status))} />
                                                 <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{hive.name}</span>
                                             </div>
-                                            <span className="text-[10px] font-bold text-gray-400">{hive.sensors.flightActivity.value} VPM</span>
+                                            <span className="text-[10px] font-bold text-gray-400">{hive.sensors.flightActivity.value} Flights/min</span>
                                         </button>
                                     ))}
                                     {hives.length > 10 && (
@@ -784,7 +784,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                                     <Cpu className="w-5 h-5 text-[#F4D03F]" />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-black uppercase tracking-tight text-slate-800 dark:text-slate-200">{t('iot_sensory_hub')}</h3>
+                                    <h3 className="text-sm font-black uppercase tracking-tight text-slate-800 dark:text-slate-200">Hive sensors</h3>
                                     <p className="text-[10px] text-gray-400 font-semibold">
                                         {selectedHive ? `${selectedHive.name} • ${selectedHive.lastSync}` : `Average of ${hives.length} hives`}
                                     </p>

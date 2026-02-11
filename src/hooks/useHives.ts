@@ -2,6 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { beeyieldService, Hive, HiveCreateInput, SensorReading, Apiary, ApiaryCreateInput } from '@/services/beeyieldService';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const hiveKeys = {
     all: ['hives'] as const,
@@ -12,11 +13,15 @@ export const hiveKeys = {
 
 // Fetch hives with real-time updates
 export function useHives(apiaryId?: string) {
+    const { user, beeyieldUser } = useAuth();
+    const userId = beeyieldUser?.id || user?.id;
+
     return useQuery({
-        queryKey: hiveKeys.list(apiaryId),
+        queryKey: [...hiveKeys.list(apiaryId), userId],
         queryFn: async () => {
             const data = await beeyieldService.getHives(apiaryId);
-            return data;
+            if (!userId) return data;
+            return data.filter(h => !h.user_id || h.user_id === userId);
         },
         staleTime: 1000 * 30,
         refetchInterval: 1000 * 30, // 30s poll
@@ -131,10 +136,15 @@ export const apiaryKeys = {
 
 // Fetch apiaries
 export function useApiaries() {
+    const { user, beeyieldUser } = useAuth();
+    const userId = beeyieldUser?.id || user?.id;
+
     return useQuery({
-        queryKey: apiaryKeys.lists(),
+        queryKey: [...apiaryKeys.lists(), userId],
         queryFn: async () => {
-            return await beeyieldService.getApiaries();
+            const data = await beeyieldService.getApiaries();
+            if (!userId) return data;
+            return data.filter(a => !a.user_id || a.user_id === userId);
         },
         staleTime: 1000 * 60, // 1 minute
     });

@@ -1,4 +1,7 @@
-import { supabase } from '@/lib/supabase';
+import { supabaseShop, supabaseCEBA } from '@/lib/supabase';
+
+// Prioritize CEBA client for admin operations, fallback to shop if not available (though unlikely)
+const supabase = supabaseCEBA || supabaseShop;
 import { apiGet, apiPost, apiPut, apiDelete } from './api';
 
 // Diagnostic check

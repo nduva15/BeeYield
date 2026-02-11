@@ -8,6 +8,7 @@ import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
 import { Shield, Lock, LogIn, Loader2, UserPlus } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
+import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 
@@ -17,13 +18,13 @@ const AdminAuth = () => {
     const [searchParams] = useSearchParams();
     const [authMode, setAuthMode] = useState<AuthMode>('login');
 
-    const redirectPath = searchParams.get('redirect') || '/ceba';
+    const redirectPath = searchParams.get('redirect') || '/admin';
 
     useEffect(() => {
         if (!loading && user) {
             // Check if user has admin role
             const userRole = user?.user_metadata?.role || 'user';
-            const isSuperAdminEmail = ['timothynduva349@gmail.com'].includes(user?.email?.toLowerCase() || '');
+            const isSuperAdminEmail = [SUPER_ADMIN_EMAIL].includes(user?.email?.toLowerCase() || '');
             const isAdmin = userRole === 'admin' || userRole === 'super_admin' || isSuperAdminEmail;
 
             if (isAdmin) {
@@ -99,6 +100,7 @@ const AdminAuth = () => {
                         {authMode === 'forgot-password' && (
                             <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
                                 <ForgotPasswordForm
+                                    variant="admin"
                                     onBackToLogin={() => setAuthMode('login')}
                                 />
                             </div>

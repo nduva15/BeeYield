@@ -60,6 +60,8 @@ const AuthCallback = lazy(() => import('@/pages/AuthCallback'))
 const NotFound = lazy(() => import('@/pages/NotFound'))
 const Receipt = lazy(() => import('@/pages/Receipt'))
 const MeasurementData = lazy(() => import('@/pages/MeasurementData'))
+const Privacy = lazy(() => import('@/pages/Privacy'))
+const Terms = lazy(() => import('@/pages/Terms'))
 
 const PageLoader = () => (
     <div className="flex items-center justify-center h-[50vh] w-full">
@@ -111,8 +113,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                                                     <Route path="/beeyield-dashboard" element={<ProtectedRoute requireBeeYield={true}><BeeYieldDashboard /></ProtectedRoute>} />
                                                     <Route path="/measurements" element={<ProtectedRoute requireBeeYield={true}><MeasurementData /></ProtectedRoute>} />
                                                     <Route path="/ceba" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+                                                    <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
                                                     <Route path="/ceba/content/editor/:id" element={<ProtectedRoute><ContentEditor /></ProtectedRoute>} />
+                                                    <Route path="/admin/content/editor/:id" element={<ProtectedRoute><ContentEditor /></ProtectedRoute>} />
                                                     <Route path="/ceba/login" element={<AdminLogin />} />
+                                                    <Route path="/admin/login" element={<AdminLogin />} />
                                                     {/* Mapped my-account to BuyerDashboard based on routes/my-account.tsx */}
                                                     <Route path="/my-account" element={<ProtectedRoute><BuyerDashboard /></ProtectedRoute>} />
                                                     <Route path="/buyer-dashboard" element={<ProtectedRoute><BuyerDashboard /></ProtectedRoute>} />
@@ -123,6 +128,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                                                     <Route path="/beeyield-login" element={<ProfessionalAuth />} />
                                                     <Route path="/auth/callback" element={<AuthCallback />} />
                                                     <Route path="/receipt/:orderId" element={<ProtectedRoute><Receipt /></ProtectedRoute>} />
+                                                    <Route path="/privacy" element={<Privacy />} />
+                                                    <Route path="/terms" element={<Terms />} />
                                                     <Route path="*" element={<NotFound />} />
                                                 </Routes>
                                             </Suspense>

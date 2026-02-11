@@ -1,3 +1,30 @@
+
+import {
+    LayoutGrid,
+    Package,
+    MapPin,
+    CreditCard,
+    Gift,
+    User,
+    Heart,
+    ShoppingBag,
+    HelpCircle,
+    CheckCircle2,
+    ArrowRight,
+    Smartphone,
+    Loader,
+    Loader2,
+    Shield,
+    Trash2,
+    Edit2,
+    Plus,
+    FileText,
+    Download,
+    XCircle,
+    Settings,
+    Truck
+} from 'lucide-react';
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
@@ -16,15 +43,6 @@ import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
 import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
 import { StripeCardForm } from '@/components/payments/StripeCardForm';
-import { toast } from 'sonner';
-import {
-    User, Mail, Shield, LogOut, Loader2, UserPlus, LogIn,
-    Package, ShoppingBag, MapPin, Phone, Clock, CheckCircle2,
-    XCircle, Truck, CreditCard, RefreshCw, ChevronRight,
-    FileText, Search, Plus, Trash2, Edit2, Star, Gift,
-    Download, ArrowRight, LayoutGrid, Settings, HelpCircle, Bell, Wallet, Heart,
-    Smartphone, CreditCard as CardIcon, Loader2 as Loader
-} from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import { initializeCheckout, CheckoutOrder } from '@/services/shopService';
@@ -33,6 +51,22 @@ import { useWishlist } from '@/contexts/WishlistContext';
 import ShopDashboardLayout from '@/components/shop/ShopDashboardLayout';
 import { ShopNavItem as NavItem } from '@/components/shop/ShopDashboardSidebar';
 import { adminService } from '@/services/adminService';
+
+// Toast utility import (adjust if needed)
+import { toast } from '@/hooks/use-toast';
+
+const BuyerDashboard = () => {
+    const { user, signOut, loading: authLoading, session } = useAuth();
+    const navigate = useNavigate();
+    const [authMode, setAuthMode] = useState<'login' | 'register' | 'forgot-password'>('login');
+    const [activeTab, setActiveTab] = useState<string>('overview');
+    const [orders, setOrders] = useState<Order[]>([]);
+    // Cart and wishlist context
+    const { items, getTotalItems, getTotalPrice, clearCart, addToCart: addToCartFromContext } = useCart() as CartContextType;
+    const { items: wishlistItems, removeFromWishlist, isInWishlist } = useWishlist();
+    // ...existing code...
+
+
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 
@@ -69,7 +103,6 @@ interface Address {
     is_default: boolean;
 }
 
-
 interface PaymentMethod {
     id: string;
     type: 'card' | 'mpesa';
@@ -83,17 +116,6 @@ interface PaymentMethod {
     expiry_month?: number;
     expiry_year?: number;
 }
-
-const BuyerDashboard = () => {
-    const { user, loading: authLoading, signOut, session } = useAuth();
-    const navigate = useNavigate();
-    const [authMode, setAuthMode] = useState<AuthMode>('login');
-    const [orders, setOrders] = useState<Order[]>([]);
-    // Removed ordersLoading for instant load
-    const [activeTab, setActiveTab] = useState('overview');
-    const { items, getTotalItems, getTotalPrice, clearCart, addToCart: addToCartFromContext } = useCart() as CartContextType;
-    const { items: wishlistItems, removeFromWishlist, isInWishlist } = useWishlist();
-
     const handleLogout = async () => {
         await signOut();
         navigate('/shop');
@@ -1308,7 +1330,10 @@ const BuyerDashboard = () => {
                     {authMode === 'login' && (
                         <LoginForm
                             variant="professional"
-                            onSuccess={() => window.location.reload()}
+                            onSuccess={() => {
+                                navigate('/beeyield-ai');
+                                window.location.reload();
+                            }}
                             onSwitchToRegister={() => setAuthMode('register')}
                         />
                     )}
@@ -1316,14 +1341,16 @@ const BuyerDashboard = () => {
                         <RegisterForm
                             variant="professional"
                             onSuccess={() => setAuthMode('login')}
-                            onSwitchToLogin={() => setAuthMode('login')}
+                        />
+                    )}
+                    {authMode === 'register' && (
+                        <RegisterForm
+                            variant="professional"
+                            onSuccess={() => setAuthMode('login')}
                         />
                     )}
                     {authMode === 'forgot-password' && (
-                        <ForgotPasswordForm
-                            onSuccess={() => setAuthMode('login')}
-                            onSwitchToLogin={() => setAuthMode('login')}
-                        />
+                        <ForgotPasswordForm />
                     )}
                 </div>
             </div>

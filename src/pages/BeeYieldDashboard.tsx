@@ -25,6 +25,7 @@ import RegisterForm from '@/components/auth/RegisterForm';
 import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
 import { useLanguage } from '@/contexts/LanguageContext';
 import UserDebugPanel from '@/components/beeyield/UserDebugPanel';
+import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 
 // View Imports
 import MyDevicesView from '@/components/beeyield/MyDevicesView';
@@ -38,9 +39,10 @@ import SettingsView from '@/components/beeyield/SettingsView';
 import PrecisionPollinationView from '@/components/beeyield/PrecisionPollinationView';
 import {
     BeeYieldOnlineView,
-    BluetoothView,
     USBView
 } from '@/components/beeyield/RemainingViews';
+import { BluetoothConnectivityView } from '@/components/beeyield/BluetoothConnectivityView';
+
 import ReportsExportsView from '@/components/beeyield/ReportsExportsView';
 import LabelGeneratorView from '@/components/beeyield/LabelGeneratorView';
 
@@ -63,7 +65,7 @@ import VarroaView from '@/components/beeyield/VarroaView';
 type AuthMode = 'login' | 'register' | 'forgot-password';
 
 const BeeYieldDashboard: React.FC = () => {
-    const { user, loading: authLoading, signOut } = useAuth();
+    const { user, loading: authLoading, signOut, beeyieldUser } = useAuth();
     const navigate = useNavigate();
     const { t } = useLanguage();
 
@@ -107,10 +109,15 @@ const BeeYieldDashboard: React.FC = () => {
                     beeyieldService.getApiaries(),
                     beeyieldService.getHives()
                 ]);
+
+                const userId = beeyieldUser?.id || user?.id;
+                const filteredApiaries = userId ? apiariesData.filter(a => !a.user_id || a.user_id === userId) : apiariesData;
+                const filteredHives = userId ? hivesData.filter(h => !h.user_id || h.user_id === userId) : hivesData;
+
                 setDevices(devicesData);
                 setReadings(readingsData);
-                setApiaries(apiariesData);
-                setHives(hivesData);
+                setApiaries(filteredApiaries);
+                setHives(filteredHives);
             } catch (error) {
                 console.error('Failed to load dashboard data', error);
                 toast.error(t('error_load_dashboard'));
@@ -277,7 +284,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'online':
                 return <BeeYieldOnlineView onTabChange={handleTabChange} />;
             case 'bluetooth':
-                return <BluetoothView onTabChange={handleTabChange} />;
+                return <BluetoothConnectivityView onTabChange={handleTabChange} />;
             case 'devices':
                 return <MyDevicesView devices={devices} readings={readings} apiaries={apiaries} hives={hives} onTabChange={handleTabChange} />;
             case 'usb':
@@ -353,7 +360,7 @@ const BeeYieldDashboard: React.FC = () => {
     }
 
     // Check if user has initialized BeeYield access
-    const isBeeYieldActive = !!user?.user_metadata?.beeyield_active || user?.email === 'timothynduva349@gmail.com';
+    const isBeeYieldActive = !!user?.user_metadata?.beeyield_active || user?.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase() || !!beeyieldUser;
 
 
 
