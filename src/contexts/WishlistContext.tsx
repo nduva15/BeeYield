@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabase';
 
 export interface WishlistItem {
     id: string; // This is the product ID
@@ -40,10 +41,13 @@ export const WishlistProvider: React.FC<{ children: ReactNode }> = ({ children }
                     localItems = JSON.parse(savedWishlist);
                 }
 
-                // 2. Try Fetch Backend
-                // We dynamically import to avoid circular dependencies if any
-                const { getWishlist } = await import('@/services/shopService');
-                const backendItems = await getWishlist(); // returns [] on error/unauth
+                // 2. Try Fetch Backend only if user is authenticated
+                const { data: { session } } = await supabase.auth.getSession();
+                let backendItems: any[] = [];
+                if (session?.access_token) {
+                    const { getWishlist } = await import('@/services/shopService');
+                    backendItems = await getWishlist(); // returns [] on error
+                }
 
                 // 3. Merge (Backend wins on conflict, or simple union by ID)
                 // If backend has items, we should probably trust it more, OR merge local items INTO backend
@@ -108,20 +112,15 @@ export const WishlistProvider: React.FC<{ children: ReactNode }> = ({ children }
             return [...prevItems, item];
         });
 
-        // Backend Sync
+        // Backend Sync (only if authenticated)
         try {
-            const { toggleWishlist: apiToggle } = await import('@/services/shopService');
-            // We assume toggle adds it if not present.
-            // But we can't easily check state here without a fetch.
-            // Just calling toggle might remove it if it was there? 
-            // The API is `toggle`. We should check `isInWishlist` logic on backend or force add.
-            // shop.py `toggle_wishlist` toggles.
-            // Ideally we should have `addToWishlist`.
-            // For now, let's assume if it wasn't in local, it wasn't in backend? Not safe.
-            // We'll invoke toggle.
-            await apiToggle(item.id);
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.access_token) {
+                const { toggleWishlist: apiToggle } = await import('@/services/shopService');
+                await apiToggle(item.id);
+            }
         } catch (e) {
-            // Ignore auth errors
+            // Ignore auth/network errors
         }
     };
 
@@ -136,12 +135,15 @@ export const WishlistProvider: React.FC<{ children: ReactNode }> = ({ children }
             return prevItems.filter((i) => i.id !== id);
         });
 
-        // Backend Sync
+        // Backend Sync (only if authenticated)
         try {
-            const { toggleWishlist: apiToggle } = await import('@/services/shopService');
-            await apiToggle(id);
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.access_token) {
+                const { toggleWishlist: apiToggle } = await import('@/services/shopService');
+                await apiToggle(id);
+            }
         } catch (e) {
-            // Ignore
+            // Ignore auth/network errors
         }
     };
 

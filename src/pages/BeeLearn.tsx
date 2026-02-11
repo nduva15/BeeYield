@@ -117,7 +117,7 @@ const BeeLearn = () => {
       setIsLoading(true);
       try {
         const { getProducts } = await import("@/services/shopService");
-        let eduData = await getProducts("education");
+        const eduData = await getProducts("education");
         // Also check 'learn' category if 'education' is empty
         let finalData = eduData;
         if (!finalData || finalData.length === 0) {
@@ -304,17 +304,17 @@ const BeeLearn = () => {
             <form onSubmit={handleQuoteSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase text-neutral-500 mb-1">Contact Name</label>
-                  <input type="text" required className="w-full h-10 px-3 rounded-lg border border-neutral-200" value={quoteForm.name} onChange={e => setQuoteForm({ ...quoteForm, name: e.target.value })} />
+                  <label htmlFor="quote-contact-name" className="block text-xs font-bold uppercase text-neutral-500 mb-1">Contact Name</label>
+                  <input id="quote-contact-name" type="text" required className="w-full h-10 px-3 rounded-lg border border-neutral-200" value={quoteForm.name} onChange={e => setQuoteForm({ ...quoteForm, name: e.target.value })} />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase text-neutral-500 mb-1">Company</label>
-                  <input type="text" required className="w-full h-10 px-3 rounded-lg border border-neutral-200" value={quoteForm.company} onChange={e => setQuoteForm({ ...quoteForm, company: e.target.value })} />
+                  <label htmlFor="quote-company" className="block text-xs font-bold uppercase text-neutral-500 mb-1">Company</label>
+                  <input id="quote-company" type="text" required className="w-full h-10 px-3 rounded-lg border border-neutral-200" value={quoteForm.company} onChange={e => setQuoteForm({ ...quoteForm, company: e.target.value })} />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-bold uppercase text-neutral-500 mb-1">Work Email</label>
-                <input type="email" required className="w-full h-10 px-3 rounded-lg border border-neutral-200" value={quoteForm.email} onChange={e => setQuoteForm({ ...quoteForm, email: e.target.value })} />
+                <label htmlFor="quote-email" className="block text-xs font-bold uppercase text-neutral-500 mb-1">Work Email</label>
+                <input id="quote-email" type="email" required className="w-full h-10 px-3 rounded-lg border border-neutral-200" value={quoteForm.email} onChange={e => setQuoteForm({ ...quoteForm, email: e.target.value })} />
               </div>
               <div>
                 <label className="block text-xs font-bold uppercase text-neutral-500 mb-1">Training Needs</label>
@@ -348,7 +348,7 @@ const BeeLearn = () => {
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-neutral-900 mb-6 leading-[1.1] tracking-tight">
                 Master the Art of{" "}
-                <span className="text-green-700 italic">Sustainable Beekeeping</span>
+                <span className="text-green-700">Sustainable Beekeeping</span>
               </h1>
 
               <p className="text-lg lg:text-xl text-neutral-600 mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed">
@@ -625,7 +625,7 @@ const BeeLearn = () => {
                 </div>
               </div>
               <div className="lg:w-2/3 text-center lg:text-left">
-                <p className="text-xl lg:text-2xl text-neutral-700 mb-6 leading-relaxed italic">
+                <p className="text-xl lg:text-2xl text-neutral-700 mb-6 leading-relaxed">
                   "As a beekeeping hobbyist, I rely on BeeYield's top-quality education to maintain my hives. Their beekeeping courses are comfortable and durable, allowing me to work with my bees with confidence."
                 </p>
                 <div>
@@ -725,6 +725,7 @@ const BeeLearn = () => {
                           inStock: true
                         });
                       }}
+                      aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
                       className={`absolute top-4 right-4 p-2.5 rounded-2xl backdrop-blur-md shadow-lg transition-all duration-300 ${isInWishlist(product.id)
                         ? "bg-amber-500 text-white"
                         : "bg-white/80 hover:bg-amber-500 hover:text-white text-neutral-400 group-hover:opacity-100 opacity-0"

@@ -52,14 +52,9 @@ class HybridSearch:
             })
 
         # --- 3. SEMANTIC SEARCH (SCIENTIFIC & CORPORATE) ---
-<<<<<<< Current (Your changes)
-        search_results = await ContentService.search_knowledge(search_query)
-        semantic_context = search_results["summary"]
-=======
         search_results = await ContentService.search_knowledge(search_query, limit=limit, continent=continent)
         semantic_context = search_results["summary"]
         sources = search_results.get("sources", [])
->>>>>>> Incoming (Background Agent changes)
         
         return {
             "query": query,

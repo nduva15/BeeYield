@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { PollinationContactForm } from "@/components/PollinationContactForm";
 
 const PrecisionPollination = () => {
   return (
@@ -24,10 +25,10 @@ const PrecisionPollination = () => {
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed mb-8">
                 Accountability. Actionable data. <br />
-                And a guarantee of the strongest bees available.
+                And a commitment to the strongest bees available.
               </p>
-              <Button size="lg" className="shadow-lg" asChild>
-                <Link to="/pollination-request">Get a Free Consultation</Link>
+              <Button size="lg" className="shadow-lg" onClick={() => document.getElementById('in-hive-form')?.scrollIntoView({ behavior: 'smooth' })}>
+                Get a Free Consultation
               </Button>
             </div>
 
@@ -60,14 +61,14 @@ const PrecisionPollination = () => {
             <div>
               <h2 className="text-4xl font-bold mb-6 text-foreground">What is Precision Pollination?</h2>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Precision Pollination is a groundbreaking, innovative approach to the critical process of managed pollination in commercial crop growing. Growers whose crops rely on commercial beekeepers for their annual pollination can now, for the first time, get visibility and accountability for their pollination experience.
+                Precision Pollination is a data-driven approach to the critical process of managed pollination in commercial crop growing. Growers whose crops rely on commercial beekeepers for their annual pollination can now get visibility and accountability for their pollination experience.
               </p>
             </div>
 
             <div className="bg-secondary/50 p-8 rounded-2xl border-l-4 border-primary">
               <Quote className="h-10 w-10 text-primary mb-4 opacity-50" />
-              <p className="text-lg text-foreground italic leading-relaxed mb-6">
-                "Our commitment to our growers is to bring them unprecedented transparency for the most effective pollination outcomes."
+              <p className="text-lg text-foreground leading-relaxed mb-6">
+                "Our commitment to our growers is to bring them complete transparency for the most effective pollination outcomes."
               </p>
               <div>
                 <p className="font-bold text-foreground">Ze'ev Barylka</p>
@@ -170,7 +171,7 @@ const PrecisionPollination = () => {
       <section className="py-20 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 text-center max-w-4xl">
           <h2 className="text-4xl font-bold mb-4">The BeeYield Difference</h2>
-          <p className="text-xl opacity-90 mb-12 italic">
+          <p className="text-xl opacity-90 mb-12">
             "Knowledge is power. Data is even better."
           </p>
           <div className="grid md:grid-cols-2 gap-8 text-left">
@@ -183,7 +184,7 @@ const PrecisionPollination = () => {
             <div className="bg-primary-foreground/10 p-6 rounded-xl backdrop-blur-sm">
               <h3 className="text-xl font-bold mb-3">Financial Prudence</h3>
               <p className="opacity-90 leading-relaxed">
-                It's accurate, efficient, and financially prudent. You stop paying for "boxes" and start paying for actual pollination power.
+                It's accurate, efficient, and cost-effective. You stop paying for "boxes" and start paying for actual pollination power.
               </p>
             </div>
           </div>
@@ -264,14 +265,12 @@ const PrecisionPollination = () => {
       {/* Partners */}
       <section className="py-24 bg-muted/20">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center mb-20 bg-background p-8 rounded-2xl shadow-xl">
-            <h2 className="text-3xl font-bold mb-4">Try BeeYield in your apiary</h2>
-            <p className="text-muted-foreground mb-6">
-              BeeYield is constantly evolving. We invite you to take part in the international testing of our system – together, we can advance technology that protects bees worldwide.
-            </p>
-            <Button size="lg" className="w-full sm:w-auto" asChild>
-              <Link to="/contact">Join the Program</Link>
-            </Button>
+          <div className="max-w-2xl mx-auto mb-20">
+            <PollinationContactForm
+              type="in_hive"
+              title="Try BeeYield In-Hive in your apiary"
+              description="BeeYield is constantly evolving. We invite you to take part in the international testing of our system – together, we can advance technology that protects bees worldwide."
+            />
           </div>
 
           <div className="text-center">

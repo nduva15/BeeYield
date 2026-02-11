@@ -1,6 +1,7 @@
 """
 Supabase Database Connection for BeeYield
 High-performance httpx implementation to avoid gRPC/DNS hangs in library.
+SDK import is LAZY to prevent startup hangs from storage3/gRPC issues.
 """
 import httpx
 import json
@@ -11,19 +12,55 @@ from app.core.config import settings
 # Global client for connection pooling
 _http_client: Optional[httpx.Client] = None
 
-from supabase import create_client, Client
-from app.core.config import settings
+# Lazy SDK clients - only created when needed (avoids import hangs)
+_supabase_client = None
+_supabase_admin_client = None
+_sdk_import_failed = False
 
-# Primary client (legacy/compatibility)
-supabase: Client = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
+def _lazy_import_sdk():
+    """Import Supabase SDK lazily to avoid storage3/gRPC import hangs at startup."""
+    global _sdk_import_failed
+    if _sdk_import_failed:
+        return None, None
+    try:
+        from supabase import create_client, Client
+        return create_client, Client
+    except Exception as e:
+        print(f"[WARNING] Supabase SDK import failed: {e}")
+        print("[WARNING] Auth endpoints using SDK will not work. DB helpers (httpx) still functional.")
+        _sdk_import_failed = True
+        return None, None
 
 def get_supabase():
-    """Compatibility function to match old Supabase client-like behavior"""
-    return supabase
+    """Compatibility function - lazily creates Supabase SDK client."""
+    global _supabase_client
+    if _supabase_client is not None:
+        return _supabase_client
+    create_client, _ = _lazy_import_sdk()
+    if create_client is None:
+        return None
+    try:
+        _supabase_client = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
+        return _supabase_client
+    except Exception as e:
+        print(f"[WARNING] Supabase client creation failed: {e}")
+        return None
 
 def get_supabase_admin():
-    """Compatibility function to match old Supabase admin behavior"""
-    return create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY or settings.SUPABASE_KEY)
+    """Compatibility function - lazily creates Supabase admin SDK client."""
+    global _supabase_admin_client
+    if _supabase_admin_client is not None:
+        return _supabase_admin_client
+    create_client, _ = _lazy_import_sdk()
+    if create_client is None:
+        return None
+    try:
+        key = settings.SUPABASE_SERVICE_ROLE_KEY or settings.SUPABASE_KEY
+        _supabase_admin_client = create_client(settings.SUPABASE_URL, key)
+        return _supabase_admin_client
+    except Exception as e:
+        print(f"[WARNING] Supabase admin client creation failed: {e}")
+        return None
 
 def get_client() -> httpx.Client:
     global _http_client

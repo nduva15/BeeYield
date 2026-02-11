@@ -663,7 +663,7 @@ const Shop = () => {
               Support Sustainable Beekeeping
             </Badge>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black text-foreground mb-4 sm:mb-6 tracking-tightest leading-[1.1] animate-in fade-in slide-in-from-bottom-4 duration-1000">
-              Quality <span className="text-primary italic">Honey & Gear.</span>
+              Quality <span className="text-primary">Honey & Gear.</span>
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-muted-foreground font-medium mb-6 sm:mb-8 md:mb-10 leading-relaxed max-w-2xl animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
               From our natural traceable honey to hive sensors,
@@ -830,7 +830,7 @@ const Shop = () => {
                           {product.name}
                           {product.category === 'hardware' && <Zap className="h-4 w-4 text-primary fill-primary/20" />}
                         </h3>
-                        <p className="text-sm text-muted-foreground font-medium mb-6 line-clamp-2 leading-relaxed h-10 italic">
+                        <p className="text-sm text-muted-foreground font-medium mb-6 line-clamp-2 leading-relaxed h-10">
                           {product.description}
                         </p>
 
@@ -926,7 +926,7 @@ const Shop = () => {
           <div className="max-w-3xl relative z-10">
             <h2 className="text-3xl lg:text-5xl font-black text-primary-foreground mb-6 leading-tight">
               Bring Professional Grade <br />
-              <span className="italic">Pollination Tech</span> To Your Farm.
+              <span>Pollination Tech</span> To Your Farm.
             </h2>
             <p className="text-primary-foreground/80 text-lg font-medium mb-10 max-w-xl">
               Our hardware solutions aren't just gadgets—they're scientific instruments

@@ -191,7 +191,7 @@ export function UsbHubDashboard() {
                     </div>
                     <div className="bg-white rounded-2xl p-8 min-h-[200px] font-mono text-[11px] shadow-sm relative overflow-hidden border border-slate-100">
                         {logs.length === 0 ? (
-                            <div className="text-slate-300 italic flex items-center gap-3">
+                            <div className="text-slate-300 flex items-center gap-3">
                                 <span className="animate-pulse w-1.5 h-3 bg-amber-400 rounded-sm" /> Waiting for serial data...
                             </div>
                         ) : (
@@ -269,7 +269,7 @@ export function UsbHubDashboard() {
                                         <div className="space-y-3">
                                             <div className="flex justify-between items-center text-slate-800 text-[10px] font-bold uppercase tracking-wider">
                                                 <span className="opacity-60">Flashing firmware blocks...</span>
-                                                <span className="text-amber-600 text-lg font-bold italic">{syncProgress}%</span>
+                                                <span className="text-amber-600 text-lg font-bold">{syncProgress}%</span>
                                             </div>
                                             <div className="h-2.5 w-full bg-white/50 rounded-full overflow-hidden shadow-inner p-0.5 border border-white">
                                                 <motion.div

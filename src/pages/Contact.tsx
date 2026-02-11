@@ -1,10 +1,21 @@
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { submitContactForm, ContactSubmission } from "@/services/contactService";
 import {
-  Mail, Phone, MapPin, ChevronDown,
+  Mail, Phone, MapPin,
   Sprout, Bug, MessageSquare, Stethoscope
 } from "lucide-react";
 import { adminService } from "@/services/adminService";
@@ -13,6 +24,8 @@ const Contact = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<"grower" | "beekeeper" | "general" | "diseases">("grower");
   const [loading, setLoading] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -56,6 +69,16 @@ const Contact = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!termsAccepted) {
+      toast({
+        title: "Terms Required",
+        description: "Please accept the terms and conditions to proceed.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -115,6 +138,7 @@ const Contact = () => {
         topic: formData.topic,
         message: ""
       });
+      setTermsAccepted(false);
 
     } catch (error) {
       console.error(error);
@@ -129,12 +153,12 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen py-20">
+    <div className="min-h-screen py-20 bg-background">
       <div className="container mx-auto px-4">
 
         {/* Header */}
         <div className="mx-auto max-w-3xl text-center mb-12">
-          <h1 className="mb-6 text-5xl font-bold">Contact Us Today</h1>
+          <h1 className="mb-6 text-5xl font-bold tracking-tight">Contact Us Today</h1>
           <p className="mb-12 text-xl text-muted-foreground">
             Fill in the form, and we will get back to you at our earliest convenience.
           </p>
@@ -149,103 +173,103 @@ const Contact = () => {
               <button
                 key={tab.id}
                 onClick={() => handleTabChange(tab.id)}
-                className={`flex items-center justify-center gap-3 p-4 rounded-xl border-2 transition-all duration-200 ${isActive
-                  ? "border-primary bg-primary/5 text-primary shadow-soft"
-                  : "border-transparent bg-white shadow-soft text-muted-foreground hover:bg-secondary/20"
+                className={`flex items-center justify-center gap-3 p-4 rounded-xl border transition-all duration-200 ${isActive
+                  ? "border-primary bg-primary/10 text-primary shadow-sm"
+                  : "border-border bg-card shadow-sm text-muted-foreground hover:bg-muted/50"
                   }`}
               >
                 <Icon className={`h-5 w-5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
-                <span className="font-bold">{tab.label}</span>
+                <span className="font-bold text-sm">{tab.label}</span>
               </button>
             );
           })}
         </div>
 
         {/* Form Container */}
-        <Card className="max-w-4xl mx-auto border-none shadow-soft">
+        <Card className="max-w-4xl mx-auto border-none shadow-premium rounded-3xl overflow-hidden glass">
           <CardContent className="p-8 md:p-12">
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Common Fields */}
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">First Name *</label>
-                  <input
+                  <Label htmlFor="firstName">First Name *</Label>
+                  <Input
+                    id="firstName"
                     type="text"
                     required
                     value={formData.firstName}
                     onChange={(e) => handleChange("firstName", e.target.value)}
                     placeholder="Jane"
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Last Name *</label>
-                  <input
+                  <Label htmlFor="lastName">Last Name *</Label>
+                  <Input
+                    id="lastName"
                     type="text"
                     required
                     value={formData.lastName}
                     onChange={(e) => handleChange("lastName", e.target.value)}
                     placeholder="Doe"
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">City *</label>
-                  <input
+                  <Label htmlFor="city">City *</Label>
+                  <Input
+                    id="city"
                     type="text"
                     required
                     value={formData.city}
                     onChange={(e) => handleChange("city", e.target.value)}
                     placeholder="New York"
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">State *</label>
-                    <input
+                    <Label htmlFor="state">State *</Label>
+                    <Input
+                      id="state"
                       type="text"
                       required
                       value={formData.state}
                       onChange={(e) => handleChange("state", e.target.value)}
                       placeholder="NY"
-                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Country *</label>
-                    <input
+                    <Label htmlFor="country">Country *</Label>
+                    <Input
+                      id="country"
                       type="text"
                       required
                       value={formData.country}
                       onChange={(e) => handleChange("country", e.target.value)}
                       placeholder="USA"
-                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Email *</label>
-                  <input
+                  <Label htmlFor="email">Email *</Label>
+                  <Input
+                    id="email"
                     type="email"
                     required
                     value={formData.email}
                     onChange={(e) => handleChange("email", e.target.value)}
                     placeholder="info@beeyield.com"
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Phone Number *</label>
-                  <input
+                  <Label htmlFor="phone">Phone Number *</Label>
+                  <Input
+                    id="phone"
                     type="tel"
                     required
                     value={formData.phone}
                     onChange={(e) => handleChange("phone", e.target.value)}
                     placeholder="+1 (555) 000-0000"
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   />
                 </div>
               </div>
@@ -258,61 +282,67 @@ const Contact = () => {
                 {activeTab === "grower" && (
                   <>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Farm Name *</label>
-                      <input
+                      <Label htmlFor="farmName">Farm Name *</Label>
+                      <Input
+                        id="farmName"
                         type="text"
                         required={activeTab === "grower"}
                         value={formData.farmName}
                         onChange={(e) => handleChange("farmName", e.target.value)}
                         placeholder="Green Acres Farm"
-                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Crop *</label>
-                      <select
-                        aria-label="Crop selection"
+                      <Label>Crop *</Label>
+                      <Select
                         value={formData.cropType}
-                        onChange={(e) => handleChange("cropType", e.target.value)}
-                        className="w-full appearance-none rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        onValueChange={(value) => handleChange("cropType", value)}
                       >
-                        <option>Maize</option>
-                        <option>Sisal</option>
-                        <option>Mangoes</option>
-                        <option>Beans</option>
-                        <option>Sunflower</option>
-                        <option>Oranges</option>
-                        <option>Vegetables</option>
-                        <option>Tomatoes</option>
-                        <option>Onions</option>
-                        <option>Other</option>
-                      </select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Crop" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Maize">Maize</SelectItem>
+                          <SelectItem value="Sisal">Sisal</SelectItem>
+                          <SelectItem value="Mangoes">Mangoes</SelectItem>
+                          <SelectItem value="Beans">Beans</SelectItem>
+                          <SelectItem value="Sunflower">Sunflower</SelectItem>
+                          <SelectItem value="Oranges">Oranges</SelectItem>
+                          <SelectItem value="Vegetables">Vegetables</SelectItem>
+                          <SelectItem value="Tomatoes">Tomatoes</SelectItem>
+                          <SelectItem value="Onions">Onions</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Acres *</label>
-                      <input
+                      <Label htmlFor="acres">Acres *</Label>
+                      <Input
+                        id="acres"
                         type="number"
                         step="any"
                         required={activeTab === "grower"}
                         value={formData.acres}
                         onChange={(e) => handleChange("acres", e.target.value)}
                         placeholder="500"
-                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Topic *</label>
-                      <select
-                        aria-label="Topic selection"
+                      <Label>Topic *</Label>
+                      <Select
                         value={formData.topic}
-                        onChange={(e) => handleChange("topic", e.target.value)}
-                        className="w-full appearance-none rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        onValueChange={(value) => handleChange("topic", value)}
                       >
-                        <option>Pollination Services</option>
-                        <option>Pricing</option>
-                        <option>Partnership</option>
-                        <option>Support</option>
-                      </select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Topic" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Pollination Services">Pollination Services</SelectItem>
+                          <SelectItem value="Pricing">Pricing</SelectItem>
+                          <SelectItem value="Partnership">Partnership</SelectItem>
+                          <SelectItem value="Support">Support</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </>
                 )}
@@ -320,53 +350,59 @@ const Contact = () => {
                 {activeTab === "beekeeper" && (
                   <>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Apiary Name *</label>
-                      <input
+                      <Label htmlFor="apiaryName">Apiary Name *</Label>
+                      <Input
+                        id="apiaryName"
                         type="text"
                         required={activeTab === "beekeeper"}
                         value={formData.apiaryName}
                         onChange={(e) => handleChange("apiaryName", e.target.value)}
                         placeholder="Busy Bee Apiaries"
-                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Number of Hives *</label>
-                      <input
+                      <Label htmlFor="hiveCount">Number of Hives *</Label>
+                      <Input
+                        id="hiveCount"
                         type="number"
                         required={activeTab === "beekeeper"}
                         value={formData.hiveCount}
                         onChange={(e) => handleChange("hiveCount", e.target.value)}
                         placeholder="1000"
-                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Years of Experience *</label>
-                      <select
-                        aria-label="Years of experience selection"
+                      <Label>Years of Experience *</Label>
+                      <Select
                         value={formData.experienceYears}
-                        onChange={(e) => handleChange("experienceYears", e.target.value)}
-                        className="w-full appearance-none rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        onValueChange={(value) => handleChange("experienceYears", value)}
                       >
-                        <option>1-5 years</option>
-                        <option>5-10 years</option>
-                        <option>10+ years</option>
-                      </select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Experience" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1-5 years">1-5 years</SelectItem>
+                          <SelectItem value="5-10 years">5-10 years</SelectItem>
+                          <SelectItem value="10+ years">10+ years</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Topic *</label>
-                      <select
-                        aria-label="Topic selection for beekeeper"
+                      <Label>Topic *</Label>
+                      <Select
                         value={formData.topic}
-                        onChange={(e) => handleChange("topic", e.target.value)}
-                        className="w-full appearance-none rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        onValueChange={(value) => handleChange("topic", value)}
                       >
-                        <option>Technology Integration</option>
-                        <option>Hive Monitoring</option>
-                        <option>Partnership</option>
-                        <option>Support</option>
-                      </select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Topic" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Technology Integration">Technology Integration</SelectItem>
+                          <SelectItem value="Hive Monitoring">Hive Monitoring</SelectItem>
+                          <SelectItem value="Partnership">Partnership</SelectItem>
+                          <SelectItem value="Support">Support</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </>
                 )}
@@ -374,24 +410,27 @@ const Contact = () => {
                 {activeTab === "diseases" && (
                   <>
                     <div className="md:col-span-2 space-y-2">
-                      <label className="text-sm font-medium">Which disease are you inquiring about? *</label>
-                      <select
-                        aria-label="Disease selection"
+                      <Label>Which disease are you inquiring about? *</Label>
+                      <Select
                         value={formData.topic}
-                        onChange={(e) => handleChange("topic", e.target.value)}
-                        className="w-full appearance-none rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        onValueChange={(value) => handleChange("topic", value)}
                       >
-                        <option>Varroa Mite</option>
-                        <option>American Foulbrood</option>
-                        <option>European Foulbrood</option>
-                        <option>Nosema</option>
-                        <option>Chalkbrood</option>
-                        <option>Sacbrood</option>
-                        <option>Small Hive Beetle</option>
-                        <option>Wax Moths</option>
-                        <option>Tracheal Mites</option>
-                        <option>Other</option>
-                      </select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Disease" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Varroa Mite">Varroa Mite</SelectItem>
+                          <SelectItem value="American Foulbrood">American Foulbrood</SelectItem>
+                          <SelectItem value="European Foulbrood">European Foulbrood</SelectItem>
+                          <SelectItem value="Nosema">Nosema</SelectItem>
+                          <SelectItem value="Chalkbrood">Chalkbrood</SelectItem>
+                          <SelectItem value="Sacbrood">Sacbrood</SelectItem>
+                          <SelectItem value="Small Hive Beetle">Small Hive Beetle</SelectItem>
+                          <SelectItem value="Wax Moths">Wax Moths</SelectItem>
+                          <SelectItem value="Tracheal Mites">Tracheal Mites</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </>
                 )}
@@ -399,28 +438,31 @@ const Contact = () => {
                 {activeTab === "general" && (
                   <>
                     <div className="md:col-span-2 space-y-2">
-                      <label className="text-sm font-medium">Company / Organization</label>
-                      <input
+                      <Label htmlFor="company">Company / Organization</Label>
+                      <Input
+                        id="company"
                         type="text"
                         value={formData.company}
                         onChange={(e) => handleChange("company", e.target.value)}
                         placeholder="Optional"
-                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                       />
                     </div>
                     <div className="md:col-span-2 space-y-2">
-                      <label className="text-sm font-medium">Topic *</label>
-                      <select
-                        aria-label="Topic selection for general inquiry"
+                      <Label>Topic *</Label>
+                      <Select
                         value={formData.topic}
-                        onChange={(e) => handleChange("topic", e.target.value)}
-                        className="w-full appearance-none rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        onValueChange={(value) => handleChange("topic", value)}
                       >
-                        <option>Press Inquiry</option>
-                        <option>Careers</option>
-                        <option>Sustainability</option>
-                        <option>General Question</option>
-                      </select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Topic" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Press Inquiry">Press Inquiry</SelectItem>
+                          <SelectItem value="Careers">Careers</SelectItem>
+                          <SelectItem value="Sustainability">Sustainability</SelectItem>
+                          <SelectItem value="General Question">General Question</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </>
                 )}
@@ -429,29 +471,30 @@ const Contact = () => {
               {/* Message Area for general and diseases */}
               {(activeTab === 'general' || activeTab === 'diseases') && (
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Message</label>
-                  <textarea
+                  <Label htmlFor="message">Message</Label>
+                  <Textarea
+                    id="message"
                     value={formData.message}
                     onChange={(e) => handleChange("message", e.target.value)}
                     placeholder="How can we help you?"
-                    className="w-full min-h-[120px] rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    className="min-h-[120px]"
                   />
                 </div>
               )}
 
               <div className="space-y-6 pt-4">
-                <div className="flex items-start space-x-2">
-                  <input
-                    type="checkbox"
+                <div className="flex items-center space-x-2">
+                  <Checkbox
                     id="terms"
-                    className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                    checked={termsAccepted}
+                    onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
                   />
-                  <label htmlFor="terms" className="text-sm font-medium leading-none text-muted-foreground">
+                  <Label htmlFor="terms" className="text-sm font-medium leading-none text-muted-foreground cursor-pointer">
                     I agree with the <a href="#" className="text-primary hover:underline">Terms and Conditions</a> and <a href="#" className="text-primary hover:underline">Privacy Policy</a>
-                  </label>
+                  </Label>
                 </div>
 
-                <Button size="lg" className="min-w-[200px]" disabled={loading}>
+                <Button size="lg" className="min-w-[200px] font-bold" disabled={loading}>
                   {loading ? "Submitting..." : "Submit Inquiry"}
                 </Button>
               </div>

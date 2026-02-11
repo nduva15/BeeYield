@@ -980,6 +980,308 @@ export const beeyieldService = {
             return { error };
         }
     },
+
+    // ========== ACOUSTIC READINGS (Sound Analysis) ==========
+    async getAcousticReadings(hiveId?: string, days: number = 30): Promise<any[]> {
+        try {
+            const params: Record<string, unknown> = { days };
+            if (hiveId) params.hive_id = hiveId;
+            return await apiGet<any[]>('/beeyield/analytics/acoustics', params);
+        } catch (error) {
+            console.error('Error fetching acoustic readings:', error);
+            return [];
+        }
+    },
+
+    async createAcousticReading(input: {
+        hive_id: string;
+        frequency_hz: number;
+        amplitude_db?: number;
+        health_index?: number;
+        spectral_profile?: any;
+        tags?: string[];
+    }): Promise<{ data: any; error: any }> {
+        try {
+            const data = await apiPost<any>('/beeyield/analytics/acoustics', input);
+            return { data, error: null };
+        } catch (error) {
+            console.error('Error creating acoustic reading:', error);
+            return { data: null, error };
+        }
+    },
+
+    // ========== VARROA READINGS & TREATMENTS ==========
+    async getVarroaReadings(hiveId?: string): Promise<any[]> {
+        try {
+            const params: Record<string, unknown> = {};
+            if (hiveId) params.hive_id = hiveId;
+            return await apiGet<any[]>('/beeyield/analytics/varroa', params);
+        } catch (error) {
+            console.error('Error fetching varroa readings:', error);
+            return [];
+        }
+    },
+
+    async createVarroaReading(input: {
+        hive_id: string;
+        reading_date: string;
+        method?: string;
+        mite_count: number;
+        sample_size?: number;
+        inspector_name?: string;
+        notes?: string;
+    }): Promise<{ data: any; error: any }> {
+        try {
+            const data = await apiPost<any>('/beeyield/analytics/varroa', input);
+            toast.success('Varroa reading recorded');
+            return { data, error: null };
+        } catch (error) {
+            console.error('Error creating varroa reading:', error);
+            toast.error('Failed to record varroa reading');
+            return { data: null, error };
+        }
+    },
+
+    async getVarroaTreatments(hiveId?: string): Promise<any[]> {
+        try {
+            const params: Record<string, unknown> = {};
+            if (hiveId) params.hive_id = hiveId;
+            return await apiGet<any[]>('/beeyield/analytics/varroa/treatments', params);
+        } catch (error) {
+            console.error('Error fetching varroa treatments:', error);
+            return [];
+        }
+    },
+
+    async createVarroaTreatment(input: {
+        hive_id: string;
+        treatment_type: string;
+        start_date: string;
+        end_date?: string;
+        dosage?: string;
+        effectiveness_percent?: number;
+        notes?: string;
+    }): Promise<{ data: any; error: any }> {
+        try {
+            const data = await apiPost<any>('/beeyield/analytics/varroa/treatments', input);
+            toast.success('Treatment recorded');
+            return { data, error: null };
+        } catch (error) {
+            console.error('Error creating varroa treatment:', error);
+            toast.error('Failed to record treatment');
+            return { data: null, error };
+        }
+    },
+
+    // ========== BILLING & SUBSCRIPTIONS ==========
+    async getBillingOverview(): Promise<{
+        subscription: any;
+        plan: any;
+        recentTransactions: any[];
+    } | null> {
+        try {
+            return await apiGet<any>('/beeyield/billing/overview', {});
+        } catch (error) {
+            console.error('Error fetching billing overview:', error);
+            return null;
+        }
+    },
+
+    async getSubscriptionPlans(): Promise<any[]> {
+        try {
+            return await apiGet<any[]>('/beeyield/billing/plans', {});
+        } catch (error) {
+            console.error('Error fetching subscription plans:', error);
+            return [];
+        }
+    },
+
+    async getTransactions(): Promise<any[]> {
+        try {
+            return await apiGet<any[]>('/beeyield/billing/transactions', {});
+        } catch (error) {
+            console.error('Error fetching transactions:', error);
+            return [];
+        }
+    },
+
+    async createTransaction(input: {
+        type: 'income' | 'expense';
+        amount: number;
+        currency: string;
+        category: string;
+        date: string;
+        description: string;
+        status: string;
+        entity_id?: string;
+    }): Promise<{ data: any; error: any }> {
+        try {
+            const data = await apiPost<any>('/beeyield/billing/transactions', input);
+            return { data, error: null };
+        } catch (error) {
+            console.error('Error creating transaction:', error);
+            return { data: null, error };
+        }
+    },
+
+    // ========== IOT DEVICES ==========
+    async getIotDevices(): Promise<any[]> {
+        try {
+            return await apiGet<any[]>('/beeyield/hardware/iot-devices', {});
+        } catch (error) {
+            console.error('Error fetching IoT devices:', error);
+            return [];
+        }
+    },
+
+    // ========== USB DEVICE PAIRING ==========
+    async getPairedUsbDevices(): Promise<any[]> {
+        try {
+            return await apiGet<any[]>('/beeyield/hardware/usb-devices', {});
+        } catch (error) {
+            console.error('Error fetching paired USB devices:', error);
+            return [];
+        }
+    },
+
+    async pairUsbDevice(input: {
+        device_uid: string;
+        device_type?: string;
+        serial_number?: string;
+        firmware_version?: string;
+        config?: any;
+    }): Promise<{ data: any; error: any }> {
+        try {
+            const data = await apiPost<any>('/beeyield/hardware/usb-devices', input);
+            toast.success('Device paired successfully');
+            return { data, error: null };
+        } catch (error) {
+            console.error('Error pairing USB device:', error);
+            toast.error('Failed to pair device');
+            return { data: null, error };
+        }
+    },
+
+    async unpairUsbDevice(id: string): Promise<{ error: any }> {
+        try {
+            await apiDelete(`/beeyield/hardware/usb-devices/${id}`);
+            toast.success('Device unpaired');
+            return { error: null };
+        } catch (error) {
+            console.error('Error unpairing device:', error);
+            toast.error('Failed to unpair device');
+            return { error };
+        }
+    },
+
+    // ========== API USAGE / SERVER STATUS ==========
+    async getApiUsageStats(days: number = 30): Promise<any> {
+        try {
+            return await apiGet<any>('/beeyield/status/api-usage', { days });
+        } catch (error) {
+            console.error('Error fetching API usage stats:', error);
+            return null;
+        }
+    },
+
+    // ========== SATELLITE / AGRO INTELLIGENCE ==========
+    async getSatelliteIndices(apiaryId?: string, days: number = 90): Promise<any[]> {
+        try {
+            const params: Record<string, unknown> = { days };
+            if (apiaryId) params.apiary_id = apiaryId;
+            return await apiGet<any[]>('/beeyield/agro/satellite', params);
+        } catch (error) {
+            console.error('Error fetching satellite indices:', error);
+            return [];
+        }
+    },
+
+    async getWeatherHistory(apiaryId?: string, days: number = 30): Promise<any[]> {
+        try {
+            const params: Record<string, unknown> = { days };
+            if (apiaryId) params.apiary_id = apiaryId;
+            return await apiGet<any[]>('/beeyield/agro/weather', params);
+        } catch (error) {
+            console.error('Error fetching weather history:', error);
+            return [];
+        }
+    },
+
+    // ========== FORAGE ZONES (Flight Map) ==========
+    async getForageZones(apiaryId?: string): Promise<any[]> {
+        try {
+            const params: Record<string, unknown> = {};
+            if (apiaryId) params.apiary_id = apiaryId;
+            return await apiGet<any[]>('/beeyield/agro/forage-zones', params);
+        } catch (error) {
+            console.error('Error fetching forage zones:', error);
+            return [];
+        }
+    },
+
+    async createForageZone(input: {
+        apiary_id: string;
+        zone_name?: string;
+        flora_type?: string;
+        radius_km?: number;
+        density_score?: number;
+        season?: string;
+        geojson?: any;
+        notes?: string;
+    }): Promise<{ data: any; error: any }> {
+        try {
+            const data = await apiPost<any>('/beeyield/agro/forage-zones', input);
+            toast.success('Forage zone added');
+            return { data, error: null };
+        } catch (error) {
+            console.error('Error creating forage zone:', error);
+            toast.error('Failed to add forage zone');
+            return { data: null, error };
+        }
+    },
+
+    // ========== HEALTH KNOWLEDGE BASE ==========
+    async getHealthKnowledgeBase(category?: string): Promise<any[]> {
+        try {
+            const params: Record<string, unknown> = {};
+            if (category) params.category = category;
+            return await apiGet<any[]>('/beeyield/health-guide', params);
+        } catch (error) {
+            console.error('Error fetching health knowledge:', error);
+            return [];
+        }
+    },
+
+    // ========== IMAGE ANALYSIS ==========
+    async createImageDetection(input: {
+        image_url: string;
+        detection_type: string; // 'pest' | 'disease' | 'colony_count'
+        confidence_score?: number;
+        detected_objects?: any; // JSON
+        hive_id?: string;
+        metadata?: any;
+    }): Promise<{ data: any; error: any }> {
+        try {
+            const result = await apiPost<any>('/beeyield/analytics/vision', input);
+            toast.success('Image analysis result saved');
+            return { data: result, error: null };
+        } catch (error) {
+            console.error('Error saving image detection:', error);
+            toast.error('Failed to save analysis');
+            return { data: null, error };
+        }
+    },
+
+    async getImageDetections(hiveId?: string, limit: number = 20): Promise<any[]> {
+        try {
+            const params: Record<string, unknown> = { limit };
+            if (hiveId) params.hive_id = hiveId;
+            return await apiGet<any[]>('/beeyield/analytics/vision', params);
+        } catch (error) {
+            console.error('Error fetching image detections:', error);
+            return [];
+        }
+    },
 };
 
 export default beeyieldService;

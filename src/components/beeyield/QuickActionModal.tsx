@@ -116,7 +116,7 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
                 <div className="bg-[#FF9100] px-8 py-10 text-white relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl" />
                     <DialogHeader className="relative z-10">
-                        <DialogTitle className="text-3xl font-black flex items-center gap-3 tracking-tighter leading-none italic">
+                        <DialogTitle className="text-3xl font-black flex items-center gap-3 tracking-tighter leading-none">
                             <Plus className="w-8 h-8 stroke-[3]" />
                             Add New Asset
                         </DialogTitle>

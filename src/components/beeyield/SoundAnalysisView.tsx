@@ -1,12 +1,13 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
     Headphones, Info, Headphones as MusicNote, Volume2, Search,
-    Upload, FileAudio
+    Upload, FileAudio, Loader2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import beeyieldService from '@/services/beeyieldService';
 
 interface SoundAnalysisViewProps {
     onTabChange: (tab: string) => void;
@@ -17,14 +18,32 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
     const [isDragging, setIsDragging] = useState(false);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [analysisResult, setAnalysisResult] = useState<string | null>(null);
+    const [recentReadings, setRecentReadings] = useState<any[]>([]);
+    const [loadingHistory, setLoadingHistory] = useState(true);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Fetch recent acoustic readings on mount
+    useEffect(() => {
+        const fetchHistory = async () => {
+            setLoadingHistory(true);
+            try {
+                const readings = await beeyieldService.getAcousticReadings(undefined, 30);
+                setRecentReadings(readings || []);
+            } catch (err) {
+                console.error('Error fetching acoustic history:', err);
+            } finally {
+                setLoadingHistory(false);
+            }
+        };
+        fetchHistory();
+    }, []);
 
     const handleFile = (file: File) => {
         if (file && file.type.startsWith('audio/')) {
             setSelectedFile(file);
             setAnalysisResult(null);
             toast.success("Audio file uploaded successfully");
-            handleStartAnalysis();
+            handleStartAnalysis(file);
         } else {
             toast.error("Invalid file type", {
                 description: "Please upload only audio files for Beehive Sound Analysis."
@@ -32,16 +51,60 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
         }
     };
 
-    const handleStartAnalysis = () => {
+    const handleStartAnalysis = async (file?: File) => {
         setIsAnalyzing(true);
-        // Simulation of sound processing
-        setTimeout(() => {
-            setIsAnalyzing(false);
-            setAnalysisResult("Normal activity detected. Colony status: Healthy.");
-            toast.success("Sound Analysis Complete", {
-                description: "Primary frequency: 185Hz (Ventilation/Microclimate control)."
+        try {
+            // Simulate frequency extraction from audio file
+            const simulatedFrequency = 150 + Math.random() * 350; // 150-500 Hz
+            const simulatedAmplitude = 30 + Math.random() * 40; // 30-70 dB
+            const healthIdx = Math.max(0, Math.min(1, 1 - (simulatedFrequency > 400 ? 0.4 : 0) - Math.random() * 0.3));
+
+            // Store the reading in the backend
+            const { data, error } = await beeyieldService.createAcousticReading({
+                hive_id: '00000000-0000-0000-0000-000000000001', // default hive
+                frequency_hz: Math.round(simulatedFrequency * 10) / 10,
+                amplitude_db: Math.round(simulatedAmplitude * 10) / 10,
+                health_index: Math.round(healthIdx * 100) / 100,
+                spectral_profile: {
+                    dominant_frequency: Math.round(simulatedFrequency),
+                    bandwidth: Math.round(30 + Math.random() * 50),
+                    harmonics: [Math.round(simulatedFrequency * 2), Math.round(simulatedFrequency * 3)],
+                },
+                tags: simulatedFrequency > 400 ? ['high-activity', 'stress'] : ['normal', 'healthy'],
             });
-        }, 3000);
+
+            const interpretation = getInterpretation(simulatedFrequency);
+            const statusLabel = healthIdx > 0.7 ? 'Healthy' : healthIdx > 0.4 ? 'Needs Attention' : 'Warning';
+
+            setAnalysisResult(
+                `${interpretation} | Frequency: ${Math.round(simulatedFrequency)}Hz | Health Index: ${(healthIdx * 100).toFixed(0)}% (${statusLabel})`
+            );
+
+            if (!error && data) {
+                // Refresh the history list
+                const readings = await beeyieldService.getAcousticReadings(undefined, 30);
+                setRecentReadings(readings || []);
+            }
+
+            toast.success("Sound Analysis Complete", {
+                description: `Primary frequency: ${Math.round(simulatedFrequency)}Hz — ${interpretation.split('.')[0]}.`
+            });
+        } catch (err) {
+            console.error('Analysis error:', err);
+            setAnalysisResult("Analysis failed. Please try again.");
+            toast.error("Analysis failed");
+        } finally {
+            setIsAnalyzing(false);
+        }
+    };
+
+    const getInterpretation = (freq: number): string => {
+        if (freq <= 190) return "Ventilation and microclimate control detected.";
+        if (freq <= 240) return "Nectar source discovery or pre-swarming behavior.";
+        if (freq <= 300) return "Intensive foraging and waggle dancing activity.";
+        if (freq <= 380) return "Colony logistics, nectar recovery operations.";
+        if (freq <= 400) return "Intense activity with possible stressors.";
+        return "High mobilization and excitement signals detected.";
     };
 
     const onDrop = (e: React.DragEvent) => {
@@ -84,7 +147,6 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
     return (
         <div className="space-y-6 animate-in fade-in duration-700 pb-20">
 
-
             {/* Page Header */}
             <div className="pt-4">
                 <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
@@ -117,6 +179,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                     ref={fileInputRef}
                     className="hidden"
                     accept="audio/*"
+                    aria-label="Upload audio file for sound analysis"
                     onChange={(e) => e.target.files && handleFile(e.target.files[0])}
                 />
 
@@ -130,7 +193,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                         </div>
                         <div className="text-center">
                             <h3 className="text-sm font-bold text-slate-800">Analyzing audio frequencies...</h3>
-                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Comparing with biological data</p>
+                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Processing and storing results</p>
                         </div>
                     </div>
                 ) : (
@@ -163,6 +226,55 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                             <p className="text-sm text-green-700 dark:text-green-300 font-medium">{analysisResult}</p>
                         </div>
                     </div>
+                </Card>
+            )}
+
+            {/* Recent Readings History */}
+            {recentReadings.length > 0 && (
+                <Card className="rounded-[1.5rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-[#111111] shadow-sm overflow-hidden">
+                    <CardContent className="p-0">
+                        <div className="p-6 border-b border-slate-50 flex items-center justify-between">
+                            <h2 className="text-lg font-bold text-slate-800 flex items-center gap-3">
+                                Recent Analyses
+                            </h2>
+                            <span className="text-xs text-slate-400 font-bold">{recentReadings.length} records</span>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm border-collapse">
+                                <thead>
+                                    <tr className="bg-slate-50/50 dark:bg-white/5 text-slate-400 font-bold uppercase tracking-wider text-[11px]">
+                                        <th className="px-6 py-3 text-left">Date</th>
+                                        <th className="px-6 py-3 text-left">Frequency</th>
+                                        <th className="px-6 py-3 text-left">Amplitude</th>
+                                        <th className="px-6 py-3 text-left">Health Index</th>
+                                        <th className="px-6 py-3 text-left">Tags</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100 dark:divide-white/5">
+                                    {recentReadings.slice(0, 10).map((r: any, idx: number) => (
+                                        <tr key={r.id || idx} className="hover:bg-slate-50/30 dark:hover:bg-white/5 transition-colors">
+                                            <td className="px-6 py-3 text-slate-600 font-medium">
+                                                {r.recorded_at ? new Date(r.recorded_at).toLocaleDateString() : '-'}
+                                            </td>
+                                            <td className="px-6 py-3 font-bold text-slate-800">{r.frequency_hz ? `${r.frequency_hz}Hz` : '-'}</td>
+                                            <td className="px-6 py-3 text-slate-600">{r.amplitude_db ? `${r.amplitude_db}dB` : '-'}</td>
+                                            <td className="px-6 py-3">
+                                                <span className={cn(
+                                                    "font-bold",
+                                                    (r.health_index ?? 0) > 0.7 ? "text-green-600" : (r.health_index ?? 0) > 0.4 ? "text-amber-600" : "text-red-600"
+                                                )}>
+                                                    {r.health_index != null ? `${(r.health_index * 100).toFixed(0)}%` : '-'}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-3 text-xs text-slate-500">
+                                                {r.tags?.join(', ') || '-'}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </CardContent>
                 </Card>
             )}
 

@@ -453,7 +453,7 @@ const ContentEditor = () => {
                             </div>
                         </div>
                     ) : (
-                        <div className="text-xs text-muted-foreground text-center italic">
+                        <div className="text-xs text-muted-foreground text-center">
                             Stats update as you write...
                         </div>
                     )}

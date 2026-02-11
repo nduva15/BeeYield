@@ -11,7 +11,7 @@ export interface ContactSubmission {
     city: string;
     state: string;
     country: string;
-    inquiry_type: "grower" | "beekeeper" | "general" | "diseases";
+    inquiry_type: "grower" | "beekeeper" | "general" | "diseases" | "In-Land Technology" | "In-Hive Technology";
     company?: string;
     farm_name?: string;
     apiary_name?: string;

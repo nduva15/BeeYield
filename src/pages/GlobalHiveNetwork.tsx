@@ -218,7 +218,7 @@ const GlobalHiveNetwork = () => {
                 <p className="text-muted-foreground leading-relaxed mb-6">
                   Working with smallholder farmers in Kitui County, we're transforming bean and tomato production through precision pollination. Our sensors track pollinator activity in real-time, helping farmers time their interventions perfectly.
                 </p>
-                <blockquote className="border-l-4 border-primary pl-4 italic text-muted-foreground">
+                <blockquote className="border-l-4 border-primary pl-4 text-muted-foreground">
                   "With BeeYield's technology, we've seen 30% better pod development in our bean crops and more uniform tomato sizes."
                 </blockquote>
               </div>

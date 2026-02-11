@@ -708,7 +708,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                                             {/* Findings Expand - optional - simplified for now */}
                                             {inspection.findings && (
                                                 <div className="px-8 pb-6 pt-0 border-t border-slate-50 dark:border-white/5 mt-[-1rem]">
-                                                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 line-clamp-2 italic">
+                                                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 line-clamp-2">
                                                         "{inspection.findings}"
                                                     </p>
                                                 </div>

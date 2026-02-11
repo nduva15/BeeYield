@@ -297,6 +297,7 @@ const Careers = () => {
                             <input
                               type="file"
                               accept=".pdf"
+                              aria-label="Upload resume or CV in PDF format"
                               onChange={handleFileChange}
                               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                             />

@@ -1,31 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import {
-    Search,
-    ChevronRight,
-    ArrowRight,
-    Map,
-    Layers,
-    Activity,
-    CloudRain,
-    Zap,
-    Leaf,
-    Sprout,
-    Droplets,
-    Wind,
-    Sun,
-    BarChart3,
-    FileText,
-    Settings,
-    Bell,
     Share2,
     Download,
-    Eye,
-    Maximize2
+    Maximize2,
+    Loader2
 } from 'lucide-react';
+import beeyieldService from '@/services/beeyieldService';
 import { cn } from '@/lib/utils';
 
 interface AIAssistantViewProps {
@@ -33,7 +16,35 @@ interface AIAssistantViewProps {
 }
 
 const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) => {
-    // New Dashboard Implementation for BeeYield Agro Intelligence
+    const [weather, setWeather] = useState<any>(null);
+    const [satellite, setSatellite] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                // Fetch latest weather and satellite data
+                const [weatherData, satelliteData] = await Promise.all([
+                    beeyieldService.getWeatherHistory().then(res => res && res.length > 0 ? res[0] : null),
+                    beeyieldService.getSatelliteIndices().then(res => res && res.length > 0 ? res[0] : null)
+                ]);
+                setWeather(weatherData);
+                setSatellite(satelliteData);
+            } catch (err) {
+                console.error('Error loading agro intelligence data:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+    // Derived stats or defaults
+    const moisture = satellite?.soil_moisture_index ? Math.round(satellite.soil_moisture_index * 100) : null;
+    const vegetation = satellite?.ndvi ? Math.round(satellite.ndvi * 100) / 100 : null;
+    const carbonScore = satellite?.ndvi ? Math.round(satellite.ndvi * 1000) : null; // Mock carbon logic
+
     return (
         <div className="flex flex-col animate-in fade-in duration-500 pb-12 space-y-8">
 
@@ -46,7 +57,6 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
                     Moving agriculture forward - Data + Insights + Farming | Secure Intelligence Interface
                 </p>
             </div>
-            {/* ... (rest of the content) */}
 
             {/* Hero Card */}
             <Card className="rounded-[1.5rem] border border-[#F4D03F]/20 shadow-sm bg-white dark:bg-[#141414] overflow-hidden border-l-4 border-l-[#F4D03F]">
@@ -160,7 +170,7 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
                                 <span>Change history and boundary versioning.</span>
                             </li>
                         </ul>
-                        <p className="text-xs text-[#1B9157]/60 mt-4 italic">Map tools ready.</p>
+                        <p className="text-xs text-[#1B9157]/60 mt-4">Map tools ready.</p>
                     </CardContent>
                 </Card>
 
@@ -204,11 +214,11 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
                     <CardContent className="space-y-3">
                         <li className="flex gap-2 items-start">
                             <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#1B9157] shrink-0" />
-                            <span className="font-bold text-[#1B9157]">Nectar Flow Index: -/10</span>
+                            <span className="font-bold text-[#1B9157]">Nectar Flow Index: {vegetation ? Math.round(vegetation * 8 + 2) + '/10' : '-/10'}</span>
                         </li>
                         <li className="flex gap-2 items-start">
                             <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#1B9157] shrink-0" />
-                            <span className="font-bold text-[#1B9157]">Pollen Diversity: -</span>
+                            <span className="font-bold text-[#1B9157]">Pollen Diversity: {vegetation && vegetation > 0.4 ? 'High' : '-'}</span>
                         </li>
                         <li className="flex gap-2 items-start">
                             <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#F4D03F] shrink-0" />
@@ -322,22 +332,30 @@ const AgroIntelligenceView: React.FC<AIAssistantViewProps> = ({ onTabChange }) =
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <Card className="p-4 rounded-2xl border-none bg-[#1B9157]/5 dark:bg-[#1B9157]/10 flex flex-col justify-between h-28 border-l-4 border-l-[#1B9157]">
                         <p className="text-[10px] font-black text-[#1B9157] uppercase tracking-widest">Weather Resilience</p>
-                        <p className="text-2xl font-black text-slate-800 dark:text-white mt-1">- %</p>
-                        <Badge className="w-fit bg-gray-500/20 text-gray-600 border-none text-[8px] font-black">PENDING</Badge>
+                        <p className="text-2xl font-black text-slate-800 dark:text-white mt-1">
+                            {loading ? <Loader2 className="animate-spin w-4 h-4" /> : weather?.cloud_cover_percent != null ? `${100 - weather.cloud_cover_percent}%` : '- %'}
+                        </p>
+                        <Badge className="w-fit bg-gray-500/20 text-gray-600 border-none text-[8px] font-black">{weather ? 'ANALYZED' : 'PENDING'}</Badge>
                     </Card>
                     <Card className="p-4 rounded-2xl border-none bg-[#F4D03F]/5 dark:bg-[#F4D03F]/10 flex flex-col justify-between h-28 border-l-4 border-l-[#F4D03F]">
                         <p className="text-[10px] font-black text-[#7a6820] dark:text-[#F4D03F] uppercase tracking-widest">Crop-Sync Delay</p>
-                        <p className="text-2xl font-black text-slate-800 dark:text-white mt-1">-<span className="text-xs"> Days</span></p>
+                        <p className="text-2xl font-black text-slate-800 dark:text-white mt-1">{loading ? <Loader2 className="animate-spin w-4 h-4" /> : '-'}<span className="text-xs"> Days</span></p>
                         <Badge className="w-fit bg-gray-500/20 text-gray-600 border-none text-[8px] font-black">CALCULATING</Badge>
                     </Card>
                     <Card className="p-4 rounded-2xl border-none bg-blue-50 dark:bg-blue-900/10 flex flex-col justify-between h-28 border-l-4 border-l-blue-500">
                         <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Moisture Saturation</p>
-                        <p className="text-2xl font-black text-slate-800 dark:text-white mt-1">- %</p>
-                        <Badge className="w-fit bg-gray-500/20 text-gray-600 border-none text-[8px] font-black">INITIALIZING</Badge>
+                        <p className="text-2xl font-black text-slate-800 dark:text-white mt-1">
+                            {loading ? <Loader2 className="animate-spin w-4 h-4" /> : moisture != null ? `${moisture}%` : '- %'}
+                        </p>
+                        <Badge className={cn("w-fit border-none text-[8px] font-black", moisture ? "bg-blue-100 text-blue-700" : "bg-gray-500/20 text-gray-600")}>
+                            {moisture ? 'LIVE DATA' : 'INITIALIZING'}
+                        </Badge>
                     </Card>
                     <Card className="p-4 rounded-2xl border-none bg-indigo-50 dark:bg-indigo-900/10 flex flex-col justify-between h-28 border-l-4 border-l-indigo-500">
                         <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">Carbon Footprint</p>
-                        <p className="text-2xl font-black text-slate-800 dark:text-white mt-1">-<span className="text-xs"> Carbon score</span></p>
+                        <p className="text-2xl font-black text-slate-800 dark:text-white mt-1">
+                            {loading ? <Loader2 className="animate-spin w-4 h-4" /> : carbonScore != null ? carbonScore : '-'}<span className="text-xs"> Score</span>
+                        </p>
                         <Badge className="w-fit bg-gray-500/20 text-gray-600 border-none text-[8px] font-black">COLLECTING</Badge>
                     </Card>
                 </div>

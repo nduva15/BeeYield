@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { Suspense, lazy } from 'react'
 import ReactDOM from 'react-dom/client'
 import { Buffer } from 'buffer';
+import { Loader2 } from 'lucide-react'
 
 // Polyfill Buffer for browser environment
 if (typeof window !== 'undefined') {
@@ -21,44 +22,50 @@ import Layout from '@/components/Layout'
 import ProtectedRoute from '@/components/auth/ProtectedRoute'
 import '@/index.css'
 
-// Page imports
-import PollinationServices from '@/pages/PollinationServices'
-import About from '@/pages/About'
-import Contact from '@/pages/Contact'
-import Honey from '@/pages/HoneyLanding'
-import Shop from '@/pages/Shop'
-import Checkout from '@/pages/Checkout'
-import Learn from '@/pages/BeeLearn'
-import Blogs from '@/pages/Blogs'
-import BlogPost from '@/pages/BlogPost'
-import Team from '@/pages/Team'
-import Careers from '@/pages/Careers'
-import Impact from '@/pages/Impact'
-import ESG from '@/pages/ESG'
-import Commitment from '@/pages/Commitment'
-import OurStory from '@/pages/OurStory'
-import GlobalHiveNetwork from '@/pages/GlobalHiveNetwork'
-import Traceability from '@/pages/Traceability'
-import PrecisionPollination from '@/pages/PrecisionPollination'
-import PollinationSolutions from '@/pages/PollinationSolutions'
-import InLandPollination from '@/pages/InLandPollinationPlatform'
-import CropsWePollinate from '@/pages/CropsWePollinate'
-import PollinationRequest from '@/pages/PollinationRequest'
-import Diseases from '@/pages/Diseases'
-import Media from '@/pages/Media'
-import BeeYieldDashboard from '@/pages/BeeYieldDashboard'
-import AdminDashboard from '@/pages/AdminDashboard'
-import ContentEditor from '@/components/beeyield/ContentEditor'
-import AdminLogin from '@/pages/AdminAuth'
-import BuyerDashboard from '@/pages/BuyerDashboard'
-import AccountSettings from '@/pages/AccountSettings'
-import UpdatePassword from '@/pages/UpdatePassword'
-import Authentication from '@/pages/Authentication'
-import ProfessionalAuth from '@/pages/ProfessionalAuth'
-import AuthCallback from '@/pages/AuthCallback'
-import NotFound from '@/pages/NotFound'
-import Receipt from '@/pages/Receipt'
-import MeasurementData from '@/pages/MeasurementData'
+// Lazy load page imports
+const PollinationServices = lazy(() => import('@/pages/PollinationServices'))
+const About = lazy(() => import('@/pages/About'))
+const Contact = lazy(() => import('@/pages/Contact'))
+const Honey = lazy(() => import('@/pages/HoneyLanding'))
+const Shop = lazy(() => import('@/pages/Shop'))
+const Checkout = lazy(() => import('@/pages/Checkout'))
+const Learn = lazy(() => import('@/pages/BeeLearn'))
+const Blogs = lazy(() => import('@/pages/Blogs'))
+const BlogPost = lazy(() => import('@/pages/BlogPost'))
+const Team = lazy(() => import('@/pages/Team'))
+const Careers = lazy(() => import('@/pages/Careers'))
+const Impact = lazy(() => import('@/pages/Impact'))
+const ESG = lazy(() => import('@/pages/ESG'))
+const Commitment = lazy(() => import('@/pages/Commitment'))
+const OurStory = lazy(() => import('@/pages/OurStory'))
+const GlobalHiveNetwork = lazy(() => import('@/pages/GlobalHiveNetwork'))
+const Traceability = lazy(() => import('@/pages/Traceability'))
+const PrecisionPollination = lazy(() => import('@/pages/PrecisionPollination'))
+const PollinationSolutions = lazy(() => import('@/pages/PollinationSolutions'))
+const InLandPollination = lazy(() => import('@/pages/InLandPollinationPlatform'))
+const CropsWePollinate = lazy(() => import('@/pages/CropsWePollinate'))
+const PollinationRequest = lazy(() => import('@/pages/PollinationRequest'))
+const Diseases = lazy(() => import('@/pages/Diseases'))
+const Media = lazy(() => import('@/pages/Media'))
+const BeeYieldDashboard = lazy(() => import('@/pages/BeeYieldDashboard'))
+const AdminDashboard = lazy(() => import('@/pages/AdminDashboard'))
+const ContentEditor = lazy(() => import('@/components/beeyield/ContentEditor'))
+const AdminLogin = lazy(() => import('@/pages/AdminAuth'))
+const BuyerDashboard = lazy(() => import('@/pages/BuyerDashboard'))
+const AccountSettings = lazy(() => import('@/pages/AccountSettings'))
+const UpdatePassword = lazy(() => import('@/pages/UpdatePassword'))
+const Authentication = lazy(() => import('@/pages/Authentication'))
+const ProfessionalAuth = lazy(() => import('@/pages/ProfessionalAuth'))
+const AuthCallback = lazy(() => import('@/pages/AuthCallback'))
+const NotFound = lazy(() => import('@/pages/NotFound'))
+const Receipt = lazy(() => import('@/pages/Receipt'))
+const MeasurementData = lazy(() => import('@/pages/MeasurementData'))
+
+const PageLoader = () => (
+    <div className="flex items-center justify-center h-[50vh] w-full">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+    </div>
+)
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
@@ -71,52 +78,54 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                                 <WishlistProvider>
                                     <Toaster />
                                     <Sonner />
-                                    <BrowserRouter>
+                                    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
                                         <ScrollToTop />
                                         <Layout>
-                                            <Routes>
-                                                <Route path="/" element={<PollinationServices />} />
-                                                <Route path="/about" element={<About />} />
-                                                <Route path="/contact" element={<Contact />} />
-                                                <Route path="/honey" element={<Honey />} />
-                                                <Route path="/shop" element={<Shop />} />
-                                                <Route path="/checkout" element={<Checkout />} />
-                                                <Route path="/learn" element={<Learn />} />
-                                                <Route path="/blogs" element={<Blogs />} />
-                                                {/* Note: React Router v6 uses :slug for parameters */}
-                                                <Route path="/blogs/:slug" element={<BlogPost />} />
-                                                <Route path="/team" element={<Team />} />
-                                                <Route path="/careers" element={<Careers />} />
-                                                <Route path="/impact" element={<Impact />} />
-                                                <Route path="/esg" element={<ESG />} />
-                                                <Route path="/commitment" element={<Commitment />} />
-                                                <Route path="/ourstory" element={<OurStory />} />
-                                                <Route path="/global-hive-network" element={<GlobalHiveNetwork />} />
-                                                <Route path="/traceability" element={<Traceability />} />
-                                                <Route path="/precision-pollination" element={<PrecisionPollination />} />
-                                                <Route path="/pollination-solutions" element={<PollinationSolutions />} />
-                                                <Route path="/in-land-pollination" element={<InLandPollination />} />
-                                                <Route path="/crops-we-pollinate" element={<CropsWePollinate />} />
-                                                <Route path="/pollination-request" element={<PollinationRequest />} />
-                                                <Route path="/diseases" element={<Diseases />} />
-                                                <Route path="/media" element={<Media />} />
-                                                <Route path="/beeyield-dashboard" element={<ProtectedRoute requireBeeYield={true}><BeeYieldDashboard /></ProtectedRoute>} />
-                                                <Route path="/measurements" element={<ProtectedRoute requireBeeYield={true}><MeasurementData /></ProtectedRoute>} />
-                                                <Route path="/ceba" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-                                                <Route path="/ceba/content/editor/:id" element={<ProtectedRoute><ContentEditor /></ProtectedRoute>} />
-                                                <Route path="/ceba/login" element={<AdminLogin />} />
-                                                {/* Mapped my-account to BuyerDashboard based on routes/my-account.tsx */}
-                                                <Route path="/my-account" element={<ProtectedRoute><BuyerDashboard /></ProtectedRoute>} />
-                                                <Route path="/buyer-dashboard" element={<ProtectedRoute><BuyerDashboard /></ProtectedRoute>} />
-                                                <Route path="/account-settings" element={<ProtectedRoute><AccountSettings /></ProtectedRoute>} />
-                                                <Route path="/update-password" element={<ProtectedRoute><UpdatePassword /></ProtectedRoute>} />
-                                                <Route path="/login" element={<Authentication />} />
-                                                <Route path="/signup" element={<Authentication />} />
-                                                <Route path="/beeyield-login" element={<ProfessionalAuth />} />
-                                                <Route path="/auth/callback" element={<AuthCallback />} />
-                                                <Route path="/receipt/:orderId" element={<ProtectedRoute><Receipt /></ProtectedRoute>} />
-                                                <Route path="*" element={<NotFound />} />
-                                            </Routes>
+                                            <Suspense fallback={<PageLoader />}>
+                                                <Routes>
+                                                    <Route path="/" element={<PollinationServices />} />
+                                                    <Route path="/about" element={<About />} />
+                                                    <Route path="/contact" element={<Contact />} />
+                                                    <Route path="/honey" element={<Honey />} />
+                                                    <Route path="/shop" element={<Shop />} />
+                                                    <Route path="/checkout" element={<Checkout />} />
+                                                    <Route path="/learn" element={<Learn />} />
+                                                    <Route path="/blogs" element={<Blogs />} />
+                                                    {/* Note: React Router v6 uses :slug for parameters */}
+                                                    <Route path="/blogs/:slug" element={<BlogPost />} />
+                                                    <Route path="/team" element={<Team />} />
+                                                    <Route path="/careers" element={<Careers />} />
+                                                    <Route path="/impact" element={<Impact />} />
+                                                    <Route path="/esg" element={<ESG />} />
+                                                    <Route path="/commitment" element={<Commitment />} />
+                                                    <Route path="/ourstory" element={<OurStory />} />
+                                                    <Route path="/global-hive-network" element={<GlobalHiveNetwork />} />
+                                                    <Route path="/traceability" element={<Traceability />} />
+                                                    <Route path="/precision-pollination" element={<PrecisionPollination />} />
+                                                    <Route path="/pollination-solutions" element={<PollinationSolutions />} />
+                                                    <Route path="/in-land-pollination" element={<InLandPollination />} />
+                                                    <Route path="/crops-we-pollinate" element={<CropsWePollinate />} />
+                                                    <Route path="/pollination-request" element={<PollinationRequest />} />
+                                                    <Route path="/diseases" element={<Diseases />} />
+                                                    <Route path="/media" element={<Media />} />
+                                                    <Route path="/beeyield-dashboard" element={<ProtectedRoute requireBeeYield={true}><BeeYieldDashboard /></ProtectedRoute>} />
+                                                    <Route path="/measurements" element={<ProtectedRoute requireBeeYield={true}><MeasurementData /></ProtectedRoute>} />
+                                                    <Route path="/ceba" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+                                                    <Route path="/ceba/content/editor/:id" element={<ProtectedRoute><ContentEditor /></ProtectedRoute>} />
+                                                    <Route path="/ceba/login" element={<AdminLogin />} />
+                                                    {/* Mapped my-account to BuyerDashboard based on routes/my-account.tsx */}
+                                                    <Route path="/my-account" element={<ProtectedRoute><BuyerDashboard /></ProtectedRoute>} />
+                                                    <Route path="/buyer-dashboard" element={<ProtectedRoute><BuyerDashboard /></ProtectedRoute>} />
+                                                    <Route path="/account-settings" element={<ProtectedRoute><AccountSettings /></ProtectedRoute>} />
+                                                    <Route path="/update-password" element={<ProtectedRoute><UpdatePassword /></ProtectedRoute>} />
+                                                    <Route path="/login" element={<Authentication />} />
+                                                    <Route path="/signup" element={<Authentication />} />
+                                                    <Route path="/beeyield-login" element={<ProfessionalAuth />} />
+                                                    <Route path="/auth/callback" element={<AuthCallback />} />
+                                                    <Route path="/receipt/:orderId" element={<ProtectedRoute><Receipt /></ProtectedRoute>} />
+                                                    <Route path="*" element={<NotFound />} />
+                                                </Routes>
+                                            </Suspense>
                                         </Layout>
                                     </BrowserRouter>
                                 </WishlistProvider>

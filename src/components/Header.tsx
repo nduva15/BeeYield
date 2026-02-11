@@ -38,7 +38,7 @@ const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6 lg:px-8">
         {/* Left side - Logo (all devices) */}
-        <Link to="/" className="flex items-center space-x-2 flex-shrink-0" aria-label="BeeYield home">
+        <Link to="/" className="flex items-center space-x-2 flex-shrink-0 transition-transform active:scale-95" aria-label="BeeYield home">
           <img
             src={Logo}
             alt="BeeYield logo"
@@ -101,7 +101,7 @@ const Header = () => {
         <div className="flex items-center space-x-2 sm:space-x-4">
           <Link
             to="/beeyield-dashboard"
-            className="p-2 hover:bg-muted rounded-full transition-all active:scale-90 group mr-1 flex items-center justify-center"
+            className="p-2 hover:bg-muted rounded-full transition-all active:scale-95 group mr-1 flex items-center justify-center"
             title="BeeYield Dashboard"
           >
             <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
@@ -109,7 +109,7 @@ const Header = () => {
 
           <button
             onClick={toggleCart}
-            className="p-2 hover:bg-muted rounded-full transition-all active:scale-90 group relative"
+            className="p-2 hover:bg-muted rounded-full transition-all active:scale-95 group relative"
             aria-label="View shopping cart"
           >
             <ShoppingBag className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
@@ -123,7 +123,7 @@ const Header = () => {
           <Button
             variant="default"
             size="sm"
-            className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-3 sm:px-6 text-xs sm:text-sm h-8 sm:h-9"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-3 sm:px-6 text-xs sm:text-sm h-8 sm:h-9 transition-transform active:scale-95"
             asChild
           >
             <Link to="/traceability">
@@ -134,7 +134,7 @@ const Header = () => {
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
-            className="p-2 hover:bg-muted rounded-md transition-colors"
+            className="p-2 hover:bg-muted rounded-md transition-all active:scale-95"
           >
             {isMenuOpen ? (
               <X className="h-5 w-5 sm:h-6 sm:w-6 text-foreground" />

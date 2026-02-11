@@ -302,7 +302,7 @@ const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTab
                         </thead>
                         <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">
                             {filteredMeters.length === 0 ? (
-                                <tr><td colSpan={5} className="py-20 text-center text-gray-400 italic">No matching meters found</td></tr>
+                                <tr><td colSpan={5} className="py-20 text-center text-gray-400">No matching meters found</td></tr>
                             ) : (
                                 filteredMeters.map(meter => (
                                     <tr key={meter.id} className="group hover:bg-gray-50/50 dark:hover:bg-gray-800/10 transition-colors">

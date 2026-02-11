@@ -48,6 +48,8 @@ class KnowledgeSyncScheduler:
     @classmethod
     async def _sync_loop(cls):
         """Main sync loop - runs indefinitely."""
+        # Delay first sync so server startup completes quickly
+        await asyncio.sleep(60)
         while cls._is_running:
             try:
                 await cls.run_sync()

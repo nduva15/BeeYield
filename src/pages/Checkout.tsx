@@ -351,7 +351,7 @@ const Checkout = () => {
                         <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 p-12 text-center relative">
                             <div className="absolute top-6 left-1/2 -translate-x-1/2 flex items-center gap-2">
                                 <img src="/logo.png" alt="BeeYield Logo" className="w-10 h-10 object-contain block" />
-                                <span className="font-black text-xl italic text-foreground">BeeYield</span>
+                                <span className="font-black text-xl text-foreground">BeeYield</span>
                             </div>
 
                             <div className="w-24 h-24 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-8 mt-4 animate-bounce">
@@ -658,6 +658,7 @@ const Checkout = () => {
                                                                     <button
                                                                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
                                                                         className="p-2 hover:bg-primary/10 rounded-l-lg transition-colors"
+                                                                        aria-label="Decrease quantity"
                                                                     >
                                                                         <Minus className="w-4 h-4" />
                                                                     </button>
@@ -665,6 +666,7 @@ const Checkout = () => {
                                                                     <button
                                                                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
                                                                         className="p-2 hover:bg-primary/10 rounded-r-lg transition-colors"
+                                                                        aria-label="Increase quantity"
                                                                     >
                                                                         <Plus className="w-4 h-4" />
                                                                     </button>
@@ -713,6 +715,7 @@ const Checkout = () => {
                                                             <button
                                                                 onClick={() => removeFromWishlist(item.id)}
                                                                 className="p-1 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                                                                aria-label="Remove from wishlist"
                                                             >
                                                                 <X className="w-4 h-4" />
                                                             </button>
@@ -1069,7 +1072,7 @@ const Checkout = () => {
                                                 {appliedCoupon.discount}% OFF
                                             </Badge>
                                         </div>
-                                        <button onClick={handleRemoveCoupon} className="text-muted-foreground hover:text-destructive">
+                                        <button onClick={handleRemoveCoupon} className="text-muted-foreground hover:text-destructive" aria-label="Remove coupon">
                                             <X className="w-4 h-4" />
                                         </button>
                                     </div>

@@ -76,7 +76,7 @@ const OurStory = () => {
                   <CardContent className="p-6">
                     <div className="flex gap-4">
                       <div className="text-4xl text-primary font-serif">"</div>
-                      <blockquote className="text-lg font-medium italic text-foreground">
+                      <blockquote className="text-lg font-medium text-foreground">
                         Where would three beekeepers meet? In our case — around the family dinner table.
                       </blockquote>
                     </div>
@@ -244,7 +244,7 @@ const OurStory = () => {
               <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl -ml-32 -mb-32" />
 
               <h2 className="text-3xl font-bold sm:text-5xl mb-6 relative z-10 text-white">
-                Join Us on Our <span className="text-green-400 italic">Journey</span>
+                Join Us on Our <span className="text-green-400">Journey</span>
               </h2>
               <p className="text-green-100/80 max-w-2xl mx-auto mb-10 text-lg relative z-10">
                 From a family dream in rural Kenya to a growing presence in pollination services — we're just getting started. Partner with us to improve agriculture.

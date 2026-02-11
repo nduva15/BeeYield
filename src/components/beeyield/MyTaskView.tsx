@@ -232,8 +232,9 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                         <div className="space-y-2">
                             <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('recurring_task_label') || "Recurring Task"}</label>
                             <div className="flex items-center gap-4 bg-slate-50 dark:bg-slate-900 h-14 rounded-2xl px-6">
-                                <span className="text-sm font-bold text-slate-600 dark:text-slate-300 flex-1">Repeat this task?</span>
+                                <label htmlFor="task-recurring-checkbox" className="text-sm font-bold text-slate-600 dark:text-slate-300 flex-1">Repeat this task?</label>
                                 <input
+                                    id="task-recurring-checkbox"
                                     type="checkbox"
                                     checked={isRecurring}
                                     onChange={(e) => setIsRecurring(e.target.checked)}
@@ -241,8 +242,9 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                                 />
                                 {isRecurring && (
                                     <div className="flex items-center gap-2 ml-4 border-l border-slate-200 dark:border-slate-700 pl-4">
-                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-tight">Every</span>
+                                        <label htmlFor="task-recurrence-days" className="text-[10px] font-black text-slate-400 uppercase tracking-tight">Every</label>
                                         <input
+                                            id="task-recurrence-days"
                                             type="number"
                                             value={recurrenceDays}
                                             onChange={(e) => setRecurrenceDays(e.target.value)}

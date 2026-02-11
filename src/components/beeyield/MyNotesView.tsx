@@ -215,8 +215,9 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                     </Popover>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('note_time')}</label>
+                                    <label htmlFor="note-time-input" className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('note_time')}</label>
                                     <input
+                                        id="note-time-input"
                                         type="time"
                                         value={noteTime}
                                         onChange={(e) => setNoteTime(e.target.value)}
@@ -324,6 +325,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                             <div className="space-y-4">
                                 <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Link to Hive / Apiary</label>
                                 <select
+                                    aria-label="Select Apiary"
                                     value={selectedPlaceId || ""}
                                     onChange={(e) => setSelectedPlaceId(e.target.value || null)}
                                     className="w-full h-12 bg-slate-50 dark:bg-white/5 border-none rounded-xl px-4 font-bold text-xs outline-none"
@@ -332,6 +334,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                     {apiaries.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
                                 </select>
                                 <select
+                                    aria-label="Select Hive"
                                     value={selectedHiveId || ""}
                                     onChange={(e) => setSelectedHiveId(e.target.value || null)}
                                     className="w-full h-12 bg-slate-50 dark:bg-white/5 border-none rounded-xl px-4 font-bold text-xs outline-none"

@@ -528,7 +528,7 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
 
                         <div className="flex-1 overflow-y-auto font-mono text-[11px] leading-relaxed space-y-2 custom-scrollbar pr-2">
                             {logs.length === 0 ? (
-                                <p className="text-slate-400 italic font-medium">No communication logs recorded.</p>
+                                <p className="text-slate-400 font-medium">No communication logs recorded.</p>
                             ) : (
                                 logs.map((log, i) => (
                                     <div key={i} className="flex gap-3 text-slate-600 border-b border-white/50 pb-1">

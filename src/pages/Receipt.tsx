@@ -112,7 +112,7 @@ const Receipt = () => {
                                 <img src={logo} alt="BeeYield" className="h-16 w-auto" />
                                 <div>
                                     <h1 className="text-2xl font-black text-slate-900 tracking-tight">BeeYield Limited</h1>
-                                    <p className="text-sm font-semibold text-primary/80 italic">Sustainable Beekeeping</p>
+                                    <p className="text-sm font-semibold text-primary/80">Sustainable Beekeeping</p>
                                 </div>
                             </div>
 
@@ -136,7 +136,7 @@ const Receipt = () => {
                                             <p className="text-slate-600 font-medium flex items-center gap-2"><Phone className="w-3.5 h-3.5 opacity-50" /> {order.shipping_address.phone}</p>
                                         </div>
                                     ) : (
-                                        <p className="text-slate-500 italic">Guest Customer</p>
+                                        <p className="text-slate-500">Guest Customer</p>
                                     )}
                                 </div>
                             </div>
@@ -185,7 +185,7 @@ const Receipt = () => {
                                                     </div>
                                                     <div className="space-y-1">
                                                         <h4 className="font-black text-slate-900 text-lg leading-tight uppercase tracking-tight">{item.product_name}</h4>
-                                                        <p className="text-sm font-bold text-primary italic">{item.variant_size || 'Standard Jar'}</p>
+                                                        <p className="text-sm font-bold text-primary">{item.variant_size || 'Standard Jar'}</p>
                                                         <p className="text-xs text-slate-400 max-w-xs line-clamp-1">Natural honey product from Makueni.</p>
                                                     </div>
                                                 </div>
@@ -202,7 +202,7 @@ const Receipt = () => {
                         {/* Totals Section */}
                         <div className="mt-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-10">
                             {/* Notes / Footer Text */}
-                            <div className="max-w-md bg-slate-50 rounded-[1.5rem] p-6 border border-slate-100 italic text-slate-500 text-sm leading-relaxed">
+                            <div className="max-w-md bg-slate-50 rounded-[1.5rem] p-6 border border-slate-100 text-slate-500 text-sm leading-relaxed">
                                 This receipt confirms your order for BeeYield products. 50% of our profits directly support smallholder farmers in Makueni. Thank you for being part of our sustainable honey project.
                             </div>
 

@@ -200,6 +200,15 @@ const NotificationsDialog = ({ open, onOpenChange }: NotificationsDialogProps) =
     );
 };
 
+interface RemainingViewProps {
+    onTabChange: (tab: string) => void;
+}
+
+interface NotificationsDialogProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+}
+
 // BeeYield Online View (Measurement data)
 export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }) => {
     const [selectedPlace, setSelectedPlace] = useState<string>('');
@@ -382,6 +391,120 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
 
 
 import { UsbHubDashboard } from './UsbHubDashboard';
+
+// Bluetooth View
+export const BluetoothView: React.FC<RemainingViewProps> = ({ onTabChange }) => {
+    const [devices, setDevices] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [isScanning, setIsScanning] = useState(false);
+
+    const fetchDevices = async () => {
+        setLoading(true);
+        try {
+            const data = await beeyieldService.getPairedUsbDevices();
+            setDevices(data || []);
+        } catch (err) {
+            console.error('Error fetching devices:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchDevices();
+    }, []);
+
+    const handlePairing = async () => {
+        setIsScanning(true);
+        // Simulate scan and pair
+        setTimeout(async () => {
+            try {
+                const newDevice = {
+                    device_uid: `BLE-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+                    device_type: 'beeyield_hub',
+                    serial_number: `SN-${Math.floor(Math.random() * 1000000)}`,
+                    firmware_version: '1.2.5',
+                };
+                await beeyieldService.pairUsbDevice(newDevice);
+                await fetchDevices();
+                toast.success("New Bluetooth device paired successfully");
+            } catch (err) {
+                toast.error("Pairing failed");
+            } finally {
+                setIsScanning(false);
+            }
+        }, 2000);
+    };
+
+    return (
+        <ViewLayout
+            title="Bluetooth Connectivity"
+            subtitle="Manage local Bluetooth connections and device pairing."
+            icon={BluetoothIcon}
+            onTabChange={onTabChange}
+        >
+            <div className="space-y-6">
+                {loading ? (
+                    <div className="flex items-center justify-center h-48">
+                        <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+                    </div>
+                ) : devices.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {devices.map((device, i) => (
+                            <Card key={device.id || i} className="rounded-3xl border-none bg-white shadow-xl shadow-slate-200/40 p-6 flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center">
+                                        <BluetoothIcon className="w-6 h-6 text-green-600" />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-slate-800">{device.serial_number || 'Unknown Device'}</h4>
+                                        <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">{device.device_uid}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                                    <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest">Active</span>
+                                </div>
+                            </Card>
+                        ))}
+                    </div>
+                ) : (
+                    <Card className="rounded-[2.5rem] p-10 border-none bg-white shadow-xl shadow-slate-200/40">
+                        <div className="flex flex-col items-center justify-center py-12 text-center">
+                            <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mb-6">
+                                <BluetoothIcon className="w-10 h-10 text-slate-300" />
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-800 mb-2">No Bluetooth Devices Found</h3>
+                            <p className="text-slate-500 max-w-md mx-auto mb-8 font-medium">
+                                Ensure your BeeYield Hub is in pairing mode and Bluetooth is enabled on your terminal.
+                            </p>
+                        </div>
+                    </Card>
+                )}
+
+                <div className="flex justify-center">
+                    <Button
+                        onClick={handlePairing}
+                        disabled={isScanning}
+                        className="rounded-2xl h-14 px-8 bg-amber-500 text-white hover:bg-amber-600 shadow-xl shadow-amber-500/20 uppercase tracking-widest font-bold min-w-[200px]"
+                    >
+                        {isScanning ? (
+                            <>
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                Scanning...
+                            </>
+                        ) : (
+                            <>
+                                <Search className="w-4 h-4 mr-2" />
+                                Scan for Devices
+                            </>
+                        )}
+                    </Button>
+                </div>
+            </div>
+        </ViewLayout>
+    );
+};
 
 // USB View
 export const USBView: React.FC<RemainingViewProps> = ({ onTabChange }) => (

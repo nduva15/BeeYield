@@ -458,7 +458,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                                 </div>
                                                 <div className="space-y-2">
                                                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Description</p>
-                                                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed italic line-clamp-4">"{description}"</p>
+                                                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-4">"{description}"</p>
                                                 </div>
                                             </div>
 

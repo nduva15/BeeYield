@@ -145,14 +145,14 @@ const SeoScorecard: React.FC<SeoScorecardProps> = ({ analysis, focusKeywords }) 
                     </TabsContent>
 
                     <TabsContent value="aeo" className="mt-4">
-                        <div className="bg-muted/30 p-3 rounded-lg text-xs italic mb-4 border border-dashed">
+                        <div className="bg-muted/30 p-3 rounded-lg text-xs mb-4 border border-dashed">
                             "AEO optimizes for direct answers in Voice Search (Siri, Alexa). Focus on Q&A formats."
                         </div>
                         <IssueList issues={analysis.aeo.issues} passes={analysis.aeo.passes} />
                     </TabsContent>
 
                     <TabsContent value="geo" className="mt-4">
-                        <div className="bg-muted/30 p-3 rounded-lg text-xs italic mb-4 border border-dashed">
+                        <div className="bg-muted/30 p-3 rounded-lg text-xs mb-4 border border-dashed">
                             "GEO optimizes for Generative AI engines (ChatGPT, Gemini). Focus on authority & data."
                         </div>
                         <IssueList issues={analysis.geo.issues} passes={analysis.geo.passes} />

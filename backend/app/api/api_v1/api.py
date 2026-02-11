@@ -7,11 +7,14 @@ from app.api.api_v1.endpoints import (
     forms, shop, blog, careers, media, 
     services, jobs, analytics, notes, admin, iot, ai,
     admin_extended, meters, beeyield, pollination, inspections, reports,
-    ai_assistant, settings, payments
+    ai_assistant, settings, payments, labels
 )
 
 
 api_router = APIRouter()
+
+# Labels endpoint
+api_router.include_router(labels.router, prefix="/labels", tags=["Labels"])
 
 # Meters endpoint
 api_router.include_router(meters.router, prefix="/meters", tags=["Meters"])

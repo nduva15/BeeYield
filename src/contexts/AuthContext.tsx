@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase } from '@/lib/supabase';
-import { Session, User, AuthError, AuthMFAEnrollResponse, AuthMFAChallengeResponse, AuthMFAVerifyResponse, Factor } from '@supabase/supabase-js';
+
+import React, { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
+import { supabaseShop, supabaseBeeYield, supabaseCEBA } from '@/lib/supabase';
+import { Session, User, AuthError, AuthMFAEnrollResponse, AuthMFAChallengeResponse, AuthMFAVerifyResponse, Factor, SupabaseClient } from '@supabase/supabase-js';
 
 interface MFAEnrollResult {
     id: string;
@@ -12,26 +13,39 @@ interface MFAEnrollResult {
     };
 }
 
+type AuthBackend = 'shop' | 'beeyield' | 'ceba';
+
 interface AuthContextType {
+    // Current active user/session based on path
     user: User | null;
     session: Session | null;
     loading: boolean;
+    activeBackend: AuthBackend;
+
+    // Backend-specific users
+    shopUser: User | null;
+    beeyieldUser: User | null;
+    cebaUser: User | null;
+
+    // Methods
+    signIn: (email: string, password: string, backend?: AuthBackend) => Promise<{ error: AuthError | null; mfaRequired?: boolean }>;
+    signUp: (email: string, password: string, metadata?: { first_name?: string; last_name?: string; role?: string }, backend?: AuthBackend) => Promise<{ error: AuthError | null; data?: { user: User | null } }>;
+    signInWithGoogle: (metadata?: Record<string, any>, backend?: AuthBackend) => Promise<{ error: AuthError | null }>;
+    signOut: (backend?: AuthBackend | 'all') => Promise<void>;
+
+    // Password Reset Methods
+    resetPassword: (email: string, backend?: AuthBackend) => Promise<{ error: AuthError | null }>;
+    updatePassword: (newPassword: string, backend?: AuthBackend) => Promise<{ error: AuthError | null }>;
+
+    // MFA Methods
     mfaRequired: boolean;
     mfaFactorId: string | null;
-    signIn: (email: string, password: string) => Promise<{ error: AuthError | null; mfaRequired?: boolean }>;
-    signUp: (email: string, password: string, metadata?: { first_name?: string; last_name?: string; role?: string }) => Promise<{ error: AuthError | null; data?: { user: User | null } }>;
-    signInWithGoogle: (metadata?: Record<string, any>) => Promise<{ error: AuthError | null }>;
-    signOut: () => Promise<void>;
-    // Password Reset Methods
-    resetPassword: (email: string) => Promise<{ error: AuthError | null }>;
-    updatePassword: (newPassword: string) => Promise<{ error: AuthError | null }>;
-    // MFA Methods
-    enrollMFA: () => Promise<{ data: MFAEnrollResult | null; error: Error | null }>;
-    verifyMFAEnrollment: (factorId: string, code: string) => Promise<{ error: Error | null }>;
-    verifyMFAChallenge: (code: string) => Promise<{ error: Error | null }>;
-    unenrollMFA: (factorId: string) => Promise<{ error: Error | null }>;
-    getMFAFactors: () => Promise<{ factors: Factor[]; error: Error | null }>;
-    hasMFAEnabled: () => Promise<boolean>;
+    enrollMFA: (backend?: AuthBackend) => Promise<{ data: MFAEnrollResult | null; error: Error | null }>;
+    verifyMFAEnrollment: (factorId: string, code: string, backend?: AuthBackend) => Promise<{ error: Error | null }>;
+    verifyMFAChallenge: (code: string, backend?: AuthBackend) => Promise<{ error: Error | null }>;
+    unenrollMFA: (factorId: string, backend?: AuthBackend) => Promise<{ error: Error | null }>;
+    getMFAFactors: (backend?: AuthBackend) => Promise<{ factors: Factor[]; error: Error | null }>;
+    hasMFAEnabled: (backend?: AuthBackend) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -49,44 +63,113 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-    const [user, setUser] = useState<User | null>(null);
-    const [session, setSession] = useState<Session | null>(null);
+    const [shopUser, setShopUser] = useState<User | null>(null);
+    const [shopSession, setShopSession] = useState<Session | null>(null);
+    const [beeyieldUser, setBeeyieldUser] = useState<User | null>(null);
+    const [beeyieldSession, setBeeyieldSession] = useState<Session | null>(null);
+    const [cebaUser, setCebaUser] = useState<User | null>(null);
+    const [cebaSession, setCebaSession] = useState<Session | null>(null);
+
     const [loading, setLoading] = useState(true);
     const [mfaRequired, setMfaRequired] = useState(false);
     const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
 
+    // Determine current backend based on path
+    const getActiveBackendFromPath = (): AuthBackend => {
+        const path = window.location.pathname;
+        if (path.includes('/ceba')) return 'ceba';
+        if (path.includes('/beeyield')) return 'beeyield';
+        return 'shop';
+    };
+
+    const [activeBackend, setActiveBackend] = useState<AuthBackend>(getActiveBackendFromPath());
+
     useEffect(() => {
-        // Get initial session
-        if (supabase) {
-            supabase.auth.getSession().then(({ data: { session } }) => {
-                setSession(session);
-                setUser(session?.user ?? null);
+        const handlePathChange = () => {
+            setActiveBackend(getActiveBackendFromPath());
+        };
+        window.addEventListener('popstate', handlePathChange);
+        // Also listen for custom events or just check periodically if mutation occurs
+        return () => window.removeEventListener('popstate', handlePathChange);
+    }, []);
+
+    const getClient = (backend?: AuthBackend): SupabaseClient => {
+        const target = backend || activeBackend;
+        if (target === 'ceba') return supabaseCEBA!;
+        if (target === 'beeyield') return supabaseBeeYield!;
+        return supabaseShop!;
+    };
+
+    useEffect(() => {
+        const initAuth = async () => {
+            setLoading(true);
+            try {
+                // Initial sessions
+                const [shopRes, beeyieldRes, cebaRes] = await Promise.all([
+                    supabaseShop?.auth.getSession(),
+                    supabaseBeeYield?.auth.getSession(),
+                    supabaseCEBA?.auth.getSession()
+                ]);
+
+                setShopSession(shopRes?.data.session ?? null);
+                setShopUser(shopRes?.data.session?.user ?? null);
+
+                setBeeyieldSession(beeyieldRes?.data.session ?? null);
+                setBeeyieldUser(beeyieldRes?.data.session?.user ?? null);
+
+                setCebaSession(cebaRes?.data.session ?? null);
+                setCebaUser(cebaRes?.data.session?.user ?? null);
+            } finally {
                 setLoading(false);
+            }
+        };
+
+        if (supabaseShop && supabaseBeeYield && supabaseCEBA) {
+            initAuth();
+
+            // Listen for changes on all backends
+            const shopSub = supabaseShop.auth.onAuthStateChange((_event, session) => {
+                setShopSession(session);
+                setShopUser(session?.user ?? null);
             });
 
-            // Listen for auth changes
-            const { data: { subscription } } = supabase.auth.onAuthStateChange(
-                (_event, session) => {
-                    setSession(session);
-                    setUser(session?.user ?? null);
-                    setLoading(false);
-                }
-            );
+            const beeyieldSub = supabaseBeeYield.auth.onAuthStateChange((_event, session) => {
+                setBeeyieldSession(session);
+                setBeeyieldUser(session?.user ?? null);
+            });
 
-            return () => subscription.unsubscribe();
-        } else {
-            setLoading(false);
+            const cebaSub = supabaseCEBA.auth.onAuthStateChange((_event, session) => {
+                setCebaSession(session);
+                setCebaUser(session?.user ?? null);
+            });
+
+            return () => {
+                shopSub.data.subscription.unsubscribe();
+                beeyieldSub.data.subscription.unsubscribe();
+                cebaSub.data.subscription.unsubscribe();
+            };
         }
     }, []);
 
-    const signIn = async (email: string, password: string) => {
-        if (!supabase) return { error: new Error('Supabase client not initialized') as AuthError };
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    // Derived user/session for backward compatibility
+    const user = useMemo(() => {
+        if (activeBackend === 'ceba') return cebaUser;
+        if (activeBackend === 'beeyield') return beeyieldUser;
+        return shopUser;
+    }, [activeBackend, shopUser, beeyieldUser, cebaUser]);
 
-        // Check if MFA is required
+    const session = useMemo(() => {
+        if (activeBackend === 'ceba') return cebaSession;
+        if (activeBackend === 'beeyield') return beeyieldSession;
+        return shopSession;
+    }, [activeBackend, shopSession, beeyieldSession, cebaSession]);
+
+    const signIn = async (email: string, password: string, backend?: AuthBackend) => {
+        const client = getClient(backend);
+        const { data, error } = await client.auth.signInWithPassword({ email, password });
+
         if (data?.session === null && !error) {
-            // MFA challenge required - get factors
-            const { data: factorsData } = await supabase.auth.mfa.listFactors();
+            const { data: factorsData } = await client.auth.mfa.listFactors();
             if (factorsData?.totp && factorsData.totp.length > 0) {
                 const factor = factorsData.totp[0];
                 setMfaRequired(true);
@@ -94,146 +177,113 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 return { error: null, mfaRequired: true };
             }
         }
-
         return { error };
     };
 
     const signUp = async (
         email: string,
         password: string,
-        metadata?: { first_name?: string; last_name?: string }
+        metadata?: Record<string, any>,
+        backend?: AuthBackend
     ) => {
-        if (!supabase) return { error: new Error('Supabase client not initialized') as AuthError, data: { user: null } };
-        const { data, error } = await supabase.auth.signUp({
+        const client = getClient(backend);
+        const { data, error } = await client.auth.signUp({
             email,
             password,
-            options: {
-                data: metadata,
-            },
+            options: { data: metadata },
         });
         return { error, data: { user: data.user } };
     };
 
-    const signInWithGoogle = async (metadata?: Record<string, any>) => {
-        if (!supabase) return { error: new Error('Supabase client not initialized') as AuthError };
-        const { error } = await supabase.auth.signInWithOAuth({
+    const signInWithGoogle = async (metadata?: Record<string, any>, backend?: AuthBackend) => {
+        const client = getClient(backend);
+        const { error } = await client.auth.signInWithOAuth({
             provider: 'google',
             options: {
                 redirectTo: `${window.location.origin}/auth/callback`,
-                queryParams: {
-                    access_type: 'offline',
-                    prompt: 'consent',
-                },
-                data: metadata,
+                queryParams: { access_type: 'offline', prompt: 'consent' },
             },
         });
         return { error };
     };
 
-    const signOut = async () => {
+    const signOut = async (backend?: AuthBackend | 'all') => {
         setMfaRequired(false);
         setMfaFactorId(null);
-        if (supabase) await supabase.auth.signOut();
+
+        if (backend === 'all') {
+            await Promise.all([
+                supabaseShop?.auth.signOut(),
+                supabaseBeeYield?.auth.signOut(),
+                supabaseCEBA?.auth.signOut()
+            ]);
+        } else {
+            const client = getClient(backend);
+            await client.auth.signOut();
+        }
     };
 
-    // Password Reset: Send reset email
-    const resetPassword = async (email: string) => {
-        if (!supabase) return { error: new Error('Supabase client not initialized') as AuthError };
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    const resetPassword = async (email: string, backend?: AuthBackend) => {
+        const client = getClient(backend);
+        const { error } = await client.auth.resetPasswordForEmail(email, {
             redirectTo: `${window.location.origin}/update-password`,
         });
         return { error };
     };
 
-    // Password Reset: Update password after clicking reset link
-    const updatePassword = async (newPassword: string) => {
-        if (!supabase) return { error: new Error('Supabase client not initialized') as AuthError };
-        const { error } = await supabase.auth.updateUser({
-            password: newPassword,
-        });
+    const updatePassword = async (newPassword: string, backend?: AuthBackend) => {
+        const client = getClient(backend);
+        const { error } = await client.auth.updateUser({ password: newPassword });
         return { error };
     };
 
-    // MFA: Enroll a new TOTP factor
-    const enrollMFA = async (): Promise<{ data: MFAEnrollResult | null; error: Error | null }> => {
-        if (!supabase) return { data: null, error: new Error('Supabase client not initialized') };
+    const enrollMFA = async (backend?: AuthBackend) => {
+        const client = getClient(backend);
         try {
-            const { data, error } = await supabase.auth.mfa.enroll({
+            const { data, error } = await client.auth.mfa.enroll({
                 factorType: 'totp',
                 friendlyName: 'BeeYield Authenticator',
             }) as AuthMFAEnrollResponse;
-
             if (error) throw error;
-
-            return {
-                data: data as MFAEnrollResult,
-                error: null
-            };
+            return { data: data as MFAEnrollResult, error: null };
         } catch (err) {
             return { data: null, error: err as Error };
         }
     };
 
-    // MFA: Verify enrollment with TOTP code
-    const verifyMFAEnrollment = async (factorId: string, code: string) => {
-        if (!supabase) return { error: new Error('Supabase client not initialized') };
+    const verifyMFAEnrollment = async (factorId: string, code: string, backend?: AuthBackend) => {
+        const client = getClient(backend);
         try {
-            const { data: challengeData, error: challengeError } = await supabase.auth.mfa.challenge({
-                factorId,
-            }) as AuthMFAChallengeResponse;
-
+            const { data: challengeData, error: challengeError } = await client.auth.mfa.challenge({ factorId }) as AuthMFAChallengeResponse;
             if (challengeError) throw challengeError;
-
-            const { error: verifyError } = await supabase.auth.mfa.verify({
-                factorId,
-                challengeId: challengeData.id,
-                code,
-            }) as AuthMFAVerifyResponse;
-
+            const { error: verifyError } = await client.auth.mfa.verify({ factorId, challengeId: challengeData.id, code }) as AuthMFAVerifyResponse;
             if (verifyError) throw verifyError;
-
             return { error: null };
         } catch (err) {
             return { error: err as Error };
         }
     };
 
-    // MFA: Verify challenge during login
-    const verifyMFAChallenge = async (code: string) => {
-        if (!supabase) return { error: new Error('Supabase client not initialized') };
-        if (!mfaFactorId) {
-            return { error: new Error('No MFA factor ID available') };
-        }
-
+    const verifyMFAChallenge = async (code: string, backend?: AuthBackend) => {
+        const client = getClient(backend);
+        if (!mfaFactorId) return { error: new Error('No MFA factor ID available') };
         try {
-            const { data: challengeData, error: challengeError } = await supabase.auth.mfa.challenge({
-                factorId: mfaFactorId,
-            }) as AuthMFAChallengeResponse;
-
+            const { data: challengeData, error: challengeError } = await client.auth.mfa.challenge({ factorId: mfaFactorId }) as AuthMFAChallengeResponse;
             if (challengeError) throw challengeError;
-
-            const { error: verifyError } = await supabase.auth.mfa.verify({
-                factorId: mfaFactorId,
-                challengeId: challengeData.id,
-                code,
-            }) as AuthMFAVerifyResponse;
-
+            const { error: verifyError } = await client.auth.mfa.verify({ factorId: mfaFactorId, challengeId: challengeData.id, code }) as AuthMFAVerifyResponse;
             if (verifyError) throw verifyError;
-
             setMfaRequired(false);
             setMfaFactorId(null);
-
             return { error: null };
         } catch (err) {
             return { error: err as Error };
         }
     };
 
-    // MFA: Unenroll a factor
-    const unenrollMFA = async (factorId: string) => {
-        if (!supabase) return { error: new Error('Supabase client not initialized') };
+    const unenrollMFA = async (factorId: string, backend?: AuthBackend) => {
+        const client = getClient(backend);
         try {
-            const { error } = await supabase.auth.mfa.unenroll({ factorId });
+            const { error } = await client.auth.mfa.unenroll({ factorId });
             if (error) throw error;
             return { error: null };
         } catch (err) {
@@ -241,11 +291,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
     };
 
-    // MFA: Get all enrolled factors
-    const getMFAFactors = async () => {
-        if (!supabase) return { factors: [], error: new Error('Supabase client not initialized') };
+    const getMFAFactors = async (backend?: AuthBackend) => {
+        const client = getClient(backend);
         try {
-            const { data, error } = await supabase.auth.mfa.listFactors();
+            const { data, error } = await client.auth.mfa.listFactors();
             if (error) throw error;
             return { factors: data.totp || [], error: null };
         } catch (err) {
@@ -253,11 +302,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
     };
 
-    // MFA: Check if user has MFA enabled
-    const hasMFAEnabled = async () => {
-        if (!supabase) return false;
+    const hasMFAEnabled = async (backend?: AuthBackend) => {
+        const client = getClient(backend);
         try {
-            const { data } = await supabase.auth.mfa.listFactors();
+            const { data } = await client.auth.mfa.listFactors();
             return (data?.totp?.length ?? 0) > 0;
         } catch {
             return false;
@@ -268,6 +316,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         user,
         session,
         loading,
+        activeBackend,
+        shopUser,
+        beeyieldUser,
+        cebaUser,
         mfaRequired,
         mfaFactorId,
         signIn,

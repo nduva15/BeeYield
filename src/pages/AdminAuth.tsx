@@ -1,12 +1,15 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent } from '@/components/ui/card';
 import LoginForm from '@/components/auth/LoginForm';
+import RegisterForm from '@/components/auth/RegisterForm';
 import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
-import { Shield, Lock, LogIn, Loader2 } from 'lucide-react';
+import { Shield, Lock, LogIn, Loader2, UserPlus } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
-type AuthMode = 'login' | 'forgot-password';
+type AuthMode = 'login' | 'register' | 'forgot-password';
 
 const AdminAuth = () => {
     const { user, loading } = useAuth();
@@ -26,8 +29,6 @@ const AdminAuth = () => {
             if (isAdmin) {
                 navigate(redirectPath);
             }
-            // If user exists but is NOT admin, we simply stay on this page 
-            // and let them log in via the form (which will overwrite the session)
         }
     }, [user, loading, navigate, redirectPath]);
 
@@ -54,11 +55,11 @@ const AdminAuth = () => {
                         <Shield className="h-10 w-10 text-primary" />
                     </div>
                     <h1 className="text-4xl font-black text-white tracking-tightest leading-none uppercase">
-                        BeeYield <span className="text-primary">Admin Portal</span>
+                        CEBA <span className="text-primary">Admin Portal</span>
                     </h1>
                 </div>
 
-                {/* Auth Mode Selector */}
+                {/* Auth Card */}
                 <Card className="border-none glass sm:glass-dark shadow-2xl rounded-[2.5rem] overflow-hidden border border-white/5">
                     <CardContent className="pt-6 pb-8 px-8">
                         {/* Login Form */}
@@ -70,9 +71,26 @@ const AdminAuth = () => {
                                 <LoginForm
                                     variant="admin"
                                     onSuccess={() => navigate(redirectPath)}
-                                    // Remove registration switch to prevent public signups
-                                    onSwitchToRegister={() => { }}
+                                    onSwitchToRegister={() => setAuthMode('register')}
                                     onForgotPassword={() => setAuthMode('forgot-password')}
+                                />
+                            </div>
+                        )}
+
+                        {/* Register Form */}
+                        {authMode === 'register' && (
+                            <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+                                <div className="mb-6 flex items-center justify-center gap-2 text-primary font-bold uppercase tracking-widest text-sm">
+                                    <UserPlus className="w-4 h-4" /> Admin Registration
+                                </div>
+                                <RegisterForm
+                                    variant="admin"
+                                    defaultRole="admin"
+                                    onSuccess={() => {
+                                        toast.success("Registration successful! You can now log in.");
+                                        setAuthMode('login');
+                                    }}
+                                    onSwitchToLogin={() => setAuthMode('login')}
                                 />
                             </div>
                         )}
@@ -97,7 +115,7 @@ const AdminAuth = () => {
                         <Lock className="h-3 w-3" /> Back to Home
                     </button>
                     <p className="mt-4 text-xs text-muted-foreground/50 uppercase tracking-widest font-bold">
-                        Secure Admin Login
+                        Secure Access Protocol
                     </p>
                 </div>
             </div>

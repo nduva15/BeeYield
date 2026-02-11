@@ -139,7 +139,7 @@ const Authentication: React.FC = () => {
                         <div className="space-y-4">
                             <h2 className="text-4xl lg:text-5xl font-black tracking-tightest leading-tight">
                                 One Account. <br />
-                                <span className="text-primary italic">Unlimited</span> Intelligence.
+                                <span className="text-primary">Unlimited</span> Access.
                             </h2>
                             <p className="text-xl text-muted-foreground font-medium leading-relaxed">
                                 Join the world's most advanced pollination network. Get data-driven insights, secure harvests, and premium honey.
@@ -263,9 +263,9 @@ const Authentication: React.FC = () => {
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-muted-foreground text-xs font-medium">
                     <p>© 2026 BeeYield Professional Pollination. All rights reserved.</p>
                     <div className="flex gap-6">
-                        <a href="#" className="hover:text-primary transition-colors">Privacy Protocol</a>
-                        <a href="#" className="hover:text-primary transition-colors">Terms of Engagement</a>
-                        <a href="#" className="hover:text-primary transition-colors">Support Matrix</a>
+                        <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
+                        <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>
+                        <a href="#" className="hover:text-primary transition-colors">Support</a>
                     </div>
                 </div>
             </div>

@@ -5,17 +5,17 @@ from typing import Optional
 from app.core.config import settings
 
 HONEY_BLURB_BY_FLORAL: dict[str, str] = {
-    "acacia": "Harvested from acacia groves, this honey offers delicate floral notes and a mild, sweet character.",
-    "multi-flower": "A complex blend of wildflowers from our apiaries. Each jar captures the diversity of the season.",
-    "multiflower": "A complex blend of wildflowers from our apiaries. Each jar captures the diversity of the season.",
-    "polyfloral": "A complex blend of wildflowers from our apiaries. Each jar captures the diversity of the season.",
-    "forest": "From forest margins and wild flora. Deep, robust flavor with hints of woodland herbs.",
-    "wildflower": "A blend of meadow and hedgerow blooms. Naturally variable and full of character.",
-    "eucalyptus": "Distinctive, with a slight menthol note. Often from Mediterranean or Australian sources.",
-    "lavender": "Floral and aromatic, with the calming scent of lavender fields.",
-    "sunflower": "Golden and sunny. Mild sweetness from sunflower pollination.",
-    "clover": "Classic and mild. Sweet, light, and widely loved.",
-    "buckwheat": "Dark and full-bodied, with malty notes. A strong character honey.",
+    "acacia": "Delicate and water-white, harvested from sun-drenched acacia groves. A mild, elegant sweetness for the discerning palate.",
+    "multi-flower": "A vibrant tapestry of local flora, cold-extracted to preserve its complex, multi-layered floral notes.",
+    "multiflower": "A vibrant tapestry of local flora, cold-extracted to preserve its complex, multi-layered floral notes.",
+    "polyfloral": "A vibrant tapestry of local flora, cold-extracted to preserve its complex, multi-layered floral notes.",
+    "forest": "Rich, dark, and robust. Harvested from ancient woodland margins, offering deep notes of malt and wild herbs.",
+    "wildflower": "Naturally variable and full of life. A classic meadow harvest that captures the essence of the season.",
+    "eucalyptus": "Bold and clean with a refreshing herbal finish. Truly unique character from native nectar sources.",
+    "lavender": "Exquisitely aromatic, carrying the soft floral scent and calming essence of blooming lavender fields.",
+    "sunflower": "Bright and buttery with a velvety texture. Naturally high in glucose, perfect for morning pastries.",
+    "clover": "Silky smooth and gently sweet. A timeless delicate classic favored for its clean finishing notes.",
+    "buckwheat": "A masterstroke of intensity. Earthy and malty with a powerful aromatic profile and deep amber hue.",
 }
 
 
@@ -245,16 +245,41 @@ def generate_advanced_label_pdf(payload: dict) -> bytes:
     c.setFillColor(text_color)
     c.drawString(8 * mm, height - 17 * mm, honey_type)
 
-    # Main Info Section (Producer, Address, Marketing)
+    # Marketing Blurb
+    marketing = payload.get("marketingNote") or ""
+    if marketing:
+        c.setFont("Helvetica-Oblique", 7)
+        c.setFillColor(text_color)
+        # Simple wrapping
+        words = marketing.split()
+        lines = []
+        curr_line = []
+        for w in words:
+            if len(" ".join(curr_line + [w])) < 50:
+                curr_line.append(w)
+            else:
+                lines.append(" ".join(curr_line))
+                curr_line = [w]
+        lines.append(" ".join(curr_line))
+        
+        y_text = height - 25 * mm
+        for line in lines[:3]: # Max 3 lines
+            c.drawString(8 * mm, y_text, line)
+            y_text -= 3 * mm
+
+    # Main Info Section (Producer, Address)
     y_pos = 20 * mm
-    c.setStrokeColor(text_color)
+    c.setStrokeColor(accent_color)
+    c.setAlpha(0.3)
     c.setLineWidth(0.2)
     c.line(8 * mm, y_pos, width - 8 * mm, y_pos)
+    c.setAlpha(1.0)
     
     y_pos -= 4 * mm
     c.setFont("Helvetica-Bold", 7)
     producer = payload.get("producer") or ""
-    c.drawString(8 * mm, y_pos, producer)
+    c.setFillColor(text_color)
+    c.drawString(8 * mm, y_pos, producer.upper())
     
     y_pos -= 3 * mm
     c.setFont("Helvetica", 6)
@@ -267,13 +292,17 @@ def generate_advanced_label_pdf(payload: dict) -> bytes:
 
     # Weight (Highlighted)
     weight_str = f"{payload.get('weight') or '500'}{payload.get('weightUnit') or 'g'}"
-    c.setFont("Helvetica-Bold", 14)
+    c.setFont("Helvetica-Bold", 16)
+    c.setFillColor(text_color)
     c.drawRightString(width - 8 * mm, 14 * mm, weight_str)
+    c.setFont("Helvetica-Bold", 6)
+    c.drawRightString(width - 8 * mm, 11 * mm, "NET WEIGHT")
 
     # Batch & Best Before (Small text at bottom)
     if payload.get("showBatchNumber") or payload.get("showBestBefore"):
         y_bottom = 8 * mm
-        c.setFont("Helvetica", 5)
+        c.setFont("Helvetica-Bold", 5)
+        c.setFillColor(text_color)
         if payload.get("showBatchNumber"):
             batch = payload.get("batchNumber") or "N/A"
             c.drawString(8 * mm, y_bottom, f"LOT: {batch}")

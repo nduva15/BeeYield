@@ -33,11 +33,25 @@ const LoginForm: React.FC<LoginFormProps> = ({
         e.preventDefault();
         setLoading(true);
 
-        const { error, mfaRequired: needsMFA } = await signIn(email, password);
+        // Map variant to backend
+        const backendMap: Record<string, 'shop' | 'beeyield' | 'ceba'> = {
+            'shop': 'shop',
+            'professional': 'beeyield',
+            'admin': 'ceba'
+        };
+        const activeBackend = backendMap[variant] || 'shop';
+
+        const { error, mfaRequired: needsMFA } = await signIn(email, password, activeBackend);
 
         // Fetch user regardless for metadata checks
         const supabaseModule = await import('@/lib/supabase');
-        const supabaseInstance = supabaseModule.supabase;
+        // Select the right instances based on backend
+        const supabaseInstances = {
+            'shop': supabaseModule.supabaseShop,
+            'beeyield': supabaseModule.supabaseBeeYield,
+            'ceba': supabaseModule.supabaseCEBA
+        };
+        const supabaseInstance = supabaseInstances[activeBackend];
 
         if (!error && !needsMFA && supabaseInstance) {
             const { data } = await supabaseInstance.auth.getUser();
@@ -50,7 +64,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
                 const isAdmin = userRole === 'admin' || userRole === 'super_admin' || isSuperAdminEmail;
 
                 if (!isAdmin) {
-                    await signOut();
+                    await signOut(activeBackend);
                     toast.error('Access Denied', {
                         description: 'Restricted access.'
                     });
@@ -60,14 +74,14 @@ const LoginForm: React.FC<LoginFormProps> = ({
             }
 
             // 2. Prevent Admins from using the Shop login (if variant is shop)
-            // This satisfies the "no connections" / "keep them different" requirement
+            // This satisfy the "no connections" / "keep them different" requirement
             if (variant === 'shop') {
                 const userRole = loggedInUser?.user_metadata?.role || 'user';
                 const isSuperAdminEmail = ['timothynduva349@gmail.com'].includes(loggedInUser?.email?.toLowerCase() || '');
                 const isAdmin = userRole === 'admin' || userRole === 'super_admin' || isSuperAdminEmail;
 
                 if (isAdmin) {
-                    await signOut();
+                    await signOut(activeBackend);
                     toast.error('Admin Account Detected', {
                         description: 'Please use the Admin Dashboard to manage your account.'
                     });
@@ -86,7 +100,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
                 );
 
                 if (missingMetadata) {
-                    await signOut();
+                    await signOut(activeBackend);
                     toast.error('Account Required', {
                         description: 'No account found for this email. Please Sign Up to continue.'
                     });
@@ -96,7 +110,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
             }
 
             const fullName = (loggedInUser?.user_metadata?.full_name || loggedInUser?.user_metadata?.name) ||
-                (loggedInUser?.user_metadata?.first_name ? `${loggedInUser.user_metadata.first_name} ${loggedInUser.user_metadata.last_name || ''}`.trim() : null) ||
+                (loggedInUser?.user_metadata?.first_name ? `${loggedInUser.first_name} ${loggedInUser.last_name || ''}`.trim() : null) ||
                 'User';
 
             toast.success(`Welcome ${fullName}! 🎉`);
@@ -117,13 +131,25 @@ const LoginForm: React.FC<LoginFormProps> = ({
         e.preventDefault();
         setLoading(true);
 
-        const { error } = await verifyMFAChallenge(mfaCode);
+        const backendMap: Record<string, 'shop' | 'beeyield' | 'ceba'> = {
+            'shop': 'shop',
+            'professional': 'beeyield',
+            'admin': 'ceba'
+        };
+        const activeBackend = backendMap[variant] || 'shop';
+
+        const { error } = await verifyMFAChallenge(mfaCode, activeBackend);
 
         if (error) {
             toast.error('Verification failed', { description: error.message });
         } else {
             const supabaseModule = await import('@/lib/supabase');
-            const supabaseInstance = supabaseModule.supabase;
+            const supabaseInstances = {
+                'shop': supabaseModule.supabaseShop,
+                'beeyield': supabaseModule.supabaseBeeYield,
+                'ceba': supabaseModule.supabaseCEBA
+            };
+            const supabaseInstance = supabaseInstances[activeBackend];
 
             if (supabaseInstance) {
                 const { data: { user: loggedInUser } } = await supabaseInstance.auth.getUser();
@@ -139,6 +165,14 @@ const LoginForm: React.FC<LoginFormProps> = ({
 
     const handleGoogleSignIn = async () => {
         setGoogleLoading(true);
+
+        const backendMap: Record<string, 'shop' | 'beeyield' | 'ceba'> = {
+            'shop': 'shop',
+            'professional': 'beeyield',
+            'admin': 'ceba'
+        };
+        const activeBackend = backendMap[variant] || 'shop';
+
         // Store current path and metadata requirements so callback knows where to return and what to verify
         localStorage.setItem('authReturnTo', window.location.pathname);
         if (requireMetadata) {
@@ -147,7 +181,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
             localStorage.removeItem('authRequireMetadata');
         }
 
-        const { error } = await signInWithGoogle();
+        const { error } = await signInWithGoogle(undefined, activeBackend);
         if (error) {
             toast.error('Google sign-in failed', { description: error.message });
             setGoogleLoading(false);

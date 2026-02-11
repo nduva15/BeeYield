@@ -221,7 +221,7 @@ const HeroSection = () => {
               Verified Quality & Source
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-neutral-900 mb-6 tracking-tighter leading-none">
-              BeeYield <span className="text-amber-600 italic">Naturally Sourced</span> <br />
+              BeeYield <span className="text-amber-600">Naturally Sourced</span> <br />
               Direct from <span className="text-green-700">Kibwezi</span>
             </h1>
             <p className="text-sm md:text-base text-neutral-600 mb-4 max-w-md mx-auto lg:mx-0">
@@ -312,7 +312,7 @@ const FeaturedProductsSection = ({ handleAddToCart, formatPrice, products }: {
               Purest Gold
             </Badge>
             <h2 className="text-3xl md:text-5xl font-black text-neutral-900 leading-none tracking-tighter uppercase">
-              Featured <span className="text-amber-600 italic">Blossoms</span>
+              Featured <span className="text-amber-600">Blossoms</span>
             </h2>
           </div>
           <Button
@@ -355,6 +355,7 @@ const FeaturedProductsSection = ({ handleAddToCart, formatPrice, products }: {
                     Buy Now
                   </Button>
                   <button
+                    aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleWishlist({
@@ -443,6 +444,7 @@ const TestimonialSection = () => {
             {testimonials.map((_, index) => (
               <button
                 key={index}
+                aria-label={`Go to testimonial ${index + 1}`}
                 onClick={() => setCurrentIndex(index)}
                 className={`w-2.5 h-2.5 rounded-full transition-all ${index === currentIndex ? "bg-green-600 w-8" : "bg-neutral-300 hover:bg-neutral-400"
                   }`}
@@ -483,7 +485,7 @@ const AboutSection = () => {
 
           <div>
             <h2 className="text-3xl md:text-4xl font-black text-neutral-900 mb-6 uppercase tracking-tighter">
-              The Most Trusted <span className="text-green-700 italic">Honey</span> in Makueni County
+              The Most Trusted <span className="text-green-700">Honey</span> in Makueni County
             </h2>
             <p className="text-neutral-600 leading-relaxed mb-4 text-sm md:text-base">
               BeeYield was founded with a singular vision: to revolutionize beekeeping through technology and radical transparency. Our journey began in the pristine landscapes of Kenya, where we saw the need for a more sustainable approach. Today, we are proud to lead with our <strong>50/50 Harvest Promise</strong>—ensuring that for every drop we take, enough is left for the bees to thrive and pollinate our future.
@@ -727,7 +729,7 @@ const NewsletterSection = () => {
         <div className="max-w-sm mx-auto">
           <div className="bg-white rounded-2xl p-8 shadow-sm border border-neutral-200 text-center relative">
             {/* Close button decoration */}
-            <button className="absolute top-4 right-4 text-neutral-300 hover:text-neutral-500">
+            <button aria-label="Close" className="absolute top-4 right-4 text-neutral-300 hover:text-neutral-500">
               <span className="text-lg">&times;</span>
             </button>
 
@@ -793,7 +795,7 @@ const AllProductsSection = ({
             Pure Kibwezi Gold
           </Badge>
           <h2 className="text-3xl md:text-5xl font-black text-neutral-900 leading-none tracking-tighter uppercase mb-4">
-            Our Full <span className="text-green-700 italic">Honey</span> Collection
+            Our Full <span className="text-green-700">Honey</span> Collection
           </h2>
           <p className="text-neutral-500 text-sm max-w-xl mx-auto font-medium">
             From medicinal Neem to delicate Acacia, discover our range of ethically harvested, 100% raw honey.

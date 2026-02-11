@@ -95,7 +95,7 @@ const KanbanColumn = ({
                 ))}
 
                 {posts.length === 0 && (
-                    <div className="h-24 flex items-center justify-center text-sm text-muted-foreground italic border-2 border-dashed rounded-lg">
+                    <div className="h-24 flex items-center justify-center text-sm text-muted-foreground border-2 border-dashed rounded-lg">
                         Empty
                     </div>
                 )}
