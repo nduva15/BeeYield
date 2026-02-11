@@ -60,10 +60,10 @@ const PollinationServices = () => {
             link: "/diseases"
         },
         {
-            icon: BarChart3,
-            title: "Bio-Security Alerts",
-            description: "Instant notifications when environmental threats or hive health dips below safety thresholds.",
-            link: "/diseases"
+            icon: Target,
+            title: "Precision Pollination",
+            description: "We bring a complete ecosystem of technology, expertise, and accountability that transforms your pollination from a gamble into a guarantee.",
+            link: "/precision-pollination"
         }
     ];
 

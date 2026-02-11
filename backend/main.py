@@ -32,10 +32,8 @@ async def startup_event():
     """
     Initialize the BeeYield AI infrastructure on startup:
     1. Start the 12-hour knowledge sync scheduler
-    2. Initialize Qdrant vector store (if available)
+    2. Vector store is lazy-initialized on first AI request (not at startup)
     """
-    import asyncio
-    
     # 1. Start the Knowledge Sync Scheduler (12-hour interval)
     try:
         from app.services.sync_scheduler import KnowledgeSyncScheduler
@@ -44,32 +42,37 @@ async def startup_event():
     except Exception as e:
         print(f"[STARTUP] Scheduler error (non-fatal): {e}")
     
-    # 2. Initialize Qdrant Vector Store in background (don't block startup)
-    async def _init_vector_store():
-        try:
-            from app.services.vector_store import QdrantVectorStore
-            init_result = await QdrantVectorStore.initialize()
-            print(f"[STARTUP] Vector store: {init_result}")
-        except ImportError:
-            print("[STARTUP] Qdrant not installed - using JSON search")
-        except Exception as e:
-            print(f"[STARTUP] Vector store error (non-fatal): {e}")
-    
-    asyncio.create_task(_init_vector_store())
+    # 2. Vector store (Qdrant + BERT model) is intentionally NOT loaded at startup
+    #    It will be lazy-initialized when the AI assistant is first used.
+    #    Loading the BERT model is CPU-intensive and blocks all requests due to Python's GIL.
+    print("[STARTUP] Vector store will be lazy-loaded on first AI request")
+    print("[STARTUP] BeeYield API ready to serve requests")
 
 
 @app.get("/")
 def read_root():
-    from app.db.supabase_db import get_supabase
-    from app.db.clickhouse_db import ClickHouseService
+    from app.db.supabase_db import get_client
+    from app.core.config import settings as cfg
     
-    print("DEBUG: Checking Supabase status...")
-    supabase_status = "connected" if get_supabase() is not None else "not configured"
+    # Quick Supabase health check using httpx (never hangs)
+    supabase_status = "not configured"
+    try:
+        if cfg.SUPABASE_URL and cfg.SUPABASE_KEY:
+            client = get_client()
+            resp = client.get("/", params={"select": "count"}, timeout=5.0)
+            supabase_status = "connected" if resp.status_code in (200, 406) else f"error ({resp.status_code})"
+    except Exception as e:
+        supabase_status = f"error: {str(e)[:50]}"
     
-    print("DEBUG: Checking ClickHouse status...")
-    clickhouse_status = "connected" if ClickHouseService.get_client() is not None else "not configured"
+    # ClickHouse: only check if host is configured
+    clickhouse_status = "not configured"
+    if cfg.CLICKHOUSE_HOST:
+        try:
+            from app.db.clickhouse_db import ClickHouseService
+            clickhouse_status = "connected" if ClickHouseService.get_client() is not None else "connection failed"
+        except Exception:
+            clickhouse_status = "error"
     
-    print("DEBUG: Root endpoint request complete.")
     return {
         "message": f"Welcome to {settings.PROJECT_NAME} API",
         "docs": "/docs",

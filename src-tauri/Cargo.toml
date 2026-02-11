@@ -66,6 +66,16 @@ uuid = { version = "1", features = ["v4", "serde"] }
 default = ["custom-protocol"]
 custom-protocol = ["tauri/custom-protocol"]
 
+# ── Dev Profile (fast iteration) ───────────────────────────
+[profile.dev]
+incremental = true   # Only recompile what changed
+opt-level = 0        # Fastest compile time
+debug = 0            # Disable debug symbols — massive speedup
+
+[profile.dev.package."*"]
+opt-level = 3        # Keep dependencies (hnsw_rs, reqwest, etc.) optimized
+
+# ── Release Profile ───────────────────────────────────────
 [profile.release]
 lto = true           # Link-Time Optimization — smaller binary
 codegen-units = 1    # Single codegen unit — max optimization

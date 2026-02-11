@@ -17,6 +17,10 @@ export default defineConfig({
         host: '127.0.0.1',
         port: 5173,
         strictPort: true,
+        // Limit HMR warmup to key entry files (avoids scanning 25k+ files)
+        warmup: {
+            clientFiles: ['./src/main.tsx', './src/routes/__root.tsx'],
+        },
     },
     // Expose TAURI flag to frontend code via import.meta.env
     define: {
@@ -25,6 +29,16 @@ export default defineConfig({
     // Prevent Vite from obscuring Rust errors in Tauri dev
     clearScreen: false,
     envPrefix: ['VITE_', 'TAURI_'],
+    // Pre-bundle heavy deps so HMR doesn't re-process them
+    optimizeDeps: {
+        include: [
+            'react',
+            'react-dom',
+            '@supabase/supabase-js',
+            '@tanstack/react-query',
+            'axios',
+        ],
+    },
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './src'),

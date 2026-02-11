@@ -89,7 +89,7 @@ const BuyerDashboard = () => {
     const navigate = useNavigate();
     const [authMode, setAuthMode] = useState<AuthMode>('login');
     const [orders, setOrders] = useState<Order[]>([]);
-    const [ordersLoading, setOrdersLoading] = useState(false);
+    // Removed ordersLoading for instant load
     const [activeTab, setActiveTab] = useState('overview');
     const { items, getTotalItems, getTotalPrice, clearCart, addToCart: addToCartFromContext } = useCart() as CartContextType;
     const { items: wishlistItems, removeFromWishlist, isInWishlist } = useWishlist();
@@ -138,25 +138,31 @@ const BuyerDashboard = () => {
     });
     const [trackingOrder, setTrackingOrder] = useState<Order | null>(null);
 
-
+    const loadSuggestions = async () => {
+        try {
+            const data = await getProducts();
+            const shuffled = [...(data || [])].sort(() => 0.5 - Math.random());
+            setSuggestions(shuffled.slice(0, 4));
+        } catch (error) {
+            console.error("Failed to load suggestions:", error);
+            setSuggestions([]);
+        }
+    };
 
     const loadOrders = async () => {
         if (!user?.email) return;
-        setOrdersLoading(true);
+        // Removed setOrdersLoading for instant load
         try {
             const { getUserOrders } = await import('@/services/shopService');
             const data = await getUserOrders(user?.email || '');
             setOrders(data as unknown as Order[]);
         } catch (error) {
             console.error("Failed to load orders:", error);
-        } finally {
-            setOrdersLoading(false);
         }
     };
 
     const loadUserData = async () => {
         if (!user) return;
-
         try {
             // Load from real backend instead of just metadata
             const [savedAddresses, savedPayments] = await Promise.all([
@@ -169,12 +175,12 @@ const BuyerDashboard = () => {
         } catch (error) {
             console.error("Failed to load user data from backend:", error);
             // Fallback to metadata if backend fails
-            const meta = user.user_metadata || {};
+            const meta = user?.user_metadata || {};
             setAddresses(meta.addresses || []);
             setPaymentMethods(meta.payment_methods || []);
         }
 
-        const meta = user.user_metadata || {};
+        const meta = user?.user_metadata || {};
         // Init Profile Form
         setProfileForm({
             firstName: meta.first_name || '',
@@ -184,25 +190,42 @@ const BuyerDashboard = () => {
         });
     };
 
-
-    const loadSuggestions = async () => {
-        try {
-            const data = await getProducts();
-            const shuffled = [...(data || [])].sort(() => 0.5 - Math.random());
-            setSuggestions(shuffled.slice(0, 4));
-        } catch (error) {
-            console.error("Failed to load suggestions:", error);
-            setSuggestions([]);
-        }
-    };
-
     useEffect(() => {
-        if (user) {
-            loadOrders();
-            loadUserData();
-            loadSuggestions();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        if (!user) return;
+        // Load all dashboard data concurrently for speed
+        Promise.all([
+            import('@/services/shopService').then(m => m.getUserOrders(user.email || '')),
+            import('@/services/shopService').then(m => m.getAddresses()),
+            import('@/services/shopService').then(m => m.getPaymentMethods()),
+            getProducts()
+        ]).then(([ordersData, addressesData, paymentMethodsData, suggestionsData]) => {
+            setOrders(Array.isArray(ordersData) ? ordersData.map(o => ({
+                ...o,
+                id: typeof o.id === 'string' ? o.id : (typeof o.order_id === 'string' ? o.order_id : ''),
+                status: typeof o.status === 'string' ? o.status : '',
+                total_amount: typeof o.total_amount === 'number' ? o.total_amount : 0,
+                payment_method: typeof o.payment_method === 'string' ? o.payment_method : '',
+                created_at: typeof o.created_at === 'string' ? o.created_at : '',
+                shipping_address: typeof o.shipping_address === 'object' && o.shipping_address !== null ? o.shipping_address : {
+                    first_name: '',
+                    last_name: '',
+                    address: '',
+                    city: '',
+                    county: '',
+                    phone: ''
+                },
+                items: Array.isArray(o.items) ? o.items : []
+            })) : []);
+            setAddresses(addressesData as Address[]);
+            setPaymentMethods(paymentMethodsData as PaymentMethod[]);
+            const shuffled = [...(suggestionsData || [])].sort(() => 0.5 - Math.random());
+            setSuggestions(shuffled.slice(0, 4));
+        }).catch(() => {
+            setOrders([]);
+            setAddresses([]);
+            setPaymentMethods([]);
+            setSuggestions([]);
+        });
     }, [user]);
 
 
@@ -383,7 +406,7 @@ const BuyerDashboard = () => {
                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div>
-                                <h1 className="text-4xl font-black tracking-tightest">Dashboard <span className="text-primary">Overview</span></h1>
+                                <h1 className="text-4xl font-black tracking-tightest">Dashboard <span className="text-primary italic">Overview</span></h1>
                                 <p className="text-muted-foreground font-medium">Welcome back, {profileForm.firstName || 'Customer'}</p>
                             </div>
                             <Button onClick={() => navigate('/shop')} className="rounded-full px-8 shadow-glow">
@@ -418,7 +441,7 @@ const BuyerDashboard = () => {
                         <Dialog open={isTrackingOpen} onOpenChange={setIsTrackingOpen}>
                             <DialogContent className="max-w-md rounded-3xl">
                                 <DialogHeader>
-                                    <DialogTitle className="text-2xl font-black">Shipment <span className="text-primary">Tracking</span></DialogTitle>
+                                    <DialogTitle className="text-2xl font-black">Shipment <span className="text-primary italic">Tracking</span></DialogTitle>
                                     <DialogDescription>
                                         Order {trackingOrder?.order_number || trackingOrder?.id}
                                     </DialogDescription>
@@ -530,9 +553,7 @@ const BuyerDashboard = () => {
                     <div className="space-y-6 animate-in fade-in duration-500">
                         <div className="flex justify-between items-center">
                             <h2 className="text-2xl font-black tracking-tight">Order History</h2>
-                            <Button size="sm" variant="outline" className="rounded-full" onClick={loadOrders} disabled={ordersLoading}>
-                                <RefreshCw className={`h-4 w-4 mr-2 ${ordersLoading ? 'animate-spin' : ''}`} /> Refresh
-                            </Button>
+                            {/* Removed manual refresh button for orders */}
                         </div>
 
                         {orders.length === 0 ? (
@@ -659,7 +680,7 @@ const BuyerDashboard = () => {
                                             <Input id="phone" name="phone" required placeholder="+254..." />
                                         </div>
                                         <div className="md:col-span-2 flex items-center gap-2">
-                                            <input type="checkbox" id="is_default" name="is_default" aria-label="Set as default address" className="w-4 h-4" />
+                                            <input type="checkbox" id="is_default" name="is_default" className="w-4 h-4" title="Set this address as default" />
                                             <Label htmlFor="is_default">Set as default address</Label>
                                         </div>
                                         <div className="md:col-span-2 pt-4">
@@ -768,17 +789,17 @@ const BuyerDashboard = () => {
                                     <div className="absolute top-6 left-6 w-10 h-8 rounded bg-gradient-to-br from-amber-300 to-amber-500 opacity-80" />
                                     <CardContent className="p-6 pt-16 relative">
                                         <div className="absolute top-4 right-4">
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="text-white/50 hover:text-white hover:bg-white/10"
+                                            <Button 
+                                                variant="ghost" 
+                                                size="icon" 
+                                                className="text-white/50 hover:text-white hover:bg-white/10" 
                                                 onClick={() => handleDeletePaymentMethod(pm.id)}
                                             >
                                                 <XCircle className="h-5 w-5" />
                                             </Button>
                                         </div>
                                         <div className="mb-6">
-                                            <p
+                                            <p 
                                                 className="text-2xl font-mono tracking-[0.3em]"
                                                 aria-label={`Card ending in ${pm.last4}`}
                                             >
@@ -820,14 +841,18 @@ const BuyerDashboard = () => {
                 return (
                     <div className="space-y-8 animate-in fade-in duration-500">
                         <div>
-                            <h2 className="text-4xl font-black tracking-tightest">Curated <span className="text-primary">Picks</span></h2>
+                            <h2 className="text-4xl font-black tracking-tightest">Curated <span className="text-primary italic">Picks</span></h2>
                             <p className="text-muted-foreground font-medium">Based on your interest in precision apiculture</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             {suggestions.map((product) => (
                                 <Card key={product.id} className="border-none shadow-premium rounded-[2rem] overflow-hidden group">
                                     <div className="aspect-square bg-muted relative overflow-hidden">
-                                        <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                        <img
+                                            src={product.images[0]}
+                                            alt={product.name ? `${product.name} product image` : 'Honey product image'}
+                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                        />
                                         <Badge className="absolute top-4 left-4 rounded-full">{product.badge || 'New'}</Badge>
                                     </div>
                                     <CardContent className="p-6">
@@ -854,31 +879,39 @@ const BuyerDashboard = () => {
                             <CardContent className="p-6 space-y-4">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label>First Name</Label>
+                                        <Label htmlFor="profile_first_name">First Name</Label>
                                         <Input
+                                            id="profile_first_name"
+                                            name="profile_first_name"
                                             value={profileForm.firstName}
                                             onChange={(e) => setProfileForm({ ...profileForm, firstName: e.target.value })}
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label>Last Name</Label>
+                                        <Label htmlFor="profile_last_name">Last Name</Label>
                                         <Input
+                                            id="profile_last_name"
+                                            name="profile_last_name"
                                             value={profileForm.lastName}
                                             onChange={(e) => setProfileForm({ ...profileForm, lastName: e.target.value })}
                                         />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Email Address</Label>
+                                    <Label htmlFor="profile_email">Email Address</Label>
                                     <Input
+                                        id="profile_email"
+                                        name="profile_email"
                                         value={profileForm.email}
                                         onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
                                         type="email"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Phone Number</Label>
+                                    <Label htmlFor="profile_phone">Phone Number</Label>
                                     <Input
+                                        id="profile_phone"
+                                        name="profile_phone"
                                         value={profileForm.phone}
                                         onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
                                         type="tel"
@@ -895,7 +928,7 @@ const BuyerDashboard = () => {
                 return (
                     <div className="space-y-8 animate-in fade-in duration-500">
                         <div>
-                            <h2 className="text-4xl font-black tracking-tightest">My <span className="text-primary">Favorites</span></h2>
+                            <h2 className="text-4xl font-black tracking-tightest">My <span className="text-primary italic">Favorites</span></h2>
                             <p className="text-muted-foreground font-medium">Items you've saved for later</p>
                         </div>
 
@@ -911,14 +944,18 @@ const BuyerDashboard = () => {
                                 {wishlistItems.map((item) => (
                                     <Card key={item.id} className="border-none shadow-premium rounded-[2rem] overflow-hidden group relative">
                                         <button
-                                            aria-label="Remove from wishlist"
                                             onClick={() => removeFromWishlist(item.id)}
+                                            aria-label={`Remove ${item.name} from favorites`}
                                             className="absolute top-4 right-4 z-10 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm hover:bg-red-50 hover:text-red-500 transition-colors"
                                         >
                                             <Trash2 className="w-4 h-4" />
                                         </button>
                                         <div className="aspect-square bg-muted relative overflow-hidden">
-                                            <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                            <img
+                                                src={item.image}
+                                                alt={item.name ? `${item.name} product image` : 'Honey product image'}
+                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                            />
                                             {item.badge && <Badge className="absolute top-4 left-4 rounded-full">{item.badge}</Badge>}
                                         </div>
                                         <CardContent className="p-6">
@@ -946,7 +983,7 @@ const BuyerDashboard = () => {
                 return (
                     <div className="space-y-8 animate-in fade-in duration-500">
                         <div>
-                            <h2 className="text-4xl font-black tracking-tightest">Support <span className="text-primary">Center</span></h2>
+                            <h2 className="text-4xl font-black tracking-tightest">Support <span className="text-primary italic">Center</span></h2>
                             <p className="text-muted-foreground font-medium">How can we help you today?</p>
                         </div>
                         <div className="grid md:grid-cols-3 gap-6">
@@ -1023,7 +1060,7 @@ const BuyerDashboard = () => {
                 return (
                     <div className="space-y-8 animate-in fade-in duration-500">
                         <div>
-                            <h2 className="text-4xl font-black tracking-tightest">Secure <span className="text-primary">Checkout</span></h2>
+                            <h2 className="text-4xl font-black tracking-tightest">Secure <span className="text-primary italic">Checkout</span></h2>
                             <p className="text-muted-foreground font-medium">Complete your premium order</p>
                         </div>
 
@@ -1252,30 +1289,42 @@ const BuyerDashboard = () => {
     };
 
     if (authLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <Loader2 className="h-10 w-10 animate-spin text-primary" />
-            </div>
-        );
+        // Show nothing, let data load instantly
+        return null;
     }
 
     if (!user) {
+        // Show login/signup modal for BeeYield dashboard
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-background">
-                <div className="max-w-md w-full text-center space-y-6">
-                    <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto border-2 border-primary/20">
-                        <ShoppingBag className="h-10 w-10 text-primary" />
+            <div className="min-h-screen flex items-center justify-center bg-background">
+                <div className="max-w-md w-full p-6 rounded-2xl shadow-lg bg-white dark:bg-zinc-900">
+                    <div className="flex justify-center mb-6">
+                        <img src="/logo.png" alt="BeeYield Logo" className="w-16 h-16" />
                     </div>
-                    <div className="space-y-2">
-                        <h1 className="text-3xl font-black">Account Required</h1>
-                        <p className="text-muted-foreground font-medium">To view your orders, wallet, and saved addresses, please sign in to your shop account.</p>
+                    <div className="mb-4 text-center">
+                        <h1 className="text-2xl font-black">BeeYield Dashboard Login</h1>
+                        <p className="text-muted-foreground">Sign in or create an account to access your hives, orders, and analytics.</p>
                     </div>
-                    <Button onClick={() => navigate('/login')} className="w-full h-12 text-lg font-bold rounded-xl shadow-glow">
-                        <LogIn className="w-5 h-5 mr-2" /> Go to Login Dashboard
-                    </Button>
-                    <Button variant="ghost" onClick={() => navigate('/shop')} className="w-full text-muted-foreground">
-                        Continue as Guest
-                    </Button>
+                    {authMode === 'login' && (
+                        <LoginForm
+                            variant="professional"
+                            onSuccess={() => window.location.reload()}
+                            onSwitchToRegister={() => setAuthMode('register')}
+                        />
+                    )}
+                    {authMode === 'register' && (
+                        <RegisterForm
+                            variant="professional"
+                            onSuccess={() => setAuthMode('login')}
+                            onSwitchToLogin={() => setAuthMode('login')}
+                        />
+                    )}
+                    {authMode === 'forgot-password' && (
+                        <ForgotPasswordForm
+                            onSuccess={() => setAuthMode('login')}
+                            onSwitchToLogin={() => setAuthMode('login')}
+                        />
+                    )}
                 </div>
             </div>
         );
@@ -1296,7 +1345,7 @@ const BuyerDashboard = () => {
             <Dialog open={isTrackingOpen} onOpenChange={setIsTrackingOpen}>
                 <DialogContent className="max-w-md rounded-3xl">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-black">Shipment <span className="text-primary">Tracking</span></DialogTitle>
+                        <DialogTitle className="text-2xl font-black">Shipment <span className="text-primary italic">Tracking</span></DialogTitle>
                         <DialogDescription>
                             Order {trackingOrder?.order_number || trackingOrder?.id}
                         </DialogDescription>

@@ -71,7 +71,9 @@ impl OpenAIClient {
                     content: "You are a senior report writer for BeeYield, \
                               a honey traceability and precision pollination \
                               platform serving farmers in Kibwezi, Kenya. \
-                              Write clear, professional, data-driven reports."
+                              Write clear, professional, data-driven repor
+                              |
+                              ts."
                         .into(),
                 },
                 ChatMessage {

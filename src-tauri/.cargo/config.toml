@@ -1,0 +1,13 @@
+# ── Linker Acceleration ────────────────────────────────────
+# Windows: uses the default MSVC linker (mold/zld are Linux/macOS only)
+# Uncomment the appropriate section for your OS:
+
+# [target.x86_64-unknown-linux-gnu]
+# rustflags = ["-C", "link-arg=-fuse-ld=mold"]
+
+# [target.aarch64-apple-darwin]
+# rustflags = ["-C", "link-arg=-fuse-ld=/usr/local/bin/zld"]
+
+# ── Faster builds on Windows ──────────────────────────────
+[build]
+rustflags = ["-C", "target-cpu=native"]

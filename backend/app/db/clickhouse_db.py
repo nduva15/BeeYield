@@ -14,11 +14,13 @@ class ClickHouseService:
     @classmethod
     def get_client(cls, database: Optional[str] = None):
         """Get or create ClickHouse client connection"""
-        # If a specific database is requested, we bypass the singleton for that call
-        # or we just re-initialize if the database is different.
-        # For initialization purposes, it's better to allow passing the database.
-        
         target_db = database if database is not None else settings.CLICKHOUSE_DATABASE
+        
+        # Fail fast if not configured
+        if not settings.CLICKHOUSE_HOST:
+            if database is None:
+                cls._client = None
+            return None
         
         try:
             client = clickhouse_connect.get_client(
@@ -28,7 +30,7 @@ class ClickHouseService:
                 password=settings.CLICKHOUSE_PASSWORD,
                 database=target_db,
                 secure=settings.CLICKHOUSE_SECURE,
-                connect_timeout=10
+                connect_timeout=5
             )
             if database is None:
                 cls._client = client
