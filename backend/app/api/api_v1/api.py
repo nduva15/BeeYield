@@ -7,7 +7,7 @@ from app.api.api_v1.endpoints import (
     forms, shop, blog, careers, media, 
     services, jobs, analytics, notes, admin, iot, ai,
     admin_extended, meters, beeyield, pollination, inspections, reports,
-    ai_assistant, settings, payments, labels
+    ai_assistant, ai_admin, settings, payments, labels, streaming
 )
 
 
@@ -34,6 +34,12 @@ api_router.include_router(ai.router, prefix="/ai", tags=["AI"])
 
 # AI Assistant v2 (comprehensive)
 api_router.include_router(ai_assistant.router, prefix="/assistant", tags=["AI Assistant"])
+
+# AI Admin (sync, rebuild) — was orphaned, now mounted
+api_router.include_router(ai_admin.router, prefix="/ai/admin", tags=["AI Admin"])
+
+# Streaming Vector Search & Ingestion
+api_router.include_router(streaming.router, prefix="/search", tags=["Streaming Search"])
 
 # Analytics endpoint
 api_router.include_router(analytics.router, prefix="/analytics", tags=["Analytics"])

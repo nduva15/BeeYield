@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { StreamingSearch } from "@/components/native-hive/StreamingSearch";
 import {
   Activity,
   Brain,
@@ -182,6 +183,13 @@ export default function NativeHiveDashboard() {
               {answer}
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Streaming Vector Search */}
+      <Card>
+        <CardContent className="pt-6">
+          <StreamingSearch />
         </CardContent>
       </Card>
 

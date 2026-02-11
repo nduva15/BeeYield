@@ -1,438 +1,468 @@
 """
-BeeYield Metadata Standardizer v5.0
-=====================================
-Normalizes datasets from all 5 Knowledge Domains into a unified schema
-with Global IDs, ensuring 25,000 nodes stay perfectly synced.
+METADATA STANDARDIZER (v5.0)
+Global ID tagging system for 25,000+ datasets.
 
-Knowledge Domains:
-  1. University & Peer-Reviewed Papers   (8,000+)
-  2. IoT & Acoustic Benchmarks           (5,000+)
-  3. Geospatial & Biodiversity Data      (6,000+)
-  4. Disease & Stressor Repositories     (4,000+)
-  5. Traceability & Quality Standards    (2,000+)
+Every dataset gets:
+  - A deterministic Global ID (GID) based on content hash
+  - Knowledge Domain classification
+  - Provenance chain (source → repository → DOI)
+  - Reliability scoring (0.0 → 1.0)
+  - Temporal tagging (publication date, ingestion date)
+  - Geographic tagging (continent, country, region)
 
-Every node receives a deterministic Global ID:
-  BY-{domain_prefix}-{sha256_short}-{seq}
+Ensures zero sync errors across the Vector-Lakehouse.
 """
 
 import hashlib
 import json
-import os
 import re
+import uuid
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
 from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple
 
-# ── Knowledge Domain Taxonomy ─────────────────────────────────
+from pydantic import BaseModel, Field
+
+
+# ─── Knowledge Domains ──────────────────────────────────────
 
 class KnowledgeDomain(str, Enum):
-    ACADEMIC       = "ACAD"    # University & Peer-Reviewed
-    IOT_ACOUSTIC   = "IOT"     # Sensor / Audio benchmarks
-    GEOSPATIAL     = "GEO"     # Biodiversity / occurrence records
-    DISEASE        = "DIS"     # Stressor / pathogen repositories
-    TRACEABILITY   = "TRC"     # Quality standards / authentication
+    ACADEMIC = "academic"                    # 8,000+ papers
+    IOT_ACOUSTIC = "iot_acoustic"            # 5,000+ sensor/audio benchmarks
+    GEOSPATIAL_BIODIVERSITY = "geospatial"   # 6,000+ occurrence records
+    DISEASE_STRESSOR = "disease_stressor"    # 4,000+ pathogen/stressor data
+    TRACEABILITY_QUALITY = "traceability"    # 2,000+ authentication records
+    INTERNAL_OPS = "internal_ops"            # BeeYield harvest/team data
+    GENERAL = "general"
 
-DOMAIN_TARGETS = {
-    KnowledgeDomain.ACADEMIC:     8_000,
-    KnowledgeDomain.IOT_ACOUSTIC: 5_000,
-    KnowledgeDomain.GEOSPATIAL:   6_000,
-    KnowledgeDomain.DISEASE:      4_000,
-    KnowledgeDomain.TRACEABILITY: 2_000,
+
+class SourceRepository(str, Enum):
+    RESEARCHGATE = "researchgate"
+    FRONTIERS = "frontiers"
+    PLOS_ONE = "plos_one"
+    SPRINGER = "springer"
+    ELSEVIER = "elsevier"
+    EU_POLLINATOR_HUB = "eu_pollinator_hub"
+    MUST_B = "must_b_efsa"
+    ICIPE = "icipe_african_ref_lab"
+    INATURALIST = "inaturalist"
+    GBIF = "gbif"
+    NU_HIVE = "nu_hive"
+    BUZZ_DATASET = "buzz_dataset"
+    OSBH = "osbh"
+    BEEYIELD_INTERNAL = "beeyield_internal"
+    SENTINEL2 = "sentinel2_satellite"
+    CUSTOM = "custom"
+
+
+class ReliabilityTier(str, Enum):
+    PEER_REVIEWED = "peer_reviewed"       # 0.95
+    INSTITUTIONAL = "institutional"       # 0.85
+    GOVERNMENT = "government"             # 0.90
+    COMMUNITY = "community"              # 0.70
+    INTERNAL = "internal"                 # 0.80
+    UNVERIFIED = "unverified"            # 0.50
+
+
+# ─── Standardized Node Schema ───────────────────────────────
+
+class StandardizedMetadata(BaseModel):
+    """Every node in the 25k lakehouse carries this envelope."""
+    
+    global_id: str = Field(
+        ..., description="Deterministic SHA-256 hash of content + source"
+    )
+    knowledge_domain: KnowledgeDomain
+    source_repository: SourceRepository
+    reliability_tier: ReliabilityTier
+    reliability_score: float = Field(ge=0.0, le=1.0)
+    
+    # Provenance
+    title: str
+    authors: List[str] = Field(default_factory=list)
+    doi: Optional[str] = None
+    url: Optional[str] = None
+    publication_date: Optional[str] = None  # ISO 8601
+    
+    # Geographic
+    continent: str = "Global"
+    country: Optional[str] = None
+    region: Optional[str] = None
+    
+    # Temporal
+    ingestion_timestamp: str = Field(
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+    )
+    data_vintage: Optional[str] = None  # e.g. "2024-2025"
+    
+    # Linkage
+    related_gids: List[str] = Field(default_factory=list)
+    tags: List[str] = Field(default_factory=list)
+    
+    # Economics (for cost-bearing records)
+    economic_impact_usd: Optional[float] = None
+    
+    # Content stats
+    word_count: int = 0
+    language: str = "en"
+
+
+class StandardizedNode(BaseModel):
+    """A fully standardized node ready for vector embedding."""
+    metadata: StandardizedMetadata
+    content: str
+    content_hash: str  # SHA-256 of raw content
+    embedding: Optional[List[float]] = None
+    chunk_index: int = 0  # For multi-chunk documents
+    total_chunks: int = 1
+
+
+# ─── Reliability Scoring ────────────────────────────────────
+
+RELIABILITY_SCORES = {
+    ReliabilityTier.PEER_REVIEWED: 0.95,
+    ReliabilityTier.INSTITUTIONAL: 0.85,
+    ReliabilityTier.GOVERNMENT: 0.90,
+    ReliabilityTier.COMMUNITY: 0.70,
+    ReliabilityTier.INTERNAL: 0.80,
+    ReliabilityTier.UNVERIFIED: 0.50,
 }
 
-# ── Unified Node Schema ──────────────────────────────────────
 
-class StandardizedNode:
-    """
-    The canonical representation of every knowledge node in the
-    BeeYield Vector-Lakehouse.
-    """
+# ─── Domain Detection Heuristics ────────────────────────────
 
-    __slots__ = (
-        "global_id", "content", "title", "domain", "source",
-        "source_type", "continent", "country", "doi", "url",
-        "authors", "publication_date", "reliability_score",
-        "is_internal", "tags", "linked_nodes", "raw_metadata",
-        "created_at", "updated_at", "content_hash",
-    )
+DOMAIN_KEYWORDS = {
+    KnowledgeDomain.ACADEMIC: [
+        "study", "research", "paper", "journal", "doi", "abstract",
+        "methodology", "findings", "peer-reviewed", "university",
+        "hypothesis", "conclusion", "p-value", "sample size",
+    ],
+    KnowledgeDomain.IOT_ACOUSTIC: [
+        "sensor", "temperature", "humidity", "acoustic", "audio",
+        "queenright", "queenless", "nu-hive", "buzz", "osbh",
+        "decibel", "frequency", "spectrogram", "iot", "telemetry",
+    ],
+    KnowledgeDomain.GEOSPATIAL_BIODIVERSITY: [
+        "latitude", "longitude", "gbif", "inaturalist", "occurrence",
+        "species", "forage", "habitat", "land cover", "sentinel",
+        "satellite", "ndvi", "geospatial", "biodiversity",
+    ],
+    KnowledgeDomain.DISEASE_STRESSOR: [
+        "varroa", "nosema", "foulbrood", "pesticide", "neonicotinoid",
+        "pathogen", "virus", "deformed wing", "acaricide", "must-b",
+        "apis", "melissococcus", "paenibacillus", "mortality",
+    ],
+    KnowledgeDomain.TRACEABILITY_QUALITY: [
+        "authentication", "dna", "protein", "melissopalynology",
+        "adulteration", "traceability", "batch", "certification",
+        "quality", "standard", "iso", "haccp", "chain of custody",
+    ],
+    KnowledgeDomain.INTERNAL_OPS: [
+        "beeyield", "harvest", "farmer", "apiary", "kibwezi",
+        "nairobi", "team", "season", "production", "yield",
+    ],
+}
 
-    def __init__(
-        self,
-        content: str,
-        domain: KnowledgeDomain,
-        source: str,
-        *,
-        title: str = "",
-        source_type: str = "General_Research",
-        continent: str = "Global",
-        country: str = "",
-        doi: str = "",
-        url: str = "",
-        authors: Optional[List[str]] = None,
-        publication_date: str = "",
-        reliability_score: float = 0.8,
-        is_internal: bool = False,
-        tags: Optional[List[str]] = None,
-        linked_nodes: Optional[List[str]] = None,
-        raw_metadata: Optional[Dict[str, Any]] = None,
-        global_id: Optional[str] = None,
-        seq: int = 0,
-    ):
-        self.content = content.strip()
-        self.title = title or self._extract_title(content)
-        self.domain = domain
-        self.source = source
-        self.source_type = source_type
-        self.continent = continent
-        self.country = country
-        self.doi = doi
-        self.url = url
-        self.authors = authors or []
-        self.publication_date = publication_date
-        self.reliability_score = min(max(reliability_score, 0.0), 1.0)
-        self.is_internal = is_internal
-        self.tags = tags or []
-        self.linked_nodes = linked_nodes or []
-        self.raw_metadata = raw_metadata or {}
-        self.content_hash = hashlib.sha256(self.content.encode()).hexdigest()[:12]
-        self.global_id = global_id or f"BY-{domain.value}-{self.content_hash}-{seq:05d}"
-        now = datetime.now(timezone.utc).isoformat()
-        self.created_at = now
-        self.updated_at = now
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "id": self.global_id,
-            "content": self.content,
-            "title": self.title,
-            "domain": self.domain.value,
-            "metadata": {
-                "source": self.source,
-                "source_type": self.source_type,
-                "continent": self.continent,
-                "country": self.country,
-                "doi": self.doi,
-                "url": self.url,
-                "authors": self.authors,
-                "publication_date": self.publication_date,
-                "reliability_score": self.reliability_score,
-                "is_internal": self.is_internal,
-                "tags": self.tags,
-                "linked_nodes": self.linked_nodes,
-                "content_hash": self.content_hash,
-                "created_at": self.created_at,
-                "updated_at": self.updated_at,
-            },
-            "raw_metadata": self.raw_metadata,
-        }
-
-    @staticmethod
-    def _extract_title(content: str) -> str:
-        """Pull a reasonable title from the first line / sentence."""
-        first_line = content.split("\n")[0].strip()
-        if len(first_line) > 120:
-            first_line = first_line[:117] + "..."
-        return first_line or "Untitled Node"
+SOURCE_PATTERNS = {
+    SourceRepository.RESEARCHGATE: [r"researchgate\.net"],
+    SourceRepository.FRONTIERS: [r"frontiersin\.org"],
+    SourceRepository.PLOS_ONE: [r"plos\.org", r"plosone"],
+    SourceRepository.SPRINGER: [r"springer\.com", r"link\.springer"],
+    SourceRepository.ELSEVIER: [r"elsevier\.com", r"sciencedirect"],
+    SourceRepository.INATURALIST: [r"inaturalist\.org"],
+    SourceRepository.GBIF: [r"gbif\.org"],
+    SourceRepository.EU_POLLINATOR_HUB: [r"pollinatorhub", r"eu.pollinator"],
+    SourceRepository.MUST_B: [r"must-b", r"efsa.*sentinel", r"apisram"],
+    SourceRepository.ICIPE: [r"icipe", r"african.*reference.*lab"],
+}
 
 
-# ── Metadata Standardizer ────────────────────────────────────
+# ─── The Standardizer ───────────────────────────────────────
 
 class MetadataStandardizer:
     """
-    Ingestion pipeline that normalizes raw datasets from heterogeneous
-    sources into StandardizedNodes with Global IDs.
+    Transforms raw heterogeneous data into standardized nodes
+    with Global IDs, domain classification, and reliability scores.
+    
+    Usage:
+        standardizer = MetadataStandardizer()
+        node = standardizer.standardize(raw_data)
     """
 
-    # Domain detection keywords
-    _DOMAIN_SIGNALS: Dict[KnowledgeDomain, List[str]] = {
-        KnowledgeDomain.ACADEMIC: [
-            "doi", "journal", "abstract", "peer-review", "university",
-            "frontiers", "plos", "researchgate", "elsevier", "springer",
-            "wiley", "pubmed", "scopus", "citation",
-        ],
-        KnowledgeDomain.IOT_ACOUSTIC: [
-            "sensor", "temperature", "humidity", "acoustic", "audio",
-            "iot", "lorawan", "nu-hive", "buzz", "osbh", "queenright",
-            "queenless", "spectrogram", "weight",
-        ],
-        KnowledgeDomain.GEOSPATIAL: [
-            "latitude", "longitude", "gbif", "inaturalist", "occurrence",
-            "forage", "land cover", "sentinel-2", "ndvi", "geospatial",
-            "habitat", "biodiversity", "species",
-        ],
-        KnowledgeDomain.DISEASE: [
-            "varroa", "nosema", "foulbrood", "pathogen", "efsa", "must-b",
-            "apisram", "pesticide", "neonicotinoid", "stressor", "mortality",
-            "colony loss", "disease", "virus", "mite",
-        ],
-        KnowledgeDomain.TRACEABILITY: [
-            "traceability", "authentication", "dna", "protein", "melissopalynology",
-            "quality", "nir", "spectroscopy", "adulteration", "honeychain",
-            "blockchain", "batch", "certification",
-        ],
-    }
-
-    # Continent detection
-    _CONTINENT_MAP = {
-        "africa": ("Africa", ["kenya", "nairobi", "kibwezi", "makueni",
-                              "ethiopia", "tanzania", "uganda", "nigeria",
-                              "south africa", "pretoria", "ghana", "cameroon",
-                              "sub-saharan", "icipe"]),
-        "europe": ("Europe", ["eu", "efsa", "portugal", "denmark", "germany",
-                              "hohenheim", "france", "spain", "italy", "uk",
-                              "european"]),
-        "north_america": ("North America", ["usa", "usda", "canada", "mexico"]),
-        "asia": ("Asia", ["china", "india", "japan", "apis cerana", "vietnam"]),
-        "oceania": ("Oceania", ["australia", "new zealand"]),
-        "south_america": ("South America", ["brazil", "argentina", "chile"]),
-    }
-
-    # DOI extraction pattern
-    _DOI_PATTERN = re.compile(r'10\.\d{4,}/[^\s,;"\'\]]+')
-
     def __init__(self):
-        self._seq_counters: Dict[str, int] = {}
+        self._gid_cache: Dict[str, str] = {}
 
-    def _next_seq(self, domain: KnowledgeDomain) -> int:
-        key = domain.value
-        self._seq_counters[key] = self._seq_counters.get(key, 0) + 1
-        return self._seq_counters[key]
+    def compute_global_id(self, content: str, source: str) -> str:
+        """Deterministic GID from content + source."""
+        raw = f"{content.strip()[:500]}|{source.strip().lower()}"
+        return hashlib.sha256(raw.encode("utf-8")).hexdigest()[:24]
 
-    # ── Core standardization ──────────────────────────────
+    def compute_content_hash(self, content: str) -> str:
+        return hashlib.sha256(content.encode("utf-8")).hexdigest()
+
+    def detect_domain(self, content: str, source: str = "") -> KnowledgeDomain:
+        """Classify content into one of the 7 knowledge domains."""
+        combined = f"{content} {source}".lower()
+        scores: Dict[KnowledgeDomain, int] = {}
+
+        for domain, keywords in DOMAIN_KEYWORDS.items():
+            score = sum(1 for kw in keywords if kw in combined)
+            if score > 0:
+                scores[domain] = score
+
+        if not scores:
+            return KnowledgeDomain.GENERAL
+
+        return max(scores, key=scores.get)
+
+    def detect_source_repo(self, url: str = "", source: str = "") -> SourceRepository:
+        """Identify the source repository from URL/source string."""
+        combined = f"{url} {source}".lower()
+        for repo, patterns in SOURCE_PATTERNS.items():
+            for pat in patterns:
+                if re.search(pat, combined, re.IGNORECASE):
+                    return repo
+
+        if "beeyield" in combined or "internal" in combined:
+            return SourceRepository.BEEYIELD_INTERNAL
+
+        return SourceRepository.CUSTOM
+
+    def detect_reliability(
+        self,
+        domain: KnowledgeDomain,
+        source_repo: SourceRepository,
+        has_doi: bool = False,
+    ) -> Tuple[ReliabilityTier, float]:
+        """Assign reliability tier and score."""
+        if has_doi or source_repo in (
+            SourceRepository.FRONTIERS,
+            SourceRepository.PLOS_ONE,
+            SourceRepository.SPRINGER,
+            SourceRepository.ELSEVIER,
+        ):
+            tier = ReliabilityTier.PEER_REVIEWED
+        elif source_repo in (
+            SourceRepository.EU_POLLINATOR_HUB,
+            SourceRepository.MUST_B,
+            SourceRepository.ICIPE,
+        ):
+            tier = ReliabilityTier.INSTITUTIONAL
+        elif source_repo == SourceRepository.BEEYIELD_INTERNAL:
+            tier = ReliabilityTier.INTERNAL
+        elif source_repo in (SourceRepository.INATURALIST, SourceRepository.GBIF):
+            tier = ReliabilityTier.COMMUNITY
+        else:
+            tier = ReliabilityTier.UNVERIFIED
+
+        return tier, RELIABILITY_SCORES[tier]
+
+    def extract_doi(self, content: str, url: str = "") -> Optional[str]:
+        """Extract DOI from content or URL."""
+        combined = f"{content} {url}"
+        match = re.search(r"10\.\d{4,9}/[^\s]+", combined)
+        return match.group(0).rstrip(".,;)") if match else None
+
+    def extract_authors(self, content: str) -> List[str]:
+        """Simple heuristic author extraction."""
+        # Look for "Author:" or "by" patterns
+        match = re.search(
+            r"(?:authors?|by)[:\s]+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+(?:\s*,\s*[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)*)",
+            content,
+        )
+        if match:
+            return [a.strip() for a in match.group(1).split(",")]
+        return []
+
+    def detect_geography(
+        self, content: str
+    ) -> Tuple[str, Optional[str], Optional[str]]:
+        """Detect continent/country/region from content."""
+        c = content.lower()
+
+        # Africa
+        african_countries = {
+            "kenya": ("Africa", "Kenya", None),
+            "kibwezi": ("Africa", "Kenya", "Makueni"),
+            "nairobi": ("Africa", "Kenya", "Nairobi"),
+            "ethiopia": ("Africa", "Ethiopia", None),
+            "tanzania": ("Africa", "Tanzania", None),
+            "south africa": ("Africa", "South Africa", None),
+            "pretoria": ("Africa", "South Africa", "Gauteng"),
+            "nigeria": ("Africa", "Nigeria", None),
+            "ghana": ("Africa", "Ghana", None),
+            "cameroon": ("Africa", "Cameroon", None),
+            "uganda": ("Africa", "Uganda", None),
+        }
+        for key, geo in african_countries.items():
+            if key in c:
+                return geo
+
+        if "europe" in c or "eu " in c:
+            return ("Europe", None, None)
+        if "portugal" in c:
+            return ("Europe", "Portugal", None)
+        if "denmark" in c:
+            return ("Europe", "Denmark", None)
+        if "germany" in c or "hohenheim" in c:
+            return ("Europe", "Germany", None)
+
+        return ("Global", None, None)
+
+    def chunk_content(
+        self, content: str, max_chunk_size: int = 1500, overlap: int = 200
+    ) -> List[str]:
+        """Split long content into overlapping chunks for embedding."""
+        if len(content) <= max_chunk_size:
+            return [content]
+
+        chunks = []
+        start = 0
+        while start < len(content):
+            end = start + max_chunk_size
+            # Try to break at sentence boundary
+            if end < len(content):
+                last_period = content.rfind(".", start, end)
+                if last_period > start + max_chunk_size // 2:
+                    end = last_period + 1
+            chunks.append(content[start:end].strip())
+            start = end - overlap
+
+        return chunks
 
     def standardize(
         self,
-        raw: Dict[str, Any],
-        *,
+        raw_data: Dict[str, Any],
         force_domain: Optional[KnowledgeDomain] = None,
-    ) -> StandardizedNode:
+    ) -> List[StandardizedNode]:
         """
-        Convert a raw dict (from any source) into a StandardizedNode.
-        Auto-detects domain, continent, DOI, and reliability if not provided.
+        Transform a raw data dict into one or more StandardizedNodes.
+        
+        Accepts:
+            {
+                "content": str,                    # required
+                "title": str,                      # optional
+                "source": str,                     # optional
+                "url": str,                        # optional
+                "authors": list[str],              # optional
+                "publication_date": str,           # optional
+                "metadata": {...}                  # optional extra fields
+            }
+        
+        Returns a list because long content is chunked.
         """
-        content = raw.get("content", "") or raw.get("text", "") or raw.get("abstract", "") or ""
-        meta = raw.get("metadata", {})
-        combined_text = f"{content} {json.dumps(meta)}".lower()
+        content = raw_data.get("content", "").strip()
+        if not content:
+            return []
 
-        # Domain detection
-        domain = force_domain or self._detect_domain(combined_text)
+        title = raw_data.get("title", "Untitled")
+        source = raw_data.get("source", "Unknown")
+        url = raw_data.get("url", "")
+        extra_meta = raw_data.get("metadata", {})
 
-        # Continent detection
-        continent = meta.get("continent") or self._detect_continent(combined_text)
+        # Detect everything
+        domain = force_domain or self.detect_domain(content, source)
+        source_repo = self.detect_source_repo(url, source)
+        doi = self.extract_doi(content, url)
+        tier, score = self.detect_reliability(domain, source_repo, doi is not None)
+        authors = raw_data.get("authors") or self.extract_authors(content)
+        continent, country, region = self.detect_geography(content)
+        pub_date = raw_data.get("publication_date")
 
-        # Country detection
-        country = meta.get("country", "")
+        # Chunk content
+        chunks = self.chunk_content(content)
+        nodes: List[StandardizedNode] = []
 
-        # DOI extraction
-        doi = meta.get("doi", "")
-        if not doi:
-            doi_match = self._DOI_PATTERN.search(content)
-            if doi_match:
-                doi = doi_match.group(0)
+        for i, chunk in enumerate(chunks):
+            gid = self.compute_global_id(chunk, source)
+            
+            tags = extra_meta.get("tags", [])
+            # Auto-tag based on domain
+            if domain == KnowledgeDomain.DISEASE_STRESSOR:
+                for disease in ["varroa", "foulbrood", "nosema", "virus"]:
+                    if disease in chunk.lower() and disease not in tags:
+                        tags.append(disease)
 
-        # Source type classification
-        source_type = meta.get("source_type", "")
-        if not source_type:
-            source_type = self._classify_source_type(combined_text, domain)
+            meta = StandardizedMetadata(
+                global_id=gid,
+                knowledge_domain=domain,
+                source_repository=source_repo,
+                reliability_tier=tier,
+                reliability_score=score,
+                title=f"{title}" + (f" (Part {i+1}/{len(chunks)})" if len(chunks) > 1 else ""),
+                authors=authors,
+                doi=doi,
+                url=url,
+                publication_date=pub_date,
+                continent=continent,
+                country=country,
+                region=region,
+                data_vintage=extra_meta.get("data_vintage"),
+                related_gids=extra_meta.get("related_gids", []),
+                tags=tags,
+                economic_impact_usd=extra_meta.get("economic_impact_usd"),
+                word_count=len(chunk.split()),
+                language=extra_meta.get("language", "en"),
+            )
 
-        # Reliability scoring
-        reliability = meta.get("reliability_score", 0.0)
-        if not reliability:
-            reliability = self._compute_reliability(doi, source_type, domain, content)
+            nodes.append(
+                StandardizedNode(
+                    metadata=meta,
+                    content=chunk,
+                    content_hash=self.compute_content_hash(chunk),
+                    chunk_index=i,
+                    total_chunks=len(chunks),
+                )
+            )
 
-        # Tags
-        tags = meta.get("tags", [])
-        if not tags:
-            tags = self._auto_tag(combined_text, domain)
-
-        # Authors
-        authors = meta.get("authors", [])
-        if isinstance(authors, str):
-            authors = [a.strip() for a in authors.split(",") if a.strip()]
-
-        seq = self._next_seq(domain)
-
-        return StandardizedNode(
-            content=content,
-            domain=domain,
-            source=meta.get("source", raw.get("source", "Unknown")),
-            title=raw.get("title", meta.get("title", "")),
-            source_type=source_type,
-            continent=continent,
-            country=country,
-            doi=doi,
-            url=meta.get("url", raw.get("url", "")),
-            authors=authors,
-            publication_date=meta.get("publication_date", meta.get("timestamp", "")),
-            reliability_score=reliability,
-            is_internal=meta.get("is_internal", False),
-            tags=tags,
-            linked_nodes=meta.get("linked_nodes", []),
-            raw_metadata=meta,
-            seq=seq,
-        )
+        return nodes
 
     def standardize_batch(
         self,
-        raw_nodes: List[Dict[str, Any]],
-        *,
+        raw_items: List[Dict[str, Any]],
         force_domain: Optional[KnowledgeDomain] = None,
     ) -> Tuple[List[StandardizedNode], List[Dict[str, str]]]:
-        """Standardize many nodes. Returns (successes, errors)."""
-        ok: List[StandardizedNode] = []
+        """
+        Standardize a batch of raw data items.
+        Returns (nodes, errors).
+        """
+        all_nodes: List[StandardizedNode] = []
         errors: List[Dict[str, str]] = []
 
-        for i, raw in enumerate(raw_nodes):
+        for i, item in enumerate(raw_items):
             try:
-                node = self.standardize(raw, force_domain=force_domain)
-                ok.append(node)
+                nodes = self.standardize(item, force_domain)
+                all_nodes.extend(nodes)
             except Exception as e:
                 errors.append({"index": str(i), "error": str(e)})
 
-        return ok, errors
+        return all_nodes, errors
 
-    # ── Detection helpers ─────────────────────────────────
+    def get_domain_stats(
+        self, nodes: List[StandardizedNode]
+    ) -> Dict[str, Any]:
+        """Breakdown of nodes by domain, repository, and geography."""
+        from collections import Counter
 
-    def _detect_domain(self, text: str) -> KnowledgeDomain:
-        """Score text against each domain's keyword set."""
-        scores = {}
-        for domain, keywords in self._DOMAIN_SIGNALS.items():
-            score = sum(1 for kw in keywords if kw in text)
-            scores[domain] = score
-        best = max(scores, key=scores.get)
-        return best if scores[best] > 0 else KnowledgeDomain.ACADEMIC
-
-    def _detect_continent(self, text: str) -> str:
-        for _, (continent, keywords) in self._CONTINENT_MAP.items():
-            if any(kw in text for kw in keywords):
-                return continent
-        return "Global"
-
-    def _classify_source_type(self, text: str, domain: KnowledgeDomain) -> str:
-        type_map = {
-            "peer_reviewed": ["journal", "doi", "peer-review", "abstract",
-                              "frontiers", "plos", "elsevier", "springer"],
-            "government": ["usda", "efsa", "fao", "government", "ministry"],
-            "dataset": ["gbif", "inaturalist", "dataset", "csv", "occurrence"],
-            "iot_telemetry": ["sensor", "reading", "temperature", "lorawan"],
-            "internal": ["beeyield", "honeychain", "harvest log"],
-            "news": ["news", "press", "announcement", "blog"],
-        }
-        for stype, signals in type_map.items():
-            if any(s in text for s in signals):
-                return stype
-        return "general_research"
-
-    def _compute_reliability(
-        self, doi: str, source_type: str, domain: KnowledgeDomain, content: str
-    ) -> float:
-        """Heuristic reliability score 0.0 – 1.0."""
-        base = 0.5
-        if doi:
-            base += 0.2
-        if source_type == "peer_reviewed":
-            base += 0.15
-        elif source_type == "government":
-            base += 0.12
-        elif source_type == "iot_telemetry":
-            base += 0.10
-        elif source_type == "internal":
-            base += 0.05
-        if len(content) > 500:
-            base += 0.05
-        if domain == KnowledgeDomain.ACADEMIC:
-            base += 0.03
-        return min(base, 1.0)
-
-    def _auto_tag(self, text: str, domain: KnowledgeDomain) -> List[str]:
-        """Generate up to 8 tags from content signals."""
-        tag_bank = {
-            "varroa": "varroa",
-            "nosema": "nosema",
-            "foulbrood": "foulbrood",
-            "pollination": "pollination",
-            "honey quality": "quality",
-            "traceability": "traceability",
-            "blockchain": "blockchain",
-            "iot": "iot",
-            "acoustic": "acoustic",
-            "sentinel": "satellite",
-            "climate": "climate",
-            "pesticide": "pesticide",
-            "apis mellifera": "apis-mellifera",
-            "apis cerana": "apis-cerana",
-            "queen": "queen-status",
-            "swarm": "swarming",
-            "colony loss": "colony-loss",
-            "biodiversity": "biodiversity",
-            "gbif": "gbif",
-            "inaturalist": "inaturalist",
-            "kibwezi": "kibwezi",
-            "kenya": "kenya",
-            "africa": "africa",
-        }
-        tags = [tag for kw, tag in tag_bank.items() if kw in text]
-        tags.append(domain.value.lower())
-        return list(dict.fromkeys(tags))[:8]  # deduplicate, limit
-
-
-# ── Lakehouse Upgrader ────────────────────────────────────────
-
-class LakehouseUpgrader:
-    """
-    Reads the existing standardized_lakehouse.json, re-standardizes
-    every node with Global IDs and domain tagging, and writes back.
-    """
-
-    def __init__(self):
-        self.standardizer = MetadataStandardizer()
-        self.data_dir = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "../data")
-        )
-
-    def upgrade(self) -> Dict[str, Any]:
-        """Run the full upgrade pipeline."""
-        src = os.path.join(self.data_dir, "standardized_lakehouse.json")
-        if not os.path.exists(src):
-            return {"error": f"Not found: {src}"}
-
-        with open(src, "r", encoding="utf-8") as f:
-            data = json.load(f)
-
-        raw_nodes = data.get("lakehouse_nodes", [])
-        nodes, errors = self.standardizer.standardize_batch(raw_nodes)
-
-        # Domain distribution
-        domain_counts: Dict[str, int] = {}
-        for n in nodes:
-            domain_counts[n.domain.value] = domain_counts.get(n.domain.value, 0) + 1
-
-        # Write upgraded lakehouse
-        upgraded = {
-            "version": "5.0.0",
-            "total_nodes": len(nodes),
-            "domain_distribution": domain_counts,
-            "targets": {d.value: t for d, t in DOMAIN_TARGETS.items()},
-            "upgraded_at": datetime.now(timezone.utc).isoformat(),
-            "lakehouse_nodes": [n.to_dict() for n in nodes],
-        }
-
-        out_path = os.path.join(self.data_dir, "standardized_lakehouse_v5.json")
-        with open(out_path, "w", encoding="utf-8") as f:
-            json.dump(upgraded, f, indent=2, ensure_ascii=False)
+        domains = Counter(n.metadata.knowledge_domain for n in nodes)
+        repos = Counter(n.metadata.source_repository for n in nodes)
+        continents = Counter(n.metadata.continent for n in nodes)
+        tiers = Counter(n.metadata.reliability_tier for n in nodes)
 
         return {
-            "status": "upgraded",
             "total_nodes": len(nodes),
-            "errors": len(errors),
-            "domain_distribution": domain_counts,
-            "output": out_path,
+            "by_domain": dict(domains),
+            "by_repository": dict(repos),
+            "by_continent": dict(continents),
+            "by_reliability": dict(tiers),
+            "avg_reliability_score": (
+                sum(n.metadata.reliability_score for n in nodes) / len(nodes)
+                if nodes
+                else 0
+            ),
+            "avg_word_count": (
+                sum(n.metadata.word_count for n in nodes) / len(nodes)
+                if nodes
+                else 0
+            ),
         }
-
-
-# ── CLI runner ────────────────────────────────────────────────
-
-if __name__ == "__main__":
-    upgrader = LakehouseUpgrader()
-    result = upgrader.upgrade()
-    print(json.dumps(result, indent=2))

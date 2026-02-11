@@ -32,31 +32,85 @@ def _lazy_import_sdk():
         return None, None
 
 def get_supabase():
-    """Compatibility function - lazily creates Supabase SDK client."""
+    """Compatibility function - lazily creates Supabase SDK client with timeout protection."""
     global _supabase_client
     if _supabase_client is not None:
         return _supabase_client
+    
+    # Don't attempt if URL/KEY missing
+    if not settings.SUPABASE_URL or not settings.SUPABASE_KEY:
+        print("[WARNING] SUPABASE_URL or SUPABASE_KEY not configured")
+        return None
+    
     create_client, _ = _lazy_import_sdk()
     if create_client is None:
         return None
     try:
-        _supabase_client = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
+        import threading
+        result = [None]
+        error = [None]
+        
+        def _create():
+            try:
+                result[0] = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
+            except Exception as e:
+                error[0] = e
+        
+        t = threading.Thread(target=_create, daemon=True)
+        t.start()
+        t.join(timeout=10)  # 10 second timeout
+        
+        if t.is_alive():
+            print("[WARNING] Supabase SDK client creation timed out (10s) - SDK may have DNS/gRPC issues")
+            return None
+        
+        if error[0]:
+            print(f"[WARNING] Supabase client creation failed: {error[0]}")
+            return None
+        
+        _supabase_client = result[0]
         return _supabase_client
     except Exception as e:
         print(f"[WARNING] Supabase client creation failed: {e}")
         return None
 
 def get_supabase_admin():
-    """Compatibility function - lazily creates Supabase admin SDK client."""
+    """Compatibility function - lazily creates Supabase admin SDK client with timeout protection."""
     global _supabase_admin_client
     if _supabase_admin_client is not None:
         return _supabase_admin_client
+    
+    if not settings.SUPABASE_URL or not settings.SUPABASE_KEY:
+        return None
+    
     create_client, _ = _lazy_import_sdk()
     if create_client is None:
         return None
     try:
+        import threading
         key = settings.SUPABASE_SERVICE_ROLE_KEY or settings.SUPABASE_KEY
-        _supabase_admin_client = create_client(settings.SUPABASE_URL, key)
+        result = [None]
+        error = [None]
+        
+        def _create():
+            try:
+                result[0] = create_client(settings.SUPABASE_URL, key)
+            except Exception as e:
+                error[0] = e
+        
+        t = threading.Thread(target=_create, daemon=True)
+        t.start()
+        t.join(timeout=10)
+        
+        if t.is_alive():
+            print("[WARNING] Supabase admin SDK client creation timed out (10s)")
+            return None
+        
+        if error[0]:
+            print(f"[WARNING] Supabase admin client creation failed: {error[0]}")
+            return None
+        
+        _supabase_admin_client = result[0]
         return _supabase_admin_client
     except Exception as e:
         print(f"[WARNING] Supabase admin client creation failed: {e}")
@@ -65,6 +119,8 @@ def get_supabase_admin():
 def get_client() -> httpx.Client:
     global _http_client
     if _http_client is None:
+        if not settings.SUPABASE_URL or not settings.SUPABASE_KEY:
+            raise Exception("SUPABASE_URL and SUPABASE_KEY must be configured")
         _http_client = httpx.Client(
             base_url=f"{settings.SUPABASE_URL}/rest/v1",
             headers={
@@ -73,7 +129,7 @@ def get_client() -> httpx.Client:
                 "Content-Type": "application/json",
                 "Prefer": "return=representation"
             },
-            timeout=10.0
+            timeout=15.0
         )
     return _http_client
 
@@ -87,12 +143,31 @@ def get_admin_headers() -> Dict[str, str]:
 
 # ============ HELPER FUNCTIONS ============
 
+def _serialize_value(v):
+    """Convert non-JSON-serializable types to strings"""
+    from uuid import UUID
+    from datetime import date, datetime
+    if isinstance(v, UUID):
+        return str(v)
+    if isinstance(v, (date, datetime)):
+        return v.isoformat()
+    if isinstance(v, dict):
+        return {k: _serialize_value(val) for k, val in v.items()}
+    if isinstance(v, (list, tuple)):
+        return [_serialize_value(item) for item in v]
+    return v
+
+def _serialize_data(data: dict) -> dict:
+    """Ensure all values in data dict are JSON-serializable"""
+    return {k: _serialize_value(v) for k, v in data.items()}
+
 def db_insert(table: str, data: dict[str, Any]) -> dict[str, Any]:
     """Insert a record via REST API"""
     try:
         client = get_client()
         headers = get_admin_headers()
-        response = client.post(f"/{table}", json=data, headers=headers)
+        clean_data = _serialize_data(data)
+        response = client.post(f"/{table}", json=clean_data, headers=headers)
         
         if response.status_code in [200, 201]:
             return {"success": True, "data": response.json()}
@@ -149,7 +224,8 @@ def db_update(table: str, data: dict[str, Any], filters: dict[str, Any]) -> dict
         for key, value in filters.items():
             params[key] = f"eq.{value}"
             
-        response = client.patch(f"/{table}", json=data, params=params, headers=get_admin_headers())
+        clean_data = _serialize_data(data)
+        response = client.patch(f"/{table}", json=clean_data, params=params, headers=get_admin_headers())
         
         if response.status_code in [200, 204]:
             return {"success": True, "data": response.json() if response.text else []}
@@ -182,7 +258,8 @@ def db_upsert(table: str, data: dict[str, Any], on_conflict: str = "id") -> dict
         headers = get_admin_headers()
         headers["Prefer"] = "resolution=merge-duplicates,return=representation"
         
-        response = client.post(f"/{table}", json=data, headers=headers)
+        clean_data = _serialize_data(data)
+        response = client.post(f"/{table}", json=clean_data, headers=headers)
         
         if response.status_code in [200, 201]:
             return {"success": True, "data": response.json()}

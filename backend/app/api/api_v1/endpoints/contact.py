@@ -2,7 +2,7 @@ import time
 from fastapi import APIRouter, HTTPException, BackgroundTasks, Request
 from app.schemas import contact as schemas
 from app.services import email
-from app.db.supabase_db import get_supabase_admin, get_supabase, db_select
+from app.db.supabase_db import db_insert, db_select, db_upsert
 
 router = APIRouter()
 
@@ -19,16 +19,6 @@ def check_rate_limit(client_ip: str, limit_seconds: int = 60):
     _rate_limit_store[client_ip] = now
     return True
 
-def get_db_client():
-    """Get a working Supabase client - prefer admin, fallback to anon."""
-    admin = get_supabase_admin()
-    if admin:
-        return admin
-    # Fallback to regular client (works with RLS policies allowing public inserts)
-    anon = get_supabase()
-    if anon:
-        return anon
-    return None
 
 @router.post("/submit", response_model=dict)
 def submit_contact_form(
@@ -61,29 +51,25 @@ def submit_contact_form(
 
     db_data.setdefault('status', 'new')
     
-    # 2. Try Database Save
+    # 2. Try Database Save (using httpx helpers - never hangs)
     success = False
     try:
-        db_client = get_db_client()
-        if db_client:
-            try:
-                result = db_client.table("contact_submissions").insert(db_data).execute()
-                success = True
-                print(f"✅ DB Save Successful: {request_in.email}")
-            except Exception as e:
-                # Retry without derived fields if schema mismatch
-                print(f"⚠️ DB Insert Error: {e}")
-                if "column" in str(e).lower() and ("name" in str(e).lower() or "subject" in str(e).lower()):
-                    temp_data = db_data.copy()
-                    temp_data.pop('name', None)
-                    temp_data.pop('subject', None)
-                    result = db_client.table("contact_submissions").insert(temp_data).execute()
+        result = db_insert("contact_submissions", db_data)
+        if result.get("success"):
+            success = True
+            print(f"✅ DB Save Successful: {request_in.email}")
+        else:
+            error_msg = result.get("error", "Unknown")
+            print(f"⚠️ DB Insert Error: {error_msg}")
+            # Retry without derived fields if schema mismatch
+            if "column" in str(error_msg).lower() and ("name" in str(error_msg).lower() or "subject" in str(error_msg).lower()):
+                temp_data = db_data.copy()
+                temp_data.pop('name', None)
+                temp_data.pop('subject', None)
+                retry_result = db_insert("contact_submissions", temp_data)
+                if retry_result.get("success"):
                     success = True
                     print(f"✅ DB Save Successful (retry without derived) for {request_in.email}")
-                else:
-                    raise e
-        else:
-            print("⚠️ No DB Client available for contact submission.")
     except Exception as e:
         print(f"⚠️ DB Connection/Save Failed: {e}. Switching to Offline Mode.")
     
@@ -173,9 +159,8 @@ def request_pollination(
     
     success = False
     try:
-        db_client = get_db_client()
-        if db_client:
-            result = db_client.table("pollination_requests").insert(db_data).execute()
+        result = db_insert("pollination_requests", db_data)
+        if result.get("success"):
             success = True
     except Exception as e:
         print(f"⚠️ DB Connection Failed (Pollination): {e}")
@@ -247,19 +232,17 @@ def subscribe_newsletter(
     db_data = request_in.dict(exclude_unset=True)
 
     try:
-        db_client = get_db_client()
-        if db_client:
-            # Check exist
-            try:
-                existing = db_client.table("newsletter_subscribers").select("id").eq("email", request_in.email).execute()
-                if existing.data:
-                    return {"status": "success", "message": "Already subscribed"}
-            except Exception as check_err: 
-                print(f"⚠️ Newsletter dupe check failed: {check_err}")
+        # Check existing subscriber using httpx helper
+        existing = db_select("newsletter_subscribers", filters={"email": request_in.email}, limit=1)
+        if existing:
+            return {"status": "success", "message": "Already subscribed"}
 
-            result = db_client.table("newsletter_subscribers").insert(db_data).execute()
+        result = db_insert("newsletter_subscribers", db_data)
+        if result.get("success"):
             success = True
             print(f"✅ Newsletter Sub DB Successful: {request_in.email}")
+        else:
+            print(f"⚠️ Newsletter DB Insert failed: {result.get('error')}")
     except Exception as e:
         print(f"⚠️ DB Connection Failed (Newsletter): {e}")
 

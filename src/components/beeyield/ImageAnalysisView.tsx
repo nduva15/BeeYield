@@ -88,24 +88,37 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
         // Initialize Real-Time Analysis Model via TensorFlow.js
         setTimeout(async () => {
             try {
-                // Ensure Scripts are loaded (Fallback for CDN readiness)
+                // Lazy-load TensorFlow.js only when analysis is requested
                 // @ts-ignore
                 if (!window.tf || !window.mobilenet) {
-                    const loadScript = (src: string) => new Promise((resolve, reject) => {
+                    const loadScript = (src: string) => new Promise<void>((resolve, reject) => {
+                        // Check if script is already loaded or loading
+                        const existing = document.querySelector(`script[src="${src}"]`);
+                        if (existing) {
+                            existing.addEventListener('load', () => resolve());
+                            // If already loaded
+                            if ((existing as HTMLScriptElement).dataset.loaded === 'true') resolve();
+                            return;
+                        }
                         const script = document.createElement('script');
                         script.src = src;
-                        script.onload = resolve;
-                        script.onerror = reject;
+                        script.crossOrigin = 'anonymous';
+                        script.onload = () => { script.dataset.loaded = 'true'; resolve(); };
+                        script.onerror = () => reject(new Error(`Failed to load ${src}. Your browser may be blocking CDN scripts.`));
                         document.head.appendChild(script);
                     });
 
-                    await loadScript("https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest");
-                    await loadScript("https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@latest");
+                    try {
+                        await loadScript("https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest");
+                        await loadScript("https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@latest");
+                    } catch (cdnError) {
+                        throw new Error("AI models could not load. If you're using Edge, disable Tracking Prevention for this site, or try Chrome/Firefox.");
+                    }
                 }
 
                 // @ts-ignore
                 if (!window.mobilenet || !window.tf) {
-                    throw new Error("Analysis Models could not be initialized from CDN");
+                    throw new Error("AI models could not load. If you're using Edge, disable Tracking Prevention for this site, or try Chrome/Firefox.");
                 }
 
                 const img = document.createElement('img');
@@ -221,8 +234,10 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                 console.error("AI Error:", err);
                 setIsAnalyzing(false);
                 setError("AI Engine Offline");
+                const errMsg = err instanceof Error ? err.message : "Could not initialize the biological classification engine. Please check your connection.";
                 toast.error("Analysis Error", {
-                    description: "Could not initialize the biological classification engine. Please check your connection."
+                    description: errMsg,
+                    duration: 8000
                 });
             }
         }, 1000);
@@ -294,7 +309,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                     onClick={() => fileInputRef.current?.click()}
                     className="w-full min-h-[160px] border border-dashed rounded-[1.5rem] flex flex-col items-center justify-center gap-3 transition-all duration-300 cursor-pointer bg-white dark:bg-[#0d0d0d] border-slate-200 dark:border-white/10 hover:border-slate-300"
                 >
-                    <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={(e) => e.target.files && handleFile(e.target.files[0])} />
+                    <input type="file" ref={fileInputRef} className="hidden" accept="image/*" aria-label="Upload bee image" onChange={(e) => e.target.files && handleFile(e.target.files[0])} />
                     <Camera className="w-6 h-6 text-slate-400" />
                     <div className="text-center">
                         <h3 className="text-sm font-bold text-[#0F172A] dark:text-white">Select Bee Image</h3>

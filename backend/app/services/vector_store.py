@@ -104,9 +104,7 @@ class QdrantVectorStore:
             batch = nodes[i:i + batch_size]
             texts = [n.get("content", "")[:512] for n in batch]  # Truncate for speed
             
-            loop = asyncio.get_event_loop()
-            embedder = _get_embedder()
-            embeddings = await loop.run_in_executor(None, lambda: embedder.encode(texts, show_progress_bar=False))
+            embeddings = _get_embedder().encode(texts, show_progress_bar=False)
             
             points = []
             for j, (node, embedding) in enumerate(zip(batch, embeddings)):
@@ -153,9 +151,7 @@ class QdrantVectorStore:
         client = cls.get_client()
         
         # Embed query
-        embedder = _get_embedder()
-        loop = asyncio.get_event_loop()
-        query_vector = (await loop.run_in_executor(None, lambda: embedder.encode(query))).tolist()
+        query_vector = _get_embedder().encode(query).tolist()
         
         # Build filter
         must_filters = []
