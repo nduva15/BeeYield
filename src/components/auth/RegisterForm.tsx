@@ -53,12 +53,19 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
 
         setLoading(true);
 
+        const backendMap: Record<string, 'shop' | 'beeyield' | 'ceba'> = {
+            'shop': 'shop',
+            'professional': 'beeyield',
+            'admin': 'ceba'
+        };
+        const activeBackend = backendMap[variant] || 'shop';
+
         const { error } = await signUp(email, password, {
             first_name: firstName,
             last_name: lastName,
             role: defaultRole,
             ...additionalMetadata,
-        });
+        }, activeBackend);
 
         if (error) {
             toast.error('Registration failed', { description: error.message });
@@ -74,13 +81,21 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
 
     const handleGoogleSignUp = async () => {
         setGoogleLoading(true);
+
+        const backendMap: Record<string, 'shop' | 'beeyield' | 'ceba'> = {
+            'shop': 'shop',
+            'professional': 'beeyield',
+            'admin': 'ceba'
+        };
+        const activeBackend = backendMap[variant] || 'shop';
+
         // Store current path so callback knows where to return
         localStorage.setItem('authReturnTo', window.location.pathname);
 
         const { error } = await signInWithGoogle({
             role: defaultRole,
             ...additionalMetadata,
-        });
+        }, activeBackend);
         if (error) {
             toast.error('Google sign-up failed', { description: error.message });
             setGoogleLoading(false);

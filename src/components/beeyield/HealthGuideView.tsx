@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { Search } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from '@/components/ui/card';
 import { beeHealthData } from '@/data/beeHealthData';
 import { beeSpeciesData } from '@/data/beeSpeciesData';
-import { beeDeepKnowledge } from '@/data/beeDeepKnowledge';
+import beeyieldService from '@/services/beeyieldService';
 
 interface HealthGuideViewProps {
     onTabChange: (tab: string, message?: string) => void;
@@ -15,13 +15,37 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedSymptom, setSelectedSymptom] = useState('none');
     const [selectedSpecies, setSelectedSpecies] = useState('none');
+    const [communityKnowledge, setCommunityKnowledge] = useState<any[]>([]);
+    const [loadingKB, setLoadingKB] = useState(false);
+
+    // Fetch dynamic knowledge base articles from backend
+    useEffect(() => {
+        const fetchKB = async () => {
+            setLoadingKB(true);
+            try {
+                const results = await beeyieldService.getHealthKnowledgeBase(searchTerm || undefined);
+                setCommunityKnowledge(results || []);
+            } catch (err) {
+                console.error('Error fetching health knowledge base:', err);
+            } finally {
+                setLoadingKB(false);
+            }
+        };
+        // Debounce search
+        const timeout = setTimeout(fetchKB, 500);
+        return () => clearTimeout(timeout);
+    }, [searchTerm]);
 
     const detail = beeHealthData[selectedSymptom] || {
         signs: "N/A",
         symptoms: "N/A",
         treatment: "N/A",
         prevention: "N/A",
-        steps: []
+        steps: [],
+        riskLevel: "MEDIUM",
+        detection: "Visual inspection",
+        transmission: "Contact",
+        scientificName: ""
     };
 
     const speciesDetail = beeSpeciesData[selectedSpecies] || {
@@ -48,7 +72,6 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
     return (
         <div className="space-y-12 animate-in fade-in duration-700 pb-20">
 
-
             <div className="md:px-4 space-y-8">
                 <p className="text-[17.5px] text-slate-600/90 dark:text-slate-400 font-medium leading-relaxed max-w-4xl">
                     Browse common symptoms and health threats encountered in professional apiaries. Select a condition to see in-depth signs, symptoms, treatment, and biological prevention protocols.
@@ -62,6 +85,11 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
+                        {loadingKB && (
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                <Loader2 className="w-5 h-5 text-slate-400 animate-spin" />
+                            </div>
+                        )}
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
@@ -75,7 +103,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                     <SelectValue placeholder="Select a health condition..." />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl border-slate-200 dark:border-zinc-800 shadow-2xl p-2 max-h-[400px]">
-                                    <SelectItem value="none" className="font-semibold py-3 rounded-lg text-slate-400 italic">Select condition...</SelectItem>
+                                    <SelectItem value="none" className="font-semibold py-3 rounded-lg text-slate-400">Select condition...</SelectItem>
                                     {filteredSymptoms.map(s => (
                                         <SelectItem key={s} value={s} className="font-semibold py-3 rounded-lg">{s}</SelectItem>
                                     ))}
@@ -93,7 +121,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                     <SelectValue placeholder="Select a bee species..." />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl border-slate-200 dark:border-zinc-800 shadow-2xl p-2 max-h-[400px]">
-                                    <SelectItem value="none" className="font-semibold py-3 rounded-lg text-slate-400 italic">Select species...</SelectItem>
+                                    <SelectItem value="none" className="font-semibold py-3 rounded-lg text-slate-400">Select species...</SelectItem>
                                     {filteredSpecies.map(s => (
                                         <SelectItem key={s} value={s} className="font-semibold py-3 rounded-lg">{s}</SelectItem>
                                     ))}
@@ -101,6 +129,26 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                             </Select>
                         </div>
                     </div>
+
+                    {/* Backend Knowledge Base Results */}
+                    {communityKnowledge.length > 0 && searchTerm && (
+                        <div className="mt-8">
+                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-4">Community Knowledge Base</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {communityKnowledge.map((article: any) => (
+                                    <Card key={article.id} className="p-4 border border-slate-100 bg-slate-50/50 hover:bg-white transition-colors cursor-pointer" onClick={() => {
+                                        // Could open a detailed modal, for now just expanding selection if it matches
+                                    }}>
+                                        <div className="flex justify-between items-start">
+                                            <h4 className="font-bold text-slate-800">{article.title}</h4>
+                                            <Badge variant="outline" className="text-[10px] uppercase">{article.category}</Badge>
+                                        </div>
+                                        <p className="text-sm text-slate-500 mt-2 line-clamp-2">{article.description}</p>
+                                    </Card>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {selectedSymptom !== 'none' && (
                         <div className="mt-8 animate-in fade-in slide-in-from-top-4 duration-500">
@@ -112,7 +160,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                                 {selectedSymptom}
                                             </h1>
                                             {detail.scientificName && (
-                                                <p className="text-xl font-medium text-slate-500 italic dark:text-slate-400">
+                                                <p className="text-xl font-medium text-slate-500 dark:text-slate-400">
                                                     {detail.scientificName}
                                                 </p>
                                             )}
@@ -180,7 +228,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                     <div className="space-y-6 pt-4">
                                         <h2 className="text-[2.2rem] font-black text-[#0f172a] dark:text-white tracking-tight leading-tight uppercase">Action Protocol</h2>
                                         <ul className="space-y-5">
-                                            {detail.steps.map((step, i) => (
+                                            {detail.steps && detail.steps.map((step: string, i: number) => (
                                                 <li key={i} className="flex gap-5 items-start text-[19px] text-slate-600 dark:text-slate-400 font-medium">
                                                     <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center shrink-0 text-xs font-bold text-slate-500">
                                                         {i + 1}
@@ -222,7 +270,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                                 {selectedSpecies}
                                             </h1>
                                             {speciesDetail.scientificName && (
-                                                <p className="text-xl font-medium text-slate-500 italic dark:text-slate-400">
+                                                <p className="text-xl font-medium text-slate-500 dark:text-slate-400">
                                                     {speciesDetail.scientificName}
                                                 </p>
                                             )}
@@ -277,7 +325,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                         <div className="space-y-6">
                                             <h2 className="text-2xl font-black text-[#1B9157] uppercase tracking-tighter">Advantages</h2>
                                             <ul className="space-y-3">
-                                                {speciesDetail.pros.map((pro: string, i: number) => (
+                                                {speciesDetail.pros && speciesDetail.pros.map((pro: string, i: number) => (
                                                     <li key={i} className="flex items-center gap-3 text-lg font-bold text-slate-600 dark:text-slate-400">
                                                         <div className="w-2 h-2 rounded-full bg-[#1B9157]" />
                                                         {pro}
@@ -288,7 +336,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                         <div className="space-y-6">
                                             <h2 className="text-2xl font-black text-red-600 uppercase tracking-tighter">Management Challenges</h2>
                                             <ul className="space-y-3">
-                                                {speciesDetail.cons.map((con: string, i: number) => (
+                                                {speciesDetail.cons && speciesDetail.cons.map((con: string, i: number) => (
                                                     <li key={i} className="flex items-center gap-3 text-lg font-bold text-slate-600 dark:text-slate-400">
                                                         <div className="w-2 h-2 rounded-full bg-red-400" />
                                                         {con}
@@ -318,6 +366,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                             </Card>
                         </div>
                     )}
+
                     {/* Industry Intelligence 2026 - Always Visible when nothing selected */}
                     {selectedSymptom === 'none' && selectedSpecies === 'none' && (
                         <div className="mt-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">

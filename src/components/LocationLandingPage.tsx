@@ -131,7 +131,7 @@ const LocationLandingPage: React.FC<LocationProps> = ({
                                     "Managed hive deployments for regional crops",
                                     "Real-time colony health monitoring",
                                     "Expert agronomists on-call for field visits",
-                                    "Guaranteed pollination coverage"
+                                    "Comprehensive pollination coverage"
                                 ].map((item, i) => (
                                     <div key={i} className="flex items-center gap-3">
                                         <CheckCircle2 className="h-6 w-6 text-green-600" />

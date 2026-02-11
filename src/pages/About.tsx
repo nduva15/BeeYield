@@ -14,9 +14,7 @@ const About = () => {
           <Badge className="mb-6 bg-amber-100 text-amber-800 hover:bg-amber-200 border-amber-200 px-4 py-1.5 text-sm font-medium rounded-full transition-colors">
             Est. 2020 • Kibwezi, Kenya
           </Badge>
-          <h1 className="mb-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-            Cultivating the <span className="text-primary italic">Future</span> of Food
-          </h1>
+          Cultivating the <span className="text-primary">Future</span> of Food
           <p className="mx-auto mb-10 max-w-3xl text-xl text-muted-foreground leading-relaxed">
             Born from a family's shared vision in rural Kenya, we're on a mission to solve the global pollination crisis through precision pollination, technology, and ecosystem guardianship.
           </p>

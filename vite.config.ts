@@ -3,17 +3,28 @@ import react from '@vitejs/plugin-react-swc'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import path from 'path'
 
+// Detect if running inside `tauri dev`
+const isTauri = !!process.env.TAURI_ENV_PLATFORM
+
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [
         react(),
         tsconfigPaths(),
     ],
+    // Tauri expects a fixed port in dev mode
     server: {
         host: '127.0.0.1',
         port: 5173,
         strictPort: true,
     },
+    // Expose TAURI flag to frontend code via import.meta.env
+    define: {
+        __TAURI__: isTauri,
+    },
+    // Prevent Vite from obscuring Rust errors in Tauri dev
+    clearScreen: false,
+    envPrefix: ['VITE_', 'TAURI_'],
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './src'),

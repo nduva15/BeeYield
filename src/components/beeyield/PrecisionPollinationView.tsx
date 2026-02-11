@@ -31,7 +31,9 @@ import {
     AlertCircle,
     FileText,
     Waves,
-    Loader2
+    Loader2,
+    Bug,
+    Flower2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -309,20 +311,20 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                     } else {
                         console.log("No real pollination data found, using fallback simulation.");
                         setUsingRealData(false);
-                        setHives(generateFallbackHives(hiveCount));
+                        setHives(generateFallbackHives(184));
                     }
                 }
             } catch (error) {
                 console.error("Error fetching pollination data:", error);
                 toast.error("Failed to load real data. Using simulation mode.");
-                setHives(generateFallbackHives(hiveCount));
+                setHives(generateFallbackHives(184));
             } finally {
                 setIsLoading(false);
             }
         };
 
         fetchRealData();
-    }, []); // Only fetch on mount
+    }, []);
 
     const selectedHive = selectedHiveId === 'aggregate' ? null : hives.find(h => h.id === selectedHiveId);
 
@@ -438,6 +440,153 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                 <StatCard label="Coverage" value={`${results.coverageHealth}%`} colorClass={results.coverageHealth >= 90 ? "bg-[#1B9157]" : results.coverageHealth >= 70 ? "bg-[#F4D03F]" : "bg-red-500"} />
             </div>
 
+            {/* Three Paths to Pollination */}
+            <div className="mt-2">
+                <div className="flex items-center gap-3 mb-4 px-1">
+                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#F4D03F]/30 to-transparent" />
+                    <h2 className="text-xs font-black uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 whitespace-nowrap">
+                        Three Paths to Pollination
+                    </h2>
+                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#F4D03F]/30 to-transparent" />
+                </div>
+                <p className="text-center text-[11px] font-semibold text-slate-400 dark:text-slate-500 -mt-2 mb-5">
+                    Complete pollination management: Inland Pollination, In-Hive Pollination, and Disease Monitoring.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Path 1: Inland Pollination */}
+                    <motion.div
+                        whileHover={{ y: -4, boxShadow: '0 12px 40px rgba(27, 145, 87, 0.15)' }}
+                        className="relative bg-white dark:bg-[#111111] rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm p-6 overflow-hidden cursor-pointer group transition-all"
+                        onClick={() => onTabChange('pollination')}
+                    >
+                        <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-[#1B9157] to-[#1B9157]/40" />
+                        <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-[#1B9157]/5 group-hover:bg-[#1B9157]/10 transition-colors" />
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-11 h-11 rounded-xl bg-[#1B9157]/10 flex items-center justify-center group-hover:bg-[#1B9157]/20 transition-colors">
+                                <Flower2 className="w-5 h-5 text-[#1B9157]" />
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Inland Pollination</h3>
+                                <p className="text-[10px] font-semibold text-gray-400">Field Coverage & Efficiency</p>
+                            </div>
+                        </div>
+                        <div className="space-y-2.5 mb-5">
+                            <div className="flex items-center gap-2">
+                                <div className="w-1 h-1 rounded-full bg-[#1B9157]" />
+                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Foraging radius & flight mapping</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-1 h-1 rounded-full bg-[#1B9157]" />
+                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Crop-specific FPA targeting</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-1 h-1 rounded-full bg-[#1B9157]" />
+                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Hive placement optimization</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-1 h-1 rounded-full bg-[#1B9157]" />
+                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Weather-adjusted pollination yield</span>
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5">
+                                <div className={cn("w-2 h-2 rounded-full", results.foragingEfficiency >= 85 ? "bg-[#1B9157]" : "bg-[#F4D03F]")} />
+                                <span className="text-[10px] font-bold text-gray-400 uppercase">{results.foragingEfficiency}% Efficiency</span>
+                            </div>
+                            <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-[#1B9157] transition-colors" />
+                        </div>
+                    </motion.div>
+
+                    {/* Path 2: In-Hive Pollination */}
+                    <motion.div
+                        whileHover={{ y: -4, boxShadow: '0 12px 40px rgba(244, 208, 63, 0.15)' }}
+                        className="relative bg-white dark:bg-[#111111] rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm p-6 overflow-hidden cursor-pointer group transition-all"
+                        onClick={() => onTabChange('measurement')}
+                    >
+                        <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-[#F4D03F] to-[#F4D03F]/40" />
+                        <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-[#F4D03F]/5 group-hover:bg-[#F4D03F]/10 transition-colors" />
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-11 h-11 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center group-hover:bg-[#F4D03F]/20 transition-colors">
+                                <Hexagon className="w-5 h-5 text-[#F4D03F]" />
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">In-Hive Pollination</h3>
+                                <p className="text-[10px] font-semibold text-gray-400">Colony Optimization</p>
+                            </div>
+                        </div>
+                        <div className="space-y-2.5 mb-5">
+                            <div className="flex items-center gap-2">
+                                <div className="w-1 h-1 rounded-full bg-[#F4D03F]" />
+                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Temperature & humidity regulation</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-1 h-1 rounded-full bg-[#F4D03F]" />
+                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Acoustic health monitoring</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-1 h-1 rounded-full bg-[#F4D03F]" />
+                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Queen presence detection</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-1 h-1 rounded-full bg-[#F4D03F]" />
+                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Colony strength (FOB) tracking</span>
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5">
+                                <div className={cn("w-2 h-2 rounded-full", results.healthyHives > results.warningHives ? "bg-[#1B9157]" : "bg-[#F4D03F]")} />
+                                <span className="text-[10px] font-bold text-gray-400 uppercase">{results.healthyHives} Hives Optimal</span>
+                            </div>
+                            <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-[#F4D03F] transition-colors" />
+                        </div>
+                    </motion.div>
+
+                    {/* Path 3: Diseases */}
+                    <motion.div
+                        whileHover={{ y: -4, boxShadow: '0 12px 40px rgba(239, 68, 68, 0.1)' }}
+                        className="relative bg-white dark:bg-[#111111] rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm p-6 overflow-hidden cursor-pointer group transition-all"
+                        onClick={() => onTabChange('assistant')}
+                    >
+                        <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-red-500 to-red-500/40" />
+                        <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-red-500/5 group-hover:bg-red-500/10 transition-colors" />
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-11 h-11 rounded-xl bg-red-500/10 flex items-center justify-center group-hover:bg-red-500/20 transition-colors">
+                                <Bug className="w-5 h-5 text-red-500" />
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Diseases</h3>
+                                <p className="text-[10px] font-semibold text-gray-400">Detection & Prevention</p>
+                            </div>
+                        </div>
+                        <div className="space-y-2.5 mb-5">
+                            <div className="flex items-center gap-2">
+                                <div className="w-1 h-1 rounded-full bg-red-500" />
+                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Varroa mite pressure tracking</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-1 h-1 rounded-full bg-red-500" />
+                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Pesticide contamination alerts</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-1 h-1 rounded-full bg-red-500" />
+                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Brood disease early detection</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-1 h-1 rounded-full bg-red-500" />
+                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">AI-powered health diagnostics</span>
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5">
+                                <div className="w-2 h-2 rounded-full bg-[#1B9157]" />
+                                <span className="text-[10px] font-bold text-gray-400 uppercase">No Threats Detected</span>
+                            </div>
+                            <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-red-500 transition-colors" />
+                        </div>
+                    </motion.div>
+                </div>
+            </div>
+
             {/* Main Content Area - Refactored for better alignment */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-2 items-start">
 
@@ -488,6 +637,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                                         type="range" min="6" max="12" step="1" value={avgFrames}
                                         onChange={(e) => setAvgFrames(Number(e.target.value))}
                                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                        title="Adjust colony strength in frames of bees"
                                     />
                                 </div>
                                 <div className="flex justify-between text-[8px] font-bold text-gray-400 uppercase">

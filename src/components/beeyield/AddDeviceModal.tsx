@@ -73,7 +73,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[700px] bg-[#FDFBF9] dark:bg-[#1A1816] border-none rounded-[3rem] p-12 shadow-2xl">
                 <DialogHeader className="p-0 space-y-4">
-                    <DialogTitle className="text-4xl font-normal text-slate-800 dark:text-slate-100 italic">
+                    <DialogTitle className="text-4xl font-normal text-slate-800 dark:text-slate-100">
                         Assign device to hive
                     </DialogTitle>
                     <DialogDescription className="text-xl text-[#6B8BA4] dark:text-[#8EABC0] font-normal leading-relaxed">

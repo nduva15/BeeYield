@@ -1,16 +1,45 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Loader2 } from 'lucide-react';
+import beeyieldService from '@/services/beeyieldService';
 
 const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTabChange }) => {
-    // Mock Data to match screenshot
-    const timestamp = "-";
-    const lastLoginTimestamp = "-";
+    const [loading, setLoading] = useState(true);
+    const [stats, setStats] = useState<any>(null);
+    const [lastRefresh, setLastRefresh] = useState('-');
 
-    const topEndpoints: any[] = [];
+    const fetchStats = async () => {
+        setLoading(true);
+        try {
+            const data = await beeyieldService.getApiUsageStats(7);
+            setStats(data);
+            setLastRefresh(new Date().toLocaleString());
+        } catch (err) {
+            console.error('Error loading API stats:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    const apis: any[] = [];
+    useEffect(() => {
+        fetchStats();
+    }, []);
+
+    const totalCalls = stats?.total_calls ?? 0;
+    const avgResponseMs = stats?.avg_response_ms ? Math.round(stats.avg_response_ms) : 0;
+    const errorCount = stats?.error_count ?? 0;
+    const topEndpoints: { endpoint: string; count: number }[] = stats?.top_endpoints ?? [];
+    const limit = 10000;
+    const usagePercent = Math.min((totalCalls / limit) * 100, 100).toFixed(2);
+
+    const apis = [
+        { name: 'Supabase REST', checkPath: '/rest/v1/', lastCheck: lastRefresh },
+        { name: 'Supabase Auth', checkPath: '/auth/v1/', lastCheck: lastRefresh },
+        { name: 'BeeYield Backend', checkPath: '/api/v1/health', lastCheck: lastRefresh },
+        { name: 'AI Service', checkPath: '/api/v1/ai/health', lastCheck: lastRefresh },
+    ];
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-10">
@@ -20,7 +49,13 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
                     <h2 className="text-2xl font-bold text-[#0F172A] dark:text-white">API status</h2>
                     <p className="text-gray-500 dark:text-gray-400 mt-1">Quick connectivity overview for BeeYield services.</p>
                 </div>
-                <Button variant="outline" className="rounded-full px-6 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300">
+                <Button
+                    variant="outline"
+                    className="rounded-full px-6 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300"
+                    onClick={fetchStats}
+                    disabled={loading}
+                >
+                    {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                     Check now
                 </Button>
             </div>
@@ -35,13 +70,15 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
                     <div className="space-y-2">
                         <div className="flex justify-between items-center text-sm">
                             <span className="text-gray-500 dark:text-gray-400">Last refresh</span>
-                            <span className="font-mono font-medium text-gray-900 dark:text-white">{timestamp}</span>
+                            <span className="font-mono font-medium text-gray-900 dark:text-white">{lastRefresh}</span>
                         </div>
-                        {/* Simulate the faded second line or just leave it out if not needed, but snippet showed it */}
-                        {/* The screenshot shows a very faint second line, I'll add it for completeness but faint */}
                         <div className="flex justify-between items-center text-sm">
-                            <span className="text-gray-500 dark:text-gray-400">Last login (this browser)</span>
-                            <span className="font-mono font-medium text-gray-900 dark:text-white">-</span>
+                            <span className="text-gray-500 dark:text-gray-400">Avg response time</span>
+                            <span className="font-mono font-medium text-gray-900 dark:text-white">{avgResponseMs}ms</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                            <span className="text-gray-500 dark:text-gray-400">Errors (7d)</span>
+                            <span className="font-mono font-medium text-gray-900 dark:text-white">{errorCount}</span>
                         </div>
                     </div>
                 </CardContent>
@@ -53,37 +90,39 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
                     <div className="flex justify-between items-start">
                         <div>
                             <h3 className="text-lg font-bold text-gray-900 dark:text-white">API usage</h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Client-side estimate for last 7 days.</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Last 7 days usage statistics.</p>
                         </div>
-                        <Badge className="bg-[#DCFCE7] text-[#166534] hover:bg-[#DCFCE7] text-[12px] font-bold px-3 py-1">0%</Badge>
+                        <Badge className="bg-[#DCFCE7] text-[#166534] hover:bg-[#DCFCE7] text-[12px] font-bold px-3 py-1">{usagePercent}%</Badge>
                     </div>
 
                     {/* Progress Bar */}
                     <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                        <div className="h-full bg-green-500 w-[1%]" /> {/* approximate 0.32% */}
+                        <div className="h-full bg-green-500 transition-all duration-500" style={{ width: `${Math.max(parseFloat(usagePercent), 1)}%` }} />
                     </div>
 
                     {/* Stats */}
                     <div className="space-y-2">
                         <div className="flex justify-between items-center text-sm">
                             <span className="text-gray-500 dark:text-gray-400">Total calls</span>
-                            <span className="font-bold text-gray-900 dark:text-white">0</span>
+                            <span className="font-bold text-gray-900 dark:text-white">{totalCalls.toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between items-center text-sm">
                             <span className="text-gray-500 dark:text-gray-400">Limit</span>
-                            <span className="font-bold text-gray-900 dark:text-white">10000</span>
+                            <span className="font-bold text-gray-900 dark:text-white">{limit.toLocaleString()}</span>
                         </div>
                     </div>
 
                     <div className="space-y-3">
                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">TOP ENDPOINTS</p>
                         <div className="space-y-1">
-                            {topEndpoints.map((ep, idx) => (
+                            {topEndpoints.length > 0 ? topEndpoints.map((ep: any, idx: number) => (
                                 <div key={idx} className={`flex justify-between items-center py-2 px-3 rounded-lg text-sm ${idx % 2 !== 0 ? 'bg-gray-50 dark:bg-white/5' : ''}`}>
-                                    <span className="font-medium text-gray-700 dark:text-gray-300">{ep.path}</span>
+                                    <span className="font-medium text-gray-700 dark:text-gray-300">{ep.endpoint}</span>
                                     <span className="font-bold text-gray-900 dark:text-white">{ep.count}</span>
                                 </div>
-                            ))}
+                            )) : (
+                                <p className="text-sm text-gray-400 py-4 text-center">No endpoint data available yet</p>
+                            )}
                         </div>
                     </div>
                 </CardContent>

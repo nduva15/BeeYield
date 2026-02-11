@@ -14,11 +14,44 @@ import { cn } from '@/lib/utils';
 import heroImage from '@/assets/beeyield_hub_sensor.jpg';
 import { toast } from 'sonner';
 
+import beeyieldService from '@/services/beeyieldService';
+import { Loader2 } from 'lucide-react';
+
 interface BuyBeeYieldHubViewProps {
     onTabChange: (tab: string) => void;
 }
 
 const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) => {
+    const [inventory, setInventory] = React.useState<any[]>([]);
+    const [loadingInventory, setLoadingInventory] = React.useState(true);
+
+    React.useEffect(() => {
+        const fetchInventory = async () => {
+            setLoadingInventory(true);
+            try {
+                const data = await beeyieldService.getIotDevices();
+                if (data && data.length > 0) {
+                    setInventory(data);
+                } else {
+                    // Fallback to static demo data if none in DB
+                    setInventory([
+                        { id: '1', sn: '130324000185', desc: 'HUB_PRO_V3', lat: '-1.2863', long: '36.8221', status: 'Online', uptime: '15d 04:22' },
+                        { id: '2', sn: '220424000842', desc: 'SENSOR_NODE_INTERNAL', lat: '-1.2864', long: '36.8222', status: 'Online', uptime: '15d 04:22' },
+                        { id: '3', sn: '220424000843', desc: 'SENSOR_NODE_EXTERNAL', lat: '-1.2863', long: '36.8224', status: 'Offline', uptime: '02d 01:15' },
+                        { id: '4', sn: '250524001290', desc: 'HIVE_SCALE_PRO', lat: '-1.2865', long: '36.8221', status: 'Online', uptime: '12d 08:45' },
+                        { id: '5', sn: '250524001291', desc: 'HIVE_SCALE_PRO', lat: '-1.2866', long: '36.8220', status: 'Online', uptime: '12d 08:45' },
+                        { id: '6', sn: '100624000551', desc: 'BEEYIELD_GPS_TRACKER', lat: '-1.2869', long: '36.8225', status: 'Online', uptime: '30d 12:10' },
+                        { id: '7', sn: '100624000552', desc: 'BEEYIELD_GPS_TRACKER', lat: '-1.2870', long: '36.8226', status: 'Online', uptime: '30d 12:10' }
+                    ]);
+                }
+            } catch (err) {
+                console.error("Error loading inventory:", err);
+            } finally {
+                setLoadingInventory(false);
+            }
+        };
+        fetchInventory();
+    }, []);
     const stats = [
         { label: 'Happy Clients', value: '5000+' },
         { label: 'Client Support', value: '24/7' },
@@ -68,16 +101,6 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
             color: 'bg-yellow-50',
             image: '/images/products/beehub_sim_card.png'
         }
-    ];
-
-    const inventory = [
-        { id: '1', sn: '130324000185', desc: 'HUB_PRO_V3', lat: '-1.2863', long: '36.8221', status: 'Online', uptime: '15d 04:22' },
-        { id: '2', sn: '220424000842', desc: 'SENSOR_NODE_INTERNAL', lat: '-1.2864', long: '36.8222', status: 'Online', uptime: '15d 04:22' },
-        { id: '3', sn: '220424000843', desc: 'SENSOR_NODE_EXTERNAL', lat: '-1.2863', long: '36.8224', status: 'Offline', uptime: '02d 01:15' },
-        { id: '4', sn: '250524001290', desc: 'HIVE_SCALE_PRO', lat: '-1.2865', long: '36.8221', status: 'Online', uptime: '12d 08:45' },
-        { id: '5', sn: '250524001291', desc: 'HIVE_SCALE_PRO', lat: '-1.2866', long: '36.8220', status: 'Online', uptime: '12d 08:45' },
-        { id: '6', sn: '100624000551', desc: 'BEEYIELD_GPS_TRACKER', lat: '-1.2869', long: '36.8225', status: 'Online', uptime: '30d 12:10' },
-        { id: '7', sn: '100624000552', desc: 'BEEYIELD_GPS_TRACKER', lat: '-1.2870', long: '36.8226', status: 'Online', uptime: '30d 12:10' }
     ];
 
     const parameters = [

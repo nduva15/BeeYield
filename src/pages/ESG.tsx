@@ -396,7 +396,7 @@ const ESG = () => {
                 </div>
                 <div className="absolute -bottom-6 -left-6 bg-card p-6 rounded-xl shadow-xl border border-border/50 max-w-xs">
                   <Quote className="w-8 h-8 text-primary/30 mb-2" />
-                  <p className="text-sm italic text-muted-foreground mb-2">
+                  <p className="text-sm text-muted-foreground mb-2">
                     "Since BeeYield brought their hives to my farm, my mango harvest has doubled. My family eats better now."
                   </p>
                   <p className="text-xs font-medium">— Mary Mutua, Farmer, Kibwezi</p>
@@ -489,7 +489,7 @@ const ESG = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <Quote className="w-12 h-12 text-primary/30 mx-auto mb-6" />
-            <blockquote className="text-xl md:text-2xl italic text-foreground mb-8 leading-relaxed">
+            <blockquote className="text-xl md:text-2xl text-foreground mb-8 leading-relaxed">
               "ESG isn't a report we file once a year—it's how we wake up every morning. Every bee we protect, every farmer we train, every tree we plant is a step toward the Kenya and the Africa we want to see."
             </blockquote>
             <div className="flex items-center justify-center gap-4">

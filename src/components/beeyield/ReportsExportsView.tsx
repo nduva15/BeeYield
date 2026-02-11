@@ -462,7 +462,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
 
                     <div className="space-y-3">
                         {reports.length === 0 ? (
-                            <div className="py-12 bg-gray-50/50 dark:bg-[#1e1e1e]/10 border-2 border-dashed border-gray-100 dark:border-[#1e1e1e] rounded-[2rem] flex flex-col items-center justify-center text-gray-500 italic text-sm">
+                            <div className="py-12 bg-gray-50/50 dark:bg-[#1e1e1e]/10 border-2 border-dashed border-gray-100 dark:border-[#1e1e1e] rounded-[2rem] flex flex-col items-center justify-center text-gray-500 text-sm">
                                 <History className="w-8 h-8 opacity-20 mb-3" />
                                 {t('no_exports')}
                             </div>
@@ -517,7 +517,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
 
                     <div className="space-y-3">
                         {schedules.length === 0 ? (
-                            <div className="py-12 bg-gray-50/50 dark:bg-[#1e1e1e]/10 border-2 border-dashed border-gray-100 dark:border-[#1e1e1e] rounded-[2rem] flex flex-col items-center justify-center text-gray-500 italic text-sm">
+                            <div className="py-12 bg-gray-50/50 dark:bg-[#1e1e1e]/10 border-2 border-dashed border-gray-100 dark:border-[#1e1e1e] rounded-[2rem] flex flex-col items-center justify-center text-gray-500 text-sm">
                                 <Calendar className="w-8 h-8 opacity-20 mb-3" />
                                 {t('no_schedules')}
                             </div>
@@ -657,6 +657,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
                                         <p className="text-gray-500 text-sm">{t('reports_desc')}</p>
                                     </div>
                                     <button
+                                        aria-label="Close scheduled reports"
                                         onClick={() => setIsScheduleModalOpen(false)}
                                         className="w-12 h-12 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                                     >

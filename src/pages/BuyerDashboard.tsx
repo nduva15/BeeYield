@@ -202,6 +202,7 @@ const BuyerDashboard = () => {
             loadUserData();
             loadSuggestions();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
 
@@ -382,7 +383,7 @@ const BuyerDashboard = () => {
                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div>
-                                <h1 className="text-4xl font-black tracking-tightest">Dashboard <span className="text-primary italic">Overview</span></h1>
+                                <h1 className="text-4xl font-black tracking-tightest">Dashboard <span className="text-primary">Overview</span></h1>
                                 <p className="text-muted-foreground font-medium">Welcome back, {profileForm.firstName || 'Customer'}</p>
                             </div>
                             <Button onClick={() => navigate('/shop')} className="rounded-full px-8 shadow-glow">
@@ -417,7 +418,7 @@ const BuyerDashboard = () => {
                         <Dialog open={isTrackingOpen} onOpenChange={setIsTrackingOpen}>
                             <DialogContent className="max-w-md rounded-3xl">
                                 <DialogHeader>
-                                    <DialogTitle className="text-2xl font-black">Shipment <span className="text-primary italic">Tracking</span></DialogTitle>
+                                    <DialogTitle className="text-2xl font-black">Shipment <span className="text-primary">Tracking</span></DialogTitle>
                                     <DialogDescription>
                                         Order {trackingOrder?.order_number || trackingOrder?.id}
                                     </DialogDescription>
@@ -658,7 +659,7 @@ const BuyerDashboard = () => {
                                             <Input id="phone" name="phone" required placeholder="+254..." />
                                         </div>
                                         <div className="md:col-span-2 flex items-center gap-2">
-                                            <input type="checkbox" id="is_default" name="is_default" className="w-4 h-4" />
+                                            <input type="checkbox" id="is_default" name="is_default" aria-label="Set as default address" className="w-4 h-4" />
                                             <Label htmlFor="is_default">Set as default address</Label>
                                         </div>
                                         <div className="md:col-span-2 pt-4">
@@ -767,17 +768,17 @@ const BuyerDashboard = () => {
                                     <div className="absolute top-6 left-6 w-10 h-8 rounded bg-gradient-to-br from-amber-300 to-amber-500 opacity-80" />
                                     <CardContent className="p-6 pt-16 relative">
                                         <div className="absolute top-4 right-4">
-                                            <Button 
-                                                variant="ghost" 
-                                                size="icon" 
-                                                className="text-white/50 hover:text-white hover:bg-white/10" 
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="text-white/50 hover:text-white hover:bg-white/10"
                                                 onClick={() => handleDeletePaymentMethod(pm.id)}
                                             >
                                                 <XCircle className="h-5 w-5" />
                                             </Button>
                                         </div>
                                         <div className="mb-6">
-                                            <p 
+                                            <p
                                                 className="text-2xl font-mono tracking-[0.3em]"
                                                 aria-label={`Card ending in ${pm.last4}`}
                                             >
@@ -819,14 +820,14 @@ const BuyerDashboard = () => {
                 return (
                     <div className="space-y-8 animate-in fade-in duration-500">
                         <div>
-                            <h2 className="text-4xl font-black tracking-tightest">Curated <span className="text-primary italic">Picks</span></h2>
+                            <h2 className="text-4xl font-black tracking-tightest">Curated <span className="text-primary">Picks</span></h2>
                             <p className="text-muted-foreground font-medium">Based on your interest in precision apiculture</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             {suggestions.map((product) => (
                                 <Card key={product.id} className="border-none shadow-premium rounded-[2rem] overflow-hidden group">
                                     <div className="aspect-square bg-muted relative overflow-hidden">
-                                        <img src={product.images[0]} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                        <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                         <Badge className="absolute top-4 left-4 rounded-full">{product.badge || 'New'}</Badge>
                                     </div>
                                     <CardContent className="p-6">
@@ -894,7 +895,7 @@ const BuyerDashboard = () => {
                 return (
                     <div className="space-y-8 animate-in fade-in duration-500">
                         <div>
-                            <h2 className="text-4xl font-black tracking-tightest">My <span className="text-primary italic">Favorites</span></h2>
+                            <h2 className="text-4xl font-black tracking-tightest">My <span className="text-primary">Favorites</span></h2>
                             <p className="text-muted-foreground font-medium">Items you've saved for later</p>
                         </div>
 
@@ -910,13 +911,14 @@ const BuyerDashboard = () => {
                                 {wishlistItems.map((item) => (
                                     <Card key={item.id} className="border-none shadow-premium rounded-[2rem] overflow-hidden group relative">
                                         <button
+                                            aria-label="Remove from wishlist"
                                             onClick={() => removeFromWishlist(item.id)}
                                             className="absolute top-4 right-4 z-10 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm hover:bg-red-50 hover:text-red-500 transition-colors"
                                         >
                                             <Trash2 className="w-4 h-4" />
                                         </button>
                                         <div className="aspect-square bg-muted relative overflow-hidden">
-                                            <img src={item.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                            <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                             {item.badge && <Badge className="absolute top-4 left-4 rounded-full">{item.badge}</Badge>}
                                         </div>
                                         <CardContent className="p-6">
@@ -944,7 +946,7 @@ const BuyerDashboard = () => {
                 return (
                     <div className="space-y-8 animate-in fade-in duration-500">
                         <div>
-                            <h2 className="text-4xl font-black tracking-tightest">Support <span className="text-primary italic">Center</span></h2>
+                            <h2 className="text-4xl font-black tracking-tightest">Support <span className="text-primary">Center</span></h2>
                             <p className="text-muted-foreground font-medium">How can we help you today?</p>
                         </div>
                         <div className="grid md:grid-cols-3 gap-6">
@@ -1021,7 +1023,7 @@ const BuyerDashboard = () => {
                 return (
                     <div className="space-y-8 animate-in fade-in duration-500">
                         <div>
-                            <h2 className="text-4xl font-black tracking-tightest">Secure <span className="text-primary italic">Checkout</span></h2>
+                            <h2 className="text-4xl font-black tracking-tightest">Secure <span className="text-primary">Checkout</span></h2>
                             <p className="text-muted-foreground font-medium">Complete your premium order</p>
                         </div>
 
@@ -1294,7 +1296,7 @@ const BuyerDashboard = () => {
             <Dialog open={isTrackingOpen} onOpenChange={setIsTrackingOpen}>
                 <DialogContent className="max-w-md rounded-3xl">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-black">Shipment <span className="text-primary italic">Tracking</span></DialogTitle>
+                        <DialogTitle className="text-2xl font-black">Shipment <span className="text-primary">Tracking</span></DialogTitle>
                         <DialogDescription>
                             Order {trackingOrder?.order_number || trackingOrder?.id}
                         </DialogDescription>

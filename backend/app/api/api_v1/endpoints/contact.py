@@ -52,15 +52,14 @@ def submit_contact_form(
     # 1. Prepare data
     db_data = request_in.dict(exclude_unset=True)
     
-    # Fill derived fields
-    if 'first_name' in db_data and 'last_name' in db_data and 'name' not in db_data:
-        db_data['name'] = f"{request_in.first_name} {request_in.last_name}"
+    # Fill derived fields (avoid overwriting if already provided)
+    if 'first_name' in db_data and 'last_name' in db_data:
+        db_data.setdefault('name', f"{request_in.first_name} {request_in.last_name}")
     
-    if 'inquiry_type' in db_data and 'topic' in db_data and 'subject' not in db_data:
-        db_data['subject'] = f"{request_in.inquiry_type.upper()}: {request_in.topic}"
+    if 'inquiry_type' in db_data and 'topic' in db_data:
+        db_data.setdefault('subject', f"{request_in.inquiry_type.upper()}: {request_in.topic}")
 
-    if 'status' not in db_data:
-        db_data['status'] = 'new'
+    db_data.setdefault('status', 'new')
     
     # 2. Try Database Save
     success = False
@@ -70,17 +69,23 @@ def submit_contact_form(
             try:
                 result = db_client.table("contact_submissions").insert(db_data).execute()
                 success = True
+                print(f"✅ DB Save Successful: {request_in.email}")
             except Exception as e:
                 # Retry without derived fields if schema mismatch
+                print(f"⚠️ DB Insert Error: {e}")
                 if "column" in str(e).lower() and ("name" in str(e).lower() or "subject" in str(e).lower()):
-                    db_data.pop('name', None)
-                    db_data.pop('subject', None)
-                    result = db_client.table("contact_submissions").insert(db_data).execute()
+                    temp_data = db_data.copy()
+                    temp_data.pop('name', None)
+                    temp_data.pop('subject', None)
+                    result = db_client.table("contact_submissions").insert(temp_data).execute()
                     success = True
+                    print(f"✅ DB Save Successful (retry without derived) for {request_in.email}")
                 else:
                     raise e
+        else:
+            print("⚠️ No DB Client available for contact submission.")
     except Exception as e:
-        print(f"⚠️ DB Connection Failed: {e}. Switching to Offline Mode.")
+        print(f"⚠️ DB Connection/Save Failed: {e}. Switching to Offline Mode.")
     
     # 3. Fallback to Local File if DB failed
     if not success:
@@ -89,7 +94,17 @@ def submit_contact_form(
             import os
             from datetime import datetime
             
-            offline_file = "offline_submissions.json"
+            # Use absolute path to ensure we can write it regardless of cwd
+            # contact.py is in backend/app/api/api_v1/endpoints/ -> 5 levels up to project root
+            current_path = os.path.abspath(__file__)
+            project_root = current_path
+            for _ in range(5):
+                project_root = os.path.dirname(project_root)
+            
+            offline_file = os.path.join(project_root, "offline_submissions.json")
+            
+            print(f"ℹ️ Attempting offline save to {offline_file}")
+            
             entry = {
                 "timestamp": datetime.now().isoformat(),
                 "type": "contact_submission",
@@ -101,9 +116,11 @@ def submit_contact_form(
             if os.path.exists(offline_file):
                 try:
                     with open(offline_file, "r") as f:
-                        existing_data = json.load(f)
-                except:
-                    pass
+                        file_content = f.read().strip()
+                        if file_content:
+                            existing_data = json.loads(file_content)
+                except Exception as read_err:
+                    print(f"⚠️ Could not read existing offline file: {read_err}")
             
             existing_data.append(entry)
             
@@ -115,27 +132,22 @@ def submit_contact_form(
             success = True
         except Exception as file_error:
             print(f"❌ Critical Error: Failed to save to file: {file_error}")
-            raise HTTPException(status_code=500, detail="Submission failed. Please try again later.")
+            # Even if file saving fails, if the DB succeeded we are fine (but success is False here)
+            if not success:
+                raise HTTPException(status_code=500, detail=f"Submission failed during database and offline fallback. Error: {str(file_error)}")
 
-    # 4. Attempt Notifications (might fail if no net, but we wrap it)
+    # 4. Attempt Notifications (wrapped in try-except)
     try:
         background_tasks.add_task(
             email.send_email,
             "info@beeyield.com",
             f"New {request_in.inquiry_type.capitalize()} Inquiry",
-            f"From: {request_in.first_name} {request_in.last_name}\nEmail: {request_in.email}\nTopic: {request_in.topic}\nMessage: {request_in.message}"
+            f"From: {request_in.first_name} {request_in.last_name}\nEmail: {request_in.email}\nTopic: {request_in.topic}\nMessage: {request_in.message or 'No message provided'}"
         )
-        
-        background_tasks.add_task(
-            email.send_email,
-            request_in.email,
-            "Inquiry Received - BeeYield",
-            f"Hi {request_in.first_name}, thanks for contacting BeeYield. We will get back to you shortly regarding your {request_in.inquiry_type} inquiry."
-        )
-    except:
-        pass
+    except Exception as t_err:
+        print(f"⚠️ Notification task failed: {t_err}")
 
-    return {"status": "success", "message": "Inquiry submitted successfully"}
+    return {"status": "success", "message": "Inquiry submitted successfully" + (" (Offline Mode)" if not success else "")}
 
 
 @router.post("/pollination", response_model=dict)
@@ -168,13 +180,17 @@ def request_pollination(
     except Exception as e:
         print(f"⚠️ DB Connection Failed (Pollination): {e}")
 
-    # Fallback
+    # 3. Fallback
     if not success:
         try:
             import json, os
             from datetime import datetime
             
-            offline_file = "offline_submissions.json"
+            app_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+            offline_file = os.path.join(app_dir, "offline_submissions.json")
+            
+            print(f"ℹ️ Attempting offline pollination save to {offline_file}")
+            
             entry = {
                 "timestamp": datetime.now().isoformat(),
                 "type": "pollination_request",
@@ -184,15 +200,19 @@ def request_pollination(
             existing_data = []
             if os.path.exists(offline_file):
                 try: 
-                    with open(offline_file, "r") as f: existing_data = json.load(f)
+                    with open(offline_file, "r") as f: 
+                        content = f.read().strip()
+                        if content:
+                            existing_data = json.loads(content)
                 except: pass
             
             existing_data.append(entry)
             with open(offline_file, "w") as f: json.dump(existing_data, f, indent=2)
             success = True
-            print(f"✅ Saved pollination request to {offline_file}")
+            print(f"✅ Saved pollination request to {offline_file} (Offline Mode)")
         except Exception as e:
-             raise HTTPException(status_code=500, detail="Submission failed. Please try again later.")
+             print(f"❌ Critical Error in Pollination Offline Save: {e}")
+             raise HTTPException(status_code=500, detail=f"Submission failed. Error: {str(e)}")
 
     try:
         background_tasks.add_task(
@@ -201,17 +221,10 @@ def request_pollination(
             "New Pollination Request",
             f"Farm: {request_in.farm_name}, Acres: {request_in.acres}, Crop: {request_in.crop_type}\nContact: {request_in.full_name} ({request_in.email})"
         )
-        
-        background_tasks.add_task(
-            email.send_email,
-            request_in.email,
-            "Pollination Request Received - BeeYield",
-            f"Dear {request_in.full_name},\n\nWe have received your pollination request for {request_in.farm_name}. Our team will review the details and contact you shortly."
-        )
     except:
         pass
         
-    return {"status": "success", "message": "Pollination request submitted successfully"}
+    return {"status": "success", "message": "Pollination request submitted successfully" + (" (Offline Mode)" if not success else "")}
 
 @router.post("/newsletter", response_model=dict)
 def subscribe_newsletter(
@@ -241,10 +254,12 @@ def subscribe_newsletter(
                 existing = db_client.table("newsletter_subscribers").select("id").eq("email", request_in.email).execute()
                 if existing.data:
                     return {"status": "success", "message": "Already subscribed"}
-            except: pass
+            except Exception as check_err: 
+                print(f"⚠️ Newsletter dupe check failed: {check_err}")
 
             result = db_client.table("newsletter_subscribers").insert(db_data).execute()
             success = True
+            print(f"✅ Newsletter Sub DB Successful: {request_in.email}")
     except Exception as e:
         print(f"⚠️ DB Connection Failed (Newsletter): {e}")
 
@@ -254,7 +269,11 @@ def subscribe_newsletter(
             import json, os
             from datetime import datetime
             
-            offline_file = "offline_submissions.json"
+            app_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+            offline_file = os.path.join(app_dir, "offline_submissions.json")
+            
+            print(f"ℹ️ Attempting offline newsletter save to {offline_file}")
+            
             entry = {
                 "timestamp": datetime.now().isoformat(),
                 "type": "newsletter_subscription",
@@ -264,7 +283,10 @@ def subscribe_newsletter(
             existing_data = []
             if os.path.exists(offline_file):
                 try: 
-                    with open(offline_file, "r") as f: existing_data = json.load(f)
+                    with open(offline_file, "r") as f: 
+                        content = f.read().strip()
+                        if content:
+                            existing_data = json.loads(content)
                 except: pass
             
             # Check for dupes in offline file to avoid spamming file
@@ -273,11 +295,14 @@ def subscribe_newsletter(
             if not is_dupe:
                 existing_data.append(entry)
                 with open(offline_file, "w") as f: json.dump(existing_data, f, indent=2)
-                print(f"✅ Saved newsletter sub to {offline_file}")
+                print(f"✅ Saved newsletter sub to {offline_file} (Offline Mode)")
+            else:
+                print(f"ℹ️ Newsletter sub already in offline file: {request_in.email}")
             
             success = True
         except Exception as e:
-             raise HTTPException(status_code=500, detail="Submission failed. Please try again later.")
+             print(f"❌ Critical Error in Newsletter Offline Save: {e}")
+             raise HTTPException(status_code=500, detail=f"Submission failed. Error: {str(e)}")
     
     try:
         # Wrap email in a try-except to ensure we return success if DB/Offline worked
@@ -301,6 +326,6 @@ def subscribe_newsletter(
 
         return {"status": "success", "message": "Subscribed successfully" + (" (Offline Mode)" if not success else "")}
     except Exception as e:
-        print(f"❌ Critical error in newsletter subscription: {e}")
+        print(f"❌ Critical error in newsletter subscription completion: {e}")
         raise HTTPException(status_code=500, detail=f"Submission failed: {str(e)}")
 

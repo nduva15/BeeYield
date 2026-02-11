@@ -11,12 +11,20 @@ from qdrant_client import QdrantClient
 from qdrant_client.http import models
 from qdrant_client.http.models import Distance, VectorParams, PointStruct
 
-# Use a lightweight embedding model for speed
-try:
-    from sentence_transformers import SentenceTransformer
-    EMBEDDER = SentenceTransformer('all-MiniLM-L6-v2')  # 384 dimensions, fast
-except ImportError:
-    EMBEDDER = None
+# Use a lightweight embedding model for speed (lazy loaded)
+EMBEDDER = None
+_EMBEDDER_LOADED = False
+
+def _get_embedder():
+    global EMBEDDER, _EMBEDDER_LOADED
+    if not _EMBEDDER_LOADED:
+        _EMBEDDER_LOADED = True
+        try:
+            from sentence_transformers import SentenceTransformer
+            EMBEDDER = SentenceTransformer('all-MiniLM-L6-v2')  # 384 dimensions, fast
+        except ImportError:
+            EMBEDDER = None
+    return EMBEDDER
 
 COLLECTION_NAME = "beeyield_lakehouse"
 VECTOR_SIZE = 384
@@ -40,7 +48,8 @@ class QdrantVectorStore:
         if cls._initialized and not force_rebuild:
             return {"status": "already_initialized"}
         
-        if EMBEDDER is None:
+        embedder = _get_embedder()
+        if embedder is None:
             return {"status": "error", "message": "sentence-transformers not installed"}
 
         client = cls.get_client()
@@ -95,7 +104,9 @@ class QdrantVectorStore:
             batch = nodes[i:i + batch_size]
             texts = [n.get("content", "")[:512] for n in batch]  # Truncate for speed
             
-            embeddings = EMBEDDER.encode(texts, show_progress_bar=False)
+            loop = asyncio.get_event_loop()
+            embedder = _get_embedder()
+            embeddings = await loop.run_in_executor(None, lambda: embedder.encode(texts, show_progress_bar=False))
             
             points = []
             for j, (node, embedding) in enumerate(zip(batch, embeddings)):
@@ -133,7 +144,7 @@ class QdrantVectorStore:
         """
         Sub-second semantic search with metadata filtering.
         """
-        if EMBEDDER is None:
+        if _get_embedder() is None:
             return {"summary": "", "sources": []}
         
         if not cls._initialized:
@@ -142,7 +153,9 @@ class QdrantVectorStore:
         client = cls.get_client()
         
         # Embed query
-        query_vector = EMBEDDER.encode(query).tolist()
+        embedder = _get_embedder()
+        loop = asyncio.get_event_loop()
+        query_vector = (await loop.run_in_executor(None, lambda: embedder.encode(query))).tolist()
         
         # Build filter
         must_filters = []

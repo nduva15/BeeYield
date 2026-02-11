@@ -53,7 +53,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 
+import { submitContactForm } from "@/services/contactService";
+import { useToast } from "@/hooks/use-toast";
+
 const Diseases = () => {
+    const { toast } = useToast();
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -66,10 +71,50 @@ const Diseases = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Handle form submission logic here
-        console.log("Form submitted:", formData);
+        setLoading(true);
+
+        try {
+            // Split name into first/last for backend consistency
+            const nameParts = formData.name.trim().split(/\s+/);
+            const first_name = nameParts[0] || "";
+            const last_name = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "Unknown";
+
+            await submitContactForm({
+                first_name,
+                last_name,
+                email: formData.email,
+                phone: formData.phone,
+                city: "Nairobi", // Default or add field
+                state: "Nairobi",
+                country: "Kenya",
+                inquiry_type: "diseases",
+                topic: "Disease Detection Inquiry",
+                message: formData.message
+            });
+
+            toast({
+                title: "Inquiry Sent!",
+                description: "We've received your message and will get back to you soon.",
+            });
+
+            setFormData({
+                name: "",
+                email: "",
+                phone: "+254",
+                message: ""
+            });
+        } catch (error) {
+            console.error(error);
+            toast({
+                title: "Submission Failed",
+                description: "There was an error sending your message. Please try again.",
+                variant: "destructive"
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
     const benefits = [
@@ -444,8 +489,8 @@ const Diseases = () => {
                                             required
                                         />
                                     </div>
-                                    <Button type="submit" className="w-full">
-                                        Send Message
+                                    <Button type="submit" className="w-full" disabled={loading}>
+                                        {loading ? "Sending..." : "Send Message"}
                                     </Button>
                                 </form>
 

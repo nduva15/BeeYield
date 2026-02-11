@@ -83,7 +83,7 @@ const Footer = () => {
         </div>
 
         <div className="mt-8 border-t border-border/40 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} BeeYield. Dynamic Optimization & Honey Trail. Secure Intelligence Interface.</p>
+          <p>&copy; {new Date().getFullYear()} BeeYield. All rights reserved.</p>
           <div className="flex gap-6">
             <Link to="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
             <Link to="/terms" className="hover:text-primary transition-colors">Terms of Service</Link>

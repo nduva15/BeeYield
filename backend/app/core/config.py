@@ -33,6 +33,21 @@ class Settings(BaseSettings):
     SUPABASE_ANON_KEY: Optional[str] = Field(default=None)
     SUPABASE_SERVICE_ROLE_KEY: Optional[str] = Field(default=None)
     SUPABASE_JWT_SECRET: Optional[str] = None
+
+    # Shop specific
+    SUPABASE_URL_SHOP: Optional[str] = Field(default=None)
+    SUPABASE_KEY_SHOP: Optional[str] = Field(default=None)
+    SUPABASE_SERVICE_ROLE_KEY_SHOP: Optional[str] = Field(default=None)
+
+    # BeeYield specific
+    SUPABASE_URL_BEEYIELD: Optional[str] = Field(default=None)
+    SUPABASE_KEY_BEEYIELD: Optional[str] = Field(default=None)
+    SUPABASE_SERVICE_ROLE_KEY_BEEYIELD: Optional[str] = Field(default=None)
+
+    # CEBA specific
+    SUPABASE_URL_CEBA: Optional[str] = Field(default=None)
+    SUPABASE_KEY_CEBA: Optional[str] = Field(default=None)
+    SUPABASE_SERVICE_ROLE_KEY_CEBA: Optional[str] = Field(default=None)
     
     OPENAI_API_KEY: Optional[str] = Field(default=None)
     GOOGLE_API_KEY: Optional[str] = Field(default=None)

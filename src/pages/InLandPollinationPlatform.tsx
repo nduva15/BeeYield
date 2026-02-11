@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { PollinationContactForm } from "@/components/PollinationContactForm";
 import { Card, CardContent } from "@/components/ui/card";
 
 const InLandPollination = () => {
@@ -49,11 +50,11 @@ const InLandPollination = () => {
                 PLIP delivers key in-land data on per-flower bee visits to evaluate pollination efficacy.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Button size="lg" className="shadow-lg" asChild>
-                  <Link to="/pollination-request">Book Pollination Service</Link>
+                <Button size="lg" className="shadow-lg" onClick={() => document.getElementById('in-land-form')?.scrollIntoView({ behavior: 'smooth' })}>
+                  Book Pollination Service
                 </Button>
                 <Button size="lg" variant="outline" className="gap-2" asChild>
-                  <Link to="/precision-pollination"><Play className="h-4 w-4" /> View Sensor Demo</Link>
+                  <Link to="/precision-pollination"><Play className="h-4 w-4" /> View Hive Sensors</Link>
                 </Button>
               </div>
             </div>
@@ -93,7 +94,7 @@ const InLandPollination = () => {
 
             <div className="bg-secondary/50 p-8 rounded-2xl border-l-4 border-primary">
               <Quote className="h-10 w-10 text-primary mb-4 opacity-50" />
-              <p className="text-lg text-foreground italic leading-relaxed mb-6">
+              <p className="text-lg text-foreground leading-relaxed mb-6">
                 "PLIP lets us see the actual number of bees that visit the flowers. Now I can check the amount of pollination in our lands 24/7."
               </p>
               <div>
@@ -117,7 +118,7 @@ const InLandPollination = () => {
                 </div>
                 <h3 className="text-2xl font-bold mb-4 text-foreground">We Can Hear Bees!</h3>
                 <p className="text-muted-foreground leading-relaxed mb-6">
-                  Redesigned to withstand the rigors of the land, our new sensor boasts a larger enclosure to deliver improved battery life, and features a custom analysis precisely tuned to detect the flight audio signature of the bees.
+                  Designed to handle outdoor conditions, our new sensor features a larger enclosure for improved battery life and uses custom analysis to detect bee flight signatures.
                 </p>
                 <Button variant="link" className="p-0 h-auto text-primary">
                   Learn More <ChevronRight className="h-4 w-4 ml-1" />
@@ -187,7 +188,7 @@ const InLandPollination = () => {
 
               {/* Research Quote */}
               <div className="bg-muted/50 p-4 rounded-lg border-l-4 border-primary">
-                <p className="text-sm italic text-foreground mb-2">
+                <p className="text-sm text-foreground mb-2">
                   "We built highly sensitive analysis models that can distinguish the acoustic signature of a flying bee from a tractor engine on the same frequency."
                 </p>
                 <p className="text-xs font-bold text-foreground">George Clouston</p>
@@ -217,7 +218,7 @@ const InLandPollination = () => {
                       <p className="text-xs text-muted-foreground">{t.role}</p>
                     </div>
                   </div>
-                  <p className="text-muted-foreground text-sm italic leading-relaxed mb-4">"{t.quote}"</p>
+                  <p className="text-muted-foreground text-sm leading-relaxed mb-4">"{t.quote}"</p>
                   <div className="flex gap-1">
                     {[...Array(5)].map((_, i) => <Star key={i} className="h-4 w-4 fill-primary text-primary" />)}
                   </div>
@@ -253,14 +254,12 @@ const InLandPollination = () => {
       {/* Partners */}
       <section className="py-24 bg-muted/20">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center mb-20 bg-background p-8 rounded-2xl shadow-xl">
-            <h2 className="text-3xl font-bold mb-4">Try BeeYield in your apiary</h2>
-            <p className="text-muted-foreground mb-6">
-              BeeYield is constantly evolving. We invite you to take part in the international testing of our system – together, we can advance technology that protects bees worldwide.
-            </p>
-            <Button size="lg" className="w-full sm:w-auto" asChild>
-              <Link to="/contact">Join the Program</Link>
-            </Button>
+          <div className="max-w-2xl mx-auto mb-20">
+            <PollinationContactForm
+              type="in_land"
+              title="Try BeeYield In-Land in your apiary"
+              description="BeeYield is constantly evolving. We invite you to take part in the international testing of our system – together, we can advance technology that protects bees worldwide."
+            />
           </div>
 
           <div className="text-center">

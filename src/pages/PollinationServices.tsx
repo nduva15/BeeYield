@@ -37,8 +37,8 @@ const PollinationServices = () => {
         },
         {
             icon: Activity,
-            title: "Acoustic Hive Wellness",
-            description: "AI analysis of colony sounds to detect queen presence and general hive productivity levels.",
+            title: "Hive Health Monitoring",
+            description: "Analysis of colony sounds to detect queen presence and general hive productivity levels.",
             link: "/precision-pollination"
         },
         {
@@ -95,29 +95,29 @@ const PollinationServices = () => {
                                 🐝 East Africa's Premier Pollination Partner
                             </Badge>
 
-                            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black leading-[1.1] tracking-tighter">
+                            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black leading-[1.1] tracking-tighter animate-fade-in-up">
                                 BeeYield <span className="text-amber-500 block">Precision Pollination</span>
                             </h1>
 
-                            <p className="text-lg sm:text-xl text-neutral-600 max-w-lg mx-auto lg:mx-0 leading-relaxed font-medium">
+                            <p className="text-lg sm:text-xl text-neutral-600 max-w-lg mx-auto lg:mx-0 leading-relaxed font-medium animate-fade-in-up" style={{ animationDelay: "150ms" }}>
                                 Data-driven pollination solutions for commercial crop growers.
                             </p>
 
-                            <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center lg:justify-start">
+                            <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center lg:justify-start animate-fade-in-up" style={{ animationDelay: "300ms" }}>
                                 <Link to="/pollination-request" className="w-full sm:w-auto">
-                                    <Button size="lg" className="w-full sm:w-auto bg-[#FCD34D] text-black hover:bg-[#F5C518] text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 font-bold shadow-lg rounded-xl sm:rounded-2xl border-none">
+                                    <Button size="lg" className="w-full sm:w-auto bg-[#FCD34D] text-black hover:bg-[#F5C518] text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 font-bold shadow-lg rounded-xl sm:rounded-2xl border-none transition-transform active:scale-95">
                                         Get A FREE Pollination Consultation
                                     </Button>
                                 </Link>
                                 <Link to="/pollination-solutions" className="w-full sm:w-auto">
-                                    <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 border-neutral-300 text-neutral-900 hover:bg-white/50 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 bg-transparent font-black rounded-xl sm:rounded-2xl">
+                                    <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 border-neutral-300 text-neutral-900 hover:bg-white/50 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 bg-transparent font-black rounded-xl sm:rounded-2xl transition-transform active:scale-95">
                                         See How It Works
                                     </Button>
                                 </Link>
                             </div>
 
                             {/* Quick Stats - Responsive */}
-                            <div className="grid grid-cols-3 gap-3 sm:gap-6 pt-6 sm:pt-8 border-t border-neutral-300/50 font-black">
+                            <div className="grid grid-cols-3 gap-3 sm:gap-6 pt-6 sm:pt-8 border-t border-neutral-300/50 font-black animate-fade-in-up" style={{ animationDelay: "450ms" }}>
                                 <div className="text-center lg:text-left">
                                     <p className="text-2xl sm:text-3xl md:text-4xl text-green-700 tracking-tighter">35%</p>
                                     <p className="text-neutral-500 text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-widest">Yield Increase</p>
@@ -268,7 +268,7 @@ const PollinationServices = () => {
                             Our Solutions
                         </Badge>
                         <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-foreground tracking-tighter px-2">
-                            Three Paths to <span className="text-amber-600 italic">Perfection</span>
+                            Three Paths to <span className="text-amber-600">Perfection</span>
                         </h2>
                         <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium px-2">
                             Complete protection and optimization: In-Hive, In-Field, and Disease Defense.
@@ -309,29 +309,29 @@ const PollinationServices = () => {
                         </Card>
 
                         {/* In-Field Insights */}
-                        <Card className="group relative overflow-hidden border-none shadow-premium bg-white dark:bg-gray-950 rounded-[3rem] transition-all duration-700 hover:-translate-y-2">
-                            <CardContent className="p-10 relative z-10 h-full flex flex-col">
-                                <div className="flex flex-col gap-6 h-full">
-                                    <div className="w-20 h-20 rounded-3xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0 animate-pulse">
+                        <Card className="group relative overflow-hidden border-none shadow-premium bg-white dark:bg-gray-950 rounded-2xl sm:rounded-[2rem] lg:rounded-[3rem] transition-all duration-700 hover:-translate-y-2">
+                            <CardContent className="p-6 sm:p-8 md:p-10 relative z-10 h-full flex flex-col">
+                                <div className="flex flex-col gap-4 sm:gap-6 h-full">
+                                    <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0 animate-pulse">
                                         <Eye className="h-10 w-10 text-green-600 dark:text-green-400" />
                                     </div>
-                                    <div className="space-y-4 flex-1">
-                                        <h3 className="text-3xl font-black text-foreground tracking-tight">In-Field <br /> Insights</h3>
-                                        <p className="text-base text-muted-foreground leading-relaxed font-medium">
+                                    <div className="space-y-3 sm:space-y-4 flex-1">
+                                        <h3 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">In-Field <br /> Insights</h3>
+                                        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed font-medium">
                                             Measure actual bee activity across your crops. See which areas are pollinated
                                             and identify gaps in real-time.
                                         </p>
-                                        <ul className="space-y-3 pt-2">
+                                        <ul className="space-y-2 sm:space-y-3 pt-2">
                                             {["Flower visitation tracking", "Pollination heatmaps", "Weather correlation data"].map((feature, i) => (
-                                                <li key={i} className="flex items-center gap-3 text-sm font-bold">
-                                                    <Check className="h-5 w-5 text-green-500" />
+                                                <li key={i} className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm font-bold">
+                                                    <Check className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 flex-shrink-0" />
                                                     {feature}
                                                 </li>
                                             ))}
                                         </ul>
                                     </div>
-                                    <Link to="/in-land-pollination" className="mt-auto pt-8">
-                                        <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-black h-12 rounded-xl">
+                                    <Link to="/in-land-pollination" className="mt-auto pt-4 sm:pt-8">
+                                        <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-black h-11 sm:h-12 rounded-xl text-sm sm:text-base">
                                             Explore Field Insights
                                             <ArrowRight className="ml-2 h-4 w-4" />
                                         </Button>
@@ -341,28 +341,28 @@ const PollinationServices = () => {
                         </Card>
 
                         {/* Disease Defense */}
-                        <Card className="group relative overflow-hidden border-none shadow-premium bg-white dark:bg-gray-950 rounded-[3rem] transition-all duration-700 hover:-translate-y-2">
-                            <CardContent className="p-10 relative z-10 h-full flex flex-col">
-                                <div className="flex flex-col gap-6 h-full">
-                                    <div className="w-20 h-20 rounded-3xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0 animate-pulse">
+                        <Card className="group relative overflow-hidden border-none shadow-premium bg-white dark:bg-gray-950 rounded-2xl sm:rounded-[2rem] lg:rounded-[3rem] transition-all duration-700 hover:-translate-y-2">
+                            <CardContent className="p-6 sm:p-8 md:p-10 relative z-10 h-full flex flex-col">
+                                <div className="flex flex-col gap-4 sm:gap-6 h-full">
+                                    <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0 animate-pulse">
                                         <Shield className="h-10 w-10 text-red-600 dark:text-red-400" />
                                     </div>
-                                    <div className="space-y-4 flex-1">
-                                        <h3 className="text-3xl font-black text-foreground tracking-tight">Disease <br /> Defense</h3>
-                                        <p className="text-base text-muted-foreground leading-relaxed font-medium">
+                                    <div className="space-y-3 sm:space-y-4 flex-1">
+                                        <h3 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">Disease <br /> Defense</h3>
+                                        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed font-medium">
                                             Proactive protection for your apiary. Detect threats in the hive and across the land before they impact your harvest.
                                         </p>
-                                        <ul className="space-y-3 pt-2">
+                                        <ul className="space-y-2 sm:space-y-3 pt-2">
                                             {["Early pathogen detection", "In-Hive & In-Land safety", "Automated health alerts"].map((feature, i) => (
-                                                <li key={i} className="flex items-center gap-3 text-sm font-bold">
-                                                    <Check className="h-5 w-5 text-red-500" />
+                                                <li key={i} className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm font-bold">
+                                                    <Check className="h-4 w-4 sm:h-5 sm:w-5 text-red-500 flex-shrink-0" />
                                                     {feature}
                                                 </li>
                                             ))}
                                         </ul>
                                     </div>
-                                    <Link to="/diseases" className="mt-auto pt-8">
-                                        <Button className="w-full bg-red-600 hover:bg-red-700 text-white font-black h-12 rounded-xl">
+                                    <Link to="/diseases" className="mt-auto pt-4 sm:pt-8">
+                                        <Button className="w-full bg-red-600 hover:bg-red-700 text-white font-black h-11 sm:h-12 rounded-xl text-sm sm:text-base">
                                             View Disease Solutions
                                             <ArrowRight className="ml-2 h-4 w-4" />
                                         </Button>
@@ -382,11 +382,11 @@ const PollinationServices = () => {
                             The Standard
                         </Badge>
                         <h2 className="text-4xl md:text-6xl font-black text-foreground tracking-tighter">
-                            BEEYIELD <span className="text-amber-600 italic">PRECISION POLLINATION</span>
+                            BEEYIELD <span className="text-amber-600">PRECISION POLLINATION</span>
                         </h2>
                         <p className="text-xl text-muted-foreground max-w-3xl mx-auto font-medium">
                             We bring a complete ecosystem of technology, expertise, and accountability
-                            that transforms your pollination from a gamble into a guarantee.
+                            that transforms your pollination from a gamble into a data-driven strategy.
                         </p>
                     </div>
 
@@ -433,7 +433,7 @@ const PollinationServices = () => {
                                     <tr>
                                         <td className="p-6 font-bold border-b border-border">Placement</td>
                                         <td className="p-6 border-b border-border text-muted-foreground">General proximity to field</td>
-                                        <td className="p-6 border-b border-border font-black text-amber-600">AI-Optimized GPS Targeting</td>
+                                        <td className="p-6 border-b border-border font-black text-amber-600">Strategic Hive Placement</td>
                                     </tr>
                                     <tr>
                                         <td className="p-6 font-bold border-b border-border">Colony Data</td>
@@ -443,7 +443,7 @@ const PollinationServices = () => {
                                     <tr>
                                         <td className="p-6 font-bold border-b border-border">Yield Impact</td>
                                         <td className="p-6 border-b border-border text-muted-foreground">Variable (weather dependent)</td>
-                                        <td className="p-6 border-b border-border font-black text-amber-600">Guaranteed 35% Average Increase</td>
+                                        <td className="p-6 border-b border-border font-black text-amber-600">Up to 35% Average Increase*</td>
                                     </tr>
                                     <tr className="bg-amber-50/30">
                                         <td className="p-6 font-bold">Best For</td>
@@ -453,8 +453,9 @@ const PollinationServices = () => {
                                 </tbody>
                             </table>
                         </div>
-                        <div className="mt-8 text-center italic text-muted-foreground text-sm">
+                        <div className="mt-8 text-center text-muted-foreground text-sm">
                             <strong className="font-bold">Bottom line</strong>: While traditional methods rely on hope, BeeYield turns pollination into a predictable, measurable engine for growth.
+                            <br /><span className="text-xs">*Results may vary depending on crop type, climate, and field conditions.</span>
                         </div>
                     </div>
                 </div>
@@ -465,7 +466,7 @@ const PollinationServices = () => {
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-24 space-y-4">
                         <Badge variant="outline" className="text-amber-600">Our Expertise</Badge>
-                        <h2 className="text-4xl md:text-6xl font-black tracking-tighter">Crops We <span className="text-amber-600 italic">Pollinate</span></h2>
+                        <h2 className="text-4xl md:text-6xl font-black tracking-tighter">Crops We <span className="text-amber-600">Pollinate</span></h2>
                         <div className="pt-8">
                             <Link to="/contact">
                                 <Button size="lg" className="bg-[#FCD34D] text-black hover:bg-[#F5C518] font-bold px-8 py-6 rounded-2xl shadow-xl border-none">
@@ -504,7 +505,7 @@ const PollinationServices = () => {
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-20 space-y-4">
                         <Badge variant="outline" className="text-green-600 border-green-300">FAQ</Badge>
-                        <h2 className="text-4xl md:text-6xl font-black tracking-tighter">Common <span className="text-green-600 italic">Questions</span></h2>
+                        <h2 className="text-4xl md:text-6xl font-black tracking-tighter">Common <span className="text-green-600">Questions</span></h2>
                     </div>
 
                     <div className="max-w-4xl mx-auto">
@@ -523,7 +524,7 @@ const PollinationServices = () => {
                                     What results can farmers expect with BeeYield?
                                 </AccordionTrigger>
                                 <AccordionContent className="text-muted-foreground leading-relaxed font-medium text-base pb-6">
-                                    On average, our partners see a <strong className="font-bold text-foreground">35% increase in crop yield</strong>. More importantly, we provide <strong className="font-bold text-foreground">300% more colony data</strong>, giving you verifiable proof of pollination activity. This leads to higher quality fruit, better seed set, and more consistent harvests across your entire field, regardless of scale.
+                                    On average, our partners have seen up to a <strong className="font-bold text-foreground">35% increase in crop yield</strong>. More importantly, we provide <strong className="font-bold text-foreground">300% more colony data</strong>, giving you verifiable proof of pollination activity. This leads to higher quality fruit, better seed set, and more consistent harvests across your entire field. Results may vary depending on crop type, climate, and conditions.
                                 </AccordionContent>
                             </AccordionItem>
 
@@ -532,7 +533,7 @@ const PollinationServices = () => {
                                     How many hives do I need for my crop?
                                 </AccordionTrigger>
                                 <AccordionContent className="text-muted-foreground leading-relaxed font-medium text-base pb-6">
-                                    Hive density varies significantly based on the crop type, field layout, and target yield. For example, sunflowers may require 2-3 hives per hectare, while some specialty vegetables need up to 5 hives. Our precision placement AI analyzes your land geography to determine the perfect density and orientation for your specific needs.
+                                    Hive density varies significantly based on the crop type, field layout, and target yield. For example, sunflowers may require 2-3 hives per hectare, while some specialty vegetables need up to 5 hives. Our placement experts analyze your land geography to determine the perfect density and orientation for your specific needs.
                                 </AccordionContent>
                             </AccordionItem>
 
@@ -559,7 +560,7 @@ const PollinationServices = () => {
                                 "name": "How does precision pollination differ from traditional beekeeping?",
                                 "acceptedAnswer": {
                                     "@type": "Answer",
-                                    "text": "Precision pollination uses IoT sensors and AI-optimized hive placement to monitor colony strength and bee activity 24/7. Unlike traditional beekeeping which relies on proximity alone, BeeYield ensures maximum fertilization during the critical bloom phase using real-time field data."
+                                    "text": "Precision pollination uses IoT sensors and data-driven hive placement to monitor colony strength and bee activity 24/7. Unlike traditional beekeeping which relies on proximity alone, BeeYield ensures maximum fertilization during the critical bloom phase using real-time field data."
                                 }
                             },
                             {
@@ -567,7 +568,7 @@ const PollinationServices = () => {
                                 "name": "What results can farmers expect with BeeYield?",
                                 "acceptedAnswer": {
                                     "@type": "Answer",
-                                    "text": "Farmers using BeeYield typically see an average increase of 35% in crop yield through optimized pollination. We also provide verifiable data showing a 300% increase in measurable colony activity compared to traditional methods."
+                                    "text": "Farmers using BeeYield have seen up to a 35% increase in crop yield through optimized pollination. Results vary by crop and conditions. We also provide verifiable data showing a 300% increase in measurable colony activity compared to traditional methods."
                                 }
                             },
                             {
@@ -592,7 +593,7 @@ const PollinationServices = () => {
 
                 <div className="container mx-auto px-4 relative z-10 text-center space-y-12">
                     <h2 className="text-4xl md:text-6xl font-black tracking-tighter leading-none text-neutral-900">
-                        Ready for <br /> Real <span className="text-green-700 italic">Results?</span>
+                        Ready for <br /> Real <span className="text-green-700">Results?</span>
                     </h2>
                     <p className="text-2xl text-neutral-600 max-w-3xl mx-auto font-medium">
                         Join the network of high-yield growers who've stopped guessing
@@ -605,7 +606,7 @@ const PollinationServices = () => {
                             </Button>
                         </Link>
                     </div>
-                    <p className="text-neutral-400 text-xs font-black uppercase tracking-widest">Support • Real-time Data • Guaranteed Impact</p>
+                    <p className="text-neutral-400 text-xs font-black uppercase tracking-widest">Support • Real-time Data • Measurable Impact</p>
                 </div>
             </section>
         </div>

@@ -1018,7 +1018,7 @@ const AdminDashboard: React.FC = () => {
                             <Col span={4} className="space-y-4">
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-lg font-bold text-foreground">General Report</h3>
-                                    <select className="text-xs bg-transparent border border-border rounded-lg px-3 py-1.5 text-muted-foreground">
+                                    <select aria-label="Report period" className="text-xs bg-transparent border border-border rounded-lg px-3 py-1.5 text-muted-foreground">
                                         <option>Daily</option>
                                         <option>Weekly</option>
                                         <option>Monthly</option>
@@ -1201,8 +1201,8 @@ const AdminDashboard: React.FC = () => {
                                         </div>
 
                                         <div className="absolute bottom-8 left-4 z-10 flex flex-col bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                                            <button className="p-1.5 hover:bg-gray-50 border-b border-gray-200"><Plus className="w-4 h-4 text-gray-600" /></button>
-                                            <button className="p-1.5 hover:bg-gray-50"><Minus className="w-4 h-4 text-gray-600" /></button>
+                                            <button aria-label="Zoom in" className="p-1.5 hover:bg-gray-50 border-b border-gray-200"><Plus className="w-4 h-4 text-gray-600" /></button>
+                                            <button aria-label="Zoom out" className="p-1.5 hover:bg-gray-50"><Minus className="w-4 h-4 text-gray-600" /></button>
                                         </div>
 
                                         {/* Map Background Pattern */}
@@ -1387,7 +1387,7 @@ const AdminDashboard: React.FC = () => {
                                     <Button size="sm" variant="outline" className="w-8 h-8 rounded-lg">3</Button>
                                     <Button size="sm" variant="outline" className="w-8 h-8 rounded-lg">&gt;</Button>
                                 </div>
-                                <select className="text-xs bg-transparent border border-border rounded-lg px-3 py-1.5">
+                                <select aria-label="Rows per page" className="text-xs bg-transparent border border-border rounded-lg px-3 py-1.5">
                                     <option>10 per page</option>
                                     <option>25 per page</option>
                                     <option>50 per page</option>
@@ -1581,7 +1581,7 @@ const AdminDashboard: React.FC = () => {
                                                             <div className="text-xs text-muted-foreground">{order.customer_email || order.shipping_address?.email}</div>
                                                         </TableCell>
                                                         <TableCell className="px-6 text-right font-medium">{order.items?.length || 0}</TableCell>
-                                                        <TableCell className="px-6 text-right font-black italic">{order.total_amount?.toLocaleString()}</TableCell>
+                                                        <TableCell className="px-6 text-right font-black">{order.total_amount?.toLocaleString()}</TableCell>
                                                         <TableCell className="px-6">
                                                             <Select
                                                                 defaultValue={order.status}
@@ -1720,7 +1720,7 @@ const AdminDashboard: React.FC = () => {
                                         <div className="flex justify-between items-end pt-2">
                                             <div>
                                                 <p className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground mb-1">MSRP</p>
-                                                <span className="text-xl font-bold italic text-primary">KES {product.variants?.[0]?.price_kes?.toLocaleString() || 0}</span>
+                                                <span className="text-xl font-bold text-primary">KES {product.variants?.[0]?.price_kes?.toLocaleString() || 0}</span>
                                             </div>
                                             <div className="flex gap-1">
                                                 <Button size="icon" variant="outline" onClick={() => handleEditProduct(product)} className="rounded-xl w-9 h-9 border-border/50 hover:bg-primary/10 hover:text-primary"><Edit className="h-4 w-4" /></Button>
@@ -1921,7 +1921,7 @@ const AdminDashboard: React.FC = () => {
                                         </TableHeader>
                                         <TableBody>
                                             {batches.length === 0 ? (
-                                                <TableRow><TableCell colSpan={8} className="text-center h-48 text-muted-foreground font-medium italic">No honey batches in the blockchain yet.</TableCell></TableRow>
+                                                <TableRow><TableCell colSpan={8} className="text-center h-48 text-muted-foreground font-medium">No honey batches in the blockchain yet.</TableCell></TableRow>
                                             ) : (
                                                 batches.map((batch, i) => (
                                                     <TableRow
@@ -1975,7 +1975,7 @@ const AdminDashboard: React.FC = () => {
                                                             </div>
                                                         </TableCell>
                                                         <TableCell className="px-6 text-sm tabular-nums">{batch.harvest_date}</TableCell>
-                                                        <TableCell className="px-6 text-right font-black italic">{batch.quantity_kg}</TableCell>
+                                                        <TableCell className="px-6 text-right font-black">{batch.quantity_kg}</TableCell>
                                                         <TableCell className="px-6">
                                                             <div className="flex items-center gap-2 group cursor-help" title={batch.block_hash}>
                                                                 <div className="w-2 h-2 rounded-xl bg-green-500 animate-pulse" />
@@ -2358,7 +2358,7 @@ const AdminDashboard: React.FC = () => {
                                         </TableHeader>
                                         <TableBody>
                                             {farmers.length === 0 ? (
-                                                <TableRow><TableCell colSpan={6} className="text-center h-48 text-muted-foreground font-medium italic">No registered farmers found.</TableCell></TableRow>
+                                                <TableRow><TableCell colSpan={6} className="text-center h-48 text-muted-foreground font-medium">No registered farmers found.</TableCell></TableRow>
                                             ) : (
                                                 farmers.map((farmer) => (
                                                     <TableRow key={farmer.id} className="hover:bg-muted/20 transition-colors border-border/10">
@@ -2986,7 +2986,7 @@ const AdminDashboard: React.FC = () => {
                                         </div>
                                         <div className="space-y-1 pt-2 border-t border-border/10">
                                             <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Additional Notes</p>
-                                            <p className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-xl italic">
+                                            <p className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-xl">
                                                 "{selectedPollination.notes || selectedPollination.message || 'No additional notes provided.'}"
                                             </p>
                                         </div>

@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     beekeeperStory: {
         fontSize: 10,
         color: '#C7D2FE',
-        fontStyle: 'italic',
+        fontStyle: 'normal',
         lineHeight: 1.5,
         marginTop: 10,
     },

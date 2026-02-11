@@ -128,7 +128,7 @@ const AccountSettings = () => {
                 {/* Header */}
                 <div className="space-y-4 text-center lg:text-left">
                     <h1 className="text-5xl font-black text-foreground tracking-tightest leading-none">
-                        Identity <span className="text-primary italic">& Security</span>
+                        Identity <span className="text-primary">& Security</span>
                     </h1>
                     <p className="text-xl text-muted-foreground font-medium">Manage your account security and authentication preferences.</p>
                 </div>

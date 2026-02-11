@@ -123,128 +123,128 @@ BEGIN
     -- Contact Submissions
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'contact_submissions') THEN
         PERFORM public.clean_legacy_policies('contact_submissions');
-        CREATE POLICY "Public insert contact_submissions" ON public.contact_submissions FOR INSERT WITH CHECK (email IS NOT NULL);
+        EXECUTE 'CREATE POLICY "Public insert contact_submissions" ON public.contact_submissions FOR INSERT WITH CHECK (email IS NOT NULL)';
     END IF;
 
     -- Donations
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'donations') THEN
         PERFORM public.clean_legacy_policies('donations');
-        CREATE POLICY "Public insert donations" ON public.donations FOR INSERT WITH CHECK (amount_usd > 0);
+        EXECUTE 'CREATE POLICY "Public insert donations" ON public.donations FOR INSERT WITH CHECK (amount_usd > 0)';
     END IF;
 
     -- Newsletter
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'newsletter_subscribers') THEN
         PERFORM public.clean_legacy_policies('newsletter_subscribers');
-        CREATE POLICY "Public insert newsletter_subscribers" ON public.newsletter_subscribers FOR INSERT WITH CHECK (email IS NOT NULL);
+        EXECUTE 'CREATE POLICY "Public insert newsletter_subscribers" ON public.newsletter_subscribers FOR INSERT WITH CHECK (email IS NOT NULL)';
     END IF;
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'newsletter_subscriptions') THEN
         PERFORM public.clean_legacy_policies('newsletter_subscriptions');
-        CREATE POLICY "Public insert newsletter_subscriptions" ON public.newsletter_subscriptions FOR INSERT WITH CHECK (email IS NOT NULL);
+        EXECUTE 'CREATE POLICY "Public insert newsletter_subscriptions" ON public.newsletter_subscriptions FOR INSERT WITH CHECK (email IS NOT NULL)';
     END IF;
 
     -- Job Applications
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'job_applications') THEN
         PERFORM public.clean_legacy_policies('job_applications');
-        CREATE POLICY "Public insert job_applications" ON public.job_applications FOR INSERT WITH CHECK (job_id IS NOT NULL);
+        EXECUTE 'CREATE POLICY "Public insert job_applications" ON public.job_applications FOR INSERT WITH CHECK (job_id IS NOT NULL)';
     END IF;
 
     -- Pollination Requests
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'pollination_requests') THEN
         PERFORM public.clean_legacy_policies('pollination_requests');
-        CREATE POLICY "Public insert pollination_requests" ON public.pollination_requests FOR INSERT WITH CHECK (email IS NOT NULL);
+        EXECUTE 'CREATE POLICY "Public insert pollination_requests" ON public.pollination_requests FOR INSERT WITH CHECK (email IS NOT NULL)';
     END IF;
 
     -- Orders
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'orders') THEN
         PERFORM public.clean_legacy_policies('orders');
-        CREATE POLICY "Users can create own orders" ON public.orders FOR INSERT WITH CHECK (auth.uid() = user_id);
+        EXECUTE 'CREATE POLICY "Users can create own orders" ON public.orders FOR INSERT WITH CHECK (auth.uid() = user_id)';
     END IF;
 
     -- Order Items
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'order_items') THEN
         PERFORM public.clean_legacy_policies('order_items');
-        CREATE POLICY "Users can create order items" ON public.order_items FOR INSERT WITH CHECK (
+        EXECUTE 'CREATE POLICY "Users can create order items" ON public.order_items FOR INSERT WITH CHECK (
           EXISTS (SELECT 1 FROM orders WHERE orders.id = order_items.order_id AND orders.user_id = auth.uid())
-        );
+        )';
     END IF;
 
     -- Payment Transactions
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'payment_transactions') THEN
         PERFORM public.clean_legacy_policies('payment_transactions');
-        CREATE POLICY "Users can insert own payment_transactions" ON public.payment_transactions FOR INSERT WITH CHECK (auth.uid() = customer_user_id);
+        EXECUTE 'CREATE POLICY "Users can insert own payment_transactions" ON public.payment_transactions FOR INSERT WITH CHECK (auth.uid() = customer_user_id)';
     END IF;
 
     -- Pollination Activity Logs
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'pollination_activity_logs') THEN
         PERFORM public.clean_legacy_policies('pollination_activity_logs');
-        CREATE POLICY "Users can insert own pollination_activity_logs" ON public.pollination_activity_logs FOR INSERT WITH CHECK (
+        EXECUTE 'CREATE POLICY "Users can insert own pollination_activity_logs" ON public.pollination_activity_logs FOR INSERT WITH CHECK (
           EXISTS (SELECT 1 FROM pollination_contracts WHERE pollination_contracts.id = pollination_activity_logs.contract_id AND pollination_contracts.user_id = auth.uid())
-        );
+        )';
     END IF;
 
     -- Generated Documents
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'generated_documents') THEN
         PERFORM public.clean_legacy_policies('generated_documents');
-        CREATE POLICY "Users can insert own generated_documents" ON public.generated_documents FOR INSERT WITH CHECK (auth.uid() = generated_by_user_id);
+        EXECUTE 'CREATE POLICY "Users can insert own generated_documents" ON public.generated_documents FOR INSERT WITH CHECK (auth.uid() = generated_by_user_id)';
     END IF;
 
     -- Tracing History
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'tracing_history') THEN
         PERFORM public.clean_legacy_policies('tracing_history');
-        CREATE POLICY "Users can insert own tracing_history" ON public.tracing_history FOR INSERT WITH CHECK (auth.uid() = traced_by_user_id);
-        CREATE POLICY "Admin full access tracing_history" ON public.tracing_history FOR ALL USING (public.is_admin());
-        CREATE POLICY "Public view tracing_history" ON public.tracing_history FOR SELECT USING (true);
+        EXECUTE 'CREATE POLICY "Users can insert own tracing_history" ON public.tracing_history FOR INSERT WITH CHECK (auth.uid() = traced_by_user_id)';
+        EXECUTE 'CREATE POLICY "Admin full access tracing_history" ON public.tracing_history FOR ALL USING (public.is_admin())';
+        EXECUTE 'CREATE POLICY "Public view tracing_history" ON public.tracing_history FOR SELECT USING (true)';
     END IF;
 
     -- Hives (Core)
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'hives') THEN
         PERFORM public.clean_legacy_policies('hives');
-        CREATE POLICY "Admin full access hives" ON public.hives FOR ALL USING (public.is_admin());
-        CREATE POLICY "Users view own hives" ON public.hives FOR SELECT USING (auth.uid() = user_id);
-        CREATE POLICY "Users insert own hives" ON public.hives FOR INSERT WITH CHECK (auth.uid() = user_id);
-        CREATE POLICY "Users update own hives" ON public.hives FOR UPDATE USING (auth.uid() = user_id);
+        EXECUTE 'CREATE POLICY "Admin full access hives" ON public.hives FOR ALL USING (public.is_admin())';
+        EXECUTE 'CREATE POLICY "Users view own hives" ON public.hives FOR SELECT USING (auth.uid() = user_id)';
+        EXECUTE 'CREATE POLICY "Users insert own hives" ON public.hives FOR INSERT WITH CHECK (auth.uid() = user_id)';
+        EXECUTE 'CREATE POLICY "Users update own hives" ON public.hives FOR UPDATE USING (auth.uid() = user_id)';
     END IF;
 
     -- Farmers (Core)
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'farmers') THEN
         PERFORM public.clean_legacy_policies('farmers');
-        CREATE POLICY "Admin full access farmers" ON public.farmers FOR ALL USING (public.is_admin());
+        EXECUTE 'CREATE POLICY "Admin full access farmers" ON public.farmers FOR ALL USING (public.is_admin())';
         -- ADDED BACK USER POLICY TO PREVENT BROKEN ACCESS
-        CREATE POLICY "Users manage own farmers" ON public.farmers FOR ALL USING (auth.uid() = user_id);
+        EXECUTE 'CREATE POLICY "Users manage own farmers" ON public.farmers FOR ALL USING (auth.uid() = user_id)';
     END IF;
 
     -- Honey Batches
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'honey_batches') THEN
         PERFORM public.clean_legacy_policies('honey_batches');
-        CREATE POLICY "Admin full access honey_batches" ON public.honey_batches FOR ALL USING (public.is_admin());
+        EXECUTE 'CREATE POLICY "Admin full access honey_batches" ON public.honey_batches FOR ALL USING (public.is_admin())';
     END IF;
 
     -- Inspections (Core)
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'inspections') THEN
         PERFORM public.clean_legacy_policies('inspections');
-        CREATE POLICY "Admin full access inspections" ON public.inspections FOR ALL USING (public.is_admin());
-        CREATE POLICY "Users view own inspections" ON public.inspections FOR SELECT USING (EXISTS (SELECT 1 FROM hives WHERE hives.id = inspections.hive_id AND hives.user_id = auth.uid()));
-        CREATE POLICY "Users insert own inspections" ON public.inspections FOR INSERT WITH CHECK (EXISTS (SELECT 1 FROM hives WHERE hives.id = inspections.hive_id AND hives.user_id = auth.uid()));
+        EXECUTE 'CREATE POLICY "Admin full access inspections" ON public.inspections FOR ALL USING (public.is_admin())';
+        EXECUTE 'CREATE POLICY "Users view own inspections" ON public.inspections FOR SELECT USING (EXISTS (SELECT 1 FROM hives WHERE hives.id = inspections.hive_id AND hives.user_id = auth.uid()))';
+        EXECUTE 'CREATE POLICY "Users insert own inspections" ON public.inspections FOR INSERT WITH CHECK (EXISTS (SELECT 1 FROM hives WHERE hives.id = inspections.hive_id AND hives.user_id = auth.uid()))';
     END IF;
 
     -- Products
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'products') THEN
         PERFORM public.clean_legacy_policies('products');
-        CREATE POLICY "Admin full access products" ON public.products FOR ALL USING (public.is_admin());
-        CREATE POLICY "Public view products" ON public.products FOR SELECT USING (true);
+        EXECUTE 'CREATE POLICY "Admin full access products" ON public.products FOR ALL USING (public.is_admin())';
+        EXECUTE 'CREATE POLICY "Public view products" ON public.products FOR SELECT USING (true)';
     END IF;
 
     -- Product Variants
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'product_variants') THEN
         PERFORM public.clean_legacy_policies('product_variants');
-        CREATE POLICY "Admin full access product_variants" ON public.product_variants FOR ALL USING (public.is_admin());
-        CREATE POLICY "Public view product_variants" ON public.product_variants FOR SELECT USING (true);
+        EXECUTE 'CREATE POLICY "Admin full access product_variants" ON public.product_variants FOR ALL USING (public.is_admin())';
+        EXECUTE 'CREATE POLICY "Public view product_variants" ON public.product_variants FOR SELECT USING (true)';
     END IF;
 
     -- Stock Movements
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'stock_movements') THEN
         PERFORM public.clean_legacy_policies('stock_movements');
-        CREATE POLICY "Admin full access stock_movements" ON public.stock_movements FOR ALL USING (public.is_admin());
+        EXECUTE 'CREATE POLICY "Admin full access stock_movements" ON public.stock_movements FOR ALL USING (public.is_admin())';
     END IF;
 
     -- Activity Logs

@@ -44,15 +44,18 @@ async def startup_event():
     except Exception as e:
         print(f"[STARTUP] Scheduler error (non-fatal): {e}")
     
-    # 2. Initialize Qdrant Vector Store
-    try:
-        from app.services.vector_store import QdrantVectorStore
-        init_result = await QdrantVectorStore.initialize()
-        print(f"[STARTUP] Vector store: {init_result}")
-    except ImportError:
-        print("[STARTUP] Qdrant not installed - using JSON search")
-    except Exception as e:
-        print(f"[STARTUP] Vector store error (non-fatal): {e}")
+    # 2. Initialize Qdrant Vector Store in background (don't block startup)
+    async def _init_vector_store():
+        try:
+            from app.services.vector_store import QdrantVectorStore
+            init_result = await QdrantVectorStore.initialize()
+            print(f"[STARTUP] Vector store: {init_result}")
+        except ImportError:
+            print("[STARTUP] Qdrant not installed - using JSON search")
+        except Exception as e:
+            print(f"[STARTUP] Vector store error (non-fatal): {e}")
+    
+    asyncio.create_task(_init_vector_store())
 
 
 @app.get("/")

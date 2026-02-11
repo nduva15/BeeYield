@@ -363,7 +363,7 @@ class DataRetriever:
             
             return """PRECISION POLLINATION SERVICES:
 - Crops Supported: Mangoes, Sunflower, Oranges, Avocados, Beans, Tomatoes
-- Average Yield Increase: 35%
+- Average Yield Increase: Up to 35% (results vary by crop & conditions)
 - Hive Density: 2-5 hives per hectare
 - Monitoring: 24/7 IoT & AI
 - Coverage Area: Makueni, Kitui Counties
@@ -787,7 +787,7 @@ I utilize BeeYield's advanced ecosystem to provide you with:
 - Access harvest dates, beekeeper profiles, and quality certifications.
 
 ### 🌻 Precision Pollination Services
-- Learn how our pollination services can boost your crop yields by up to 35%.
+- Learn how our pollination services may help improve your crop yields.
 - Get customized quotes for crops like Mangoes, Avocados, and Sunflowers.
 - Understand our hive density recommendations and management practices.
 

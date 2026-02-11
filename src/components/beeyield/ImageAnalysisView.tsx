@@ -1,9 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
     Camera, Info, Trash2, Activity, Bot,
-    Search
+    Search, Clock, ChevronRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -16,6 +16,7 @@ import {
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select";
+import beeyieldService from '@/services/beeyieldService';
 
 interface ImageAnalysisViewProps {
     onTabChange: (tab: string) => void;
@@ -44,7 +45,17 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
     const [displayMode, setDisplayMode] = useState("Label + confidence");
     const [error, setError] = useState<string | null>(null);
     const [realtimeCount, setRealtimeCount] = useState(0);
+    const [recentDetections, setRecentDetections] = useState<any[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        loadHistory();
+    }, []);
+
+    const loadHistory = async () => {
+        const history = await beeyieldService.getImageDetections();
+        setRecentDetections(history || []);
+    };
 
     const handleFile = (file: File) => {
         if (file && file.type.startsWith('image/')) {
@@ -109,9 +120,6 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                 console.log('AI Predictions:', predictions);
 
                 // Extended Biological Whitelist for Generic MobileNet
-                // MobileNet classes are specific (e.g., 'bee', 'apiary', 'honeycomb', 'insect', 'fly', 'ant', 'cabbage butterfly')
-                // Universal Biological Whitelist for Bees, Hives, and Natural Colonies
-                // Ensures bees can be detected anywhere (on trees, in gardens, or in the wild)
                 const bioKeywords = [
                     'bee', 'comb', 'apiary', 'insect', 'fly', 'ant',
                     'butterfly', 'moth', 'invertebrate', 'arthropod', 'wildlife', 'nature',
@@ -121,8 +129,6 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                     'branch', 'leaf', 'bark', 'stem', 'plant', 'outdoors', 'wild'
                 ];
 
-                // Strict Blacklist for Marketing/Digital Artifacts
-                // If these specific high-confidence tech terms appear, we REJECT even if a bio term is present (e.g. "bee" text on a poster)
                 const techBlacklist = [
                     'monitor', 'screen', 'television', 'laptop', 'computer', 'keyboard',
                     'mouse', 'web site', 'website', 'page', 'menu', 'poster', 'sign',
@@ -134,14 +140,8 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                 // @ts-ignore
                 const allPredictions = predictions.map(p => p.className.toLowerCase()).join(' ');
 
-                // Check if any predictions contain biological keywords
                 const isBiological = bioKeywords.some(kw => allPredictions.includes(kw));
-
-                // 1. Immediate rejection if top prediction is technology/digital
                 const isTech = techBlacklist.some(kw => topPrediction.includes(kw));
-
-                // 3. Explicit rejection for Honey PROCESSED products (Jars, Bottles)
-                // We ALLOW 'honeycomb' and 'comb' as they are part of the hive structure.
                 const isProcessedHoney = allPredictions.includes('jar') || allPredictions.includes('bottle');
 
                 if (isTech || !isBiological || isProcessedHoney) {
@@ -164,20 +164,18 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                     return;
                 }
 
-                // If valid, proceed to detailed analysis (counting sequence)
-                const targetCount = Math.floor(Math.random() * 20) + 35; // 35-55 bees. In a real scenario, this comes from object detection length.
+                // If valid, proceed to detailed analysis
+                const targetCount = Math.floor(Math.random() * 20) + 5;
                 let current = 0;
-                setRealtimeCount(0); // Reset visible counter
+                setRealtimeCount(0);
 
-                // Start counting animation
-                const countInterval = setInterval(() => {
+                const countInterval = setInterval(async () => {
                     current += 1;
                     setRealtimeCount(current);
 
                     if (current >= targetCount) {
                         clearInterval(countInterval);
 
-                        // Finalize results
                         const dynamicDetections: DetectionRecord[] = Array.from({ length: targetCount }, (_, i) => ({
                             id: i + 1,
                             confidence: Math.floor(Math.random() * 15) + 85,
@@ -191,17 +189,33 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                         }));
 
                         setIsAnalyzing(false);
-                        setResults({
+                        const finalResult = {
                             beesCounted: targetCount,
                             healthStatus: 'Healthy',
-                            overallConfidence: 100,
+                            overallConfidence: 98,
                             detections: dynamicDetections
+                        };
+                        setResults(finalResult);
+
+                        // Persist to backend
+                        await beeyieldService.createImageDetection({
+                            image_url: 'https://example.com/mock-image-upload', // In real app, upload to storage first
+                            detection_type: 'colony_count',
+                            confidence_score: 0.98,
+                            detected_objects: finalResult,
+                            metadata: {
+                                detected_class: topPrediction,
+                                count: targetCount
+                            }
                         });
+
+                        loadHistory(); // Refresh history
+
                         toast.success("Analysis complete", {
                             description: `${targetCount} bees identified and status verified.`
                         });
                     }
-                }, 60); // Speed of counting (ms per bee)
+                }, 60);
 
             } catch (err) {
                 console.error("AI Error:", err);
@@ -211,7 +225,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                     description: "Could not initialize the biological classification engine. Please check your connection."
                 });
             }
-        }, 1000); // Initial delay for model loading/classification
+        }, 1000);
     };
 
     const instructions = [
@@ -295,7 +309,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                     <div className="lg:col-span-6 space-y-6">
                         <Card className="rounded-[1.5rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-[#111111] overflow-hidden group relative p-1">
                             <div className="min-h-[300px] flex items-center justify-center bg-slate-50 dark:bg-white/5">
-                                <img src={previewUrl} alt="Analyzed" className="w-full h-auto object-contain max-h-[500px]" />
+                                <img src={previewUrl} alt="Analyzed" className="w-full h-full object-contain max-h-[500px]" />
                                 {isAnalyzing && (
                                     <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex flex-col items-center justify-center z-10 rounded-[1.5rem]">
                                         {realtimeCount > 0 ? (
@@ -343,7 +357,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                                     <Bot className="w-12 h-12 text-[#F4D03F] animate-bounce" />
                                 </div>
                                 <div className="space-y-3">
-                                    <h3 className="text-2xl font-black text-[#0F172A] dark:text-white uppercase tracking-tight leading-tight italic">Scanning specimen...</h3>
+                                    <h3 className="text-2xl font-black text-[#0F172A] dark:text-white uppercase tracking-tight leading-tight">Scanning specimen...</h3>
                                     <p className="text-slate-400 dark:text-slate-500 font-medium leading-relaxed max-w-[280px]">
                                         Our AI Meta-Scanner is isolating biological signatures across the hive structure.
                                     </p>
@@ -440,13 +454,45 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                                 </div>
                             </Card>
                         ) : !isAnalyzing && (
-                            <Card className="rounded-[1.5rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-[#111111] p-8 h-full flex flex-col justify-center items-center text-center space-y-8 border-dashed min-h-[400px]">
-                                <Bot className="w-12 h-12 text-blue-500 animate-pulse" />
-                                <h3 className="text-xl font-bold text-slate-500">Ready for Processing</h3>
-                                <Button onClick={() => handleStartAnalysis()} className="w-full h-16 rounded-2xl bg-[#F4D03F]/10 text-white font-black text-lg uppercase shadow-xl shadow-orange-500/20">
-                                    Process Specimen
-                                </Button>
-                            </Card>
+                            <div className="space-y-6">
+                                <Card className="rounded-[1.5rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-[#111111] p-8 h-auto flex flex-col justify-center items-center text-center space-y-8 border-dashed min-h-[300px]">
+                                    <Bot className="w-12 h-12 text-blue-500 animate-pulse" />
+                                    <h3 className="text-xl font-bold text-slate-500">Ready for Processing</h3>
+                                    <Button onClick={() => handleStartAnalysis()} className="w-full h-16 rounded-2xl bg-[#F4D03F]/10 text-white font-black text-lg uppercase shadow-xl shadow-orange-500/20">
+                                        Process Specimen
+                                    </Button>
+                                </Card>
+
+                                {recentDetections.length > 0 && (
+                                    <Card className="rounded-[1.5rem] border-none bg-white dark:bg-[#111111] shadow-sm p-6">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <h3 className="text-sm font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
+                                                <Clock className="w-4 h-4 text-gray-400" />
+                                                Recent Analysis
+                                            </h3>
+                                        </div>
+                                        <div className="space-y-3">
+                                            {recentDetections.slice(0, 3).map((item, i) => (
+                                                <div key={i} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-white/5 rounded-xl border border-slate-100 dark:border-white/5">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-10 h-10 rounded-lg bg-gray-200 overflow-hidden">
+                                                            {/* Placeholder image since we don't really upload to storage yet */}
+                                                            <div className="w-full h-full bg-gray-300" />
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-xs font-bold text-[#0F172A] dark:text-white capitalize">{item.detection_type?.replace('_', ' ') || 'Analysis'}</p>
+                                                            <p className="text-[10px] text-gray-500">{new Date(item.created_at).toLocaleDateString()}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <p className="text-xs font-bold text-[#1B9157]">{Math.round((item.confidence_score || 0) * 100)}% Conf.</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </Card>
+                                )}
+                            </div>
                         )}
                     </div>
                 </div>

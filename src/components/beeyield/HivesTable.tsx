@@ -187,7 +187,7 @@ export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={columns.length} className="h-24 text-center text-slate-400 italic">
+                                <td colSpan={columns.length} className="h-24 text-center text-slate-400">
                                     No hives found.
                                 </td>
                             </tr>

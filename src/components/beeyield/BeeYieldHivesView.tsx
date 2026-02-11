@@ -719,7 +719,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                             <StickyNote className="w-4 h-4 text-[#1B9157]" />
                                             <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Recent Observations</h4>
                                         </div>
-                                        <p className="text-sm font-bold text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed italic">
+                                        <p className="text-sm font-bold text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">
                                             {activeHive.notes || "No recent archive notes detected. Use the note command to document colony status."}
                                         </p>
                                     </div>

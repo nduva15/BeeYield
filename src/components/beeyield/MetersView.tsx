@@ -259,7 +259,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
 
                     <div className="mt-10 w-full bg-slate-50 rounded-[2rem] p-6 text-left">
                         {chatMessages.slice(-1).map((msg, idx) => (
-                            <div key={idx} className="text-xs font-bold text-slate-600 leading-relaxed italic">
+                            <div key={idx} className="text-xs font-bold text-slate-600 leading-relaxed">
                                 "{msg.content}"
                             </div>
                         ))}
@@ -279,7 +279,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                 <Card className="lg:col-span-7 rounded-[2.5rem] border-none bg-white shadow-xl shadow-slate-200/40 p-10">
                     <div className="flex items-center justify-between mb-8">
                         <div>
-                            <h3 className="text-2xl font-black text-slate-800 tracking-tight leading-none italic">Event Log</h3>
+                            <h3 className="text-2xl font-black text-slate-800 tracking-tight leading-none">Event Log</h3>
                             <p className="text-slate-400 text-xs font-black uppercase mt-1 tracking-widest">Telemetry Stream</p>
                         </div>
                         <Button variant="ghost" className="text-[10px] font-black text-[#1B9157] tracking-widest uppercase" onClick={() => onTabChange('meters-alarms')}>Logs Archive</Button>

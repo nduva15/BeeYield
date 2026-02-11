@@ -88,7 +88,7 @@ export default function MeasurementData() {
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
-                    <h1 className="text-4xl font-black bg-gradient-to-tr from-amber-200 via-amber-500 to-orange-600 bg-clip-text text-transparent italic tracking-tighter">
+                    <h1 className="text-4xl font-black bg-gradient-to-tr from-amber-200 via-amber-500 to-orange-600 bg-clip-text text-transparent tracking-tighter">
                         MEASUREMENT DATA
                     </h1>
                     <p className="text-muted-foreground mt-1 flex items-center gap-2">

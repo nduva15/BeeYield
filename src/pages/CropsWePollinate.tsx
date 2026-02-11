@@ -48,7 +48,7 @@ const CropsWePollinate = () => {
               </Badge>
               <h1 className="text-4xl font-black tracking-tighter md:text-5xl lg:text-6xl leading-tight text-neutral-900">
                 Get Data-Driven <br />
-                <span className="text-green-700 italic">Crop Pollination</span>
+                <span className="text-green-700">Crop Pollination</span>
               </h1>
               <p className="max-w-xl text-lg text-neutral-600 font-medium leading-relaxed">
                 Our end-to-end solution gives unprecedented control and visibility into pollination, ensuring maximized crop yields and sustainable practices.
@@ -224,7 +224,6 @@ const CropsWePollinate = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0A2612]/90 via-transparent to-transparent" />
                   <div className="absolute bottom-6 left-6 space-y-1">
                     <h3 className="text-[2.5rem] font-black text-white leading-none uppercase tracking-tighter">{crop.cropName}</h3>
-                    <p className="text-emerald-400 font-bold uppercase tracking-widest text-xs">BeeYield Dynamic Optimization</p>
                     <Link to="/media" className="inline-flex items-center gap-2 text-white/50 hover:text-white text-xs font-black uppercase tracking-widest mt-2 transition-colors">
                       View Media <ArrowRight className="w-3 h-3" />
                     </Link>

@@ -177,7 +177,7 @@ const Traceability = () => {
               </Badge>
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black leading-tight tracking-tighter px-2">
-              The Journey of <span className="text-green-700 italic">Every Drop</span>
+              The Journey of <span className="text-green-700">Every Drop</span>
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed px-4">
               Transparent. Ethical. Traceable. Scan your jar's QR code to meet your bees,
@@ -256,7 +256,7 @@ const Traceability = () => {
                         </div>
                         <div className="flex items-center gap-2 mt-6">
                           <ShieldCheck className="h-4 w-4 text-green-500" />
-                          <span className="text-xs font-bold text-muted-foreground italic">Verified Harvest Journey</span>
+                          <span className="text-xs font-bold text-muted-foreground">Verified Harvest Journey</span>
                         </div>
                       </div>
                     </div>
@@ -494,7 +494,7 @@ const Traceability = () => {
                               </div>
                             </div>
                             <div className="mt-3 pt-3 border-t border-slate-200">
-                              <p className="text-[10px] text-slate-500 font-medium italic">
+                              <p className="text-[10px] text-slate-500 font-medium">
                                 {traceData?.extra_metadata?.harvest_context || "Only 30 hives met our peak maturity strict standards for this harvest."}
                               </p>
                             </div>
@@ -588,8 +588,8 @@ const Traceability = () => {
                                           </div>
                                         ) : (
                                           <div className="flex items-center gap-1.5 px-2 py-0.5 bg-white/5 border border-white/10 rounded-full">
-                                            <span className="text-[10px] leading-none text-slate-400 italic">?</span>
-                                            <span className="text-[9px] font-black uppercase tracking-widest text-slate-300 italic">State Unknown</span>
+                                            <span className="text-[10px] leading-none text-slate-400">?</span>
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-slate-300">State Unknown</span>
                                           </div>
                                         )}
                                       </div>
@@ -628,7 +628,7 @@ const Traceability = () => {
                                     <div className="flex items-baseline gap-2">
                                       <span className="text-xl font-black">{traceData.sensor_snapshot?.brood_temp || "36"}°C</span>
                                       <div className="flex items-center gap-1.5">
-                                        <span className="text-[10px] text-amber-400 font-bold flex items-center italic animate-pulse">LIVE</span>
+                                        <span className="text-[10px] text-amber-400 font-bold flex items-center animate-pulse">LIVE</span>
                                         <span className="text-[10px] text-amber-400 font-bold flex items-center">▲ {traceData.sensor_snapshot?.temp_trend || "+0.9%"}</span>
                                       </div>
                                     </div>
@@ -640,7 +640,7 @@ const Traceability = () => {
                                     <div className="flex items-baseline gap-2">
                                       <span className="text-xl font-black">{traceData.sensor_snapshot?.nest_humidity || "75"}%</span>
                                       <div className="flex items-center gap-1.5">
-                                        <span className="text-[10px] text-amber-400 font-bold flex items-center italic animate-pulse">LIVE</span>
+                                        <span className="text-[10px] text-amber-400 font-bold flex items-center animate-pulse">LIVE</span>
                                         <span className="text-[10px] text-amber-400 font-bold flex items-center">▲ {traceData.sensor_snapshot?.humidity_trend || "+5.2%"}</span>
                                       </div>
                                     </div>
@@ -806,7 +806,7 @@ const Traceability = () => {
                         </div>
 
                         <p className="text-[10px] font-black uppercase tracking-widest text-indigo-300 mb-4">Our Story</p>
-                        <p className="text-sm font-medium text-indigo-100 italic leading-relaxed">
+                        <p className="text-sm font-medium text-indigo-100 leading-relaxed">
                           " {traceData?.farmer?.story || "Dedicated to sustainable beekeeping and protecting our local ecosystems. Every jar tells the story of our commitment to the bees and the land we share with them."} "
                         </p>
                       </div>

@@ -8,7 +8,7 @@ const NotFound = () => {
       <div className="relative mb-8">
         <h1 className="text-[12rem] font-black leading-none tracking-tighter text-primary/10 select-none">404</h1>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-4xl font-black tracking-tightest">Lost in the <br /><span className="text-primary italic">Hive?</span></span>
+          <span className="text-4xl font-black tracking-tightest">Lost in the <br /><span className="text-primary">Hive?</span></span>
         </div>
       </div>
 

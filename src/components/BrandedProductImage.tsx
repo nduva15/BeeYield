@@ -38,7 +38,7 @@ export const BrandedProductImage: React.FC<BrandedProductImageProps> = ({
             <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-black/5 opacity-30 pointer-events-none" />
 
             {/* Dynamic Shine Effect on Hover */}
-            <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 pointer-events-none" />
+            <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
 
             {/* Brand Overlay / Tag */}
             {isHoney && (

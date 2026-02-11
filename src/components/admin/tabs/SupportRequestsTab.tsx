@@ -205,7 +205,7 @@ export const SupportRequestsTab: React.FC = () => {
                                         {isLoadingComments ? (
                                             <div className="flex justify-center p-8"><Clock className="h-6 w-6 animate-spin text-muted-foreground" /></div>
                                         ) : comments?.length === 0 ? (
-                                            <div className="text-center p-8 bg-muted/30 rounded-2xl text-xs text-muted-foreground italic">
+                                            <div className="text-center p-8 bg-muted/30 rounded-2xl text-xs text-muted-foreground">
                                                 No comments yet. Be the first to respond!
                                             </div>
                                         ) : (

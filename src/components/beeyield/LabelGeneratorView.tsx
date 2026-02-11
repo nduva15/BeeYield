@@ -95,28 +95,28 @@ interface LabelGeneratorViewProps {
 
 const defaultDesign: LabelDesign = {
     id: crypto.randomUUID(),
-    name: 'New Label',
-    productName: 'Lipowy', // Example from image
-    honeyType: 'Wildflower',
+    name: 'Artisan Collection 2025',
+    productName: 'Mountain Wildflower',
+    honeyType: 'Premium Raw',
     harvestYear: '2025',
-    weight: '400',
+    weight: '500',
     weightUnit: 'g',
-    countryOfOrigin: 'Single country',
-    country: 'Polska',
-    producer: 'Pasieka Słoneczna',
-    address: 'Krakow, ul. Miodowa 12',
-    marketingNote: 'Zbiór z pasiek wsród lipowych alei.',
+    countryOfOrigin: 'Single Estate',
+    country: 'Kenya',
+    producer: 'BeeYield Premium Apiaries',
+    address: 'Nanyuki Highlands, Box 15',
+    marketingNote: 'Cold-extracted from native wildflowers in the shadow of Mount Kenya. 100% natural, unprocessed goodness.',
 
     showBatchNumber: true,
-    batchNumber: 'LOT-0525',
+    batchNumber: 'MTK-2025-01',
     showBottlingDate: true,
-    bottlingDate: '2025-06-01',
+    bottlingDate: new Date().toISOString().split('T')[0],
     showBestBefore: true,
-    bestBeforeDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    bestBeforeDate: new Date(Date.now() + 365 * 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     showStorageConditions: true,
-    storageConditions: 'Przechowywać w chłodnym miejscu.',
+    storageConditions: 'Store in a cool, dry place away from direct sunlight.',
     showContact: true,
-    contactInfo: 'Pasieka Słoneczna, +48 500 000 000',
+    contactInfo: 'www.beeyield.com • hello@beeyield.com',
     showQRCode: false,
     showFooter: true,
     showLogo: true,
@@ -128,9 +128,9 @@ const defaultDesign: LabelDesign = {
     customWidth: '99.1',
     customHeight: '57',
     customShape: 'Rectangle',
-    backgroundColor: '#FFF8E7',
-    textColor: '#4A3728',
-    accentColor: '#F5A623',
+    backgroundColor: '#FFFBF0',
+    textColor: '#2D241E',
+    accentColor: '#D97706',
     borderStyle: 'elegant',
 
     exportFormat: 'PDF',
@@ -139,7 +139,7 @@ const defaultDesign: LabelDesign = {
     showCropMarks: true,
     useA4Sheet: false,
 
-    certifications: ['organic'],
+    certifications: ['raw', 'premium'],
 };
 
 const honeyTypes = [
@@ -320,22 +320,23 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                         </div>
                     </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <Button variant="outline" onClick={createNewDesign} className="gap-2">
+                <div className="flex items-center gap-3">
+                    <Button variant="outline" size="sm" onClick={createNewDesign} className="gap-2 border-gray-200 dark:border-white/10">
                         <Plus className="w-4 h-4" />
-                        New Design
+                        <span className="hidden sm:inline">New Project</span>
                     </Button>
-                    <Button variant="outline" onClick={saveDesign} className="gap-2">
+                    <Button variant="outline" size="sm" onClick={saveDesign} className="gap-2 border-gray-200 dark:border-white/10">
                         <Save className="w-4 h-4" />
-                        Save
+                        <span className="hidden sm:inline">Save Design</span>
                     </Button>
                     <Button
+                        size="sm"
                         onClick={handleGeneratePDF}
                         disabled={isGenerating}
-                        className="gap-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700"
+                        className="gap-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 shadow-md shadow-amber-500/20"
                     >
                         <Download className="w-4 h-4" />
-                        {isGenerating ? 'Generating...' : 'Export PDF'}
+                        {isGenerating ? 'Exporting...' : 'Export PDF'}
                     </Button>
                 </div>
             </div>
@@ -343,255 +344,250 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
             {/* Main Content */}
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 {/* Left Panel - Content Editor */}
-                <div className="lg:col-span-1 space-y-6">
-                    <Card className="bg-white dark:bg-[#0a0a0a] border-gray-200 dark:border-[#1e1e1e]">
-                        <CardHeader>
-                            <CardTitle className="text-lg">Label data</CardTitle>
+                <div className="lg:col-span-1 space-y-4">
+                    <Card className="bg-white dark:bg-[#0a0a0a] border-gray-200 dark:border-[#1e1e1e] shadow-sm">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                                <FileText className="w-4 h-4 text-amber-500" />
+                                Label Content
+                            </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="p-3 mb-4 rounded-xl bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 space-y-2">
-                                <Label className="text-amber-900 dark:text-amber-100 text-xs font-medium flex items-center gap-2">
-                                    <LinkIcon className="w-3 h-3" /> Link to Record
+                        <CardContent className="space-y-4 pt-0">
+                            <div className="p-2.5 rounded-xl bg-amber-50/50 dark:bg-amber-900/5 border border-amber-200/50 dark:border-amber-800/20 space-y-2">
+                                <Label className="text-amber-900 dark:text-amber-100 text-[10px] font-bold uppercase tracking-wider flex items-center gap-2">
+                                    <LinkIcon className="w-3 h-3" /> Auto-fill from Harvest
                                 </Label>
                                 <Select onValueChange={handleHarvestSelect}>
-                                    <SelectTrigger className="h-8 bg-white dark:bg-[#1e1e1e] text-xs">
-                                        <SelectValue placeholder="Select Record" />
+                                    <SelectTrigger className="h-9 bg-white dark:bg-[#121212] text-xs border-amber-200/30">
+                                        <SelectValue placeholder="Select a harvest..." />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {harvests.map(h => (
+                                        {harvests.length > 0 ? harvests.map(h => (
                                             <SelectItem key={h.id} value={h.id} className="text-xs">
-                                                {h.batch_code}
+                                                {h.batch_code || `Harvest ${h.harvest_date}`}
                                             </SelectItem>
-                                        ))}
+                                        )) : (
+                                            <div className="p-2 text-center text-[10px] text-gray-400">No harvests found</div>
+                                        )}
                                     </SelectContent>
                                 </Select>
                             </div>
 
                             <div className="space-y-4">
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="productName" className="text-xs">Honey name / type*</Label>
-                                    <Input id="productName" value={design.productName} onChange={e => updateDesign({ productName: e.target.value })} />
+                                    <Label htmlFor="productName" className="text-[11px] font-medium">Product Name*</Label>
+                                    <Input
+                                        id="productName"
+                                        value={design.productName}
+                                        onChange={e => updateDesign({ productName: e.target.value })}
+                                        className="h-9 text-xs"
+                                        placeholder="e.g. Mountain Wildflower"
+                                    />
                                 </div>
-                                <div className="space-y-1.5">
-                                    <Label htmlFor="harvestYear" className="text-xs">Harvest year (optional)</Label>
-                                    <Input id="harvestYear" value={design.harvestYear} onChange={e => updateDesign({ harvestYear: e.target.value })} />
-                                </div>
-                                <div className="grid grid-cols-2 gap-2">
+                                <div className="grid grid-cols-2 gap-3">
                                     <div className="space-y-1.5">
-                                        <Label htmlFor="weight" className="text-xs">Weight*</Label>
-                                        <Input id="weight" value={design.weight} onChange={e => updateDesign({ weight: e.target.value })} />
+                                        <Label htmlFor="weight" className="text-[11px] font-medium">Weight*</Label>
+                                        <Input
+                                            id="weight"
+                                            value={design.weight}
+                                            onChange={e => updateDesign({ weight: e.target.value })}
+                                            className="h-9 text-xs"
+                                        />
                                     </div>
                                     <div className="space-y-1.5">
-                                        <Label htmlFor="weightUnit" className="text-xs">Unit*</Label>
-                                        <Input id="weightUnit" value={design.weightUnit} onChange={e => updateDesign({ weightUnit: e.target.value })} />
+                                        <Label htmlFor="weightUnit" className="text-[11px] font-medium">Unit*</Label>
+                                        <Input
+                                            id="weightUnit"
+                                            value={design.weightUnit}
+                                            onChange={e => updateDesign({ weightUnit: e.target.value })}
+                                            className="h-9 text-xs"
+                                        />
                                     </div>
                                 </div>
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="countryOfOrigin" className="text-xs">Country of origin*</Label>
-                                    <Input id="countryOfOrigin" value={design.countryOfOrigin} onChange={e => updateDesign({ countryOfOrigin: e.target.value })} />
+                                    <Label htmlFor="producer" className="text-[11px] font-medium">Producer/Apiary*</Label>
+                                    <Input
+                                        id="producer"
+                                        value={design.producer}
+                                        onChange={e => updateDesign({ producer: e.target.value })}
+                                        className="h-9 text-xs"
+                                    />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="country" className="text-xs">Country*</Label>
-                                    <Input id="country" value={design.country} onChange={e => updateDesign({ country: e.target.value })} />
+                                    <Label htmlFor="address" className="text-[11px] font-medium">Location/Address*</Label>
+                                    <Input
+                                        id="address"
+                                        value={design.address}
+                                        onChange={e => updateDesign({ address: e.target.value })}
+                                        className="h-9 text-xs"
+                                    />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="producer" className="text-xs">Producer / apiary*</Label>
-                                    <Input id="producer" value={design.producer} onChange={e => updateDesign({ producer: e.target.value })} />
-                                </div>
-                                <div className="space-y-1.5">
-                                    <Label htmlFor="address" className="text-xs">Address / city*</Label>
-                                    <Input id="address" value={design.address} onChange={e => updateDesign({ address: e.target.value })} />
-                                </div>
-                                <div className="space-y-1.5">
-                                    <Label htmlFor="marketingNote" className="text-xs">Marketing note (max 140 chars)</Label>
+                                    <Label htmlFor="marketingNote" className="text-[11px] font-medium flex justify-between">
+                                        <span>Marketing Blurb</span>
+                                        <span className="text-[9px] text-gray-400">{design.marketingNote.length}/140</span>
+                                    </Label>
                                     <textarea
                                         id="marketingNote"
-                                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-xs ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        className="w-full rounded-lg border border-input bg-background px-3 py-2 text-xs ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
                                         rows={3}
                                         maxLength={140}
                                         value={design.marketingNote}
                                         onChange={e => updateDesign({ marketingNote: e.target.value })}
+                                        placeholder="Tell the story of this honey..."
                                     />
                                 </div>
                             </div>
                         </CardContent>
                     </Card>
 
-                    <Card className="bg-white dark:bg-[#0a0a0a] border-gray-200 dark:border-[#1e1e1e]">
-                        <CardHeader>
-                            <CardTitle className="text-lg">Optional fields</CardTitle>
+                    <Card className="bg-white dark:bg-[#0a0a0a] border-gray-200 dark:border-[#1e1e1e] shadow-sm">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                                <Plus className="w-4 h-4 text-amber-500" />
+                                Details & QR
+                            </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <Switch checked={design.showBatchNumber} onCheckedChange={v => updateDesign({ showBatchNumber: v })} />
-                                        <Label className="text-xs">Batch number (LOT)</Label>
-                                    </div>
+                        <CardContent className="space-y-3 pt-0">
+                            <div className="space-y-2.5">
+                                <div className="flex items-center justify-between group">
+                                    <Label className="text-[11px] cursor-pointer" htmlFor="sw-batch">Include Batch #</Label>
+                                    <Switch id="sw-batch" checked={design.showBatchNumber} onCheckedChange={v => updateDesign({ showBatchNumber: v })} />
                                 </div>
                                 {design.showBatchNumber && (
-                                    <Input value={design.batchNumber} onChange={e => updateDesign({ batchNumber: e.target.value })} />
+                                    <Input
+                                        value={design.batchNumber}
+                                        onChange={e => updateDesign({ batchNumber: e.target.value })}
+                                        className="h-8 text-[11px] bg-gray-50/50 dark:bg-white/5"
+                                        placeholder="LOT Number"
+                                    />
                                 )}
 
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <Switch checked={design.showBottlingDate} onCheckedChange={v => updateDesign({ showBottlingDate: v })} />
-                                        <Label className="text-xs">Bottling date</Label>
-                                    </div>
-                                </div>
-                                {design.showBottlingDate && (
-                                    <Input type="date" value={design.bottlingDate} onChange={e => updateDesign({ bottlingDate: e.target.value })} />
-                                )}
-
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <Switch checked={design.showBestBefore} onCheckedChange={v => updateDesign({ showBestBefore: v })} />
-                                        <Label className="text-xs">Best before date</Label>
-                                    </div>
+                                <div className="flex items-center justify-between group">
+                                    <Label className="text-[11px] cursor-pointer" htmlFor="sw-date">Best Before Date</Label>
+                                    <Switch id="sw-date" checked={design.showBestBefore} onCheckedChange={v => updateDesign({ showBestBefore: v })} />
                                 </div>
                                 {design.showBestBefore && (
-                                    <Input type="date" value={design.bestBeforeDate} onChange={e => updateDesign({ bestBeforeDate: e.target.value })} />
+                                    <Input
+                                        type="date"
+                                        value={design.bestBeforeDate}
+                                        onChange={e => updateDesign({ bestBeforeDate: e.target.value })}
+                                        className="h-8 text-[11px] bg-gray-50/50 dark:bg-white/5"
+                                    />
                                 )}
 
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <Switch checked={design.showStorageConditions} onCheckedChange={v => updateDesign({ showStorageConditions: v })} />
-                                        <Label className="text-xs">Storage conditions</Label>
-                                    </div>
-                                </div>
-                                {design.showStorageConditions && (
-                                    <Input value={design.storageConditions} onChange={e => updateDesign({ storageConditions: e.target.value })} />
-                                )}
-
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <Switch checked={design.showContact} onCheckedChange={v => updateDesign({ showContact: v })} />
-                                        <Label className="text-xs">Contact / www</Label>
-                                    </div>
-                                </div>
-                                {design.showContact && (
-                                    <Input value={design.contactInfo} onChange={e => updateDesign({ contactInfo: e.target.value })} />
-                                )}
-
-                                <div className="flex items-center gap-2">
-                                    <Switch checked={design.showQRCode} onCheckedChange={v => updateDesign({ showQRCode: v })} />
-                                    <Label className="text-xs">QR code</Label>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Switch checked={design.showFooter} onCheckedChange={v => updateDesign({ showFooter: v })} />
-                                    <Label className="text-xs">BeeHUB.app footer</Label>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Switch checked={design.showLogo} onCheckedChange={v => updateDesign({ showLogo: v })} />
-                                    <Label className="text-xs">Show logo</Label>
+                                <div className="flex items-center justify-between group">
+                                    <Label className="text-[11px] cursor-pointer" htmlFor="sw-qr">Traceability QR</Label>
+                                    <Switch id="sw-qr" checked={design.showQRCode} onCheckedChange={v => updateDesign({ showQRCode: v })} />
                                 </div>
 
-                                {design.showLogo && (
-                                    <div className="space-y-3 pt-2">
-                                        <div
-                                            className="w-full h-24 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 flex flex-col items-center justify-center bg-gray-50 dark:bg-[#1e1e1e] cursor-pointer"
-                                            onClick={() => fileInputRef.current?.click()}
-                                        >
-                                            {design.logoUrl ? (
-                                                <img src={design.logoUrl} alt="Logo" className="h-16 object-contain" />
-                                            ) : (
-                                                <>
-                                                    <Upload className="w-5 h-5 text-gray-400 mb-1" />
-                                                    <p className="text-[10px] text-gray-400">Drop the logo or click to upload</p>
-                                                    <p className="text-[8px] text-gray-500">PNG, JPG, SVG</p>
-                                                </>
-                                            )}
-                                        </div>
-                                        <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleLogoUpload} />
-                                        <div className="space-y-1">
-                                            <div className="flex justify-between text-[10px]">
-                                                <Label>Logo scale</Label>
-                                                <span>{design.logoScale.toFixed(2)}x</span>
-                                            </div>
-                                            <Slider
-                                                value={[design.logoScale]}
-                                                min={0.1} max={2} step={0.1}
-                                                onValueChange={v => updateDesign({ logoScale: v[0] })}
-                                            />
-                                        </div>
-                                    </div>
-                                )}
+                                <div className="flex items-center justify-between group">
+                                    <Label className="text-[11px] cursor-pointer" htmlFor="sw-footer">System Footer</Label>
+                                    <Switch id="sw-footer" checked={design.showFooter} onCheckedChange={v => updateDesign({ showFooter: v })} />
+                                </div>
                             </div>
                         </CardContent>
                     </Card>
                 </div>
 
-                {/* Middle Panel - Visual Designer & Templates */}
-                <div className="lg:col-span-2 space-y-6">
-                    {/* Visual Preview */}
-                    <Card className="bg-white dark:bg-[#0a0a0a] border-gray-200 dark:border-[#1e1e1e] overflow-hidden">
-                        <div className="p-8 flex justify-center bg-gray-100 dark:bg-[#111] min-h-[400px]">
+
+                {/* Middle Panel - Visual Designer */}
+                <div className="lg:col-span-2 space-y-4">
+                    <Card className="bg-white dark:bg-[#0a0a0a] border-gray-200 dark:border-[#1e1e1e] overflow-hidden shadow-xl ring-1 ring-black/5">
+                        <div className="p-4 sm:p-12 flex items-center justify-center bg-gray-50 dark:bg-[#111] min-h-[500px] relative overflow-auto">
+                            {/* Grid Background Effect */}
+                            <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none"
+                                style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
+
                             <div
                                 ref={previewRef}
-                                className="bg-white shadow-2xl relative overflow-hidden flex flex-col p-8 transition-all duration-300"
+                                className="bg-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] relative overflow-hidden flex flex-col p-7 transition-all duration-500 ease-out hover:scale-[1.02]"
                                 style={{
                                     width: `${parseFloat(design.customWidth) * 4}px`,
                                     height: `${parseFloat(design.customHeight) * 4}px`,
                                     backgroundColor: design.backgroundColor,
                                     color: design.textColor,
-                                    border: design.borderStyle === 'elegant' ? `4px double ${design.accentColor}` : 'none',
-                                    borderRadius: design.customShape === 'Circle' ? '50%' : '8px'
+                                    border: design.borderStyle === 'elegant' ? `6px double ${design.accentColor}40` : 'none',
+                                    borderRadius: design.customShape === 'Circle' ? '50%' : '12px',
+                                    fontFamily: "'Playfair Display', serif"
                                 }}
                             >
-                                <div className="flex justify-between items-start">
+                                {/* Background Accent Pattern */}
+                                <div className="absolute top-0 right-0 w-32 h-32 opacity-[0.03] pointer-events-none -mr-8 -mt-8 rotate-12">
+                                    <Hexagon className="w-full h-full" stroke={design.accentColor} />
+                                </div>
+
+                                <div className="flex justify-between items-start relative z-10">
                                     <div>
-                                        <h2 className="text-2xl font-bold uppercase tracking-widest" style={{ color: design.accentColor }}>{design.productName}</h2>
-                                        <p className="text-sm italic">{design.honeyType} Honey</p>
+                                        <h2 className="text-2xl font-black uppercase tracking-[0.15em] leading-tight" style={{ color: design.accentColor }}>
+                                            {design.productName || 'Pure Honey'}
+                                        </h2>
+                                        <p className="text-[11px] font-medium tracking-wide uppercase opacity-80 mt-1">
+                                            {design.honeyType} Collection
+                                        </p>
                                     </div>
-                                    {design.showLogo && design.logoUrl && (
-                                        <img
-                                            src={design.logoUrl}
-                                            alt="Logo"
-                                            style={{ height: `${24 * design.logoScale}px` }}
-                                            className="object-contain"
-                                        />
+                                    {design.showLogo && (
+                                        <div className="flex items-center justify-center bg-white/40 backdrop-blur-sm rounded-lg p-2 border border-black/5">
+                                            {design.logoUrl ? (
+                                                <img
+                                                    src={design.logoUrl}
+                                                    alt="Logo"
+                                                    style={{ height: `${28 * design.logoScale}px` }}
+                                                    className="object-contain"
+                                                />
+                                            ) : (
+                                                <Droplet className="w-5 h-5" style={{ color: design.accentColor }} />
+                                            )}
+                                        </div>
                                     )}
                                 </div>
 
-                                <div className="mt-auto space-y-2">
-                                    <div className="flex justify-between items-end border-t pt-4" style={{ borderColor: `${design.textColor}20` }}>
-                                        <div className="text-[10px] space-y-0.5">
-                                            {design.producer && <p className="font-bold">{design.producer}</p>}
-                                            {design.address && <p>{design.address}</p>}
-                                            {design.country && <p>{design.country}</p>}
+                                <div className="mt-4 flex-1">
+                                    <p className="text-[9px] leading-relaxed max-w-[80%] opacity-90">
+                                        {design.marketingNote || 'A taste of nature in every drop.'}
+                                    </p>
+                                </div>
+
+                                <div className="mt-auto space-y-3 relative z-10">
+                                    <div className="flex justify-between items-end border-t pt-3" style={{ borderColor: `${design.accentColor}20` }}>
+                                        <div className="text-[9px] space-y-0.5 font-medium leading-tight">
+                                            {design.producer && <p className="font-bold uppercase tracking-tighter text-[10px]">{design.producer}</p>}
+                                            {design.address && <p className="opacity-70">{design.address}</p>}
+                                            {design.country && <p className="opacity-70">{design.country}</p>}
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-xl font-black">{design.weight}{design.weightUnit}</p>
+                                            <p className="text-xs opacity-60 font-bold uppercase tracking-widest">Net Weight</p>
+                                            <p className="text-2xl font-black tabular-nums">{design.weight}{design.weightUnit}</p>
                                         </div>
                                     </div>
 
                                     {(design.showBatchNumber || design.showBestBefore) && (
-                                        <div className="grid grid-cols-2 gap-4 text-[8px] uppercase tracking-tighter opacity-70">
+                                        <div className="flex gap-4 text-[7px] uppercase tracking-wider font-bold opacity-60">
                                             {design.showBatchNumber && (
                                                 <div>
-                                                    <p>Batch / Partia:</p>
-                                                    <p className="font-mono">{design.batchNumber}</p>
+                                                    <span className="opacity-60">LOT:</span> <span className="font-mono">{design.batchNumber}</span>
                                                 </div>
                                             )}
                                             {design.showBestBefore && (
                                                 <div>
-                                                    <p>Best before / Najlepiej spożyć:</p>
-                                                    <p className="font-mono">{design.bestBeforeDate}</p>
+                                                    <span className="opacity-60">EXP:</span> <span className="font-mono">{design.bestBeforeDate}</span>
                                                 </div>
                                             )}
                                         </div>
                                     )}
 
                                     {design.showFooter && (
-                                        <div className="text-[6px] text-center opacity-40 mt-2">
-                                            BeeYield Traceability System • {design.customWidth}x{design.customHeight}mm
+                                        <div className="text-[6px] text-center opacity-30 mt-1 flex items-center justify-center gap-1.5 uppercase tracking-[0.2em] font-medium">
+                                            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: design.accentColor }} />
+                                            BeeYield Traceability System • {design.harvestYear}
+                                            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: design.accentColor }} />
                                         </div>
                                     )}
                                 </div>
 
                                 {design.showQRCode && (
-                                    <div className="absolute top-8 right-8 w-12 h-12 bg-white border flex items-center justify-center p-1">
-                                        <Grid className="w-full h-full text-black" />
+                                    <div className="absolute bottom-12 right-6 w-10 h-10 bg-white shadow-sm border border-black/5 flex items-center justify-center p-1.5 rounded-md">
+                                        <Grid className="w-full h-full text-black/80" />
                                     </div>
                                 )}
                             </div>
@@ -657,142 +653,117 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                     </div>
                 </div>
 
-                {/* Right Panel - Settings & Templates */}
-                <div className="lg:col-span-1 space-y-6">
-                    <Card className="bg-white dark:bg-[#0a0a0a] border-gray-200 dark:border-[#1e1e1e]">
-                        <CardHeader>
-                            <CardTitle className="text-lg">Templates</CardTitle>
+                {/* Right Panel - Style & Export */}
+                <div className="lg:col-span-1 space-y-4">
+                    <Card className="bg-white dark:bg-[#0a0a0a] border-gray-200 dark:border-[#1e1e1e] shadow-sm">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                                <Palette className="w-4 h-4 text-orange-500" />
+                                Style Presets
+                            </CardTitle>
                         </CardHeader>
-                        <CardContent>
-                            <div className="grid grid-cols-2 gap-3">
+                        <CardContent className="pt-0">
+                            <div className="grid grid-cols-2 gap-2">
                                 {templates.map(tmp => (
                                     <button
                                         key={tmp.id}
-                                        onClick={() => updateDesign({ template: tmp.id, backgroundColor: tmp.color })}
-                                        className={`group p-2 rounded-lg border-2 text-left transition-all ${design.template === tmp.id ? 'border-amber-501 bg-amber-50 dark:bg-amber-900/10' : 'border-gray-100 hover:border-amber-200'}`}
+                                        onClick={() => updateDesign({
+                                            template: tmp.id,
+                                            backgroundColor: tmp.color,
+                                            textColor: tmp.id.includes('ink') ? '#FFFFFF' : '#2D241E',
+                                            accentColor: tmp.id.includes('ink') ? '#F5A623' : tmp.color === '#FFF8E7' ? '#D97706' : '#8B4513'
+                                        })}
+                                        className={`group p-2 rounded-xl border-2 text-left transition-all ${design.template === tmp.id ? 'border-amber-500 bg-amber-50/50 dark:bg-amber-900/10' : 'border-gray-100 dark:border-white/5 hover:border-amber-200'}`}
                                     >
-                                        <div className="aspect-[3/4] rounded bg-white border border-gray-200 mb-2 shadow-sm flex flex-col p-2 space-y-1">
-                                            <div className="h-1 w-full rounded" style={{ backgroundColor: tmp.color }}></div>
-                                            <div className="h-1 w-2/3 rounded bg-gray-100"></div>
-                                            <div className="flex-1"></div>
-                                            <div className="h-2 w-full rounded bg-gray-50"></div>
+                                        <div className="aspect-[3/2] rounded-lg mb-2 shadow-sm flex flex-col p-2 space-y-1 overflow-hidden relative" style={{ backgroundColor: tmp.color }}>
+                                            <div className="w-full h-1 bg-black/10 rounded-full" />
+                                            <div className="w-2/3 h-1 bg-black/5 rounded-full" />
+                                            <div className="mt-auto flex justify-between">
+                                                <div className="w-4 h-4 bg-black/10 rounded-sm" />
+                                                <div className="w-8 h-4 bg-black/10 rounded-sm" />
+                                            </div>
                                         </div>
-                                        <p className="text-[10px] font-bold truncate">{tmp.name}</p>
-                                        <p className="text-[8px] text-gray-500 line-clamp-2 leading-tight mt-0.5">{tmp.description}</p>
+                                        <p className="text-[10px] font-bold truncate leading-tight">{tmp.name}</p>
                                     </button>
                                 ))}
                             </div>
                         </CardContent>
                     </Card>
 
-                    <Card className="bg-white dark:bg-[#0a0a0a] border-gray-200 dark:border-[#1e1e1e]">
-                        <CardHeader>
-                            <CardTitle className="text-lg">Label size</CardTitle>
+                    <Card className="bg-white dark:bg-[#0a0a0a] border-gray-200 dark:border-[#1e1e1e] shadow-sm">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                                <Grid className="w-4 h-4 text-orange-500" />
+                                Label Geometry
+                            </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div className="space-y-4">
-                                <p className="text-[10px] font-bold text-gray-400 uppercase">500 g</p>
-                                <div className="grid grid-cols-2 gap-2">
-                                    <Button variant="outline" size="sm" className="text-[10px] h-8" onClick={() => updateDesign({ customWidth: '99.1', customHeight: '57' })}>99.1 x 57 mm</Button>
-                                    <Button variant="outline" size="sm" className="text-[10px] h-8" onClick={() => updateDesign({ customWidth: '100', customHeight: '50' })}>100 x 50 mm</Button>
-                                </div>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase">250 g</p>
-                                <div className="grid grid-cols-2 gap-2">
-                                    <Button variant="outline" size="sm" className="text-[10px] h-8" onClick={() => updateDesign({ customWidth: '50', customHeight: '37' })}>50 x 37 mm</Button>
-                                    <Button variant="outline" size="sm" className="text-[10px] h-8" onClick={() => updateDesign({ customWidth: '125', customHeight: '35' })}>125 x 35 mm</Button>
-                                </div>
-                            </div>
-
-                            <Separator />
-
-                            <div className="space-y-3">
-                                <Label className="text-xs font-bold text-gray-400 uppercase">Custom size</Label>
-                                <div className="grid grid-cols-2 gap-2">
-                                    <div className="space-y-1">
-                                        <Label className="text-[10px]">Width (mm)*</Label>
-                                        <Input value={design.customWidth} onChange={e => updateDesign({ customWidth: e.target.value })} />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <Label className="text-[10px]">Height (mm)*</Label>
-                                        <Input value={design.customHeight} onChange={e => updateDesign({ customHeight: e.target.value })} />
-                                    </div>
+                        <CardContent className="space-y-4 pt-0">
+                            <div className="grid grid-cols-2 gap-2">
+                                <div className="space-y-1">
+                                    <Label className="text-[10px] font-bold uppercase opacity-60">Width (mm)</Label>
+                                    <Input value={design.customWidth} onChange={e => updateDesign({ customWidth: e.target.value })} className="h-8 text-xs" />
                                 </div>
                                 <div className="space-y-1">
-                                    <Label className="text-[10px]">Shape*</Label>
-                                    <Select value={design.customShape} onValueChange={v => updateDesign({ customShape: v })}>
-                                        <SelectTrigger className="h-8 text-xs">
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Rectangle">Rectangle</SelectItem>
-                                            <SelectItem value="Circle">Circle</SelectItem>
-                                            <SelectItem value="Oval">Oval</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                    <Label className="text-[10px] font-bold uppercase opacity-60">Height (mm)</Label>
+                                    <Input value={design.customHeight} onChange={e => updateDesign({ customHeight: e.target.value })} className="h-8 text-xs" />
                                 </div>
                             </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="bg-white dark:bg-[#0a0a0a] border-gray-200 dark:border-[#1e1e1e]">
-                        <CardHeader>
-                            <CardTitle className="text-lg">Export</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
                             <div className="space-y-1">
-                                <Label className="text-[10px]">Format</Label>
-                                <Select value={design.exportFormat} onValueChange={v => updateDesign({ exportFormat: v })}>
+                                <Label className="text-[10px] font-bold uppercase opacity-60">Shape</Label>
+                                <Select value={design.customShape} onValueChange={v => updateDesign({ customShape: v })}>
                                     <SelectTrigger className="h-8 text-xs">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="PDF">PDF</SelectItem>
-                                        <SelectItem value="PNG">PNG Image</SelectItem>
+                                        <SelectItem value="Rectangle">Standard Rectangle</SelectItem>
+                                        <SelectItem value="Circle">Round Label</SelectItem>
+                                        <SelectItem value="Oval">Oval Seal</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="grid grid-cols-2 gap-2">
-                                <div className="space-y-1">
-                                    <Label className="text-[10px]">DPI</Label>
-                                    <Input value={design.exportDPI} onChange={e => updateDesign({ exportDPI: e.target.value })} />
-                                </div>
-                                <div className="space-y-1">
-                                    <Label className="text-[10px]">Bleed (mm)</Label>
-                                    <Input value={design.exportBleed} onChange={e => updateDesign({ exportBleed: e.target.value })} />
-                                </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="bg-white dark:bg-[#0a0a0a] border-gray-200 dark:border-[#1e1e1e] shadow-sm">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                                <ImageIcon className="w-4 h-4 text-orange-500" />
+                                Logo & Branding
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                            <div
+                                className="w-full h-20 rounded-xl border-2 border-dashed border-gray-200 dark:border-white/10 flex flex-col items-center justify-center bg-gray-50/50 dark:bg-white/5 cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                                onClick={() => fileInputRef.current?.click()}
+                            >
+                                {design.logoUrl ? (
+                                    <img src={design.logoUrl} alt="Logo" className="h-12 object-contain" />
+                                ) : (
+                                    <>
+                                        <Upload className="w-4 h-4 text-gray-400 mb-1" />
+                                        <p className="text-[9px] text-gray-400 uppercase font-bold">Upload Brand Logo</p>
+                                    </>
+                                )}
                             </div>
-                            <div className="space-y-2 pt-2">
-                                <div className="flex items-center gap-2">
-                                    <Switch checked={design.showCropMarks} onCheckedChange={v => updateDesign({ showCropMarks: v })} />
-                                    <Label className="text-[10px]">Crop marks (PDF)</Label>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Switch checked={design.useA4Sheet} onCheckedChange={v => updateDesign({ useA4Sheet: v })} />
-                                    <Label className="text-[10px]">A4 sheet</Label>
-                                </div>
-                            </div>
-                            <Button className="w-full mt-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:scale-105 transition-transform font-bold" onClick={handleGeneratePDF}>
-                                Export
-                            </Button>
+                            <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleLogoUpload} />
                         </CardContent>
                     </Card>
                 </div>
             </div>
 
-
             {/* Action Buttons */}
-            <div className="grid grid-cols-2 gap-2 mt-4">
-                <Button variant="outline" onClick={handlePrint} className="gap-2">
+            <div className="grid grid-cols-2 gap-3 mt-6">
+                <Button variant="outline" onClick={handlePrint} className="gap-2 h-11 border-gray-200 dark:border-white/10">
                     <Printer className="w-4 h-4" />
-                    Print
+                    Print Labels
                 </Button>
                 <Button
                     variant="outline"
                     onClick={createNewDesign}
-                    className="gap-2"
+                    className="gap-2 h-11 border-gray-200 dark:border-white/10"
                 >
                     <RotateCcw className="w-4 h-4" />
-                    Reset
+                    Reset Editor
                 </Button>
             </div>
         </div>

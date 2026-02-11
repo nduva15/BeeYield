@@ -970,7 +970,7 @@ const Media = () => {
                           <div className="relative p-8 md:p-10 bg-primary/5 rounded-3xl border border-primary/10">
                             <Quote className="absolute top-8 left-8 w-10 h-10 text-primary/20" />
                             <blockquote className="relative z-10 pt-6">
-                              <p className="text-xl md:text-2xl font-medium italic text-foreground mb-6 leading-normal">
+                              <p className="text-xl md:text-2xl font-medium text-foreground mb-6 leading-normal">
                                 "{story.quote}"
                               </p>
                               <footer className="flex items-center gap-4 border-t border-primary/10 pt-6">
@@ -1000,7 +1000,7 @@ const Media = () => {
                                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                               </Link>
                             </Button>
-                            <p className="text-sm text-muted-foreground italic flex items-center">
+                            <p className="text-sm text-muted-foreground flex items-center">
                               <MapPin className="w-3 h-3 mr-1" /> Verified at{" "}
                               {story.location}
                             </p>
