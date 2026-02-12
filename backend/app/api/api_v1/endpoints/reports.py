@@ -43,12 +43,12 @@ def get_user_id(current_user: dict = Depends(security.get_current_user)) -> str:
 # =======================
 
 @router.get("", response_model=List[dict])
-def get_generated_reports(user_id: str = Depends(get_user_id)):
+async def get_generated_reports(user_id: str = Depends(get_user_id)):
     """Get all generated reports for the current user"""
-    return db_select("generated_reports", filters={"user_id": user_id}, order_by="created_at", ascending=False)
+    return await db_select("generated_reports", filters={"user_id": user_id}, order_by="created_at", ascending=False)
 
 @router.post("", response_model=dict)
-def generate_report(
+async def generate_report(
     report_in: ReportCreate,
     user_id: str = Depends(get_user_id)
 ):
@@ -62,19 +62,19 @@ def generate_report(
     data["status"] = "completed"
     data["file_url"] = "https://example.com/report.pdf"  # Mock URL
     
-    result = db_insert("generated_reports", data)
+    result = await db_insert("generated_reports", data)
     if not result.get("success"):
         raise HTTPException(status_code=500, detail=result.get("error", "Failed to generate report"))
     
     return result["data"][0] if result.get("data") else data
 
 @router.get("/scheduled", response_model=List[dict])
-def get_scheduled_reports(user_id: str = Depends(get_user_id)):
+async def get_scheduled_reports(user_id: str = Depends(get_user_id)):
     """Get all scheduled reports"""
-    return db_select("scheduled_reports", filters={"user_id": user_id}, order_by="created_at", ascending=False)
+    return await db_select("scheduled_reports", filters={"user_id": user_id}, order_by="created_at", ascending=False)
 
 @router.post("/scheduled", response_model=dict)
-def create_scheduled_report(
+async def create_scheduled_report(
     schedule_in: ScheduledReportCreate,
     user_id: str = Depends(get_user_id)
 ):
@@ -82,27 +82,27 @@ def create_scheduled_report(
     data = schedule_in.dict()
     data["user_id"] = user_id
     
-    result = db_insert("scheduled_reports", data)
+    result = await db_insert("scheduled_reports", data)
     if not result.get("success"):
         raise HTTPException(status_code=500, detail=result.get("error", "Failed to create schedule"))
     
     return result["data"][0] if result.get("data") else data
 
 @router.delete("/scheduled/{schedule_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_scheduled_report(
+async def delete_scheduled_report(
     schedule_id: str,
     user_id: str = Depends(get_user_id)
 ):
     """Delete a schedule"""
     # Verify ownership
-    existing = db_select("scheduled_reports", filters={"id": schedule_id})
+    existing = await db_select("scheduled_reports", filters={"id": schedule_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Schedule not found")
         
     if existing[0]["user_id"] != user_id:
         raise HTTPException(status_code=403, detail="Access denied")
         
-    result = db_delete("scheduled_reports", {"id": schedule_id})
+    result = await db_delete("scheduled_reports", {"id": schedule_id})
     if not result.get("success"):
         raise HTTPException(status_code=500, detail=result.get("error", "Failed to delete schedule"))
         

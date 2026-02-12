@@ -101,12 +101,32 @@ class AIService:
         dna_block = _get_bee_dna()
         knowledge_context = f"{dna_block}\n{knowledge_context}" if dna_block else knowledge_context
 
-        # --- PHASE 2: TIER 1 - GEMINI FLASH (THE READER) ---
+        # --- PHASE 2: TIER 1 - GEMINI FLASH (THE READER / RESPONDER) ---
+        
+        # Optimization: Simple Response Mode for short/conversational queries
+        is_simple = len(message) < 50 and not any(kw in msg_lower for kw in ["compare", "analyze", "report", "detailed", "technical", "history"])
+        
+        if is_simple:
+            simple_prompt = (
+                f"You are BeeYield AI. Provide a helpful, professional, but CONCISE response (2-3 paragraphs max) "
+                f"to this message: '{message}'. Use this context if relevant:\n{knowledge_context[:2000]}"
+            )
+            google_key = settings.GOOGLE_API_KEY
+            if google_key:
+                client = genai.Client(api_key=google_key)
+                response = client.models.generate_content(
+                    model="gemini-2.0-flash",
+                    contents=[simple_prompt],
+                    config=genai.types.GenerateContentConfig(temperature=0.7)
+                )
+                return response.text
+        
+        # Technical/Complex Query Path
         observation_prompt = (
             f"You are the BEE_OBSERVER node. Extract EVERY technical fact, metric, statistic, date, and citation from this context "
             f"related to the query: '{message}'.\n\n"
             f"RULES:\n"
-            f"- Be EXHAUSTIVE. Do not omit details. Include percentages, dates, names, figures.\n"
+            f"- Be EXHAUSTIVE. Include percentages, dates, names, figures.\n"
             f"- Organize by pillar: INTELLIGENCE, GLOBAL_CONTEXT, IOT_ENVIRONMENTAL, INTERNAL_OPS, BIBLIOGRAPHY.\n"
             f"- Output a structured JSON array: [{{\"pillar\": \"...\", \"fact\": \"...\", \"source\": \"...\"}}]\n\n"
             f"CONTEXT:\n{knowledge_context}"
@@ -128,38 +148,24 @@ class AIService:
             try:
                 extracted_facts = await RateLimitManager.with_retry(
                     gemini_observe,
-                    max_retries=3,
-                    base_delay=2.0,
+                    max_retries=2,
+                    base_delay=1.0,
                     api_name="gemini_observe"
                 )
-            except Exception as e:
-                print(f"GEMINI OBSERVATION ERROR (after retries): {e}")
+            except Exception:
                 extracted_facts = knowledge_context[:3000]
 
-        # --- PHASE 3: TIER 2 - GPT-4o (THE REASONER & WRITER) ---
+        # --- PHASE 3: TIER 2 - SYNTHESIS (THE REASONER & WRITER) ---
         system_prompt = (
             f"You are the BEE_ARCHITECT (v5.0), the primary intelligence of BeeYield.\n"
             f"TIMESTAMP: {current_time}, {current_date}\n\n"
             f"STRICT GOVERNANCE:\n"
-            f"1. FACT-GROUNDING: Use ONLY facts from the extracted data below. NEVER invent data, statistics, or sources. If uncertain, say 'Based on available data' or omit.\n"
-            f"2. LENGTH: Target 2200-3200 words. Each section MUST have 4-6 substantial paragraphs. Do NOT summarize or truncate.\n"
-            f"3. STRUCTURE: Use ## for main sections, ### for subsections. Include bullet lists for key metrics where appropriate.\n"
-            f"4. CITATIONS: Integrate inline [1], [2] and a full VERIFIED BIBLIOGRAPHY with URLs from: {json.dumps(citations)}\n"
-            f"5. KEY TAKEAWAYS: End Section I with a **Key Takeaways** bullet list (4-6 items). End the report with **Recommendations** (3-5 numbered items).\n\n"
-            f"EXTRACTED FACTS (authoritative source—do not add to this):\n{extracted_facts}\n\n"
-            f"REQUIRED STRUCTURE:\n"
-            f"## I. INTELLIGENCE BRIEF\n"
-            f"### Executive Summary | Key Findings | Key Takeaways (bullets)\n"
-            f"## II. GLOBAL TECHNICAL CONTEXT\n"
-            f"### Industry Trends | Regional Factors | Technical Metrics\n"
-            f"## III. IOT & ENVIRONMENTAL CORRELATION\n"
-            f"### Sensor Data | Environmental Factors | Correlations\n"
-            f"## IV. INTERNAL OPERATIONS SYNC\n"
-            f"### Harvest Data | Apiary Operations | Internal Metrics\n"
-            f"## V. VERIFIED BIBLIOGRAPHY\n"
-            f"### Numbered references with URLs\n"
-            f"## VI. RECOMMENDATIONS\n"
-            f"### 3-5 numbered, actionable recommendations"
+            f"1. FACT-GROUNDING: Use ONLY facts from the extracted data below. NEVER invent data.\n"
+            f"2. LENGTH: Target 800-1200 words. Provide substantial depth without unnecessary fluff.\n"
+            f"3. STRUCTURE: Use ## for main sections, ### for subsections.\n"
+            f"4. CITATIONS: Integrate inline [1], [2] referencing: {json.dumps(citations)}\n"
+            f"5. KEY TAKEAWAYS: Include a **Key Takeaways** list at the end of Section I.\n\n"
+            f"EXTRACTED FACTS:\n{extracted_facts}\n"
         )
 
         final_answer = ""

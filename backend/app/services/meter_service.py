@@ -4,18 +4,18 @@ from datetime import datetime
 
 class MeterService:
     @staticmethod
-    def get_buildings() -> List[Dict[str, Any]]:
-        return db_select("meters_buildings", order_by="name")
+    async def get_buildings() -> List[Dict[str, Any]]:
+        return await db_select("meters_buildings", order_by="name")
 
     @staticmethod
-    def get_apartments(building_id: Optional[str] = None) -> List[Dict[str, Any]]:
+    async def get_apartments(building_id: Optional[str] = None) -> List[Dict[str, Any]]:
         filters = {}
         if building_id:
             filters["building_id"] = building_id
-        return db_select("meters_apartments", filters=filters, order_by="unit_number")
+        return await db_select("meters_apartments", filters=filters, order_by="unit_number")
 
     @staticmethod
-    def get_meters(
+    async def get_meters(
         building_id: Optional[str] = None, 
         apartment_id: Optional[str] = None,
         meter_type: Optional[str] = None
@@ -28,11 +28,11 @@ class MeterService:
         if meter_type:
             filters["meter_type"] = meter_type
             
-        return db_select("meters_devices", filters=filters, order_by="meter_number")
+        return await db_select("meters_devices", filters=filters, order_by="meter_number")
 
     @staticmethod
-    def get_readings(meter_id: str, limit: int = 100) -> List[Dict[str, Any]]:
-        return db_select(
+    async def get_readings(meter_id: str, limit: int = 100) -> List[Dict[str, Any]]:
+        return await db_select(
             "meters_readings", 
             filters={"meter_id": meter_id}, 
             limit=limit, 
@@ -41,20 +41,20 @@ class MeterService:
         )
 
     @staticmethod
-    def get_billing_rates() -> List[Dict[str, Any]]:
-        return db_select("meters_billing_rates", filters={"is_active": True})
+    async def get_billing_rates() -> List[Dict[str, Any]]:
+        return await db_select("meters_billing_rates", filters={"is_active": True})
 
     @staticmethod
-    def get_events(severity: Optional[str] = None, limit: int = 50) -> List[Dict[str, Any]]:
+    async def get_events(severity: Optional[str] = None, limit: int = 50) -> List[Dict[str, Any]]:
         filters = {}
         if severity:
             filters["severity"] = severity
-        return db_select("meters_events", filters=filters, limit=limit, order_by="timestamp", ascending=False)
+        return await db_select("meters_events", filters=filters, limit=limit, order_by="timestamp", ascending=False)
 
     @staticmethod
-    def update_meter_reading(meter_id: str, value: float, unit: str):
+    async def update_meter_reading(meter_id: str, value: float, unit: str):
         # 1. Insert new reading
-        db_insert("meters_readings", {
+        await db_insert("meters_readings", {
             "meter_id": meter_id,
             "value": value,
             "unit": unit,
@@ -62,8 +62,4 @@ class MeterService:
         })
         
         # 2. Update last reading in meter device
-        db_update("meters_devices", meter_id, {
-            "last_reading_value": value,
-            "last_reading_unit": unit,
-            "last_reading_at": datetime.utcnow().isoformat()
-        })
+        await db_update("meters_devices", {"last_reading_value": value, "last_reading_unit": unit, "last_reading_at": datetime.utcnow().isoformat()}, {"id": meter_id})
