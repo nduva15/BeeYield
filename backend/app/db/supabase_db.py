@@ -6,11 +6,12 @@ SDK import is LAZY to prevent startup hangs from storage3/gRPC issues.
 import httpx
 import json
 import os
+import asyncio
 from typing import Optional, Any, List, Dict
 from app.core.config import settings
 
-# Global client for connection pooling
-_http_client: Optional[httpx.Client] = None
+# Global async client for connection pooling
+_async_http_client: Optional[httpx.AsyncClient] = None
 
 # Lazy SDK clients - only created when needed (avoids import hangs)
 _supabase_client = None
@@ -74,54 +75,14 @@ def get_supabase():
         print(f"[WARNING] Supabase client creation failed: {e}")
         return None
 
-def get_supabase_admin():
-    """Compatibility function - lazily creates Supabase admin SDK client with timeout protection."""
-    global _supabase_admin_client
-    if _supabase_admin_client is not None:
-        return _supabase_admin_client
-    
-    if not settings.SUPABASE_URL or not settings.SUPABASE_KEY:
-        return None
-    
-    create_client, _ = _lazy_import_sdk()
-    if create_client is None:
-        return None
-    try:
-        import threading
-        key = settings.SUPABASE_SERVICE_ROLE_KEY or settings.SUPABASE_KEY
-        result = [None]
-        error = [None]
-        
-        def _create():
-            try:
-                result[0] = create_client(settings.SUPABASE_URL, key)
-            except Exception as e:
-                error[0] = e
-        
-        t = threading.Thread(target=_create, daemon=True)
-        t.start()
-        t.join(timeout=10)
-        
-        if t.is_alive():
-            print("[WARNING] Supabase admin SDK client creation timed out (10s)")
-            return None
-        
-        if error[0]:
-            print(f"[WARNING] Supabase admin client creation failed: {error[0]}")
-            return None
-        
-        _supabase_admin_client = result[0]
-        return _supabase_admin_client
-    except Exception as e:
-        print(f"[WARNING] Supabase admin client creation failed: {e}")
-        return None
-
-def get_client() -> httpx.Client:
-    global _http_client
-    if _http_client is None:
+async def get_async_client() -> httpx.AsyncClient:
+    global _async_http_client
+    if _async_http_client is None:
         if not settings.SUPABASE_URL or not settings.SUPABASE_KEY:
             raise Exception("SUPABASE_URL and SUPABASE_KEY must be configured")
-        _http_client = httpx.Client(
+        
+        limits = httpx.Limits(max_keepalive_connections=5, max_connections=10)
+        _async_http_client = httpx.AsyncClient(
             base_url=f"{settings.SUPABASE_URL}/rest/v1",
             headers={
                 "apikey": settings.SUPABASE_KEY,
@@ -129,9 +90,10 @@ def get_client() -> httpx.Client:
                 "Content-Type": "application/json",
                 "Prefer": "return=representation"
             },
-            timeout=15.0
+            timeout=15.0,
+            limits=limits
         )
-    return _http_client
+    return _async_http_client
 
 def get_admin_headers() -> Dict[str, str]:
     return {
@@ -161,13 +123,13 @@ def _serialize_data(data: dict) -> dict:
     """Ensure all values in data dict are JSON-serializable"""
     return {k: _serialize_value(v) for k, v in data.items()}
 
-def db_insert(table: str, data: dict[str, Any]) -> dict[str, Any]:
+async def db_insert(table: str, data: dict[str, Any]) -> dict[str, Any]:
     """Insert a record via REST API"""
     try:
-        client = get_client()
+        client = await get_async_client()
         headers = get_admin_headers()
         clean_data = _serialize_data(data)
-        response = client.post(f"/{table}", json=clean_data, headers=headers)
+        response = await client.post(f"/{table}", json=clean_data, headers=headers)
         
         if response.status_code in [200, 201]:
             return {"success": True, "data": response.json()}
@@ -176,7 +138,7 @@ def db_insert(table: str, data: dict[str, Any]) -> dict[str, Any]:
     except Exception as e:
         return {"success": False, "error": str(e)}
 
-def db_select(
+async def db_select(
     table: str, 
     columns: str = "*",
     filters: Optional[dict[str, Any]] = None,
@@ -186,7 +148,7 @@ def db_select(
 ) -> list[dict[str, Any]]:
     """Select records via REST API"""
     try:
-        client = get_client()
+        client = await get_async_client()
         params = {"select": columns, "limit": limit}
         
         if filters:
@@ -205,7 +167,7 @@ def db_select(
         if order_by:
             params["order"] = f"{order_by}.{'asc' if ascending else 'desc'}"
             
-        response = client.get(f"/{table}", params=params, headers=get_admin_headers())
+        response = await client.get(f"/{table}", params=params, headers=get_admin_headers())
         
         if response.status_code == 200:
             return response.json()
@@ -216,16 +178,16 @@ def db_select(
         print(f"DB Select Exception for {table}: {e}")
         return []
 
-def db_update(table: str, data: dict[str, Any], filters: dict[str, Any]) -> dict[str, Any]:
+async def db_update(table: str, data: dict[str, Any], filters: dict[str, Any]) -> dict[str, Any]:
     """Update records via REST API"""
     try:
-        client = get_client()
+        client = await get_async_client()
         params = {}
         for key, value in filters.items():
             params[key] = f"eq.{value}"
             
         clean_data = _serialize_data(data)
-        response = client.patch(f"/{table}", json=clean_data, params=params, headers=get_admin_headers())
+        response = await client.patch(f"/{table}", json=clean_data, params=params, headers=get_admin_headers())
         
         if response.status_code in [200, 204]:
             return {"success": True, "data": response.json() if response.text else []}
@@ -234,15 +196,15 @@ def db_update(table: str, data: dict[str, Any], filters: dict[str, Any]) -> dict
     except Exception as e:
         return {"success": False, "error": str(e)}
 
-def db_delete(table: str, filters: dict[str, Any]) -> dict[str, Any]:
+async def db_delete(table: str, filters: dict[str, Any]) -> dict[str, Any]:
     """Delete records via REST API"""
     try:
-        client = get_client()
+        client = await get_async_client()
         params = {}
         for key, value in filters.items():
             params[key] = f"eq.{value}"
             
-        response = client.delete(f"/{table}", params=params, headers=get_admin_headers())
+        response = await client.delete(f"/{table}", params=params, headers=get_admin_headers())
         
         if response.status_code in [200, 204]:
             return {"success": True}
@@ -251,15 +213,15 @@ def db_delete(table: str, filters: dict[str, Any]) -> dict[str, Any]:
     except Exception as e:
         return {"success": False, "error": str(e)}
 
-def db_upsert(table: str, data: dict[str, Any], on_conflict: str = "id") -> dict[str, Any]:
+async def db_upsert(table: str, data: dict[str, Any], on_conflict: str = "id") -> dict[str, Any]:
     """Upsert a record via REST API (uses Resolution header)"""
     try:
-        client = get_client()
+        client = await get_async_client()
         headers = get_admin_headers()
         headers["Prefer"] = "resolution=merge-duplicates,return=representation"
         
         clean_data = _serialize_data(data)
-        response = client.post(f"/{table}", json=clean_data, headers=headers)
+        response = await client.post(f"/{table}", json=clean_data, headers=headers)
         
         if response.status_code in [200, 201]:
             return {"success": True, "data": response.json()}
@@ -268,7 +230,7 @@ def db_upsert(table: str, data: dict[str, Any], on_conflict: str = "id") -> dict
     except Exception as e:
         return {"success": False, "error": str(e)}
 
-def db_get_by_id(table: str, id: str, id_column: str = "id") -> Optional[dict[str, Any]]:
+async def db_get_by_id(table: str, id: str, id_column: str = "id") -> Optional[dict[str, Any]]:
     """Get a single record by ID"""
-    results = db_select(table, filters={id_column: id}, limit=1)
+    results = await db_select(table, filters={id_column: id}, limit=1)
     return results[0] if results else None

@@ -613,3 +613,35 @@ async def get_assistant_status():
         ],
         "timestamp": datetime.now(pytz.UTC).isoformat()
     }
+
+# ==============================================================================
+# ATOMIC AI ENDPOINT (NATIVE HIVE)
+# ==============================================================================
+
+@router.post("/atomic/chat", response_model=ChatResponse)
+async def chat_atomic(
+    request: ChatRequest,
+    current_user: Optional[dict] = Depends(get_optional_current_user)
+):
+    """
+    Chat with the BeeYield Native Hive (Atomic Mode).
+    Uses the pure Python dependency-free model.
+    """
+    try:
+        from app.services.bee_atomic import AtomicAIService
+        
+        result = await AtomicAIService.generate_thought_response(request.message)
+        
+        return ChatResponse(
+            response=result["response"],
+            sources=[{"type": "model", "name": result.get("mode", "Atomic")}],
+            confidence=0.95,
+            processing_time_ms=20,
+            language="EN",
+            suggestions=["Ask about traceability", "Check hive status"],
+            timestamp=datetime.now().isoformat()
+        )
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))

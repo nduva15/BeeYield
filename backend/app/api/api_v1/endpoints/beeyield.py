@@ -169,13 +169,13 @@ def get_user_id(current_user: dict = Depends(security.get_current_user)) -> str:
         )
     return user_id
 
-def check_apiary_access(apiary_id: str, user_id: str, required_permission: str = "view") -> dict:
+async def check_apiary_access(apiary_id: str, user_id: str, required_permission: str = "view") -> dict:
     """
     Check if user has access to apiary (owner or shared).
     Returns basic apiary info if authorized.
     """
     # 1. Check direct ownership first (most common)
-    apiaries = db_select("apiaries", filters={"id": apiary_id})
+    apiaries = await db_select("apiaries", filters={"id": apiary_id})
     if not apiaries:
         raise HTTPException(status_code=404, detail="Apiary not found")
         
@@ -184,7 +184,7 @@ def check_apiary_access(apiary_id: str, user_id: str, required_permission: str =
         return apiary
         
     # 2. Check sharing
-    shares = db_select("apiary_shares", filters={"apiary_id": apiary_id, "shared_with_user_id": user_id})
+    shares = await db_select("apiary_shares", filters={"apiary_id": apiary_id, "shared_with_user_id": user_id})
     if not shares:
          raise HTTPException(status_code=403, detail="Access denied")
          
@@ -203,7 +203,7 @@ def check_apiary_access(apiary_id: str, user_id: str, required_permission: str =
 # ============================================
 
 @router.get("/apiaries", response_model=List[dict])
-def get_user_apiaries(
+async def get_user_apiaries(
     user_id: str = Depends(get_user_id),
     status_filter: Optional[str] = Query(None, description="Filter by status")
 ):
@@ -213,7 +213,7 @@ def get_user_apiaries(
     # Handle missing 'status' column by filtering in memory or using is_active
     db_filters = filters.copy()
     
-    owned_apiaries = db_select("apiaries", filters=db_filters, order_by="created_at", ascending=False)
+    owned_apiaries = await db_select("apiaries", filters=db_filters, order_by="created_at", ascending=False)
     
     # Post-process for status filter and ensure 'status' field exists
     def process_apiary(a):
@@ -232,11 +232,11 @@ def get_user_apiaries(
     
     # 2. Shared apiaries
     shared_apiaries = []
-    shares = db_select("apiary_shares", filters={"shared_with_user_id": user_id})
+    shares = await db_select("apiary_shares", filters={"shared_with_user_id": user_id})
     if shares:
         shared_ids = [s["apiary_id"] for s in shares]
         # Bulk fetch shared apiaries
-        results = db_select("apiaries", filters={"id": shared_ids})
+        results = await db_select("apiaries", filters={"id": shared_ids})
         # Add sharing metadata
         share_map = {s["apiary_id"]: s for s in shares}
         for a in results:
@@ -252,7 +252,7 @@ def get_user_apiaries(
     # Enrich with hive count (Bulk fetch all hives for all visible apiaries)
     if all_apiaries:
         apiary_ids = [a["id"] for a in all_apiaries]
-        all_relevant_hives = db_select("hives", filters={"apiary_id": apiary_ids}, limit=1000)
+        all_relevant_hives = await db_select("hives", filters={"apiary_id": apiary_ids}, limit=1000)
         
         # Count in memory
         hive_counts = {}
@@ -266,15 +266,15 @@ def get_user_apiaries(
     return all_apiaries
 
 @router.get("/apiaries/{apiary_id}", response_model=dict)
-def get_apiary(
+async def get_apiary(
     apiary_id: str,
     user_id: str = Depends(get_user_id)
 ):
     """Get a specific apiary by ID"""
-    apiary = check_apiary_access(apiary_id, user_id, "view")
+    apiary = await check_apiary_access(apiary_id, user_id, "view")
     
     # Add hive count and list
-    hives = db_select("hives", filters={"apiary_id": apiary_id})
+    hives = await db_select("hives", filters={"apiary_id": apiary_id})
     apiary["hive_count"] = len(hives)
     apiary["hives"] = hives
     
@@ -365,7 +365,7 @@ def delete_apiary(
 # ============================================
 
 @router.get("/hives", response_model=List[dict])
-def get_user_hives(
+async def get_user_hives(
     user_id: str = Depends(get_user_id),
     apiary_id: Optional[str] = Query(None, description="Filter by apiary"),
     status_filter: Optional[str] = Query(None, description="Filter by status")
@@ -378,7 +378,7 @@ def get_user_hives(
         filters["status"] = status_filter
     
     # 1. Owned hives
-    owned_hives = db_select("hives", filters=filters, order_by="created_at", ascending=False, limit=1000)
+    owned_hives = await db_select("hives", filters=filters, order_by="created_at", ascending=False, limit=1000)
     
     
     
@@ -387,22 +387,22 @@ def get_user_hives(
     # If filtered by apiary_id, check if that apiary is shared
     if apiary_id:
         # Check if apiary is shared with user
-        shares = db_select("apiary_shares", filters={"apiary_id": apiary_id, "shared_with_user_id": user_id})
+        shares = await db_select("apiary_shares", filters={"apiary_id": apiary_id, "shared_with_user_id": user_id})
         if shares:
             # Fetch all hives for this apiary
             h_filters = {"apiary_id": apiary_id}
             if status_filter:
                 h_filters["status"] = status_filter
-            hives_in_shared = db_select("hives", filters=h_filters, limit=1000)
+            hives_in_shared = await db_select("hives", filters=h_filters, limit=1000)
             shared_hives.extend(hives_in_shared)
     else:
         # Get all shared apiaries, then all hives inside them
-        shares = db_select("apiary_shares", filters={"shared_with_user_id": user_id})
+        shares = await db_select("apiary_shares", filters={"shared_with_user_id": user_id})
         for share in shares:
             h_filters = {"apiary_id": share["apiary_id"]}
             if status_filter:
                 h_filters["status"] = status_filter
-            hives = db_select("hives", filters=h_filters, limit=1000)
+            hives = await db_select("hives", filters=h_filters, limit=1000)
             shared_hives.extend(hives)
 
     all_hives = owned_hives + shared_hives
@@ -410,7 +410,7 @@ def get_user_hives(
     # Enrich with apiary name
     for hive in all_hives:
         if hive.get("apiary_id"):
-            apiaries = db_select("apiaries", filters={"id": hive["apiary_id"]})
+            apiaries = await db_select("apiaries", filters={"id": hive["apiary_id"]})
             if apiaries:
                 hive["apiary_name"] = apiaries[0].get("name")
     

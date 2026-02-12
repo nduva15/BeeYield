@@ -19,7 +19,13 @@ export default defineConfig({
         strictPort: true,
         // Limit HMR warmup to key entry files (avoids scanning 25k+ files)
         warmup: {
-            clientFiles: ['./src/main.tsx', './src/routes/__root.tsx'],
+            clientFiles: [
+                './src/main.tsx',
+                './src/routes/__root.tsx',
+                './src/pages/BeeYieldDashboard.tsx',
+                './src/pages/AdminDashboard.tsx',
+                './src/pages/PollinationServices.tsx'
+            ],
         },
     },
     // Expose TAURI flag to frontend code via import.meta.env
@@ -34,10 +40,20 @@ export default defineConfig({
         include: [
             'react',
             'react-dom',
+            'react-router-dom',
             '@supabase/supabase-js',
             '@tanstack/react-query',
             'axios',
+            'lucide-react',
+            'recharts',
+            'framer-motion',
+            'date-fns',
+            'lodash',
+            'clsx',
+            'tailwind-merge',
+            'jspdf'
         ],
+        exclude: ['@tauri-apps/api', '@tauri-apps/plugin-shell']
     },
     resolve: {
         alias: {
@@ -52,11 +68,15 @@ export default defineConfig({
     build: {
         outDir: 'dist',
         sourcemap: false,
+        minify: 'esbuild',
+        cssMinify: true,
         rollupOptions: {
             output: {
                 manualChunks: {
                     vendor: ['react', 'react-dom', 'react-router-dom'],
                     ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-tooltip'],
+                    charts: ['recharts'],
+                    utils: ['lodash', 'date-fns'],
                 },
             },
         },

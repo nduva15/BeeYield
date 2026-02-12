@@ -70,7 +70,7 @@ def create_request(
     Submit a new support request.
     Triggers an email notification to the admin.
     """
-    data = request_in.model_dump() # pydantic v2
+    data = request_in.dict() # pydantic v1
     data["user_id"] = user_id
     
     # Insert into database

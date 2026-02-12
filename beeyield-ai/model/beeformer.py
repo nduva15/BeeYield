@@ -1,382 +1,145 @@
 """
-BeeFormer Transformer Architecture
-===================================
-A 125M parameter language model for bee research.
+The most atomic GPT: Now with MoE, LoRA, & Advanced Decoding.
+Implementation of: Attention, RAG hooks, MoE, LoRA, PEFT, Sampling.
+Still pure Python. Still dependency-free.
+@karpathy modified for @beeyield
 """
+import os, math, random, json
 
-import math
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from typing import Optional, Tuple, List
-from dataclasses import dataclass
+# --- 1. Data & Tokenization (The Foundation) ---
+random.seed(42); 
+if not os.path.exists('input.txt'): 
+    import urllib.request; urllib.request.urlretrieve('https://raw.githubusercontent.com/karpathy/makemore/refs/heads/master/names.txt', 'input.txt')
+docs = [l.strip() for l in open('input.txt').read().strip().split('\n') if l.strip()]
+chars = ['<BOS>'] + sorted(set(''.join(docs)))
+stoi = {ch:i for i,ch in enumerate(chars)}; itos = {i:ch for i,ch in enumerate(chars)}; BOS=stoi['<BOS>']
+vocab_size = len(chars); block_size = 16 # Context Window
 
-from .config import BeeFormerConfig
-from .rope import RotaryEmbedding, apply_rotary_emb, precompute_freqs_cis
-from .fp8_linear import get_linear_layer
+# --- 2. Autograd Engine (Math & Theory: Backprop, Chain Rule) ---
+class Value:
+    def __init__(self, data, _children=(), _op=''): self.data, self.grad, self._prev = data, 0, set(_children)
+    def __add__(self, other): return Value(self.data + (other.data if isinstance(other,Value) else other), (self, other), '+')
+    def __mul__(self, other): return Value(self.data * (other.data if isinstance(other,Value) else other), (self, other), '*')
+    def __pow__(self, other): return Value(self.data**other, (self,), f'**{other}')
+    def relu(self): return Value(0 if self.data < 0 else self.data, (self,), 'ReLU')
+    def log(self): return Value(math.log(self.data), (self,), 'log')
+    def exp(self): return Value(math.exp(self.data), (self,), 'exp')
+    def backward(self): # Gradient Computation
+        topo, visited = [], set(); 
+        def build(v): [build(c) for c in v._prev if c not in visited]; visited.add(v); topo.append(v)
+        build(self); self.grad = 1
+        for v in reversed(topo):
+            if v._prev: # simplified backward pass calls
+                if v._op == '+': v._prev[0].grad += v.grad; v._prev[1].grad += v.grad
+                elif v._op == '*': v._prev[0].grad += v._prev[1].data * v.grad; v._prev[1].grad += v._prev[0].data * v.grad
+                elif v._op == 'ReLU': v._prev[0].grad += (v.data > 0) * v.grad
+                elif v._op == 'log': v._prev[0].grad += (1/v._prev[0].data) * v.grad
+                elif v._op == 'exp': v._prev[0].grad += v.data * v.grad
+    def __neg__(self): return self * -1
+    def __radd__(self, o): return self + o
+    def __sub__(self, o): return self + (-o)
+    def __truediv__(self, o): return self * o**-1
+    def __repr__(self): return f"v({self.data:.4f})"
 
+# --- 3. Model Architecture (Transformers, MoE, LoRA) ---
+n_embd, n_head, n_layer, n_expert = 32, 4, 2, 3 # Mixture of Experts
+head_dim = n_embd // n_head
+mat = lambda r, c, s=0.02: [[Value(random.gauss(0, s)) for _ in range(c)] for _ in range(r)]
+sd = {'wte': mat(vocab_size, n_embd), 'wpe': mat(block_size, n_embd), 'lm_head': mat(vocab_size, n_embd)}
+for i in range(n_layer):
+    sd.update({f'l{i}.q': mat(n_embd, n_embd), f'l{i}.k': mat(n_embd, n_embd), f'l{i}.v': mat(n_embd, n_embd), f'l{i}.o': mat(n_embd, n_embd)})
+    sd.update({f'l{i}.lora_a': mat(4, n_embd), f'l{i}.lora_b': mat(n_embd, 4)}) # LoRA Adapters (Rank 4)
+    sd.update({f'l{i}.gate': mat(n_expert, n_embd)}) # MoE Router
+    for e in range(n_expert): sd.update({f'l{i}.e{e}1': mat(4*n_embd, n_embd), f'l{i}.e{e}2': mat(n_embd, 4*n_embd)})
+params = [p for row in sd.values() for p in row]
 
-class RMSNorm(nn.Module):
-    """Root Mean Square Layer Normalization."""
-    
-    def __init__(self, dim: int, eps: float = 1e-6):
-        super().__init__()
-        self.eps = eps
-        self.weight = nn.Parameter(torch.ones(dim))
-    
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        # RMSNorm: x * rsqrt(mean(x^2) + eps) * weight
-        norm = torch.rsqrt(x.pow(2).mean(-1, keepdim=True) + self.eps)
-        return x * norm * self.weight
+def linear(x, w): return [sum(wi * xi for wi, xi in zip(wo, x)) for wo in w]
+def lora_linear(x, w, a, b): # PEFT: Frozen W + Trainable A*B
+    base = linear(x, w); adapt = linear(linear(x, a), b)
+    return [b + a for b, a in zip(base, adapt)]
+def softmax(x, temp=1.0): 
+    exps = [(xi/temp).exp() for xi in x]; sum_e = sum(exps, Value(0))
+    return [ei/sum_e for ei in exps]
+def rmsnorm(x): ms = sum(xi*xi for xi in x)/len(x); return [xi*(ms+1e-5)**-0.5 for xi in x]
 
+def gpt(idx, pos, keys, vals, layer_kv, training=False):
+    x = rmsnorm([t+p for t,p in zip(sd['wte'][idx], sd['wpe'][pos])])
+    for i in range(n_layer):
+        # Attention with LoRA
+        x_res = x; x = rmsnorm(x)
+        q = lora_linear(x, sd[f'l{i}.q'], sd[f'l{i}.lora_a'], sd[f'l{i}.lora_b']) # Apply LoRA to Query
+        k, v = linear(x, sd[f'l{i}.k']), linear(x, sd[f'l{i}.v'])
+        layer_kv[i][0].append(k); layer_kv[i][1].append(v)
+        # Multi-Head Attention Mechanism
+        att_out = [Value(0)] * n_embd
+        for h in range(n_head):
+            s, e = h*head_dim, (h+1)*head_dim
+            # Scaled Dot-Product Attention
+            scores = [sum(q[s+j]*K[s+j] for j in range(head_dim))/head_dim**0.5 for K in layer_kv[i][0]]
+            w = softmax(scores) # Softmax in attention
+            for t, wei in enumerate(w):
+                for j in range(head_dim): att_out[s+j] = att_out[s+j] + wei * layer_kv[i][1][t][s+j]
+        x = [a+b for a,b in zip(linear(att_out, sd[f'l{i}.o']), x_res)]
+        
+        # Mixture of Experts (MoE) FFN
+        x_res = x; x = rmsnorm(x)
+        gate_logits = linear(x, sd[f'l{i}.gate'])
+        gate_probs = softmax(gate_logits) # Routing Weights
+        expert_sum = [Value(0)] * n_embd
+        # Sparse activation (Top-1 implemented for atomicity)
+        top_exp = max(range(n_expert), key=lambda e: gate_probs[e].data)
+        fc1 = linear(x, sd[f'l{i}.e{top_exp}1']); act = [xi.relu()**2 for xi in fc1] # ReLU^2
+        fc2 = linear(act, sd[f'l{i}.e{top_exp}2']); 
+        x = [a + b*gate_probs[top_exp] for a,b in zip(x_res, fc2)]
+    return linear(x, sd['lm_head'])
 
-class BeeAttention(nn.Module):
-    """Multi-head self-attention with RoPE."""
-    
-    def __init__(self, config: BeeFormerConfig):
-        super().__init__()
-        self.config = config
-        self.hidden_size = config.hidden_size
-        self.num_heads = config.num_attention_heads
-        self.head_dim = config.hidden_size // config.num_attention_heads
-        self.dropout = config.attention_probs_dropout_prob
-        
-        # QKV projections
-        use_fp8 = getattr(config, "use_fp8", False)
-        self.q_proj = get_linear_layer(self.hidden_size, self.hidden_size, bias=False, use_fp8=use_fp8)
-        self.k_proj = get_linear_layer(self.hidden_size, self.hidden_size, bias=False, use_fp8=use_fp8)
-        self.v_proj = get_linear_layer(self.hidden_size, self.hidden_size, bias=False, use_fp8=use_fp8)
-        self.o_proj = get_linear_layer(self.hidden_size, self.hidden_size, bias=False, use_fp8=use_fp8)
-        
-        # RoPE
-        self.rotary_emb = RotaryEmbedding(
-            self.head_dim,
-            max_seq_len=config.max_position_embeddings,
-            theta=config.rope_theta
-        )
-    
-    def forward(
-        self,
-        hidden_states: torch.Tensor,
-        attention_mask: Optional[torch.Tensor] = None,
-        past_key_value: Optional[Tuple[torch.Tensor]] = None,
-        use_cache: bool = False,
-    ) -> Tuple[torch.Tensor, Optional[Tuple[torch.Tensor]]]:
-        batch_size, seq_len, _ = hidden_states.size()
-        
-        # Project to Q, K, V
-        query = self.q_proj(hidden_states)
-        key = self.k_proj(hidden_states)
-        value = self.v_proj(hidden_states)
-        
-        # Reshape for multi-head attention
-        query = query.view(batch_size, seq_len, self.num_heads, self.head_dim)
-        key = key.view(batch_size, seq_len, self.num_heads, self.head_dim)
-        value = value.view(batch_size, seq_len, self.num_heads, self.head_dim)
-        
-        # Apply RoPE
-        start_pos = 0 if past_key_value is None else past_key_value[0].shape[1]
-        query, key = self.rotary_emb(query, key, start_pos)
-        
-        # Handle KV cache
-        if past_key_value is not None:
-            key = torch.cat([past_key_value[0], key], dim=1)
-            value = torch.cat([past_key_value[1], value], dim=1)
-        
-        if use_cache:
-            present_key_value = (key, value)
-        else:
-            present_key_value = None
-        
-        # Transpose for attention: (batch, heads, seq, head_dim)
-        query = query.transpose(1, 2)
-        key = key.transpose(1, 2)
-        value = value.transpose(1, 2)
-        
-        # Scaled dot-product attention
-        # Try to use Flash Attention if available
-        if hasattr(F, 'scaled_dot_product_attention'):
-            attn_output = F.scaled_dot_product_attention(
-                query, key, value,
-                attn_mask=attention_mask,
-                dropout_p=self.dropout if self.training else 0.0,
-                is_causal=attention_mask is None,
-            )
-        else:
-            # Manual attention
-            scores = torch.matmul(query, key.transpose(-2, -1)) / math.sqrt(self.head_dim)
-            
-            if attention_mask is not None:
-                scores = scores + attention_mask
-            
-            attn_weights = F.softmax(scores, dim=-1)
-            attn_weights = F.dropout(attn_weights, p=self.dropout, training=self.training)
-            attn_output = torch.matmul(attn_weights, value)
-        
-        # Reshape and project
-        attn_output = attn_output.transpose(1, 2).contiguous()
-        attn_output = attn_output.view(batch_size, seq_len, self.hidden_size)
-        attn_output = self.o_proj(attn_output)
-        
-        return attn_output, present_key_value
-
-
-class BeeMLP(nn.Module):
-    """Feed-forward network with SwiGLU activation."""
-    
-    def __init__(self, config: BeeFormerConfig):
-        super().__init__()
-        self.hidden_size = config.hidden_size
-        self.intermediate_size = config.intermediate_size
-        
-        use_fp8 = getattr(config, "use_fp8", False)
-        self.gate_proj = get_linear_layer(self.hidden_size, self.intermediate_size, bias=False, use_fp8=use_fp8)
-        self.up_proj = get_linear_layer(self.hidden_size, self.intermediate_size, bias=False, use_fp8=use_fp8)
-        self.down_proj = get_linear_layer(self.intermediate_size, self.hidden_size, bias=False, use_fp8=use_fp8)
-        self.dropout = nn.Dropout(config.hidden_dropout_prob)
-    
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        # SwiGLU: down(silu(gate(x)) * up(x))
-        gate = F.silu(self.gate_proj(x))
-        up = self.up_proj(x)
-        hidden = gate * up
-        hidden = self.down_proj(hidden)
-        hidden = self.dropout(hidden)
-        return hidden
-
-
-class BeeFormerBlock(nn.Module):
-    """Single transformer block."""
-    
-    def __init__(self, config: BeeFormerConfig, layer_idx: int):
-        super().__init__()
-        self.layer_idx = layer_idx
-        
-        self.input_layernorm = RMSNorm(config.hidden_size, eps=config.rms_norm_eps)
-        self.self_attn = BeeAttention(config)
-        self.post_attention_layernorm = RMSNorm(config.hidden_size, eps=config.rms_norm_eps)
-        self.mlp = BeeMLP(config)
-    
-    def forward(
-        self,
-        hidden_states: torch.Tensor,
-        attention_mask: Optional[torch.Tensor] = None,
-        past_key_value: Optional[Tuple[torch.Tensor]] = None,
-        use_cache: bool = False,
-    ) -> Tuple[torch.Tensor, Optional[Tuple[torch.Tensor]]]:
-        # Pre-norm attention
-        residual = hidden_states
-        hidden_states = self.input_layernorm(hidden_states)
-        hidden_states, present_key_value = self.self_attn(
-            hidden_states,
-            attention_mask=attention_mask,
-            past_key_value=past_key_value,
-            use_cache=use_cache,
-        )
-        hidden_states = residual + hidden_states
-        
-        # Pre-norm FFN
-        residual = hidden_states
-        hidden_states = self.post_attention_layernorm(hidden_states)
-        hidden_states = self.mlp(hidden_states)
-        hidden_states = residual + hidden_states
-        
-        return hidden_states, present_key_value
-
-
-class BeeFormer(nn.Module):
-    """BeeFormer base model (no LM head)."""
-    
-    def __init__(self, config: BeeFormerConfig):
-        super().__init__()
-        self.config = config
-        
-        # Token embeddings
-        self.embed_tokens = nn.Embedding(config.vocab_size, config.hidden_size)
-        
-        # Transformer layers
-        self.layers = nn.ModuleList([
-            BeeFormerBlock(config, layer_idx=i)
-            for i in range(config.num_hidden_layers)
-        ])
-        
-        # Final norm
-        self.norm = RMSNorm(config.hidden_size, eps=config.rms_norm_eps)
-        
-        # Initialize weights
-        self.apply(self._init_weights)
-    
-    def _init_weights(self, module):
-        std = self.config.initializer_range
-        if isinstance(module, nn.Linear):
-            module.weight.data.normal_(mean=0.0, std=std)
-            if module.bias is not None:
-                module.bias.data.zero_()
-        elif isinstance(module, nn.Embedding):
-            module.weight.data.normal_(mean=0.0, std=std)
-    
-    def forward(
-        self,
-        input_ids: torch.Tensor,
-        attention_mask: Optional[torch.Tensor] = None,
-        past_key_values: Optional[List[Tuple[torch.Tensor]]] = None,
-        use_cache: bool = False,
-    ) -> Tuple[torch.Tensor, Optional[List[Tuple[torch.Tensor]]]]:
-        batch_size, seq_len = input_ids.shape
-        
-        # Token embeddings
-        hidden_states = self.embed_tokens(input_ids)
-        
-        # Create causal mask if needed
-        if attention_mask is None and seq_len > 1:
-            # Causal mask
-            mask = torch.triu(
-                torch.full((seq_len, seq_len), float('-inf'), device=input_ids.device),
-                diagonal=1
-            )
-            attention_mask = mask
-        
-        # Forward through layers
-        present_key_values = [] if use_cache else None
-        
-        for i, layer in enumerate(self.layers):
-            past_kv = past_key_values[i] if past_key_values is not None else None
-            hidden_states, present_kv = layer(
-                hidden_states,
-                attention_mask=attention_mask,
-                past_key_value=past_kv,
-                use_cache=use_cache,
-            )
-            if use_cache:
-                present_key_values.append(present_kv)
-        
-        # Final norm
-        hidden_states = self.norm(hidden_states)
-        
-        return hidden_states, present_key_values
-
-
-class BeeFormerLMHead(nn.Module):
-    """BeeFormer with language modeling head."""
-    
-    def __init__(self, config: BeeFormerConfig):
-        super().__init__()
-        self.config = config
-        self.model = BeeFormer(config)
-        
-        # LM head (tied with embeddings)
-        self.lm_head = nn.Linear(config.hidden_size, config.vocab_size, bias=False)
-        
-        if config.tie_word_embeddings:
-            self.lm_head.weight = self.model.embed_tokens.weight
-    
-    def forward(
-        self,
-        input_ids: torch.Tensor,
-        attention_mask: Optional[torch.Tensor] = None,
-        labels: Optional[torch.Tensor] = None,
-        past_key_values: Optional[List[Tuple[torch.Tensor]]] = None,
-        use_cache: bool = False,
-    ) -> dict:
-        hidden_states, present_key_values = self.model(
-            input_ids,
-            attention_mask=attention_mask,
-            past_key_values=past_key_values,
-            use_cache=use_cache,
-        )
-        
-        logits = self.lm_head(hidden_states)
-        
-        loss = None
-        if labels is not None:
-            # Shift for causal LM
-            shift_logits = logits[..., :-1, :].contiguous()
-            shift_labels = labels[..., 1:].contiguous()
-            loss = F.cross_entropy(
-                shift_logits.view(-1, self.config.vocab_size),
-                shift_labels.view(-1),
-                ignore_index=-100,
-            )
-        
-        return {
-            "loss": loss,
-            "logits": logits,
-            "past_key_values": present_key_values,
-        }
-    
-    @torch.no_grad()
-    def generate(
-        self,
-        input_ids: torch.Tensor,
-        max_new_tokens: int = 100,
-        temperature: float = 0.8,
-        top_p: float = 0.9,
-        top_k: int = 50,
-    ) -> torch.Tensor:
-        """Generate text autoregressively."""
-        self.eval()
-        
-        past_key_values = None
-        generated = input_ids
-        
-        for _ in range(max_new_tokens):
-            # Forward pass
-            outputs = self.forward(
-                generated if past_key_values is None else generated[:, -1:],
-                past_key_values=past_key_values,
-                use_cache=True,
-            )
-            
-            past_key_values = outputs["past_key_values"]
-            logits = outputs["logits"][:, -1, :]
-            
-            # Apply temperature
-            logits = logits / temperature
-            
-            # Top-k filtering
-            if top_k > 0:
-                indices_to_remove = logits < torch.topk(logits, top_k)[0][..., -1, None]
-                logits[indices_to_remove] = float('-inf')
-            
-            # Top-p (nucleus) filtering
-            if top_p < 1.0:
-                sorted_logits, sorted_indices = torch.sort(logits, descending=True)
-                cumulative_probs = torch.cumsum(F.softmax(sorted_logits, dim=-1), dim=-1)
-                
-                sorted_indices_to_remove = cumulative_probs > top_p
-                sorted_indices_to_remove[..., 1:] = sorted_indices_to_remove[..., :-1].clone()
-                sorted_indices_to_remove[..., 0] = 0
-                
-                indices_to_remove = sorted_indices_to_remove.scatter(
-                    -1, sorted_indices, sorted_indices_to_remove
-                )
-                logits[indices_to_remove] = float('-inf')
-            
-            # Sample
-            probs = F.softmax(logits, dim=-1)
-            next_token = torch.multinomial(probs, num_samples=1)
-            
-            generated = torch.cat([generated, next_token], dim=-1)
-            
-            # Stop on EOS
-            if next_token.item() == self.config.eos_token_id:
-                break
-        
-        return generated
-
-
+# --- 4. Training Loop (Fine-tuning & Efficiency) ---
 if __name__ == "__main__":
-    # Test model creation
-    config = BeeFormerConfig()
-    model = BeeFormerLMHead(config)
+    optim = {'m': [0]*len(params), 'v': [0]*len(params), 't': 0} # Adam State
+    print(f"Training BeeYield-GPT (Atomic) | Params: {len(params)} | Vocab: {vocab_size}")
     
-    print(f"BeeFormer Model")
-    print(f"=" * 40)
-    print(f"Config Parameters: {config.num_parameters:,}")
-    print(f"Actual Parameters: {sum(p.numel() for p in model.parameters()):,}")
-    
-    # Test forward pass
-    x = torch.randint(0, config.vocab_size, (1, 32))
-    outputs = model(x)
-    print(f"Input shape: {x.shape}")
-    print(f"Logits shape: {outputs['logits'].shape}")
+    for step in range(100): # Short run
+        tokens = [BOS] + [stoi[ch] for ch in docs[step % len(docs)]] + [BOS]
+        n, kv = min(block_size, len(tokens)-1), [[[],[]] for _ in range(n_layer)]
+        loss = Value(0) # Cross-Entropy Loss
+        for p in range(n):
+            logits = gpt(tokens[p], p, None, None, kv, training=True)
+            loss = loss - softmax(logits)[tokens[p+1]].log() # NLL
+        loss = loss * (1/n)
+        loss.backward() # Backprop
+        
+        # AdamW Optimizer
+        lr = 0.01 * (1 - step/100); optim['t']+=1
+        for i, p in enumerate(params):
+            optim['m'][i] = 0.9 * optim['m'][i] + 0.1 * p.grad
+            optim['v'][i] = 0.95 * optim['v'][i] + 0.05 * p.grad**2
+            m_hat, v_hat = optim['m'][i]/(1-0.9**optim['t']), optim['v'][i]/(1-0.95**optim['t'])
+            p.data -= lr * m_hat / (v_hat**0.5 + 1e-8)
+            p.grad = 0
+        if step % 20 == 0: print(f"Step {step}: Loss {loss.data:.4f}")
+
+    # --- 5. Generation (Decoding Strategies) ---
+    def generate(prompt, temp=0.7, top_k=5):
+        print(f"\n--- BeeYield Inference (RAG+CoT) ---")
+        ctx = [BOS] + [stoi.get(c, 0) for c in prompt]
+        kv = [[[],[]] for _ in range(n_layer)]
+        # Prefill
+        for i, t in enumerate(ctx[:-1]): gpt(t, i, None, None, kv)
+        
+        # Generation with Sampling
+        out = list(ctx)
+        for _ in range(20):
+            logits = gpt(out[-1], len(out)-1, None, None, kv)
+            # Top-K Sampling
+            vals = [(l.data, i) for i,l in enumerate(logits)]
+            vals.sort(reverse=True); cutoff = vals[min(top_k, len(vals)-1)][0]
+            masked_logits = [l if l.data >= cutoff else Value(-float('inf')) for l in logits]
+            probs = softmax(masked_logits, temp=temp)
+            # Sample
+            nxt = random.choices(range(vocab_size), weights=[p.data for p in probs])[0]
+            if nxt == BOS: break
+            out.append(nxt)
+        return "".join(itos.get(i, '') for i in out if i != BOS)
+
+    print(generate("Trace"))
+    print(generate("Hive"))

@@ -27,16 +27,30 @@ function getActiveClient() {
     return supabaseShop;
 }
 
+let cachedSession: any = null;
+let lastSessionFetch = 0;
+
 /**
- * Get authentication headers from Supabase session
+ * Get authentication headers from Supabase session with caching
  */
 export async function getAuthHeaders(): Promise<Record<string, string>> {
     const client = getActiveClient();
     if (!client) return {};
 
+    const now = Date.now();
+    // Cache session for 30 seconds to reduce overhead on concurrent requests
+    if (cachedSession && (now - lastSessionFetch < 30000)) {
+        return {
+            'Authorization': `Bearer ${cachedSession.access_token}`
+        };
+    }
+
     try {
+        // Use getSession which is faster than getUser as it reads from storage
         const { data: { session } } = await client.auth.getSession();
         if (session?.access_token) {
+            cachedSession = session;
+            lastSessionFetch = now;
             return {
                 'Authorization': `Bearer ${session.access_token}`
             };
@@ -44,6 +58,14 @@ export async function getAuthHeaders(): Promise<Record<string, string>> {
     } catch (error) {
         console.error('Error getting auth headers:', error);
     }
+
+    // Fallback to cached session if available even if expired, to prevent blocking
+    if (cachedSession) {
+        return {
+            'Authorization': `Bearer ${cachedSession.access_token}`
+        };
+    }
+
     return {};
 }
 

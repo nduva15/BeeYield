@@ -178,20 +178,20 @@ class DataRetriever:
                 filters["user_id"] = user_id
                 
             now = datetime.now().date()
-            harvests = db_select("harvests", filters=filters, limit=10, order_by="harvest_date", ascending=False)
-            batches = db_select("batches", filters=filters, limit=5, order_by="packaging_date", ascending=False)
+            harvests = await db_select("harvests", filters=filters, limit=10, order_by="harvest_date", ascending=False)
+            batches = await db_select("batches", filters=filters, limit=5, order_by="packaging_date", ascending=False)
             
             summary = "PRODUCTION & BATCH SUMMARY:\n"
             
             if not harvests and not batches:
                 # Try unfiltered for demo purposes if specific user has none
-                harvests = db_select("harvests", limit=5, order_by="harvest_date", ascending=False)
-                batches = db_select("batches", limit=3, order_by="packaging_date", ascending=False)
+                harvests = await db_select("harvests", limit=5, order_by="harvest_date", ascending=False)
+                batches = await db_select("batches", limit=3, order_by="packaging_date", ascending=False)
             
             if harvests:
                 # Map hive IDs to codes for better readability
                 hive_ids = [h.get('hive_id') for h in harvests if h.get('hive_id')]
-                hives_data = db_select("hives", filters={"id": hive_ids}) if hive_ids else []
+                hives_data = await db_select("hives", filters={"id": hive_ids}) if hive_ids else []
                 hive_map = {hive['id']: hive.get('hive_code', 'H-UNK') for hive in hives_data}
                 
                 summary += "RECENT HARVEST LOGS:\n"
@@ -229,7 +229,7 @@ class DataRetriever:
             if category:
                 filters["category"] = category
             
-            products = db_select("products", filters=filters, limit=limit)
+            products = await db_select("products", filters=filters, limit=limit)
             
             if not products:
                 return "SHOP DATA: No products currently in database."
@@ -250,7 +250,7 @@ class DataRetriever:
         """Get order information"""
         try:
             if order_id:
-                order = db_get_by_id("orders", order_id)
+                order = await db_get_by_id("orders", order_id)
                 if order:
                     return f"""ORDER DETAILS:
 - Order #: {order.get('order_number', order.get('id'))}
@@ -260,7 +260,7 @@ class DataRetriever:
 - Created: {order.get('created_at', 'Unknown')}"""
             
             if user_id:
-                orders = db_select("orders", filters={"user_id": user_id}, limit=5, order_by="created_at", ascending=False)
+                orders = await db_select("orders", filters={"user_id": user_id}, limit=5, order_by="created_at", ascending=False)
                 if orders:
                     summary = "RECENT ORDERS:\n"
                     for o in orders:
@@ -288,7 +288,7 @@ class DataRetriever:
 - Verified: ✓ Authentic on HoneyChain Ledger"""
             
             # Fallback to database
-            batches = db_select("batches", filters={"batch_code": batch_code})
+            batches = await db_select("batches", filters={"batch_code": batch_code})
             if batches:
                 b = batches[0]
                 return f"""BATCH INFORMATION ({batch_code}):
@@ -308,8 +308,8 @@ class DataRetriever:
             if user_id:
                 filters["user_id"] = user_id
             
-            apiaries = db_select("apiaries", filters=filters, limit=20)
-            hives = db_select("hives", limit=200) # Fetch more to be safe
+            apiaries = await db_select("apiaries", filters=filters, limit=20)
+            hives = await db_select("hives", limit=200) # Fetch more to be safe
             
             # Simple count mapping if we had hive->apiary relation, but purely stats here:
             total_hives = len(hives) if hives else 0
@@ -359,7 +359,7 @@ class DataRetriever:
     async def get_pollination_info() -> str:
         """Get pollination service information"""
         try:
-            contracts = db_select("pollination_contracts", limit=5)
+            contracts = await db_select("pollination_contracts", limit=5)
             
             return """PRECISION POLLINATION SERVICES:
 - Crops Supported: Mangoes, Sunflower, Oranges, Avocados, Beans, Tomatoes
@@ -392,7 +392,7 @@ class DataRetriever:
         """Get farmer/beekeeper information"""
         try:
             if farmer_id:
-                farmer = db_get_by_id("farmers", farmer_id)
+                farmer = await db_get_by_id("farmers", farmer_id)
                 if farmer:
                     return f"""FARMER PROFILE:
 - Name: {farmer.get('name', 'Partner Beekeeper')}
@@ -400,7 +400,7 @@ class DataRetriever:
 - Experience: {farmer.get('years_experience', '5+')} years
 - Cert: Master Beekeeper"""
             
-            farmers = db_select("farmers", limit=5)
+            farmers = await db_select("farmers", limit=5)
             if farmers:
                 return f"PARTNER NETWORK: {len(farmers)}+ certified beekeepers across Kenya"
             
@@ -421,11 +421,11 @@ class DataRetriever:
                 filters["user_id"] = user_id
             
             now = datetime.now().date()
-            inspections = db_select("inspections", filters=filters, limit=10, order_by="inspection_date", ascending=False)
+            inspections = await db_select("inspections", filters=filters, limit=10, order_by="inspection_date", ascending=False)
             
             if not inspections:
                 # Fallback to general history
-                inspections = db_select("inspections", limit=5, order_by="inspection_date", ascending=False)
+                inspections = await db_select("inspections", limit=5, order_by="inspection_date", ascending=False)
                 
             if not inspections:
                  return "INSPECTION DATA: No recent inspections recorded."

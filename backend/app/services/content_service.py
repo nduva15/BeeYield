@@ -3,6 +3,7 @@ import os
 import json
 import math
 import re
+from datetime import datetime, timedelta
 
 # Query expansion: domain-specific synonyms for better recall
 QUERY_EXPANSION_MAP = {
@@ -18,47 +19,63 @@ QUERY_EXPANSION_MAP = {
 
 
 class ContentService:
+    _lakehouse_cache: Optional[Dict[str, Any]] = None
+    _cache_time: Optional[datetime] = None
+    _cache_duration = timedelta(minutes=30)
+
     @staticmethod
     async def get_lakehouse_data() -> Dict[str, Any]:
-        """Reads the standardized knowledge lakehouse, fallback to knowledge_base."""
+        """Reads the standardized knowledge lakehouse, with in-memory caching."""
+        now = datetime.now()
+        if (ContentService._lakehouse_cache is not None and 
+            ContentService._cache_time is not None and 
+            (now - ContentService._cache_time) < ContentService._cache_duration):
+            return ContentService._lakehouse_cache
+
+        data = {"lakehouse_nodes": []}
         lakehouse_path = os.path.abspath(
             os.path.join(os.path.dirname(__file__), "../data/standardized_lakehouse.json")
         )
         if os.path.exists(lakehouse_path):
             try:
                 with open(lakehouse_path, 'r', encoding='utf-8') as f:
-                    return json.load(f)
+                    data = json.load(f)
             except Exception:
                 pass
-        # Fallback: use knowledge_base.json
-        kb_path = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "../data/knowledge_base.json")
-        )
-        if os.path.exists(kb_path):
-            try:
-                with open(kb_path, 'r', encoding='utf-8') as f:
-                    kb = json.load(f)
-                nodes = kb.get("knowledge_nodes", [])
-                # Convert to lakehouse format with default metadata
-                lakehouse_nodes = [
-                    {
-                        "content": n.get("content", ""),
-                        "metadata": {
-                            "source": n.get("source", "Unknown"),
-                            "subtopic": n.get("subtopic", "General"),
-                            "continent": "Global",
-                            "source_type": "General",
-                            "reliability_score": 0.8,
-                            "is_internal": "BeeYield" in str(n.get("source", "")),
-                            "url": ""
-                        }
+        
+        # Fallback: use knowledge_base.json if lakehouse is empty
+        if not data.get("lakehouse_nodes"):
+            kb_path = os.path.abspath(
+                os.path.join(os.path.dirname(__file__), "../data/knowledge_base.json")
+            )
+            if os.path.exists(kb_path):
+                try:
+                    with open(kb_path, 'r', encoding='utf-8') as f:
+                        kb = json.load(f)
+                    nodes = kb.get("knowledge_nodes", [])
+                    data = {
+                        "lakehouse_nodes": [
+                            {
+                                "content": n.get("content", ""),
+                                "metadata": {
+                                    "source": n.get("source", "Unknown"),
+                                    "subtopic": n.get("subtopic", "General"),
+                                    "continent": "Global",
+                                    "source_type": "General",
+                                    "reliability_score": 0.8,
+                                    "is_internal": "BeeYield" in str(n.get("source", "")),
+                                    "url": ""
+                                }
+                            }
+                            for n in nodes
+                        ]
                     }
-                    for n in nodes
-                ]
-                return {"lakehouse_nodes": lakehouse_nodes}
-            except Exception:
-                pass
-        return {"lakehouse_nodes": []}
+                except Exception:
+                    pass
+        
+        ContentService._lakehouse_cache = data
+        ContentService._cache_time = now
+        return data
 
     @staticmethod
     def _expand_query(query: str) -> List[str]:
@@ -96,40 +113,62 @@ class ContentService:
 
         scored_nodes = []
         n_nodes = len(nodes)
-        avg_doc_len = max(1, sum(len(n.get("content", "").split()) for n in nodes) / max(1, n_nodes))
+        if n_nodes == 0:
+            return {"summary": "", "sources": []}
+            
+        avg_doc_len = max(1, sum(len(n.get("content", "").split()) for n in nodes) / n_nodes)
         k1, b = 1.5, 0.75
 
+        # --- PRE-CALCULATE DF FOR ALL TERMS ---
+        df_map = {}
+        processed_nodes = []
         for node in nodes:
+            content_lower = node.get("content", "").lower()
+            # Store split content to avoid repeated splitting
+            words = content_lower.split()
+            word_set = set(words)
+            processed_nodes.append((node, words, word_set))
+            
+            for term in all_query_terms:
+                if term in word_set:
+                    df_map[term] = df_map.get(term, 0) + 1
+
+        # --- MAIN SCORING LOOP ---
+        for node, words, word_set in processed_nodes:
             meta = node.get("metadata", {})
             if continent and meta.get("continent") != continent and meta.get("continent") != "Global":
                 continue
             if source_type and meta.get("source_type") != source_type:
                 continue
 
-            content = node.get("content", "").lower()
-            doc_len = max(1, len(content.split()))
+            doc_len = len(words)
             score = 0.0
 
             for term in all_query_terms:
-                tf = content.count(term)
-                if tf == 0:
+                if term not in word_set:
                     continue
-                df = sum(1 for n in nodes if term in n.get("content", "").lower())
-                idf = math.log((n_nodes - df + 0.5) / (df + 0.5) + 1) if n_nodes else 1
+                
+                tf = words.count(term)
+                df = df_map.get(term, 0)
+                
+                # BM25 IDF
+                idf = math.log((n_nodes - df + 0.5) / (df + 0.5) + 1)
                 norm = 1 - b + b * (doc_len / avg_doc_len)
                 score += idf * (tf * (k1 + 1)) / (tf + k1 * norm)
+                
+                # Source/Subtopic Boost
                 if term in meta.get("source", "").lower() or term in meta.get("subtopic", "").lower():
                     score += 8.0
 
-            score *= meta.get("reliability_score", 0.7)
-            if meta.get("is_internal"):
-                score *= 2.0
-
             if score > 0:
+                score *= meta.get("reliability_score", 0.7)
+                if meta.get("is_internal"):
+                    score *= 2.0
                 scored_nodes.append((score, node))
 
         scored_nodes.sort(key=lambda x: x[0], reverse=True)
         top_results = scored_nodes[:limit]
+
 
         intel_summary = ""
         bibliography = []

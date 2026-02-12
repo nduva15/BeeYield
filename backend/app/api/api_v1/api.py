@@ -7,7 +7,8 @@ from app.api.api_v1.endpoints import (
     forms, shop, blog, careers, media, 
     services, jobs, analytics, notes, admin, iot, ai,
     admin_extended, meters, beeyield, pollination, inspections, reports,
-    ai_assistant, ai_admin, settings, payments, labels, streaming, bluetooth
+    ai_assistant, ai_admin, settings, payments, labels, streaming, bluetooth,
+    requests
 )
 
 
@@ -24,6 +25,8 @@ api_router.include_router(meters.router, prefix="/meters", tags=["Meters"])
 api_router.include_router(beeyield.router, prefix="/beeyield", tags=["BeeYield Dashboard"])
 api_router.include_router(reports.router, prefix="/beeyield/reports", tags=["BeeYield Reports"])
 api_router.include_router(bluetooth.router, prefix="/beeyield/bluetooth", tags=["Bluetooth"])
+api_router.include_router(requests.router, prefix="/beeyield/requests", tags=["Support Requests"])
+api_router.include_router(notes.router, prefix="/beeyield/notes", tags=["Notes"])
 
 
 # Precision Pollination endpoint
