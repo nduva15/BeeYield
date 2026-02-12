@@ -79,8 +79,8 @@ const STATIC_PRODUCTS: Product[] = [
   },
   {
     id: "h2",
-    name: "Wildflower Blossom Honey",
-    description: "A complex, multi-floral honey with aromatic notes from Makueni's diverse flora. Perfect for daily wellness and gourmet pairings.",
+    name: "BeeYield Acacia",
+    description: "Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.",
     category: "honey",
     badge: "Premium",
     images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
@@ -95,8 +95,8 @@ const STATIC_PRODUCTS: Product[] = [
   },
   {
     id: "h3",
-    name: "Kibwezi Forest Honey",
-    description: "Bold, dark, and rich in minerals. This forest honey is harvested from deep within the protected Kibwezi groundwater forest.",
+    name: "BeeYield Acacia",
+    description: "Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.",
     category: "honey",
     badge: "Rare",
     images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
@@ -111,8 +111,8 @@ const STATIC_PRODUCTS: Product[] = [
   },
   {
     id: "h4",
-    name: "Desert Thorn Honey",
-    description: "Exquisite honey from the arid regions. Intense floral notes with a hint of spice. Highly sought after for its unique properties.",
+    name: "BeeYield Acacia",
+    description: "Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.",
     category: "honey",
     badge: "Limited Edition",
     images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
@@ -127,8 +127,8 @@ const STATIC_PRODUCTS: Product[] = [
   },
   {
     id: "h5",
-    name: "Raw Honeycomb Chunk",
-    description: "The purest form of honey. A generous slab of fresh honeycomb submerged in our premium liquid honey. Entirely edible and delicious.",
+    name: "BeeYield Acacia",
+    description: "Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.",
     category: "honey",
     badge: "100% Raw",
     images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
@@ -143,8 +143,8 @@ const STATIC_PRODUCTS: Product[] = [
   },
   {
     id: "h6",
-    name: "Lavender Infused Honey",
-    description: "Our premium acacia honey gently infused with organic lavender blossoms. Calming, floral, and perfect for evening tea.",
+    name: "BeeYield Acacia",
+    description: "Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.",
     category: "honey",
     badge: "New Arrival",
     images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
@@ -159,8 +159,8 @@ const STATIC_PRODUCTS: Product[] = [
   },
   {
     id: "h7",
-    name: "Ginger & Lemon Honey",
-    description: "Raw honey with organic ginger and lemon. Soothing for throats and a natural pick-me-up.",
+    name: "BeeYield Acacia",
+    description: "Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.",
     category: "honey",
     badge: "Wellness",
     images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
@@ -175,8 +175,8 @@ const STATIC_PRODUCTS: Product[] = [
   },
   {
     id: "h8",
-    name: "Signature Reserve (Aged)",
-    description: "Our most exclusive honey, aged for 12 months to develop deep, molasses-like complexity. A true connoisseur's choice.",
+    name: "BeeYield Acacia",
+    description: "Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.",
     category: "honey",
     badge: "Gold Label",
     images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
@@ -918,7 +918,33 @@ const Shop = () => {
         </Tabs>
       </section>
 
-      {/* Tech CTA Section */}
+      {/* BeeYield Branding Section with QR Code */}
+      <section className="container mx-auto px-4 py-12">
+        <div className="bg-white rounded-[2rem] p-8 md:p-16 shadow-xl border border-green-100 flex flex-col md:flex-row items-center gap-8 md:gap-16">
+          <div className="flex-shrink-0 flex flex-col items-center justify-center">
+            <img src="/logo.png" alt="BeeYield Logo" className="h-20 w-20 mb-4" />
+            <span className="text-2xl font-black text-green-700 tracking-tight mb-2">BeeYield HoneyChain™</span>
+            <span className="text-sm text-muted-foreground mb-4 text-center">Every jar is traceable. Scan the QR code below to verify your honey’s journey from hive to jar.</span>
+            <img
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://beeyield.co.ke/trace/SAMPLE-BATCH-CODE`}
+              alt="BeeYield Traceability QR"
+              className="w-28 h-28 rounded bg-white border border-green-200 shadow"
+            />
+            <span className="text-xs text-green-700 mt-2">Scan to verify</span>
+            <span className="text-xs font-mono text-green-900 bg-green-50 border border-green-200 rounded px-2 py-0.5 mt-2">SAMPLE-BATCH-CODE</span>
+          </div>
+          <div className="flex-1 flex flex-col justify-center">
+            <h2 className="text-3xl md:text-4xl font-black mb-4 text-green-900">Trust in Every Drop</h2>
+            <p className="text-lg text-muted-foreground mb-4">BeeYield is Africa’s leader in honey traceability. Our blockchain-powered HoneyChain™ guarantees authenticity, purity, and full transparency for every batch. Look for the BeeYield QR code on your jar and scan to see the full story behind your honey.</p>
+            <ul className="list-disc pl-6 text-green-800 text-base font-medium space-y-1">
+              <li>Blockchain-sealed batch records</li>
+              <li>Meet the beekeeper and apiary</li>
+              <li>Harvest date and floral source</li>
+              <li>Full journey from hive to jar</li>
+            </ul>
+          </div>
+        </div>
+      </section>
       <section className="container mx-auto px-4 py-12">
         <div className="bg-primary rounded-[3rem] p-8 lg:p-16 relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-white/20 transition-all duration-1000" />
@@ -987,7 +1013,7 @@ const Shop = () => {
               <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
                 <Cpu className="h-5 w-5 text-primary" />
               </div>
-              <span className="font-bold text-lg">Technical Hives</span>
+              <span className="font-bold text-lg">Intelligent Hives</span>
             </div>
           </div>
         </div>

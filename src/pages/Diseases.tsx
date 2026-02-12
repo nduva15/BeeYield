@@ -409,7 +409,7 @@ const Diseases = () => {
                                 <div className="h-12 w-12 bg-primary/20 rounded-full flex items-center justify-center">
                                     <Cpu className="h-6 w-6 text-primary" />
                                 </div>
-                                <span className="font-bold text-xl">Technical Hives</span>
+                                <span className="font-bold text-xl">Intelligent Hives</span>
                             </div>
                         </div>
                     </div>

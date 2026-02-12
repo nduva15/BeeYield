@@ -1,8 +1,0 @@
-node_modules
-venv
-vendor
-.idea
-.vscode
-target/
-Cargo.lock
-.env

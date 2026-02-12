@@ -70,14 +70,13 @@ const OurStory = () => {
                   alt="Early days in Kibwezi"
                   className="relative rounded-3xl shadow-lg w-full object-cover h-[400px] lg:h-[500px]"
                 />
-
                 {/* Floating Quote Card */}
                 <Card className="absolute -bottom-8 -right-8 w-[90%] sm:w-[80%] shadow-xl border-none bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                   <CardContent className="p-6">
                     <div className="flex gap-4">
                       <div className="text-4xl text-primary font-serif">"</div>
                       <blockquote className="text-lg font-medium text-foreground">
-                        Where would three beekeepers meet? In our case — around the family dinner table.
+                        Sometimes, the spark for something big comes from boredom, family, and a little bit of courage.
                       </blockquote>
                     </div>
                   </CardContent>
@@ -91,17 +90,17 @@ const OurStory = () => {
                 Kibwezi, Kenya • 2020
               </Badge>
               <h2 className="text-3xl font-bold text-foreground sm:text-4xl">
-                A Family Mission Born in a Pandemic
+                A Pandemic Spark, a Family Mission
               </h2>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  In 2020, while the world stood still amid a global pandemic, <strong className="text-foreground">Timothy</strong>, a Strathmore University student, saw an opportunity in the quiet of rural Kibwezi, Makueni County. With just <strong className="text-foreground">half an acre of land and 4 beehives</strong>, BeeYield was born.
+                  In 2020, as the world slowed down during the COVID pandemic, <strong className="text-foreground">Timothy Nduva</strong> found himself restless in rural Kibwezi, Kenya. While attending Strathmore University, Timothy’s curiosity and drive for innovation grew. The unique challenges of the pandemic became the spark that ignited BeeYield’s vision for scalable, tech-driven beekeeping solutions.
                 </p>
                 <p>
-                  What started as a small venture quickly became a family affair. Timothy's two sisters, <strong className="text-foreground">Agatha</strong> and <strong className="text-foreground">Carole</strong>, brought their unique expertise to shape the company's direction — from web development and product design to IoT research, they helped give BeeYield its technical expertise.
+                  But BeeYield was never a solo journey. Timothy’s sisters, <strong className="text-foreground">Agatha</strong> and <strong className="text-foreground">Carole</strong>, brought their own unique skills—ranging from web development and product design to IoT research. Together, the siblings transformed a small family apiary into a platform for technological advancement and agricultural impact.
                 </p>
                 <p>
-                  Together, the three siblings transformed a modest apiary into something much greater — proving that innovation can flourish anywhere, even in the most unexpected places.
+                  What began with just half an acre and four hives quickly became a family mission to empower farmers, advance pollination, and prove that innovation can flourish anywhere—even in the most unexpected places.
                 </p>
               </div>
             </div>

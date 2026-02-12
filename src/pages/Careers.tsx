@@ -541,7 +541,7 @@ const Careers = () => {
 
           <div className="mt-12 text-center">
             <p className="text-sm text-muted-foreground bg-secondary/30 inline-block px-6 py-3 rounded-lg">
-              BeeYield is an international company. We have offices in Tel Aviv, Fresno, Palo Alto, Australia, and <strong>Kenya</strong>.
+              BeeYield careers are currently available only in <strong>Kenya (Makueni)</strong>.
             </p>
           </div>
         </div>

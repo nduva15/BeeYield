@@ -56,7 +56,7 @@ const GlobalHiveNetwork = () => {
                 <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center">
                   <Activity className="h-4 w-4 text-primary" />
                 </div>
-                <span className="font-bold text-base text-foreground/80">Technical Hives</span>
+                <span className="font-bold text-base text-foreground/80">Intelligent Hives</span>
               </div>
             </div>
           </div>
@@ -131,7 +131,7 @@ const GlobalHiveNetwork = () => {
                   <Globe className="h-8 w-8 text-primary" />
                 </div>
                 <p className="text-sm font-bold text-primary uppercase tracking-wider mb-2">GOAL 1</p>
-                <h3 className="text-2xl font-bold mb-4 text-foreground">Technical Hives Network</h3>
+                <h3 className="text-2xl font-bold mb-4 text-foreground">Intelligent Hives Network</h3>
                 <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">Target: 2M hives</p>
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   A network of sensor-equipped hives across Makueni and Kitui. Beekeepers get real-time colony health and pollination data.
@@ -288,7 +288,7 @@ const GlobalHiveNetwork = () => {
                 <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
                   <Activity className="h-6 w-6 text-primary" />
                 </div>
-                <span className="font-bold text-lg">Technical Hives</span>
+                <span className="font-bold text-lg">Intelligent Hives</span>
               </div>
             </div>
           </div>
