@@ -48,6 +48,7 @@ export const BrandedProductImage: React.FC<BrandedProductImageProps> = ({
                         <img src="/logo.png" alt="BeeYield Official" className="h-6 w-auto object-contain" />
                     </div>
 
+
                     {/* HoneyChain Traceability Stamp */}
                     <div className="bg-green-50 backdrop-blur-md px-2 py-1 rounded-full border border-green-200/50 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                         <ShieldCheck className="h-3 w-3 text-green-700" />

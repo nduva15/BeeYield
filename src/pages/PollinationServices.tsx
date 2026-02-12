@@ -17,15 +17,15 @@ import {
 
 const PollinationServices = () => {
     const crops = [
-        { name: "Maize", image: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&q=80&w=400" },
-        { name: "Sisal", image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=400" },
-        { name: "Mangoes", image: "https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&q=80&w=400" },
-        { name: "Beans", image: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&q=80&w=400" },
-        { name: "Sunflower", image: "https://images.unsplash.com/photo-1597848212624-a19eb35e2651?auto=format&fit=crop&q=80&w=400" },
-        { name: "Oranges", image: "https://images.unsplash.com/photo-1547514701-42782101795e?auto=format&fit=crop&q=80&w=400" },
-        { name: "Vegetables", image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&q=80&w=400" },
-        { name: "Tomatoes", image: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&q=80&w=400" },
-        { name: "Onions", image: "/images/onion-plantation.png" },
+        { name: "Maize", image: "/images/crops/maize.jpg" },
+        { name: "Sisal", image: "/images/crops/sisal.jpg" },
+        { name: "Mangoes", image: "/images/crops/mangoes.jpg" },
+        { name: "Beans", image: "/images/crops/beans.jpg" },
+        { name: "Sunflower", image: "/images/crops/sunflower.jpg" },
+        { name: "Oranges", image: "/images/crops/oranges.jpg" },
+        { name: "Vegetables", image: "/images/crops/vegetables.jpg" },
+        { name: "Tomatoes", image: "/images/crops/tomatoes.jpg" },
+        { name: "Onions", image: "/images/crops/onions.jpg" },
     ];
 
     const differences = [
@@ -95,7 +95,7 @@ const PollinationServices = () => {
                                 🐝 East Africa's Premier Pollination Partner
                             </Badge>
 
-                            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black leading-[1.1] tracking-tighter animate-fade-in-up">
+                            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black leading-[1.1] tracking-tighter animate-fade-in-up">
                                 BeeYield <span className="text-amber-500 block">Precision Pollination</span>
                             </h1>
 
@@ -105,12 +105,12 @@ const PollinationServices = () => {
 
                             <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center lg:justify-start animate-fade-in-up" style={{ animationDelay: "300ms" }}>
                                 <Link to="/pollination-request" className="w-full sm:w-auto">
-                                    <Button size="lg" className="w-full sm:w-auto bg-[#FCD34D] text-black hover:bg-[#F5C518] text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 font-bold shadow-lg rounded-xl sm:rounded-2xl border-none transition-transform active:scale-95">
+                                    <Button size="md" className="w-full sm:w-auto bg-[#FCD34D] text-black hover:bg-[#F5C518] text-sm sm:text-base px-4 sm:px-5 py-3 sm:py-4 font-bold shadow-lg rounded-xl sm:rounded-2xl border-none transition-transform active:scale-95">
                                         Get A FREE Pollination Consultation
                                     </Button>
                                 </Link>
                                 <Link to="/pollination-solutions" className="w-full sm:w-auto">
-                                    <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 border-neutral-300 text-neutral-900 hover:bg-white/50 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 bg-transparent font-black rounded-xl sm:rounded-2xl transition-transform active:scale-95">
+                                    <Button size="md" variant="outline" className="w-full sm:w-auto border-2 border-neutral-300 text-neutral-900 hover:bg-white/50 text-sm sm:text-base px-4 sm:px-5 py-3 sm:py-4 bg-transparent font-black rounded-xl sm:rounded-2xl transition-transform active:scale-95">
                                         See How It Works
                                     </Button>
                                 </Link>
@@ -171,7 +171,7 @@ const PollinationServices = () => {
             <section className="py-20 sm:py-32 bg-white">
                 <div className="container mx-auto px-4 sm:px-6">
                     <div className="max-w-4xl mb-12 sm:mb-16">
-                        <h2 className="text-4xl md:text-6xl font-black text-neutral-900 mb-6 leading-tight tracking-tighter">
+                        <h2 className="text-2xl md:text-4xl font-black text-neutral-900 mb-6 leading-tight tracking-tighter">
                             BeeYield is Africa's Leading <br />
                             Provider of Pollination Services
                         </h2>
@@ -225,7 +225,7 @@ const PollinationServices = () => {
                         <Badge variant="outline" className="text-amber-600 border-amber-300 px-3 sm:px-4 py-1">
                             Success Stories
                         </Badge>
-                        <h2 className="text-4xl md:text-6xl font-black text-neutral-900 tracking-tighter leading-tight">
+                        <h2 className="text-2xl md:text-4xl font-black text-neutral-900 tracking-tighter leading-tight">
                             BeeYield Pollination Stories
                         </h2>
                         <p className="text-xl md:text-2xl text-neutral-600 font-medium leading-relaxed">
@@ -267,11 +267,11 @@ const PollinationServices = () => {
                         <Badge variant="outline" className="text-amber-600 border-amber-300">
                             Our Solutions
                         </Badge>
-                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-foreground tracking-tighter px-2">
-                            Three Paths to <span className="text-amber-600">Perfection</span>
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-foreground tracking-tighter px-2">
+                            Three Paths to <span className="text-amber-600">Pollination</span>
                         </h2>
                         <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium px-2">
-                            Complete protection and optimization: In-Hive, In-Field, and Disease Defense.
+                            Complete protection and optimization: In-Hive, In-Field, and Pollination.
                         </p>
                     </div>
 
@@ -340,7 +340,7 @@ const PollinationServices = () => {
                             </CardContent>
                         </Card>
 
-                        {/* Disease Defense */}
+                        {/* Diseases */}
                         <Card className="group relative overflow-hidden border-none shadow-premium bg-white dark:bg-gray-950 rounded-2xl sm:rounded-[2rem] lg:rounded-[3rem] transition-all duration-700 hover:-translate-y-2">
                             <CardContent className="p-6 sm:p-8 md:p-10 relative z-10 h-full flex flex-col">
                                 <div className="flex flex-col gap-4 sm:gap-6 h-full">
@@ -348,7 +348,7 @@ const PollinationServices = () => {
                                         <Shield className="h-10 w-10 text-red-600 dark:text-red-400" />
                                     </div>
                                     <div className="space-y-3 sm:space-y-4 flex-1">
-                                        <h3 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">Disease <br /> Defense</h3>
+                                        <h3 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">Diseases</h3>
                                         <p className="text-sm sm:text-base text-muted-foreground leading-relaxed font-medium">
                                             Proactive protection for your apiary. Detect threats in the hive and across the land before they impact your harvest.
                                         </p>
@@ -461,7 +461,7 @@ const PollinationServices = () => {
                 </div>
             </section>
 
-            {/* Crops Section */}
+            {/* Crops Section - Improved UI/UX */}
             <section className="py-32 bg-muted/20">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-24 space-y-4">
@@ -469,30 +469,36 @@ const PollinationServices = () => {
                         <h2 className="text-4xl md:text-6xl font-black tracking-tighter">Crops We <span className="text-amber-600">Pollinate</span></h2>
                         <div className="pt-8">
                             <Link to="/contact">
-                                <Button size="lg" className="bg-[#FCD34D] text-black hover:bg-[#F5C518] font-bold px-8 py-6 rounded-2xl shadow-xl border-none">
+                                <Button size="md" className="bg-[#FCD34D] text-black hover:bg-[#F5C518] font-bold px-4 py-3 rounded-2xl shadow-xl border-none">
                                     Book a Pollination Consultation
                                 </Button>
                             </Link>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 max-w-7xl mx-auto">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 max-w-7xl mx-auto">
                         {crops.map((crop, index) => (
                             <div
                                 key={index}
-                                className="group relative overflow-hidden rounded-[3rem] aspect-square cursor-pointer shadow-premium"
+                                className="group relative overflow-hidden rounded-[2.5rem] aspect-square cursor-pointer shadow-lg border border-amber-100 hover:border-green-200 bg-gradient-to-br from-amber-50 to-green-50 flex flex-col items-center justify-end p-0"
                             >
-                                <img
-                                    src={crop.image}
-                                    alt={crop.name}
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-125"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
-                                <div className="absolute bottom-0 left-0 right-0 p-8">
-                                    <h3 className="text-white font-black text-2xl group-hover:text-yellow-300 transition-colors tracking-tighter">
+                                <div className="w-full h-3/4 flex items-center justify-center">
+                                    <img
+                                        src={crop.image}
+                                        alt={crop.name}
+                                        className="w-full h-full object-cover rounded-t-[2.5rem] group-hover:scale-110 transition-transform duration-500"
+                                        loading="lazy"
+                                    />
+                                </div>
+                                <div className="w-full flex flex-col items-center justify-center p-6">
+                                    <h3 className="font-extrabold text-xl text-green-900 mb-2 tracking-tight group-hover:text-amber-700 transition-colors">
                                         {crop.name}
                                     </h3>
-                                    <Link to="/media" className="text-white/60 text-xs font-black uppercase tracking-widest mt-2 opacity-0 group-hover:opacity-100 transition-all underline decoration-yellow-300 block">View Data</Link>
+                                    <Link to="/media" className="w-full">
+                                        <Button size="sm" variant="default" className="w-full font-bold rounded-xl bg-green-600 hover:bg-amber-500 text-white transition-colors">
+                                            View Data
+                                        </Button>
+                                    </Link>
                                 </div>
                             </div>
                         ))}
@@ -601,7 +607,7 @@ const PollinationServices = () => {
                     </p>
                     <div className="flex flex-wrap justify-center gap-6">
                         <Link to="/contact">
-                            <Button size="lg" className="bg-green-700 text-white hover:bg-green-800 text-2xl font-black h-24 px-16 rounded-[2rem] shadow-2xl">
+                            <Button size="md" className="bg-green-700 text-white hover:bg-green-800 text-xl font-black h-16 px-8 rounded-[2rem] shadow-2xl">
                                 Get Your Custom Plan
                             </Button>
                         </Link>

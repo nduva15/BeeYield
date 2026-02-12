@@ -397,7 +397,7 @@ const TestimonialSection = () => {
     {
       name: "Michael Ochieng",
       title: "Wellness enthusiast",
-      quote: "I've been buying BeeYield honey for my family for over a year now. The traceability feature gives me confidence that we're consuming 100% pure honey. Amazing quality!",
+      quote: "I've been buying BeeYield honey for my family for a year now. The traceability feature gives me confidence that we're consuming 100% pure honey. Amazing quality!",
     },
     {
       name: "Amina Hassan",
@@ -491,7 +491,7 @@ const AboutSection = () => {
               BeeYield was founded with a singular vision: to revolutionize beekeeping through technology and radical transparency. Our journey began in the pristine landscapes of Kenya, where we saw the need for a more sustainable approach. Today, we are proud to lead with our <strong>50/50 Harvest Promise</strong>—ensuring that for every drop we take, enough is left for the bees to thrive and pollinate our future.
             </p>
             <p className="text-neutral-600 leading-relaxed mb-4 text-sm md:text-base">
-              With over <strong>2,500 trees planted</strong> and a growing network of tech-enabled apiaries, our impact goes beyond just honey. Every jar you hold features <strong>Honey Journey Tracking</strong>, allowing you to trace your honey back to the very hive it came from, meeting the beekeeper and seeing our verified seal of authenticity.
+              With <strong>2,500 trees planted</strong> and a growing network of tech-enabled apiaries, our impact goes beyond just honey. Every jar you hold features <strong>Honey Journey Tracking</strong>, allowing you to trace your honey back to the very hive it came from, meeting the beekeeper and seeing our verified seal of authenticity.
             </p>
             <p className="text-neutral-600 leading-relaxed text-sm md:text-base">
               We believe in "Pollination with Purpose." By choosing BeeYield, you're not just buying raw, unfiltered honey; you're supporting a circular ecosystem that restores biodiversity, empowers local farmers, and uses smart monitoring to protect the health of our colonies. This is the new standard of sweetness.
@@ -646,7 +646,7 @@ const FAQSection = () => {
     },
     {
       question: "How are you contributing to apiary restoration?",
-      answer: "We don't just place hives; we restore ecosystems. To date, we have planted over 2,500 indigenous trees around our apiary sites to provide diverse forage for bees and restore the natural biodiversity of the region.",
+      answer: "We don't just place hives; we restore ecosystems. To date, we have planted 2,500 indigenous trees around our apiary sites to provide diverse forage for bees and restore the natural biodiversity of the region.",
     },
     {
       question: "Is your honey raw and unfiltered?",

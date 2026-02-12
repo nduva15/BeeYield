@@ -72,7 +72,7 @@ const ESG = () => {
           "Acres Pollinated: 25 (Precision coverage)",
           "Trees Planted: 2,500+ (Ecosystem restoration)",
           "Active Colonies: 184 (Managed hives)",
-          "Honey Produced: 883kg (Pure traceable honey)",
+          "Honey Produced: 943kg (Pure traceable honey)",
           "Bees Protected: 2M+ (Pollinators thriving)"
         ];
 
@@ -95,10 +95,10 @@ const ESG = () => {
           "1. Bee Disease Prevention - <15% colony loss rate",
           "2. The 50/50 Harvest Promise - Ethical beekeeping",
           "3. HoneyChain™ Traceability - 100% verified journey",
-          "4. Sustainable AgriTech - IoT & AI optimization",
           "5. Sustainable Farming - Zero chemical pesticides",
           "6. Women-Led Tech Leadership - 66% women founders"
         ];
+            "3. Precision Pollination & BeeYield AI/LLM - AI-powered pollination & monitoring",
 
         pillars.forEach(pillar => {
           doc.text(pillar, 14, yPos);
@@ -127,7 +127,7 @@ const ESG = () => {
     { value: "25", label: "Acres Pollinated", icon: MapPin, description: "Precision pollination coverage" },
     { value: "2,500+", label: "Trees Planted", icon: TreePine, description: "Ecosystem restoration" },
     { value: "184", label: "Active Colonies", icon: Bug, description: "Managed bee colonies" },
-    { value: "883kg", label: "Honey Produced", icon: Package, description: "Pure traceable honey" },
+    { value: "943kg", label: "Honey Produced", icon: Package, description: "Pure traceable honey" },
     { value: "2M+", label: "Bees Protected", icon: Heart, description: "Pollinators saved & thriving" },
   ];
 
@@ -159,17 +159,18 @@ const ESG = () => {
       impact: "Sustainable beekeeping that ensures long-term colony health and productivity"
     },
     {
-      title: "HoneyChain™ Traceability",
-      icon: Database,
+      title: "Precision Pollination & BeeYield AI/LLM",
+      icon: Cpu,
       color: "from-blue-500 to-indigo-600",
       initiatives: [
-        "Blockchain-verified journey from hive to jar for every batch",
-        "QR codes on every product linking to harvest origin data",
-        "GPS-tagged hive locations with environmental monitoring",
-        "Beekeeper profiles and fair payment records on-chain",
-        "Consumer transparency dashboard for complete product visibility"
+        "Precision Pollination: Frames per Acre Model for optimal crop yield",
+        "BeeYield AI/LLM: Advanced decision support for farmers and beekeepers",
+        "Sound analysis for hive health and colony activity monitoring",
+        "Image analysis for disease detection and hive inspections",
+        "Smart predictive analytics for optimal harvest timing",
+        "Mobile app for beekeepers with instant hive health alerts"
       ],
-      impact: "100% of honey batches traceable to specific hive, beekeeper, and harvest date"
+      impact: "AI-powered pollination and monitoring for data-driven, sustainable agriculture across Africa"
     },
     {
       title: "Sustainable AgriTech",
@@ -178,11 +179,12 @@ const ESG = () => {
       initiatives: [
         "Solar-powered IoT hive monitoring systems for off-grid apiaries",
         "Smart predictive analytics for optimal harvest timing",
+        "Precision Pollination: Frames per Acre Model for optimal crop yield",
         "Real-time temperature and humidity sensors protecting colony health",
         "Mobile app for beekeepers with instant hive health alerts",
         "Carbon-neutral technology operations through renewable energy"
       ],
-      impact: "Tech-enabled beekeeping reducing environmental impact while maximizing efficiency"
+      impact: "Tech-enabled beekeeping and precision pollination reducing environmental impact while maximizing efficiency"
     },
     {
       title: "Sustainable Farming Practices",
@@ -231,29 +233,14 @@ const ESG = () => {
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
               Our <span className="text-primary">ESG</span> Commitment
             </h1>
+            <Button size="lg" variant="default">
+              Download 2024 Report
+              <Download className="w-4 h-4 ml-2" />
+            </Button>
+            <Button size="lg" variant="outline" asChild>
+              <Link to="/commitment">View SDG Alignment</Link>
+            </Button>
 
-            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-              Environmental, Social, and Governance practices aren't just corporate buzzwords for us—they're the foundation of everything we do at BeeYield. From the semi-arid lands of Kibwezi, Kenya, we're proving that sustainable beekeeping can transform communities and ecosystems.
-            </p>
-
-            <div className="flex flex-wrap justify-center gap-4">
-              <Button size="lg" className="gap-2" onClick={handleDownloadReport} disabled={downloading}>
-                {downloading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Generating PDF...
-                  </>
-                ) : (
-                  <>
-                    Download 2024 Report
-                    <Download className="w-4 h-4" />
-                  </>
-                )}
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link to="/commitment">View SDG Alignment</Link>
-              </Button>
-            </div>
           </div>
         </div>
       </section>
@@ -296,6 +283,7 @@ const ESG = () => {
               </h2>
               <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
                 At BeeYield, ESG isn't a checkbox—it's our DNA. From bee disease prevention to women empowerment, from sustainable agritech to full traceability, these six pillars define how we operate and measure success.
+                  At BeeYield, ESG isn't a checkbox—it's our DNA. From bee disease prevention to women empowerment, from AI-powered pollination to full traceability, these five pillars define how we operate and measure success.
               </p>
             </div>
 
