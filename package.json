@@ -141,7 +141,7 @@
     "whatwg-encoding": "^3.1.2",
     "h3": "^2.0.0",
     "tar": "^6.2.0",
-    "@isaacs/brace-expansion": "^2.0.1",
+    "@isaacs/brace-expansion": "^5.0.1",
     "jspdf": "^2.5.1",
     "axios": "^1.6.8",
     "d3-color": "^3.1.0",
