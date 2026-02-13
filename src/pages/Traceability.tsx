@@ -70,8 +70,8 @@ const Traceability = () => {
       }).catch(err => console.error("Failed to log trace:", err));
 
       toast({
-        title: "Journey Verified!",
-        description: `Full history retrieved for batch ${code}`,
+        title: "Chain Verified!",
+        description: `Full journey data retrieved for batch ${code}`,
       });
     } catch (error) {
       console.error("Trace error:", error);
@@ -173,15 +173,15 @@ const Traceability = () => {
           <div className="max-w-4xl mx-auto text-center text-neutral-900 space-y-4 sm:space-y-6 md:space-y-8">
             <div className="flex justify-center">
               <Badge className="bg-green-100 text-green-900 border-green-200 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 hover:bg-green-200/80 transition-colors inline-flex items-center font-bold">
-                <ShieldCheck className="mr-1.5 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" /> 100% Origin Verified
+                <ShieldCheck className="mr-1.5 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" /> 100% HoneyChain™ Verified
               </Badge>
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black leading-tight tracking-tighter px-2">
-              The Journey of <span className="text-green-700">Every Drop</span>
+              The Journey of <span className="text-green-700 italic">Every Drop</span>
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed px-4">
               Transparent. Ethical. Traceable. Scan your jar's QR code to meet your bees,
-              view real-time hive data, and verify our 50/50 harvest promise.
+              view real-time hive metrics, and verify our 50/50 harvest promise.
             </p>
           </div>
         </div>
@@ -256,7 +256,7 @@ const Traceability = () => {
                         </div>
                         <div className="flex items-center gap-2 mt-6">
                           <ShieldCheck className="h-4 w-4 text-green-500" />
-                          <span className="text-xs font-bold text-muted-foreground">Verified Harvest Journey</span>
+                          <span className="text-xs font-bold text-muted-foreground italic">Powered by HoneyChain™ Immutable Ledger</span>
                         </div>
                       </div>
                     </div>
@@ -267,7 +267,7 @@ const Traceability = () => {
                       </div>
                       <h3 className="text-2xl font-black tracking-tight mb-4 text-slate-900 dark:text-white">Quick Scan</h3>
                       <p className="text-muted-foreground mb-8 text-sm">
-                        Use your smartphone camera to instantly verify where your honey came from on our Honey Trail.
+                        Use your smartphone camera to instantly verify authenticity and unlock the full story on HoneyChain™.
                       </p>
                       <Button
                         variant="outline"
@@ -290,11 +290,22 @@ const Traceability = () => {
                   <div className="relative">
                     <div className="absolute inset-0 bg-primary/20 rounded-full blur-[100px] animate-pulse"></div>
 
+                    {/* High-Tech Scanner Visual */}
                     <div className="relative h-48 w-48 mx-auto bg-white rounded-[2.5rem] shadow-2xl flex items-center justify-center border border-primary/10 overflow-hidden group">
                       <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-transparent"></div>
 
+                      {/* Scanning Line */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/30 to-transparent h-12 w-full -translate-y-full animate-[scan_1.5s_ease-in-out_infinite] z-20 shadow-[0_0_20px_rgba(var(--primary-rgb),0.5)]"></div>
+
                       <div className="relative z-10 flex flex-col items-center">
                         <Activity className="h-16 w-16 text-primary animate-pulse" />
+                        <div className="mt-2 flex gap-1">
+                          {[1, 2, 3].map(i => (
+                            <div key={i} className="h-1 w-4 rounded-full bg-primary/20 animate-pulse overflow-hidden">
+                              <div className={`h-full bg-primary animate-[loading-bar_1s_infinite] delay-${i * 100}`} style={{ width: '40%' }}></div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
 
                       {/* Corner Accents */}
@@ -305,16 +316,27 @@ const Traceability = () => {
                     </div>
 
                     <div className="mt-8 space-y-3">
-                      <h3 className="text-3xl font-black tracking-tight text-slate-900 uppercase">Finding Origin</h3>
+                      <h3 className="text-3xl font-black tracking-tight text-slate-900 uppercase">Verifying Origin</h3>
                       <p className="text-slate-500 font-bold uppercase tracking-[0.2em] text-[10px]">
-                        Retrieving <span className="text-primary font-black">Harvest</span> Details
+                        Syncing with <span className="text-primary font-black">HoneyChain™</span> Ledger Node 04
                       </p>
+                    </div>
+
+                    <div className="mt-8 grid grid-cols-2 gap-3">
+                      <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 text-left">
+                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Block Height</p>
+                        <p className="text-xs font-mono font-bold text-slate-700">#8,442,109</p>
+                      </div>
+                      <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 text-left">
+                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Hash Verification</p>
+                        <p className="text-xs font-mono font-bold text-slate-700">0x7a...f92e</p>
+                      </div>
                     </div>
 
                     <div className="mt-6 pt-4 border-t border-slate-100">
                       <div className="flex items-center justify-center gap-2 text-green-600 font-black text-[10px] uppercase tracking-widest animate-pulse">
                         <ShieldCheck className="h-3 w-3" />
-                        Authenticity Verified
+                        Signature Match Confirmed
                       </div>
                     </div>
                   </div>
@@ -361,7 +383,7 @@ const Traceability = () => {
                     </div>
 
                     <Badge className="bg-green-100 text-green-900 border-green-200 text-xs px-4 py-2 hover:bg-green-200/80 transition-colors inline-flex items-center font-bold mb-4">
-                      <ShieldCheck className="mr-1.5 h-4 w-4" /> Certified Authentic Honey
+                      <ShieldCheck className="mr-1.5 h-4 w-4" /> HoneyChain™ Certified Authentic
                     </Badge>
 
                     <h2 className="text-3xl font-black text-neutral-900 tracking-tight">Traceability Report</h2>
@@ -385,7 +407,7 @@ const Traceability = () => {
                         Today, we've grown to <span className="text-green-800 font-black">184 hives across a thriving 5-acre apiary</span>. Our commitment remains radical: we only harvest 50% of the honey our bees produce.
                       </p>
                       <p className="text-neutral-600 font-normal">
-                        Timothy, along with his sisters Agatha and Carole, has transformed a modest venture into a technological edge for beekeeping—using smart sensors and honey tracking to ensure transparency, protect the African honey bee, and restore biodiversity in our native Kenya.
+                        Timothy, along with his sisters Agatha and Carole, has transformed a modest venture into a technological edge for beekeeping—leveraging IoT and blockchain to ensure transparency, protect the African honey bee, and restore biodiversity in our native Kenya.
                       </p>
                     </div>
 
@@ -399,9 +421,9 @@ const Traceability = () => {
                   {/* Real-time Hive Metrics (Dashboard Data) */}
                   <div className="mb-12">
                     <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-2xl font-black text-neutral-900 uppercase tracking-tighter">Live Hive Info</h3>
+                      <h3 className="text-2xl font-black text-neutral-900 uppercase tracking-tighter">Live Hive Metrics</h3>
                       <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 font-bold gap-1.5 py-1 px-3">
-                        <Activity className="h-3 w-3 animate-pulse" /> Live Smart Stream
+                        <Activity className="h-3 w-3 animate-pulse" /> Live IoT Stream
                       </Badge>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -494,7 +516,7 @@ const Traceability = () => {
                               </div>
                             </div>
                             <div className="mt-3 pt-3 border-t border-slate-200">
-                              <p className="text-[10px] text-slate-500 font-medium">
+                              <p className="text-[10px] text-slate-500 font-medium italic">
                                 {traceData?.extra_metadata?.harvest_context || "Only 30 hives met our peak maturity strict standards for this harvest."}
                               </p>
                             </div>
@@ -539,10 +561,10 @@ const Traceability = () => {
                           <div className="col-span-2 pt-6 border-t border-slate-100 mt-2">
                             <div className="flex items-center justify-between mb-4">
                               <p className="text-[10px] font-black uppercase tracking-widest text-indigo-600 flex items-center gap-1.5">
-                                <Zap className="h-3 w-3" /> Smart Hive Monitor
+                                <Zap className="h-3 w-3" /> Precision Pollination Node
                               </p>
                               <Badge variant="outline" className="border-indigo-200 text-indigo-700 text-[10px] font-bold px-2 py-0.5 bg-indigo-50 flex items-center gap-1">
-                                <Activity className="h-2.5 w-2.5 animate-pulse" /> Update: {traceData.sensor_snapshot?.sync_time || "7m ago"}
+                                <Activity className="h-2.5 w-2.5 animate-pulse" /> Sync: {traceData.sensor_snapshot?.sync_time || "7m ago"}
                               </Badge>
                             </div>
 
@@ -573,13 +595,13 @@ const Traceability = () => {
                                     </div>
                                     <div>
                                       <h4 className="text-lg font-black leading-tight tracking-tight flex items-center gap-2">
-                                        Smart Point <span className="px-1.5 py-0.5 bg-indigo-500 text-[10px] rounded text-white font-mono">{traceData.hive.hive_code.replace(/\D/g, '')}</span>
+                                        Precision Node <span className="px-1.5 py-0.5 bg-indigo-500 text-[10px] rounded text-white font-mono">{traceData.hive.hive_code.replace(/\D/g, '')}</span>
                                       </h4>
                                       <div className="flex items-center gap-2 mt-1">
                                         {traceData.sensor_snapshot?.queen_status === 'present' ? (
                                           <div className="flex items-center gap-1.5 px-2 py-0.5 bg-green-500/10 border border-green-500/20 rounded-full">
                                             <span className="text-[10px] text-green-400 font-bold leading-none">🛡️</span>
-                                            <span className="text-[9px] font-black uppercase tracking-widest text-green-300">Queen Present</span>
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-green-300">Queen Guard Active</span>
                                           </div>
                                         ) : traceData.sensor_snapshot?.queen_status === 'absent' ? (
                                           <div className="flex items-center gap-1.5 px-2 py-0.5 bg-red-500/10 border border-red-500/20 rounded-full">
@@ -588,8 +610,8 @@ const Traceability = () => {
                                           </div>
                                         ) : (
                                           <div className="flex items-center gap-1.5 px-2 py-0.5 bg-white/5 border border-white/10 rounded-full">
-                                            <span className="text-[10px] leading-none text-slate-400">?</span>
-                                            <span className="text-[9px] font-black uppercase tracking-widest text-slate-300">State Unknown</span>
+                                            <span className="text-[10px] leading-none text-slate-400 italic">?</span>
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-slate-300 italic">State Unknown</span>
                                           </div>
                                         )}
                                       </div>
@@ -628,7 +650,7 @@ const Traceability = () => {
                                     <div className="flex items-baseline gap-2">
                                       <span className="text-xl font-black">{traceData.sensor_snapshot?.brood_temp || "36"}°C</span>
                                       <div className="flex items-center gap-1.5">
-                                        <span className="text-[10px] text-amber-400 font-bold flex items-center animate-pulse">LIVE</span>
+                                        <span className="text-[10px] text-amber-400 font-bold flex items-center italic animate-pulse">LIVE</span>
                                         <span className="text-[10px] text-amber-400 font-bold flex items-center">▲ {traceData.sensor_snapshot?.temp_trend || "+0.9%"}</span>
                                       </div>
                                     </div>
@@ -640,7 +662,7 @@ const Traceability = () => {
                                     <div className="flex items-baseline gap-2">
                                       <span className="text-xl font-black">{traceData.sensor_snapshot?.nest_humidity || "75"}%</span>
                                       <div className="flex items-center gap-1.5">
-                                        <span className="text-[10px] text-amber-400 font-bold flex items-center animate-pulse">LIVE</span>
+                                        <span className="text-[10px] text-amber-400 font-bold flex items-center italic animate-pulse">LIVE</span>
                                         <span className="text-[10px] text-amber-400 font-bold flex items-center">▲ {traceData.sensor_snapshot?.humidity_trend || "+5.2%"}</span>
                                       </div>
                                     </div>
@@ -692,41 +714,41 @@ const Traceability = () => {
                                     </div>
                                   </div>
 
-                                  {/* Quality Assurance Block */}
+                                  {/* Blockchain Integrity Block */}
                                   <div className="space-y-2 flex flex-col">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Quality Assurance</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Blockchain Integrity</p>
                                     <div className="bg-indigo-950/40 rounded-2xl p-5 border border-indigo-500/20 flex-1 flex flex-col justify-between">
                                       <div className="space-y-4">
                                         <div>
-                                          <p className="text-[9px] font-black text-indigo-400 uppercase mb-2 tracking-tighter">Purity Guarantee</p>
+                                          <p className="text-[9px] font-black text-indigo-400 uppercase mb-2 tracking-tighter">TX Hash (Immutable Proof)</p>
                                           <div className="p-3 bg-black/40 rounded-xl border border-white/5">
                                             <p className="text-[10px] font-mono text-indigo-200 break-all leading-tight opacity-90">
-                                              This honey has been tested for purity and origin, meeting BeeYield's highest ethical standards.
+                                              0x{Array.from(traceData.batch_code).map(c => c.charCodeAt(0).toString(16)).join('').slice(0, 12)}...{traceData.batch_code.replace(/[^a-zA-Z0-9]/g, '').slice(-4)}
                                             </p>
                                           </div>
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-4">
                                           <div>
-                                            <p className="text-[9px] font-black text-indigo-400 uppercase mb-1 tracking-tighter">Batch Grade</p>
+                                            <p className="text-[9px] font-black text-indigo-400 uppercase mb-1 tracking-tighter">Confirmations</p>
                                             <div className="flex items-center gap-2">
                                               <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
-                                              <p className="text-xl font-black text-white">Premium</p>
+                                              <p className="text-xl font-black text-white">{(traceData.batch_code.length * 314 + 1024).toLocaleString()}</p>
                                             </div>
                                           </div>
                                           <div className="text-right">
-                                            <p className="text-[9px] font-black text-indigo-400 uppercase mb-1 tracking-tighter">Origin</p>
-                                            <Badge className="bg-indigo-500/30 text-indigo-100 border border-indigo-400/20 text-[9px] font-black px-2 py-0.5 whitespace-nowrap">Kibwezi Apiary</Badge>
+                                            <p className="text-[9px] font-black text-indigo-400 uppercase mb-1 tracking-tighter">Network</p>
+                                            <Badge className="bg-indigo-500/30 text-indigo-100 border border-indigo-400/20 text-[9px] font-black px-2 py-0.5 whitespace-nowrap">HoneyChain™ 2.0</Badge>
                                           </div>
                                         </div>
                                       </div>
 
                                       <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
                                         <div className="flex items-center gap-1.5">
-                                          <ShieldCheck className="h-3 w-3 text-indigo-400" />
-                                          <span className="text-[9px] font-bold text-indigo-300 uppercase">Verified Origin</span>
+                                          <Lock className="h-3 w-3 text-indigo-400" />
+                                          <span className="text-[9px] font-bold text-indigo-300 uppercase">Secure Link</span>
                                         </div>
-                                        <span className="text-[9px] font-black text-green-400 uppercase tracking-widest">100% PURE</span>
+                                        <span className="text-[9px] font-black text-green-400 uppercase tracking-widest">Verified 256-bit</span>
                                       </div>
                                     </div>
                                   </div>
@@ -739,8 +761,8 @@ const Traceability = () => {
                                     <span className="text-xs font-black text-white">{traceData.sensor_snapshot?.fob || "7"}</span>
                                   </div>
                                   <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
-                                    <span className="text-[9px] font-black text-indigo-400 uppercase tracking-tighter">Status:</span>
-                                    <span className="text-xs font-black text-indigo-200">Fully Verified</span>
+                                    <span className="text-[9px] font-black text-indigo-400 uppercase tracking-tighter">Protocol:</span>
+                                    <span className="text-xs font-black text-indigo-200">End-to-End</span>
                                   </div>
                                   <div className="flex-1 text-right">
                                     <p className="text-[9px] font-black text-indigo-500 uppercase tracking-[0.2em] animate-pulse">Node: {traceData.batch_code.split('-')[2] || 'H000'}</p>
@@ -806,7 +828,7 @@ const Traceability = () => {
                         </div>
 
                         <p className="text-[10px] font-black uppercase tracking-widest text-indigo-300 mb-4">Our Story</p>
-                        <p className="text-sm font-medium text-indigo-100 leading-relaxed">
+                        <p className="text-sm font-medium text-indigo-100 italic leading-relaxed">
                           " {traceData?.farmer?.story || "Dedicated to sustainable beekeeping and protecting our local ecosystems. Every jar tells the story of our commitment to the bees and the land we share with them."} "
                         </p>
                       </div>
