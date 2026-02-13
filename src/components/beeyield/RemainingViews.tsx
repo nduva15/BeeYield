@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { beeyieldService, Apiary, Hive } from '@/services/beeyieldService';
+import { beeyieldService, Apiary, Hive, IoTDevice, SensorReading } from '@/services/beeyieldService';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Wifi, Shield, Zap, Bluetooth as BluetoothIcon, Usb, Grid3X3, Box, Bell, Settings, ChevronDown, Check, X, AlertTriangle, Search, Info, Loader2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Wifi, Shield, Zap, Bluetooth as BluetoothIcon, Usb, Grid3X3, Box, Bell, Settings, ChevronDown, Check, X, AlertTriangle, Search, Info, Loader2, Thermometer, Droplet, Weight } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { toast } from 'sonner';
 import { UsbHubDashboard } from './UsbHubDashboard';
 
@@ -87,7 +90,7 @@ const SettingsDialog = ({ open, onOpenChange }: SettingsDialogProps) => {
                     </div>
                     <div>
                         <DialogTitle className="text-xl font-bold text-slate-800 tracking-tight leading-none">System Settings</DialogTitle>
-                        <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-1">Configure sync and health parameters.</p>
+                        <DialogDescription className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-1">Configure sync and health parameters.</DialogDescription>
                     </div>
                 </div>
 
@@ -152,7 +155,7 @@ const NotificationsDialog = ({ open, onOpenChange }: NotificationsDialogProps) =
                     </div>
                     <div>
                         <DialogTitle className="text-xl font-bold text-slate-800 tracking-tight leading-none">Alert Preferences</DialogTitle>
-                        <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-1">Configure hive health and sensor notifications.</p>
+                        <DialogDescription className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-1">Configure hive health and sensor notifications.</DialogDescription>
                     </div>
                 </div>
 
@@ -222,25 +225,29 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
 
     const [apiaries, setApiaries] = useState<Apiary[]>([]);
     const [hives, setHives] = useState<Hive[]>([]);
+    const [devices, setDevices] = useState<IoTDevice[]>([]);
+    const [latestReading, setLatestReading] = useState<SensorReading | null>(null);
+    const [isFetchingReading, setIsFetchingReading] = useState(false);
 
     const { user, beeyieldUser } = useAuth();
     const userId = beeyieldUser?.id || user?.id;
 
+    const [devices, setDevices] = useState<IoTDevice[]>([]);
+
     useEffect(() => {
         const loadInitialData = async () => {
-            const apiariesData = await beeyieldService.getApiaries();
-            const hivesData = await beeyieldService.getHives();
+            const [apiariesData, hivesData, devicesData] = await Promise.all([
+                beeyieldService.getApiaries(),
+                beeyieldService.getHives(),
+                beeyieldService.getDevices()
+            ]);
 
-            if (userId) {
-                setApiaries(apiariesData.filter(a => !a.user_id || a.user_id === userId));
-                setHives(hivesData.filter(h => !h.user_id || h.user_id === userId));
-            } else {
-                setApiaries(apiariesData);
-                setHives(hivesData);
-            }
+            setApiaries(apiariesData);
+            setHives(hivesData);
+            setDevices(devicesData);
         };
         loadInitialData();
-    }, [userId]);
+    }, []);
 
     useEffect(() => {
         if (selectedPlace && selectedPlace !== 'none') {
@@ -250,6 +257,26 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
             }
         }
     }, [selectedPlace, hives]);
+
+    useEffect(() => {
+        const fetchLatest = async () => {
+            if (selectedHive && selectedHive !== 'none') {
+                setIsFetchingReading(true);
+                try {
+                    const data = await beeyieldService.getReadings(selectedHive, 1);
+                    if (data && data.length > 0) setLatestReading(data[0]);
+                    else setLatestReading(null);
+                } catch (err) {
+                    setLatestReading(null);
+                } finally {
+                    setIsFetchingReading(false);
+                }
+            } else {
+                setLatestReading(null);
+            }
+        };
+        fetchLatest();
+    }, [selectedHive]);
 
     const currentPlace = apiaries.find(a => a.id === selectedPlace);
     const currentHive = hives.find(h => h.id === selectedHive);
@@ -297,7 +324,7 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                                             </SelectTrigger>
                                             <SelectContent className="rounded-xl border-slate-100 shadow-2xl p-1 bg-white">
                                                 <SelectItem value="none" className="font-semibold py-2 uppercase tracking-wider text-[10px] text-slate-400 text-center">None</SelectItem>
-                                                {apiaries.filter(a => a.name.includes('Kibwezi')).map(apiary => (
+                                                {apiaries.map(apiary => (
                                                     <SelectItem key={apiary.id} value={apiary.id} className="font-semibold py-2 text-sm">{apiary.name}</SelectItem>
                                                 ))}
                                             </SelectContent>
@@ -368,6 +395,38 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                 </Card>
             </div>
 
+            {/* LIVE TELEMETRY Section */}
+            <AnimatePresence>
+                {selectedHive && selectedHive !== 'none' && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 20 }}
+                        className="grid grid-cols-1 md:grid-cols-3 gap-8"
+                    >
+                        {[
+                            { label: 'Ambient Temp', value: latestReading ? `${latestReading.temp_internal}°C` : '--', icon: Thermometer, color: 'text-orange-500', sub: 'Internal Brood' },
+                            { label: 'Live Humidity', value: latestReading ? `${latestReading.humidity_internal}%` : '--', icon: Droplet, color: 'text-blue-500', sub: 'Air Quality' },
+                            { label: 'Current Weight', value: latestReading ? `${latestReading.weight_kg}kg` : '--', icon: Weight, color: 'text-green-600', sub: 'Nectar Flow' }
+                        ].map((stat, i) => (
+                            <Card key={i} className="rounded-[2.5rem] border-none bg-white p-8 shadow-xl shadow-slate-200/30 flex flex-col gap-4 group hover:scale-[1.02] transition-all">
+                                <div className="flex items-center justify-between">
+                                    <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center bg-slate-50 group-hover:bg-white transition-colors", stat.color.replace('text', 'bg').replace('500', '50'))}>
+                                        <stat.icon className={cn("w-6 h-6", stat.color)} />
+                                    </div>
+                                    <Badge variant="outline" className="text-[10px] font-bold text-slate-400 border-slate-100">Live</Badge>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{stat.label}</p>
+                                    <h4 className="text-3xl font-black text-slate-800 tracking-tighter mt-1">{stat.value}</h4>
+                                    <p className="text-[11px] font-bold text-slate-400 mt-1">{stat.sub}</p>
+                                </div>
+                            </Card>
+                        ))}
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* Status & Help Section */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="bg-amber-50/50 border border-amber-100 rounded-2xl p-6 flex items-center gap-5 group hover:bg-amber-50 transition-all">
@@ -375,8 +434,22 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                         <AlertTriangle className="w-5 h-5 text-amber-500 stroke-[2.5]" />
                     </div>
                     <div>
-                        <p className="text-[10px] font-bold text-amber-500 uppercase tracking-wider mb-0.5">Sensor Status</p>
-                        <p className="text-slate-700 font-semibold text-xs leading-tight">No device linked. Connect BeeHub hardware.</p>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Sensor Status</p>
+                        {selectedHive && selectedHive !== 'none' ? (
+                            <div className="flex items-center gap-2">
+                                <div className={cn(
+                                    "w-1.5 h-1.5 rounded-full animate-pulse",
+                                    devices.find(d => d.hive_id === selectedHive) ? "bg-green-500" : "bg-amber-400"
+                                )} />
+                                <p className="text-slate-700 font-semibold text-xs leading-tight">
+                                    {devices.find(d => d.hive_id === selectedHive)
+                                        ? "Device connected & streaming."
+                                        : "No device linked to this unit."}
+                                </p>
+                            </div>
+                        ) : (
+                            <p className="text-slate-400 font-semibold text-xs leading-tight">Select a hive to view telemetry.</p>
+                        )}
                     </div>
                 </div>
 

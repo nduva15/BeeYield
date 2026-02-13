@@ -514,9 +514,11 @@ export interface UserNotificationSettings {
 
 export interface IoTSettings {
     user_id: string;
-    default_temp_high: number;
-    default_temp_low: number;
-    default_weight_drop: number;
+    temp_min_threshold: number;
+    temp_max_threshold: number;
+    weight_drop_alert_kg: number;
+    humidity_min_threshold: number;
+    humidity_max_threshold: number;
     updated_at: string;
 }
 
@@ -720,20 +722,16 @@ export const beeyieldService = {
     },
 
     // ========== HARVESTS ==========
-    async getHarvests(filters?: { hive_id?: string; farmer_id?: string; year?: number }): Promise<Harvest[]> {
+    async getHarvests(filters?: { hive_id?: string; apiary_id?: string; farmer_id?: string; year?: number }): Promise<Harvest[]> {
         try {
-            const harvests = await apiGet<Harvest[]>('/beeyield/harvests', {});
-            if (filters) {
-                return harvests.filter(h => {
-                    if (filters.hive_id && h.hive_id !== filters.hive_id) return false;
-                    if (filters.farmer_id && h.farmer_id !== filters.farmer_id) return false;
-                    if (filters.year) {
-                        const hYear = new Date(h.harvest_date).getFullYear();
-                        if (hYear !== filters.year) return false;
-                    }
-                    return true;
-                });
-            }
+            const params: any = {};
+            if (filters?.hive_id) params.hive_id = filters.hive_id;
+            if (filters?.apiary_id) params.apiary_id = filters.apiary_id;
+            if (filters?.year) params.year = filters.year;
+            // Note: farmer_id check in backend is automatic based on token, 
+            // but we pass it if provided, noting that in the backend it might be redundant.
+
+            const harvests = await apiGet<Harvest[]>('/beeyield/harvests', params);
             return harvests;
         } catch (error) {
             console.error('Error in getHarvests:', error);
@@ -818,7 +816,7 @@ export const beeyieldService = {
 
     async updateTask(id: string, updates: Partial<TaskCreateInput>): Promise<{ data: Task | null; error: any }> {
         try {
-            const data = await apiPut<Task>(`/ beeyield / tasks / ${id} `, updates);
+            const data = await apiPut<Task>(`/beeyield/tasks/${id}`, updates);
             toast.success('Task updated');
             return { data, error: null };
         } catch (error) {
@@ -830,7 +828,7 @@ export const beeyieldService = {
 
     async deleteTask(id: string): Promise<{ error: any }> {
         try {
-            await apiDelete(`/ beeyield / tasks / ${id} `);
+            await apiDelete(`/beeyield/tasks/${id}`);
             toast.success('Task deleted');
             return { error: null };
         } catch (error) {
@@ -976,7 +974,7 @@ export const beeyieldService = {
 
     async updateNotificationConfig(eventType: string, config: NotificationConfigUpdate): Promise<{ data: any; error: any }> {
         try {
-            const data = await apiPut<any>(`/ settings / notifications / ${eventType} `, config);
+            const data = await apiPut<any>(`/settings/notifications/${eventType}`, config);
             toast.success(`Notification updated`);
             return { data, error: null };
         } catch (error) {
@@ -986,15 +984,24 @@ export const beeyieldService = {
         }
     },
 
-    async updateHiveThresholds(hiveId: string, thresholds: { temp_threshold_high?: number; temp_threshold_low?: number; weight_drop_threshold?: number }): Promise<{ data: any; error: any }> {
+    async updateHiveThresholds(hiveId: string, thresholds: { temp_high?: number; temp_low?: number; weight_drop?: number }): Promise<{ data: any; error: any }> {
         try {
-            const data = await apiPut<any>(`/ settings / hives / ${hiveId} `, thresholds);
+            const data = await apiPost<any>(`/settings/hives/${hiveId}/thresholds`, thresholds);
             toast.success(`Hive thresholds updated`);
             return { data, error: null };
         } catch (error) {
             console.error('Error updating hive thresholds:', error);
             toast.error('Failed to update hive thresholds');
             return { data: null, error };
+        }
+    },
+
+    async getHiveSettings(): Promise<any[]> {
+        try {
+            return await apiGet<any[]>('/settings/hives', {});
+        } catch (error) {
+            console.error('Error fetching hive settings:', error);
+            return [];
         }
     },
 
@@ -1108,7 +1115,7 @@ export const beeyieldService = {
 
     async deleteScheduledReport(id: string): Promise<{ error: any }> {
         try {
-            await apiDelete(`/ beeyield / reports / scheduled / ${id} `);
+            await apiDelete(`/beeyield/reports/scheduled/${id}`);
             return { error: null };
         } catch (error) {
             console.error('Error deleting schedule:', error);
@@ -1331,7 +1338,7 @@ export const beeyieldService = {
 
     async unpairUsbDevice(id: string): Promise<{ error: any }> {
         try {
-            await apiDelete(`/ beeyield / hardware / usb - devices / ${id} `);
+            await apiDelete(`/beeyield/hardware/usb-devices/${id}`);
             toast.success('Device unpaired');
             return { error: null };
         } catch (error) {
@@ -1474,7 +1481,7 @@ export const beeyieldService = {
 
     async updateNote(id: string, updates: Partial<NoteCreateInput>): Promise<{ data: Note | null; error: any }> {
         try {
-            const data = await apiPut<Note>(`/ beeyield / notes / ${id} `, updates);
+            const data = await apiPut<Note>(`/beeyield/notes/${id}`, updates);
             toast.success('Note updated');
             return { data, error: null };
         } catch (error) {
@@ -1486,7 +1493,7 @@ export const beeyieldService = {
 
     async deleteNote(id: string): Promise<{ error: any }> {
         try {
-            await apiDelete(`/ beeyield / notes / ${id} `);
+            await apiDelete(`/beeyield/notes/${id}`);
             toast.success('Note deleted');
             return { error: null };
         } catch (error) {

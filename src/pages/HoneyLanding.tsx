@@ -41,26 +41,7 @@ import { submitNewsletterSubscription } from "@/services/contactService";
 import SEO from "@/components/SEO";
 
 // Reusing same product types and data from Shop.tsx for consistency
-interface ProductVariant {
-  id: string;
-  size: string;
-  price_kes: number;
-  stock_quantity: number;
-  is_available: boolean;
-}
-
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  category: 'honey' | 'hardware' | 'merch' | 'education';
-  badge: string | null;
-  images: string[];
-  rating: number;
-  review_count: number;
-  is_active: boolean;
-  variants: ProductVariant[];
-}
+import { type Product, type ProductVariant } from "@/services/shopService";
 
 const initialHoneyProducts: Product[] = [
   {

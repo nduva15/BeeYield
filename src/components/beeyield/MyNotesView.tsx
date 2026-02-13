@@ -56,7 +56,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
     const [description, setDescription] = useState("");
     const [noteDate, setNoteDate] = useState<Date>(new Date());
     const [noteTime, setNoteTime] = useState(format(new Date(), "HH:mm"));
-    const [priority, setPriority] = useState<string>("Medium");
+    const [priority, setPriority] = useState<'low' | 'medium' | 'high'>("medium");
     const [category, setCategory] = useState("General");
     const [isSaving, setIsSaving] = useState(false);
 
@@ -75,10 +75,10 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
     useEffect(() => {
         if (isEditingNote) {
             setTitle(isEditingNote.title || "");
-            setDescription(isEditingNote.content || isEditingNote.description || "");
+            setDescription(isEditingNote.content || "");
             setNoteDate(isEditingNote.note_date ? new Date(isEditingNote.note_date) : new Date());
-            setNoteTime(isEditingNote.note_time?.substring(0, 5) || format(new Date(), "HH:mm"));
-            setPriority(isEditingNote.priority || "Medium");
+            setNoteTime(isEditingNote.created_at ? format(new Date(isEditingNote.created_at), "HH:mm") : format(new Date(), "HH:mm"));
+            setPriority(isEditingNote.priority || "medium");
             setCategory(isEditingNote.category || "General");
             setSelectedPlaceId(isEditingNote.apiary_id || null);
             setSelectedHiveId(isEditingNote.hive_id || null);
@@ -115,9 +115,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
             const payload = {
                 title,
                 content: description,
-                description, // Backward compatibility
                 note_date: format(noteDate, 'yyyy-MM-dd'),
-                note_time: noteTime + ":00",
                 priority,
                 category,
                 apiary_id: selectedPlaceId || undefined,
@@ -185,7 +183,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                     value={title}
                                     onChange={(e) => setTitle(e.target.value)}
                                     className="w-full h-14 bg-slate-50 dark:bg-white/5 border-none rounded-2xl px-6 font-bold text-slate-700 dark:text-white outline-none focus:ring-2 focus:ring-[#1B9157]/10 transition-all"
-                                    placeholder="e.g. Varroa check in Kibwezi Main"
+                                    placeholder="e.g. Varroa check in main apiary"
                                 />
                             </div>
 
@@ -271,7 +269,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                             <div className="space-y-4">
                                 <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('priority_label')}</label>
                                 <div className="grid grid-cols-1 gap-3">
-                                    {['Low', 'Medium', 'High'].map((p) => (
+                                    {['low', 'medium', 'high'].map((p) => (
                                         <button
                                             key={p}
                                             type="button"
@@ -280,18 +278,18 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                                 "flex items-center gap-3 px-5 py-3 rounded-xl border-2 transition-all font-black text-[10px] uppercase tracking-widest outline-none cursor-pointer flex-1",
                                                 priority === p
                                                     ? cn(
-                                                        p === 'Low' && "border-green-200 bg-green-50 text-[#1B9157]",
-                                                        p === 'Medium' && "border-[#F4D03F]/20 bg-[#F4D03F]/5 text-[#7a6820]",
-                                                        p === 'High' && "border-rose-200 bg-rose-50 text-rose-600"
+                                                        p === 'low' && "border-green-200 bg-green-50 text-[#1B9157]",
+                                                        p === 'medium' && "border-[#F4D03F]/20 bg-[#F4D03F]/5 text-[#7a6820]",
+                                                        p === 'high' && "border-rose-200 bg-rose-50 text-rose-600"
                                                     )
                                                     : "border-slate-50 dark:border-white/5 bg-slate-50 dark:bg-white/5 text-slate-400 hover:border-slate-200"
                                             )}
                                         >
                                             <div className={cn(
                                                 "w-2 h-2 rounded-full",
-                                                p === 'Low' && "bg-[#1B9157]",
-                                                p === 'Medium' && "bg-[#F4D03F]",
-                                                p === 'High' && "bg-rose-500"
+                                                p === 'low' && "bg-[#1B9157]",
+                                                p === 'medium' && "bg-[#F4D03F]",
+                                                p === 'high' && "bg-rose-500"
                                             )} />
                                             {p}
                                         </button>
@@ -399,7 +397,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                 className="absolute top-full left-0 right-0 mt-3 bg-white dark:bg-[#111111] border border-gray-100 dark:border-white/5 rounded-[2rem] shadow-2xl z-50 overflow-hidden"
                             >
                                 <div className="p-3 max-h-[300px] overflow-y-auto custom-scrollbar">
-                                    {apiaries.filter(a => a.name.includes('Kibwezi')).map((place) => (
+                                    {apiaries.map((place) => (
                                         <button
                                             key={place.id}
                                             onClick={() => { setSelectedPlaceId(place.id); setIsPlacesOpen(false); }}
@@ -487,8 +485,8 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                             >
                                 <div className="bg-white dark:bg-[#111111] p-8 rounded-[3rem] border border-gray-100 dark:border-white/5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full relative overflow-hidden">
                                     <div className={cn("absolute top-0 right-0 w-3 h-full",
-                                        note.priority === 'High' ? "bg-rose-500" :
-                                            note.priority === 'Medium' ? "bg-[#F4D03F]" : "bg-[#1B9157]"
+                                        note.priority === 'high' ? "bg-rose-500" :
+                                            note.priority === 'medium' ? "bg-[#F4D03F]" : "bg-[#1B9157]"
                                     )} />
 
                                     <div className="flex items-center justify-between mb-6">
@@ -510,7 +508,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
                                     </h4>
 
                                     <p className="text-slate-500 dark:text-slate-400 font-bold text-sm leading-relaxed line-clamp-4 flex-1">
-                                        {note.content || note.description}
+                                        {note.content}
                                     </p>
 
                                     <div className="mt-8 pt-6 border-t border-slate-50 dark:border-white/5 flex flex-wrap gap-4">

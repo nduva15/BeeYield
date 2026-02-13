@@ -20,8 +20,15 @@ async def get_sensor_readings(
     if sensor_type:
         filters["sensor_type"] = sensor_type
         
-    # Note: In a real system we would filter by timestamp here too
-    return await db_select("sensor_readings", filters=filters, limit=500, order_by="timestamp", ascending=False, token=token)
+    # Note: Using 'recorded_at' as the actual DB column name
+    readings = await db_select("sensor_readings", filters=filters, limit=500, order_by="recorded_at", ascending=False, token=token)
+    
+    # Map 'recorded_at' to 'timestamp' for frontend compatibility
+    for r in readings:
+        if "recorded_at" in r and "timestamp" not in r:
+            r["timestamp"] = r["recorded_at"]
+            
+    return readings
 
 async def get_client_hives(user_id: str, token: Optional[str] = None) -> List[Dict[str, Any]]:
     return await db_select("client_hives", filters={"user_id": user_id}, order_by="created_at", token=token)

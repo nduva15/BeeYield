@@ -105,12 +105,12 @@ const PollinationServices = () => {
 
                             <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center lg:justify-start animate-fade-in-up" style={{ animationDelay: "300ms" }}>
                                 <Link to="/pollination-request" className="w-full sm:w-auto">
-                                    <Button size="md" className="w-full sm:w-auto bg-[#FCD34D] text-black hover:bg-[#F5C518] text-sm sm:text-base px-4 sm:px-5 py-3 sm:py-4 font-bold shadow-lg rounded-xl sm:rounded-2xl border-none transition-transform active:scale-95">
+                                    <Button size="default" className="w-full sm:w-auto bg-[#FCD34D] text-black hover:bg-[#F5C518] text-sm sm:text-base px-4 sm:px-5 py-3 sm:py-4 font-bold shadow-lg rounded-xl sm:rounded-2xl border-none transition-transform active:scale-95">
                                         Get A FREE Pollination Consultation
                                     </Button>
                                 </Link>
                                 <Link to="/pollination-solutions" className="w-full sm:w-auto">
-                                    <Button size="md" variant="outline" className="w-full sm:w-auto border-2 border-neutral-300 text-neutral-900 hover:bg-white/50 text-sm sm:text-base px-4 sm:px-5 py-3 sm:py-4 bg-transparent font-black rounded-xl sm:rounded-2xl transition-transform active:scale-95">
+                                    <Button size="default" variant="outline" className="w-full sm:w-auto border-2 border-neutral-300 text-neutral-900 hover:bg-white/50 text-sm sm:text-base px-4 sm:px-5 py-3 sm:py-4 bg-transparent font-black rounded-xl sm:rounded-2xl transition-transform active:scale-95">
                                         See How It Works
                                     </Button>
                                 </Link>
@@ -469,7 +469,7 @@ const PollinationServices = () => {
                         <h2 className="text-4xl md:text-6xl font-black tracking-tighter">Crops We <span className="text-amber-600">Pollinate</span></h2>
                         <div className="pt-8">
                             <Link to="/contact">
-                                <Button size="md" className="bg-[#FCD34D] text-black hover:bg-[#F5C518] font-bold px-4 py-3 rounded-2xl shadow-xl border-none">
+                                <Button size="default" className="bg-[#FCD34D] text-black hover:bg-[#F5C518] font-bold px-4 py-3 rounded-2xl shadow-xl border-none">
                                     Book a Pollination Consultation
                                 </Button>
                             </Link>
@@ -607,7 +607,7 @@ const PollinationServices = () => {
                     </p>
                     <div className="flex flex-wrap justify-center gap-6">
                         <Link to="/contact">
-                            <Button size="md" className="bg-green-700 text-white hover:bg-green-800 text-xl font-black h-16 px-8 rounded-[2rem] shadow-2xl">
+                            <Button size="default" className="bg-green-700 text-white hover:bg-green-800 text-xl font-black h-16 px-8 rounded-[2rem] shadow-2xl">
                                 Get Your Custom Plan
                             </Button>
                         </Link>

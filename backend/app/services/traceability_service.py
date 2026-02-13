@@ -225,6 +225,18 @@ def get_all_hives(limit: int = 100) -> list[dict[str, Any]]:
     return db_select("hives", columns="*,apiary:apiaries(*),farmer:farmers(*)", order_by="created_at", ascending=False, limit=limit)
 
 
+def get_all_batches(limit: int = 100) -> list[dict[str, Any]]:
+    """Get all honey batches"""
+    # Try fetching from honey_batches first
+    data = db_select("honey_batches", order_by="packaged_date", ascending=False, limit=limit)
+    
+    if not data:
+        # Fallback to older 'batches' table
+        data = db_select("batches", order_by="packaged_date", ascending=False, limit=limit)
+        
+    return data
+
+
 
 def _build_db_journey(harvest: dict) -> schemas.TraceResponse:
     """Construct trace response from immutable DB record (Smart Batching)"""
@@ -382,9 +394,20 @@ def get_trace_journey(batch_code: str) -> Optional[schemas.TraceResponse]:
     """
     # 1. Smart Batching (DB Lookup)
     try:
+        # Check harvests table (legacy/detailed records)
         harvests = db_select("harvests", filters={"batch_id": batch_code})
         if harvests and len(harvests) > 0:
             return _build_db_journey(harvests[0])
+            
+        # Check batches/honey_batches table (synced blockchain records)
+        batches = db_select("honey_batches", filters={"batch_code": batch_code})
+        if not batches:
+            batches = db_select("batches", filters={"batch_code": batch_code})
+            
+        if batches and len(batches) > 0:
+            # We found a batch record, but it might not have the full harvest link in DB
+            # The blockchain fallback is better for reconstructing full history if DB is flat
+            pass 
     except Exception as e:
         print(f"Smart Batch lookup failed: {e}")
 
@@ -618,7 +641,7 @@ def get_trace_journey(batch_code: str) -> Optional[schemas.TraceResponse]:
         season_total = "943"
         harvest_date = batch_data.get('harvest_date') or ""
         if "2026" in batch_code or "2026" in harvest_date:
-            season_total = "60"
+            season_total = "60.0"
         elif "2025" in batch_code or "2025" in harvest_date:
             season_total = "301.10"
         elif "2024" in batch_code or "2024" in harvest_date:
@@ -644,6 +667,7 @@ def get_trace_journey(batch_code: str) -> Optional[schemas.TraceResponse]:
             impact_stats={
                 "acres_pollinated": f"{real_acres} Acres",
                 "hive_count": f"{real_hive_count} Hives",
+                "harvested_hives": batch_data.get('harvested_hives') or ("30" if "2026" in batch_code else "184"),
                 "total_honey_kg": season_total,
                 "all_time_total": "943",
                 "trees_planted": batch_data.get('trees_planted') or "2,500+",

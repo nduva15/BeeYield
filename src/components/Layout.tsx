@@ -17,22 +17,18 @@ const Layout = ({ children }: LayoutProps) => {
   const pageVariants = {
     initial: {
       opacity: 0,
-      y: 10,
     },
     enter: {
       opacity: 1,
-      y: 0,
       transition: {
-        duration: 0.4,
-        ease: [0.61, 1, 0.88, 1] as any,
+        duration: 0.2,
+        ease: "easeOut" as any,
       },
     },
     exit: {
       opacity: 0,
-      y: -10,
       transition: {
-        duration: 0.3,
-        ease: [0.61, 1, 0.88, 1] as any,
+        duration: 0.1,
       },
     },
   };
@@ -41,7 +37,7 @@ const Layout = ({ children }: LayoutProps) => {
     return (
       <>
         <CartDrawer />
-        <AnimatePresence mode="wait">
+        <AnimatePresence>
           <motion.div
             key={location.pathname}
             initial="initial"
@@ -61,7 +57,7 @@ const Layout = ({ children }: LayoutProps) => {
       <CartDrawer />
       <Header />
       <main className="flex-1 overflow-x-hidden">
-        <AnimatePresence mode="wait">
+        <AnimatePresence>
           <motion.div
             key={location.pathname}
             initial="initial"

@@ -88,6 +88,12 @@ def create_batch(batch_in: dict[str, Any]):
     return traceability_service.create_batch(batch_in)
 
 
+@router.get("/batches", response_model=list[dict[str, Any]])
+def get_batches(limit: int = 100):
+    """Get all honey batches."""
+    return traceability_service.get_all_batches(limit=limit)
+
+
 # ==================== POLYGON BLOCKCHAIN ENDPOINTS ====================
 
 @router.get("/polygon/status", response_model=dict[str, Any])
