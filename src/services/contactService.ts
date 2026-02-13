@@ -1,7 +1,7 @@
 /**
  * Contact Service - Connects to Secure Backend API
  */
-import { apiPost } from "./api";
+import { apiPost, apiGet, apiPatch } from "./api";
 
 export interface ContactSubmission {
     first_name: string;
@@ -41,6 +41,25 @@ export interface NewsletterSubscription {
     source?: string;
 }
 
+/** Dedicated Contact Message (PRD Engagement Module) */
+export interface ContactMessage {
+    full_name: string;
+    email: string;
+    subject?: string;
+    message: string;
+}
+
+/** Contact message row returned from DB */
+export interface ContactMessageRow {
+    id: string;
+    full_name: string;
+    email: string;
+    subject: string | null;
+    message: string;
+    status: "new" | "read" | "replied" | "archived";
+    created_at: string;
+}
+
 export const submitContactForm = async (data: ContactSubmission) => {
     try {
         return await apiPost<{ status: string; message: string }>("/contact/submit", data);
@@ -64,6 +83,40 @@ export const submitNewsletterSubscription = async (data: NewsletterSubscription)
         return await apiPost<{ status: string; message: string }>("/contact/newsletter", data);
     } catch (error) {
         console.error("Error subscribing to newsletter:", error);
+        throw error;
+    }
+};
+
+/** Submit a dedicated contact message (public) */
+export const submitContactMessage = async (data: ContactMessage) => {
+    try {
+        return await apiPost<{ status: string; message: string }>("/contact/message", data);
+    } catch (error) {
+        console.error("Error submitting contact message:", error);
+        throw error;
+    }
+};
+
+/** Get all contact messages (admin only) */
+export const getContactMessages = async (status?: string, limit = 50) => {
+    try {
+        const params = new URLSearchParams();
+        if (status) params.append("status", status);
+        params.append("limit", String(limit));
+        const query = params.toString();
+        return await apiGet<ContactMessageRow[]>(`/contact/messages${query ? `?${query}` : ""}`);
+    } catch (error) {
+        console.error("Error fetching contact messages:", error);
+        throw error;
+    }
+};
+
+/** Update a contact message status (admin only) */
+export const updateContactMessageStatus = async (messageId: string, status: "new" | "read" | "replied" | "archived") => {
+    try {
+        return await apiPatch<{ status: string; message: string }>(`/contact/messages/${messageId}/status`, { status });
+    } catch (error) {
+        console.error("Error updating message status:", error);
         throw error;
     }
 };

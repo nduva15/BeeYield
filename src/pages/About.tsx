@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card";
+﻿import { Card, CardContent } from "@/components/ui/card";
 import { Users, Target, ArrowRight, Sprout, Globe, ShieldCheck, Heart, History, TrendingUp, Leaf } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ const About = () => {
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
         <div className="container relative mx-auto px-4 text-center">
           <Badge className="mb-6 bg-amber-100 text-amber-800 hover:bg-amber-200 border-amber-200 px-4 py-1.5 text-sm font-medium rounded-full transition-colors">
-            Est. 2020 • Kibwezi, Kenya
+            Est. 2020 â€¢ Kibwezi, Kenya
           </Badge>
           Cultivating the <span className="text-primary">Future</span> of Food
           <p className="mx-auto mb-10 max-w-3xl text-xl text-muted-foreground leading-relaxed">
@@ -93,7 +93,7 @@ const About = () => {
                   <Target className="h-6 w-6 text-primary" />
                 </div>
                 <div className="sm:w-1/2 order-2 sm:order-2">
-                  <h3 className="text-2xl font-bold text-primary mb-2">Today: Smart Technology</h3>
+                  <h3 className="text-2xl font-bold text-primary mb-2">Today: Intelligent Technology</h3>
                   <p className="text-muted-foreground">Evolving into a Precision Pollination leader using advanced technology and data to secure the future of food globally.</p>
                 </div>
               </div>
@@ -119,7 +119,7 @@ const About = () => {
                 </div>
                 <h3 className="mb-3 text-2xl font-bold">Meet The Team</h3>
                 <p className="text-muted-foreground mb-6 line-clamp-3">
-                  Get to know the founding family—three Strathmore graduates combining tech, business, and beekeeping.
+                  Get to know the founding familyâ€”three Strathmore graduates combining tech, business, and beekeeping.
                 </p>
                 <Link to="/team" className="inline-flex items-center text-primary font-semibold group-hover:translate-x-1 transition-transform">
                   Meet the Founders <ArrowRight className="ml-2 h-4 w-4" />

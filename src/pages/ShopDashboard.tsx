@@ -55,7 +55,7 @@ import { adminService } from '@/services/adminService';
 // Toast utility import (adjust if needed)
 import { toast } from '@/hooks/use-toast';
 
-const BuyerDashboard = () => {
+const ShopDashboard = () => {
     const { user, signOut, loading: authLoading, session } = useAuth();
     const navigate = useNavigate();
     const [authMode, setAuthMode] = useState<'login' | 'register' | 'forgot-password'>('login');
@@ -68,54 +68,54 @@ const BuyerDashboard = () => {
 
 
 
-type AuthMode = 'login' | 'register' | 'forgot-password';
+    type AuthMode = 'login' | 'register' | 'forgot-password';
 
-interface Order {
-    id: string;
-    order_number?: string;
-    status: string;
-    total_amount: number;
-    payment_method: string;
-    created_at: string;
-    shipping_address: {
-        first_name?: string;
-        last_name?: string;
-        address?: string;
-        city?: string;
-        county?: string;
-        phone?: string;
-    };
-    items?: Record<string, unknown>[];
-}
+    interface Order {
+        id: string;
+        order_number?: string;
+        status: string;
+        total_amount: number;
+        payment_method: string;
+        created_at: string;
+        shipping_address: {
+            first_name?: string;
+            last_name?: string;
+            address?: string;
+            city?: string;
+            county?: string;
+            phone?: string;
+        };
+        items?: Record<string, unknown>[];
+    }
 
-interface Address {
-    id: string;
-    name: string;
-    street: string;
-    city: string;
-    county: string;
-    phone: string;
-    email?: string;
-    apartment?: string;
-    building?: string;
-    floor?: string;
-    postal_code?: string;
-    is_default: boolean;
-}
+    interface Address {
+        id: string;
+        name: string;
+        street: string;
+        city: string;
+        county: string;
+        phone: string;
+        email?: string;
+        apartment?: string;
+        building?: string;
+        floor?: string;
+        postal_code?: string;
+        is_default: boolean;
+    }
 
-interface PaymentMethod {
-    id: string;
-    type: 'card' | 'mpesa';
-    last4?: string;
-    brand?: string;
-    expiry?: string;
-    isDefault?: boolean;
-    is_default?: boolean;
-    card_holder_name?: string;
-    provider?: string;
-    expiry_month?: number;
-    expiry_year?: number;
-}
+    interface PaymentMethod {
+        id: string;
+        type: 'card' | 'mpesa';
+        last4?: string;
+        brand?: string;
+        expiry?: string;
+        isDefault?: boolean;
+        is_default?: boolean;
+        card_holder_name?: string;
+        provider?: string;
+        expiry_month?: number;
+        expiry_year?: number;
+    }
     const handleLogout = async () => {
         await signOut();
         navigate('/shop');
@@ -811,17 +811,17 @@ interface PaymentMethod {
                                     <div className="absolute top-6 left-6 w-10 h-8 rounded bg-gradient-to-br from-amber-300 to-amber-500 opacity-80" />
                                     <CardContent className="p-6 pt-16 relative">
                                         <div className="absolute top-4 right-4">
-                                            <Button 
-                                                variant="ghost" 
-                                                size="icon" 
-                                                className="text-white/50 hover:text-white hover:bg-white/10" 
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="text-white/50 hover:text-white hover:bg-white/10"
                                                 onClick={() => handleDeletePaymentMethod(pm.id)}
                                             >
                                                 <XCircle className="h-5 w-5" />
                                             </Button>
                                         </div>
                                         <div className="mb-6">
-                                            <p 
+                                            <p
                                                 className="text-2xl font-mono tracking-[0.3em]"
                                                 aria-label={`Card ending in ${pm.last4}`}
                                             >
@@ -1161,6 +1161,8 @@ interface PaymentMethod {
                                                 <div className="md:col-span-2 space-y-2">
                                                     <Label>Full Name / Recipient</Label>
                                                     <Input
+                                                        id="checkout-full-name"
+                                                        name="fullName"
                                                         value={shippingDetails.fullName}
                                                         onChange={e => setShippingDetails({ ...shippingDetails, fullName: e.target.value })}
                                                         placeholder="Timothy Nduva"
@@ -1169,6 +1171,8 @@ interface PaymentMethod {
                                                 <div className="space-y-2">
                                                     <Label>Contact Phone</Label>
                                                     <Input
+                                                        id="checkout-phone"
+                                                        name="phone"
                                                         value={shippingDetails.phone}
                                                         onChange={e => setShippingDetails({ ...shippingDetails, phone: e.target.value })}
                                                         placeholder="+254..."
@@ -1177,6 +1181,8 @@ interface PaymentMethod {
                                                 <div className="space-y-2">
                                                     <Label>Contact Email</Label>
                                                     <Input
+                                                        id="checkout-email"
+                                                        name="email"
                                                         value={shippingDetails.email}
                                                         onChange={e => setShippingDetails({ ...shippingDetails, email: e.target.value })}
                                                         placeholder="test@example.com"
@@ -1185,6 +1191,8 @@ interface PaymentMethod {
                                                 <div className="md:col-span-2 space-y-2">
                                                     <Label>Street & Number</Label>
                                                     <Input
+                                                        id="checkout-street"
+                                                        name="street"
                                                         value={shippingDetails.street}
                                                         onChange={e => setShippingDetails({ ...shippingDetails, street: e.target.value })}
                                                         placeholder="123 Beevior Road"
@@ -1193,6 +1201,8 @@ interface PaymentMethod {
                                                 <div className="space-y-2">
                                                     <Label>Building / Estate</Label>
                                                     <Input
+                                                        id="checkout-building"
+                                                        name="building"
                                                         value={shippingDetails.building}
                                                         onChange={e => setShippingDetails({ ...shippingDetails, building: e.target.value })}
                                                         placeholder="Honey Heights"
@@ -1202,11 +1212,15 @@ interface PaymentMethod {
                                                     <Label>Apt / Suite / Floor</Label>
                                                     <div className="flex gap-2">
                                                         <Input
+                                                            id="checkout-apartment"
+                                                            name="apartment"
                                                             value={shippingDetails.apartment}
                                                             onChange={e => setShippingDetails({ ...shippingDetails, apartment: e.target.value })}
                                                             placeholder="Apt 2B"
                                                         />
                                                         <Input
+                                                            id="checkout-floor"
+                                                            name="floor"
                                                             value={shippingDetails.floor}
                                                             onChange={e => setShippingDetails({ ...shippingDetails, floor: e.target.value })}
                                                             placeholder="4th"
@@ -1217,6 +1231,8 @@ interface PaymentMethod {
                                                 <div className="space-y-2">
                                                     <Label>City</Label>
                                                     <Input
+                                                        id="checkout-city"
+                                                        name="city"
                                                         value={shippingDetails.city}
                                                         onChange={e => setShippingDetails({ ...shippingDetails, city: e.target.value })}
                                                         placeholder="Nairobi"
@@ -1225,6 +1241,8 @@ interface PaymentMethod {
                                                 <div className="space-y-2">
                                                     <Label>County</Label>
                                                     <Input
+                                                        id="checkout-county"
+                                                        name="county"
                                                         value={shippingDetails.county}
                                                         onChange={e => setShippingDetails({ ...shippingDetails, county: e.target.value })}
                                                         placeholder="Nairobi"
@@ -1421,4 +1439,4 @@ interface PaymentMethod {
 };
 
 
-export default BuyerDashboard;
+export default ShopDashboard;

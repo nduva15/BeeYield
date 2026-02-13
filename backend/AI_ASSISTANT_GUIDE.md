@@ -38,7 +38,7 @@ The BeeYield AI Assistant V2 is a comprehensive multi-modal intelligence system 
 **Response:**
 ```json
 {
-  "response": "Your honey is 100% authentic Acacia honey from our Kibwezi Main Apiary...",
+  "response": "Your honey is 100% authentic Acacia honey from our Kibwezi Main Apiary. It was harvested by our partner beekeeper and sealed on HoneyChain to guarantee provenance and integrity.\n\nDetailed provenance: Batch KIB-ACACIAL-26 was collected on 2025-11-02 from Apiary Kibwezi North, processed at our certified facility, and the ledger entry includes harvest metadata and handler signatures. You can verify the batch by scanning the QR code or querying HoneyChain for the batch code.\n\nQuality & handling: The honey was stored under controlled conditions and tested for moisture and purity; jars are labeled with lot and date codes so you can trace each bottle back to the hive.",
   "sources": [{"type": "blockchain", "name": "HoneyChain Ledger"}]
 }
 ```

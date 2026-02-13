@@ -343,8 +343,8 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                         <div className="space-y-6">
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Select Apiary</Label>
-                                <Select value={selectedPlace} onValueChange={setSelectedPlace}>
-                                    <SelectTrigger className="h-14 rounded-2xl bg-slate-50 border-slate-100 font-bold">
+                                <Select name="apiary_filter" value={selectedPlace} onValueChange={setSelectedPlace}>
+                                    <SelectTrigger id="hives-apiary-filter" className="h-14 rounded-2xl bg-slate-50 border-slate-100 font-bold">
                                         <SelectValue placeholder="All Territories" />
                                     </SelectTrigger>
                                     <SelectContent className="rounded-2xl">
@@ -373,7 +373,7 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                 <div className="flex items-center justify-between mb-8 px-4">
                     <div className="flex items-center gap-3">
                         <div className="w-2 h-8 bg-green-600 rounded-full" />
-                        <h2 className="text-2xl font-bold text-slate-800 tracking-tight uppercase">Hive List</h2>
+                        <h2 className="text-2xl font-bold text-slate-800 tracking-tight uppercase">Hive List ({filteredHives.length})</h2>
                     </div>
                     <Badge className="bg-slate-100 text-slate-500 border-none font-bold px-4 py-1.5 rounded-full uppercase tracking-wider text-[9px]">
                         {filteredHives.length} Hives
@@ -560,6 +560,8 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                     <div className="space-y-2">
                                         <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Operation Description</Label>
                                         <Input
+                                            id="inspection-title"
+                                            name="inspection-title"
                                             value={inspectionTaskForm.title}
                                             onChange={(e) => setInspectionTaskForm({ ...inspectionTaskForm, title: e.target.value })}
                                             className="h-12 rounded-xl bg-slate-50 dark:bg-white/[0.02] border-slate-100 dark:border-white/5 font-bold"
@@ -568,6 +570,8 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                     <div className="space-y-2">
                                         <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Scheduled Date</Label>
                                         <Input
+                                            id="inspection-date"
+                                            name="inspection-date"
                                             type="date"
                                             value={inspectionTaskForm.due_date}
                                             onChange={(e) => setInspectionTaskForm({ ...inspectionTaskForm, due_date: e.target.value })}
@@ -627,6 +631,8 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Colony Observations</Label>
                                     <textarea
+                                        id="hive-observations"
+                                        name="hive-observations"
                                         value={hiveNotes}
                                         onChange={(e) => setHiveNotes(e.target.value)}
                                         className="w-full min-h-[200px] bg-slate-50 border-none rounded-3xl p-6 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-green-500/10 transition-all text-sm resize-none"

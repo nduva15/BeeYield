@@ -111,10 +111,10 @@ def get_impact_stats():
         }
     
     return {
-        "total_honey_kg": "50,000+",
+        "total_honey_kg": "943",
         "hive_count": "184",
-        "beekeepers": "500+",
-        "farmers_served": "1,200+",
+        "beekeepers": "3",
+        "farmers_served": "15",
         "acres_pollinated": "5"
     }
 

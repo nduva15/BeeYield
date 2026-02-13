@@ -64,13 +64,13 @@ const Header = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="center" className="w-72 flex flex-col p-4 bg-primary border-none rounded-2xl shadow-xl z-[100]">
               <DropdownMenuItem asChild className="focus:bg-primary/80 focus:text-primary-foreground">
-                <Link to="/precision-pollination" className="w-full cursor-pointer px-4 py-3 text-base font-medium text-primary-foreground hover:bg-primary/80 rounded-lg">
-                  In-Hive Precision Pollination
+                <Link to="/in-land-pollination" className="w-full cursor-pointer px-4 py-3 text-base font-medium text-primary-foreground hover:bg-primary/80 rounded-lg">
+                  In Land Pollination
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="focus:bg-primary/80 focus:text-primary-foreground">
-                <Link to="/in-land-pollination" className="w-full cursor-pointer px-4 py-3 text-base font-medium text-primary-foreground hover:bg-primary/80 rounded-lg">
-                  In-Land Pollination Insights
+                <Link to="/precision-pollination" className="w-full cursor-pointer px-4 py-3 text-base font-medium text-primary-foreground hover:bg-primary/80 rounded-lg">
+                  In Hive Pollination
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="focus:bg-primary/80 focus:text-primary-foreground">
@@ -176,20 +176,20 @@ const Header = () => {
                 </span>
                 <div className="pl-4 flex flex-col space-y-1">
                   <Link
-                    to="/precision-pollination"
-                    onClick={() => setIsMenuOpen(false)}
-                    className={`text-sm font-medium hover:bg-primary-foreground/10 rounded-lg px-3 py-2 transition-colors ${isActive("/precision-pollination") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground/90"
-                      }`}
-                  >
-                    Hive Monitoring
-                  </Link>
-                  <Link
                     to="/in-land-pollination"
                     onClick={() => setIsMenuOpen(false)}
                     className={`text-sm font-medium hover:bg-primary-foreground/10 rounded-lg px-3 py-2 transition-colors ${isActive("/in-land-pollination") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground/90"
                       }`}
                   >
-                    Land Analysis
+                    In Land Pollination
+                  </Link>
+                  <Link
+                    to="/precision-pollination"
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`text-sm font-medium hover:bg-primary-foreground/10 rounded-lg px-3 py-2 transition-colors ${isActive("/precision-pollination") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground/90"
+                      }`}
+                  >
+                    In Hive Pollination
                   </Link>
                   <Link
                     to="/diseases"

@@ -95,10 +95,11 @@ async def get_async_client() -> httpx.AsyncClient:
         )
     return _async_http_client
 
-def get_admin_headers() -> Dict[str, str]:
+def get_admin_headers(token: Optional[str] = None) -> Dict[str, str]:
+    auth_val = token or settings.SUPABASE_SERVICE_ROLE_KEY or settings.SUPABASE_KEY
     return {
         "apikey": settings.SUPABASE_SERVICE_ROLE_KEY or settings.SUPABASE_KEY,
-        "Authorization": f"Bearer {settings.SUPABASE_SERVICE_ROLE_KEY or settings.SUPABASE_KEY}",
+        "Authorization": f"Bearer {auth_val}",
         "Content-Type": "application/json",
         "Prefer": "return=representation"
     }
@@ -123,11 +124,11 @@ def _serialize_data(data: dict) -> dict:
     """Ensure all values in data dict are JSON-serializable"""
     return {k: _serialize_value(v) for k, v in data.items()}
 
-async def db_insert(table: str, data: dict[str, Any]) -> dict[str, Any]:
+async def db_insert(table: str, data: dict[str, Any], token: Optional[str] = None) -> dict[str, Any]:
     """Insert a record via REST API"""
     try:
         client = await get_async_client()
-        headers = get_admin_headers()
+        headers = get_admin_headers(token)
         clean_data = _serialize_data(data)
         response = await client.post(f"/{table}", json=clean_data, headers=headers)
         
@@ -144,7 +145,8 @@ async def db_select(
     filters: Optional[dict[str, Any]] = None,
     limit: int = 100,
     order_by: Optional[str] = None,
-    ascending: bool = True
+    ascending: bool = True,
+    token: Optional[str] = None
 ) -> list[dict[str, Any]]:
     """Select records via REST API"""
     try:
@@ -167,7 +169,7 @@ async def db_select(
         if order_by:
             params["order"] = f"{order_by}.{'asc' if ascending else 'desc'}"
             
-        response = await client.get(f"/{table}", params=params, headers=get_admin_headers())
+        response = await client.get(f"/{table}", params=params, headers=get_admin_headers(token))
         
         if response.status_code == 200:
             return response.json()
@@ -178,7 +180,7 @@ async def db_select(
         print(f"DB Select Exception for {table}: {e}")
         return []
 
-async def db_update(table: str, data: dict[str, Any], filters: dict[str, Any]) -> dict[str, Any]:
+async def db_update(table: str, data: dict[str, Any], filters: dict[str, Any], token: Optional[str] = None) -> dict[str, Any]:
     """Update records via REST API"""
     try:
         client = await get_async_client()
@@ -187,7 +189,7 @@ async def db_update(table: str, data: dict[str, Any], filters: dict[str, Any]) -
             params[key] = f"eq.{value}"
             
         clean_data = _serialize_data(data)
-        response = await client.patch(f"/{table}", json=clean_data, params=params, headers=get_admin_headers())
+        response = await client.patch(f"/{table}", json=clean_data, params=params, headers=get_admin_headers(token))
         
         if response.status_code in [200, 204]:
             return {"success": True, "data": response.json() if response.text else []}
@@ -196,7 +198,7 @@ async def db_update(table: str, data: dict[str, Any], filters: dict[str, Any]) -
     except Exception as e:
         return {"success": False, "error": str(e)}
 
-async def db_delete(table: str, filters: dict[str, Any]) -> dict[str, Any]:
+async def db_delete(table: str, filters: dict[str, Any], token: Optional[str] = None) -> dict[str, Any]:
     """Delete records via REST API"""
     try:
         client = await get_async_client()
@@ -204,7 +206,7 @@ async def db_delete(table: str, filters: dict[str, Any]) -> dict[str, Any]:
         for key, value in filters.items():
             params[key] = f"eq.{value}"
             
-        response = await client.delete(f"/{table}", params=params, headers=get_admin_headers())
+        response = await client.delete(f"/{table}", params=params, headers=get_admin_headers(token))
         
         if response.status_code in [200, 204]:
             return {"success": True}
@@ -213,11 +215,11 @@ async def db_delete(table: str, filters: dict[str, Any]) -> dict[str, Any]:
     except Exception as e:
         return {"success": False, "error": str(e)}
 
-async def db_upsert(table: str, data: dict[str, Any], on_conflict: str = "id") -> dict[str, Any]:
+async def db_upsert(table: str, data: dict[str, Any], on_conflict: str = "id", token: Optional[str] = None) -> dict[str, Any]:
     """Upsert a record via REST API (uses Resolution header)"""
     try:
         client = await get_async_client()
-        headers = get_admin_headers()
+        headers = get_admin_headers(token)
         headers["Prefer"] = "resolution=merge-duplicates,return=representation"
         
         clean_data = _serialize_data(data)
@@ -230,7 +232,40 @@ async def db_upsert(table: str, data: dict[str, Any], on_conflict: str = "id") -
     except Exception as e:
         return {"success": False, "error": str(e)}
 
-async def db_get_by_id(table: str, id: str, id_column: str = "id") -> Optional[dict[str, Any]]:
+async def db_get_by_id(table: str, id: str, id_column: str = "id", token: Optional[str] = None) -> Optional[dict[str, Any]]:
     """Get a single record by ID"""
-    results = await db_select(table, filters={id_column: id}, limit=1)
+    results = await db_select(table, filters={id_column: id}, limit=1, token=token)
     return results[0] if results else None
+
+
+# Compatibility shim: some scripts import `get_client` or call DB helpers synchronously.
+def get_client():
+    """Return the lazy Supabase SDK client (or None). Kept for compatibility with older imports."""
+    return get_supabase()
+
+
+def _sync_wrapper(async_func):
+    """Wrap an async function so that calling it from sync code runs it, but
+    calling it from async code returns the coroutine as usual.
+
+    Usage: db_insert = _sync_wrapper(db_insert)
+    """
+    def wrapper(*args, **kwargs):
+        try:
+            # If there is a running loop, return the coroutine (caller should await)
+            asyncio.get_running_loop()
+            return async_func(*args, **kwargs)
+        except RuntimeError:
+            # No running loop: run the coroutine to completion synchronously
+            return asyncio.run(async_func(*args, **kwargs))
+
+    return wrapper
+
+
+# Apply sync-wrapper to common helpers so legacy sync scripts work.
+db_insert = _sync_wrapper(db_insert)
+db_select = _sync_wrapper(db_select)
+db_update = _sync_wrapper(db_update)
+db_delete = _sync_wrapper(db_delete)
+db_upsert = _sync_wrapper(db_upsert)
+db_get_by_id = _sync_wrapper(db_get_by_id)

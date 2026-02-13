@@ -96,6 +96,7 @@ class HarvestCreate(BaseModel):
     moisture_content_percent: Optional[float] = None
     batch_code: Optional[str] = None
     honey_type: Optional[str] = None
+    florage_type: Optional[str] = None
     color_grade: Optional[str] = None
     is_verified: bool = True
 
@@ -138,6 +139,10 @@ class TraceResponse(BaseModel):
     
     # Sensor Snapshot (at harvest time or realtime)
     sensor_snapshot: Optional[dict[str, Any]] = None
+    
+    # Health Snapshot
+    health_snapshot: Optional[dict[str, Any]] = None
+    florage_type: Optional[str] = None
     
     # Extra Details
     extra_metadata: Optional[dict[str, Any]] = None

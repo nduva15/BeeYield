@@ -413,8 +413,8 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2 bg-white dark:bg-[#111111] rounded-lg border border-gray-100 dark:border-white/5 px-3 py-2">
                         <span className="text-sm font-bold text-gray-400 uppercase tracking-wider">Contract:</span>
-                        <Select value={String(hiveCount)} onValueChange={(v) => setHiveCount(Number(v))}>
-                            <SelectTrigger className="h-6 w-16 rounded border-none bg-slate-50 dark:bg-white/5 font-bold text-sm p-1">
+                        <Select name="hive_count_required" value={String(hiveCount)} onValueChange={(v) => setHiveCount(Number(v))}>
+                            <SelectTrigger id="pollination-hives" className="h-6 w-16 rounded border-none bg-slate-50 dark:bg-white/5 font-bold text-sm p-1">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent className="rounded-lg">
@@ -601,8 +601,8 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                         <div className="space-y-5">
                             <div className="space-y-1.5">
                                 <Label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{t('crop_select')}</Label>
-                                <Select value={selectedCrop} onValueChange={setSelectedCrop}>
-                                    <SelectTrigger className="h-10 rounded-lg bg-slate-50 dark:bg-white/5 border-gray-200 dark:border-white/10 font-bold text-sm">
+                                <Select name="crop_type" value={selectedCrop} onValueChange={setSelectedCrop}>
+                                    <SelectTrigger id="pollination-crop" className="h-10 rounded-lg bg-slate-50 dark:bg-white/5 border-gray-200 dark:border-white/10 font-bold text-sm">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent className="rounded-lg">
@@ -616,6 +616,8 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                             <div className="space-y-1.5">
                                 <Label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{t('acreage')}</Label>
                                 <Input
+                                    id="pollination-acreage"
+                                    name="acreage"
                                     type="number"
                                     value={acreage}
                                     onChange={(e) => setAcreage(Number(e.target.value))}
@@ -634,6 +636,8 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                                         animate={{ width: `${(avgFrames / 12) * 100}%` }}
                                     />
                                     <input
+                                        id="pollination-frames"
+                                        name="avg_frames"
                                         type="range" min="6" max="12" step="1" value={avgFrames}
                                         onChange={(e) => setAvgFrames(Number(e.target.value))}
                                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"

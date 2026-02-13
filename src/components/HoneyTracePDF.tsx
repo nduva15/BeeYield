@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     beekeeperSection: {
         marginBottom: 24,
         padding: 16,
-        backgroundColor: '#312E81',
+        backgroundColor: '#064E3B',
         borderRadius: 8,
         color: '#FFFFFF',
     },
@@ -135,12 +135,12 @@ const styles = StyleSheet.create({
     },
     beekeeperLocation: {
         fontSize: 10,
-        color: '#C7D2FE',
+        color: '#D1FAE5',
         marginTop: 4,
     },
     beekeeperStory: {
         fontSize: 10,
-        color: '#C7D2FE',
+        color: '#D1FAE5',
         fontStyle: 'normal',
         lineHeight: 1.5,
         marginTop: 10,
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         marginBottom: 24,
         padding: 16,
-        backgroundColor: '#1F2937',
+        backgroundColor: '#065F46',
         borderRadius: 8,
     },
     sensorItem: {
@@ -316,7 +316,7 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
                         <Image src={BEEYIELD_LOGO} style={styles.logoImage} />
                         <View style={styles.logoTextContainer}>
                             <Text style={styles.logo}>BeeYield</Text>
-                            <Text style={styles.logoSubtext}>HoneyChain Traceability Certificate</Text>
+                            <Text style={styles.logoSubtext}>Origin & Authenticity Certificate</Text>
                         </View>
                     </View>
                     <Text style={styles.badge}>VERIFIED</Text>
@@ -357,19 +357,22 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
                     <View style={styles.row}>
                         <Text style={styles.label}>Harvest Date:</Text>
                         <Text style={styles.value}>
-                            {traceData.timeline?.find((t: TraceJourneyStep) => t.title === 'Harvested')?.date || 'Unknown'}
+                            {traceData.timeline?.find((t: TraceJourneyStep) => t.title === 'Harvest Day')?.date || 'Unknown'}
                         </Text>
                     </View>
 
                     <View style={styles.row}>
                         <Text style={styles.label}>Flora Sources:</Text>
                         <View style={styles.floraContainer}>
+                            {traceData.florage_type && (
+                                <Text style={[styles.floraTag, { backgroundColor: '#FDE68A' }]}>{traceData.florage_type} (Primary)</Text>
+                            )}
                             {traceData.apiary?.flora_types && traceData.apiary.flora_types.length > 0 ? (
-                                traceData.apiary.flora_types.map((flora: string, idx: number) => (
+                                traceData.apiary.flora_types.filter(f => f !== traceData.florage_type).map((flora: string, idx: number) => (
                                     <Text key={idx} style={styles.floraTag}>{flora}</Text>
                                 ))
                             ) : (
-                                <Text style={styles.value}>Acacia, Wildflower</Text>
+                                !traceData.florage_type && <Text style={styles.value}>Acacia, Wildflower</Text>
                             )}
                         </View>
                     </View>
@@ -429,7 +432,7 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
                 {traceData.sensor_snapshot && (
                     <View style={styles.sensorGrid}>
                         <Text style={[styles.sectionTitle, { color: '#FFFFFF', width: '100%' }]}>
-                            Hive Intelligence (at Harvest)
+                            Hive Conditions (at Harvest)
                         </Text>
 
                         <View style={styles.sensorItem}>
@@ -446,14 +449,14 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
 
                         <View style={styles.sensorItem}>
                             <Text style={styles.sensorLabel}>Acoustic Health</Text>
-                            <Text style={styles.sensorValue}>{traceData.sensor_snapshot.acoustic_health}</Text>
-                            <Text style={styles.sensorStatus}>Active Queen Pattern</Text>
+                            <Text style={styles.sensorValue}>{traceData.sensor_snapshot.colony_acoustics || traceData.sensor_snapshot.acoustic_health} Hz</Text>
+                            <Text style={styles.sensorStatus}>{traceData.sensor_snapshot.acoustics_status || "Normal Activity"}</Text>
                         </View>
 
                         <View style={styles.sensorItem}>
                             <Text style={styles.sensorLabel}>Hive Weight</Text>
                             <Text style={styles.sensorValue}>{traceData.sensor_snapshot.weight_kg}kg</Text>
-                            <Text style={styles.sensorStatus}>Productivity Peak</Text>
+                            <Text style={styles.sensorStatus}>Harvest Ready</Text>
                         </View>
                     </View>
                 )}
@@ -482,7 +485,7 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
                 {/* Footer with BeeYield Contact Info */}
                 <View style={styles.footer}>
                     <Text style={styles.footerText}>
-                        This certificate verifies the authenticity and traceability of your honey on HoneyChain
+                        This certificate verifies the authenticity and origin of your honey.
                     </Text>
                     <Text style={styles.footerHighlight}>
                         BeeYield - Champions for Saving Bees | 50% Ethical Harvest Promise

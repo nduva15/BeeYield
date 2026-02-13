@@ -1,4 +1,4 @@
-export interface PollinationDetail {
+﻿export interface PollinationDetail {
     cropName: string;
     beeDependence: string;
     optimalHivesPerAcre: string;
@@ -107,14 +107,14 @@ export const beePollinationData: Record<string, PollinationDetail> = {
         optimalHivesPerAcre: "2.0 - 3.0 Hives",
         targetFPA: 16,
         beeyieldAdvantage: "Adaptive hive mobility allows BeeYield to service short-bloom vegetable crops efficiently.",
-        regionalTrends2026: "Peri-urban vegetable farming growth demands mobile, smart pollination solutions.",
+        regionalTrends2026: "Peri-urban vegetable farming growth demands mobile, intelligent pollination solutions.",
         economicImpact: "Crucial for fruit-vegetables like squash, peppers, and cucumbers.",
         image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&q=80&w=600"
     }
 };
 
 export const globalPollinationTrends2026 = {
-    "Precision Pollination™": "A market segment created by BeeYield, where IoT sensors and AI ensure exactly the right amount of pollination for every square meter of farm.",
+    "Precision Pollinationâ„¢": "A market segment created by BeeYield, where IoT sensors and AI ensure exactly the right amount of pollination for every square meter of farm.",
     "Pollinator Depletion Reserve": "BeeYield's initiative to create 'Safe Zones' around industrial farms, restoring 2,500+ trees per region to support wild bee populations.",
     "Pollination-as-a-Service (PaaS)": "By 2026, PaaS is the primary model for commercial beekeeping, with BeeYield's platform acting as the global marketplace for farmers and beekeepers."
 };

@@ -21,7 +21,8 @@ export const PollinationContactForm = ({ type, title, description }: Pollination
         email: "",
         phone: "",
         company: "",
-        message: ""
+        message: "",
+        hive_code: "" // Added for in-hive inquires
     });
 
     const handleChange = (field: string, value: string) => {
@@ -58,7 +59,8 @@ export const PollinationContactForm = ({ type, title, description }: Pollination
                 email: "",
                 phone: "",
                 company: "",
-                message: ""
+                message: "",
+                hive_code: ""
             });
         } catch (error) {
             console.error(error);
@@ -84,6 +86,8 @@ export const PollinationContactForm = ({ type, title, description }: Pollination
                     <div className="space-y-2">
                         <label className="text-sm font-medium">First Name *</label>
                         <Input
+                            id="pollination-first-name"
+                            name="firstName"
                             required
                             value={formData.firstName}
                             onChange={(e) => handleChange("firstName", e.target.value)}
@@ -93,6 +97,8 @@ export const PollinationContactForm = ({ type, title, description }: Pollination
                     <div className="space-y-2">
                         <label className="text-sm font-medium">Last Name *</label>
                         <Input
+                            id="pollination-last-name"
+                            name="lastName"
                             required
                             value={formData.lastName}
                             onChange={(e) => handleChange("lastName", e.target.value)}
@@ -101,10 +107,27 @@ export const PollinationContactForm = ({ type, title, description }: Pollination
                     </div>
                 </div>
 
+                {/* New Hive Code Input */}
+                {type === "in_hive" && (
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Hive Code</label>
+                        <Input
+                            id="hive_code"
+                            name="hive_code"
+                            value={formData.hive_code}
+                            onChange={(e) => handleChange("hive_code", e.target.value)}
+                            placeholder="e.g. ALPHA-001"
+                            className="h-14 rounded-2xl border-slate-100 dark:border-white/5 text-base bg-slate-50/50 dark:bg-white/[0.02] font-bold"
+                        />
+                    </div>
+                )}
+
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <label className="text-sm font-medium">Email *</label>
                         <Input
+                            id="pollination-email"
+                            name="email"
                             type="email"
                             required
                             value={formData.email}
@@ -115,6 +138,8 @@ export const PollinationContactForm = ({ type, title, description }: Pollination
                     <div className="space-y-2">
                         <label className="text-sm font-medium">Phone Number *</label>
                         <Input
+                            id="pollination-phone"
+                            name="phone"
                             type="tel"
                             required
                             value={formData.phone}
@@ -127,6 +152,8 @@ export const PollinationContactForm = ({ type, title, description }: Pollination
                 <div className="space-y-2">
                     <label className="text-sm font-medium">Company / Farm Name</label>
                     <Input
+                        id="pollination-company"
+                        name="company"
                         value={formData.company}
                         onChange={(e) => handleChange("company", e.target.value)}
                         placeholder="Your Company Name"
@@ -136,6 +163,8 @@ export const PollinationContactForm = ({ type, title, description }: Pollination
                 <div className="space-y-2">
                     <label className="text-sm font-medium">Message (Optional)</label>
                     <Textarea
+                        id="pollination-message"
+                        name="message"
                         value={formData.message}
                         onChange={(e) => handleChange("message", e.target.value)}
                         placeholder="Tell us about your needs..."

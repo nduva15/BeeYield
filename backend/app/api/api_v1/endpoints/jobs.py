@@ -1,165 +1,80 @@
-"""
-Jobs Endpoints - Alias for Careers
-Maps /api/v1/jobs to the careers endpoints for frontend compatibility
-"""
-from fastapi import APIRouter, HTTPException, UploadFile, File, Form, BackgroundTasks
-
-from datetime import date
-from app.schemas import careers as schemas
-from app.db.supabase_db import db_select, db_insert, get_supabase
-from app.services import email
+from fastapi import APIRouter, File, UploadFile, Form, HTTPException, status
+from typing import Optional
+from app.db.supabase_db import get_supabase, db_insert
+import logging
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
-
-@router.get("/", response_model=list[schemas.Joblisting])
-def get_jobs():
-    """
-    Get all active job listings.
-    Alias for /api/v1/careers/
-    """
-    jobs = db_select("job_listings", filters={"is_active": True}, order_by="posted_date", ascending=False)
-    
-    if not jobs:
-        # Return fallback data
-        return [
-            {
-                "id": "job-1",
-                "title": "Senior Agronomist",
-                "slug": "senior-agronomist",
-                "department": "Agriculture",
-                "location": "Nairobi, Kenya",
-                "job_type": "Full-time",
-                "description": "Lead our agricultural research and pollination optimization programs.",
-                "requirements": ["MSc in Agronomy", "5+ years experience"],
-                "benefits": ["Health insurance", "Performance bonus"],
-                "salary_range": "KES 150,000 - 250,000/month",
-                "is_active": True,
-                "posted_date": date.today()
-            },
-            {
-                "id": "job-2",
-                "title": "Field Operations Manager",
-                "slug": "field-operations-manager",
-                "department": "Operations",
-                "location": "Rift Valley, Kenya",
-                "job_type": "Full-time",
-                "description": "Manage hive deployment and pollination services.",
-                "requirements": ["Bachelor's degree", "3+ years in operations"],
-                "benefits": ["Health insurance", "Company vehicle"],
-                "salary_range": "KES 100,000 - 150,000/month",
-                "is_active": True,
-                "posted_date": date.today()
-            },
-            {
-                "id": "job-3",
-                "title": "Data Scientist",
-                "slug": "data-scientist",
-                "department": "Technology",
-                "location": "Remote (Kenya)",
-                "job_type": "Full-time",
-                "description": "Build ML models for pollination optimization.",
-                "requirements": ["MSc in Data Science", "Python experience"],
-                "benefits": ["Remote work", "Stock options"],
-                "salary_range": "KES 200,000 - 350,000/month",
-                "is_active": True,
-                "posted_date": date.today()
-            },
-            {
-                "id": "job-4",
-                "title": "Beekeeping Specialist",
-                "slug": "beekeeping-specialist",
-                "department": "Operations",
-                "location": "Mount Kenya Region",
-                "job_type": "Contract",
-                "description": "Expert guidance on hive management.",
-                "requirements": ["5+ years experience", "Training certification"],
-                "benefits": ["Competitive daily rate", "Equipment provided"],
-                "salary_range": "KES 2,500 - 4,000/day",
-                "is_active": True,
-                "posted_date": date.today()
-            },
-            {
-                "id": "job-5",
-                "title": "Customer Success Manager",
-                "slug": "customer-success-manager",
-                "department": "Sales",
-                "location": "Nairobi, Kenya",
-                "job_type": "Full-time",
-                "description": "Build lasting relationships with grower clients.",
-                "requirements": ["Bachelor's degree", "3+ years in customer success"],
-                "benefits": ["Health insurance", "Performance commission"],
-                "salary_range": "KES 80,000 - 120,000/month",
-                "is_active": True,
-                "posted_date": date.today()
-            }
-        ]
-    
-    return jobs
-
-
-@router.post("/apply", response_model=dict)
+@router.post("/apply")
 async def apply_for_job(
-    background_tasks: BackgroundTasks,
     job_id: str = Form(...),
     full_name: str = Form(...),
-    email_address: str = Form(...),
-    phone: str = Form(None),
-    cover_letter: str = Form(None),
-    linkedin_url: str = Form(None),
-    portfolio_url: str = Form(None),
-    experience_years: int = Form(None),
-    resume: UploadFile = File(None)
+    email: str = Form(...),
+    phone: Optional[str] = Form(None),
+    resume: UploadFile = File(...)
 ):
     """
-    Submit a job application.
-    Alias for /api/v1/careers/apply
+    Handle job application submission: 
+    1. Upload resume to Supabase Storage ('resumes' bucket)
+    2. Create record in 'job_applications' table
     """
-    resume_url = None
+    supabase = get_supabase()
+    if not supabase:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE, 
+            detail="Database connection unavailable"
+        )
     
-    if resume:
+    try:
+        # 1. Read file content
+        file_content = await resume.read()
+        
+        # 2. Construct file path
+        # Logic: {job_id}/{email}_{filename}
+        # Sanitize email slightly to avoid weird chars in path if needed, but path usually allows most.
+        file_path = f"{job_id}/{email}_{resume.filename}"
+        
+        # 3. Upload to Supabase Storage
+        # Note: 'resumes' bucket must exist and be set to Private.
+        # The clean path logic requested: JUST the structure inside the bucket.
         try:
-            supabase = get_supabase()
-            if supabase:
-                file_ext = resume.filename.split(".")[-1] if resume.filename else "pdf"
-                file_name = f"{job_id}_{full_name.replace(' ', '_')}_{date.today().isoformat()}.{file_ext}"
-                contents = await resume.read()
-                supabase.storage.from_("resumes").upload(file_name, contents)
-                resume_url = supabase.storage.from_("resumes").get_public_url(file_name)
+            res = supabase.storage.from_("resumes").upload(
+                path=file_path, 
+                file=file_content,
+                file_options={"content-type": resume.content_type}
+            )
         except Exception as e:
-            print(f"Resume upload error: {e}")
-    
-    application_data = {
-        "job_id": job_id,
-        "full_name": full_name,
-        "email": email_address,
-        "phone": phone,
-        "resume_url": resume_url,
-        "cover_letter": cover_letter,
-        "linkedin_url": linkedin_url,
-        "portfolio_url": portfolio_url,
-        "experience_years": experience_years,
-        "status": "new"
-    }
-    
-    result = db_insert("job_applications", application_data)
-    
-    # Send notifications
-    background_tasks.add_task(
-        email.send_email,
-        "careers@beeyield.com",
-        f"New Job Application: {full_name}",
-        f"New application for job ID: {job_id}\nApplicant: {full_name}\nEmail: {email_address}"
-    )
-    
-    background_tasks.add_task(
-        email.send_email,
-        email_address,
-        "Application Received - BeeYield Careers",
-        f"Dear {full_name},\n\nThank you for applying to BeeYield!\n\nBest regards,\nBeeYield Talent Team"
-    )
-    
-    return {
-        "status": "success",
-        "message": "Application submitted successfully"
-    }
+            # Check if error is "The resource already exists" or similar if trying to re-upload
+            logger.error(f"Storage upload failed: {e}")
+            raise HTTPException(status_code=500, detail=f"Failed to upload resume: {str(e)}")
+
+        # 4. Insert Application Record
+        application_data = {
+            "job_id": job_id,
+            "full_name": full_name,
+            "email": email,
+            "phone": phone,
+            "resume_url": file_path, # Store the internal path
+            "status": "applied"
+        }
+        
+        # Using db_insert helper or raw client? db_insert uses REST API.
+        # Let's use the supabase client directly for consistency with storage if available,
+        # but db_insert is imported from supabase_db. Let's use db_insert for the DB part.
+        
+        insert_res = await db_insert("job_applications", application_data)
+        
+        if not insert_res.get("success"):
+            # If DB insert fails, we might want to clean up the file? 
+            # For now, just error out.
+            logger.error(f"DB insert failed: {insert_res.get('error')}")
+            raise HTTPException(status_code=500, detail=f"Failed to save application: {insert_res.get('error')}")
+            
+        return {"message": "Application sent successfully!", "data": insert_res.get("data")}
+
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))

@@ -89,8 +89,8 @@ const ComparisonsView: React.FC = () => {
                         {/* Apiary Selector */}
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Location / Apiary</label>
-                            <Select value={selectedApiaryId} onValueChange={setSelectedApiaryId}>
-                                <SelectTrigger className="rounded-2xl border-slate-100 bg-slate-50/50 h-14 font-bold focus:ring-0 shadow-none text-slate-600 transition-all hover:bg-slate-50">
+                            <Select name="apiary_id" value={selectedApiaryId} onValueChange={setSelectedApiaryId}>
+                                <SelectTrigger id="comparison-apiary" className="rounded-2xl border-slate-100 bg-slate-50/50 h-14 font-bold focus:ring-0 shadow-none text-slate-600 transition-all hover:bg-slate-50">
                                     <div className="flex items-center gap-2">
                                         <MapPin className="w-4 h-4 text-amber-500" />
                                         <SelectValue placeholder="Select Apiary" />
@@ -107,8 +107,8 @@ const ComparisonsView: React.FC = () => {
                         {/* Medium Selector */}
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Variable (Medium)</label>
-                            <Select value={medium} onValueChange={setMedium}>
-                                <SelectTrigger className="rounded-2xl border-slate-100 bg-slate-50/50 h-14 font-bold focus:ring-0 shadow-none text-slate-600 transition-all hover:bg-slate-50">
+                            <Select name="medium" value={medium} onValueChange={setMedium}>
+                                <SelectTrigger id="comparison-medium" className="rounded-2xl border-slate-100 bg-slate-50/50 h-14 font-bold focus:ring-0 shadow-none text-slate-600 transition-all hover:bg-slate-50">
                                     <SelectValue placeholder="Select medium" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-2xl border-slate-100 shadow-2xl p-1 bg-white">
@@ -122,8 +122,8 @@ const ComparisonsView: React.FC = () => {
                         {/* Date range */}
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Temporal Scope</label>
-                            <Select value={dateRange} onValueChange={setDateRange}>
-                                <SelectTrigger className="rounded-2xl border-slate-100 bg-slate-50/50 h-14 font-bold focus:ring-0 shadow-none text-slate-600 transition-all hover:bg-slate-50">
+                            <Select name="date_range" value={dateRange} onValueChange={setDateRange}>
+                                <SelectTrigger id="comparison-range" className="rounded-2xl border-slate-100 bg-slate-50/50 h-14 font-bold focus:ring-0 shadow-none text-slate-600 transition-all hover:bg-slate-50">
                                     <SelectValue placeholder="Select range" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-2xl border-slate-100 shadow-2xl p-1 bg-white">
@@ -137,8 +137,8 @@ const ComparisonsView: React.FC = () => {
                         {/* Compare Mode */}
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Compare Mode</label>
-                            <Select value={comparisonMode} onValueChange={setComparisonMode}>
-                                <SelectTrigger className="rounded-2xl border-slate-100 bg-slate-50/50 h-14 font-bold focus:ring-0 shadow-none text-slate-600 transition-all hover:bg-slate-50">
+                            <Select name="comparison_mode" value={comparisonMode} onValueChange={setComparisonMode}>
+                                <SelectTrigger id="comparison-mode" className="rounded-2xl border-slate-100 bg-slate-50/50 h-14 font-bold focus:ring-0 shadow-none text-slate-600 transition-all hover:bg-slate-50">
                                     <SelectValue placeholder="Select comparison" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-2xl border-slate-100 shadow-2xl p-1 bg-white">

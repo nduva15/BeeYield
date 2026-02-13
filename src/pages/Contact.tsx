@@ -13,18 +13,28 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { submitContactForm, ContactSubmission } from "@/services/contactService";
+import { submitContactForm, submitContactMessage, ContactSubmission } from "@/services/contactService";
 import {
   Mail, Phone, MapPin,
-  Sprout, Bug, MessageSquare, Stethoscope
+  Sprout, Bug, MessageSquare, Stethoscope, Send, Loader2, CheckCircle2
 } from "lucide-react";
 import { adminService } from "@/services/adminService";
 
 const Contact = () => {
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<"grower" | "beekeeper" | "general" | "diseases">("grower");
+  const [activeTab, setActiveTab] = useState<"quick" | "grower" | "beekeeper" | "general" | "diseases">("quick");
   const [loading, setLoading] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
+
+  // Quick Message form state (PRD Contact Messages)
+  const [quickForm, setQuickForm] = useState({
+    fullName: "",
+    email: "",
+    subject: "",
+    message: ""
+  });
+  const [quickLoading, setQuickLoading] = useState(false);
+  const [quickSent, setQuickSent] = useState(false);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -47,20 +57,57 @@ const Contact = () => {
   });
 
   const tabs = [
+    { id: "quick" as const, label: "Quick Message", icon: Send },
     { id: "grower" as const, label: "Grower Inquiries", icon: Sprout },
     { id: "beekeeper" as const, label: "Beekeeper Inquiries", icon: Bug },
     { id: "diseases" as const, label: "Diseases Inquiry", icon: Stethoscope },
     { id: "general" as const, label: "General Inquiries", icon: MessageSquare },
   ];
 
-  const handleTabChange = (tabId: "grower" | "beekeeper" | "general" | "diseases") => {
+  const handleTabChange = (tabId: "quick" | "grower" | "beekeeper" | "general" | "diseases") => {
     setActiveTab(tabId);
+    setQuickSent(false);
     // Reset topic based on tab
     let defaultTopic = "Pollination Services";
     if (tabId === "beekeeper") defaultTopic = "Technology Integration";
     if (tabId === "diseases") defaultTopic = "Varroa Mite";
     if (tabId === "general") defaultTopic = "General Question";
     setFormData(prev => ({ ...prev, topic: defaultTopic }));
+  };
+
+  const handleQuickChange = (field: string, value: string) => {
+    setQuickForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleQuickSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setQuickLoading(true);
+
+    try {
+      await submitContactMessage({
+        full_name: quickForm.fullName,
+        email: quickForm.email,
+        subject: quickForm.subject || undefined,
+        message: quickForm.message,
+      });
+
+      toast({
+        title: "Message Sent! ✉️",
+        description: "We'll get back to you shortly.",
+      });
+
+      setQuickSent(true);
+      setQuickForm({ fullName: "", email: "", subject: "", message: "" });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Failed to Send",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setQuickLoading(false);
+    }
   };
 
   const handleChange = (field: string, value: string) => {
@@ -90,7 +137,7 @@ const Contact = () => {
         city: formData.city,
         state: formData.state,
         country: formData.country,
-        inquiry_type: activeTab,
+        inquiry_type: activeTab === "quick" ? "general" : activeTab,
         topic: formData.topic,
         message: (activeTab === "general" || activeTab === "diseases") ? formData.message : undefined,
         // Optional fields based on tab

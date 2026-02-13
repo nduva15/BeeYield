@@ -212,8 +212,8 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                             <div className="grid grid-cols-2 gap-8">
                                                 <div className="space-y-3">
                                                     <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Category</Label>
-                                                    <Select value={formData.category} onValueChange={(val) => handleSelectChange('category', val)}>
-                                                        <SelectTrigger className="h-16 rounded-2xl border-2 border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 px-6 font-bold text-slate-700 dark:text-slate-300">
+                                                    <Select name="category" value={formData.category} onValueChange={(val) => handleSelectChange('category', val)}>
+                                                        <SelectTrigger id="support-category" className="h-16 rounded-2xl border-2 border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 px-6 font-bold text-slate-700 dark:text-slate-300">
                                                             <SelectValue />
                                                         </SelectTrigger>
                                                         <SelectContent className="rounded-2xl border-slate-100 shadow-2xl">
@@ -227,8 +227,8 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
 
                                                 <div className="space-y-3">
                                                     <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Priority</Label>
-                                                    <Select value={formData.priority} onValueChange={(val) => handleSelectChange('priority', val)}>
-                                                        <SelectTrigger className="h-16 rounded-2xl border-2 border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 px-6 font-bold text-slate-700 dark:text-slate-300">
+                                                    <Select name="priority" value={formData.priority} onValueChange={(val) => handleSelectChange('priority', val)}>
+                                                        <SelectTrigger id="support-priority" className="h-16 rounded-2xl border-2 border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 px-6 font-bold text-slate-700 dark:text-slate-300">
                                                             <SelectValue />
                                                         </SelectTrigger>
                                                         <SelectContent className="rounded-2xl border-slate-100 shadow-2xl">
@@ -243,6 +243,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                             <div className="space-y-3">
                                                 <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Subject</Label>
                                                 <Input
+                                                    id="support-subject"
                                                     name="subject"
                                                     value={formData.subject}
                                                     onChange={handleInputChange}
@@ -254,6 +255,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                                             <div className="space-y-3">
                                                 <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Description</Label>
                                                 <Textarea
+                                                    id="support-description"
                                                     name="description"
                                                     value={formData.description}
                                                     onChange={handleInputChange}
@@ -308,6 +310,8 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
                         <div className="relative group min-w-[300px]">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-amber-500 transition-all" />
                             <input
+                                id="ticket-search"
+                                name="ticket-search"
                                 value={filterText}
                                 onChange={(e) => setFilterText(e.target.value)}
                                 placeholder="Search tickets..."

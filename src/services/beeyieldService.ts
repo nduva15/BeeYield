@@ -171,14 +171,17 @@ export interface Request {
     user_id: string;
     subject: string;
     description: string;
-    status: 'pending' | 'open' | 'in_progress' | 'resolved' | 'closed';
-    priority: 'low' | 'medium' | 'high';
+    status: 'pending' | 'open' | 'in_progress' | 'resolved' | 'closed' | 'new';
+    priority: 'low' | 'medium' | 'high' | 'Low' | 'Medium' | 'High';
     type: 'maintenance' | 'support' | 'inspection' | 'other';
     apiary_id?: string;
     hive_id?: string;
+    category?: string;
     created_at: string;
     updated_at: string;
 }
+
+export type SupportRequest = Request;
 
 export interface RequestCreateInput {
     subject: string;
@@ -187,6 +190,7 @@ export interface RequestCreateInput {
     priority?: string;
     apiary_id?: string;
     hive_id?: string;
+    category?: string;
 }
 
 // ========== APIARY & FARMER TYPES ==========
@@ -256,6 +260,7 @@ export interface Hive {
     status?: string;
     installation_date?: string;
     has_sensors?: boolean;
+    notes?: string;
     created_at?: string;
     updated_at?: string;
     apiary?: Apiary | null;
@@ -279,6 +284,7 @@ export interface HiveCreateInput {
     status?: string;
     installation_date?: string;
     has_sensors?: boolean;
+    notes?: string;
 }
 
 // ========== HARVEST TYPES ==========
@@ -298,6 +304,7 @@ export interface Harvest {
     color_grade?: string;
     is_verified?: boolean;
     blockchain_hash?: string;
+    florage_type?: string;
     created_at?: string;
     updated_at?: string;
     hive?: Hive | null;
@@ -319,6 +326,17 @@ export interface HarvestCreateInput {
     honey_type?: string;
     color_grade?: string;
     is_verified?: boolean;
+    florage_type?: string;
+}
+
+export interface HarvestBatchInput {
+    hive_id: string;
+    apiary_id: string;
+    quantity_kg: number;
+    florage_type: string;
+    harvest_date?: string;
+    honey_type?: string;
+    notes?: string;
 }
 
 // ========== TASK TYPES ==========
@@ -328,28 +346,36 @@ export interface Task {
     title: string;
     description?: string;
     status: 'pending' | 'completed' | 'in_progress';
-    priority: 'low' | 'medium' | 'high';
+    priority: 'low' | 'medium' | 'high' | 'Low' | 'Medium' | 'High';
+    type?: string;
     category: string;
     due_date?: string;
     apiary_id?: string;
     hive_id?: string;
     is_completed: boolean;
+    is_recurring?: boolean;
+    recurrence_days?: number;
     created_at?: string;
     updated_at?: string;
     apiary?: Apiary;
     hive?: Hive;
+    recurrence?: string;
 }
 
 export interface TaskCreateInput {
     title: string;
     description?: string;
     status?: 'pending' | 'completed' | 'in_progress';
-    priority?: 'low' | 'medium' | 'high';
+    priority?: 'low' | 'medium' | 'high' | 'Low' | 'Medium' | 'High';
+    type?: string;
     category?: string;
     due_date?: string;
     apiary_id?: string;
     hive_id?: string;
     is_completed?: boolean;
+    is_recurring?: boolean;
+    recurrence_days?: number;
+    recurrence?: string;
 }
 
 // ========== NOTE TYPES ==========
@@ -474,6 +500,24 @@ export interface NotificationConfigUpdate {
     email_enabled?: boolean;
     push_enabled?: boolean;
     sms_enabled?: boolean;
+}
+
+export interface UserNotificationSettings {
+    user_id: string;
+    email_alerts_enabled: boolean;
+    push_notifications_enabled: boolean;
+    notify_on_swarm: boolean;
+    notify_on_theft: boolean;
+    notify_on_low_battery: boolean;
+    updated_at: string;
+}
+
+export interface IoTSettings {
+    user_id: string;
+    default_temp_high: number;
+    default_temp_low: number;
+    default_weight_drop: number;
+    updated_at: string;
 }
 
 export const beeyieldService = {
@@ -697,6 +741,18 @@ export const beeyieldService = {
         }
     },
 
+    async logHarvestBatch(input: HarvestBatchInput): Promise<{ data: any | null; error: any }> {
+        try {
+            const data = await apiPost<any>('/beeyield/harvests/log', input);
+            toast.success('Batch logged & secured!');
+            return { data, error: null };
+        } catch (error) {
+            console.error('Error in logHarvestBatch:', error);
+            toast.error('Failed to log batch');
+            return { data: null, error };
+        }
+    },
+
     async createHarvest(input: HarvestCreateInput): Promise<{ data: Harvest | null; error: any }> {
         try {
             const response = await apiPost<any>('/beeyield/harvests', {
@@ -762,7 +818,7 @@ export const beeyieldService = {
 
     async updateTask(id: string, updates: Partial<TaskCreateInput>): Promise<{ data: Task | null; error: any }> {
         try {
-            const data = await apiPut<Task>(`/beeyield/tasks/${id}`, updates);
+            const data = await apiPut<Task>(`/ beeyield / tasks / ${id} `, updates);
             toast.success('Task updated');
             return { data, error: null };
         } catch (error) {
@@ -774,7 +830,7 @@ export const beeyieldService = {
 
     async deleteTask(id: string): Promise<{ error: any }> {
         try {
-            await apiDelete(`/beeyield/tasks/${id}`);
+            await apiDelete(`/ beeyield / tasks / ${id} `);
             toast.success('Task deleted');
             return { error: null };
         } catch (error) {
@@ -798,7 +854,7 @@ export const beeyieldService = {
 
     async getInspectionById(id: string): Promise<Inspection | null> {
         try {
-            return await apiGet<Inspection>(`/beeyield/inspections/${id}`, {});
+            return await apiGet<Inspection>(`/ beeyield / inspections / ${id} `, {});
         } catch (error) {
             console.error('Error fetching inspection:', error);
             return null;
@@ -819,7 +875,7 @@ export const beeyieldService = {
 
     async updateInspection(id: string, updates: Partial<InspectionCreateInput>): Promise<{ data: Inspection | null; error: any }> {
         try {
-            const data = await apiPut<Inspection>(`/beeyield/inspections/${id}`, updates);
+            const data = await apiPut<Inspection>(`/ beeyield / inspections / ${id} `, updates);
             toast.success('Inspection updated successfully');
             return { data, error: null };
         } catch (error) {
@@ -831,7 +887,7 @@ export const beeyieldService = {
 
     async deleteInspection(id: string): Promise<{ error: any }> {
         try {
-            await apiDelete(`/beeyield/inspections/${id}`);
+            await apiDelete(`/ beeyield / inspections / ${id} `);
             toast.success('Inspection deleted');
             return { error: null };
         } catch (error) {
@@ -920,7 +976,7 @@ export const beeyieldService = {
 
     async updateNotificationConfig(eventType: string, config: NotificationConfigUpdate): Promise<{ data: any; error: any }> {
         try {
-            const data = await apiPut<any>(`/settings/notifications/${eventType}`, config);
+            const data = await apiPut<any>(`/ settings / notifications / ${eventType} `, config);
             toast.success(`Notification updated`);
             return { data, error: null };
         } catch (error) {
@@ -932,12 +988,59 @@ export const beeyieldService = {
 
     async updateHiveThresholds(hiveId: string, thresholds: { temp_threshold_high?: number; temp_threshold_low?: number; weight_drop_threshold?: number }): Promise<{ data: any; error: any }> {
         try {
-            const data = await apiPut<any>(`/settings/hives/${hiveId}`, thresholds);
+            const data = await apiPut<any>(`/ settings / hives / ${hiveId} `, thresholds);
             toast.success(`Hive thresholds updated`);
             return { data, error: null };
         } catch (error) {
             console.error('Error updating hive thresholds:', error);
             toast.error('Failed to update hive thresholds');
+            return { data: null, error };
+        }
+    },
+
+    async getFullSettings(): Promise<any> {
+        try {
+            return await apiGet<any>('/settings/full', {});
+        } catch (error) {
+            console.error('Error fetching full settings:', error);
+            return null;
+        }
+    },
+
+    async getNotificationSettings(): Promise<UserNotificationSettings | null> {
+        try {
+            return await apiGet<UserNotificationSettings>('/settings/notifications', {});
+        } catch (error) {
+            console.error('Error fetching notification settings:', error);
+            return null;
+        }
+    },
+
+    async updateNotificationSettings(settings: Partial<UserNotificationSettings>): Promise<{ data: any; error: any }> {
+        try {
+            const data = await apiPut<any>('/settings/notifications', settings);
+            return { data, error: null };
+        } catch (error) {
+            console.error('Error updating notification settings:', error);
+            return { data: null, error };
+        }
+    },
+
+    async getIoTSettings(): Promise<IoTSettings | null> {
+        try {
+            return await apiGet<IoTSettings>('/settings/iot', {});
+        } catch (error) {
+            console.error('Error fetching IoT settings:', error);
+            return null;
+        }
+    },
+
+    async updateIoTSettings(settings: Partial<IoTSettings>): Promise<{ data: any; error: any }> {
+        try {
+            const data = await apiPut<any>('/settings/iot', settings);
+            return { data, error: null };
+        } catch (error) {
+            console.error('Error updating IoT settings:', error);
             return { data: null, error };
         }
     },
@@ -1005,7 +1108,7 @@ export const beeyieldService = {
 
     async deleteScheduledReport(id: string): Promise<{ error: any }> {
         try {
-            await apiDelete(`/beeyield/reports/scheduled/${id}`);
+            await apiDelete(`/ beeyield / reports / scheduled / ${id} `);
             return { error: null };
         } catch (error) {
             console.error('Error deleting schedule:', error);
@@ -1228,7 +1331,7 @@ export const beeyieldService = {
 
     async unpairUsbDevice(id: string): Promise<{ error: any }> {
         try {
-            await apiDelete(`/beeyield/hardware/usb-devices/${id}`);
+            await apiDelete(`/ beeyield / hardware / usb - devices / ${id} `);
             toast.success('Device unpaired');
             return { error: null };
         } catch (error) {
@@ -1371,7 +1474,7 @@ export const beeyieldService = {
 
     async updateNote(id: string, updates: Partial<NoteCreateInput>): Promise<{ data: Note | null; error: any }> {
         try {
-            const data = await apiPut<Note>(`/beeyield/notes/${id}`, updates);
+            const data = await apiPut<Note>(`/ beeyield / notes / ${id} `, updates);
             toast.success('Note updated');
             return { data, error: null };
         } catch (error) {
@@ -1383,7 +1486,7 @@ export const beeyieldService = {
 
     async deleteNote(id: string): Promise<{ error: any }> {
         try {
-            await apiDelete(`/beeyield/notes/${id}`);
+            await apiDelete(`/ beeyield / notes / ${id} `);
             toast.success('Note deleted');
             return { error: null };
         } catch (error) {
@@ -1405,6 +1508,29 @@ export const beeyieldService = {
         } catch (error) {
             console.error('Error fetching comparison data:', error);
             return [];
+        }
+    },
+
+    // ========== JOBS ==========
+    async submitJobApplication(formData: FormData): Promise<{ data: any; error: any }> {
+        try {
+            // Use API_URL from env or default to relative path proxy
+            const apiUrl = import.meta.env.VITE_API_URL || '';
+            const response = await fetch(`${apiUrl}/api/v1/jobs/apply`, {
+                method: 'POST',
+                body: formData, // fetch will automatically set the correct boundary for multipart/form-data
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ detail: response.statusText }));
+                throw new Error(errorData.detail || 'Application submission failed');
+            }
+
+            const data = await response.json();
+            return { data, error: null };
+        } catch (error: any) {
+            console.error('Error submitting application:', error);
+            return { data: null, error };
         }
     },
 };

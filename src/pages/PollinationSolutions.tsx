@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight, Activity, Sprout, BarChart3,
@@ -128,7 +128,7 @@ const PollinationSolutions = () => {
 
                 <h2 className="text-3xl font-bold mb-4 text-foreground">Diseases</h2>
                 <p className="text-lg text-muted-foreground mb-8 flex-grow">
-                  Intelligent protection for your beehives. Detect diseases early and monitor colony health with smart analysis and real-time alerts.
+                  Intelligent protection for your beehives. Detect diseases early and monitor colony health with intelligent analysis and real-time alerts.
                 </p>
 
                 <div className="space-y-4 mb-8">
@@ -171,7 +171,7 @@ const PollinationSolutions = () => {
           <div className="max-w-4xl mx-auto text-center mb-20 bg-background p-8 rounded-2xl shadow-xl">
             <h2 className="text-3xl font-bold mb-4">Try BeeYield in your apiary</h2>
             <p className="text-muted-foreground mb-6">
-              BeeYield is constantly evolving. We invite you to take part in the international testing of our system – together, we can advance technology that protects bees worldwide.
+              BeeYield is constantly evolving. We invite you to take part in the international testing of our system â€“ together, we can advance technology that protects bees worldwide.
             </p>
             <Button size="lg" className="w-full sm:w-auto" asChild>
               <Link to="/contact">Join the Program</Link>
@@ -201,7 +201,7 @@ const PollinationSolutions = () => {
                 <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
                   <Cpu className="h-5 w-5 text-primary" />
                 </div>
-                <span className="font-bold text-lg">Smart Hives</span>
+                <span className="font-bold text-lg">Intelligent Hives</span>
               </div>
             </div>
           </div>

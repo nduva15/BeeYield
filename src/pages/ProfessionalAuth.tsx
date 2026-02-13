@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -94,7 +94,7 @@ const ProfessionalAuth: React.FC = () => {
 
                             <div className="grid grid-cols-2 gap-4">
                                 {[
-                                    { icon: Bot, label: 'Smart Insights', desc: 'Predicting hive needs' },
+                                    { icon: Bot, label: 'Intelligent Insights', desc: 'Predicting hive needs' },
                                     { icon: Activity, label: 'Live Tracking', desc: 'Real-time hive data' },
                                     { icon: Shield, label: 'Secure Support', desc: 'Safe data protection' },
                                     { icon: Database, label: 'Fleet Management', desc: 'Easy hive organization' }
@@ -199,7 +199,7 @@ const ProfessionalAuth: React.FC = () => {
 
                 {/* Cyber Footer (Light Version) */}
                 <div className="py-8 border-t border-zinc-200 flex items-center justify-between text-xs font-bold text-zinc-400 uppercase tracking-[0.3em]">
-                    <p>© 2026 BeeYield</p>
+                    <p>Â© 2026 BeeYield</p>
                     <div className="flex gap-8">
                         <span className="text-primary/60 font-black">Connected</span>
                     </div>

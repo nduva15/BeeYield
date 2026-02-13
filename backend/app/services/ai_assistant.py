@@ -688,6 +688,7 @@ Answer the user's question with the depth and expertise expected of a world-clas
                     if "candidates" in data:
                         response_text = data["candidates"][0]["content"]["parts"][0]["text"]
                         response_text = AIEngine._sanitize_response(response_text)
+                        response_text = AIEngine._ensure_min_paragraphs(response_text, min_paragraphs=2)
                         
                         elapsed = (datetime.now() - start_time).total_seconds() * 1000
                         
@@ -701,16 +702,16 @@ Answer the user's question with the depth and expertise expected of a world-clas
                         )
                     
                     elif "error" in data:
-                        print(f"GEMINI ERROR: {data['error'].get('message')}")
+                        print(f"[ERROR] GEMINI ERROR: {data['error'].get('message')}")
             
             except Exception as e:
-                print(f"AI ENGINE ERROR: {e}")
+                print(f"[ERROR] AI ENGINE ERROR: {e}")
         
         # Fallback response
         elapsed = (datetime.now() - start_time).total_seconds() * 1000
         
         return AIResponse(
-            response=AIEngine._generate_fallback(query.message, intents, context_data),
+            response=AIEngine._ensure_min_paragraphs(AIEngine._generate_fallback(query.message, intents, context_data), min_paragraphs=2),
             confidence=0.7,
             processing_time_ms=int(elapsed),
             language=ctx.language,
@@ -726,8 +727,40 @@ Answer the user's question with the depth and expertise expected of a world-clas
         # Fix hallucinated company names  
         text = text.replace("HoneyBee Corp", "BeeYield")
         text = text.replace("YieldBee", "BeeYield")
-        
         return text.strip()
+    
+    @staticmethod
+    def _ensure_min_paragraphs(text: str, min_paragraphs: int = 2) -> str:
+        """Ensure the response contains at least `min_paragraphs` paragraphs.
+
+        - Considers paragraphs separated by one or more blank lines.
+        - If fewer paragraphs exist, split sentences into additional paragraphs.
+        """
+        if not text:
+            return text
+
+        # split on blank lines
+        parts = [p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()]
+        if len(parts) >= min_paragraphs:
+            return "\n\n".join(parts)
+
+        # fallback: split into sentences and redistribute into paragraphs
+        sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', text.strip()) if s.strip()]
+        if not sentences:
+            return text
+
+        # compute sentences per paragraph (round up)
+        per_par = max(1, (len(sentences) + min_paragraphs - 1) // min_paragraphs)
+        new_parts = []
+        i = 0
+        for _ in range(min_paragraphs):
+            chunk = sentences[i:i+per_par]
+            if not chunk:
+                chunk = [sentences[-1]]
+            new_parts.append(" ".join(chunk).strip())
+            i += per_par
+
+        return "\n\n".join(new_parts)
     
     @staticmethod
     def _extract_sources(context_data: str) -> List[Dict[str, str]]:

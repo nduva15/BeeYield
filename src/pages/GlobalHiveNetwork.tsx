@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Globe, Activity, BookOpen, Heart, AlertTriangle, MapPin, Check, Mail, Leaf, TrendingUp, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -104,7 +104,7 @@ const GlobalHiveNetwork = () => {
                 With 75% of food crops relying on pollinators, the decline of African bee populations threatens agricultural productivity, farmer livelihoods, and regional food security. Crops like mangoes, beans, tomatoes, and sisal depend heavily on healthy bee colonies.
               </p>
               <p className="text-background/80 leading-relaxed mb-8">
-                This isn't just about bees—it's about ensuring sustainable agriculture and food security for millions across Africa and the world. The time to act is now.
+                This isn't just about beesâ€”it's about ensuring sustainable agriculture and food security for millions across Africa and the world. The time to act is now.
               </p>
               <Button variant="secondary" className="gap-2">
                 Learn More <ArrowRight className="h-4 w-4" />
@@ -185,7 +185,7 @@ const GlobalHiveNetwork = () => {
                 </Badge>
                 <h3 className="text-3xl font-bold mb-4 text-foreground">Optimizing Mango Pollination</h3>
                 <p className="text-muted-foreground leading-relaxed mb-6">
-                  In partnership with local mango growers in Makueni County, BeeYield is deploying smart hive sensors to maximize fruit set during the critical flowering window. Our precision monitoring ensures bee colonies are active when trees need them most.
+                  In partnership with local mango growers in Makueni County, BeeYield is deploying intelligent hive sensors to maximize fruit set during the critical flowering window. Our precision monitoring ensures bee colonies are active when trees need them most.
                 </p>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-center gap-2 text-foreground"><Check className="h-4 w-4 text-primary" /> 40% increase in mango yields observed</li>
@@ -258,7 +258,7 @@ const GlobalHiveNetwork = () => {
           <div className="max-w-4xl mx-auto text-center mb-20 bg-background p-8 rounded-2xl shadow-xl">
             <h2 className="text-3xl font-bold mb-4">Try BeeYield in your apiary</h2>
             <p className="text-muted-foreground mb-6">
-              BeeYield is constantly evolving. We invite you to take part in the international testing of our system – together, we can advance technology that protects bees worldwide.
+              BeeYield is constantly evolving. We invite you to take part in the international testing of our system â€“ together, we can advance technology that protects bees worldwide.
             </p>
             <Button size="lg" className="w-full sm:w-auto" asChild>
               <Link to="/contact">Join the Program</Link>
@@ -303,7 +303,7 @@ const GlobalHiveNetwork = () => {
             <Heart className="h-12 w-12 mx-auto mb-4 text-primary-foreground/80" />
             <h2 className="text-4xl font-bold mb-4 text-primary-foreground">Support African and World Farmers</h2>
             <p className="text-xl text-primary-foreground/80 max-w-2xl mx-auto">
-              Join our community of supporters strengthening pollinator health and food security across Makueni and Kitui Counties today—and building a global network for farmers everywhere.
+              Join our community of supporters strengthening pollinator health and food security across Makueni and Kitui Counties todayâ€”and building a global network for farmers everywhere.
             </p>
           </div>
 
@@ -361,7 +361,7 @@ const GlobalHiveNetwork = () => {
                 </div>
 
                 <ul className="space-y-3 mb-8">
-                  <li className="flex items-center gap-2 text-sm text-foreground"><Check className="h-4 w-4 text-primary" /> Adopt a smart hive</li>
+                  <li className="flex items-center gap-2 text-sm text-foreground"><Check className="h-4 w-4 text-primary" /> Partner with an intelligent hive</li>
                   <li className="flex items-center gap-2 text-sm text-foreground"><Check className="h-4 w-4 text-primary" /> Access to webinars & events</li>
                   <li className="flex items-center gap-2 text-sm text-foreground"><Check className="h-4 w-4 text-primary" /> Exclusive network insights</li>
                 </ul>

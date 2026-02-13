@@ -51,10 +51,10 @@ const BeeYieldDashboard = lazy(() => import('@/pages/BeeYieldDashboard'))
 const AdminDashboard = lazy(() => import('@/pages/AdminDashboard'))
 const ContentEditor = lazy(() => import('@/components/beeyield/ContentEditor'))
 const AdminLogin = lazy(() => import('@/pages/AdminAuth'))
-const BuyerDashboard = lazy(() => import('@/pages/BuyerDashboard'))
+const ShopDashboard = lazy(() => import('@/pages/ShopDashboard'))
 const AccountSettings = lazy(() => import('@/pages/AccountSettings'))
 const UpdatePassword = lazy(() => import('@/pages/UpdatePassword'))
-const Authentication = lazy(() => import('@/pages/Authentication'))
+const ShopAuth = lazy(() => import('@/pages/ShopAuth'))
 const ProfessionalAuth = lazy(() => import('@/pages/ProfessionalAuth'))
 const AuthCallback = lazy(() => import('@/pages/AuthCallback'))
 const NotFound = lazy(() => import('@/pages/NotFound'))
@@ -80,7 +80,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                                 <WishlistProvider>
                                     <Toaster />
                                     <Sonner />
-                                    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+                                    <BrowserRouter>
                                         <ScrollToTop />
                                         <Layout>
                                             <Suspense fallback={<PageLoader />}>
@@ -118,13 +118,13 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                                                     <Route path="/admin/content/editor/:id" element={<ProtectedRoute><ContentEditor /></ProtectedRoute>} />
                                                     <Route path="/ceba/login" element={<AdminLogin />} />
                                                     <Route path="/admin/login" element={<AdminLogin />} />
-                                                    {/* Mapped my-account to BuyerDashboard based on routes/my-account.tsx */}
-                                                    <Route path="/my-account" element={<ProtectedRoute><BuyerDashboard /></ProtectedRoute>} />
-                                                    <Route path="/buyer-dashboard" element={<ProtectedRoute><BuyerDashboard /></ProtectedRoute>} />
+                                                    <Route path="/my-account" element={<ProtectedRoute><ShopDashboard /></ProtectedRoute>} />
+                                                    <Route path="/buyer-dashboard" element={<ProtectedRoute><ShopDashboard /></ProtectedRoute>} />
+                                                    <Route path="/shop-dashboard" element={<ProtectedRoute><ShopDashboard /></ProtectedRoute>} />
                                                     <Route path="/account-settings" element={<ProtectedRoute><AccountSettings /></ProtectedRoute>} />
                                                     <Route path="/update-password" element={<ProtectedRoute><UpdatePassword /></ProtectedRoute>} />
-                                                    <Route path="/login" element={<Authentication />} />
-                                                    <Route path="/signup" element={<Authentication />} />
+                                                    <Route path="/login" element={<ShopAuth />} />
+                                                    <Route path="/signup" element={<ShopAuth />} />
                                                     <Route path="/beeyield-login" element={<ProfessionalAuth />} />
                                                     <Route path="/auth/callback" element={<AuthCallback />} />
                                                     <Route path="/receipt/:orderId" element={<ProtectedRoute><Receipt /></ProtectedRoute>} />

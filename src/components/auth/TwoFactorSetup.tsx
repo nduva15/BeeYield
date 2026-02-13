@@ -179,6 +179,7 @@ const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({ onComplete }) => {
                             </Label>
                             <Input
                                 id="verify-code"
+                                name="verification-code"
                                 type="text"
                                 placeholder="000000"
                                 value={verificationCode}

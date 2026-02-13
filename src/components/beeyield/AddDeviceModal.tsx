@@ -85,7 +85,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                     <div className="grid grid-cols-2 gap-8">
                         <div className="space-y-3">
                             <label className="text-sm font-bold text-slate-500 uppercase tracking-wider ml-1">Apiary</label>
-                            <Select value={selectedApiaryId} onValueChange={setSelectedApiaryId}>
+                            <Select name="apiary_id" value={selectedApiaryId} onValueChange={setSelectedApiaryId}>
                                 <SelectTrigger className="h-16 rounded-2xl bg-white dark:bg-black/20 border-slate-200 dark:border-white/10 text-xl font-medium">
                                     <SelectValue placeholder="Select Apiary" />
                                 </SelectTrigger>
@@ -102,6 +102,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                         <div className="space-y-3">
                             <label className="text-sm font-bold text-slate-500 uppercase tracking-wider ml-1">Hive</label>
                             <Select
+                                name="hive_id"
                                 value={selectedHiveId}
                                 onValueChange={setSelectedHiveId}
                                 disabled={!selectedApiaryId}
@@ -124,6 +125,8 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                         <div className="space-y-3">
                             <label className="text-sm font-bold text-slate-500 uppercase tracking-wider ml-1">BeeHUB ID (Short ID)</label>
                             <Input
+                                id="device-code"
+                                name="device_code"
                                 value={deviceCode}
                                 onChange={(e) => setDeviceCode(e.target.value)}
                                 placeholder="e.g. HUB-42X"
@@ -133,7 +136,7 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
 
                         <div className="space-y-3">
                             <label className="text-sm font-bold text-slate-500 uppercase tracking-wider ml-1">Device Type</label>
-                            <Select value={deviceType} onValueChange={(v: any) => setDeviceType(v)}>
+                            <Select name="device_type" value={deviceType} onValueChange={(v: any) => setDeviceType(v)}>
                                 <SelectTrigger className="h-16 rounded-2xl bg-white dark:bg-black/20 border-slate-200 dark:border-white/10 text-xl font-medium">
                                     <SelectValue />
                                 </SelectTrigger>
@@ -149,6 +152,8 @@ const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onA
                     <div className="space-y-3">
                         <label className="text-sm font-bold text-slate-500 uppercase tracking-wider ml-1">Friendly Name (Optional)</label>
                         <Input
+                            id="device-name"
+                            name="device_name"
                             value={deviceName}
                             onChange={(e) => setDeviceName(e.target.value)}
                             placeholder="e.g. Front Gate Monitor"

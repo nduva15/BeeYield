@@ -14,7 +14,7 @@ try:
     from dns_fix import patch_dns
     patch_dns()
 except Exception as e:
-    print(f"⚠️ Could not apply DNS patch: {e}")
+    print(f"[WARNING] Could not apply DNS patch: {e}")
 
 app = FastAPI(
     title=settings.PROJECT_NAME,

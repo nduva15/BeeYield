@@ -478,7 +478,8 @@ jobs:
         with:
           status: ${{ job.status }}
           text: 'Production deployment completed successfully! 🚀'
-          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
         if: always()
 
   # ============================================================

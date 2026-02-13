@@ -146,12 +146,25 @@ class HoneyBlockchain:
         return os.path.join(os.path.dirname(os.path.abspath(__file__)), "traceability_chain.json")
 
     def _save_chain(self) -> None:
-        """Save the blockchain to disk"""
+        """Save the blockchain to disk with atomic write"""
         try:
+            import os
+            import tempfile
             chain_data = [block.to_dict() for block in self.chain]
-            with open(self._get_chain_path(), "w") as f:
+            path = self._get_chain_path()
+            
+            # Use a temporary file to prevent corruption if interrupted
+            fd, temp_path = tempfile.mkstemp(dir=os.path.dirname(path))
+            with os.fdopen(fd, 'w') as f:
                 json.dump(chain_data, f, indent=2)
-            print(f"BLOCKCHAIN saved to {self._get_chain_path()}")
+            
+            # Atomic rename
+            if os.path.exists(path):
+                os.replace(temp_path, path)
+            else:
+                os.rename(temp_path, path)
+                
+            print(f"BLOCKCHAIN saved to {path}")
         except Exception as e:
             print(f"FAILED to save blockchain: {e}")
 

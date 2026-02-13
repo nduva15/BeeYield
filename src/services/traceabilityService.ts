@@ -101,8 +101,15 @@ export interface TraceResponse {
     // Stats / Impact
     impact_stats: ImpactStats | Record<string, unknown>;
 
+
     // Sensor Snapshot
     sensor_snapshot?: SensorSnapshot;
+
+    // Health Snapshot
+    health_snapshot?: Record<string, any>;
+
+    // Product Details
+    florage_type?: string;
 
     // Extra Details
     extra_metadata?: Record<string, any>;
@@ -180,11 +187,13 @@ const generateMockData = (code: string): TraceResponse => {
     const lng = (baseLng + (col * 0.0008) + ((seed % 10) * 0.00002)).toFixed(4);
 
     const isAcacia = code.toUpperCase().includes("ACACIA");
-    const day = (hiveNumInt % 20) + 10;
-    const harvestDate = `Jan ${day}, 2026`;
+    const isSavanna = code.toUpperCase().includes("SAV");
+    const isGold = code.toUpperCase().includes("GOLD");
 
-    // HARVEST LOGIC: 60kg total / 30 hives = 2kg per hive
-    const hiveYield = "2.00";
+    // Jan 3-10 range for 2026 as per user request
+    const day = (hiveNumInt % 8) + 3;
+    const yearCode = code.includes("-26") || code.includes("2026") ? "2026" : "2025";
+    const harvestDate = `Jan ${day}, ${yearCode}`;
 
     // Determine Jar Size and Price Category mapping
     let jarSize = "500g";
@@ -192,18 +201,18 @@ const generateMockData = (code: string): TraceResponse => {
 
     if (code.includes("1KG") || (hiveNumInt >= 101 && hiveNumInt <= 110)) {
         jarSize = "1kg";
-        jarsProduced = 2; // 2kg / 1kg
-    } else if (code.includes("500G") || (hiveNumInt >= 111 && hiveNumInt <= 120)) {
-        jarSize = "500g";
-        jarsProduced = 4;
+        jarsProduced = 2;
     } else if (code.includes("250G") || (hiveNumInt >= 121 && hiveNumInt <= 130)) {
         jarSize = "250g";
         jarsProduced = 8;
     }
 
+    // HARVEST LOGIC
+    const hiveYield = "2.00";
+
     return {
         batch_code: code,
-        product_name: isAcacia ? "Premium Acacia Honey" : "Organic Wildflower Honey",
+        product_name: isAcacia ? "Premium Acacia Honey" : (isGold ? "24K Gold Forest Honey" : (isSavanna ? "Wild Savanna Honey" : "Organic Wildflower Honey")),
         verified: true,
         blockchain_verified: true,
         verification_url: `https://trail.beeyield.com/verify/${code}`,
@@ -215,8 +224,8 @@ const generateMockData = (code: string): TraceResponse => {
             county: "Makueni",
             latitude: -2.4167,
             longitude: 37.9667,
-            experience_years: 6,
-            story: "Dedicated to sustainable beekeeping and protecting our local ecosystems. Every jar tells the story of our commitment to the bees and the land we share with them.",
+            experience_years: 15,
+            story: "Timothy is a master beekeeper managing 184 hives in the Kibwezi ecosystem. His heritage spans over a decade of ethical production.",
             registration_date: "2020-01-15"
         },
         apiary: {
@@ -226,7 +235,7 @@ const generateMockData = (code: string): TraceResponse => {
             location_name: "Kibwezi West",
             region: "Eastern",
             county: "Makueni",
-            environment_type: "Savanna Wooded",
+            environment_type: isSavanna ? "Arid Savanna" : "Savanna Wooded",
             flora_types: isAcacia ? ["Yellow Acacia", "Red Acacia"] : ["Wildflower", "Acacia", "Sunflower"],
             water_source: "Natural Spring Stream",
             established_date: "2020-02-01",
@@ -244,23 +253,35 @@ const generateMockData = (code: string): TraceResponse => {
             status: "Active",
             installation_date: "2020-03-01"
         },
-        story_title: "The BeeYield Story",
-        story_content: "From 4 hives to 184.",
+        story_title: isGold ? "The 24K Gold standard" : "The BeeYield Heritage",
+        story_content: isGold
+            ? "Meticulously harvested from our most vital forest colonies, this limited edition batch represents the pinnacle of Kibwezi's biodiversity."
+            : "From 10 hives in 2020 to a thriving community sanctuary in 2026.",
         impact_stats: {
-            total_honey_kg: "60.00",
+            total_honey_kg: code.includes("2026") ? "60.00" : (code.includes("2025") ? "301.10" : (code.includes("2024") ? "280.98" : (code.includes("2023") ? "160.56" : (code.includes("2022") ? "100.35" : (code.includes("2020") ? "40.14" : "943.00"))))),
+            all_time_total: "943.00",
             hive_count: "184",
-            harvested_hives: "30",
+            harvested_hives: code.includes("2026") ? "30" : (code.includes("2025") ? "75" : (code.includes("2024") ? "70" : (code.includes("2023") ? "40" : (code.includes("2022") ? "25" : "10")))),
             beekeepers: "1",
-            farmers_served: "5",
-            acres_pollinated: "5",
+            farmers_served: "15",
+            acres_pollinated: "500",
             batch_yield_kg: hiveYield,
             jars_in_this_sub_batch: jarsProduced.toString()
         },
+        health_snapshot: {
+            status: "Clean",
+            last_checked: "2026-01-01",
+            pest_level: "None",
+            certified_disease_free: true
+        },
+        florage_type: isAcacia ? "Acacia" : (isSavanna ? "Savanna Flora" : (isGold ? "Wild Forest" : "Wildflower")),
         extra_metadata: {
-            harvest_context: `Harvested specifically from Hive H-${hiveNumberVal} on ${harvestDate}. Part of the 60kg Certified Harvest.`,
+            harvest_context: `Harvested specifically from Hive H-${hiveNumberVal} on ${harvestDate}. Part of the 943kg Heritage Collection.`,
             jar_size: jarSize,
             production_lot_size: `${jarsProduced} jars of ${jarSize}`,
-            placement_score: (94 + (hiveNumInt % 5)).toString()
+            placement_score: (94 + (hiveNumInt % 5)).toString(),
+            bees_protected: "YES - 50/50 Promise",
+            harvest_window: "Jan 3-10, 2026"
         },
         sensor_snapshot: {
             avg_temp: parseFloat(broodTemp),

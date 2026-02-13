@@ -1,37 +1,34 @@
 from typing import List, Optional, Dict, Any
-from datetime import datetime, timedelta
-from app.db.supabase_db import db_select, db_insert, db_get_by_id
-from app.schemas import iot as schemas
+from datetime import datetime
+from app.db.supabase_db import db_select, db_insert
 
-def get_devices(farmer_id: Optional[str] = None) -> List[Dict[str, Any]]:
+async def get_devices(farmer_id: Optional[str] = None, token: Optional[str] = None) -> List[Dict[str, Any]]:
     filters = {}
     if farmer_id:
         filters["farmer_id"] = farmer_id
-    return db_select("iot_devices", filters=filters, order_by="created_at")
+    return await db_select("iot_devices", filters=filters, order_by="created_at", token=token)
 
-def get_sensor_readings(
+async def get_sensor_readings(
     device_id: Optional[str] = None, 
     sensor_type: Optional[str] = None,
-    hours: int = 24
+    hours: int = 24,
+    token: Optional[str] = None
 ) -> List[Dict[str, Any]]:
-    # In a real system we would filter by timestamp here too
-    # For now, using the db_select helper which doesn't support complex time filtering yet
-    # but we can filter by device and type
     filters = {}
     if device_id:
         filters["device_id"] = device_id
     if sensor_type:
         filters["sensor_type"] = sensor_type
         
-    return db_select("sensor_readings", filters=filters, limit=500, order_by="timestamp", ascending=False)
+    # Note: In a real system we would filter by timestamp here too
+    return await db_select("sensor_readings", filters=filters, limit=500, order_by="timestamp", ascending=False, token=token)
 
-def get_client_hives(user_id: str) -> List[Dict[str, Any]]:
-    return db_select("client_hives", filters={"user_id": user_id}, order_by="created_at")
+async def get_client_hives(user_id: str, token: Optional[str] = None) -> List[Dict[str, Any]]:
+    return await db_select("client_hives", filters={"user_id": user_id}, order_by="created_at", token=token)
 
-def get_dashboard_stats(user_id: str) -> Dict[str, Any]:
-    # In a real app, this would be optimized queries
-    devices = get_devices() # Should probably be filtered by user/farmer
-    readings = get_sensor_readings(hours=24)
+async def get_dashboard_stats(user_id: str, token: Optional[str] = None) -> Dict[str, Any]:
+    devices = await get_devices(token=token)
+    readings = await get_sensor_readings(hours=24, token=token)
     
     active_devices = [d for d in devices if d.get("status") == "active"]
     infield = [r for r in readings if r.get("sensor_type") == "infield"]
@@ -47,14 +44,14 @@ def get_dashboard_stats(user_id: str) -> Dict[str, Any]:
         "totalDevices": len(devices),
         "activeDevices": len(active_devices),
         "totalReadings": len(readings),
-        "lastUpdate": readings[0].get("timestamp") if readings else datetime.utcnow(),
+        "lastUpdate": readings[0].get("timestamp") if readings else datetime.utcnow().isoformat(),
         "avgTemperature": round(avg_temp, 1),
         "avgHumidity": round(avg_hum, 1),
         "avgHiveWeight": round(avg_weight, 1),
         "healthScore": round(health_score)
     }
-def create_device(data: Dict[str, Any]) -> Dict[str, Any]:
-    # Ensure mandatory fields
+
+async def create_device(data: Dict[str, Any], token: Optional[str] = None) -> Dict[str, Any]:
     if "status" not in data:
         data["status"] = "active"
     if "battery_level" not in data:
@@ -64,7 +61,7 @@ def create_device(data: Dict[str, Any]) -> Dict[str, Any]:
     if "last_ping" not in data:
         data["last_ping"] = datetime.utcnow().isoformat()
         
-    result = db_insert("iot_devices", data)
+    result = await db_insert("iot_devices", data, token=token)
     if result.get("success"):
         return result["data"][0] if result.get("data") else data
     return data

@@ -34,8 +34,8 @@ let lastSessionFetch = 0;
  * Get authentication headers from Supabase session with caching
  */
 export async function getAuthHeaders(): Promise<Record<string, string>> {
-    const client = getActiveClient();
-    if (!client) return {};
+    const activeClient = getActiveClient();
+    if (!activeClient) return {};
 
     const now = Date.now();
     // Cache session for 30 seconds to reduce overhead on concurrent requests
@@ -46,8 +46,18 @@ export async function getAuthHeaders(): Promise<Record<string, string>> {
     }
 
     try {
-        // Use getSession which is faster than getUser as it reads from storage
-        const { data: { session } } = await client.auth.getSession();
+        // 1. Try active client (e.g. BeeYield or CEBA)
+        let { data: { session } } = await activeClient.auth.getSession();
+
+        // 2. Fallback: If no session on active client, and active client is NOT shop, try shop (main) session
+        // This handles cases where a Shop user has permissions to access BeeYield/CEBA areas
+        if (!session && activeClient !== supabaseShop && supabaseShop) {
+            const { data: shopAuth } = await supabaseShop.auth.getSession();
+            if (shopAuth.session) {
+                session = shopAuth.session;
+            }
+        }
+
         if (session?.access_token) {
             cachedSession = session;
             lastSessionFetch = now;
@@ -59,7 +69,7 @@ export async function getAuthHeaders(): Promise<Record<string, string>> {
         console.error('Error getting auth headers:', error);
     }
 
-    // Fallback to cached session if available even if expired, to prevent blocking
+    // Fallback to previously cached session if available even if expired, to prevent blocking
     if (cachedSession) {
         return {
             'Authorization': `Bearer ${cachedSession.access_token}`

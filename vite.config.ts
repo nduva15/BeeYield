@@ -3,11 +3,22 @@ import react from '@vitejs/plugin-react-swc'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import path from 'path'
 
+import tailwindcss from 'tailwindcss'
+import autoprefixer from 'autoprefixer'
+
 // Detect if running inside `tauri dev`
 const isTauri = !!process.env.TAURI_ENV_PLATFORM
 
 // https://vitejs.dev/config/
 export default defineConfig({
+    css: {
+        postcss: {
+            plugins: [
+                tailwindcss,
+                autoprefixer,
+            ],
+        },
+    },
     plugins: [
         react(),
         tsconfigPaths(),

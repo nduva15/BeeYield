@@ -50,6 +50,39 @@ class AIService:
         return mapping.get(code.upper(), 'English')
 
     @staticmethod
+    def _ensure_min_paragraphs(text: str, min_paragraphs: int = 2) -> str:
+        """Ensure the response contains at least `min_paragraphs` paragraphs."""
+        if not text:
+            return text
+
+        # split on blank lines
+        parts = [p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()]
+        if len(parts) >= min_paragraphs:
+            return "\n\n".join(parts)
+
+        # fallback: split into sentences and redistribute into paragraphs
+        sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', text.strip()) if s.strip()]
+        if not sentences:
+            return text
+
+        # compute sentences per paragraph (round up)
+        per_par = max(1, (len(sentences) + min_paragraphs - 1) // min_paragraphs)
+        new_parts = []
+        i = 0
+        for _ in range(min_paragraphs):
+            # Take a chunk of sentences
+            chunk = sentences[i:i+per_par]
+            if not chunk and sentences:
+                # If we're out of sentences but still need paragraphs, take the last sentence
+                chunk = [sentences[-1]]
+            
+            if chunk:
+                new_parts.append(" ".join(chunk).strip())
+            i += per_par
+
+        return "\n\n".join(new_parts)
+
+    @staticmethod
     async def chat(
         message: str, 
         history: list[dict[str, str]] = None, 
@@ -83,7 +116,7 @@ class AIService:
         for kw in hybrid_results.get("keyword_results", []):
             if kw.get("content"):
                 knowledge_context = f"{kw['content']}\n\n{knowledge_context}"
-
+ 
         # Fuse with Qdrant vector search if available (semantic diversity)
         if QDRANT_AVAILABLE and knowledge_context:
             try:
@@ -106,10 +139,13 @@ class AIService:
         # Optimization: Simple Response Mode for short/conversational queries
         is_simple = len(message) < 50 and not any(kw in msg_lower for kw in ["compare", "analyze", "report", "detailed", "technical", "history"])
         
+        final_answer = ""
+        
         if is_simple:
             simple_prompt = (
-                f"You are BeeYield AI. Provide a helpful, professional, but CONCISE response (2-3 paragraphs max) "
-                f"to this message: '{message}'. Use this context if relevant:\n{knowledge_context[:2000]}"
+                f"You are BeeYield AI. Provide a helpful, professional response. "
+                f"Your response MUST contain at least 2 distinct paragraphs. "
+                f"Message: '{message}'\n\nContext:\n{knowledge_context[:2000]}"
             )
             google_key = settings.GOOGLE_API_KEY
             if google_key:
@@ -119,114 +155,117 @@ class AIService:
                     contents=[simple_prompt],
                     config=genai.types.GenerateContentConfig(temperature=0.7)
                 )
-                return response.text
+                final_answer = response.text
         
-        # Technical/Complex Query Path
-        observation_prompt = (
-            f"You are the BEE_OBSERVER node. Extract EVERY technical fact, metric, statistic, date, and citation from this context "
-            f"related to the query: '{message}'.\n\n"
-            f"RULES:\n"
-            f"- Be EXHAUSTIVE. Include percentages, dates, names, figures.\n"
-            f"- Organize by pillar: INTELLIGENCE, GLOBAL_CONTEXT, IOT_ENVIRONMENTAL, INTERNAL_OPS, BIBLIOGRAPHY.\n"
-            f"- Output a structured JSON array: [{{\"pillar\": \"...\", \"fact\": \"...\", \"source\": \"...\"}}]\n\n"
-            f"CONTEXT:\n{knowledge_context}"
-        )
-        
-        extracted_facts = ""
-        google_key = settings.GOOGLE_API_KEY
-        if google_key:
-            async def gemini_observe():
-                from google.genai import types
-                client = genai.Client(api_key=google_key)
-                obs_resp = client.models.generate_content(
-                    model="gemini-2.0-flash",
-                    contents=[observation_prompt],
-                    config=types.GenerateContentConfig(temperature=0.1, max_output_tokens=8192)
-                )
-                return obs_resp.text
+        if not final_answer:
+            # Technical/Complex Query Path
+            observation_prompt = (
+                f"You are the BEE_OBSERVER node. Extract EVERY technical fact, metric, statistic, date, and citation from this context "
+                f"related to the query: '{message}'.\n\n"
+                f"RULES:\n"
+                f"- Be EXHAUSTIVE. Include percentages, dates, names, figures.\n"
+                f"- Organize by pillar: INTELLIGENCE, GLOBAL_CONTEXT, IOT_ENVIRONMENTAL, INTERNAL_OPS, BIBLIOGRAPHY.\n"
+                f"- Output a structured JSON array: [{{\"pillar\": \"...\", \"fact\": \"...\", \"source\": \"...\"}}]\n\n"
+                f"CONTEXT:\n{knowledge_context}"
+            )
             
-            try:
-                extracted_facts = await RateLimitManager.with_retry(
-                    gemini_observe,
-                    max_retries=2,
-                    base_delay=1.0,
-                    api_name="gemini_observe"
-                )
-            except Exception:
-                extracted_facts = knowledge_context[:3000]
-
-        # --- PHASE 3: TIER 2 - SYNTHESIS (THE REASONER & WRITER) ---
-        system_prompt = (
-            f"You are the BEE_ARCHITECT (v5.0), the primary intelligence of BeeYield.\n"
-            f"TIMESTAMP: {current_time}, {current_date}\n\n"
-            f"STRICT GOVERNANCE:\n"
-            f"1. FACT-GROUNDING: Use ONLY facts from the extracted data below. NEVER invent data.\n"
-            f"2. LENGTH: Target 800-1200 words. Provide substantial depth without unnecessary fluff.\n"
-            f"3. STRUCTURE: Use ## for main sections, ### for subsections.\n"
-            f"4. CITATIONS: Integrate inline [1], [2] referencing: {json.dumps(citations)}\n"
-            f"5. KEY TAKEAWAYS: Include a **Key Takeaways** list at the end of Section I.\n\n"
-            f"EXTRACTED FACTS:\n{extracted_facts}\n"
-        )
-
-        final_answer = ""
-        openai_key = settings.OPENAI_API_KEY
-        if openai_key and not openai_key.startswith("sk-proj-REPLACE"):
-            async def openai_synthesize():
-                async with httpx.AsyncClient() as client:
-                    url = "https://api.openai.com/v1/chat/completions"
-                    headers = {"Authorization": f"Bearer {openai_key}", "Content-Type": "application/json"}
-                    payload = {
-                        "model": "gpt-4o",
-                        "messages": [
-                            {"role": "system", "content": system_prompt},
-                            {"role": "user", "content": f"Write a full, authoritative report. Do not truncate. Query: {message}"}
-                        ],
-                        "temperature": 0.25,
-                        "max_tokens": 16384
-                    }
-                    resp = await client.post(url, headers=headers, json=payload, timeout=120.0)
-                    data = resp.json()
-                    if "choices" in data:
-                        return data["choices"][0]["message"]["content"]
-                    elif "error" in data:
-                        raise Exception(data["error"].get("message", "OpenAI API error"))
-                    return ""
-            
-            try:
-                final_answer = await RateLimitManager.with_retry(
-                    openai_synthesize,
-                    max_retries=3,
-                    base_delay=1.0,
-                    api_name="openai_synthesize"
-                )
-            except Exception as e:
-                print(f"OPENAI SYNTHESIS ERROR (after retries): {e}")
-
-        # Fallback to pure Gemini if GPT-4o fails
-        if not final_answer and google_key:
-            async def gemini_synthesize():
-                from google.genai import types
-                client = genai.Client(api_key=google_key)
-                response = client.models.generate_content(
-                    model="gemini-2.0-flash",
-                    contents=[f"Write a full, authoritative report. Do not truncate. Query: {message}"],
-                    config=types.GenerateContentConfig(
-                        system_instruction=system_prompt,
-                        temperature=0.25,
-                        max_output_tokens=16384
+            extracted_facts = ""
+            google_key = settings.GOOGLE_API_KEY
+            if google_key:
+                async def gemini_observe():
+                    from google.genai import types
+                    client = genai.Client(api_key=google_key)
+                    obs_resp = client.models.generate_content(
+                        model="gemini-2.0-flash",
+                        contents=[observation_prompt],
+                        config=types.GenerateContentConfig(temperature=0.1, max_output_tokens=8192)
                     )
-                )
-                return response.text
-            
-            try:
-                final_answer = await RateLimitManager.with_retry(
-                    gemini_synthesize,
-                    max_retries=3,
-                    base_delay=5.0,
-                    api_name="gemini_synthesize"
-                )
-            except Exception as e:
-                final_answer = f"Error in synthesis: {e}\n\nRaw Context:\n{knowledge_context[:1000]}"
+                    return obs_resp.text
+                
+                try:
+                    extracted_facts = await RateLimitManager.with_retry(
+                        gemini_observe,
+                        max_retries=2,
+                        base_delay=1.0,
+                        api_name="gemini_observe"
+                    )
+                except Exception:
+                    extracted_facts = knowledge_context[:3000]
+
+            # --- PHASE 3: TIER 2 - SYNTHESIS (THE REASONER & WRITER) ---
+            system_prompt = (
+                f"You are the BEE_ARCHITECT (v5.0), the primary intelligence of BeeYield.\n"
+                f"TIMESTAMP: {current_time}, {current_date}\n\n"
+                f"STRICT GOVERNANCE:\n"
+                f"1. FACT-GROUNDING: Use ONLY facts from the extracted data below. NEVER invent data.\n"
+                f"2. LENGTH: Target 800-1200 words. Provide substantial depth without unnecessary fluff.\n"
+                f"3. STRUCTURE: Use ## for main sections, ### for subsections. Ensure at least 5-7 paragraphs.\n"
+                f"4. CITATIONS: Integrate inline [1], [2] referencing: {json.dumps(citations)}\n"
+                f"5. KEY TAKEAWAYS: Include a **Key Takeaways** list at the end of Section I.\n\n"
+                f"EXTRACTED FACTS:\n{extracted_facts}\n"
+            )
+
+            openai_key = settings.OPENAI_API_KEY
+            if openai_key and not openai_key.startswith("sk-proj-REPLACE"):
+                async def openai_synthesize():
+                    async with httpx.AsyncClient() as client:
+                        url = "https://api.openai.com/v1/chat/completions"
+                        headers = {"Authorization": f"Bearer {openai_key}", "Content-Type": "application/json"}
+                        payload = {
+                            "model": "gpt-4o",
+                            "messages": [
+                                {"role": "system", "content": system_prompt},
+                                {"role": "user", "content": f"Write a full, authoritative report with at least 5 paragraphs. Query: {message}"}
+                            ],
+                            "temperature": 0.25,
+                            "max_tokens": 16384
+                        }
+                        resp = await client.post(url, headers=headers, json=payload, timeout=120.0)
+                        data = resp.json()
+                        if "choices" in data:
+                            return data["choices"][0]["message"]["content"]
+                        elif "error" in data:
+                            raise Exception(data["error"].get("message", "OpenAI API error"))
+                        return ""
+                
+                try:
+                    final_answer = await RateLimitManager.with_retry(
+                        openai_synthesize,
+                        max_retries=3,
+                        base_delay=1.0,
+                        api_name="openai_synthesize"
+                    )
+                except Exception as e:
+                    print(f"OPENAI SYNTHESIS ERROR (after retries): {e}")
+
+            # Fallback to pure Gemini if GPT-4o fails
+            if not final_answer and google_key:
+                async def gemini_synthesize():
+                    from google.genai import types
+                    client = genai.Client(api_key=google_key)
+                    response = client.models.generate_content(
+                        model="gemini-2.0-flash",
+                        contents=[f"Write a full, authoritative report with at least 5 paragraphs. Do not truncate. Query: {message}"],
+                        config=types.GenerateContentConfig(
+                            system_instruction=system_prompt,
+                            temperature=0.25,
+                            max_output_tokens=16384
+                        )
+                    )
+                    return response.text
+                
+                try:
+                    final_answer = await RateLimitManager.with_retry(
+                        gemini_synthesize,
+                        max_retries=3,
+                        base_delay=5.0,
+                        api_name="gemini_synthesize"
+                    )
+                except Exception as e:
+                    final_answer = f"Error in synthesis: {e}\n\nRaw Context:\n{knowledge_context[:1000]}"
+
+        # Apply minimum paragraph rule as Post-processing
+        final_answer = AIService._ensure_min_paragraphs(final_answer, min_paragraphs=2)
 
         # --- PHASE 4: ASSET GENERATION ---
         if "pdf" in msg_lower or "report" in msg_lower:
@@ -238,3 +277,4 @@ class AIService:
             final_answer += f"\n\n---\n**GENERATOR LOG:** 📄 [Intelligence_Report_v4.pdf]({pdf_url})"
 
         return final_answer
+

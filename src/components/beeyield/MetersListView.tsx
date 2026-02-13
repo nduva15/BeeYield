@@ -333,8 +333,8 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                         <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Apiary</label>
                         <div className="relative">
                             <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-                            <select className="w-full h-9 pl-9 pr-4 bg-gray-50 dark:bg-slate-100 border-none rounded-xl text-[11px] font-medium appearance-none cursor-pointer">
-                                <option>All apiaries</option>
+                            <select id="filter-apiary" name="apiary" className="w-full h-9 pl-9 pr-4 bg-gray-50 dark:bg-slate-100 border-none rounded-xl text-[11px] font-medium appearance-none cursor-pointer">
+                                <option value="">All apiaries</option>
                             </select>
                         </div>
                     </div>
@@ -343,8 +343,8 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                         <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Hive</label>
                         <div className="relative">
                             <Home className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-                            <select className="w-full h-9 pl-9 pr-4 bg-gray-50 dark:bg-slate-100 border-none rounded-xl text-[11px] font-medium appearance-none cursor-pointer">
-                                <option>All hives</option>
+                            <select id="filter-hive" name="hive" className="w-full h-9 pl-9 pr-4 bg-gray-50 dark:bg-slate-100 border-none rounded-xl text-[11px] font-medium appearance-none cursor-pointer">
+                                <option value="">All hives</option>
                             </select>
                         </div>
                     </div>
@@ -353,8 +353,8 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                         <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Health</label>
                         <div className="relative">
                             <Activity className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-                            <select className="w-full h-9 pl-9 pr-4 bg-gray-50 dark:bg-slate-100 border-none rounded-xl text-[11px] font-medium appearance-none cursor-pointer">
-                                <option>All statuses</option>
+                            <select id="filter-status" name="status" className="w-full h-9 pl-9 pr-4 bg-gray-50 dark:bg-slate-100 border-none rounded-xl text-[11px] font-medium appearance-none cursor-pointer">
+                                <option value="">All statuses</option>
                             </select>
                         </div>
                     </div>
@@ -363,8 +363,8 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                         <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Reading level</label>
                         <div className="relative">
                             <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-                            <select className="w-full h-9 pl-9 pr-4 bg-gray-50 dark:bg-slate-100 border-none rounded-xl text-[11px] font-medium appearance-none cursor-pointer">
-                                <option>All levels</option>
+                            <select id="filter-level" name="reading-level" className="w-full h-9 pl-9 pr-4 bg-gray-50 dark:bg-slate-100 border-none rounded-xl text-[11px] font-medium appearance-none cursor-pointer">
+                                <option value="">All levels</option>
                             </select>
                         </div>
                     </div>
@@ -374,6 +374,8 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                             <Input
+                                id="meter-search"
+                                name="meter-search"
                                 placeholder="Sensor ID / address..."
                                 className="h-9 pl-9 bg-gray-50 dark:bg-slate-100 border-none rounded-xl text-[11px]"
                                 value={searchQuery}
