@@ -95,6 +95,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
             await createRequest.mutateAsync({
                 subject,
                 description,
+                type: category,
                 category,
                 priority,
                 hive_id: selectedHive || undefined,
@@ -181,7 +182,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                 MY PLACES {apiariesData?.length ? `(${apiariesData.length})` : ''}
                             </span>
                             <span className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate w-full text-left -mt-0.5 uppercase">
-                                {selectedPlace || "Kibwezi Main Apiary"}
+                                {selectedPlace || "Select Territory"}
                             </span>
                         </div>
                         <ChevronDown className={cn("w-4 h-4 text-slate-400 transition-transform duration-300", isPlacesOpen && "rotate-180 text-[#F4D03F]")} />
@@ -201,11 +202,11 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                         <div className="flex items-center justify-center py-8">
                                             <Loader2 className="w-5 h-5 text-[#F4D03F] animate-spin" />
                                         </div>
-                                    ) : places.filter(a => a.name.includes('Kibwezi')).length === 0 ? (
+                                    ) : places.length === 0 ? (
                                         <div className="px-4 py-8 text-center text-slate-400 text-xs font-bold uppercase tracking-wider">
                                             No places found
                                         </div>
-                                    ) : places.filter(a => a.name.includes('Kibwezi')).map((place) => (
+                                    ) : places.map((place) => (
                                         <button
                                             key={place.id}
                                             onClick={() => {

@@ -22,12 +22,15 @@ import Layout from '@/components/Layout'
 import ProtectedRoute from '@/components/auth/ProtectedRoute'
 import '@/index.css'
 
-// Lazy load page imports
-const PollinationServices = lazy(() => import('@/pages/PollinationServices'))
-const About = lazy(() => import('@/pages/About'))
-const Contact = lazy(() => import('@/pages/Contact'))
-const Honey = lazy(() => import('@/pages/HoneyLanding'))
-const Shop = lazy(() => import('@/pages/Shop'))
+// Core pages are statically imported for instant startup and zero-flicker navigation
+import PollinationServices from '@/pages/PollinationServices'
+import Honey from '@/pages/HoneyLanding'
+import About from '@/pages/About'
+import Shop from '@/pages/Shop'
+import Contact from '@/pages/Contact'
+import Traceability from '@/pages/Traceability'
+
+// Secondary/Private pages remain lazy-loaded to optimize bundle size
 const Checkout = lazy(() => import('@/pages/Checkout'))
 const Learn = lazy(() => import('@/pages/BeeLearn'))
 const Blogs = lazy(() => import('@/pages/Blogs'))
@@ -39,7 +42,6 @@ const ESG = lazy(() => import('@/pages/ESG'))
 const Commitment = lazy(() => import('@/pages/Commitment'))
 const OurStory = lazy(() => import('@/pages/OurStory'))
 const GlobalHiveNetwork = lazy(() => import('@/pages/GlobalHiveNetwork'))
-const Traceability = lazy(() => import('@/pages/Traceability'))
 const PrecisionPollination = lazy(() => import('@/pages/PrecisionPollination'))
 const PollinationSolutions = lazy(() => import('@/pages/PollinationSolutions'))
 const InLandPollination = lazy(() => import('@/pages/InLandPollinationPlatform'))

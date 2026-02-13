@@ -22,7 +22,7 @@
         style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
         font-src 'self' https://fonts.gstatic.com;
         img-src 'self' data: blob: https: http:;
-        connect-src 'self' https://*.supabase.co https://*.google-analytics.com https://www.google-analytics.com https://stats.g.doubleclick.net https://polygon-rpc.com https://rpc-mumbai.maticvigil.com https://cdn.jsdelivr.net http://localhost:8000 http://127.0.0.1:8000;
+        connect-src 'self' data: https://*.supabase.co https://*.google-analytics.com https://www.google-analytics.com https://stats.g.doubleclick.net https://polygon-rpc.com https://rpc-mumbai.maticvigil.com https://cdn.jsdelivr.net http://localhost:8000 http://127.0.0.1:8000;
         frame-src 'self' https://www.googletagmanager.com https://www.youtube.com https://youtube.com;
     ">
 
@@ -55,7 +55,57 @@
 </head>
 
 <body>
-    <div id="root"></div>
+    <div id="root">
+        <!-- Persistent Splash Screen for Zero-Latency First Interaction -->
+        <style>
+            #splash {
+                position: fixed;
+                inset: 0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                background-color: #ffffff;
+                z-index: 9999;
+                font-family: 'Outfit', sans-serif;
+            }
+
+            .loader {
+                width: 60px;
+                height: 60px;
+                border: 4px solid #f3f3f3;
+                border-top: 4px solid #f59e0b;
+                border-radius: 50%;
+                animation: spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+                margin-bottom: 20px;
+            }
+
+            .logo-text {
+                font-weight: 900;
+                font-size: 24px;
+                color: #1a1a1a;
+                letter-spacing: -0.05em;
+            }
+
+            .logo-sub {
+                color: #f59e0b;
+            }
+
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+        </style>
+        <div id="splash">
+            <div class="loader"></div>
+            <div class="logo-text">BeeYield <span class="logo-sub">AI</span></div>
+        </div>
+    </div>
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KF284247" height="0" width="0"
             style="display:none;visibility:hidden"></iframe></noscript>

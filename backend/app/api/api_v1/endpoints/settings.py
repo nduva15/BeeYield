@@ -86,14 +86,16 @@ def get_full_settings(user_id: str = Depends(get_user_id)):
     }
 
 # 2. Get Hive Threshold List (The Table View)
-@router.get("/hives", response_model=List["HiveAlertSettingsView"])
+@router.get("/hives", response_model=List[HiveAlertSettingsView])
 def get_hive_settings(user_id: str = Depends(get_user_id)):
     """
     Get list of hives with their effective thresholds (merged global + specific).
-    Performs a logical Left Join in Python if View is unavailable.
     """
-    # Fetch all Hives
-    hives = db_select("hives", columns="id,name,hive_code,user_id", filters={"user_id": user_id}, limit=1000)
+    # Fetch all Hives with Apiary name joined
+    # We'll do it in Python to avoid complex view if db_select doesn't support joins easily
+    hives = db_select("hives", columns="id,apiary_id,hive_code,user_id", filters={"user_id": user_id}, limit=1000)
+    apiaries = db_select("apiaries", columns="id,name", filters={"user_id": user_id}, limit=1000)
+    apiary_map = {a["id"]: a["name"] for a in apiaries}
     
     # Fetch all Thresholds for user
     thresholds = db_select("alert_thresholds", filters={"user_id": user_id}, limit=1000)
@@ -105,6 +107,7 @@ def get_hive_settings(user_id: str = Depends(get_user_id)):
     results = []
     for h in hives:
         h_id = h.get("id")
+        a_id = h.get("apiary_id")
         
         # Get specific rule or empty dict
         spec = specific_t_map.get(h_id, {})
@@ -116,7 +119,7 @@ def get_hive_settings(user_id: str = Depends(get_user_id)):
         
         results.append({
             "hive_id": h_id,
-            "hive_name": h.get("name"),
+            "hive_name": apiary_map.get(a_id, "Main Apiary"), # We'll use apiary name as "name" in this view
             "hive_code": h.get("hive_code"),
             "user_id": user_id,
             "threshold_id": spec.get("id"),

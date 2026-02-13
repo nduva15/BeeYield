@@ -102,7 +102,7 @@ def seed_official_data():
         traceability_service.create_batch({
             "batch_code": "KIB-ACACIAL-26",
             "honey_type": "Premium Acacia",
-            "total_quantity_kg": 150.0,
+            "total_quantity_kg": 60.0,
             "quality_grade": "Grade A Premium",
             "production_date": datetime.now().isoformat(),
             "harvest_id": hrv_id,

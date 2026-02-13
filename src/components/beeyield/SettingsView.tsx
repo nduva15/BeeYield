@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
     Select,
     SelectContent,
@@ -12,7 +12,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Settings2, CloudRain, Briefcase, UserRound, Star, HelpCircle, Camera, Loader2, Mail, Check, ChevronDown, Sparkles, BookOpen } from 'lucide-react';
+import { Settings2, CloudRain, Briefcase, UserRound, Star, HelpCircle, Camera, Loader2, Mail, Check, ChevronDown, Sparkles, BookOpen, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -22,11 +22,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
-import { useUserSettings, useUpdateSettings, useUpdateNotificationConfig, useUpdateHiveThresholds, useNotificationSettings, useUpdateNotificationSettings, useIoTSettings, useUpdateIoTSettings } from '@/hooks/useSettingsData';
+import { useApiaries } from '@/hooks/useApiaries';
+import { useUserSettings, useUpdateSettings, useUpdateNotificationConfig, useUpdateHiveThresholds, useNotificationSettings, useUpdateNotificationSettings, useIoTSettings, useUpdateIoTSettings, useHiveSettings } from '@/hooks/useSettingsData';
 import { UserSettingsUpdate, NotificationConfigUpdate, UserNotificationSettings, IoTSettings } from '@/services/beeyieldService';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useHives } from '@/hooks/useApiaries';
-import { useHiveSettings } from '@/hooks/useSettingsData';
 import { Slider } from "@/components/ui/slider";
 import { BellRing, Shield, Smartphone, Zap, Thermometer, Droplets, Weight } from 'lucide-react';
 
@@ -61,7 +60,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
     const updateSettingsMutation = useUpdateSettings();
     const updateNotifMutation = useUpdateNotificationConfig();
     const updateHiveThresholdsMutation = useUpdateHiveThresholds();
-    const { data: allHivesSettings } = useHiveSettings();
+    const { data: allHivesSettings, isLoading: hivesLoading } = useHiveSettings();
+    const { data: apiaries = [], isLoading: apiariesLoading } = useApiaries();
 
     // PRD Settings Hooks
     const { data: prdNotifications, isLoading: notifLoading } = useNotificationSettings();
@@ -72,9 +72,9 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
     // State for local overrides before saving
     const [localSettings, setLocalSettings] = useState<UserSettingsUpdate>({});
     const [hiveThresholds, setHiveThresholds] = useState<Record<string, {
-        temp_threshold_high?: number;
-        temp_threshold_low?: number;
-        weight_drop_threshold?: number;
+        temp_high?: number;
+        temp_low?: number;
+        weight_drop?: number;
     }>>({});
 
     const handleSaveGeneral = async () => {
@@ -833,6 +833,86 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                 </div>
             </div>
 
+            {/* Apiaries Section */}
+            <motion.div variants={itemVariants}>
+                <Card className="border-none shadow-2xl bg-white dark:bg-[#111111] rounded-[2.5rem] overflow-hidden overflow-x-auto">
+                    <CardHeader className="p-8 pb-4">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <CardTitle className="text-3xl font-black text-gray-900 dark:text-white">Apiaries & Locations</CardTitle>
+                                <CardDescription className="text-gray-400 font-bold mt-2 uppercase tracking-widest text-[10px]">
+                                    Active production sites and geographic locations
+                                </CardDescription>
+                            </div>
+                            <Badge variant="outline" className="px-4 py-1.5 rounded-full border-gray-100 dark:border-white/10 text-gray-400 font-black text-[10px]">
+                                {apiaries.length} LOCATIONS
+                            </Badge>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="p-8">
+                        <Table>
+                            <TableHeader>
+                                <TableRow className="border-gray-50 dark:border-white/5 hover:bg-transparent">
+                                    <TableHead className="text-[10px] font-black uppercase tracking-widest py-6">Apiary Name</TableHead>
+                                    <TableHead className="text-[10px] font-black uppercase tracking-widest py-6">Location</TableHead>
+                                    <TableHead className="text-[10px] font-black uppercase tracking-widest py-6">Type</TableHead>
+                                    <TableHead className="text-[10px] font-black uppercase tracking-widest py-6">Hives</TableHead>
+                                    <TableHead className="text-[10px] font-black uppercase tracking-widest py-6 text-right">Size</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {apiariesLoading ? (
+                                    <TableRow>
+                                        <TableCell colSpan={5} className="py-20 text-center">
+                                            <div className="flex flex-col items-center gap-4 text-gray-400 font-bold">
+                                                <div className="w-8 h-8 border-4 border-amber-400 border-t-transparent rounded-full animate-spin" />
+                                                <span>Loading apiaries...</span>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ) : apiaries.map((apiary) => (
+                                    <TableRow key={apiary.id} className="border-gray-50 dark:border-white/5 hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors group">
+                                        <TableCell className="py-6">
+                                            <div className="flex flex-col">
+                                                <span className="font-black text-gray-900 dark:text-white group-hover:text-amber-500 transition-colors">{apiary.name}</span>
+                                                <span className="text-[10px] text-gray-400 font-bold uppercase mt-1">{apiary.forage_type || 'Natural Flora'}</span>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="py-6 font-bold text-gray-500 dark:text-gray-400">{apiary.location_name || 'Not Specified'}</TableCell>
+                                        <TableCell className="py-6">
+                                            <Badge variant="outline" className="rounded-full bg-slate-50 dark:bg-white/5 border-none font-bold text-[9px] uppercase px-3 py-1">
+                                                {apiary.type}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell className="py-6">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full bg-amber-400" />
+                                                <span className="font-black text-gray-900 dark:text-white">{apiary.hive_count || 0}</span>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="py-6 text-right font-black text-gray-900 dark:text-white">
+                                            {apiary.size_acres || 0} AC
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                                {apiaries.length === 0 && !apiariesLoading && (
+                                    <TableRow>
+                                        <TableCell colSpan={5} className="py-20 text-center">
+                                            <div className="flex flex-col items-center gap-3">
+                                                <div className="w-12 h-12 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center">
+                                                    <MapPin className="w-6 h-6 text-gray-300" />
+                                                </div>
+                                                <p className="text-gray-400 font-black uppercase text-xs tracking-widest">No apiaries found</p>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            </motion.div>
+
             {/* Hive Thresholds Section */}
             <motion.div variants={itemVariants}>
                 <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-xl shadow-sm overflow-hidden mt-8 hover:shadow-md transition-all duration-500">
@@ -875,10 +955,10 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                         name={`temp_high_${hive.hive_id}`}
                                                         type="number"
                                                         placeholder={hive.effective_temp_high?.toString()}
-                                                        value={hiveThresholds[hive.hive_id]?.temp_threshold_high ?? hive.override_temp_high ?? ''}
+                                                        value={hiveThresholds[hive.hive_id]?.temp_high ?? hive.override_temp_high ?? ''}
                                                         onChange={(e) => setHiveThresholds(prev => ({
                                                             ...prev,
-                                                            [hive.hive_id]: { ...prev[hive.hive_id], temp_threshold_high: parseFloat(e.target.value) }
+                                                            [hive.hive_id]: { ...prev[hive.hive_id], temp_high: parseFloat(e.target.value) }
                                                         }))}
                                                         className="w-24 h-10 rounded-xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 font-bold text-sm focus:border-amber-500 transition-all outline-none"
                                                     />
@@ -892,10 +972,10 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                         name={`temp_low_${hive.hive_id}`}
                                                         type="number"
                                                         placeholder={hive.effective_temp_low?.toString()}
-                                                        value={hiveThresholds[hive.hive_id]?.temp_threshold_low ?? hive.override_temp_low ?? ''}
+                                                        value={hiveThresholds[hive.hive_id]?.temp_low ?? hive.override_temp_low ?? ''}
                                                         onChange={(e) => setHiveThresholds(prev => ({
                                                             ...prev,
-                                                            [hive.hive_id]: { ...prev[hive.hive_id], temp_threshold_low: parseFloat(e.target.value) }
+                                                            [hive.hive_id]: { ...prev[hive.hive_id], temp_low: parseFloat(e.target.value) }
                                                         }))}
                                                         className="w-24 h-10 rounded-xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 font-bold text-sm focus:border-amber-500 transition-all outline-none"
                                                     />
@@ -909,10 +989,10 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                                         name={`weight_drop_${hive.hive_id}`}
                                                         type="number"
                                                         placeholder={hive.effective_weight_drop?.toString()}
-                                                        value={hiveThresholds[hive.hive_id]?.weight_drop_threshold ?? hive.override_weight_drop ?? ''}
+                                                        value={hiveThresholds[hive.hive_id]?.weight_drop ?? hive.override_weight_drop ?? ''}
                                                         onChange={(e) => setHiveThresholds(prev => ({
                                                             ...prev,
-                                                            [hive.hive_id]: { ...prev[hive.hive_id], weight_drop_threshold: parseFloat(e.target.value) }
+                                                            [hive.hive_id]: { ...prev[hive.hive_id], weight_drop: parseFloat(e.target.value) }
                                                         }))}
                                                         className="w-24 h-10 rounded-xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 font-bold text-sm focus:border-amber-500 transition-all outline-none"
                                                     />

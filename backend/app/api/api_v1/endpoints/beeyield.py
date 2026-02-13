@@ -47,19 +47,29 @@ class ApiaryUpdate(BaseModel):
 class HiveCreate(BaseModel):
     hive_code: str = Field(..., description="Unique hive identifier")
     apiary_id: UUID = Field(..., description="Parent apiary ID")
-    type: Optional[str] = Field("Langstroth", description="Langstroth, KTBH, Traditional Log")
+    hive_type: Optional[str] = Field("Langstroth", description="Langstroth, KTBH, Traditional Log")
     status: Optional[str] = Field("Active & Healthy", description="Active & Healthy, Weak Colony, Abandoned, Recently Harvested")
     installation_date: Optional[date] = None
     health_status: Optional[str] = None
+    bee_type: Optional[str] = None
+    queen_type: Optional[str] = None
+    frame_count: Optional[int] = None
+    material: Optional[str] = None
+    has_sensors: Optional[bool] = False
     notes: Optional[str] = None
 
 class HiveUpdate(BaseModel):
     hive_code: Optional[str] = None
     apiary_id: Optional[UUID] = None
-    type: Optional[str] = None
+    hive_type: Optional[str] = None
     status: Optional[str] = None
     installation_date: Optional[date] = None
     health_status: Optional[str] = None
+    bee_type: Optional[str] = None
+    queen_type: Optional[str] = None
+    frame_count: Optional[int] = None
+    material: Optional[str] = None
+    has_sensors: Optional[bool] = None
     last_inspection_date: Optional[date] = None
     notes: Optional[str] = None
 

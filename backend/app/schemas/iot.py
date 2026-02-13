@@ -27,7 +27,8 @@ class IoTDevice(IoTDeviceBase):
 class SensorReadingBase(BaseModel):
     device_id: str
     sensor_type: str # infield, inland, disease
-    timestamp: datetime
+    timestamp: Optional[datetime] = None
+    recorded_at: Optional[datetime] = None
     readings: dict[str, Any]
     battery_level: Optional[int] = None
     signal_strength: Optional[int] = None

@@ -58,9 +58,19 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
     const [allHarvests, setAllHarvests] = useState<Harvest[]>([]);
 
     const filteredHarvests = allHarvests.filter(h => {
-        if (quickYear === 'all') return true;
-        const harvestYear = new Date(h.harvest_date).getFullYear().toString();
-        return harvestYear === (quickYear || '2026');
+        // Apiary filter
+        if (selectedPlace && h.apiary_id !== selectedPlace) return false;
+
+        // Hive filter
+        if (selectedHive && h.hive_id !== selectedHive) return false;
+
+        // Year filter
+        if (quickYear !== 'all') {
+            const harvestYear = new Date(h.harvest_date).getFullYear().toString();
+            if (harvestYear !== (quickYear || '2026')) return false;
+        }
+
+        return true;
     });
 
     // List of apiaries and hives used in generation
@@ -99,13 +109,9 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ onTabChange }) => {
                 beeyieldService.getHives()
             ]);
 
-            // Client-side filter for strict safety (in case API returns more)
-            const userApiaries = userId ? apiariesData.filter(a => !a.user_id || a.user_id === userId || a.farmer_id === userId) : apiariesData;
-            const userHives = userId ? hivesData.filter(h => !h.farmer_id || h.farmer_id === userId) : hivesData;
-
             setAllHarvests(harvestsData);
-            setApiaries(userApiaries);
-            setHives(userHives);
+            setApiaries(apiariesData);
+            setHives(hivesData);
             setIsLoading(false);
         };
         fetchData();

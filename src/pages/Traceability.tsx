@@ -488,7 +488,7 @@ const Traceability = () => {
                         <div className="col-span-2 sm:col-span-1">
                           <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Harvest Date</p>
                           <p className="text-xl font-black text-slate-900 leading-none">
-                            {traceData?.timeline?.find(s => s.title === "Harvest Day")?.date || "Jan 20, 2026"}
+                            {traceData?.timeline?.find(s => s.title === "Harvest Day")?.date || traceData?.extra_metadata?.harvest_window?.split('-')[0] || "Jan 5, 2026"}
                           </p>
                         </div>
 
@@ -503,12 +503,14 @@ const Traceability = () => {
                               <div>
                                 <p className="text-[10px] font-bold text-slate-400 uppercase">Selected Hives</p>
                                 <p className="text-lg font-black text-slate-900">
-                                  <span className="text-green-600">30</span> <span className="text-slate-400 text-sm">/ 184</span>
+                                  <span className="text-green-600">{traceData?.impact_stats?.harvested_hives || (traceData?.batch_code?.includes('2026') ? "30" : "184")}</span> <span className="text-slate-400 text-sm">/ {traceData?.impact_stats?.hive_count?.replace(/\D/g, '') || "184"}</span>
                                 </p>
                               </div>
                               <div>
                                 <p className="text-[10px] font-bold text-slate-400 uppercase">Total Harvest</p>
-                                <p className="text-lg font-black text-slate-900">60 kg</p>
+                                <p className="text-lg font-black text-slate-900">
+                                  {traceData?.impact_stats?.total_honey_kg || (traceData?.batch_code?.includes('2026') ? "60" : "943")} kg
+                                </p>
                               </div>
                               <div className="col-span-2 md:col-span-1 border-t md:border-t-0 md:border-l border-slate-200 pt-3 md:pt-0 md:pl-4">
                                 <p className="text-[10px] font-bold text-primary uppercase">Your Jar</p>
