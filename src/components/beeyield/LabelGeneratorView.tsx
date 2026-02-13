@@ -357,8 +357,8 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                 <Label className="text-amber-900 dark:text-amber-100 text-[10px] font-bold uppercase tracking-wider flex items-center gap-2">
                                     <LinkIcon className="w-3 h-3" /> Auto-fill from Harvest
                                 </Label>
-                                <Select onValueChange={handleHarvestSelect}>
-                                    <SelectTrigger className="h-9 bg-white dark:bg-[#121212] text-xs border-amber-200/30">
+                                <Select name="harvest_id" onValueChange={handleHarvestSelect}>
+                                    <SelectTrigger id="label-harvest-lookup" className="h-9 bg-white dark:bg-[#121212] text-xs border-amber-200/30">
                                         <SelectValue placeholder="Select a harvest..." />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -378,6 +378,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                     <Label htmlFor="productName" className="text-[11px] font-medium">Product Name*</Label>
                                     <Input
                                         id="productName"
+                                        name="productName"
                                         value={design.productName}
                                         onChange={e => updateDesign({ productName: e.target.value })}
                                         className="h-9 text-xs"
@@ -389,6 +390,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                         <Label htmlFor="weight" className="text-[11px] font-medium">Weight*</Label>
                                         <Input
                                             id="weight"
+                                            name="weight"
                                             value={design.weight}
                                             onChange={e => updateDesign({ weight: e.target.value })}
                                             className="h-9 text-xs"
@@ -398,6 +400,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                         <Label htmlFor="weightUnit" className="text-[11px] font-medium">Unit*</Label>
                                         <Input
                                             id="weightUnit"
+                                            name="weightUnit"
                                             value={design.weightUnit}
                                             onChange={e => updateDesign({ weightUnit: e.target.value })}
                                             className="h-9 text-xs"
@@ -408,6 +411,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                     <Label htmlFor="producer" className="text-[11px] font-medium">Producer/Apiary*</Label>
                                     <Input
                                         id="producer"
+                                        name="producer"
                                         value={design.producer}
                                         onChange={e => updateDesign({ producer: e.target.value })}
                                         className="h-9 text-xs"
@@ -417,6 +421,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                     <Label htmlFor="address" className="text-[11px] font-medium">Location/Address*</Label>
                                     <Input
                                         id="address"
+                                        name="address"
                                         value={design.address}
                                         onChange={e => updateDesign({ address: e.target.value })}
                                         className="h-9 text-xs"
@@ -429,6 +434,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                     </Label>
                                     <textarea
                                         id="marketingNote"
+                                        name="marketingNote"
                                         className="w-full rounded-lg border border-input bg-background px-3 py-2 text-xs ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
                                         rows={3}
                                         maxLength={140}
@@ -452,10 +458,12 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                             <div className="space-y-2.5">
                                 <div className="flex items-center justify-between group">
                                     <Label className="text-[11px] cursor-pointer" htmlFor="sw-batch">Include Batch #</Label>
-                                    <Switch id="sw-batch" checked={design.showBatchNumber} onCheckedChange={v => updateDesign({ showBatchNumber: v })} />
+                                    <Switch id="sw-batch" name="show_batch_number" checked={design.showBatchNumber} onCheckedChange={v => updateDesign({ showBatchNumber: v })} />
                                 </div>
                                 {design.showBatchNumber && (
                                     <Input
+                                        id="label-batch"
+                                        name="label-batch"
                                         value={design.batchNumber}
                                         onChange={e => updateDesign({ batchNumber: e.target.value })}
                                         className="h-8 text-[11px] bg-gray-50/50 dark:bg-white/5"
@@ -465,10 +473,12 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
 
                                 <div className="flex items-center justify-between group">
                                     <Label className="text-[11px] cursor-pointer" htmlFor="sw-date">Best Before Date</Label>
-                                    <Switch id="sw-date" checked={design.showBestBefore} onCheckedChange={v => updateDesign({ showBestBefore: v })} />
+                                    <Switch id="sw-date" name="show_best_before" checked={design.showBestBefore} onCheckedChange={v => updateDesign({ showBestBefore: v })} />
                                 </div>
                                 {design.showBestBefore && (
                                     <Input
+                                        id="label-exp-date"
+                                        name="label-exp-date"
                                         type="date"
                                         value={design.bestBeforeDate}
                                         onChange={e => updateDesign({ bestBeforeDate: e.target.value })}
@@ -478,12 +488,12 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
 
                                 <div className="flex items-center justify-between group">
                                     <Label className="text-[11px] cursor-pointer" htmlFor="sw-qr">Traceability QR</Label>
-                                    <Switch id="sw-qr" checked={design.showQRCode} onCheckedChange={v => updateDesign({ showQRCode: v })} />
+                                    <Switch id="sw-qr" name="show_qr_code" checked={design.showQRCode} onCheckedChange={v => updateDesign({ showQRCode: v })} />
                                 </div>
 
                                 <div className="flex items-center justify-between group">
                                     <Label className="text-[11px] cursor-pointer" htmlFor="sw-footer">System Footer</Label>
-                                    <Switch id="sw-footer" checked={design.showFooter} onCheckedChange={v => updateDesign({ showFooter: v })} />
+                                    <Switch id="sw-footer" name="show_footer" checked={design.showFooter} onCheckedChange={v => updateDesign({ showFooter: v })} />
                                 </div>
                             </div>
                         </CardContent>
@@ -701,11 +711,11 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                             <div className="grid grid-cols-2 gap-2">
                                 <div className="space-y-1">
                                     <Label className="text-[10px] font-bold uppercase opacity-60">Width (mm)</Label>
-                                    <Input value={design.customWidth} onChange={e => updateDesign({ customWidth: e.target.value })} className="h-8 text-xs" />
+                                    <Input id="label-width" name="label-width" value={design.customWidth} onChange={e => updateDesign({ customWidth: e.target.value })} className="h-8 text-xs" />
                                 </div>
                                 <div className="space-y-1">
                                     <Label className="text-[10px] font-bold uppercase opacity-60">Height (mm)</Label>
-                                    <Input value={design.customHeight} onChange={e => updateDesign({ customHeight: e.target.value })} className="h-8 text-xs" />
+                                    <Input id="label-height" name="label-height" value={design.customHeight} onChange={e => updateDesign({ customHeight: e.target.value })} className="h-8 text-xs" />
                                 </div>
                             </div>
                             <div className="space-y-1">

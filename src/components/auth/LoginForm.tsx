@@ -207,6 +207,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
                     <Label htmlFor="mfa-code">Verification Code</Label>
                     <Input
                         id="mfa-code"
+                        name="mfa-code"
                         type="text"
                         placeholder="000000"
                         value={mfaCode}
@@ -299,6 +300,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                         id="login-email"
+                        name="email"
                         type="email"
                         placeholder={isAdminVariant ? "admin@beeyield.com" : "you@example.com"}
                         value={email}
@@ -326,6 +328,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                         id="login-password"
+                        name="password"
                         type="password"
                         placeholder="••••••••"
                         value={password}
@@ -347,7 +350,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
                         Logging in...
                     </>
                 ) : (
-                    isAdminVariant ? 'Login' : 'Sign In'
+                    isAdminVariant ? 'Admin Login' : 'Shop Sign In'
                 )}
             </Button>
 

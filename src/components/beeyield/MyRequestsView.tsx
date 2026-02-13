@@ -51,7 +51,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
     const [category, setCategory] = useState('');
     const [subject, setSubject] = useState('');
     const [description, setDescription] = useState('');
-    const [priority, setPriority] = useState('Medium');
+    const [priority, setPriority] = useState('medium');
     const [showWizard, setShowWizard] = useState(false);
 
     // Filter History State
@@ -380,6 +380,8 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                             <div className="space-y-2">
                                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Subject</label>
                                                 <Input
+                                                    id="wizard-subject"
+                                                    name="subject"
                                                     value={subject}
                                                     onChange={(e) => setSubject(e.target.value)}
                                                     placeholder="What can we help you with?"
@@ -389,6 +391,8 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                                             <div className="space-y-2">
                                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Message Detail</label>
                                                 <Textarea
+                                                    id="wizard-description"
+                                                    name="description"
                                                     value={description}
                                                     onChange={(e) => setDescription(e.target.value)}
                                                     placeholder="Describe your issue or request in detail..."
@@ -508,6 +512,8 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                             <Input
+                                id="history-search"
+                                name="search"
                                 placeholder="Search by ID or Subject..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}

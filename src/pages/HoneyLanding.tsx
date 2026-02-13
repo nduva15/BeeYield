@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
@@ -419,7 +419,7 @@ const TestimonialSection = () => {
             <div className="flex justify-center">
               <div className="relative">
                 <div className="w-48 h-48 md:w-64 md:h-64 rounded-full bg-gradient-to-br from-green-100 to-green-50 flex items-center justify-center overflow-hidden">
-                  <span className="text-6xl">👩</span>
+                  <span className="text-6xl">ðŸ‘©</span>
                 </div>
                 {/* Decorative honey elements */}
                 <div className="absolute -top-4 -right-4 w-16 h-16 bg-green-200 rounded-full opacity-80"></div>
@@ -434,7 +434,7 @@ const TestimonialSection = () => {
               <p className="text-neutral-600 leading-relaxed mb-6 text-sm md:text-base">
                 {testimonials[currentIndex].quote}
               </p>
-              <p className="font-bold text-neutral-900">– {testimonials[currentIndex].name},</p>
+              <p className="font-bold text-neutral-900">â€“ {testimonials[currentIndex].name},</p>
               <p className="text-green-700 text-sm font-semibold">{testimonials[currentIndex].title}</p>
             </div>
           </div>
@@ -488,13 +488,13 @@ const AboutSection = () => {
               The Most Trusted <span className="text-green-700">Honey</span> in Makueni County
             </h2>
             <p className="text-neutral-600 leading-relaxed mb-4 text-sm md:text-base">
-              BeeYield was founded with a singular vision: to revolutionize beekeeping through technology and radical transparency. Our journey began in the pristine landscapes of Kenya, where we saw the need for a more sustainable approach. Today, we are proud to lead with our <strong>50/50 Harvest Promise</strong>—ensuring that for every drop we take, enough is left for the bees to thrive and pollinate our future.
+              BeeYield was founded with a singular vision: to revolutionize beekeeping through technology and radical transparency. Our journey began in the pristine landscapes of Kenya, where we saw the need for a more sustainable approach. Today, we are proud to lead with our <strong>50/50 Harvest Promise</strong>â€”ensuring that for every drop we take, enough is left for the bees to thrive and pollinate our future.
             </p>
             <p className="text-neutral-600 leading-relaxed mb-4 text-sm md:text-base">
               With <strong>2,500 trees planted</strong> and a growing network of tech-enabled apiaries, our impact goes beyond just honey. Every jar you hold features <strong>Honey Journey Tracking</strong>, allowing you to trace your honey back to the very hive it came from, meeting the beekeeper and seeing our verified seal of authenticity.
             </p>
             <p className="text-neutral-600 leading-relaxed text-sm md:text-base">
-              We believe in "Pollination with Purpose." By choosing BeeYield, you're not just buying raw, unfiltered honey; you're supporting a circular ecosystem that restores biodiversity, empowers local farmers, and uses smart monitoring to protect the health of our colonies. This is the new standard of sweetness.
+              We believe in "Pollination with Purpose." By choosing BeeYield, you're not just buying raw, unfiltered honey; you're supporting a circular ecosystem that restores biodiversity, empowers local farmers, and uses intelligent monitoring to protect the health of our colonies. This is the new standard of sweetness.
             </p>
           </div>
         </div>
@@ -519,8 +519,8 @@ const FeaturesSection = () => {
     },
     {
       icon: Droplets,
-      title: "Smart Hive Monitoring",
-      description: "Our hives use smart sensors to detect disease and stress before they impact the honey.",
+      title: "Intelligent Hive Monitoring",
+      description: "Our hives use intelligent sensors to detect disease and stress before they impact the honey.",
     },
   ];
 
@@ -638,7 +638,7 @@ const FAQSection = () => {
     },
     {
       question: "How does BeeYield protect bees from diseases?",
-      answer: "We use smart sensors and sound monitoring to listen to the hive. Our technology can detect signs of stress or specific diseases (like Varroa mites) early, allowing us to help the bees before it becomes a problem.",
+      answer: "We use intelligent sensors and sound monitoring to listen to the hive. Our technology can detect signs of stress or specific diseases (like Varroa mites) early, allowing us to help the bees before it becomes a problem.",
     },
     {
       question: "Why does protecting bees result in better honey?",
@@ -955,7 +955,7 @@ const HoneyLanding = () => {
   const faqs_structured = [
     {
       q: "How can I verify the authenticity of my honey?",
-      a: "Every jar of BeeYield honey features a unique HoneyChain™ QR code. By scanning it, you can access the 'Digital Birth Certificate' showing exact hive location and harvest date."
+      a: "Every jar of BeeYield honey features a unique HoneyChainâ„¢ QR code. By scanning it, you can access the 'Digital Birth Certificate' showing exact hive location and harvest date."
     },
     {
       q: "Where is BeeYield honey harvested?",
@@ -971,7 +971,7 @@ const HoneyLanding = () => {
     <div className="min-h-screen bg-white">
       <SEO
         title="Premium Traceable Honey from Kibwezi"
-        description="Shop 100% raw, traceable honey from Kibwezi. Powered by HoneyChain™ technology and the 50/50 Harvest Promise. Supporting sustainable pollination in Kenya."
+        description="Shop 100% raw, traceable honey from Kibwezi. Powered by HoneyChainâ„¢ technology and the 50/50 Harvest Promise. Supporting sustainable pollination in Kenya."
         keywords="honey, raw honey, Kibwezi honey, traceable honey, HoneyChain, beekeeping Kenya, sustainable honey, Acacia honey"
       />
 

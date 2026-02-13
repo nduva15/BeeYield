@@ -206,6 +206,8 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                     <div className="space-y-2">
                         <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('task_title_label')}<span className="text-red-500">*</span></label>
                         <input
+                            id="task-title"
+                            name="title"
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
@@ -244,6 +246,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                                 <label htmlFor="task-recurring-checkbox" className="text-sm font-bold text-slate-600 dark:text-slate-300 flex-1">Repeat this task?</label>
                                 <input
                                     id="task-recurring-checkbox"
+                                    name="is_recurring"
                                     type="checkbox"
                                     checked={isRecurring}
                                     onChange={(e) => setIsRecurring(e.target.checked)}
@@ -254,6 +257,7 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                                         <label htmlFor="task-recurrence-days" className="text-[10px] font-black text-slate-400 uppercase tracking-tight">Every</label>
                                         <input
                                             id="task-recurrence-days"
+                                            name="recurrence_days"
                                             type="number"
                                             value={recurrenceDays}
                                             onChange={(e) => setRecurrenceDays(e.target.value)}
@@ -546,6 +550,8 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
                     <div className="space-y-2">
                         <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('description_label')}</label>
                         <textarea
+                            id="task-description"
+                            name="description"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             className="w-full min-h-[120px] bg-slate-50 dark:bg-slate-900 border-none rounded-[2rem] p-6 font-medium text-slate-700 dark:text-slate-200 outline-none focus:ring-4 focus:ring-[#1B9157]/10 transition-all resize-none leading-relaxed font-sans placeholder:text-slate-300"

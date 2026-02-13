@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Database, TrendingUp, Check, Heart, Sprout, Globe, Wind, Sun, ArrowRight, Quote, Users, Droplets, TreePine, Bug, Package, MapPin, Shield, Leaf, Cpu, Code, Loader2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -77,7 +77,7 @@ const ESG = () => {
         ];
 
         stats.forEach(stat => {
-          doc.text(`• ${stat}`, 20, yPos + 5);
+          doc.text(`â€¢ ${stat}`, 20, yPos + 5);
           yPos += 8;
         });
         yPos += 15;
@@ -94,11 +94,11 @@ const ESG = () => {
         const pillars = [
           "1. Bee Disease Prevention - <15% colony loss rate",
           "2. The 50/50 Harvest Promise - Ethical beekeeping",
-          "3. HoneyChain™ Traceability - 100% verified journey",
+          "3. Full Traceability - 100% verified journey",
           "5. Sustainable Farming - Zero chemical pesticides",
-          "6. Women-Led Tech Leadership - 66% women founders"
+          "6. Women-Led Tech Leadership - 66% women founders",
+          "4. Precision Pollination & Monitoring - Data-driven pollination & insights",
         ];
-            "3. Precision Pollination & BeeYield AI/LLM - AI-powered pollination & monitoring",
 
         pillars.forEach(pillar => {
           doc.text(pillar, 14, yPos);
@@ -137,7 +137,7 @@ const ESG = () => {
       icon: Shield,
       color: "from-emerald-500 to-green-600",
       initiatives: [
-        "Regular hive health inspections using IoT-enabled monitoring systems",
+        "Regular hive health inspections using sensor monitoring systems",
         "Proactive Varroa mite detection and natural treatment protocols",
         "Hygienic queen breeding programs to strengthen colony immunity",
         "Quarantine protocols for new colonies to prevent disease spread",
@@ -150,35 +150,35 @@ const ESG = () => {
       icon: Heart,
       color: "from-amber-500 to-orange-600",
       initiatives: [
-        "We harvest only 50% of honey—bees keep what they need to thrive",
+        "We harvest only 50% of honeyâ€”bees keep what they need to thrive",
         "Ethical beekeeping that prioritizes colony health over profit",
-        "No artificial feeding—bees sustain themselves naturally",
+        "No artificial feedingâ€”bees sustain themselves naturally",
         "Seasonal harvest schedules aligned with bee lifecycles",
         "Stronger, more resilient colonies that survive harsh conditions"
       ],
       impact: "Sustainable beekeeping that ensures long-term colony health and productivity"
     },
     {
-      title: "Precision Pollination & BeeYield AI/LLM",
+      title: "Precision Pollination & Monitoring",
       icon: Cpu,
       color: "from-blue-500 to-indigo-600",
       initiatives: [
         "Precision Pollination: Frames per Acre Model for optimal crop yield",
-        "BeeYield AI/LLM: Advanced decision support for farmers and beekeepers",
+        "BeeYield Data: Advanced decision support for farmers and beekeepers",
         "Sound analysis for hive health and colony activity monitoring",
         "Image analysis for disease detection and hive inspections",
-        "Smart predictive analytics for optimal harvest timing",
+        "Smart data analytics for optimal harvest timing",
         "Mobile app for beekeepers with instant hive health alerts"
       ],
-      impact: "AI-powered pollination and monitoring for data-driven, sustainable agriculture across Africa"
+      impact: "Data-powered pollination and monitoring for sustainable agriculture across Africa"
     },
     {
       title: "Sustainable AgriTech",
       icon: Cpu,
       color: "from-violet-500 to-purple-600",
       initiatives: [
-        "Solar-powered IoT hive monitoring systems for off-grid apiaries",
-        "Smart predictive analytics for optimal harvest timing",
+        "Solar-powered hive monitoring systems for off-grid apiaries",
+        "Smart data analytics for optimal harvest timing",
         "Precision Pollination: Frames per Acre Model for optimal crop yield",
         "Real-time temperature and humidity sensors protecting colony health",
         "Mobile app for beekeepers with instant hive health alerts",
@@ -197,7 +197,7 @@ const ESG = () => {
         "Native pollinator corridor creation across Makueni County",
         "Regenerative agriculture partnerships with local farms"
       ],
-      impact: "3,000+ tons CO₂ avoided annually through ecosystem restoration"
+      impact: "3,000+ tons COâ‚‚ avoided annually through ecosystem restoration"
     },
     {
       title: "Women-Led Tech Leadership",
@@ -282,8 +282,7 @@ const ESG = () => {
                 What ESG Means for BeeYield
               </h2>
               <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                At BeeYield, ESG isn't a checkbox—it's our DNA. From bee disease prevention to women empowerment, from sustainable agritech to full traceability, these six pillars define how we operate and measure success.
-                  At BeeYield, ESG isn't a checkbox—it's our DNA. From bee disease prevention to women empowerment, from AI-powered pollination to full traceability, these five pillars define how we operate and measure success.
+                At BeeYield, ESG isn't a checkboxâ€”it's our DNA. From bee disease prevention to women empowerment, from sustainable agritech to full traceability, these six pillars define how we operate and measure success.
               </p>
             </div>
 
@@ -387,7 +386,7 @@ const ESG = () => {
                   <p className="text-sm text-muted-foreground mb-2">
                     "Since BeeYield brought their hives to my farm, my mango harvest has doubled. My family eats better now."
                   </p>
-                  <p className="text-xs font-medium">— Mary Mutua, Farmer, Kibwezi</p>
+                  <p className="text-xs font-medium">â€” Mary Mutua, Farmer, Kibwezi</p>
                 </div>
               </div>
             </div>
@@ -442,7 +441,7 @@ const ESG = () => {
                   <div className="text-3xl font-bold text-primary mb-2">100%</div>
                   <div className="text-sm text-muted-foreground mb-4">Full Traceability</div>
                   <div className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-3 py-1 rounded-full inline-block">
-                    Hive to Jar via HoneyChain™
+                    Hive to Jar via BeeYield Trace
                   </div>
                 </CardContent>
               </Card>
@@ -478,7 +477,7 @@ const ESG = () => {
           <div className="max-w-3xl mx-auto text-center">
             <Quote className="w-12 h-12 text-primary/30 mx-auto mb-6" />
             <blockquote className="text-xl md:text-2xl text-foreground mb-8 leading-relaxed">
-              "ESG isn't a report we file once a year—it's how we wake up every morning. Every bee we protect, every farmer we train, every tree we plant is a step toward the Kenya and the Africa we want to see."
+              "ESG isn't a report we file once a yearâ€”it's how we wake up every morning. Every bee we protect, every farmer we train, every tree we plant is a step toward the Kenya and the Africa we want to see."
             </blockquote>
             <div className="flex items-center justify-center gap-4">
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
@@ -501,7 +500,7 @@ const ESG = () => {
               Partner With Us for Impact
             </h2>
             <p className="text-lg text-muted-foreground mb-8">
-              Whether you're a farmer seeking pollination services, an investor aligned with ESG principles, or a beekeeper looking to join our network—we'd love to hear from you.
+              Whether you're a farmer seeking pollination services, an investor aligned with ESG principles, or a beekeeper looking to join our networkâ€”we'd love to hear from you.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Button size="lg" asChild>

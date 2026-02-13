@@ -309,7 +309,16 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                     onClick={() => fileInputRef.current?.click()}
                     className="w-full min-h-[160px] border border-dashed rounded-[1.5rem] flex flex-col items-center justify-center gap-3 transition-all duration-300 cursor-pointer bg-white dark:bg-[#0d0d0d] border-slate-200 dark:border-white/10 hover:border-slate-300"
                 >
-                    <input type="file" ref={fileInputRef} className="hidden" accept="image/*" aria-label="Upload bee image" onChange={(e) => e.target.files && handleFile(e.target.files[0])} />
+                    <input
+                        id="bee-image-upload"
+                        name="bee-image-upload"
+                        type="file"
+                        ref={fileInputRef}
+                        className="hidden"
+                        accept="image/*"
+                        aria-label="Upload bee image"
+                        onChange={(e) => e.target.files && handleFile(e.target.files[0])}
+                    />
                     <Camera className="w-6 h-6 text-slate-400" />
                     <div className="text-center">
                         <h3 className="text-sm font-bold text-[#0F172A] dark:text-white">Select Bee Image</h3>

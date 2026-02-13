@@ -110,6 +110,7 @@ export function ActivityLogTab() {
                         </div>
                         <div className="flex gap-2">
                             <Select
+                                name="activity_type"
                                 value={filters.activity_type}
                                 onValueChange={(val) => setFilters({ ...filters, activity_type: val })}
                             >
@@ -128,6 +129,7 @@ export function ActivityLogTab() {
                             </Select>
 
                             <Select
+                                name="days"
                                 value={filters.days}
                                 onValueChange={(val) => setFilters({ ...filters, days: val })}
                             >

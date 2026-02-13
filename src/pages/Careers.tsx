@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { beeyieldService } from "@/services/beeyieldService";
 
 interface Job {
   id: string;
@@ -111,36 +112,21 @@ const Careers = () => {
     setIsSubmitting(true);
 
     try {
-      if (!supabase) throw new Error("Supabase client not initialized");
+      const formData = new FormData();
+      formData.append('job_id', selectedJob.id);
+      formData.append('full_name', fullName);
+      formData.append('email', email);
+      formData.append('phone', phone);
+      if (linkedin) {
+        // Add linkedin to notes or description if backend doesn't have explicit field
+        // Or just append it if we update backend later. For now let's send it.
+        formData.append('linkedin_url', linkedin);
+      }
+      formData.append('resume', resume);
 
-      // 1. Upload Resume
-      const fileExt = resume.name.split('.').pop();
-      const fileName = `${selectedJob.id}/${email.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}.${fileExt}`;
+      const { error } = await beeyieldService.submitJobApplication(formData);
 
-      const { error: uploadError } = await supabase.storage
-        .from('resumes')
-        .upload(fileName, resume);
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('resumes')
-        .getPublicUrl(fileName);
-
-      // 2. Insert Application
-      const { error: dbError } = await supabase
-        .from('job_applications')
-        .insert({
-          job_id: selectedJob.id,
-          full_name: fullName,
-          email: email,
-          phone: phone,
-          linkedin_url: linkedin,
-          resume_url: publicUrl,
-          status: 'applied'
-        });
-
-      if (dbError) throw dbError;
+      if (error) throw error;
 
       setUploadSuccess(true);
       toast.success("Application received! We will contact you shortly.");

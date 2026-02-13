@@ -349,6 +349,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                     </Label>
                                     <Input
                                         id="name"
+                                        name="name"
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                         placeholder="e.g. Nanyuki North Field"
@@ -379,6 +380,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                     </Label>
                                     <Input
                                         id="hives"
+                                        name="expected_hives"
                                         type="number"
                                         value={formData.expected_hives || ''}
                                         onChange={(e) => setFormData({ ...formData, expected_hives: parseInt(e.target.value) || 0 })}
@@ -392,6 +394,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                     </Label>
                                     <Input
                                         id="acres"
+                                        name="size_acres"
                                         type="number"
                                         step="0.01"
                                         value={formData.size_acres || ''}
@@ -410,6 +413,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                     </Label>
                                     <Input
                                         id="location"
+                                        name="location_name"
                                         value={formData.location_name}
                                         onChange={(e) => setFormData({ ...formData, location_name: e.target.value })}
                                         placeholder="e.g. Mount Kenya Region"
@@ -423,6 +427,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                     </Label>
                                     <Input
                                         id="forage"
+                                        name="forage_type"
                                         value={formData.forage_type}
                                         onChange={(e) => setFormData({ ...formData, forage_type: e.target.value })}
                                         placeholder="e.g. Acacia, Canola"
@@ -436,6 +441,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
                                     </Label>
                                     <textarea
                                         id="notes"
+                                        name="notes"
                                         value={formData.notes}
                                         onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                                         className="w-full min-h-[120px] p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 resize-y focus:outline-none focus:ring-2 focus:ring-[#F4D03F]"
@@ -473,7 +479,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
             <div className="mb-8 px-2 flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold text-[#1e293b] dark:text-white tracking-tight">
-                        My Places
+                        My Places ({apiaries.length})
                     </h1>
                     <p className="text-slate-500 mt-1">
                         Manage your apiaries and hive locations

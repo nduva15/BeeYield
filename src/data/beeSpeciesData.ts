@@ -402,7 +402,7 @@ export const beeSpeciesData: Record<string, BeeSpeciesDetail> = {
         climateSuitability: "Tropical to high altitude (Himalayas).",
         pros: ["Resistant to Varroa", "Low resource requirement"],
         cons: ["Prone to frequent absconding"],
-        description: "The domesticated Asian bee. BeeYield is at the forefront of 'Cerana-Smart' apiary tech for the rural Indian market."
+        description: "The domesticated Asian bee. BeeYield is at the forefront of 'Cerana-Intelligent' apiary tech for the rural Indian market."
     },
     // === STINGLESS BEES (MELIPONICULTURE) ===
     "Sugarbag Bee": {

@@ -7,8 +7,9 @@ from app.schemas.notes import NoteCreate, NoteUpdate
 router = APIRouter()
 
 @router.get("/", response_model=List[Any])
-def read_notes(
-    current_user: Dict[str, Any] = Depends(get_current_user)
+async def read_notes(
+    current_user: Dict[str, Any] = Depends(get_current_user),
+    token: Optional[str] = Depends(lambda r: r.headers.get("Authorization", "").replace("Bearer ", "") if r.headers.get("Authorization") else None)
 ):
     """
     Retrieve notes for the authenticated user.
@@ -16,13 +17,14 @@ def read_notes(
     """
     user_id = current_user.get("sub")
     # Even though RLS is enabled, explicitly filtering by user_id is good practice for the API layer
-    notes = db_select("notes", filters={"user_id": user_id}, order_by="created_at", ascending=False)
+    notes = await db_select("notes", filters={"user_id": user_id}, order_by="created_at", ascending=False, token=token)
     return notes
 
 @router.post("/", response_model=Any)
-def create_note(
+async def create_note(
     note_in: NoteCreate,
-    current_user: Dict[str, Any] = Depends(get_current_user)
+    current_user: Dict[str, Any] = Depends(get_current_user),
+    token: Optional[str] = Depends(lambda r: r.headers.get("Authorization", "").replace("Bearer ", "") if r.headers.get("Authorization") else None)
 ):
     """
     Create a new note for the authenticated user.
@@ -36,17 +38,18 @@ def create_note(
     if not note_data.get("content") and note_data.get("description"):
         note_data["content"] = note_data.get("description")
 
-    result = db_insert("notes", note_data)
+    result = await db_insert("notes", note_data, token=token)
     if not result.get("success"):
         raise HTTPException(status_code=500, detail=result.get("error"))
     
     return result.get("data")
 
 @router.put("/{note_id}", response_model=Any)
-def update_note(
+async def update_note(
     note_id: str,
     note_in: NoteUpdate,
-    current_user: Dict[str, Any] = Depends(get_current_user)
+    current_user: Dict[str, Any] = Depends(get_current_user),
+    token: Optional[str] = Depends(lambda r: r.headers.get("Authorization", "").replace("Bearer ", "") if r.headers.get("Authorization") else None)
 ):
     """
     Update a note. RLS ensures only owner can modify.
@@ -55,23 +58,24 @@ def update_note(
     note_data = note_in.dict(exclude_unset=True)
     
     # Ensure user can only update their own note
-    result = db_update("notes", note_data, filters={"id": note_id, "user_id": user_id})
+    result = await db_update("notes", note_data, filters={"id": note_id, "user_id": user_id}, token=token)
     if not result.get("success"):
         raise HTTPException(status_code=500, detail=result.get("error"))
     
     return result.get("data")
 
 @router.delete("/{note_id}", response_model=Any)
-def delete_note(
+async def delete_note(
     note_id: str,
-    current_user: Dict[str, Any] = Depends(get_current_user)
+    current_user: Dict[str, Any] = Depends(get_current_user),
+    token: Optional[str] = Depends(lambda r: r.headers.get("Authorization", "").replace("Bearer ", "") if r.headers.get("Authorization") else None)
 ):
     """
     Delete a note. RLS ensures only owner can delete.
     """
     user_id = current_user.get("sub")
     
-    result = db_delete("notes", filters={"id": note_id, "user_id": user_id})
+    result = await db_delete("notes", filters={"id": note_id, "user_id": user_id}, token=token)
     if not result.get("success"):
         raise HTTPException(status_code=500, detail=result.get("error"))
     

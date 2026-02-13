@@ -24,7 +24,7 @@ import Logo from '@/assets/Logo.png';
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 
-const Authentication: React.FC = () => {
+const ShopAuth: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { user, loading: authLoading } = useAuth();
@@ -47,12 +47,12 @@ const Authentication: React.FC = () => {
             const redirect = params.get('redirect');
 
             if (redirect === 'checkout') {
-                navigate('/buyer-dashboard?tab=checkout');
+                navigate('/shop-dashboard?tab=checkout');
             } else if (items.length > 0) {
                 // Default fallback if they have items but no explicit redirect
-                navigate('/buyer-dashboard?tab=checkout');
+                navigate('/shop-dashboard?tab=checkout');
             } else {
-                navigate('/buyer-dashboard');
+                navigate('/shop-dashboard');
             }
         }
     }, [user, authLoading, items, navigate, location.search]);
@@ -138,19 +138,19 @@ const Authentication: React.FC = () => {
                     <div className="lg:col-span-12 xl:col-span-5 space-y-8 order-2 lg:order-1 mt-8 lg:mt-0">
                         <div className="space-y-4">
                             <h2 className="text-4xl lg:text-5xl font-black tracking-tightest leading-tight">
-                                One Account. <br />
-                                <span className="text-primary">Unlimited</span> Access.
+                                Shop <span className="text-primary">Checkout.</span> <br />
+                                Secure Access.
                             </h2>
                             <p className="text-xl text-muted-foreground font-medium leading-relaxed">
-                                Join the world's most advanced pollination network. Get data-driven insights, secure harvests, and premium honey.
+                                Access your orders, track shipments, and manage your honey subscription with ease.
                             </p>
                         </div>
 
                         <div className="grid gap-4">
                             {[
-                                { title: 'Seamless Checkout', desc: 'Securely store addresses and payment methods for 1-click buying.', icon: ShoppingBag },
-                                { title: 'Honey Traceability', desc: 'Verify the origin and purity of every jar you purchase.', icon: CheckCircle2 },
-                                { title: 'IoT Hive Monitoring', desc: 'Access real-time data from your smart hives anywhere.', icon: Hexagon },
+                                { title: 'Fast Checkout', desc: 'Securely store addresses and payment methods for 1-click buying.', icon: ShoppingBag },
+                                { title: 'Traceability', desc: 'Verify the origin and purity of every bottle you purchase.', icon: CheckCircle2 },
+                                { title: 'Order History', desc: 'Track your deliveries and re-order your favorites instantly.', icon: Hexagon },
                                 { title: 'Buyer Protection', desc: 'Every transaction is encrypted and monitored for your safety.', icon: Shield }
                             ].map((benefit, i) => (
                                 <div key={i} className="flex gap-4 p-6 rounded-3xl bg-card/50 border border-border/50 hover:border-primary/30 transition-all group">
@@ -173,10 +173,10 @@ const Authentication: React.FC = () => {
                                 <div>
                                     <CardTitle className="text-2xl font-black font-heading flex items-center gap-2">
                                         <LogIn className="h-6 w-6 text-primary" />
-                                        {authMode === 'login' ? 'Welcome Back' : authMode === 'register' ? 'Create Account' : 'Reset Password'}
+                                        {authMode === 'login' ? 'Shop Sign In' : authMode === 'register' ? 'Join the Shop' : 'Reset Password'}
                                     </CardTitle>
                                     <p className="text-base font-medium text-muted-foreground mt-1">
-                                        {authMode === 'login' ? 'Please enter your details to continue' : 'Join BeeYield today'}
+                                        {authMode === 'login' ? 'Please enter your account details' : 'Create your buyer account today'}
                                     </p>
                                 </div>
                                 <div className="flex gap-1 p-1 bg-background/50 rounded-xl border border-border/50">
@@ -213,6 +213,7 @@ const Authentication: React.FC = () => {
                                     {authMode === 'register' && (
                                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                                             <RegisterForm
+                                                variant="shop"
                                                 onSuccess={() => {
                                                     toast.success("Account Created Successfully");
                                                     setAuthMode('login');
@@ -238,7 +239,7 @@ const Authentication: React.FC = () => {
                                         </p>
 
                                         {items.length > 0 && (
-                                            <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 flex items-center justify-between group cursor-pointer" onClick={() => navigate('/buyer-dashboard?tab=checkout')}>
+                                            <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 flex items-center justify-between group cursor-pointer" onClick={() => navigate('/shop-dashboard?tab=checkout')}>
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
                                                         <ShoppingBag className="h-4 w-4 text-primary" />
@@ -274,4 +275,4 @@ const Authentication: React.FC = () => {
     );
 };
 
-export default Authentication;
+export default ShopAuth;

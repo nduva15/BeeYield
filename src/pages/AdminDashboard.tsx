@@ -1747,30 +1747,71 @@ const AdminDashboard: React.FC = () => {
                                 <div className="grid gap-5 py-4">
                                     <div className="space-y-2">
                                         <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Product Designation</Label>
-                                        <Input placeholder="e.g. Amber Infusion VII" value={productForm.name} onChange={e => setProductForm({ ...productForm, name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                        <Input
+                                            id="product-name"
+                                            name="product-name"
+                                            placeholder="e.g. Amber Infusion VII"
+                                            value={productForm.name}
+                                            onChange={e => setProductForm({ ...productForm, name: e.target.value })}
+                                            className="rounded-xl h-12 bg-muted/50 border-border/50"
+                                        />
                                     </div>
                                     <div className="space-y-2">
                                         <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Asset Description</Label>
-                                        <Textarea placeholder="Describe the sensory profile..." value={productForm.description} onChange={e => setProductForm({ ...productForm, description: e.target.value })} className="rounded-xl min-h-[100px] bg-muted/50 border-border/50" />
+                                        <Textarea
+                                            id="product-description"
+                                            name="product-description"
+                                            placeholder="Describe the sensory profile..."
+                                            value={productForm.description}
+                                            onChange={e => setProductForm({ ...productForm, description: e.target.value })}
+                                            className="rounded-xl min-h-[100px] bg-muted/50 border-border/50"
+                                        />
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Classification</Label>
-                                            <Input value={productForm.category} onChange={e => setProductForm({ ...productForm, category: e.target.value })} className="rounded-xl h-11 bg-muted/50 border-border/50" />
+                                            <Input
+                                                id="product-category"
+                                                name="product-category"
+                                                value={productForm.category}
+                                                onChange={e => setProductForm({ ...productForm, category: e.target.value })}
+                                                className="rounded-xl h-11 bg-muted/50 border-border/50"
+                                            />
                                         </div>
                                         <div className="space-y-2">
                                             <Label className="uppercase text-[10px] font-black tracking-widest ml-1">MSRP (KES)</Label>
-                                            <Input type="number" value={productForm.price_kes} onChange={e => setProductForm({ ...productForm, price_kes: parseFloat(e.target.value) })} className="rounded-xl h-11 bg-muted/50 border-border/50" />
+                                            <Input
+                                                id="product-price"
+                                                name="product-price"
+                                                type="number"
+                                                value={productForm.price_kes}
+                                                onChange={e => setProductForm({ ...productForm, price_kes: parseFloat(e.target.value) })}
+                                                className="rounded-xl h-11 bg-muted/50 border-border/50"
+                                            />
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Initial Reserve</Label>
-                                            <Input type="number" value={productForm.stock_quantity} onChange={e => setProductForm({ ...productForm, stock_quantity: parseInt(e.target.value) })} className="rounded-xl h-11 bg-muted/50 border-border/50" />
+                                            <Input
+                                                id="product-stock"
+                                                name="product-stock"
+                                                type="number"
+                                                value={productForm.stock_quantity}
+                                                onChange={e => setProductForm({ ...productForm, stock_quantity: parseInt(e.target.value) })}
+                                                className="rounded-xl h-11 bg-muted/50 border-border/50"
+                                            />
                                         </div>
                                         <div className="space-y-2">
                                             <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Visual Matrix (URL)</Label>
-                                            <Input value={productForm.images} onChange={e => setProductForm({ ...productForm, images: e.target.value })} placeholder="https://..." className="rounded-xl h-11 bg-muted/50 border-border/50 font-mono text-xs" />
+                                            <Input
+                                                id="product-images"
+                                                name="product-images"
+                                                value={productForm.images}
+                                                onChange={e => setProductForm({ ...productForm, images: e.target.value })}
+                                                placeholder="https://..."
+                                                className="rounded-xl h-11 bg-muted/50 border-border/50 font-mono text-xs"
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -1874,12 +1915,26 @@ const AdminDashboard: React.FC = () => {
                                         </div>
                                         <div className="space-y-2">
                                             <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Quantity</Label>
-                                            <Input type="number" value={stockForm.quantity} onChange={e => setStockForm({ ...stockForm, quantity: parseInt(e.target.value) || 0 })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                            <Input
+                                                id="stock-quantity"
+                                                name="stock-quantity"
+                                                type="number"
+                                                value={stockForm.quantity}
+                                                onChange={e => setStockForm({ ...stockForm, quantity: parseInt(e.target.value) || 0 })}
+                                                className="rounded-xl h-12 bg-muted/50 border-border/50"
+                                            />
                                         </div>
                                     </div>
                                     <div className="space-y-2">
                                         <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Protocol Reasoning</Label>
-                                        <Input placeholder="e.g. New harvest arrival" value={stockForm.reason} onChange={e => setStockForm({ ...stockForm, reason: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                        <Input
+                                            id="stock-reason"
+                                            name="stock-reason"
+                                            placeholder="e.g. New harvest arrival"
+                                            value={stockForm.reason}
+                                            onChange={e => setStockForm({ ...stockForm, reason: e.target.value })}
+                                            className="rounded-xl h-12 bg-muted/50 border-border/50"
+                                        />
                                     </div>
                                 </div>
                                 <DialogFooter>
@@ -2035,19 +2090,47 @@ const AdminDashboard: React.FC = () => {
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
                                                 <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Honey Variety</Label>
-                                                <Input value={batchForm.honey_type} onChange={e => setBatchForm({ ...batchForm, honey_type: e.target.value })} placeholder="e.g. Acacia Noir" className="rounded-xl h-11 bg-muted/50" />
+                                                <Input
+                                                    id="batch-honey-type"
+                                                    name="batch-honey-type"
+                                                    value={batchForm.honey_type}
+                                                    onChange={e => setBatchForm({ ...batchForm, honey_type: e.target.value })}
+                                                    placeholder="e.g. Acacia Noir"
+                                                    className="rounded-xl h-11 bg-muted/50"
+                                                />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Harvest Date</Label>
-                                                <Input type="date" value={batchForm.harvest_date} onChange={e => setBatchForm({ ...batchForm, harvest_date: e.target.value })} className="rounded-xl h-11 bg-muted/50" />
+                                                <Input
+                                                    id="batch-harvest-date"
+                                                    name="batch-harvest-date"
+                                                    type="date"
+                                                    value={batchForm.harvest_date}
+                                                    onChange={e => setBatchForm({ ...batchForm, harvest_date: e.target.value })}
+                                                    className="rounded-xl h-11 bg-muted/50"
+                                                />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Packaged Date</Label>
-                                                <Input type="date" value={(batchForm as any).packaged_date || ''} onChange={e => setBatchForm({ ...batchForm, packaged_date: e.target.value } as any)} className="rounded-xl h-11 bg-muted/50" />
+                                                <Input
+                                                    id="batch-packaged-date"
+                                                    name="batch-packaged-date"
+                                                    type="date"
+                                                    value={(batchForm as any).packaged_date || ''}
+                                                    onChange={e => setBatchForm({ ...batchForm, packaged_date: e.target.value } as any)}
+                                                    className="rounded-xl h-11 bg-muted/50"
+                                                />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Harvest Quantity (KG)</Label>
-                                                <Input type="number" value={batchForm.quantity_kg} onChange={e => setBatchForm({ ...batchForm, quantity_kg: parseFloat(e.target.value) })} className="rounded-xl h-11 bg-muted/50" />
+                                                <Input
+                                                    id="batch-quantity"
+                                                    name="batch-quantity"
+                                                    type="number"
+                                                    value={batchForm.quantity_kg}
+                                                    onChange={e => setBatchForm({ ...batchForm, quantity_kg: parseFloat(e.target.value) })}
+                                                    className="rounded-xl h-11 bg-muted/50"
+                                                />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Processing Method</Label>
@@ -2073,6 +2156,8 @@ const AdminDashboard: React.FC = () => {
                                             <div className="space-y-2">
                                                 <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Farmer Name</Label>
                                                 <Input
+                                                    id="batch-farmer-name"
+                                                    name="batch-farmer-name"
                                                     value={(batchForm as any).farmer_name || ''}
                                                     onChange={e => setBatchForm({ ...batchForm, farmer_name: e.target.value } as any)}
                                                     placeholder="e.g. John Doe"
@@ -2082,6 +2167,8 @@ const AdminDashboard: React.FC = () => {
                                             <div className="space-y-2">
                                                 <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Contact Phone</Label>
                                                 <Input
+                                                    id="batch-farmer-phone"
+                                                    name="batch-farmer-phone"
                                                     value={(batchForm as any).farmer_phone || ''}
                                                     onChange={e => setBatchForm({ ...batchForm, farmer_phone: e.target.value } as any)}
                                                     placeholder="+254..."
@@ -2091,6 +2178,8 @@ const AdminDashboard: React.FC = () => {
                                             <div className="space-y-2">
                                                 <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Beekeeper Name</Label>
                                                 <Input
+                                                    id="batch-beekeeper-name"
+                                                    name="batch-beekeeper-name"
                                                     value={(batchForm as any).beekeeper_name || ''}
                                                     onChange={e => setBatchForm({ ...batchForm, beekeeper_name: e.target.value } as any)}
                                                     placeholder="e.g. Jane Smith"
@@ -2100,6 +2189,8 @@ const AdminDashboard: React.FC = () => {
                                             <div className="space-y-2">
                                                 <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Beekeeper ID</Label>
                                                 <Input
+                                                    id="batch-beekeeper-id"
+                                                    name="batch-beekeeper-id"
                                                     value={(batchForm as any).beekeeper_id || ''}
                                                     onChange={e => setBatchForm({ ...batchForm, beekeeper_id: e.target.value } as any)}
                                                     placeholder="ID-..."
@@ -2109,6 +2200,8 @@ const AdminDashboard: React.FC = () => {
                                             <div className="space-y-2">
                                                 <Label className="uppercase text-[10px] font-black tracking-widest ml-1">County</Label>
                                                 <Input
+                                                    id="batch-county"
+                                                    name="batch-county"
                                                     value={(batchForm as any).location_county || ''}
                                                     onChange={e => setBatchForm({ ...batchForm, location_county: e.target.value } as any)}
                                                     placeholder="e.g. Kitui"
@@ -2118,6 +2211,8 @@ const AdminDashboard: React.FC = () => {
                                             <div className="space-y-2">
                                                 <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Region</Label>
                                                 <Input
+                                                    id="batch-region"
+                                                    name="batch-region"
                                                     value={(batchForm as any).location_region || ''}
                                                     onChange={e => setBatchForm({ ...batchForm, location_region: e.target.value } as any)}
                                                     placeholder="e.g. Mwingi North"
@@ -2127,6 +2222,8 @@ const AdminDashboard: React.FC = () => {
                                             <div className="space-y-2">
                                                 <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Apiary Name</Label>
                                                 <Input
+                                                    id="batch-apiary-name"
+                                                    name="batch-apiary-name"
                                                     value={(batchForm as any).apiary_name || ''}
                                                     onChange={e => setBatchForm({ ...batchForm, apiary_name: e.target.value } as any)}
                                                     placeholder="e.g. Acacia Grove"
@@ -2137,6 +2234,8 @@ const AdminDashboard: React.FC = () => {
                                                 <div className="space-y-2">
                                                     <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Lat</Label>
                                                     <Input
+                                                        id="batch-latitude"
+                                                        name="batch-latitude"
                                                         type="number" step="any"
                                                         value={(batchForm as any).latitude || ''}
                                                         onChange={e => setBatchForm({ ...batchForm, latitude: parseFloat(e.target.value) } as any)}
@@ -2147,6 +2246,8 @@ const AdminDashboard: React.FC = () => {
                                                 <div className="space-y-2">
                                                     <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Long</Label>
                                                     <Input
+                                                        id="batch-longitude"
+                                                        name="batch-longitude"
                                                         type="number" step="any"
                                                         value={(batchForm as any).longitude || ''}
                                                         onChange={e => setBatchForm({ ...batchForm, longitude: parseFloat(e.target.value) } as any)}
@@ -2178,6 +2279,8 @@ const AdminDashboard: React.FC = () => {
                                             <div className="space-y-2">
                                                 <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Moisture Level (%)</Label>
                                                 <Input
+                                                    id="batch-moisture"
+                                                    name="batch-moisture"
                                                     type="number"
                                                     step="0.1"
                                                     value={(batchForm as any).moisture_content || ''}
@@ -2422,44 +2525,103 @@ const AdminDashboard: React.FC = () => {
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Full Name</Label>
-                                            <Input placeholder="Timothy Nduva" value={farmerForm.name} onChange={e => setFarmerForm({ ...farmerForm, name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                            <Input
+                                                id="farmer-fullname"
+                                                name="farmer-fullname"
+                                                placeholder="Timothy Nduva"
+                                                value={farmerForm.name}
+                                                onChange={e => setFarmerForm({ ...farmerForm, name: e.target.value })}
+                                                className="rounded-xl h-12 bg-muted/50 border-border/50"
+                                            />
                                         </div>
                                         <div className="space-y-2">
                                             <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Phone Number</Label>
-                                            <Input placeholder="+254 7XX XXX XXX" value={farmerForm.phone} onChange={e => setFarmerForm({ ...farmerForm, phone: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                            <Input
+                                                id="farmer-phone"
+                                                name="farmer-phone"
+                                                placeholder="+254 7XX XXX XXX"
+                                                value={farmerForm.phone}
+                                                onChange={e => setFarmerForm({ ...farmerForm, phone: e.target.value })}
+                                                className="rounded-xl h-12 bg-muted/50 border-border/50"
+                                            />
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Email Address</Label>
-                                            <Input type="email" placeholder="timothy@beeyield.com" value={farmerForm.email} onChange={e => setFarmerForm({ ...farmerForm, email: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                            <Input
+                                                id="farmer-email"
+                                                name="farmer-email"
+                                                type="email"
+                                                placeholder="timothy@beeyield.com"
+                                                value={farmerForm.email}
+                                                onChange={e => setFarmerForm({ ...farmerForm, email: e.target.value })}
+                                                className="rounded-xl h-12 bg-muted/50 border-border/50"
+                                            />
                                         </div>
                                         <div className="space-y-2">
                                             <Label className="uppercase text-[10px] font-black tracking-widest ml-1">ID Number</Label>
-                                            <Input placeholder="National ID or Passport" value={farmerForm.id_number} onChange={e => setFarmerForm({ ...farmerForm, id_number: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                            <Input
+                                                id="farmer-id-number"
+                                                name="farmer-id-number"
+                                                placeholder="National ID or Passport"
+                                                value={farmerForm.id_number}
+                                                onChange={e => setFarmerForm({ ...farmerForm, id_number: e.target.value })}
+                                                className="rounded-xl h-12 bg-muted/50 border-border/50"
+                                            />
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-3 gap-4">
                                         <div className="space-y-2">
                                             <Label className="uppercase text-[10px] font-black tracking-widest ml-1">County</Label>
-                                            <Input placeholder="Makueni" value={farmerForm.county} onChange={e => setFarmerForm({ ...farmerForm, county: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                            <Input
+                                                id="farmer-county"
+                                                name="farmer-county"
+                                                placeholder="Makueni"
+                                                value={farmerForm.county}
+                                                onChange={e => setFarmerForm({ ...farmerForm, county: e.target.value })}
+                                                className="rounded-xl h-12 bg-muted/50 border-border/50"
+                                            />
                                         </div>
                                         <div className="space-y-2">
                                             <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Region</Label>
-                                            <Input placeholder="Eastern" value={farmerForm.region} onChange={e => setFarmerForm({ ...farmerForm, region: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                            <Input
+                                                id="farmer-region"
+                                                name="farmer-region"
+                                                placeholder="Eastern"
+                                                value={farmerForm.region}
+                                                onChange={e => setFarmerForm({ ...farmerForm, region: e.target.value })}
+                                                className="rounded-xl h-12 bg-muted/50 border-border/50"
+                                            />
                                         </div>
                                         <div className="space-y-2">
                                             <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Years Experience</Label>
-                                            <Input type="number" value={farmerForm.experience_years} onChange={e => setFarmerForm({ ...farmerForm, experience_years: parseInt(e.target.value) || 0 })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                            <Input
+                                                id="farmer-experience"
+                                                name="farmer-experience"
+                                                type="number"
+                                                value={farmerForm.experience_years}
+                                                onChange={e => setFarmerForm({ ...farmerForm, experience_years: parseInt(e.target.value) || 0 })}
+                                                className="rounded-xl h-12 bg-muted/50 border-border/50"
+                                            />
                                         </div>
                                     </div>
                                     <div className="space-y-2">
                                         <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Location Details / Ward</Label>
-                                        <Input placeholder="Kibwezi East, Mtito Andei" value={farmerForm.location_name} onChange={e => setFarmerForm({ ...farmerForm, location_name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                        <Input
+                                            id="farmer-location"
+                                            name="farmer-location"
+                                            placeholder="Kibwezi East, Mtito Andei"
+                                            value={farmerForm.location_name}
+                                            onChange={e => setFarmerForm({ ...farmerForm, location_name: e.target.value })}
+                                            className="rounded-xl h-12 bg-muted/50 border-border/50"
+                                        />
                                     </div>
                                     <div className="space-y-2">
                                         <Label className="uppercase text-[10px] font-black tracking-widest ml-1">The Beekeeper's Story</Label>
                                         <Textarea
+                                            id="farmer-story"
+                                            name="farmer-story"
                                             placeholder="Brief background about the farmer..."
                                             value={farmerForm.story}
                                             onChange={e => setFarmerForm({ ...farmerForm, story: e.target.value })}
@@ -2554,16 +2716,37 @@ const AdminDashboard: React.FC = () => {
                                 <div className="grid gap-6 py-4">
                                     <div className="space-y-2">
                                         <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Apiary Name</Label>
-                                        <Input placeholder="Kibwezi East Cluster A" value={apiaryForm.name} onChange={e => setApiaryForm({ ...apiaryForm, name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                        <Input
+                                            id="apiary-name"
+                                            name="apiary-name"
+                                            placeholder="Kibwezi East Cluster A"
+                                            value={apiaryForm.name}
+                                            onChange={e => setApiaryForm({ ...apiaryForm, name: e.target.value })}
+                                            className="rounded-xl h-12 bg-muted/50 border-border/50"
+                                        />
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <Label className="uppercase text-[10px] font-black tracking-widest ml-1">County</Label>
-                                            <Input placeholder="Makueni" value={apiaryForm.county} onChange={e => setApiaryForm({ ...apiaryForm, county: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                            <Input
+                                                id="apiary-county"
+                                                name="apiary-county"
+                                                placeholder="Makueni"
+                                                value={apiaryForm.county}
+                                                onChange={e => setApiaryForm({ ...apiaryForm, county: e.target.value })}
+                                                className="rounded-xl h-12 bg-muted/50 border-border/50"
+                                            />
                                         </div>
                                         <div className="space-y-2">
                                             <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Region</Label>
-                                            <Input placeholder="Eastern" value={apiaryForm.region} onChange={e => setApiaryForm({ ...apiaryForm, region: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                            <Input
+                                                id="apiary-region"
+                                                name="apiary-region"
+                                                placeholder="Eastern"
+                                                value={apiaryForm.region}
+                                                onChange={e => setApiaryForm({ ...apiaryForm, region: e.target.value })}
+                                                className="rounded-xl h-12 bg-muted/50 border-border/50"
+                                            />
                                         </div>
                                     </div>
                                     <div className="space-y-2">
@@ -2582,11 +2765,25 @@ const AdminDashboard: React.FC = () => {
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Latitude</Label>
-                                            <Input type="number" step="any" value={apiaryForm.latitude} onChange={e => setApiaryForm({ ...apiaryForm, latitude: parseFloat(e.target.value) })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                            <Input
+                                                id="apiary-latitude"
+                                                name="apiary-latitude"
+                                                type="number" step="any"
+                                                value={apiaryForm.latitude}
+                                                onChange={e => setApiaryForm({ ...apiaryForm, latitude: parseFloat(e.target.value) })}
+                                                className="rounded-xl h-12 bg-muted/50 border-border/50"
+                                            />
                                         </div>
                                         <div className="space-y-2">
                                             <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Longitude</Label>
-                                            <Input type="number" step="any" value={apiaryForm.longitude} onChange={e => setApiaryForm({ ...apiaryForm, longitude: parseFloat(e.target.value) })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                            <Input
+                                                id="apiary-longitude"
+                                                name="apiary-longitude"
+                                                type="number" step="any"
+                                                value={apiaryForm.longitude}
+                                                onChange={e => setApiaryForm({ ...apiaryForm, longitude: parseFloat(e.target.value) })}
+                                                className="rounded-xl h-12 bg-muted/50 border-border/50"
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -2604,7 +2801,7 @@ const AdminDashboard: React.FC = () => {
                         <Card className="bg-card border-border rounded-2xl overflow-hidden shadow-sm">
                             <CardHeader className="border-b border-border bg-muted/30 flex flex-row items-center justify-between">
                                 <div>
-                                    <CardTitle className="text-xl font-bold">Smart Hive Ledger</CardTitle>
+                                    <CardTitle className="text-xl font-bold">Intelligent Hive Ledger</CardTitle>
                                     <CardDescription>Inventory and health status of individual colony units.</CardDescription>
                                 </div>
                                 <Button
@@ -2673,7 +2870,14 @@ const AdminDashboard: React.FC = () => {
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Hive Code</Label>
-                                            <Input placeholder="HIVE-KIB-001" value={hiveForm.hive_code} onChange={e => setHiveForm({ ...hiveForm, hive_code: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                            <Input
+                                                id="hive-code"
+                                                name="hive-code"
+                                                placeholder="HIVE-KIB-001"
+                                                value={hiveForm.hive_code}
+                                                onChange={e => setHiveForm({ ...hiveForm, hive_code: e.target.value })}
+                                                className="rounded-xl h-12 bg-muted/50 border-border/50"
+                                            />
                                         </div>
                                         <div className="space-y-2">
                                             <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Hive Type</Label>
@@ -2705,7 +2909,14 @@ const AdminDashboard: React.FC = () => {
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Installation Date</Label>
-                                            <Input type="date" value={hiveForm.installation_date} onChange={e => setHiveForm({ ...hiveForm, installation_date: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                            <Input
+                                                id="hive-install-date"
+                                                name="hive-install-date"
+                                                type="date"
+                                                value={hiveForm.installation_date}
+                                                onChange={e => setHiveForm({ ...hiveForm, installation_date: e.target.value })}
+                                                className="rounded-xl h-12 bg-muted/50 border-border/50"
+                                            />
                                         </div>
                                         <div className="space-y-2">
                                             <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Health Status</Label>
@@ -2724,7 +2935,14 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                     <div className="space-y-2">
                                         <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Mechanical Notes</Label>
-                                        <Textarea placeholder="Condition of the box, queen status, etc." value={hiveForm.notes} onChange={e => setHiveForm({ ...hiveForm, notes: e.target.value })} className="rounded-xl bg-muted/50 border-border/50" />
+                                        <Textarea
+                                            id="hive-notes"
+                                            name="hive-notes"
+                                            placeholder="Condition of the box, queen status, etc."
+                                            value={hiveForm.notes}
+                                            onChange={e => setHiveForm({ ...hiveForm, notes: e.target.value })}
+                                            className="rounded-xl bg-muted/50 border-border/50"
+                                        />
                                     </div>
                                 </div>
                                 <DialogFooter>
@@ -2834,21 +3052,51 @@ const AdminDashboard: React.FC = () => {
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-2">
                                                     <Label className="uppercase text-[10px] font-black tracking-widest ml-1">First Name</Label>
-                                                    <Input placeholder="John" value={userForm.first_name} onChange={e => setUserForm({ ...userForm, first_name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                                    <Input
+                                                        id="user-firstname"
+                                                        name="user-firstname"
+                                                        placeholder="John"
+                                                        value={userForm.first_name}
+                                                        onChange={e => setUserForm({ ...userForm, first_name: e.target.value })}
+                                                        className="rounded-xl h-12 bg-muted/50 border-border/50"
+                                                    />
                                                 </div>
                                                 <div className="space-y-2">
                                                     <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Last Name</Label>
-                                                    <Input placeholder="Doe" value={userForm.last_name} onChange={e => setUserForm({ ...userForm, last_name: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                                    <Input
+                                                        id="user-lastname"
+                                                        name="user-lastname"
+                                                        placeholder="Doe"
+                                                        value={userForm.last_name}
+                                                        onChange={e => setUserForm({ ...userForm, last_name: e.target.value })}
+                                                        className="rounded-xl h-12 bg-muted/50 border-border/50"
+                                                    />
                                                 </div>
                                             </div>
                                             <div className="space-y-2">
                                                 <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Email Address</Label>
-                                                <Input type="email" placeholder="operator@beeyield.com" value={userForm.email} onChange={e => setUserForm({ ...userForm, email: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                                <Input
+                                                    id="user-email"
+                                                    name="user-email"
+                                                    type="email"
+                                                    placeholder="operator@beeyield.com"
+                                                    value={userForm.email}
+                                                    onChange={e => setUserForm({ ...userForm, email: e.target.value })}
+                                                    className="rounded-xl h-12 bg-muted/50 border-border/50"
+                                                />
                                             </div>
                                             {!editingUser && (
                                                 <div className="space-y-2">
                                                     <Label className="uppercase text-[10px] font-black tracking-widest ml-1">Access Password</Label>
-                                                    <Input type="password" placeholder="••••••••" value={userForm.password} onChange={e => setUserForm({ ...userForm, password: e.target.value })} className="rounded-xl h-12 bg-muted/50 border-border/50" />
+                                                    <Input
+                                                        id="user-password"
+                                                        name="user-password"
+                                                        type="password"
+                                                        placeholder="••••••••"
+                                                        value={userForm.password}
+                                                        onChange={e => setUserForm({ ...userForm, password: e.target.value })}
+                                                        className="rounded-xl h-12 bg-muted/50 border-border/50"
+                                                    />
                                                 </div>
                                             )}
                                             <div className="space-y-2">

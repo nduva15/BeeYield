@@ -37,4 +37,4 @@ def run_sql(sql_file):
         return False
 
 if __name__ == "__main__":
-    run_sql("db/migrate_user_specific_data.sql")
+    run_sql("migrations/jobs_setup.sql")

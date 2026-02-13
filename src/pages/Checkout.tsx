@@ -1252,12 +1252,14 @@ const Checkout = () => {
                         </TabsList>
                         <TabsContent value="login" className="p-6 pt-4">
                             <LoginForm
+                                variant="shop"
                                 onSuccess={handleAuthSuccess}
                                 onSwitchToRegister={() => setAuthTab('register')}
                             />
                         </TabsContent>
                         <TabsContent value="register" className="p-6 pt-4">
                             <RegisterForm
+                                variant="shop"
                                 onSuccess={handleAuthSuccess}
                                 onSwitchToLogin={() => setAuthTab('login')}
                             />

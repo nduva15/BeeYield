@@ -26,7 +26,7 @@ def get_trace_by_code(code: str, request: Request, background_tasks: BackgroundT
         return result
         
     background_tasks.add_task(track_traceability_scan, code)
-    print(f"❌ Code Not Found: {code}")
+    print(f"[ERROR] Code Not Found: {code}")
 
     raise HTTPException(status_code=404, detail=f"Traceability code '{code}' not found. Please verify the code on your jar.")
 

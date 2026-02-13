@@ -273,6 +273,8 @@ const BeeLearn = () => {
               <div>
                 <label className="block text-xs font-bold uppercase text-neutral-500 mb-1">Email Address</label>
                 <input
+                  id="guide-email"
+                  name="guide-email"
                   type="email"
                   required
                   placeholder="name@example.com"
@@ -305,20 +307,20 @@ const BeeLearn = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="quote-contact-name" className="block text-xs font-bold uppercase text-neutral-500 mb-1">Contact Name</label>
-                  <input id="quote-contact-name" type="text" required className="w-full h-10 px-3 rounded-lg border border-neutral-200" value={quoteForm.name} onChange={e => setQuoteForm({ ...quoteForm, name: e.target.value })} />
+                  <input id="quote-contact-name" name="contact-name" type="text" required className="w-full h-10 px-3 rounded-lg border border-neutral-200" value={quoteForm.name} onChange={e => setQuoteForm({ ...quoteForm, name: e.target.value })} />
                 </div>
                 <div>
                   <label htmlFor="quote-company" className="block text-xs font-bold uppercase text-neutral-500 mb-1">Company</label>
-                  <input id="quote-company" type="text" required className="w-full h-10 px-3 rounded-lg border border-neutral-200" value={quoteForm.company} onChange={e => setQuoteForm({ ...quoteForm, company: e.target.value })} />
+                  <input id="quote-company" name="company" type="text" required className="w-full h-10 px-3 rounded-lg border border-neutral-200" value={quoteForm.company} onChange={e => setQuoteForm({ ...quoteForm, company: e.target.value })} />
                 </div>
               </div>
               <div>
                 <label htmlFor="quote-email" className="block text-xs font-bold uppercase text-neutral-500 mb-1">Work Email</label>
-                <input id="quote-email" type="email" required className="w-full h-10 px-3 rounded-lg border border-neutral-200" value={quoteForm.email} onChange={e => setQuoteForm({ ...quoteForm, email: e.target.value })} />
+                <input id="quote-email" name="work-email" type="email" required className="w-full h-10 px-3 rounded-lg border border-neutral-200" value={quoteForm.email} onChange={e => setQuoteForm({ ...quoteForm, email: e.target.value })} />
               </div>
               <div>
                 <label className="block text-xs font-bold uppercase text-neutral-500 mb-1">Training Needs</label>
-                <textarea required rows={3} className="w-full p-3 rounded-lg border border-neutral-200" placeholder="Number of attendees, preferred dates, etc." value={quoteForm.message} onChange={e => setQuoteForm({ ...quoteForm, message: e.target.value })}></textarea>
+                <textarea id="quote-message" name="training-needs" required rows={3} className="w-full p-3 rounded-lg border border-neutral-200" placeholder="Number of attendees, preferred dates, etc." value={quoteForm.message} onChange={e => setQuoteForm({ ...quoteForm, message: e.target.value })}></textarea>
               </div>
               <Button type="submit" disabled={isSubmitting} className="w-full h-12 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl">
                 {isSubmitting ? <Loader2 className="animate-spin" /> : "Submit Request"}

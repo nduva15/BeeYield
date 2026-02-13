@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from typing import Optional, Dict
+from typing import Optional, Dict, Literal
 
 class ContactSubmissionCreate(BaseModel):
     inquiry_type: str # grower, beekeeper, general
@@ -41,3 +41,16 @@ class NewsletterSubscriptionCreate(BaseModel):
     email: EmailStr
     first_name: Optional[str] = None
     source: Optional[str] = "footer"
+
+
+class ContactMessageCreate(BaseModel):
+    """Schema for the dedicated contact_messages inbox (PRD Engagement Module)."""
+    full_name: str
+    email: EmailStr
+    subject: Optional[str] = None
+    message: str
+
+
+class ContactMessageUpdate(BaseModel):
+    """Admin-only: update the status of a contact message."""
+    status: Literal["new", "read", "replied", "archived"]

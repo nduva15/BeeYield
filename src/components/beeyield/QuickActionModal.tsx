@@ -144,6 +144,7 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
                                     <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-500" />
                                     <Input
                                         id="apiary-name"
+                                        name="name"
                                         placeholder="e.g. Kibwezi Sector Alpha"
                                         className="pl-11 h-14 rounded-2xl border-slate-100 bg-white shadow-sm focus:ring-[#FF9100] focus:border-[#FF9100] font-bold text-slate-800"
                                         value={apiaryData.name}
@@ -156,6 +157,7 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
                                 <Label htmlFor="apiary-location" className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Geospatial Coordinates</Label>
                                 <Input
                                     id="apiary-location"
+                                    name="location_name"
                                     placeholder="Enter physical address or Lat/Long"
                                     className="h-14 rounded-2xl border-slate-100 bg-white shadow-sm font-bold text-slate-800"
                                     value={apiaryData.location_name}
@@ -167,10 +169,11 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Forage Core</Label>
                                     <Select
+                                        name="forage_type"
                                         value={apiaryData.forage_type}
                                         onValueChange={v => setApiaryData({ ...apiaryData, forage_type: v })}
                                     >
-                                        <SelectTrigger className="h-14 rounded-2xl border-slate-100 bg-white font-bold text-slate-800">
+                                        <SelectTrigger id="apiary-forage" className="h-14 rounded-2xl border-slate-100 bg-white font-bold text-slate-800">
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent className="rounded-2xl">
@@ -184,10 +187,11 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Sun Vector</Label>
                                     <Select
+                                        name="sun_exposure"
                                         value={apiaryData.sun_exposure}
                                         onValueChange={v => setApiaryData({ ...apiaryData, sun_exposure: v })}
                                     >
-                                        <SelectTrigger className="h-14 rounded-2xl border-slate-100 bg-white font-bold text-slate-800">
+                                        <SelectTrigger id="apiary-sun" className="h-14 rounded-2xl border-slate-100 bg-white font-bold text-slate-800">
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent className="rounded-2xl">
@@ -204,10 +208,11 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Parent Node (Apiary)</Label>
                                 <Select
+                                    name="apiary_id"
                                     value={hiveData.apiary_id}
                                     onValueChange={v => setHiveData({ ...hiveData, apiary_id: v })}
                                 >
-                                    <SelectTrigger className="h-14 rounded-2xl border-slate-100 bg-white font-bold text-slate-800">
+                                    <SelectTrigger id="hive-apiary" className="h-14 rounded-2xl border-slate-100 bg-white font-bold text-slate-800">
                                         <SelectValue placeholder="Deploy to..." />
                                     </SelectTrigger>
                                     <SelectContent className="rounded-2xl">
@@ -223,6 +228,8 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
                                 <div className="relative">
                                     <Database className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-green-600" />
                                     <Input
+                                        id="hive-code"
+                                        name="hive_code"
                                         placeholder="e.g. BY-ALPHA-01"
                                         className="pl-11 h-14 rounded-2xl border-slate-100 bg-white font-bold text-slate-800"
                                         value={hiveData.hive_code}
@@ -235,10 +242,11 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Architecture</Label>
                                     <Select
+                                        name="type"
                                         value={hiveData.type}
                                         onValueChange={v => setHiveData({ ...hiveData, type: v })}
                                     >
-                                        <SelectTrigger className="h-14 rounded-2xl border-slate-100 bg-white font-bold text-slate-800">
+                                        <SelectTrigger id="hive-type" className="h-14 rounded-2xl border-slate-100 bg-white font-bold text-slate-800">
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent className="rounded-2xl">
@@ -252,6 +260,8 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
                                     <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Gestation Date</Label>
                                     <div className="relative">
                                         <Input
+                                            id="queen-hatched"
+                                            name="queen_hatched"
                                             type="date"
                                             className="h-14 rounded-2xl border-slate-100 bg-white font-bold text-slate-800"
                                             value={hiveData.queen_hatched}

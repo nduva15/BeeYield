@@ -31,7 +31,7 @@ const PollinationServices = () => {
     const differences = [
         {
             icon: Cpu,
-            title: "Smart Colony Monitoring",
+            title: "Intelligent Colony Monitoring",
             description: "Sensors inside every hive track population density and brood temperature in real-time.",
             link: "/precision-pollination"
         },
@@ -43,7 +43,7 @@ const PollinationServices = () => {
         },
         {
             icon: Eye,
-            title: "Smart Field Mapping",
+            title: "Intelligent Field Mapping",
             description: "Visualizing bee distribution across your acreage to ensure uniform pollination coverage.",
             link: "/in-land-pollination"
         },
@@ -286,7 +286,7 @@ const PollinationServices = () => {
                                     <div className="space-y-3 sm:space-y-4 flex-1">
                                         <h3 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">In-Hive Precision</h3>
                                         <p className="text-sm sm:text-base text-muted-foreground leading-relaxed font-medium">
-                                            Smart sensors inside every hive monitor colony strength, population,
+                                            Intelligent sensors inside every hive monitor colony strength, population,
                                             and activity levels. Know exactly what you're paying for.
                                         </p>
                                         <ul className="space-y-2 sm:space-y-3 pt-2">
@@ -521,7 +521,7 @@ const PollinationServices = () => {
                                     How does precision pollination differ from traditional beekeeping?
                                 </AccordionTrigger>
                                 <AccordionContent className="text-muted-foreground leading-relaxed font-medium text-base pb-6">
-                                    Traditional beekeeping involves placing hives near crops and hoping for the best. BeeYield's <strong className="font-bold text-foreground">Precision Pollination</strong> uses smart sensors inside every hive and optimized placement across the land. We monitor colony health, bee activity, and weather patterns 24/7 to ensure maximum results, taking the guesswork out of the harvest.
+                                    Traditional beekeeping involves placing hives near crops and hoping for the best. BeeYield's <strong className="font-bold text-foreground">Precision Pollination</strong> uses Intelligent sensors inside every hive and optimized placement across the land. We monitor colony health, bee activity, and weather patterns 24/7 to ensure maximum results, taking the guesswork out of the harvest.
                                 </AccordionContent>
                             </AccordionItem>
 

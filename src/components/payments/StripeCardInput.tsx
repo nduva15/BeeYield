@@ -174,9 +174,9 @@ export const StripeCardInput: React.FC<StripeCardInputProps> = ({
         setCardError(event.error?.message || null);
     };
 
-    const defaultButtonText = mode === 'save' 
+    const defaultButtonText = mode === 'save'
         ? 'Save Card Securely'
-        : amount 
+        : amount
             ? `Pay KES ${amount.toLocaleString()}`
             : 'Complete Payment';
 
@@ -187,6 +187,7 @@ export const StripeCardInput: React.FC<StripeCardInputProps> = ({
                     <Label htmlFor="cardholder-name">Cardholder Name</Label>
                     <Input
                         id="cardholder-name"
+                        name="cardholderName"
                         value={cardholderName}
                         onChange={(e) => setCardholderName(e.target.value)}
                         placeholder="Name on card"

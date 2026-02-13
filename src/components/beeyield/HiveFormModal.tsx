@@ -125,6 +125,7 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                     </Label>
                                     <Input
                                         id="hive_code"
+                                        name="hive_code"
                                         value={formData.hive_code}
                                         onChange={(e) => setFormData({ ...formData, hive_code: e.target.value })}
                                         placeholder="e.g. ALPHA-001"
@@ -136,8 +137,8 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                     <Label htmlFor="apiary_id" className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
                                         Assigned Apiary<span className="text-red-500 ml-1">*</span>
                                     </Label>
-                                    <Select value={formData.apiary_id} onValueChange={(val) => setFormData({ ...formData, apiary_id: val })}>
-                                        <SelectTrigger className="h-14 rounded-2xl border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02] font-bold">
+                                    <Select name="apiary_id" value={formData.apiary_id} onValueChange={(val) => setFormData({ ...formData, apiary_id: val })}>
+                                        <SelectTrigger id="hive-apiary" className="h-14 rounded-2xl border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02] font-bold">
                                             <SelectValue placeholder="Select target apiary" />
                                         </SelectTrigger>
                                         <SelectContent className="rounded-2xl border-white/10">
@@ -152,8 +153,8 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                     <Label htmlFor="hive_type" className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
                                         Architecture Type
                                     </Label>
-                                    <Select value={formData.hive_type} onValueChange={(val) => setFormData({ ...formData, hive_type: val })}>
-                                        <SelectTrigger className="h-14 rounded-2xl border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02] font-bold">
+                                    <Select name="hive_type" value={formData.hive_type} onValueChange={(val) => setFormData({ ...formData, hive_type: val })}>
+                                        <SelectTrigger id="hive-type" className="h-14 rounded-2xl border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02] font-bold">
                                             <SelectValue placeholder="Select architecture" />
                                         </SelectTrigger>
                                         <SelectContent className="rounded-2xl border-white/10">
@@ -171,6 +172,7 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                     </Label>
                                     <Input
                                         id="frame_count"
+                                        name="frame_count"
                                         type="number"
                                         value={formData.frame_count || ''}
                                         onChange={(e) => setFormData({ ...formData, frame_count: parseInt(e.target.value) || 0 })}
@@ -186,8 +188,8 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                     <Label htmlFor="bee_type" className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
                                         Colony Species
                                     </Label>
-                                    <Select value={formData.bee_type} onValueChange={(val) => setFormData({ ...formData, bee_type: val })}>
-                                        <SelectTrigger className="h-14 rounded-2xl border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02] font-bold">
+                                    <Select name="bee_type" value={formData.bee_type} onValueChange={(val) => setFormData({ ...formData, bee_type: val })}>
+                                        <SelectTrigger id="hive-bee-type" className="h-14 rounded-2xl border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02] font-bold">
                                             <SelectValue placeholder="Select species" />
                                         </SelectTrigger>
                                         <SelectContent className="rounded-2xl border-white/10">
@@ -203,8 +205,8 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                     <Label htmlFor="status" className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
                                         Current Vitals Status
                                     </Label>
-                                    <Select value={formData.status} onValueChange={(val) => setFormData({ ...formData, status: val })}>
-                                        <SelectTrigger className="h-14 rounded-2xl border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02] font-bold">
+                                    <Select name="status" value={formData.status} onValueChange={(val) => setFormData({ ...formData, status: val })}>
+                                        <SelectTrigger id="hive-status" className="h-14 rounded-2xl border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02] font-bold">
                                             <SelectValue placeholder="Update status" />
                                         </SelectTrigger>
                                         <SelectContent className="rounded-2xl border-white/10">
@@ -220,8 +222,8 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                     <Label htmlFor="material" className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
                                         Chassis Material
                                     </Label>
-                                    <Select value={formData.material} onValueChange={(val) => setFormData({ ...formData, material: val })}>
-                                        <SelectTrigger className="h-14 rounded-2xl border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02] font-bold">
+                                    <Select name="material" value={formData.material} onValueChange={(val) => setFormData({ ...formData, material: val })}>
+                                        <SelectTrigger id="hive-material" className="h-14 rounded-2xl border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02] font-bold">
                                             <SelectValue placeholder="Select material" />
                                         </SelectTrigger>
                                         <SelectContent className="rounded-2xl border-white/10">
@@ -238,6 +240,7 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                     </Label>
                                     <Input
                                         id="installation_date"
+                                        name="installation_date"
                                         type="date"
                                         value={formData.installation_date || ''}
                                         onChange={(e) => setFormData({ ...formData, installation_date: e.target.value })}

@@ -158,6 +158,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                         <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                             id="register-firstName"
+                            name="firstName"
                             placeholder="John"
                             value={firstName}
                             onChange={(e) => setFirstName(e.target.value)}
@@ -170,6 +171,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                     <Label htmlFor="register-lastName">Last Name</Label>
                     <Input
                         id="register-lastName"
+                        name="lastName"
                         placeholder="Doe"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
@@ -185,6 +187,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                         id="register-email"
+                        name="email"
                         type="email"
                         placeholder="you@example.com"
                         value={email}
@@ -201,6 +204,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                         id="register-password"
+                        name="password"
                         type="password"
                         placeholder="At least 6 characters"
                         value={password}
@@ -217,6 +221,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                         id="register-confirmPassword"
+                        name="confirm-password"
                         type="password"
                         placeholder="••••••••"
                         value={confirmPassword}
@@ -238,7 +243,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                         Creating account...
                     </>
                 ) : (
-                    'Create Account'
+                    isAdminVariant ? 'Create Admin Account' : 'Create Shop Account'
                 )}
             </Button>
 

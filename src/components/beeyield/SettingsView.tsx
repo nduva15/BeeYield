@@ -362,23 +362,24 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="relative group">
                                         <Label htmlFor="firstname" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10 pointer-events-none">{t('first_name')}</Label>
-                                        <Input id="firstname" defaultValue={firstName} className="pt-8 pb-3 px-4 rounded-2xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-[4.5rem] shadow-none font-bold group-hover:border-amber-500/30 focus:border-amber-500 transition-all outline-none focus-visible:ring-0 focus-visible:bg-white dark:focus-visible:bg-black" />
+                                        <Input id="firstname" name="first_name" defaultValue={firstName} className="pt-8 pb-3 px-4 rounded-2xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-[4.5rem] shadow-none font-bold group-hover:border-amber-500/30 focus:border-amber-500 transition-all outline-none focus-visible:ring-0 focus-visible:bg-white dark:focus-visible:bg-black" />
                                     </div>
                                     <div className="relative group">
                                         <Label htmlFor="surname" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10 pointer-events-none">{t('surname')}</Label>
-                                        <Input id="surname" defaultValue={lastName} className="pt-8 pb-3 px-4 rounded-2xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-[4.5rem] shadow-none font-bold group-hover:border-amber-500/30 focus:border-amber-500 transition-all outline-none focus-visible:ring-0 focus-visible:bg-white dark:focus-visible:bg-black" />
+                                        <Input id="surname" name="last_name" defaultValue={lastName} className="pt-8 pb-3 px-4 rounded-2xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-[4.5rem] shadow-none font-bold group-hover:border-amber-500/30 focus:border-amber-500 transition-all outline-none focus-visible:ring-0 focus-visible:bg-white dark:focus-visible:bg-black" />
                                     </div>
                                 </div>
 
                                 <div className="relative group">
                                     <Label htmlFor="phone" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10 pointer-events-none">{t('phone')}</Label>
-                                    <Input id="phone" defaultValue="0742014187" className="pt-8 pb-3 px-4 rounded-2xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-[4.5rem] shadow-none font-bold group-hover:border-amber-500/30 focus:border-amber-500 transition-all outline-none focus-visible:ring-0 focus-visible:bg-white dark:focus-visible:bg-black" />
+                                    <Input id="phone" name="phone" defaultValue="0742014187" className="pt-8 pb-3 px-4 rounded-2xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-[4.5rem] shadow-none font-bold group-hover:border-amber-500/30 focus:border-amber-500 transition-all outline-none focus-visible:ring-0 focus-visible:bg-white dark:focus-visible:bg-black" />
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="relative group">
                                         <Label htmlFor="unit_system" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-40 pointer-events-none">Unit System</Label>
                                         <Select
+                                            name="unit_system"
                                             value={localSettings.unit_system || settings?.unit_system || 'Metric'}
                                             onValueChange={(val) => setLocalSettings(prev => ({ ...prev, unit_system: val as any }))}
                                         >
@@ -394,6 +395,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     <div className="relative group">
                                         <Label htmlFor="theme" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-40 pointer-events-none">Theme</Label>
                                         <Select
+                                            name="theme"
                                             value={localSettings.theme || settings?.theme || 'System'}
                                             onValueChange={(val) => setLocalSettings(prev => ({ ...prev, theme: val as any }))}
                                         >
@@ -411,7 +413,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
 
                                 <div className="relative group">
                                     <Label htmlFor="language" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-40 pointer-events-none">{t('language')}</Label>
-                                    <Select value={language} onValueChange={(val) => setLanguage(val as LanguageCode)}>
+                                    <Select name="language" value={language} onValueChange={(val) => setLanguage(val as LanguageCode)}>
                                         <SelectTrigger
                                             className="w-full pt-8 pb-3 px-4 rounded-2xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-[4.5rem] shadow-none font-bold hover:border-amber-500/30 focus:border-amber-500 transition-all outline-none focus:ring-0 flex items-center justify-between group"
                                         >
@@ -557,6 +559,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                         <Mail className="w-6 h-6 mb-4 text-[#737373] group-hover:text-[#F4D03F]" />
                                         <span className="text-[10px] font-black uppercase tracking-widest mb-4">Email</span>
                                         <Switch
+                                            id="notify-email"
+                                            name="email_alerts_enabled"
                                             checked={prdNotifications?.email_alerts_enabled}
                                             onCheckedChange={(v) => updatePrdNotif.mutate({ email_alerts_enabled: v })}
                                         />
@@ -565,6 +569,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                         <Smartphone className="w-6 h-6 mb-4 text-[#737373] group-hover:text-[#F4D03F]" />
                                         <span className="text-[10px] font-black uppercase tracking-widest mb-4">Push</span>
                                         <Switch
+                                            id="notify-push"
+                                            name="push_notifications_enabled"
                                             checked={prdNotifications?.push_notifications_enabled}
                                             onCheckedChange={(v) => updatePrdNotif.mutate({ push_notifications_enabled: v })}
                                         />
@@ -592,6 +598,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                             </div>
                                         </div>
                                         <Switch
+                                            id="notify-swarm"
+                                            name="notify_on_swarm"
                                             checked={prdNotifications?.notify_on_swarm}
                                             onCheckedChange={(v) => updatePrdNotif.mutate({ notify_on_swarm: v })}
                                         />
@@ -608,6 +616,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                             </div>
                                         </div>
                                         <Switch
+                                            id="notify-theft"
+                                            name="notify_on_theft"
                                             checked={prdNotifications?.notify_on_theft}
                                             onCheckedChange={(v) => updatePrdNotif.mutate({ notify_on_theft: v })}
                                         />
@@ -624,6 +634,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                             </div>
                                         </div>
                                         <Switch
+                                            id="notify-battery"
+                                            name="notify_on_low_battery"
                                             checked={prdNotifications?.notify_on_low_battery}
                                             onCheckedChange={(v) => updatePrdNotif.mutate({ notify_on_low_battery: v })}
                                         />
@@ -686,6 +698,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     <Label htmlFor="new-email" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10 pointer-events-none">{t('new_email_address')}</Label>
                                     <Input
                                         id="new-email"
+                                        name="new-email"
                                         type="email"
                                         placeholder="Enter new email"
                                         value={newEmail}
@@ -724,6 +737,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     <Label htmlFor="new-password" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10 pointer-events-none">{t('new_password')}</Label>
                                     <Input
                                         id="new-password"
+                                        name="new-password"
                                         type="password"
                                         placeholder="Min 6 characters"
                                         value={newPassword}
@@ -735,6 +749,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     <Label htmlFor="confirm-password" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-10 pointer-events-none">{t('confirm_password')}</Label>
                                     <Input
                                         id="confirm-password"
+                                        name="confirm-password"
                                         type="password"
                                         placeholder="Repeat new password"
                                         value={confirmPassword}
@@ -792,6 +807,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                             <CardContent className="p-10 pt-0 space-y-8">
                                 <div className="flex items-center gap-4 bg-gray-50/50 dark:bg-white/5 p-4 rounded-2xl border border-gray-100 dark:border-white/5">
                                     <Switch
+                                        id="show-guides"
+                                        name="show_guides"
                                         checked={showGuides}
                                         onCheckedChange={setShowGuides}
                                         className="data-[state=checked]:bg-[#B48428] scale-125 ml-2"
@@ -854,6 +871,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                             <TableCell className="py-6 px-8">
                                                 <div className="flex flex-col gap-1">
                                                     <Input
+                                                        id={`temp-high-${hive.hive_id}`}
+                                                        name={`temp_high_${hive.hive_id}`}
                                                         type="number"
                                                         placeholder={hive.effective_temp_high?.toString()}
                                                         value={hiveThresholds[hive.hive_id]?.temp_threshold_high ?? hive.override_temp_high ?? ''}
@@ -869,6 +888,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                             <TableCell className="py-6 px-8">
                                                 <div className="flex flex-col gap-1">
                                                     <Input
+                                                        id={`temp-low-${hive.hive_id}`}
+                                                        name={`temp_low_${hive.hive_id}`}
                                                         type="number"
                                                         placeholder={hive.effective_temp_low?.toString()}
                                                         value={hiveThresholds[hive.hive_id]?.temp_threshold_low ?? hive.override_temp_low ?? ''}
@@ -884,6 +905,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                             <TableCell className="py-6 px-8">
                                                 <div className="flex flex-col gap-1">
                                                     <Input
+                                                        id={`weight-drop-${hive.hive_id}`}
+                                                        name={`weight_drop_${hive.hive_id}`}
                                                         type="number"
                                                         placeholder={hive.effective_weight_drop?.toString()}
                                                         value={hiveThresholds[hive.hive_id]?.weight_drop_threshold ?? hive.override_weight_drop ?? ''}
@@ -983,6 +1006,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                             </motion.button>
                                             <div className="relative">
                                                 <Switch
+                                                    id={`module-${mod.id}`}
+                                                    name={`module_${mod.id}`}
                                                     checked={mod.enabled}
                                                     onCheckedChange={() => toggleModule(mod.id)}
                                                     className="data-[state=checked]:bg-[#B48428] scale-110"

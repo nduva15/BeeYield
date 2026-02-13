@@ -261,13 +261,14 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-bold text-gray-400 uppercase">Apiary</Label>
                                     <Select
+                                        name="apiary_id"
                                         value={hives.find(h => h.id === formData.hive_id)?.apiary_id || 'unselected'}
                                         onValueChange={(val) => {
                                             const firstHive = hives.find(h => h.apiary_id === val);
                                             if (firstHive) setFormData({ ...formData, hive_id: firstHive.id });
                                         }}
                                     >
-                                        <SelectTrigger className="h-12 rounded-xl bg-slate-50 dark:bg-white/5 border-none font-bold">
+                                        <SelectTrigger id="inspection-apiary" className="h-12 rounded-xl bg-slate-50 dark:bg-white/5 border-none font-bold">
                                             <SelectValue placeholder="Select Apiary" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -279,10 +280,11 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-bold text-gray-400 uppercase">Target Hive</Label>
                                     <Select
+                                        name="hive_id"
                                         value={formData.hive_id}
                                         onValueChange={(val) => setFormData({ ...formData, hive_id: val })}
                                     >
-                                        <SelectTrigger className="h-12 rounded-xl bg-slate-50 dark:bg-white/5 border-none font-bold">
+                                        <SelectTrigger id="inspection-hive" className="h-12 rounded-xl bg-slate-50 dark:bg-white/5 border-none font-bold">
                                             <SelectValue placeholder="Select Hive" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -297,6 +299,8 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-bold text-gray-400 uppercase">Inspection Date</Label>
                                     <Input
+                                        id="inspection-date"
+                                        name="inspection_date"
                                         type="date"
                                         value={formData.inspection_date}
                                         onChange={(e) => setFormData({ ...formData, inspection_date: e.target.value })}
@@ -307,6 +311,8 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-bold text-gray-400 uppercase">Inspector Name</Label>
                                     <Input
+                                        id="inspector-name"
+                                        name="inspector_name"
                                         placeholder="Full Name"
                                         value={formData.inspector_name}
                                         onChange={(e) => setFormData({ ...formData, inspector_name: e.target.value })}
@@ -360,6 +366,8 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                                                     <span className="text-[10px] font-medium text-gray-400 tracking-tight">Visual confirmation of the queen</span>
                                                 </div>
                                                 <Switch
+                                                    id="queen-seen"
+                                                    name="queen_seen"
                                                     checked={formData.queen_seen}
                                                     onCheckedChange={(val) => setFormData({ ...formData, queen_seen: val })}
                                                     className="data-[state=checked]:bg-[#1B9157]"
@@ -372,6 +380,8 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                                                     <span className="text-[10px] font-medium text-gray-400 tracking-tight">Evidence of a laying queen</span>
                                                 </div>
                                                 <Switch
+                                                    id="eggs-seen"
+                                                    name="eggs_seen"
                                                     checked={formData.eggs_seen}
                                                     onCheckedChange={(val) => setFormData({ ...formData, eggs_seen: val })}
                                                     className="data-[state=checked]:bg-[#1B9157]"
@@ -384,6 +394,8 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                                                     <span className="text-[10px] font-medium text-gray-400 tracking-tight">Active or emerging queen cells</span>
                                                 </div>
                                                 <Switch
+                                                    id="queen-cells-seen"
+                                                    name="queen_cells_seen"
                                                     checked={formData.queen_cells_seen}
                                                     onCheckedChange={(val) => setFormData({ ...formData, queen_cells_seen: val })}
                                                     className="data-[state=checked]:bg-[#1B9157]"
@@ -420,6 +432,8 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                                                     <Thermometer className="w-3 h-3" /> External Temp (°C)
                                                 </Label>
                                                 <Input
+                                                    id="temp-celsius"
+                                                    name="temperature_celsius"
                                                     type="number"
                                                     value={formData.temperature_celsius}
                                                     onChange={(e) => setFormData({ ...formData, temperature_celsius: parseFloat(e.target.value) })}
@@ -428,8 +442,8 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                                             </div>
                                             <div className="space-y-2">
                                                 <Label className="text-[10px] font-bold text-gray-400 uppercase">Weather</Label>
-                                                <Select value={formData.weather_condition} onValueChange={(v) => setFormData({ ...formData, weather_condition: v })}>
-                                                    <SelectTrigger className="h-11 rounded-xl bg-slate-50 dark:bg-white/5 border-none font-bold px-3">
+                                                <Select name="weather_condition" value={formData.weather_condition} onValueChange={(v) => setFormData({ ...formData, weather_condition: v })}>
+                                                    <SelectTrigger id="weather-condition" className="h-11 rounded-xl bg-slate-50 dark:bg-white/5 border-none font-bold px-3">
                                                         <SelectValue />
                                                     </SelectTrigger>
                                                     <SelectContent>
@@ -446,6 +460,8 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                                             <div className="space-y-2">
                                                 <Label className="text-[10px] font-bold text-gray-400 uppercase">Honey Stores (kg)</Label>
                                                 <Input
+                                                    id="honey-stores"
+                                                    name="honey_stores"
                                                     type="number"
                                                     value={formData.honey_stores}
                                                     onChange={(e) => setFormData({ ...formData, honey_stores: parseFloat(e.target.value) })}
@@ -455,6 +471,8 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                                             <div className="space-y-2">
                                                 <Label className="text-[10px] font-bold text-gray-400 uppercase">Pollen (Frames)</Label>
                                                 <Input
+                                                    id="pollen-stores"
+                                                    name="pollen_stores"
                                                     type="number"
                                                     value={formData.pollen_stores}
                                                     onChange={(e) => setFormData({ ...formData, pollen_stores: parseFloat(e.target.value) })}
@@ -467,6 +485,8 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                                             <div className="space-y-2">
                                                 <Label className="text-[10px] font-bold text-gray-400 uppercase text-red-500">Varroa Count (/300)</Label>
                                                 <Input
+                                                    id="varroa-count"
+                                                    name="varroa_mite_count"
                                                     type="number"
                                                     value={formData.varroa_mite_count}
                                                     onChange={(e) => setFormData({ ...formData, varroa_mite_count: parseInt(e.target.value) })}
@@ -476,6 +496,8 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                                             <div className="space-y-2">
                                                 <Label className="text-[10px] font-bold text-gray-400 uppercase">SH Beetles</Label>
                                                 <Input
+                                                    id="beetle-count"
+                                                    name="small_hive_beetles_seen"
                                                     type="number"
                                                     value={formData.small_hive_beetles_seen}
                                                     onChange={(e) => setFormData({ ...formData, small_hive_beetles_seen: parseInt(e.target.value) })}
@@ -492,6 +514,8 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                                     <div className="space-y-2">
                                         <Label className="text-[10px] font-bold text-gray-400 uppercase">Key Findings</Label>
                                         <Textarea
+                                            id="findings"
+                                            name="findings"
                                             placeholder="What did you observe?"
                                             value={formData.findings}
                                             onChange={(e) => setFormData({ ...formData, findings: e.target.value })}
@@ -501,6 +525,8 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ onTabChange }) => {
                                     <div className="space-y-2">
                                         <Label className="text-[10px] font-bold text-gray-400 uppercase">Actions Taken</Label>
                                         <Textarea
+                                            id="actions-taken"
+                                            name="actions_taken"
                                             placeholder="Added super, treated for varroa, etc."
                                             value={formData.actions_taken}
                                             onChange={(e) => setFormData({ ...formData, actions_taken: e.target.value })}
