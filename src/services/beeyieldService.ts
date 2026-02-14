@@ -55,9 +55,73 @@ export interface InlandReadings {
 }
 
 export interface DiseaseReadings {
-    colony_health_score: number;
-    pest_detection: string;
     treatment_status: string;
+}
+
+// ========== IMAGE ANALYSIS TYPES ==========
+export interface ImageAnalysisRequest {
+    image: File;
+    hive_id?: string;
+    apiary_id?: string;
+    confidence_threshold?: number;
+    overlap_threshold?: number;
+    analysis_type?: 'full' | 'detection_only' | 'health_only';
+}
+
+export interface BeeDetection {
+    id: number;
+    label: string;
+    confidence: number;
+    health: string;
+    health_confidence: number;
+    bbox: {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+    };
+}
+
+export interface DiseaseIndicator {
+    disease: string;
+    probability: number;
+    affected_bees: number[];
+    severity: 'Low' | 'Medium' | 'High' | 'Critical';
+}
+
+export interface ImageAnalysisResult {
+    success: boolean;
+    analysis_id: string;
+    status: 'processing' | 'completed' | 'failed';
+    results: {
+        bee_count: number;
+        health_status: 'Healthy' | 'Warning' | 'Critical' | 'Unknown';
+        health_score: number;
+        confidence: number;
+        detections: BeeDetection[];
+        disease_indicators: DiseaseIndicator[];
+        recommendations: string[];
+    };
+    image_url: string;
+    annotated_image_url: string;
+    created_at: string;
+    processing_time_ms: number;
+}
+
+export interface AnalysisHistoryItem {
+    id: string;
+    thumbnail_url: string;
+    bee_count: number;
+    health_score: number;
+    health_status: string;
+    created_at: string;
+    hive_id?: string;
+    apiary_id?: string;
+}
+
+export interface AnalysisHistoryResponse {
+    total: number;
+    items: AnalysisHistoryItem[];
 }
 
 export interface IoTDevice {
@@ -1426,34 +1490,77 @@ export const beeyieldService = {
         }
     },
 
-    // ========== IMAGE ANALYSIS ==========
-    async createImageDetection(input: {
-        image_url: string;
-        detection_type: string; // 'pest' | 'disease' | 'colony_count'
-        confidence_score?: number;
-        detected_objects?: any; // JSON
+    async analyzeImage(
+        request: ImageAnalysisRequest
+    ): Promise<ImageAnalysisResult> {
+        const headers = await getAuthHeaders();
+        const formData = new FormData();
+        formData.append('image', request.image);
+        if (request.hive_id) formData.append('hive_id', request.hive_id);
+        if (request.apiary_id) formData.append('apiary_id', request.apiary_id);
+        if (request.confidence_threshold) {
+            formData.append('confidence_threshold', request.confidence_threshold.toString());
+        }
+        if (request.overlap_threshold) {
+            formData.append('overlap_threshold', request.overlap_threshold.toString());
+        }
+        if (request.analysis_type) {
+            formData.append('analysis_type', request.analysis_type);
+        }
+
+        const apiUrl = import.meta.env.VITE_API_URL || '';
+        const response = await fetch(`${apiUrl}/api/v1/image/analyze`, {
+            method: 'POST',
+            headers: {
+                ...headers
+            },
+            body: formData
+        });
+
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({ detail: 'Analysis failed' }));
+            throw new Error(error.detail || 'Analysis failed');
+        }
+
+        return response.json();
+    },
+
+    async getAnalysisHistory(options?: {
         hive_id?: string;
-        metadata?: any;
-    }): Promise<{ data: any; error: any }> {
+        apiary_id?: string;
+        limit?: number;
+        offset?: number;
+    }): Promise<AnalysisHistoryResponse> {
         try {
-            const result = await apiPost<any>('/beeyield/analytics/vision', input);
-            toast.success('Image analysis result saved');
-            return { data: result, error: null };
+            const params: Record<string, string> = {};
+            if (options?.hive_id) params.hive_id = options.hive_id;
+            if (options?.apiary_id) params.apiary_id = options.apiary_id;
+            if (options?.limit) params.limit = options.limit.toString();
+            if (options?.offset) params.offset = options.offset.toString();
+
+            const query = new URLSearchParams(params).toString();
+            return await apiGet<AnalysisHistoryResponse>(`/image/analyses${query ? '?' + query : ''}`, {});
         } catch (error) {
-            console.error('Error saving image detection:', error);
-            toast.error('Failed to save analysis');
-            return { data: null, error };
+            console.error('Error fetching analysis history:', error);
+            return { total: 0, items: [] };
         }
     },
 
-    async getImageDetections(hiveId?: string, limit: number = 20): Promise<any[]> {
+    async getAnalysisById(id: string): Promise<ImageAnalysisResult | null> {
         try {
-            const params: Record<string, unknown> = { limit };
-            if (hiveId) params.hive_id = hiveId;
-            return await apiGet<any[]>('/beeyield/analytics/vision', params);
+            return await apiGet<ImageAnalysisResult>(`/image/analysis/${id}`, {});
         } catch (error) {
-            console.error('Error fetching image detections:', error);
-            return [];
+            console.error('Error fetching analysis:', error);
+            return null;
+        }
+    },
+
+    async deleteAnalysis(id: string): Promise<{ success: boolean; message: string }> {
+        try {
+            return await apiDelete<{ success: boolean; message: string }>(`/image/analysis/${id}`);
+        } catch (error) {
+            console.error('Error deleting analysis:', error);
+            throw error;
         }
     },
 

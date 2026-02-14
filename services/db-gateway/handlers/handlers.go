@@ -69,6 +69,18 @@ func (g *Gateway) ProxyGetByID(w http.ResponseWriter, r *http.Request) {
 	g.proxyToRust(w, r, "/db/get-by-id", http.MethodPost)
 }
 
+// ProxyAIRoute proxies POST /ai/route to Rust service.
+func (g *Gateway) ProxyAIRoute(w http.ResponseWriter, r *http.Request) {
+	g.proxyToRust(w, r, "/ai/route", http.MethodPost)
+}
+
+// ProxyAITokenize proxies POST /ai/tokenize to Rust service.
+func (g *Gateway) ProxyAITokenize(w http.ResponseWriter, r *http.Request) {
+	g.proxyToRust(w, r, "/ai/tokenize", http.MethodPost)
+}
+
+
+
 // proxyToRust forwards a request to the Rust DB service.
 func (g *Gateway) proxyToRust(w http.ResponseWriter, r *http.Request, path string, method string) {
 	body, err := io.ReadAll(r.Body)

@@ -102,10 +102,30 @@ class AIService:
         """
         msg_lower = message.lower().strip()
         
-        # --- PHASE 0: INTENT & GEOSPATIAL DETECTION ---
+        # --- PHASE 0: POLYGLOT INTENT & EXPERT ROUTING (Go Gateway -> Rust Engine) ---
         continent = None
-        if any(kw in msg_lower for kw in ["africa", "kenya", "nairobi", "makueni"]):
-            continent = "Africa"
+        expert_context = ""
+        try:
+            async with httpx.AsyncClient(timeout=2.0) as client:
+                # Call the Go Gateway which proxies to the Rust MoE Router
+                route_resp = await client.post(
+                    f"{settings.DB_GATEWAY_URL}/ai/route",
+                    json={"query": message}
+                )
+                if route_resp.status_code == 200:
+                    route_data = route_resp.json()
+                    expert = route_data.get("expert")
+                    reason = route_data.get("reason")
+                    print(f"[MOE ROUTER] Expert: {expert} | Reason: {reason}")
+                    
+                    if expert == "AFRICAN":
+                        continent = "Africa"
+                    expert_context = f"ROUTING_METADATA: Expert: {expert}, Reason: {reason}\n"
+        except Exception as e:
+            print(f"[MOE ROUTER] Fallback to basic detection: {e}")
+            if any(kw in msg_lower for kw in ["africa", "kenya", "nairobi", "makueni"]):
+                continent = "Africa"
+
         
         # --- PHASE 1: HYBRID RAG (Fused Retrieval) ---
         # HybridSearch: query expansion + BM25-style ContentService
@@ -132,7 +152,8 @@ class AIService:
 
         # Inject BeeYield DNA for grounding
         dna_block = _get_bee_dna()
-        knowledge_context = f"{dna_block}\n{knowledge_context}" if dna_block else knowledge_context
+        knowledge_context = f"{expert_context}\n{dna_block}\n{knowledge_context}" if dna_block else f"{expert_context}\n{knowledge_context}"
+
 
         # --- PHASE 2: TIER 1 - GEMINI FLASH (THE READER / RESPONDER) ---
         

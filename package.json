@@ -9,7 +9,7 @@
     "dev:backend": "backend\\venv\\Scripts\\python -m uvicorn main:app --reload --port 8000 --app-dir backend",
     "dev:ai": "backend\\venv\\Scripts\\python beeyield-ai\\stream_server.py",
     "dev:rust-db": "cd services/rust-db && cargo run",
-    "dev:db-gateway": "cd services/db-gateway && go run main.go",
+    "dev:db-gateway": "backend\\venv\\Scripts\\python services\\db-gateway\\fallback_gateway.py",
     "build": "vite build",
     "start": "vite preview",
     "dev:vinxi": "vinxi dev",
