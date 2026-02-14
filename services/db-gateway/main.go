@@ -32,6 +32,10 @@ func main() {
 	mux.HandleFunc("DELETE /db/delete", gw.ProxyDelete)
 	mux.HandleFunc("POST /db/upsert", gw.ProxyUpsert)
 	mux.HandleFunc("POST /db/get-by-id", gw.ProxyGetByID)
+	mux.HandleFunc("POST /ai/route", gw.ProxyAIRoute)
+	mux.HandleFunc("POST /ai/tokenize", gw.ProxyAITokenize)
+
+
 
 	// ===== ClickHouse Analytics =====
 	mux.HandleFunc("POST /ch/track/page-view", gw.TrackPageView)

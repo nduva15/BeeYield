@@ -55,8 +55,14 @@ async fn main() -> std::io::Result<()> {
             .route("/db/get-by-id", web::post().to(handlers::handle_get_by_id))
             // Health
             .route("/health", web::get().to(handlers::health_check))
+            // AI Routing
+            .route("/ai/route", web::post().to(handlers::handle_ai_route))
+            // AI Tokenization
+            .route("/ai/tokenize", web::post().to(handlers::handle_tokenize))
     })
+
     .bind(&bind_addr)?
+
     .run()
     .await
 }

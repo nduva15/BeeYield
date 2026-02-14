@@ -53,8 +53,8 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
     }, []);
 
     const loadHistory = async () => {
-        const history = await beeyieldService.getImageDetections();
-        setRecentDetections(history || []);
+        const history = await beeyieldService.getAnalysisHistory({ limit: 5 });
+        setRecentDetections(history.items || []);
     };
 
     const handleFile = (file: File) => {
@@ -77,170 +77,55 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
         setError(null);
     };
 
-    const handleStartAnalysis = (fileOverride?: File) => {
+    const handleStartAnalysis = async (fileOverride?: File) => {
         const targetFile = fileOverride || selectedImage;
         if (!targetFile) return;
 
         setIsAnalyzing(true);
         setResults(null);
         setError(null);
+        setRealtimeCount(0);
 
-        // Initialize Real-Time Analysis Model via TensorFlow.js
-        setTimeout(async () => {
-            try {
-                // Lazy-load TensorFlow.js only when analysis is requested
-                // @ts-ignore
-                if (!window.tf || !window.mobilenet) {
-                    const loadScript = (src: string) => new Promise<void>((resolve, reject) => {
-                        // Check if script is already loaded or loading
-                        const existing = document.querySelector(`script[src="${src}"]`);
-                        if (existing) {
-                            existing.addEventListener('load', () => resolve());
-                            // If already loaded
-                            if ((existing as HTMLScriptElement).dataset.loaded === 'true') resolve();
-                            return;
-                        }
-                        const script = document.createElement('script');
-                        script.src = src;
-                        script.crossOrigin = 'anonymous';
-                        script.onload = () => { script.dataset.loaded = 'true'; resolve(); };
-                        script.onerror = () => reject(new Error(`Failed to load ${src}. Your browser may be blocking CDN scripts.`));
-                        document.head.appendChild(script);
-                    });
+        try {
+            const result = await beeyieldService.analyzeImage({
+                image: targetFile,
+                confidence_threshold: confidenceThreshold[0] / 100,
+                overlap_threshold: overlapThreshold[0] / 100,
+                analysis_type: 'full'
+            });
 
-                    try {
-                        await loadScript("https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest");
-                        await loadScript("https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@latest");
-                    } catch (cdnError) {
-                        throw new Error("AI models could not load. If you're using Edge, disable Tracking Prevention for this site, or try Chrome/Firefox.");
-                    }
-                }
-
-                // @ts-ignore
-                if (!window.mobilenet || !window.tf) {
-                    throw new Error("AI models could not load. If you're using Edge, disable Tracking Prevention for this site, or try Chrome/Firefox.");
-                }
-
-                const img = document.createElement('img');
-                img.src = URL.createObjectURL(targetFile);
-                await new Promise((resolve) => { img.onload = resolve; });
-
-                // @ts-ignore
-                const model = await window.mobilenet.load();
-                // @ts-ignore
-                const predictions = await model.classify(img);
-
-                console.log('AI Predictions:', predictions);
-
-                // Extended Biological Whitelist for Generic MobileNet
-                const bioKeywords = [
-                    'bee', 'comb', 'apiary', 'insect', 'fly', 'ant',
-                    'butterfly', 'moth', 'invertebrate', 'arthropod', 'wildlife', 'nature',
-                    'flower', 'garden', 'hive', 'wing', 'pollen', 'agriculture',
-                    'wood', 'tree', 'log', 'barrel', 'crate', 'box', 'birdhouse', 'nest',
-                    'container', 'house', 'barn', 'picket fence', 'lumber',
-                    'branch', 'leaf', 'bark', 'stem', 'plant', 'outdoors', 'wild'
-                ];
-
-                const techBlacklist = [
-                    'monitor', 'screen', 'television', 'laptop', 'computer', 'keyboard',
-                    'mouse', 'web site', 'website', 'page', 'menu', 'poster', 'sign',
-                    'scoreboard', 'digital clock', 'projector', 'tablet', 'phone', 'cellular'
-                ];
-
-                // @ts-ignore
-                const topPrediction = predictions[0].className.toLowerCase();
-                // @ts-ignore
-                const allPredictions = predictions.map(p => p.className.toLowerCase()).join(' ');
-
-                const isBiological = bioKeywords.some(kw => allPredictions.includes(kw));
-                const isTech = techBlacklist.some(kw => topPrediction.includes(kw));
-                const isProcessedHoney = allPredictions.includes('jar') || allPredictions.includes('bottle');
-
-                if (isTech || !isBiological || isProcessedHoney) {
-                    setIsAnalyzing(false);
-                    setError("Invalid Target Specimen");
-                    // @ts-ignore
-                    const detectedClass = predictions[0].className.split(',')[0];
-                    let errorMessage = `Analysis detected: '${detectedClass}'.`;
-
-                    if (isProcessedHoney) {
-                        errorMessage += " Processed honey (jars/bottles) is restricted. Please upload photos of live bees, hives, or honeycombs only.";
-                    } else {
-                        errorMessage += " Only natural bees, hives, and apiary structures are permitted.";
-                    }
-
-                    toast.error("Strict Biological Protocol Engaged", {
-                        description: errorMessage,
-                        duration: 6000
-                    });
-                    return;
-                }
-
-                // If valid, proceed to detailed analysis
-                const targetCount = Math.floor(Math.random() * 20) + 5;
-                let current = 0;
-                setRealtimeCount(0);
-
-                const countInterval = setInterval(async () => {
-                    current += 1;
-                    setRealtimeCount(current);
-
-                    if (current >= targetCount) {
-                        clearInterval(countInterval);
-
-                        const dynamicDetections: DetectionRecord[] = Array.from({ length: targetCount }, (_, i) => ({
-                            id: i + 1,
-                            confidence: Math.floor(Math.random() * 15) + 85,
-                            health: 'Healthy',
-                            healthConf: Math.floor(Math.random() * 10) + 90,
-                            x: Math.floor(Math.random() * 800),
-                            y: Math.floor(Math.random() * 600),
-                            w: 50,
-                            h: 50,
-                            label: 'Bee'
-                        }));
-
-                        setIsAnalyzing(false);
-                        const finalResult = {
-                            beesCounted: targetCount,
-                            healthStatus: 'Healthy',
-                            overallConfidence: 98,
-                            detections: dynamicDetections
-                        };
-                        setResults(finalResult);
-
-                        // Persist to backend
-                        await beeyieldService.createImageDetection({
-                            image_url: 'https://example.com/mock-image-upload', // In real app, upload to storage first
-                            detection_type: 'colony_count',
-                            confidence_score: 0.98,
-                            detected_objects: finalResult,
-                            metadata: {
-                                detected_class: topPrediction,
-                                count: targetCount
-                            }
-                        });
-
-                        loadHistory(); // Refresh history
-
-                        toast.success("Analysis complete", {
-                            description: `${targetCount} bees identified and status verified.`
-                        });
-                    }
-                }, 60);
-
-            } catch (err) {
-                console.error("AI Error:", err);
-                setIsAnalyzing(false);
-                setError("AI Engine Offline");
-                const errMsg = err instanceof Error ? err.message : "Could not initialize the biological classification engine. Please check your connection.";
-                toast.error("Analysis Error", {
-                    description: errMsg,
-                    duration: 8000
+            if (result.success) {
+                setResults({
+                    ...result.results,
+                    beesCounted: result.results.bee_count,
+                    overallConfidence: Math.round(result.results.confidence * 100),
+                    annotatedImageUrl: result.annotated_image_url
                 });
+
+                // Show the annotated image if available
+                if (result.annotated_image_url) {
+                    setPreviewUrl(result.annotated_image_url);
+                }
+
+                toast.success("Analysis complete", {
+                    description: `${result.results.bee_count} bees identified and status verified.`
+                });
+
+                loadHistory();
+            } else {
+                throw new Error("Analysis failed on server");
             }
-        }, 1000);
+        } catch (err) {
+            console.error("AI Error:", err);
+            setError("Analysis Failed");
+            const errMsg = err instanceof Error ? err.message : "Could not complete image analysis.";
+            toast.error("Analysis Error", {
+                description: errMsg,
+                duration: 8000
+            });
+        } finally {
+            setIsAnalyzing(false);
+        }
     };
 
     const instructions = [
@@ -500,16 +385,19 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                                                 <div key={i} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-white/5 rounded-xl border border-slate-100 dark:border-white/5">
                                                     <div className="flex items-center gap-3">
                                                         <div className="w-10 h-10 rounded-lg bg-gray-200 overflow-hidden">
-                                                            {/* Placeholder image since we don't really upload to storage yet */}
-                                                            <div className="w-full h-full bg-gray-300" />
+                                                            {item.thumbnail_url ? (
+                                                                <img src={item.thumbnail_url} alt="Thumbnail" className="w-full h-full object-cover" />
+                                                            ) : (
+                                                                <div className="w-full h-full bg-gray-300" />
+                                                            )}
                                                         </div>
                                                         <div>
-                                                            <p className="text-xs font-bold text-[#0F172A] dark:text-white capitalize">{item.detection_type?.replace('_', ' ') || 'Analysis'}</p>
+                                                            <p className="text-xs font-bold text-[#0F172A] dark:text-white capitalize">Bee Analysis</p>
                                                             <p className="text-[10px] text-gray-500">{new Date(item.created_at).toLocaleDateString()}</p>
                                                         </div>
                                                     </div>
                                                     <div className="text-right">
-                                                        <p className="text-xs font-bold text-[#1B9157]">{Math.round((item.confidence_score || 0) * 100)}% Conf.</p>
+                                                        <p className="text-xs font-bold text-[#1B9157]">{item.health_score}% Health</p>
                                                     </div>
                                                 </div>
                                             ))}

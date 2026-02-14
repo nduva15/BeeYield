@@ -97,9 +97,43 @@ impl DbResponse {
     }
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct AIRouteRequest {
+    pub query: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum AIExpertType {
+    African,
+    EuropeanNa,
+    AsianOceanic,
+    Pathology,
+    General,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct AIRouteResponse {
+    pub expert: AIExpertType,
+    pub confidence: f32,
+    pub reason: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct TokenizeRequest {
+    pub text: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct TokenizeResponse {
+    pub tokens: Vec<u32>,
+}
+
 #[derive(Debug, Serialize)]
 pub struct HealthResponse {
+
     pub service: String,
     pub status: String,
     pub supabase_configured: bool,
 }
+
