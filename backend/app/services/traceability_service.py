@@ -6,6 +6,76 @@ from app.blockchain.honey_chain import honey_blockchain, BlockType
 from app.db.supabase_db import db_select, db_insert, db_get_by_id
 from app.schemas import traceability as schemas
 
+# --- Database-Driven Stats Helpers (NO hardcoded values) ---
+
+def _get_impact_stats_from_db() -> dict[str, Any]:
+    """Fetch impact stats from the company_stats table in the database.
+    Returns empty strings for missing values — never hardcoded fallbacks."""
+    stats = db_select("company_stats")
+    result = {}
+    if stats:
+        for s in stats:
+            key = s.get("stat_key", "")
+            val = s.get("stat_value", "")
+            if key == "honey_produced":
+                result["total_honey_kg"] = val
+            elif key == "hives_managed":
+                result["hive_count"] = val
+            elif key == "beekeepers_trained":
+                result["beekeepers"] = val
+            elif key == "farmers_supported":
+                result["farmers_served"] = val
+            elif key == "acres_pollinated":
+                result["acres_pollinated"] = val
+            elif key == "trees_planted":
+                result["trees_planted"] = val
+    return result
+
+
+def _calc_season_total_from_db(batch_code: str, batch_data: dict) -> str:
+    """Calculate season harvest total from actual harvest records in the database."""
+    try:
+        # Extract year from batch code or harvest date
+        year = None
+        for y in range(2020, 2030):
+            if str(y) in batch_code or str(y) in str(batch_data.get("harvest_date", "")):
+                year = str(y)
+                break
+
+        if year:
+            # Query harvests for this year
+            harvests = db_select(
+                "harvests",
+                columns="quantity_kg",
+                filters={"harvest_date": f"gte.{year}-01-01"},
+                limit=1000,
+            )
+            # Filter for this year only
+            total = sum(
+                float(h.get("quantity_kg", 0))
+                for h in harvests
+                if year in str(h.get("harvest_date", ""))
+            )
+            if total > 0:
+                return f"{total:.1f}"
+    except Exception as e:
+        print(f"Error calculating season total: {e}")
+
+    return "0"
+
+
+def _calc_all_time_total_from_db() -> str:
+    """Calculate all-time harvest total from actual harvest records."""
+    try:
+        harvests = db_select("harvests", columns="quantity_kg", limit=10000)
+        total = sum(float(h.get("quantity_kg", 0)) for h in harvests)
+        if total > 0:
+            return f"{total:.1f}"
+    except Exception as e:
+        print(f"Error calculating all-time total: {e}")
+    return "0"
+
+
 # --- Write Operations (Blockchain + DB) ---
 
 def register_farmer(farmer_in: schemas.FarmerCreate) -> dict[str, Any]:
@@ -137,14 +207,14 @@ def create_batch(batch_data: dict[str, Any]) -> dict[str, Any]:
         "packaged_date": datetime.now().date().isoformat(),
         "quantity_kg": batch_data.get('total_quantity_kg', batch_data.get('quantity_kg', 0)),
         "processing_method": batch_data.get('processing_method', 'Cold Extraction'),
-        "farmer_name": farmer.get('name') if farmer else 'Timothy Nduva',
-        "beekeeper_name": farmer.get('name') if farmer else 'Timothy Nduva',
+        "farmer_name": farmer.get('name') if farmer else None,
+        "beekeeper_name": farmer.get('name') if farmer else None,
         "beekeeper_id": farmer_id,
-        "apiary_name": apiary.get('name') if apiary else 'Kibwezi Apiary',
-        "location_county": apiary.get('county') if apiary else 'Makueni',
-        "location_region": apiary.get('region') if apiary else 'Eastern',
-        "latitude": apiary.get('latitude') if apiary else -2.41,
-        "longitude": apiary.get('longitude') if apiary else 37.97,
+        "apiary_name": apiary.get('name') if apiary else None,
+        "location_county": apiary.get('county') if apiary else None,
+        "location_region": apiary.get('region') if apiary else None,
+        "latitude": apiary.get('latitude') if apiary else None,
+        "longitude": apiary.get('longitude') if apiary else None,
         "quality_grade": batch_data.get('quality_grade', 'Premium'),
         "status": "verified",
         "blockchain_hash": block.hash,
@@ -360,7 +430,10 @@ def _build_db_journey(harvest: dict) -> schemas.TraceResponse:
             data=apiary_data
         ))
 
-    return schemas.TraceResponse(
+        # Fetch real impact stats from database
+        impact_stats = _get_impact_stats_from_db()
+
+        return schemas.TraceResponse(
         batch_code=harvest.get("batch_id"),
         product_name=harvest.get("honey_type", "Premium Honey"),
         verified=True,
@@ -370,15 +443,8 @@ def _build_db_journey(harvest: dict) -> schemas.TraceResponse:
         apiary=apiary,
         hive=hive,
         story_title="The BeeYield Story",
-        story_content="From the heart of Kibwezi, our community of farmers works in harmony with nature to bring you this pure, ethical honey.",
-        impact_stats={
-            "total_honey_kg": "60" if "2026" in harvest.get("batch_id", "") else "943", 
-            "all_time_total": "943",
-            "hive_count": "184", 
-            "beekeepers": "3", 
-            "farmers_served": "15", 
-            "acres_pollinated": "500"
-        },
+        story_content=farmer_data.get('story', '') if farmer_data else '',
+        impact_stats=impact_stats,
         sensor_snapshot=sensor_snapshot,
         health_snapshot=health_snapshot,
         florage_type=harvest.get("florage_type"),
@@ -622,36 +688,39 @@ def get_trace_journey(batch_code: str) -> Optional[schemas.TraceResponse]:
             except Exception as e:
                 print(f"Error syncing sensor data from DB: {e}")
 
-        # Fetch actual Apiary stats for Impact Stats
-        real_hive_count = 184 # Default fallback
-        real_acres = 5 # Default fallback
+        # Calculate real stats from database — no hardcoded values
+        real_hive_count = 0
+        real_acres = 0
         if apiary and apiary.apiary_id:
             try:
                  hives_res = db_select("hives", {"apiary_id": apiary.apiary_id})
                  if hives_res:
                      real_hive_count = len(hives_res)
                  
-                 # Attempt to calc acres from DB or fallback
-                 # Assuming 4 hives per acre roughly if not specified
-                 real_acres = getattr(apiary, 'size_acres', None) or (real_hive_count // 4 if real_hive_count > 20 else 5)
+                 # Calculate acres from DB
+                 real_acres = getattr(apiary, 'size_acres', None) or (real_hive_count // 4 if real_hive_count > 20 else 0)
             except:
                 pass
 
-        # Calculate Season Total
-        season_total = "943"
-        harvest_date = batch_data.get('harvest_date') or ""
-        if "2026" in batch_code or "2026" in harvest_date:
-            season_total = "60.0"
-        elif "2025" in batch_code or "2025" in harvest_date:
-            season_total = "301.10"
-        elif "2024" in batch_code or "2024" in harvest_date:
-            season_total = "280.98"
-        elif "2023" in batch_code or "2023" in harvest_date:
-            season_total = "160.56"
-        elif "2022" in batch_code or "2022" in harvest_date:
-            season_total = "100.35"
-        elif "2020" in batch_code or "2020" in harvest_date:
-            season_total = "40.14"
+        # Calculate season total from actual harvest records in DB
+        season_total = _calc_season_total_from_db(batch_code, batch_data)
+
+        # Get all-time total from DB
+        all_time_total = _calc_all_time_total_from_db()
+
+        # Get impact stats from DB
+        impact_stats = _get_impact_stats_from_db()
+        # Override with computed values
+        if real_hive_count > 0:
+            impact_stats["hive_count"] = str(real_hive_count)
+        if real_acres > 0:
+            impact_stats["acres_pollinated"] = str(real_acres)
+        impact_stats["total_honey_kg"] = season_total
+        impact_stats["all_time_total"] = all_time_total
+        if farmer:
+            impact_stats["beekeepers"] = farmer.name
+        impact_stats["bees_protected"] = "YES - 50/50 Promise"
+        impact_stats["farmer_fair_pay"] = "100% Verified Heritage"
 
         return schemas.TraceResponse(
             batch_code=batch_code,
@@ -663,28 +732,18 @@ def get_trace_journey(batch_code: str) -> Optional[schemas.TraceResponse]:
             apiary=apiary,
             hive=hive,
             story_title=f"Meet {farmer.name}" if farmer else "Our Story",
-            story_content=batch_data.get('origin_story') or (farmer.story if farmer else "Sustainably harvested from Kenya's rich landscapes."),
-            impact_stats={
-                "acres_pollinated": f"{real_acres} Acres",
-                "hive_count": f"{real_hive_count} Hives",
-                "harvested_hives": batch_data.get('harvested_hives') or ("30" if "2026" in batch_code else "184"),
-                "total_honey_kg": season_total,
-                "all_time_total": "943",
-                "trees_planted": batch_data.get('trees_planted') or "2,500+",
-                "beekeepers": farmer.name if farmer else "Timothy Nduva",
-                "bees_protected": "YES - 50/50 Promise",
-                "farmer_fair_pay": "100% Verified Heritage"
-            },
+            story_content=batch_data.get('origin_story') or (farmer.story if farmer else ""),
+            impact_stats=impact_stats,
             sensor_snapshot=sensor_snapshot,
             health_snapshot=batch_data.get('health_snapshot') or {"status": "Clean", "last_checked": "Verification Date", "pest_level": "None"},
-            florage_type=batch_data.get('honey_type') or "Wildflower",
+            florage_type=batch_data.get('honey_type') or "",
             extra_metadata={
                  **batch_data.get('extra_metadata', {}),
-                 "honey_harvested_kg": batch_data.get('quantity_kg', 2.0),
-                 "honey_left_for_bees": batch_data.get('quantity_kg', 2.0), # 50/50 Promise
+                 "honey_harvested_kg": batch_data.get('quantity_kg', 0),
+                 "honey_left_for_bees": batch_data.get('quantity_kg', 0),
                  "promise_50_50": "Verified - We leave exactly half for the colony's health.",
-                 "harvest_window": "Jan 3rd - Jan 10th 2026" if "2026" in batch_code else "Historical Heritage",
-                 "placement": batch_data.get('placement') or "Precision Pollination Zone",
+                 "harvest_window": batch_data.get('harvest_window', ''),
+                 "placement": batch_data.get('placement', ''),
                  "temperature": sensor_snapshot.get('avg_temp'),
                  "humidity": sensor_snapshot.get('avg_humidity')
             },
@@ -692,8 +751,7 @@ def get_trace_journey(batch_code: str) -> Optional[schemas.TraceResponse]:
         )
     except Exception as e:
         import traceback
-        with open("C:/Users/aggym/Downloads/Honey/FATAL_LOG.txt", "w") as f:
-            f.write(traceback.format_exc())
-            f.write("\n")
-            f.write(str(e))
+        print(f"FATAL TRACEABILITY ERROR: {e}")
+        import traceback
+        traceback.print_exc()
         raise e

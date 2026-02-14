@@ -8,8 +8,8 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: beeyield-frontend
-  minReplicas: 3
-  maxReplicas: 10
+  minReplicas: 2
+  maxReplicas: 5
   metrics:
   - type: Resource
     resource:
@@ -35,7 +35,7 @@ spec:
     kind: Deployment
     name: beeyield-backend
   minReplicas: 2
-  maxReplicas: 8
+  maxReplicas: 5
   metrics:
   - type: Resource
     resource:

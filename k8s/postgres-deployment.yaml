@@ -4,12 +4,9 @@ metadata:
   name: beeyield-postgres
   namespace: beeyield
   labels:
-    app: beeyield-postgres
-    tier: database
+    app: postgres
 spec:
   replicas: 1
-  strategy:
-    type: Recreate  # Ensures only one pod runs at a time for stateful DB
   selector:
     matchLabels:
       app: beeyield-postgres
@@ -17,35 +14,26 @@ spec:
     metadata:
       labels:
         app: beeyield-postgres
-        tier: database
     spec:
       containers:
       - name: postgres
         image: postgres:16-alpine
         ports:
         - containerPort: 5432
-          name: postgres
         env:
         - name: POSTGRES_DB
-          valueFrom:
-            configMapKeyRef:
-              name: beeyield-config
-              key: POSTGRES_DB
+          value: "beeyield"
         - name: POSTGRES_USER
-          valueFrom:
-            configMapKeyRef:
-              name: beeyield-config
-              key: POSTGRES_USER
+          value: "postgres"
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
               name: beeyield-secrets
               key: POSTGRES_PASSWORD
-        - name: PGDATA
-          value: /var/lib/postgresql/data/pgdata
         volumeMounts:
         - name: postgres-storage
           mountPath: /var/lib/postgresql/data
+          subPath: postgres
         resources:
           requests:
             memory: "256Mi"
@@ -56,21 +44,19 @@ spec:
         livenessProbe:
           exec:
             command:
-            - pg_isready
-            - -U
-            - postgres
+            - /bin/sh
+            - -c
+            - pg_isready -U postgres
           initialDelaySeconds: 30
           periodSeconds: 10
-          timeoutSeconds: 5
         readinessProbe:
           exec:
             command:
-            - pg_isready
-            - -U
-            - postgres
+            - /bin/sh
+            - -c
+            - pg_isready -U postgres
           initialDelaySeconds: 5
           periodSeconds: 5
-          timeoutSeconds: 3
       volumes:
       - name: postgres-storage
         persistentVolumeClaim:
@@ -82,13 +68,12 @@ metadata:
   name: beeyield-postgres
   namespace: beeyield
   labels:
-    app: beeyield-postgres
+    app: postgres
 spec:
   type: ClusterIP
   ports:
   - port: 5432
     targetPort: 5432
     protocol: TCP
-    name: postgres
   selector:
     app: beeyield-postgres

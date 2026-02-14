@@ -4,13 +4,14 @@ metadata:
   name: beeyield-config
   namespace: beeyield
 data:
-  # Backend configuration
   PYTHONUNBUFFERED: "1"
-  
-  # Database configuration
-  POSTGRES_DB: "beeyield"
-  POSTGRES_USER: "postgres"
-  
-  # Redis configuration
-  REDIS_HOST: "beeyield-redis"
-  REDIS_PORT: "6379"
+  NODE_ENV: "production"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: beeyield-config
+  namespace: beeyield-prod
+data:
+  PYTHONUNBUFFERED: "1"
+  NODE_ENV: "production"

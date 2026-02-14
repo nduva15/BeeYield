@@ -99,8 +99,14 @@ class Settings(BaseSettings):
     # ============ APP SETTINGS ============
     APP_URL: str = "http://localhost:5173"
     API_URL: str = "http://localhost:8000"
+    DB_GATEWAY_URL: str = "http://localhost:9090"
     DEBUG: bool = True
-    
+
+    # Checkouts
+    ADMIN_BYPASS_PHONE: Optional[str] = None  # e.g. "2547..."
+    ADMIN_EMAIL: str = "timothynduva349@gmail.com"
+    TOTAL_HARVEST_LIMIT_GRAMS: int = 60000
+
     class Config:
         case_sensitive = True
         env_file = ".env"

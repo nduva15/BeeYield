@@ -2,13 +2,17 @@ import { supabaseShop, supabaseBeeYield, supabaseCEBA } from '@/lib/supabase';
 
 // Use environment variable for the API base URL
 const isDev = import.meta.env.DEV;
-const rawBaseUrl = (import.meta.env.VITE_API_URL as string) || (isDev ? "http://localhost:8000/api/v1" : "/api/v1");
-export const API_BASE_URL = rawBaseUrl.endsWith("/") ? rawBaseUrl.slice(0, -1) : rawBaseUrl;
 
-// Ensure we have /api/v1 path
-export const API_V1_URL = API_BASE_URL.includes("/api/v1")
-    ? API_BASE_URL
-    : `${API_BASE_URL}/api/v1`;
+
+// Python Backend (AI ONLY)
+export const AI_API_URL = "http://localhost:8000/api/v1";
+
+// Rust/Go Gateway (DATA & SHOP)
+export const DATA_API_URL = "http://localhost:9090/api/v1";
+
+// Default to Data URL for generic requests, but handle routing in apiRequest
+export const API_BASE_URL = DATA_API_URL;
+export const API_V1_URL = DATA_API_URL;
 
 /**
  * Get the active Supabase client based on URL path
@@ -84,7 +88,22 @@ export async function apiRequest<T>(
     endpoint: string,
     options?: RequestInit
 ): Promise<T> {
-    const url = endpoint.startsWith('http') ? endpoint : `${API_V1_URL}${endpoint}`;
+    let baseUrl = DATA_API_URL;
+
+    // Route AI requests to Python Backend
+    if (endpoint.includes("/ai/") || endpoint.startsWith("ai/")) {
+        baseUrl = AI_API_URL;
+    }
+
+    // Construct full URL
+    // If endpoint starts with http, use it as is.
+    // If endpoint starts with /, append to baseUrl (which has no trailing slash usually)
+    // If endpoint has no leading slash, add one.
+    let url = endpoint;
+    if (!endpoint.startsWith('http')) {
+        const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+        url = `${baseUrl}${path}`;
+    }
 
     const authHeaders = await getAuthHeaders();
 

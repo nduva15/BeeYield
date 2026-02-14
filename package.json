@@ -4,10 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "npx concurrently --names \"FRONTEND,BACKEND,AI\" --prefix-colors \"cyan,yellow,green\" \"npm run dev:frontend\" \"npm run dev:backend\" \"npm run dev:ai\"",
+    "dev": "npx concurrently --names \"FRONTEND,BACKEND,AI,RUST,GO\" --prefix-colors \"cyan,yellow,green,red,blue\" \"npm run dev:frontend\" \"npm run dev:backend\" \"npm run dev:ai\" \"npm run dev:rust-db\" \"npm run dev:db-gateway\"",
     "dev:frontend": "vite",
     "dev:backend": "backend\\venv\\Scripts\\python -m uvicorn main:app --reload --port 8000 --app-dir backend",
     "dev:ai": "backend\\venv\\Scripts\\python beeyield-ai\\stream_server.py",
+    "dev:rust-db": "cd services/rust-db && cargo run",
+    "dev:db-gateway": "cd services/db-gateway && go run main.go",
     "build": "vite build",
     "start": "vite preview",
     "dev:vinxi": "vinxi dev",

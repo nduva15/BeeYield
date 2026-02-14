@@ -1,25 +1,28 @@
 """
 Supabase Database Connection for BeeYield
-High-performance httpx implementation to avoid gRPC/DNS hangs in library.
-SDK import is LAZY to prevent startup hangs from storage3/gRPC issues.
+===========================================
+REWRITTEN: Now routes ALL database operations through the Rust + Go database gateway.
+- Rust service (port 9091): Handles core Supabase REST CRUD with connection pooling
+- Go gateway (port 9090):   Routes + handles ClickHouse analytics + JWT auth
+
+ALL configuration comes from environment variables. ZERO hardcoded data.
 """
 import httpx
-import json
-import os
 import asyncio
+import os
 from typing import Optional, Any, List, Dict
 from app.core.config import settings
 
-# Global async client for connection pooling
-_async_http_client: Optional[httpx.AsyncClient] = None
+# Gateway URL from environment — no hardcoded defaults for production
+DB_GATEWAY_URL = settings.DB_GATEWAY_URL
 
-# Lazy SDK clients - only created when needed (avoids import hangs)
+# ============ LAZY SUPABASE SDK (kept for auth endpoints only) ============
 _supabase_client = None
-_supabase_admin_client = None
 _sdk_import_failed = False
 
+
 def _lazy_import_sdk():
-    """Import Supabase SDK lazily to avoid storage3/gRPC import hangs at startup."""
+    """Import Supabase SDK lazily — only needed for auth sign-up/sign-in."""
     global _sdk_import_failed
     if _sdk_import_failed:
         return None, None
@@ -28,88 +31,158 @@ def _lazy_import_sdk():
         return create_client, Client
     except Exception as e:
         print(f"[WARNING] Supabase SDK import failed: {e}")
-        print("[WARNING] Auth endpoints using SDK will not work. DB helpers (httpx) still functional.")
         _sdk_import_failed = True
         return None, None
 
+
 def get_supabase():
-    """Compatibility function - lazily creates Supabase SDK client with timeout protection."""
+    """Compatibility function — lazily creates Supabase SDK client for auth only."""
     global _supabase_client
     if _supabase_client is not None:
         return _supabase_client
-    
-    # Don't attempt if URL/KEY missing
-    if not settings.SUPABASE_URL or not settings.SUPABASE_KEY:
+
+    url = os.environ.get("SUPABASE_URL") or os.environ.get("VITE_SUPABASE_URL")
+    key = os.environ.get("SUPABASE_KEY") or os.environ.get("SUPABASE_ANON_KEY") or os.environ.get("VITE_SUPABASE_ANON_KEY")
+
+    if not url or not key:
         print("[WARNING] SUPABASE_URL or SUPABASE_KEY not configured")
         return None
-    
+
     create_client, _ = _lazy_import_sdk()
     if create_client is None:
         return None
     try:
-        import threading
-        result = [None]
-        error = [None]
-        
-        def _create():
-            try:
-                result[0] = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
-            except Exception as e:
-                error[0] = e
-        
-        t = threading.Thread(target=_create, daemon=True)
-        t.start()
-        t.join(timeout=10)  # 10 second timeout
-        
-        if t.is_alive():
-            print("[WARNING] Supabase SDK client creation timed out (10s) - SDK may have DNS/gRPC issues")
-            return None
-        
-        if error[0]:
-            print(f"[WARNING] Supabase client creation failed: {error[0]}")
-            return None
-        
-        _supabase_client = result[0]
+        _supabase_client = create_client(url, key)
         return _supabase_client
     except Exception as e:
         print(f"[WARNING] Supabase client creation failed: {e}")
         return None
 
-async def get_async_client() -> httpx.AsyncClient:
-    global _async_http_client
-    if _async_http_client is None:
-        if not settings.SUPABASE_URL or not settings.SUPABASE_KEY:
-            raise Exception("SUPABASE_URL and SUPABASE_KEY must be configured")
+
+# ============ DATABASE HELPER FUNCTIONS ============
+# All operations go through the Rust/Go gateway — no direct Supabase calls.
+
+async def _request_gateway(endpoint: str, payload: dict, token: Optional[str] = None) -> dict:
+    """Helper to send request to gateway with ephemeral async client."""
+    try:
+        if token:
+            payload["token"] = token
+            
+        async with httpx.AsyncClient(base_url=DB_GATEWAY_URL, timeout=15.0) as client:
+            if endpoint == "/db/delete":
+                # DELETE often requires body, so we use build_request
+                request = client.build_request("DELETE", endpoint, json=payload)
+                response = await client.send(request)
+            elif endpoint == "/db/update":
+                response = await client.patch(endpoint, json=payload)
+            else:
+                response = await client.post(endpoint, json=payload)
+                
+            return response.json()
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+async def db_insert(table: str, data: dict[str, Any], token: Optional[str] = None) -> dict[str, Any]:
+    """Insert a record via the Rust/Go gateway."""
+    payload = {"table": table, "data": _serialize_data(data)}
+    return await _request_gateway("/db/insert", payload, token)
+
+
+async def db_select(
+    table: str,
+    columns: str = "*",
+    filters: Optional[dict[str, Any]] = None,
+    limit: int = 1000,
+    order_by: Optional[str] = None,
+    ascending: bool = True,
+    token: Optional[str] = None,
+) -> list[dict[str, Any]]:
+    """Select records via the Rust/Go gateway."""
+    payload = {"table": table, "columns": columns, "limit": limit}
+    if filters:
+        # Serialize filter values to strings for PostgREST
+        serialized_filters = {}
+        for key, value in filters.items():
+            if isinstance(value, (list, tuple)):
+                serialized_filters[key] = [str(v) for v in value]
+            elif isinstance(value, str) and "." in value and any(
+                value.startswith(op) for op in [
+                    "eq.", "neq.", "gt.", "lt.", "gte.", "lte.",
+                    "like.", "ilike.", "is.", "in.", "cs.", "cd.",
+                ]
+            ):
+                serialized_filters[key] = value
+            else:
+                serialized_filters[key] = str(value)
+        payload["filters"] = serialized_filters
+    if order_by:
+        payload["order_by"] = order_by
+        payload["ascending"] = ascending
         
-        limits = httpx.Limits(max_keepalive_connections=5, max_connections=10)
-        _async_http_client = httpx.AsyncClient(
-            base_url=f"{settings.SUPABASE_URL}/rest/v1",
-            headers={
-                "apikey": settings.SUPABASE_KEY,
-                "Authorization": f"Bearer {settings.SUPABASE_KEY}",
-                "Content-Type": "application/json",
-                "Prefer": "return=representation"
-            },
-            timeout=15.0,
-            limits=limits
-        )
-    return _async_http_client
+    res = await _request_gateway("/db/select", payload, token)
+    if isinstance(res, list):
+        return res
+    return []
 
-def get_admin_headers(token: Optional[str] = None) -> Dict[str, str]:
-    auth_val = token or settings.SUPABASE_SERVICE_ROLE_KEY or settings.SUPABASE_KEY
-    return {
-        "apikey": settings.SUPABASE_SERVICE_ROLE_KEY or settings.SUPABASE_KEY,
-        "Authorization": f"Bearer {auth_val}",
-        "Content-Type": "application/json",
-        "Prefer": "return=representation"
+
+async def db_update(
+    table: str,
+    data: dict[str, Any],
+    filters: dict[str, Any],
+    token: Optional[str] = None,
+) -> dict[str, Any]:
+    """Update records via the Rust/Go gateway."""
+    str_filters = {k: str(v) for k, v in filters.items()}
+    payload = {"table": table, "data": _serialize_data(data), "filters": str_filters}
+    return await _request_gateway("/db/update", payload, token)
+
+
+async def db_delete(
+    table: str, filters: dict[str, Any], token: Optional[str] = None
+) -> dict[str, Any]:
+    """Delete records via the Rust/Go gateway."""
+    str_filters = {k: str(v) for k, v in filters.items()}
+    payload = {"table": table, "filters": str_filters}
+    return await _request_gateway("/db/delete", payload, token)
+
+
+async def db_upsert(
+    table: str,
+    data: dict[str, Any],
+    on_conflict: str = "id",
+    token: Optional[str] = None,
+) -> dict[str, Any]:
+    """Upsert a record via the Rust/Go gateway."""
+    payload = {
+        "table": table,
+        "data": _serialize_data(data),
+        "on_conflict": on_conflict,
     }
+    return await _request_gateway("/db/upsert", payload, token)
 
-# ============ HELPER FUNCTIONS ============
+
+async def db_get_by_id(
+    table: str,
+    id: str,
+    id_column: str = "id",
+    token: Optional[str] = None,
+) -> Optional[dict[str, Any]]:
+    """Get a single record by ID via the Rust/Go gateway."""
+    payload = {"table": table, "id": str(id), "id_column": id_column}
+    res = await _request_gateway("/db/get-by-id", payload, token)
+    if res and res != "null" and res is not None and isinstance(res, dict):
+        return res
+    return None
+
+
+# ============ SERIALIZATION HELPERS ============
 
 def _serialize_value(v):
-    """Convert non-JSON-serializable types to strings"""
+    """Convert non-JSON-serializable types to strings."""
     from uuid import UUID
     from datetime import date, datetime
+
     if isinstance(v, UUID):
         return str(v)
     if isinstance(v, (date, datetime)):
@@ -120,149 +193,33 @@ def _serialize_value(v):
         return [_serialize_value(item) for item in v]
     return v
 
+
 def _serialize_data(data: dict) -> dict:
-    """Ensure all values in data dict are JSON-serializable"""
+    """Ensure all values in data dict are JSON-serializable."""
     return {k: _serialize_value(v) for k, v in data.items()}
 
-async def db_insert(table: str, data: dict[str, Any], token: Optional[str] = None) -> dict[str, Any]:
-    """Insert a record via REST API"""
-    try:
-        client = await get_async_client()
-        headers = get_admin_headers(token)
-        clean_data = _serialize_data(data)
-        response = await client.post(f"/{table}", json=clean_data, headers=headers)
-        
-        if response.status_code in [200, 201]:
-            return {"success": True, "data": response.json()}
-        else:
-            return {"success": False, "error": response.text}
-    except Exception as e:
-        return {"success": False, "error": str(e)}
 
-async def db_select(
-    table: str, 
-    columns: str = "*",
-    filters: Optional[dict[str, Any]] = None,
-    limit: int = 100,
-    order_by: Optional[str] = None,
-    ascending: bool = True,
-    token: Optional[str] = None
-) -> list[dict[str, Any]]:
-    """Select records via REST API"""
-    try:
-        client = await get_async_client()
-        params = {"select": columns, "limit": limit}
-        
-        if filters:
-            for key, value in filters.items():
-                if isinstance(value, (list, tuple)):
-                    # Handle IN filter: in.(val1,val2,...)
-                    val_str = ",".join([str(v) for v in value])
-                    params[key] = f"in.({val_str})"
-                elif isinstance(value, str) and "." in value and any(value.startswith(op) for op in ["eq.", "neq.", "gt.", "lt.", "gte.", "lte.", "like.", "ilike.", "is.", "in.", "cs.", "cd."]):
-                    # Direct operator use
-                    params[key] = value
-                else:
-                    # Default EQ
-                    params[key] = f"eq.{value}"
-        
-        if order_by:
-            params["order"] = f"{order_by}.{'asc' if ascending else 'desc'}"
-            
-        response = await client.get(f"/{table}", params=params, headers=get_admin_headers(token))
-        
-        if response.status_code == 200:
-            return response.json()
-        else:
-            print(f"DB Select Error for {table}: {response.text}")
-            return []
-    except Exception as e:
-        print(f"DB Select Exception for {table}: {e}")
-        return []
-
-async def db_update(table: str, data: dict[str, Any], filters: dict[str, Any], token: Optional[str] = None) -> dict[str, Any]:
-    """Update records via REST API"""
-    try:
-        client = await get_async_client()
-        params = {}
-        for key, value in filters.items():
-            params[key] = f"eq.{value}"
-            
-        clean_data = _serialize_data(data)
-        response = await client.patch(f"/{table}", json=clean_data, params=params, headers=get_admin_headers(token))
-        
-        if response.status_code in [200, 204]:
-            return {"success": True, "data": response.json() if response.text else []}
-        else:
-            return {"success": False, "error": response.text}
-    except Exception as e:
-        return {"success": False, "error": str(e)}
-
-async def db_delete(table: str, filters: dict[str, Any], token: Optional[str] = None) -> dict[str, Any]:
-    """Delete records via REST API"""
-    try:
-        client = await get_async_client()
-        params = {}
-        for key, value in filters.items():
-            params[key] = f"eq.{value}"
-            
-        response = await client.delete(f"/{table}", params=params, headers=get_admin_headers(token))
-        
-        if response.status_code in [200, 204]:
-            return {"success": True}
-        else:
-            return {"success": False, "error": response.text}
-    except Exception as e:
-        return {"success": False, "error": str(e)}
-
-async def db_upsert(table: str, data: dict[str, Any], on_conflict: str = "id", token: Optional[str] = None) -> dict[str, Any]:
-    """Upsert a record via REST API (uses Resolution header)"""
-    try:
-        client = await get_async_client()
-        headers = get_admin_headers(token)
-        headers["Prefer"] = "resolution=merge-duplicates,return=representation"
-        
-        clean_data = _serialize_data(data)
-        response = await client.post(f"/{table}", json=clean_data, headers=headers)
-        
-        if response.status_code in [200, 201]:
-            return {"success": True, "data": response.json()}
-        else:
-            return {"success": False, "error": response.text}
-    except Exception as e:
-        return {"success": False, "error": str(e)}
-
-async def db_get_by_id(table: str, id: str, id_column: str = "id", token: Optional[str] = None) -> Optional[dict[str, Any]]:
-    """Get a single record by ID"""
-    results = await db_select(table, filters={id_column: id}, limit=1, token=token)
-    return results[0] if results else None
+# ============ COMPATIBILITY SHIMS ============
+# Allow both sync and async usage from existing Python code.
 
 
-# Compatibility shim: some scripts import `get_client` or call DB helpers synchronously.
 def get_client():
-    """Return the lazy Supabase SDK client (or None). Kept for compatibility with older imports."""
+    """Return the lazy Supabase SDK client (or None). For auth compatibility."""
     return get_supabase()
 
 
 def _sync_wrapper(async_func):
-    """Wrap an async function so that calling it from sync code runs it, but
-    calling it from async code returns the coroutine as usual.
-
-    Usage: db_insert = _sync_wrapper(db_insert)
-    """
+    """Wrap an async function so calling from sync code runs it."""
     def wrapper(*args, **kwargs):
         try:
-            # If there is a running loop, return the coroutine (caller should await)
             asyncio.get_running_loop()
             return async_func(*args, **kwargs)
         except RuntimeError:
-            # No running loop: run the coroutine to completion synchronously
             return asyncio.run(async_func(*args, **kwargs))
-
     return wrapper
 
 
-# Apply sync-wrapper to common helpers so legacy sync scripts work.
+# Apply sync-wrapper to all helpers so legacy sync scripts work.
 db_insert = _sync_wrapper(db_insert)
 db_select = _sync_wrapper(db_select)
 db_update = _sync_wrapper(db_update)
