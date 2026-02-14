@@ -344,13 +344,13 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
 
                     <View style={styles.row}>
                         <Text style={styles.label}>Apiary Name:</Text>
-                        <Text style={styles.value}>{traceData.apiary?.name || 'Kibwezi Savanna Apiary'}</Text>
+                        <Text style={styles.value}>{traceData.apiary?.name || 'Unknown Apiary'}</Text>
                     </View>
 
                     <View style={styles.row}>
                         <Text style={styles.label}>Location:</Text>
                         <Text style={styles.value}>
-                            Kibwezi, Makueni County, Kenya
+                            {traceData.apiary?.location_name || traceData.apiary?.county || 'Unknown'}, {traceData.apiary?.county ? 'Kenya' : ''}
                         </Text>
                     </View>
 
@@ -382,16 +382,18 @@ const HoneyTracePDF = ({ traceData }: HoneyTracePDFProps) => {
                 <View style={styles.beekeeperSection}>
                     <Text style={[styles.sectionTitle, { color: '#FCD34D' }]}>Master Beekeeper</Text>
                     <View style={styles.beekeeperHeader}>
-                        <Image src={TIMOTHY_PHOTO} style={styles.beekeeperPhoto} />
+                        {(traceData.farmer?.photo_url || TIMOTHY_PHOTO) && (
+                            <Image src={traceData.farmer?.photo_url || TIMOTHY_PHOTO} style={styles.beekeeperPhoto} />
+                        )}
                         <View style={styles.beekeeperInfo}>
-                            <Text style={styles.beekeeperName}>Timothy Nduva</Text>
-                            <Text style={styles.beekeeperTitle}>Certified Master Beekeeper</Text>
-                            <Text style={styles.beekeeperLocation}>Location: Kibwezi, Makueni County</Text>
-                            <Text style={styles.beekeeperLocation}>15+ Years Experience</Text>
+                            <Text style={styles.beekeeperName}>{traceData.farmer?.name || 'Beekeeper'}</Text>
+                            <Text style={styles.beekeeperTitle}>{(traceData.farmer as any)?.certification || 'Certified Beekeeper'}</Text>
+                            <Text style={styles.beekeeperLocation}>Location: {traceData.farmer?.location_name || traceData.apiary?.location_name || 'Kenya'}</Text>
+                            <Text style={styles.beekeeperLocation}>{traceData.farmer?.experience_years || ''}+ Years Experience</Text>
                         </View>
                     </View>
                     <Text style={styles.beekeeperStory}>
-                        "{traceData.farmer?.story || 'Timothy Nduva is a master beekeeper and conservationist in Kibwezi, leading the way in sustainable honey production. With 15 years of experience, he manages multiple apiaries across Makueni County, mentoring young beekeepers and championing the 50/50 harvest promise.'}"
+                        "{traceData.farmer?.story || 'Dedicated to sustainable beekeeping and protecting local ecosystems.'}"
                     </Text>
                 </View>
 

@@ -8,15 +8,17 @@ import os
 from datetime import datetime
 from app.db.supabase_db import db_select, db_insert, db_get_by_id, db_update
 from app.schemas import shop as schemas
+from app.core.config import settings
 
 # Products and orders now come exclusively from the database.
-TOTAL_HARVEST_LIMIT_GRAMS = 60000
+TOTAL_HARVEST_LIMIT_GRAMS = settings.TOTAL_HARVEST_LIMIT_GRAMS
 
 def get_total_honey_sold_grams() -> int:
     """Calculate total grams of honey sold across all completed orders."""
     # Fetch all honey items from order_items
     # In a real app we'd filter by successful payment status in the 'orders' table first.
-    items = db_select("order_items")
+    # Increased limit to ensure we get all items for accurate stats
+    items = db_select("order_items", limit=10000)
     total_grams = 0
     for item in items:
         name = str(item.get("product_name", "")).lower()
@@ -63,63 +65,29 @@ def get_products(category: Optional[str] = None) -> List[Dict[str, Any]]:
 
 
 def get_product_by_id(product_id: str) -> Optional[Dict[str, Any]]:
-    """Fetch a single product with variants. Supports fallback for static IDs."""
+    """Fetch a single product with variants from the database.
+    Returns None if product not found — no hardcoded fallbacks."""
     product = None
-    is_mock = product_id.startswith(("h", "hw", "m", "edu"))
     
     try:
         product = db_get_by_id("products", product_id)
-    except:
+    except Exception:
         pass
     
-    if not product and is_mock:
-        # Fallback for static IDs used in frontend (h1, h2, hw1, etc.)
-        category = "honey" if product_id.startswith("h") else "hardware" if product_id.startswith("hw") else "merch" if product_id.startswith("m") else "education" if product_id.startswith("edu") else "honey"
-        
-        # Determine name based on ID prefix
-        name_map = {
-            "h1": "BeeYield Premium Acacia",
-            "h2": "Wildflower Blossom Honey",
-            "h3": "Kibwezi Forest Honey",
-            "hw1": "Solar Hive Monitor Pro",
-            "m1": "BeeYield Premium Hoodie",
-            "edu-1": "BEEKEEPING STARTER GUIDE"
-        }
-        
-        product = {
-            "id": product_id,
-            "name": name_map.get(product_id, f"Product {product_id}"),
-            "description": "Premium quality product from BeeYield.",
-            "category": category,
-            "images": [],
-            "rating": 4.9,
-            "review_count": 100,
-            "is_active": True,
-            "variants": []
-        }
+    if not product:
+        # Try searching by slug as a fallback
+        try:
+            results = db_select("products", filters={"slug": product_id})
+            if results:
+                product = results[0]
+        except Exception:
+            pass
     
     if product:
         if not product.get("variants"):
-            product["variants"] = db_select("product_variants", filters={"product_id": product_id})
-        
-        # If still no variants and it's a mock, add a default one or catch-all
-        if not product.get("variants") and is_mock:
-            product["variants"] = [
-                {"id": f"v{product_id}-1", "size": "500g", "price_kes": 500, "stock_quantity": 100, "is_available": True},
-                {"id": f"v{product_id}-2", "size": "250g", "price_kes": 300, "stock_quantity": 100, "is_available": True},
-                {"id": f"v{product_id}-3", "size": "1kg", "price_kes": 950, "stock_quantity": 100, "is_available": True}
-            ]
-            
+            product["variants"] = db_select("product_variants", filters={"product_id": product["id"]})
         if not product.get("images"):
-            # Default mock images based on category
-            if product.get("category") == "honey":
-                product["images"] = ["/images/products/beeyield_honey_500g.png"]
-            elif product.get("category") == "hardware":
-                product["images"] = ["/images/products/solar_hive_monitor.png"]
-            elif product.get("category") == "merch":
-                product["images"] = ["/images/products/beeyield_hoodie.png"]
-            else:
-                product["images"] = ["/images/products/beekeeping_guide.png"]
+            product["images"] = []
         
     return product
 
@@ -169,11 +137,20 @@ def get_batches_for_items(items: List[Dict[str, Any]]) -> List[str]:
         num_hives = (total_weight + 1999) // 2000
     import random
     
-    # Define hive ranges for realistic variety
-    ranges = {
-        "acacia": list(range(101, 161)),
-        "wildflower": list(range(161, 221))
-    }
+    # Fetch actual hives from DB instead of hardcoded ranges
+    try:
+        # Get all active hives (limit increased to cover all)
+        all_hives = db_select("hives", filters={"status": "active"}, limit=1000)
+        if not all_hives:
+             # Fallback if no hives in DB yet (prevent crash)
+             all_hives = [{"hive_code": "KIB-H101"}]
+    except Exception:
+        all_hives = [{"hive_code": "KIB-H101"}]
+
+    # Categorize hives if possible, or just use all for now
+    # In future, we can filter by apiary forage_type if linked
+    
+    available_hives = [h.get("hive_code", "KIB-H101") for h in all_hives]
     
     for cat, total_weight in category_weights.items():
         # User requested logic: Handle "different batches" for same total weight.
@@ -188,17 +165,18 @@ def get_batches_for_items(items: List[Dict[str, Any]]) -> List[str]:
         if num_hives_needed > 1:
             num_hives_needed += random.choice([0, 1])
         
-        available_hives = ranges.get(cat, ranges["wildflower"])
-        
         # Ensure we don't request more than available
         count = min(num_hives_needed, len(available_hives))
         
         # Pick random hives for this order
         selected_hives = random.sample(available_hives, count)
         
-        for h_id in selected_hives:
-            h_num = str(h_id).zfill(3)
-            batches.add(f"KIB-H{h_num}-2026")
+        for h_code in selected_hives:
+            # h_code usually looks like KIB-H101
+            # We append year 2026 for the batch code as per pattern
+            # If h_code already has -2026 (unlikely for hive code), handle it
+            base_code = h_code.replace("-2026", "")
+            batches.add(f"{base_code}-2026")
             
     return sorted(list(batches))
 

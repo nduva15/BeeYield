@@ -3,31 +3,20 @@ kind: Kustomization
 
 namespace: beeyield
 
-resources:
-  - namespace.yaml
-  - configmap.yaml
-  - secrets.yaml
-  - postgres-pvc.yaml
-  - redis-pvc.yaml
-  - postgres-deployment.yaml
-  - redis-deployment.yaml
-  - backend-deployment.yaml
-  - frontend-deployment.yaml
-  - ingress.yaml
-  - hpa.yaml
-  - cronjobs.yaml
-
-# Apply common labels
 commonLabels:
   app.kubernetes.io/name: beeyield
-  app.kubernetes.io/version: "1.0.0"
-  app.kubernetes.io/managed-by: kustomize
+  app.kubernetes.io/instance: production
 
-# Image transformations (update these with your registry)
-images:
-  - name: beeyield-frontend
-    newName: your-registry.io/beeyield-frontend
-    newTag: latest
-  - name: beeyield-backend
-    newName: your-registry.io/beeyield-backend
-    newTag: latest
+resources:
+- namespace.yaml
+- configmap.yaml
+- secrets.yaml
+- postgres-pvc.yaml
+- postgres-deployment.yaml
+- redis-pvc.yaml
+- redis-deployment.yaml
+- frontend-deployment.yaml
+- backend-deployment.yaml
+- services.yaml
+- ingress.yaml
+- hpa.yaml

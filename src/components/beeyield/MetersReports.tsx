@@ -16,7 +16,7 @@ interface GeneratedReport {
 
 const MetersReports: React.FC = () => {
     const [generatedReports, setGeneratedReports] = useState<GeneratedReport[]>([
-        { id: '1', name: 'Alerts report', date: '2026-01-17 07:50', type: 'PDF' }
+        { id: '1', name: 'Anomalies report', date: '2026-01-17 07:50', type: 'PDF' }
     ]);
     const [loading, setLoading] = useState<string | null>(null);
     const [downloading, setDownloading] = useState<string | null>(null);
@@ -28,7 +28,7 @@ const MetersReports: React.FC = () => {
 
         if (reportName === 'Monthly report') {
             return {
-                title: 'Monthly Usage Report',
+                title: 'Monthly Utility Consumption Report',
                 period: `${now.toLocaleString('default', { month: 'long' })} ${now.getFullYear()}`,
                 summary: {
                     totalMeters: 184,
@@ -44,12 +44,12 @@ const MetersReports: React.FC = () => {
                     { region: 'Kibwezi Main Area C', hives: 61, production: '1,622 m3', health: '97%' },
                 ]
             };
-        } else if (reportName === 'Alerts report') {
+        } else if (reportName === 'Anomalies report') {
             return {
-                title: 'System Alerts & Status Report',
+                title: 'Utility Anomalies & Alerts Report',
                 period: dateStr,
                 anomalies: [
-                    { hive: 'WAT-001', type: 'Leak Detected', severity: 'High', date: '2026-01-28', resolved: true },
+                    { hive: 'WAT-001', type: 'Leak Detected', severity: 'Critical', date: '2026-01-28', resolved: true },
                     { hive: 'ENE-015', type: 'High Load', severity: 'Medium', date: '2026-01-25', resolved: true },
                     { hive: 'HEA-022', type: 'No Signal', severity: 'Low', date: '2026-01-20', resolved: true },
                 ],
@@ -62,7 +62,7 @@ const MetersReports: React.FC = () => {
             };
         } else {
             return {
-                title: 'Cost Breakdown Report',
+                title: 'Utility Cost Analysis Report',
                 period: `${now.toLocaleString('default', { month: 'long' })} ${now.getFullYear()}`,
                 costs: {
                     monitoring: 'KES 5,000',
@@ -119,7 +119,7 @@ const MetersReports: React.FC = () => {
 
             doc.setFontSize(10);
             doc.setTextColor(107, 114, 128); // Gray
-            doc.text("Africa's Largest Beekeeping Community", 50, 32);
+            doc.text('Africa\'s Biggest Beekeeping Platform', 50, 32);
             doc.text('Kibwezi, Makueni County, Kenya', 50, 38);
 
             // Title
@@ -149,16 +149,16 @@ const MetersReports: React.FC = () => {
                 doc.setFontSize(11);
                 doc.setTextColor(75, 85, 99);
                 const summary = data.summary;
-                doc.text(`Total Hives: ${summary.totalMeters}`, 14, yPos); yPos += 7;
-                doc.text(`Active Hives: ${summary.activeMeters}`, 14, yPos); yPos += 7;
-                doc.text(`Average Water Usage: ${summary.avgUsageWater}`, 14, yPos); yPos += 7;
-                doc.text(`Average Energy Usage: ${summary.avgUsageEnergy}`, 14, yPos); yPos += 7;
-                doc.text(`Total Usage: ${summary.totalConsumption}`, 14, yPos); yPos += 7;
-                doc.text(`Alerts Fixed: ${summary.alertsResolved}`, 14, yPos); yPos += 15;
+                doc.text(`Total Meters: ${summary.totalMeters}`, 14, yPos); yPos += 7;
+                doc.text(`Active Meters: ${summary.activeMeters}`, 14, yPos); yPos += 7;
+                doc.text(`Avg Water Usage: ${summary.avgUsageWater}`, 14, yPos); yPos += 7;
+                doc.text(`Avg Energy Usage: ${summary.avgUsageEnergy}`, 14, yPos); yPos += 7;
+                doc.text(`Total Consumption: ${summary.totalConsumption}`, 14, yPos); yPos += 7;
+                doc.text(`Alerts Resolved: ${summary.alertsResolved}`, 14, yPos); yPos += 15;
 
                 doc.setFontSize(14);
                 doc.setTextColor(31, 41, 55);
-                doc.text('Apiary Breakdown', 14, yPos);
+                doc.text('Kibwezi Main Area Breakdown', 14, yPos);
                 yPos += 10;
 
                 // Table header
@@ -168,8 +168,8 @@ const MetersReports: React.FC = () => {
                 doc.setTextColor(75, 85, 99);
                 doc.text('Apiary Area', 16, yPos);
                 doc.text('Hives', 70, yPos);
-                doc.text('Usage', 100, yPos);
-                doc.text('Status', 150, yPos);
+                doc.text('Production', 100, yPos);
+                doc.text('Health', 150, yPos);
                 yPos += 10;
 
                 data.breakdown.forEach((row: any) => {
@@ -180,7 +180,7 @@ const MetersReports: React.FC = () => {
                     yPos += 8;
                 });
 
-            } else if (reportName === 'Alerts report') {
+            } else if (reportName === 'Anomalies report') {
                 doc.setFontSize(14);
                 doc.setTextColor(31, 41, 55);
                 doc.text('Alert Statistics', 14, yPos);
@@ -190,22 +190,22 @@ const MetersReports: React.FC = () => {
                 doc.setTextColor(75, 85, 99);
                 const stats = data.stats;
                 doc.text(`Total Alerts: ${stats.totalAlerts}`, 14, yPos); yPos += 7;
-                doc.text(`Fixed: ${stats.resolved}`, 14, yPos); yPos += 7;
+                doc.text(`Resolved: ${stats.resolved}`, 14, yPos); yPos += 7;
                 doc.text(`Pending: ${stats.pending}`, 14, yPos); yPos += 7;
-                doc.text(`Fix Time: ${stats.avgResolutionTime}`, 14, yPos); yPos += 15;
+                doc.text(`Avg Resolution Time: ${stats.avgResolutionTime}`, 14, yPos); yPos += 15;
 
                 doc.setFontSize(14);
                 doc.setTextColor(31, 41, 55);
-                doc.text('Recent Alerts', 14, yPos);
+                doc.text('Recent Anomalies', 14, yPos);
                 yPos += 10;
 
                 // Table header
                 doc.setFillColor(249, 250, 251);
                 doc.rect(14, yPos - 5, pageWidth - 28, 10, 'F');
                 doc.setFontSize(10);
-                doc.text('Hive / Station', 16, yPos);
-                doc.text('Description', 50, yPos);
-                doc.text('Priority', 110, yPos);
+                doc.text('Meter / Hive', 16, yPos);
+                doc.text('Type', 50, yPos);
+                doc.text('Severity', 110, yPos);
                 doc.text('Date', 140, yPos);
                 doc.text('Status', 175, yPos);
                 yPos += 10;
@@ -215,21 +215,21 @@ const MetersReports: React.FC = () => {
                     doc.text(row.type, 50, yPos);
                     doc.text(row.severity, 110, yPos);
                     doc.text(row.date, 140, yPos);
-                    doc.text(row.resolved ? 'Fixed' : 'Pending', 175, yPos);
+                    doc.text(row.resolved ? 'Resolved' : 'Pending', 175, yPos);
                     yPos += 8;
                 });
 
             } else {
                 doc.setFontSize(14);
                 doc.setTextColor(31, 41, 55);
-                doc.text('Costs', 14, yPos);
+                doc.text('Operating Costs', 14, yPos);
                 yPos += 10;
 
                 doc.setFontSize(11);
                 doc.setTextColor(75, 85, 99);
                 const costs = data.costs;
                 doc.text(`Monitoring: ${costs.monitoring}`, 14, yPos); yPos += 7;
-                doc.text(`Maintenance: ${costs.taxes}`, 14, yPos); yPos += 7;
+                doc.text(`Taxes: ${costs.taxes}`, 14, yPos); yPos += 7;
                 doc.text(`Logistics: ${costs.logistics}`, 14, yPos); yPos += 7;
                 doc.setTextColor(31, 41, 55);
                 doc.text(`Total Costs: ${costs.total}`, 14, yPos); yPos += 15;
@@ -243,7 +243,7 @@ const MetersReports: React.FC = () => {
                 doc.setTextColor(75, 85, 99);
                 const revenue = data.revenue;
                 doc.text(`Honey Sales: ${revenue.honeysSales}`, 14, yPos); yPos += 7;
-                doc.text(`Service: ${revenue.pollinationServices}`, 14, yPos); yPos += 7;
+                doc.text(`Pollination Services: ${revenue.pollinationServices}`, 14, yPos); yPos += 7;
                 doc.setTextColor(31, 41, 55);
                 doc.text(`Total Revenue: ${revenue.total}`, 14, yPos); yPos += 15;
 
@@ -256,7 +256,7 @@ const MetersReports: React.FC = () => {
             doc.setFontSize(9);
             doc.setTextColor(156, 163, 175);
             doc.text('This report was generated by BeeYield Dashboard - www.beeyield.com', pageWidth / 2, 280, { align: 'center' });
-            doc.text('Celebrating Africa\'s Beekepers | 50% Ethical Harvest Promise', pageWidth / 2, 286, { align: 'center' });
+            doc.text('Champions for Saving Bees | 50% Ethical Harvest Promise', pageWidth / 2, 286, { align: 'center' });
 
             // Save PDF
             const fileName = `BeeYield_${reportName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
@@ -273,78 +273,78 @@ const MetersReports: React.FC = () => {
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
-            <h1 className="text-4xl font-bold text-[#0F172A] dark:text-white tracking-tight">Documents</h1>
+            <h1 className="text-[2.5rem] font-bold text-[#0F172A] dark:text-white tracking-tight">Reports</h1>
 
             {/* Header Summary */}
-            <Card className="rounded-2xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm">
+            <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm">
                 <CardHeader>
                     <div className="flex items-center gap-2">
                         <Activity className="w-5 h-5 text-[#1B9157]" />
-                        <CardTitle>Quick summaries</CardTitle>
+                        <CardTitle>Ready summaries for administrators</CardTitle>
                     </div>
-                    <CardDescription>Create and download reports easily.</CardDescription>
+                    <CardDescription>Export PDF/XLS without heavy OMS workflows.</CardDescription>
                 </CardHeader>
             </Card>
 
             {/* Report Generation Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card className="rounded-2xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm border-l-4 border-l-[#F4D03F]">
+                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm border-l-4 border-l-[#F4D03F]">
                     <CardContent className="p-6 space-y-4">
                         <div className="flex items-center gap-2">
-                            <FileText className="w-5 h-5 text-gray-700 dark:text-slate-700" />
+                            <FileText className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                             <h3 className="font-bold text-lg">Monthly report</h3>
                         </div>
-                        <p className="text-base text-gray-500">Usage and cost summary</p>
+                        <p className="text-sm text-gray-500">Usage and cost summary</p>
                         <div className="flex items-center justify-between mt-4">
-                            <span className="text-sm text-gray-400">Today 09:20</span>
+                            <span className="text-xs text-gray-400">Today 09:20</span>
                             <div className="flex gap-2">
                                 <Button variant="secondary" size="sm" onClick={() => handleGenerate('Monthly report')} disabled={loading === 'Monthly report'}>
-                                    {loading === 'Monthly report' ? 'Creating...' : 'Create report'}
+                                    {loading === 'Monthly report' ? 'Generating...' : 'Generate report'}
                                 </Button>
                                 <Button variant="ghost" size="sm" onClick={() => handleDownload('Monthly report')} disabled={downloading === 'Monthly report'}>
-                                    {downloading === 'Monthly report' ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Download className="w-4 h-4 mr-1" />Get file</>}
+                                    {downloading === 'Monthly report' ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Download className="w-4 h-4 mr-1" />Download</>}
                                 </Button>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-2xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm border-l-4 border-l-[#F4D03F]">
+                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm border-l-4 border-l-[#F4D03F]">
                     <CardContent className="p-6 space-y-4">
                         <div className="flex items-center gap-2">
-                            <BarChart className="w-5 h-5 text-gray-700 dark:text-slate-700" />
-                            <h3 className="font-bold text-lg">Alerts report</h3>
+                            <BarChart className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                            <h3 className="font-bold text-lg">Anomalies report</h3>
                         </div>
-                        <p className="text-base text-gray-500">Recent issues and status</p>
+                        <p className="text-sm text-gray-500">List of deviations and alarms</p>
                         <div className="flex items-center justify-between mt-4">
-                            <span className="text-sm text-gray-400">Yesterday 18:05</span>
+                            <span className="text-xs text-gray-400">Yesterday 18:05</span>
                             <div className="flex gap-2">
-                                <Button variant="secondary" size="sm" onClick={() => handleGenerate('Alerts report')} disabled={loading === 'Alerts report'}>
-                                    {loading === 'Alerts report' ? 'Creating...' : 'Create report'}
+                                <Button variant="secondary" size="sm" onClick={() => handleGenerate('Anomalies report')} disabled={loading === 'Anomalies report'}>
+                                    {loading === 'Anomalies report' ? 'Generating...' : 'Generate report'}
                                 </Button>
-                                <Button variant="ghost" size="sm" onClick={() => handleDownload('Alerts report')} disabled={downloading === 'Alerts report'}>
-                                    {downloading === 'Alerts report' ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Download className="w-4 h-4 mr-1" />Get file</>}
+                                <Button variant="ghost" size="sm" onClick={() => handleDownload('Anomalies report')} disabled={downloading === 'Anomalies report'}>
+                                    {downloading === 'Anomalies report' ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Download className="w-4 h-4 mr-1" />Download</>}
                                 </Button>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-2xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm border-l-4 border-l-[#F4D03F]">
+                <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm border-l-4 border-l-[#F4D03F]">
                     <CardContent className="p-6 space-y-4">
                         <div className="flex items-center gap-2">
-                            <DollarSign className="w-5 h-5 text-gray-700 dark:text-slate-700" />
-                            <h3 className="font-bold text-lg">Spending report</h3>
+                            <DollarSign className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                            <h3 className="font-bold text-lg">Cost report</h3>
                         </div>
-                        <p className="text-base text-gray-500">Costs by category</p>
+                        <p className="text-sm text-gray-500">Estimated costs by medium</p>
                         <div className="flex items-center justify-between mt-4">
-                            <span className="text-sm text-gray-400">Yesterday 14:12</span>
+                            <span className="text-xs text-gray-400">Yesterday 14:12</span>
                             <div className="flex gap-2">
-                                <Button variant="secondary" size="sm" onClick={() => handleGenerate('Spending report')} disabled={loading === 'Spending report'}>
-                                    {loading === 'Spending report' ? 'Creating...' : 'Create report'}
+                                <Button variant="secondary" size="sm" onClick={() => handleGenerate('Cost report')} disabled={loading === 'Cost report'}>
+                                    {loading === 'Cost report' ? 'Generating...' : 'Generate report'}
                                 </Button>
-                                <Button variant="ghost" size="sm" onClick={() => handleDownload('Spending report')} disabled={downloading === 'Spending report'}>
-                                    {downloading === 'Spending report' ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Download className="w-4 h-4 mr-1" />Get file</>}
+                                <Button variant="ghost" size="sm" onClick={() => handleDownload('Cost report')} disabled={downloading === 'Cost report'}>
+                                    {downloading === 'Cost report' ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Download className="w-4 h-4 mr-1" />Download</>}
                                 </Button>
                             </div>
                         </div>
@@ -353,22 +353,22 @@ const MetersReports: React.FC = () => {
             </div>
 
             {/* Generated Reports List */}
-            <Card className="rounded-2xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm">
+            <Card className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#09090b] shadow-sm">
                 <CardHeader>
-                    <CardTitle className="text-lg font-bold text-[#1B9157]">Recent reports</CardTitle>
+                    <CardTitle className="text-lg">Generated reports</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     {generatedReports.length === 0 ? (
-                        <p className="text-gray-500 text-sm">No reports created yet.</p>
+                        <p className="text-gray-500 text-sm">No reports generated yet.</p>
                     ) : (
                         generatedReports.map((report) => (
-                            <div key={report.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-slate-100 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-200 transition-colors">
+                            <div key={report.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                                 <div>
-                                    <h4 className="font-semibold text-gray-900 dark:text-slate-800">{report.name}</h4>
-                                    <p className="text-sm text-gray-500">{report.date}</p>
+                                    <h4 className="font-semibold text-gray-900 dark:text-white">{report.name}</h4>
+                                    <p className="text-xs text-gray-500">{report.date}</p>
                                 </div>
                                 <Button variant="secondary" size="sm" onClick={() => handleDownload(report.name, report.data)} disabled={downloading === report.name}>
-                                    {downloading === report.name ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Download className="w-4 h-4 mr-1" />Get file</>}
+                                    {downloading === report.name ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Download className="w-4 h-4 mr-1" />Download</>}
                                 </Button>
                             </div>
                         ))

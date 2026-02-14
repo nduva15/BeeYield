@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from typing import Optional, Any, List
 from app.core import security
+from app.core.config import settings
 from app.schemas import iot as schemas
 from app.services import iot_service
 
@@ -18,11 +19,16 @@ async def get_devices(
     current_user: dict = Depends(security.get_current_user),
     token: Optional[str] = Depends(get_token)
 ):
-    """Get all IoT devices. Restricted to primary developer/farmer account."""
+    """Get all IoT devices. Restricted to admin or requested farmer (if self)."""
     email = current_user.get("email")
-    if email != "timothynduva349@gmail.com":
-         return [] # Current demo data is only for Timothy
-         
+    user_id = current_user.get("sub")
+    
+    # If not admin, force farmer_id to be current user
+    if email != settings.ADMIN_EMAIL:
+        if farmer_id and farmer_id != user_id:
+             return [] # Unauthorized to see others
+        farmer_id = user_id # Force self
+
     return await iot_service.get_devices(farmer_id, token=token)
 
 @router.get("/readings", response_model=List[schemas.SensorReading])
@@ -35,8 +41,8 @@ async def get_readings(
 ):
     """Get sensor readings. Restricted to primary developer/farmer account."""
     email = current_user.get("email")
-    if email != "timothynduva349@gmail.com":
-         return [] # Current demo data is only for Timothy
+    if email != settings.ADMIN_EMAIL:
+         return [] # Current demo data is only for Admin
          
     return await iot_service.get_sensor_readings(device_id, sensor_type, hours, token=token)
 
@@ -66,7 +72,7 @@ async def create_device(
 ):
     """Create (link) an IoT device to a farmer account."""
     email = current_user.get("email")
-    if email != "timothynduva349@gmail.com":
+    if email != settings.ADMIN_EMAIL:
          raise HTTPException(status_code=403, detail="Not authorized to link devices")
          
     return await iot_service.create_device(device_in.dict(), token=token)

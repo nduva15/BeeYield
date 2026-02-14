@@ -4,12 +4,9 @@ metadata:
   name: beeyield-redis
   namespace: beeyield
   labels:
-    app: beeyield-redis
-    tier: cache
+    app: redis
 spec:
   replicas: 1
-  strategy:
-    type: Recreate
   selector:
     matchLabels:
       app: beeyield-redis
@@ -17,17 +14,15 @@ spec:
     metadata:
       labels:
         app: beeyield-redis
-        tier: cache
     spec:
       containers:
       - name: redis
         image: redis:7-alpine
         ports:
         - containerPort: 6379
-          name: redis
-        args:
+        command:
         - redis-server
-        - --appendonly
+        - "--appendonly"
         - "yes"
         volumeMounts:
         - name: redis-storage
@@ -46,7 +41,6 @@ spec:
             - ping
           initialDelaySeconds: 30
           periodSeconds: 10
-          timeoutSeconds: 5
         readinessProbe:
           exec:
             command:
@@ -54,7 +48,6 @@ spec:
             - ping
           initialDelaySeconds: 5
           periodSeconds: 5
-          timeoutSeconds: 3
       volumes:
       - name: redis-storage
         persistentVolumeClaim:
@@ -66,13 +59,12 @@ metadata:
   name: beeyield-redis
   namespace: beeyield
   labels:
-    app: beeyield-redis
+    app: redis
 spec:
   type: ClusterIP
   ports:
   - port: 6379
     targetPort: 6379
     protocol: TCP
-    name: redis
   selector:
     app: beeyield-redis

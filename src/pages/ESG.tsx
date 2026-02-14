@@ -353,7 +353,7 @@ const ESG = () => {
 
                   <div className="flex items-center gap-4 p-4 bg-background rounded-lg border border-border/50">
                     <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center">
-                      <span className="text-2xl font-bold text-amber-600">883</span>
+                      <span className="text-2xl font-bold text-amber-600">943</span>
                     </div>
                     <div>
                       <div className="font-semibold">Kilograms of Honey</div>

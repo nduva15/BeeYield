@@ -9,4 +9,17 @@ spec:
   resources:
     requests:
       storage: 10Gi
-  storageClassName: standard  # Change based on your cluster's storage class
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: beeyield-prod
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: local-path

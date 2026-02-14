@@ -46,14 +46,19 @@ def initialize_checkout(
     raw_phone = str(order_in.shipping_address.get("phone", ""))
     clean_phone = "".join(filter(str.isdigit, raw_phone))
     
-    # Check if it ends with 742004187 (handles +254 or 07 prefixes)
-    is_bypass = clean_phone.endswith("742004187") or ("0742004187" in str(order_in.dict()))
+    # Check if phone matches configured admin bypass (if set)
+    # Checks last 9 digits (e.g. 742...) to handle +254/07 variations if ADMIN_BYPASS_PHONE is set
+    bypass_ph = settings.ADMIN_BYPASS_PHONE
+    is_bypass = False
+    if bypass_ph and len(clean_phone) >= 9:
+        is_bypass = clean_phone.endswith(bypass_ph[-9:]) or (bypass_ph in str(order_in.dict()))
     
     if settings.DEBUG:
         print(f"DEBUG: Initialize Checkout - User: {current_user}, Bypass: {is_bypass}, Phone: {raw_phone}")
     
+    user_id = None
     if is_bypass:
-        user_id = "TEST-BYPASS-USER"
+        user_id = None # Guest/System order
         order_in.total_kes = 0 # Force 0 for bypass
     elif not current_user:
         raise HTTPException(
@@ -139,11 +144,11 @@ def get_order_detail(
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
 
-    user_id = current_user.get("sub") if current_user else "TEST-BYPASS-USER"
+    user_id = current_user.get("sub") if current_user else None
     
-    # If it's the bypass user, allow if order was created without a fixed user or by the bypass user
+    # If it's a guest user (no auth), allow if order belongs to no user (guest order)
     if not current_user:
-        if order.get("user_id") is not None and order.get("user_id") != "TEST-BYPASS-USER":
+        if order.get("user_id") is not None:
              raise HTTPException(status_code=403, detail="Access denied")
     else:
         # If logged in, must own the order
@@ -275,15 +280,15 @@ def download_invoice(
     from fastapi.responses import StreamingResponse
     
     # Security check
-    user_id = current_user.get("sub") if current_user else "TEST-BYPASS-USER"
+    user_id = current_user.get("sub") if current_user else None
     
     order = shop_service.get_order(order_id)
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
 
-    # If it's the bypass user, allow if order was created without a fixed user or by the bypass user
+    # If it's a guest user, allow if order has no user_id
     if not current_user:
-        if order.get("user_id") is not None and order.get("user_id") != "TEST-BYPASS-USER":
+        if order.get("user_id") is not None:
              raise HTTPException(status_code=403, detail="Access denied")
     else:
         # If logged in, must own the order

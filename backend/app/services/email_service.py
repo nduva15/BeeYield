@@ -4,6 +4,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from typing import List, Dict, Any, Optional
+from app.core.config import settings
 
 class EmailService:
     def __init__(self):
@@ -98,7 +99,7 @@ class EmailService:
                         {batch_number}
                     </div>
                 </div>
-                <a href="http://localhost:5173/traceability" style="display: inline-block; background-color: #16a34a; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; font-size: 14px;">Track Journey</a>
+                <a href="{settings.APP_URL}/traceability" style="display: inline-block; background-color: #16a34a; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; font-size: 14px;">Track Journey</a>
             </div>
             """
 
