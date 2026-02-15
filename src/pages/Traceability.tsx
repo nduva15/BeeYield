@@ -59,8 +59,6 @@ const Traceability = () => {
       const verificationResult = await verifier.verifyBatchIntegrity(code, data, "GENESIS_HASH_0x1");
       console.log("[C++ Core] Verified:", verificationResult);
 
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Cinematic delay for animation
-
       setVerifying(false);
 
       setIsModalOpen(true);
@@ -156,38 +154,50 @@ const Traceability = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section - Premium Sage Green theme - Mobile Responsive */}
-      <section className="relative min-h-[50vh] sm:min-h-[55vh] md:min-h-[60vh] flex items-center overflow-hidden py-12 sm:py-16 md:py-20 lg:py-24">
-        <div className="absolute inset-0 bg-[#F0F7F0]">
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-10 sm:top-20 left-4 sm:left-10 w-40 sm:w-72 h-40 sm:h-72 bg-green-200 rounded-full blur-3xl animate-pulse" />
-            <div className="absolute bottom-10 sm:bottom-20 right-4 sm:right-10 w-48 sm:w-96 h-48 sm:h-96 bg-amber-100 rounded-full blur-3xl animate-pulse delay-1000" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 sm:w-64 h-32 sm:h-64 bg-secondary/10 rounded-full blur-3xl animate-pulse delay-500" />
-          </div>
-          {/* Honeycomb Pattern */}
-          <svg className="absolute inset-0 w-full h-full opacity-[0.04]" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <pattern id="honeycomb-trace" x="0" y="0" width="20" height="17.32" patternUnits="userSpaceOnUse">
-              <polygon points="10,0 20,5.77 20,17.32 10,23.09 0,17.32 0,5.77" fill="none" stroke="currentColor" strokeWidth="0.5" />
-            </pattern>
-            <rect width="100%" height="100%" fill="url(#honeycomb-trace)" />
-          </svg>
+      <section className="relative min-h-[60vh] flex items-center overflow-hidden py-24 sm:py-32">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#fdfbf6] to-[#f8faf8]">
+          <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(circle_at_80%_20%,#fef3c7_0%,transparent_50%)] opacity-40 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-[radial-gradient(circle_at_20%_80%,#ecfdf5_0%,transparent_50%)] opacity-40 pointer-events-none" />
+
+          {/* Vertical Text Accent */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1 }}
+            className="absolute left-8 top-1/2 -translate-y-1/2 hidden xl:block pointer-events-none"
+          >
+            <span className="text-[100px] font-black text-neutral-200/50 tracking-tighter leading-none select-none uppercase" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
+              Provenance
+            </span>
+          </motion.div>
         </div>
 
-        <div className="container mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
-          <div className="max-w-4xl mx-auto text-center text-neutral-900 space-y-4 sm:space-y-6 md:space-y-8">
-            <div className="flex justify-center">
-              <Badge className="bg-green-100 text-green-900 border-green-200 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 hover:bg-green-200/80 transition-colors inline-flex items-center font-bold">
-                <ShieldCheck className="mr-1.5 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" /> 100% Verified Authentic
-              </Badge>
-            </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black leading-tight tracking-tighter px-2">
-              The Journey of <span className="text-green-700 italic">Every Drop</span>
+        <div className="container mx-auto px-4 sm:px-6 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="max-w-4xl mx-auto text-center"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-50 text-green-700 text-[11px] font-black uppercase tracking-[0.2em] mb-8 border border-green-100 shadow-sm"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              Verified Harvest System
+            </motion.div>
+
+            <h1 className="text-5xl md:text-7xl font-black text-neutral-900 mb-8 tracking-tighter leading-[0.95]">
+              Authentic <span className="text-amber-600">Honey.</span> <br />
+              <span className="text-green-700">See</span> the Harvest.
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed px-4">
-              Transparent. Ethical. Traceable. Scan your jar's QR code to see where your honey comes from,
-              check live hive conditions, and verify our 50/50 harvest promise.
+
+            <p className="text-lg md:text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed font-medium">
+              See the records for yourself. Every jar of BeeYield is backed by permanent harvest data, including exact moisture levels and hive health.
             </p>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -295,66 +305,89 @@ const Traceability = () => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-2xl flex items-center justify-center"
+                  className="fixed inset-0 z-[100] bg-neutral-950/95 backdrop-blur-2xl flex items-center justify-center"
                 >
                   <motion.div
                     initial={{ scale: 0.9, y: 20 }}
                     animate={{ scale: 1, y: 0 }}
                     exit={{ scale: 1.1, opacity: 0 }}
                     transition={{ type: "spring", bounce: 0.4 }}
-                    className="max-w-md w-full px-6 text-center space-y-10"
+                    className="max-w-md w-full px-8 text-center"
                   >
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-primary/20 rounded-full blur-[100px] animate-pulse"></div>
+                    <div className="relative mb-12">
+                      <div className="absolute inset-0 bg-amber-500/20 rounded-full blur-[120px] animate-pulse"></div>
 
                       {/* High-Tech Scanner Visual */}
-                      <div className="relative h-48 w-48 mx-auto bg-white rounded-[2.5rem] shadow-2xl flex items-center justify-center border border-primary/10 overflow-hidden group">
-                        <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-transparent"></div>
+                      <div className="relative h-56 w-56 mx-auto bg-neutral-900 rounded-[3rem] shadow-2xl flex items-center justify-center border border-white/10 overflow-hidden group">
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,#15803d_0%,transparent_70%)] opacity-20"></div>
 
                         {/* Scanning Line */}
-                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/30 to-transparent h-12 w-full -translate-y-full animate-[scan_1.5s_ease-in-out_infinite] z-20 shadow-[0_0_20px_rgba(var(--primary-rgb),0.5)]"></div>
+                        <motion.div
+                          animate={{ y: ["-100%", "100%", "-100%"] }}
+                          transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                          className="absolute inset-0 bg-gradient-to-b from-transparent via-green-500/50 to-transparent h-16 w-full z-20 shadow-[0_0_30px_rgba(34,197,94,0.4)]"
+                        />
 
                         <div className="relative z-10 flex flex-col items-center">
-                          <Activity className="h-16 w-16 text-primary animate-pulse" />
-                          <div className="mt-2 flex gap-1">
+                          <motion.div
+                            animate={{ scale: [1, 1.1, 1] }}
+                            transition={{ duration: 2, repeat: Infinity }}
+                          >
+                            <Cpu className="h-16 w-16 text-amber-500 mb-3" />
+                          </motion.div>
+                          <div className="flex gap-1.5">
                             {[1, 2, 3].map(i => (
-                              <div key={i} className="h-1 w-4 rounded-full bg-primary/20 animate-pulse overflow-hidden">
-                                <div className={`h-full bg-primary animate-[loading-bar_1s_infinite] delay-${i * 100}`} style={{ width: '40%' }}></div>
+                              <div key={i} className="h-1 w-6 rounded-full bg-green-500/20 overflow-hidden">
+                                <motion.div
+                                  animate={{ x: ["-100%", "100%"] }}
+                                  transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
+                                  className="h-full bg-green-500 w-1/2"
+                                />
                               </div>
                             ))}
                           </div>
                         </div>
 
                         {/* Corner Accents */}
-                        <div className="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-primary/40 rounded-tl-lg"></div>
-                        <div className="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2 border-primary/40 rounded-tr-lg"></div>
-                        <div className="absolute bottom-4 left-4 w-4 h-4 border-b-2 border-l-2 border-primary/40 rounded-bl-lg"></div>
-                        <div className="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-primary/40 rounded-br-lg"></div>
+                        <div className="absolute top-6 left-6 w-6 h-6 border-t-2 border-l-2 border-amber-500/30 rounded-tl-xl"></div>
+                        <div className="absolute top-6 right-6 w-6 h-6 border-t-2 border-r-2 border-amber-500/30 rounded-tr-xl"></div>
+                        <div className="absolute bottom-6 left-6 w-6 h-6 border-b-2 border-l-2 border-amber-500/30 rounded-bl-xl"></div>
+                        <div className="absolute bottom-6 right-6 w-6 h-6 border-b-2 border-r-2 border-amber-500/30 rounded-br-xl"></div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <h3 className="text-3xl font-black tracking-tight text-white uppercase italic">Confirming Records</h3>
+                      <p className="text-neutral-500 font-black uppercase tracking-[0.3em] text-[10px]">
+                        Accessing <span className="text-amber-500">Secure Database</span> Module
+                      </p>
+
+                      <div className="flex items-center justify-center gap-3 py-4">
+                        <div className="h-px flex-1 bg-white/10" />
+                        <span className="text-[10px] font-mono text-green-500 animate-pulse">INTEGRITY_CHECK_PASS</span>
+                        <div className="h-px flex-1 bg-white/10" />
                       </div>
 
-                      <div className="mt-8 space-y-3">
-                        <h3 className="text-3xl font-black tracking-tight text-slate-900 uppercase">Verifying Origin</h3>
-                        <p className="text-slate-500 font-bold uppercase tracking-[0.2em] text-[10px]">
-                          Checking <span className="text-primary font-black">BeeYield</span> harvest records via C++ Core
-                        </p>
-                      </div>
-
-                      <div className="mt-8 grid grid-cols-2 gap-3">
-                        <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 text-left">
-                          <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Record ID</p>
-                          <p className="text-xs font-mono font-bold text-slate-700">#8,442,109</p>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-white/5 backdrop-blur-md p-4 rounded-3xl border border-white/10 text-left">
+                          <p className="text-[8px] font-black text-neutral-500 uppercase tracking-widest mb-1">Source Node</p>
+                          <p className="text-xs font-mono font-bold text-white">GENESIS_0x71A</p>
                         </div>
-                        <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 text-left">
-                          <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Batch Verified</p>
-                          <p className="text-xs font-mono font-bold text-slate-700">Authentic</p>
+                        <div className="bg-white/5 backdrop-blur-md p-4 rounded-3xl border border-white/10 text-left">
+                          <p className="text-[8px] font-black text-neutral-500 uppercase tracking-widest mb-1">Batch Key</p>
+                          <p className="text-xs font-mono font-bold text-white">{qrCode || "PENDING"}</p>
                         </div>
                       </div>
 
-                      <div className="mt-6 pt-4 border-t border-slate-100">
-                        <div className="flex items-center justify-center gap-2 text-green-600 font-black text-[10px] uppercase tracking-widest animate-pulse">
-                          <ShieldCheck className="h-3 w-3" />
-                          Origin Confirmed
-                        </div>
+                      <div className="pt-8">
+                        <motion.div
+                          animate={{ opacity: [0.5, 1, 0.5] }}
+                          transition={{ duration: 1.5, repeat: Infinity }}
+                          className="flex items-center justify-center gap-3 text-green-500 font-black text-[11px] uppercase tracking-[0.2em]"
+                        >
+                          <ShieldCheck className="h-4 w-4" />
+                          Authentication Locked
+                        </motion.div>
                       </div>
                     </div>
                   </motion.div>

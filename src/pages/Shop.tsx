@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
@@ -649,38 +650,62 @@ const Shop = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section - Mobile Responsive */}
-      <section className="relative py-12 sm:py-16 md:py-20 lg:py-32 overflow-hidden bg-primary/10">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute top-0 right-0 w-1/2 h-full bg-primary/20 rounded-l-full blur-3xl opacity-50" />
-          <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-accent/20 rounded-r-full blur-3xl opacity-30" />
+      {/* Hero Section - Zero-Trust Premium Theme */}
+      <section className="relative py-24 sm:py-32 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#fdfbf6] to-[#f8faf8]">
+          <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(circle_at_80%_20%,#fef3c7_0%,transparent_50%)] opacity-40 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-[radial-gradient(circle_at_20%_80%,#ecfdf5_0%,transparent_50%)] opacity-40 pointer-events-none" />
+
+          {/* Vertical Text Accent */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1 }}
+            className="absolute left-8 top-1/2 -translate-y-1/2 hidden xl:block pointer-events-none"
+          >
+            <span className="text-[100px] font-black text-neutral-200/50 tracking-tighter leading-none select-none uppercase" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
+              Collection
+            </span>
+          </motion.div>
         </div>
 
         <div className="container mx-auto px-4 sm:px-6 relative z-10 text-center lg:text-left">
-          <div className="max-w-3xl">
-            <Badge variant="outline" className="mb-4 sm:mb-6 px-3 sm:px-4 py-1 sm:py-1.5 border-primary/20 bg-primary/20 text-primary-foreground font-black animate-in fade-in slide-in-from-bottom-2 duration-700 text-xs sm:text-sm uppercase tracking-widest">
-              <Zap className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1.5 sm:mr-2 fill-primary/20" />
-              Support Sustainable Beekeeping
-            </Badge>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black text-foreground mb-4 sm:mb-6 tracking-tightest leading-[1.1] animate-in fade-in slide-in-from-bottom-4 duration-1000">
-              Quality <span className="text-primary">Honey & Gear.</span>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="max-w-4xl"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-50 text-amber-700 text-[11px] font-black uppercase tracking-[0.2em] mb-8 border border-amber-100 shadow-sm"
+            >
+              <Zap className="w-3.5 h-3.5" />
+              Verified Authenticity Hub
+            </motion.div>
+
+            <h1 className="text-5xl md:text-7xl font-black text-neutral-900 mb-8 tracking-tighter leading-[0.95]">
+              The Gold <span className="text-amber-600">Standard.</span> <br />
+              <span className="text-green-700">Traceable</span> by Default.
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-muted-foreground font-medium mb-6 sm:mb-8 md:mb-10 leading-relaxed max-w-2xl animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
-              From our natural traceable honey to hive sensors,
-              everything in our shop supports the mission of sustainable pollination.
+
+            <p className="text-lg md:text-xl text-neutral-600 mb-10 max-w-2xl leading-relaxed font-medium">
+              Every item in our boutique is a proof of concept for uncompromised trust. From 100% raw honey to IoT hive monitoring, quality is cryptographically verified from the source.
             </p>
 
-            <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 animate-in fade-in mt-2 duration-1000 delay-500 justify-center lg:justify-start">
-              <div className="flex items-center gap-2 sm:gap-3 bg-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-primary/10 shadow-sm">
-                <Truck className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
-                <span className="text-xs sm:text-sm font-black text-foreground uppercase tracking-wider">Fast Delivery Nationwide</span>
+            <div className="flex flex-wrap justify-center lg:justify-start gap-4">
+              <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-2xl border border-neutral-100 shadow-sm">
+                <Truck className="h-5 w-5 text-green-700" />
+                <span className="text-[10px] font-black text-neutral-600 uppercase tracking-widest">Global Purity Standards</span>
               </div>
-              <div className="flex items-center gap-2 sm:gap-3 bg-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-primary/10 shadow-sm">
-                <ShieldCheck className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
-                <span className="text-xs sm:text-sm font-black text-foreground uppercase tracking-wider">Secure Transactions</span>
+              <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-2xl border border-neutral-100 shadow-sm">
+                <ShieldCheck className="h-5 w-5 text-amber-600" />
+                <span className="text-[10px] font-black text-neutral-600 uppercase tracking-widest">Zero-Trust Verified</span>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -918,104 +943,94 @@ const Shop = () => {
         </Tabs>
       </section>
 
-      {/* BeeYield Branding Section with QR Code */}
-      <section className="container mx-auto px-4 py-12">
-        <div className="bg-white rounded-[2rem] p-8 md:p-16 shadow-xl border border-green-100 flex flex-col md:flex-row items-center gap-8 md:gap-16">
-          <div className="flex-shrink-0 flex flex-col items-center justify-center">
-            <img src="/logo.png" alt="BeeYield Logo" className="h-20 w-20 mb-4" />
-            <span className="text-2xl font-black text-green-700 tracking-tight mb-2">BeeYield HoneyChain™</span>
-            <span className="text-sm text-muted-foreground mb-4 text-center">Every jar is traceable. Scan the QR code below to verify your honey’s journey from hive to jar.</span>
-            <img
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://beeyield.co.ke/trace/SAMPLE-BATCH-CODE`}
-              alt="BeeYield Traceability QR"
-              className="w-28 h-28 rounded bg-white border border-green-200 shadow"
-            />
-            <span className="text-xs text-green-700 mt-2">Scan to verify</span>
-            <span className="text-xs font-mono text-green-900 bg-green-50 border border-green-200 rounded px-2 py-0.5 mt-2">SAMPLE-BATCH-CODE</span>
-          </div>
-          <div className="flex-1 flex flex-col justify-center">
-            <h2 className="text-3xl md:text-4xl font-black mb-4 text-green-900">Trust in Every Drop</h2>
-            <p className="text-lg text-muted-foreground mb-4">BeeYield is Africa’s leader in honey traceability. Our blockchain-powered HoneyChain™ guarantees authenticity, purity, and full transparency for every batch. Look for the BeeYield QR code on your jar and scan to see the full story behind your honey.</p>
-            <ul className="list-disc pl-6 text-green-800 text-base font-medium space-y-1">
-              <li>Blockchain-sealed batch records</li>
-              <li>Meet the beekeeper and apiary</li>
-              <li>Harvest date and floral source</li>
-              <li>Full journey from hive to jar</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-      <section className="container mx-auto px-4 py-12">
-        <div className="bg-primary rounded-[3rem] p-8 lg:p-16 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-white/20 transition-all duration-1000" />
+      {/* Trust & Traceability Proof */}
+      <section className="container mx-auto px-4 py-24">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          className="bg-neutral-900 rounded-[3rem] p-10 md:p-20 relative overflow-hidden"
+        >
+          <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-amber-600/20 to-transparent pointer-events-none" />
 
-          <div className="max-w-3xl relative z-10">
-            <h2 className="text-3xl lg:text-5xl font-black text-primary-foreground mb-6 leading-tight">
-              Bring Professional Grade <br />
-              <span>Pollination Tech</span> To Your Farm.
-            </h2>
-            <p className="text-primary-foreground/80 text-lg font-medium mb-10 max-w-xl">
-              Our hardware solutions aren't just gadgets—they're scientific instruments
-              designed to maximize yield and protect the health of your colonies.
-            </p>
-            <div className="flex flex-wrap gap-4">
+          <div className="grid lg:grid-cols-2 gap-12 items-center relative z-10">
+            <div>
+              <Badge className="bg-amber-500 text-neutral-900 border-none mb-8 px-6 py-1.5 font-black uppercase tracking-widest text-xs shadow-lg shadow-amber-500/20">
+                BeeYield HoneyChain™
+              </Badge>
+              <h2 className="text-4xl md:text-5xl font-black text-white mb-8 leading-[0.9] tracking-tighter uppercase">
+                Trust in Every <span className="text-amber-500">Blockchain</span> Sealed Jar
+              </h2>
+              <p className="text-neutral-400 text-lg mb-10 leading-relaxed font-medium">
+                Africa's leader in honey traceability. Our HoneyChain™ protocol guarantees authenticity, purity, and full transparency. Look for the QR code on your boutique jar.
+              </p>
+
+              <ul className="space-y-4 mb-10">
+                {[
+                  "Immutable Harvest Records",
+                  "Verified Flora & Water Sources",
+                  "Direct Impact Tracking",
+                  "Zero-Trust Verification"
+                ].map((item, i) => (
+                  <li key={i} className="flex items-center gap-3 text-white font-bold text-sm">
+                    <div className="h-5 w-5 rounded-full bg-green-500/20 flex items-center justify-center">
+                      <ShieldCheck className="h-3 w-3 text-green-500" />
+                    </div>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+
               <Button
-                variant="secondary"
-                size="lg"
-                className="h-14 px-10 rounded-2xl font-black text-primary bg-white hover:bg-white/90"
+                variant="outline"
+                className="h-14 border-2 border-white/20 text-white hover:bg-white hover:text-neutral-900 font-black rounded-2xl px-10 uppercase tracking-widest text-xs transition-all"
                 asChild
               >
-                <Link to="/contact">
-                  Request Consultation <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
+                <Link to="/traceability">Explore HoneyChain™</Link>
               </Button>
             </div>
-          </div>
 
-          <div className="hidden lg:block absolute right-16 top-1/2 -translate-y-1/2">
-            <div className="w-80 h-80 rounded-[3rem] border-2 border-white/20 rotate-12 flex items-center justify-center p-8 backdrop-blur-sm bg-white/5">
-              <Cpu className="w-32 h-32 text-white/40" />
+            <div className="hidden lg:flex justify-center">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                className="relative"
+              >
+                <div className="absolute inset-0 bg-amber-500/20 blur-[100px] rounded-full" />
+                <div className="w-64 h-64 border-2 border-white/10 rounded-full flex items-center justify-center backdrop-blur-sm bg-white/5">
+                  <Cpu className="w-24 h-24 text-amber-500/40" />
+                </div>
+              </motion.div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
-      {/* Social Proof / Trust */}
-      {/* Partners Section */}
-      <section className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto text-center mb-12 bg-muted/30 p-8 rounded-[2rem] border border-border/50">
-          <h2 className="text-3xl font-black mb-4">Try BeeYield in your apiary</h2>
-          <p className="text-muted-foreground mb-6 font-medium">
-            BeeYield is constantly evolving. We invite you to take part in the international testing of our system – together, we can advance technology that protects bees worldwide.
-          </p>
-          <Button size="lg" className="w-full sm:w-auto rounded-xl font-bold gap-2" asChild>
-            <Link to="/contact">Join the Program <ArrowRight className="h-4 w-4" /></Link>
-          </Button>
+      {/* Partners Section - Redesigned */}
+      <section className="container mx-auto px-4 py-24 border-t border-neutral-100">
+        <div className="text-center mb-16">
+          <Badge className="bg-neutral-100 text-neutral-500 border-none mb-6 px-4 py-1 font-black uppercase tracking-widest text-[9px]">
+            Global Ecosystem
+          </Badge>
+          <h2 className="text-3xl font-black text-neutral-900 uppercase tracking-tighter">Verified Partners</h2>
         </div>
 
-        <div className="text-center">
-          <h2 className="text-2xl font-black mb-8 text-muted-foreground uppercase tracking-widest">Global Partners</h2>
-          {/* Partners */}
-          <div className="flex flex-wrap justify-center gap-6 sm:gap-8 items-center opacity-70 hover:opacity-100 transition-opacity">
-            <div className="flex items-center gap-3 px-6 py-4 bg-muted/30 rounded-2xl border border-border/50">
-              <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
-                <Globe className="h-5 w-5 text-primary" />
+        <div className="flex flex-wrap justify-center gap-12 items-center opacity-40 hover:opacity-100 transition-opacity duration-700">
+          {[
+            { label: "Regional Farmers", icon: Globe },
+            { label: "ApiSense Network", icon: Activity },
+            { label: "Intelligent Hives", icon: Cpu },
+            { label: "Traceability Core", icon: ShieldCheck }
+          ].map((partner, i) => (
+            <div key={i} className="flex items-center gap-4 group cursor-pointer">
+              <div className="h-12 w-12 bg-neutral-50 rounded-2xl flex items-center justify-center group-hover:bg-neutral-900 group-hover:text-white transition-all">
+                <partner.icon className="h-6 w-6" />
               </div>
-              <span className="font-bold text-lg">Farmers</span>
+              <span className="font-black text-xs uppercase tracking-[0.2em] text-neutral-400 group-hover:text-neutral-900 transition-colors">
+                {partner.label}
+              </span>
             </div>
-            <div className="flex items-center gap-3 px-6 py-4 bg-muted/30 rounded-2xl border border-border/50">
-              <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
-                <Activity className="h-5 w-5 text-primary" />
-              </div>
-              <span className="font-bold text-lg">ApiSense</span>
-            </div>
-            <div className="flex items-center gap-3 px-6 py-4 bg-muted/30 rounded-2xl border border-border/50">
-              <div className="h-10 w-10 bg-primary/20 rounded-full flex items-center justify-center">
-                <Cpu className="h-5 w-5 text-primary" />
-              </div>
-              <span className="font-bold text-lg">Intelligent Hives</span>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
     </div>

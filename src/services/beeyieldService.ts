@@ -1,45 +1,6 @@
 import { supabase } from '@/lib/supabase';
-import { apiGet, apiPost, apiPut, apiDelete } from './api';
+import { apiGet, apiPost, apiPut, apiDelete, getAuthHeaders } from './api';
 import { toast } from 'sonner';
-
-let cachedSession: any = null;
-let lastSessionFetch = 0;
-
-export const getAuthHeaders = async (): Promise<Record<string, string>> => {
-    if (!supabase) return {};
-
-    const now = Date.now();
-    // Cache for 60 seconds for performance
-    if (cachedSession && (now - lastSessionFetch < 60000)) {
-        return { Authorization: `Bearer ${cachedSession.access_token}` };
-    }
-
-    try {
-        // Use a 5s timeout to prevent hanging while allowing for initial cold-start latency
-        const sessionPromise = supabase.auth.getSession();
-        const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Auth timeout')), 5000)
-        );
-
-        const result = await Promise.race([sessionPromise, timeoutPromise]) as { data: { session: { access_token: string } } };
-        const session = result?.data?.session;
-
-        if (session) {
-            cachedSession = session;
-            lastSessionFetch = now;
-            return { Authorization: `Bearer ${session.access_token}` };
-        }
-    } catch (error) {
-        console.warn('Auth headers fetch failed, using cache if available:', error);
-    }
-
-    // Return cached session as fallback if auth check fails/times out
-    if (cachedSession) {
-        return { Authorization: `Bearer ${cachedSession.access_token}` };
-    }
-
-    return {};
-};
 
 // Types for BeeYield Dashboard
 export interface InfieldReadings {
@@ -658,6 +619,15 @@ export const beeyieldService = {
         } catch (error) {
             console.error('Error fetching telemetry:', error);
             return [];
+        }
+    },
+
+    async getImpactStats(): Promise<any> {
+        try {
+            return await apiGet<any>('/stats/impact', {});
+        } catch (error) {
+            console.error('Error fetching impact stats:', error);
+            return null;
         }
     },
 

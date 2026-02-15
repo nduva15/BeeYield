@@ -11,6 +11,7 @@ from app.services.content_service import ContentService
 from app.services.hybrid_search import HybridSearch
 from app.services.report_generator import ReportGenerator
 from app.services.rate_limit_manager import RateLimitManager
+from app.services.link_generator import enhance_response
 
 # Try to import vector store (optional dependency)
 try:
@@ -154,6 +155,66 @@ class AIService:
         dna_block = _get_bee_dna()
         knowledge_context = f"{expert_context}\n{dna_block}\n{knowledge_context}" if dna_block else f"{expert_context}\n{knowledge_context}"
 
+        # --- PHASE 1.5: VERTICAL DATA INJECTION (BEE HEALTH & DISEASES) ---
+        if any(kw in msg_lower for kw in ["disease", "health", "sick", "varroa", "foulbrood", "nosema"]):
+            try:
+                # Retrieve structured health data from our new vertical endpoint
+                # Since we are inside the same process, we could try to call the function directly 
+                # or use an internal app client. For simplicity here, we'll use a mocked load of the same data logic
+                # or a local HTTP call if settings ALLOW it.
+                async with httpx.AsyncClient(timeout=2.0) as client:
+                    health_url = f"{settings.API_URL}{settings.API_V1_STR}/bee-data/bee-health"
+                    health_resp = await client.get(health_url)
+                    if health_resp.status_code == 200:
+                        health_data = health_resp.json()
+                        knowledge_context += f"\n\n--- INTERNAL BEE HEALTH DATABASE ---\n{json.dumps(health_data, indent=2)}"
+            except Exception as e:
+                print(f"[BEE HEALTH INJECTION] Skipped: {e}")
+
+        if any(kw in msg_lower for kw in ["market", "price", "export", "import", "money", "business", "demand"]):
+            try:
+                async with httpx.AsyncClient(timeout=2.0) as client:
+                    market_url = f"{settings.API_URL}{settings.API_V1_STR}/bee-data/market-data"
+                    market_resp = await client.get(market_url)
+                    if market_resp.status_code == 200:
+                        market_data = market_resp.json()
+                        knowledge_context += f"\n\n--- MARKET INTELLIGENCE DATABASE ---\n{json.dumps(market_data, indent=2)}"
+            except Exception as e:
+                print(f"[MARKET DATA INJECTION] Skipped: {e}")
+
+        if any(kw in msg_lower for kw in ["research", "science", "breakthrough", "study", "university", "paper", "innovation"]):
+            try:
+                async with httpx.AsyncClient(timeout=2.0) as client:
+                    research_url = f"{settings.API_URL}{settings.API_V1_STR}/bee-data/global-research"
+                    research_resp = await client.get(research_url)
+                    if research_resp.status_code == 200:
+                        research_data = research_resp.json()
+                        knowledge_context += f"\n\n--- GLOBAL RESEARCH HUB ---\n{json.dumps(research_data, indent=2)}"
+            except Exception as e:
+                print(f"[GLOBAL RESEARCH INJECTION] Skipped: {e}")
+
+        if any(kw in msg_lower for kw in ["sensor", "iot", "temperature", "humidity", "acoustic", "metric", "monitoring", "meter", "live data"]):
+            try:
+                async with httpx.AsyncClient(timeout=2.0) as client:
+                    iot_url = f"{settings.API_URL}{settings.API_V1_STR}/bee-data/iot-metrics"
+                    iot_resp = await client.get(iot_url)
+                    if iot_resp.status_code == 200:
+                        iot_data = iot_resp.json()
+                        knowledge_context += f"\n\n--- LIVE IOT SENSOR STREAM ---\n{json.dumps(iot_data, indent=2)}"
+            except Exception as e:
+                print(f"[IOT DATA INJECTION] Skipped: {e}")
+
+        if any(kw in msg_lower for kw in ["traceability", "blockchain", "ledger", "batch", "verify", "honeychain", "polygon", "integrity"]):
+            try:
+                async with httpx.AsyncClient(timeout=2.0) as client:
+                    trace_url = f"{settings.API_URL}{settings.API_V1_STR}/bee-data/traceability-ledger"
+                    trace_resp = await client.get(trace_url)
+                    if trace_resp.status_code == 200:
+                        trace_data = trace_resp.json()
+                        knowledge_context += f"\n\n--- BLOCKCHAIN TRACEABILITY LEDGER ---\n{json.dumps(trace_data, indent=2)}"
+            except Exception as e:
+                print(f"[TRACEABILITY INJECTION] Skipped: {e}")
+
 
         # --- PHASE 2: TIER 1 - GEMINI FLASH (THE READER / RESPONDER) ---
         
@@ -285,9 +346,6 @@ class AIService:
                 except Exception as e:
                     final_answer = f"Error in synthesis: {e}\n\nRaw Context:\n{knowledge_context[:1000]}"
 
-        # Apply minimum paragraph rule as Post-processing
-        final_answer = AIService._ensure_min_paragraphs(final_answer, min_paragraphs=2)
-
         # --- PHASE 4: ASSET GENERATION ---
         if "pdf" in msg_lower or "report" in msg_lower:
             pdf_url = await ReportGenerator.create_report(
@@ -296,6 +354,20 @@ class AIService:
                 sources=citations
             )
             final_answer += f"\n\n---\n**GENERATOR LOG:** 📄 [Intelligence_Report_v4.pdf]({pdf_url})"
+
+
+        # Apply minimum paragraph rule as Post-processing
+        final_answer = AIService._ensure_min_paragraphs(final_answer, min_paragraphs=2)
+
+        # --- PHASE 5: VERTICAL LINKING & CITATION ORCHESTRATION ---
+        # Enhance the response with internal links and formatted citations
+        final_answer = enhance_response(
+            text=final_answer,
+            sources=citations,
+            add_citations=True,
+            add_links=True,
+            add_suggestions=True
+        )
 
         return final_answer
 

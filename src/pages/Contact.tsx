@@ -24,6 +24,7 @@ const Contact = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<"quick" | "grower" | "beekeeper" | "general" | "diseases">("quick");
   const [loading, setLoading] = useState(false);
+  const [formSubmitted, setFormSubmitted] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
 
   // Quick Message form state (PRD Contact Messages)
@@ -84,7 +85,7 @@ const Contact = () => {
     setQuickLoading(true);
 
     try {
-      await submitContactMessage({
+      const response = await submitContactMessage({
         full_name: quickForm.fullName,
         email: quickForm.email,
         subject: quickForm.subject || undefined,
@@ -92,8 +93,8 @@ const Contact = () => {
       });
 
       toast({
-        title: "Message Sent! ✉️",
-        description: "We'll get back to you shortly.",
+        title: "✅ Message Sent!",
+        description: response?.message || "We'll get back to you shortly.",
       });
 
       setQuickSent(true);
@@ -150,7 +151,7 @@ const Contact = () => {
         experience_years: activeTab === "beekeeper" ? formData.experienceYears : undefined,
       };
 
-      await submitContactForm(submissionData);
+      const response = await submitContactForm(submissionData);
 
       // Log activity
       adminService.logActivity({
@@ -162,9 +163,11 @@ const Contact = () => {
       }).catch(() => { });
 
       toast({
-        title: "Inquiry Received!",
-        description: "We'll get back to you as soon as possible.",
+        title: "✅ Inquiry Received!",
+        description: response?.message || "We'll get back to you as soon as possible.",
       });
+
+      setFormSubmitted(true);
 
       // Reset form (keep tab)
       setFormData({
@@ -186,6 +189,9 @@ const Contact = () => {
         message: ""
       });
       setTermsAccepted(false);
+
+      // Reset success state after 5 seconds
+      setTimeout(() => setFormSubmitted(false), 5000);
 
     } catch (error) {
       console.error(error);

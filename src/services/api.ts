@@ -33,44 +33,64 @@ function getActiveClient() {
 
 let cachedSession: any = null;
 let lastSessionFetch = 0;
+let sessionPromise: Promise<any> | null = null;
 
 /**
- * Get authentication headers from Supabase session with caching
+ * Get authentication headers from Supabase session with caching and concurrency protection
  */
 export async function getAuthHeaders(): Promise<Record<string, string>> {
     const activeClient = getActiveClient();
     if (!activeClient) return {};
 
     const now = Date.now();
-    // Cache session for 30 seconds to reduce overhead on concurrent requests
-    if (cachedSession && (now - lastSessionFetch < 30000)) {
+    // Cache session for 60 seconds to reduce overhead on concurrent requests
+    if (cachedSession && (now - lastSessionFetch < 60000)) {
         return {
             'Authorization': `Bearer ${cachedSession.access_token}`
         };
     }
 
-    try {
-        // 1. Try active client (e.g. BeeYield or CEBA)
-        let { data: { session } } = await activeClient.auth.getSession();
+    // If a request is already in flight, wait for it
+    if (sessionPromise) {
+        try {
+            const session = await sessionPromise;
+            if (session) return { 'Authorization': `Bearer ${session.access_token}` };
+        } catch (e) {
+            // If promise fails, fall through to create a new one
+        }
+    }
 
-        // 2. Fallback: If no session on active client, and active client is NOT shop, try shop (main) session
-        // This handles cases where a Shop user has permissions to access BeeYield/CEBA areas
-        if (!session && activeClient !== supabaseShop && supabaseShop) {
-            const { data: shopAuth } = await supabaseShop.auth.getSession();
-            if (shopAuth.session) {
-                session = shopAuth.session;
+    // Create a new session fetch promise
+    sessionPromise = (async () => {
+        try {
+            // 1. Try active client (e.g. BeeYield or CEBA)
+            let { data: { session } } = await activeClient.auth.getSession();
+
+            // 2. Fallback: If no session on active client, and active client is NOT shop, try shop (main) session
+            if (!session && activeClient !== supabaseShop && supabaseShop) {
+                const { data: shopAuth } = await supabaseShop.auth.getSession();
+                if (shopAuth.session) {
+                    session = shopAuth.session;
+                }
             }
-        }
 
-        if (session?.access_token) {
-            cachedSession = session;
-            lastSessionFetch = now;
-            return {
-                'Authorization': `Bearer ${session.access_token}`
-            };
+            if (session?.access_token) {
+                cachedSession = session;
+                lastSessionFetch = Date.now();
+                return session;
+            }
+            return null;
+        } catch (error) {
+            console.error('Error getting auth headers:', error);
+            return null;
+        } finally {
+            sessionPromise = null;
         }
-    } catch (error) {
-        console.error('Error getting auth headers:', error);
+    })();
+
+    const session = await sessionPromise;
+    if (session) {
+        return { 'Authorization': `Bearer ${session.access_token}` };
     }
 
     // Fallback to previously cached session if available even if expired, to prevent blocking
@@ -90,15 +110,19 @@ export async function apiRequest<T>(
 ): Promise<T> {
     let baseUrl = DATA_API_URL;
 
-    // Route AI requests to Python Backend
-    if (endpoint.includes("/ai/") || endpoint.startsWith("ai/")) {
+    // Route AI and Assistant requests to Python Backend (Port 8000)
+    const isAI = endpoint.includes("/ai/") ||
+        endpoint.startsWith("ai/") ||
+        endpoint.includes("/assistant/") ||
+        endpoint.startsWith("assistant/") ||
+        endpoint.includes("/bee-data") ||
+        endpoint.includes("/search");
+
+    if (isAI) {
         baseUrl = AI_API_URL;
     }
 
     // Construct full URL
-    // If endpoint starts with http, use it as is.
-    // If endpoint starts with /, append to baseUrl (which has no trailing slash usually)
-    // If endpoint has no leading slash, add one.
     let url = endpoint;
     if (!endpoint.startsWith('http')) {
         const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
@@ -123,7 +147,6 @@ export async function apiRequest<T>(
             try {
                 errorData = JSON.parse(text);
             } catch (e) {
-                console.error("Non-JSON error response:", text.substring(0, 200));
                 errorData = { detail: `API Error ${response.status}: ${response.statusText}` };
             }
             throw new Error(errorData.detail || errorData.message || `API Error: ${response.status}`);
@@ -135,7 +158,7 @@ export async function apiRequest<T>(
         try {
             return JSON.parse(responseText);
         } catch (e) {
-            console.error("Failed to parse JSON:", responseText.substring(0, 200));
+            console.error("Failed to parse JSON for endpoint:", endpoint);
             throw new Error(`Invalid JSON response from server`);
         }
     } catch (error: any) {

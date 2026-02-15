@@ -24,9 +24,6 @@
     "noImplicitAny": false,
     "noFallthroughCasesInSwitch": false,
     "baseUrl": ".",
-    "types": [
-      "node"
-    ],
     "typeRoots": [
       "./node_modules/@types"
     ],

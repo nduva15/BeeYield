@@ -3,13 +3,21 @@ import { Progress } from "@/components/ui/progress";
 import { Sprout, Droplets, TreePine, Bug, Download, ArrowRight, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import impactImage from "@/assets/impact-beekeeping.jpg";
-import { useState } from "react";
 import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import BEEYIELD_LOGO from "@/assets/Logo.png";
+import { beeyieldService } from "@/services/beeyieldService";
+import { useState, useEffect } from "react";
 
 const Impact = () => {
   const [downloading, setDownloading] = useState(false);
+  const [liveStats, setLiveStats] = useState<any>(null);
+
+  useEffect(() => {
+    beeyieldService.getImpactStats().then(data => {
+      if (data) setLiveStats(data);
+    });
+  }, []);
 
   const handleDownloadImpactReport = async () => {
     setDownloading(true);
@@ -132,8 +140,8 @@ const Impact = () => {
   };
 
   const stats = [
-    { label: "Beehives Protected", value: "184", icon: Bug },
-    { label: "Trees Planted", value: "2500+", icon: TreePine },
+    { label: "Beehives Protected", value: liveStats?.hive_count || "184", icon: Bug },
+    { label: "Trees Planted", value: "2,500+", icon: TreePine },
     { label: "Bees Saved (Colonies)", value: "2M+", icon: Droplets },
     { label: "Carbon Offset (Tons)", value: "2+", icon: Sprout },
   ];

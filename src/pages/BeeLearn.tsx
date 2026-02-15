@@ -144,8 +144,8 @@ const BeeLearn = () => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await submitNewsletterSubscription({ email: guideEmail, source: 'starter_guide_download' });
-      toast.success("Guide sent to your email!");
+      const response = await submitNewsletterSubscription({ email: guideEmail, source: 'starter_guide_download' });
+      toast.success(response?.message || "Guide sent to your email!");
       setIsGuideModalOpen(false);
       setGuideEmail("");
     } catch (error) {
@@ -161,7 +161,7 @@ const BeeLearn = () => {
     setIsSubmitting(true);
     try {
       const { submitContactForm } = await import("@/services/contactService");
-      await submitContactForm({
+      const response = await submitContactForm({
         first_name: quoteForm.name.split(' ')[0],
         last_name: quoteForm.name.split(' ').slice(1).join(' ') || '',
         email: quoteForm.email,
@@ -174,7 +174,7 @@ const BeeLearn = () => {
         topic: "Corporate Workshop Quote",
         message: quoteForm.message
       });
-      toast.success("Quote request received! We'll be in touch shortly.");
+      toast.success(response?.message || "Quote request received! We'll be in touch shortly.");
       setIsQuoteModalOpen(false);
       setQuoteForm({ name: "", email: "", company: "", message: "" });
     } catch (error) {
@@ -190,8 +190,8 @@ const BeeLearn = () => {
     if (!newsletterEmail) return;
     setIsSubmitting(true);
     try {
-      await submitNewsletterSubscription({ email: newsletterEmail, source: 'beelearn_footer' });
-      toast.success("Welcome to the community!");
+      const response = await submitNewsletterSubscription({ email: newsletterEmail, source: 'beelearn_footer' });
+      toast.success(response?.message || "Welcome to the community!");
       setNewsletterEmail("");
     } catch (error) {
       console.error(error);

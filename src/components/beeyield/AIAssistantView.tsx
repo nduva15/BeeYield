@@ -226,40 +226,84 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
     const FormattedMessage: React.FC<{ content: string, isUser: boolean }> = ({ content, isUser }) => {
         if (isUser) return <p className="text-sm leading-relaxed whitespace-pre-wrap">{content}</p>;
 
-        // Handle bold pattern **text**
-        const processBold = (text: string) => {
-            const boldParts = text.split(/(\*\*[^*]+\*\*)/g);
+        const processBoldAndLinks = (text: string) => {
+            const boldParts = text.split(/(\*\*[^*]+\*\*|\[.*?\]\(.*?\))/g);
             return boldParts.map((part, i) => {
                 if (part.startsWith('**') && part.endsWith('**')) {
-                    return <strong key={i} className="font-black text-foreground">{part.slice(2, -2)}</strong>;
+                    return <strong key={i} className="font-black text-gray-900 dark:text-white">{part.slice(2, -2)}</strong>;
+                }
+                const linkMatch = part.match(/\[(.*?)\]\((.*?)\)/);
+                if (linkMatch) {
+                    return (
+                        <a key={i} href={linkMatch[2]} target="_blank" rel="noopener noreferrer" className="text-[#1B9157] dark:text-[#F4D03F] font-bold hover:underline">
+                            {linkMatch[1]}
+                        </a>
+                    );
                 }
                 return part;
             });
         };
 
-        // eslint-disable-next-line no-useless-escape
-        const parts = content.split(/(\[Insert Link: beeyield\.com\/[a-zA-Z0-9\-\/]+\])/g);
+        const processInternalLinks = (text: string) => {
+            const parts = text.split(/(\[Insert Link: beeyield\.com[a-zA-Z0-9\-\/\?\=\&]+\])/g);
+
+            return parts.map((part, j) => {
+                const match = part.match(/\[Insert Link: beeyield\.com([a-zA-Z0-9\-\/\?\=\&]+)\]/);
+                if (match) {
+                    const path = match[1];
+                    const displayName = path.split('?')[0].split('/').pop()?.replace(/-/g, ' ').toUpperCase() || 'VIEW PAGE';
+
+                    return (
+                        <button
+                            key={j}
+                            onClick={() => {
+                                if (path.startsWith('/')) {
+                                    navigate(path);
+                                } else {
+                                    window.open(path, '_blank');
+                                }
+                            }}
+                            className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-[#F4D03F] text-black font-black text-[10px] rounded uppercase tracking-wider hover:bg-[#1B9157] hover:text-white transition-colors mx-1 align-middle"
+                        >
+                            <LinkIcon className="h-2.5 w-2.5" />
+                            {displayName}
+                        </button>
+                    );
+                }
+                return <span key={j}>{processBoldAndLinks(part)}</span>;
+            });
+        };
+
+        const lines = content.split('\n');
 
         return (
-            <div className="text-sm leading-relaxed whitespace-pre-wrap">
-                {parts.map((part, i) => {
-                    // eslint-disable-next-line no-useless-escape
-                    const match = part.match(/\[Insert Link: beeyield\.com\/([a-zA-Z0-9\-\/]+)\]/);
-                    if (match) {
-                        const path = '/' + match[1];
+            <div className="text-sm leading-relaxed space-y-4">
+                {lines.map((line, i) => {
+                    const trimmedLine = line.trim();
+                    if (!trimmedLine) return <div key={i} className="h-2" />;
+
+                    if (trimmedLine.startsWith('###')) {
+                        return <h4 key={i} className="text-base font-black mt-4 mb-2 uppercase tracking-tight text-[#1B9157]">{trimmedLine.replace('###', '').trim()}</h4>;
+                    }
+                    if (trimmedLine.startsWith('##')) {
+                        return <h3 key={i} className="text-lg font-black mt-6 mb-3 uppercase tracking-tighter text-[#1B9157] border-b-2 border-[#1B9157]/10 pb-1">{trimmedLine.replace('##', '').trim()}</h3>;
+                    }
+                    if (trimmedLine.startsWith('#')) {
+                        return <h2 key={i} className="text-xl font-black mt-8 mb-4 uppercase tracking-tighter text-[#1B9157]">{trimmedLine.replace('#', '').trim()}</h2>;
+                    }
+
+                    if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
                         return (
-                            <a
-                                key={i}
-                                href={path}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-[#F4D03F] dark:text-[#F4D03F] font-bold hover:underline underline-offset-4 decoration-2 px-1 rounded hover:bg-[#F4D03F]/5 dark:hover:bg-[#F4D03F]/20 transition-all cursor-pointer inline-flex items-center"
-                            >
-                                {match[1].replace(/-/g, ' ').toUpperCase()}
-                            </a>
+                            <div key={i} className="flex gap-3 ml-2">
+                                <span className="text-[#F4D03F] mt-1.5">•</span>
+                                <div className="flex-1">
+                                    {processInternalLinks(trimmedLine.substring(2))}
+                                </div>
+                            </div>
                         );
                     }
-                    return <span key={i}>{processBold(part)}</span>;
+
+                    return <div key={i}>{processInternalLinks(line)}</div>;
                 })}
             </div>
         );

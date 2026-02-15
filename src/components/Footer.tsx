@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
+import { QuickLink as Link } from "./QuickLink";
 import { Facebook, Instagram, Twitter, Linkedin, MessageSquare } from "lucide-react";
 import Logo from "@/assets/Logo.png";
 import { Newsletter } from "@/components/Newsletter";

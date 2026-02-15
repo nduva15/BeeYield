@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown, ShoppingBag, User, Shield, LogIn, UserPlus } from "lucide-react";
 import { Button } from "./ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/contexts/CartContext";
+import { useQueryClient } from "@tanstack/react-query";
+import { getProducts } from "@/services/shopService";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,14 +14,25 @@ import {
 } from "./ui/dropdown-menu";
 import { Separator } from "./ui/separator";
 import Logo from "@/assets/Logo.png";
+import { QuickLink as Link } from "./QuickLink";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const { user, signOut } = useAuth();
   const { toggleCart, getTotalItems } = useCart();
+  const queryClient = useQueryClient();
 
   const isActive = (path: string) => location.pathname === path;
+
+  // Prefetch data helper
+  const prefetchShop = () => {
+    queryClient.prefetchQuery({
+      queryKey: ['products'],
+      queryFn: () => getProducts(),
+      staleTime: 1000 * 60 * 5,
+    });
+  };
 
   const menuLinks = [
     { to: "/global-hive-network", label: "Global Hive Network" },
@@ -90,6 +103,7 @@ const Header = () => {
           </Link>
           <Link
             to="/shop"
+            onPrefetch={prefetchShop}
             className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/shop") ? "text-primary" : "text-foreground"
               }`}
           >
@@ -212,6 +226,7 @@ const Header = () => {
               </Link>
               <Link
                 to="/shop"
+                onPrefetch={prefetchShop}
                 onClick={() => setIsMenuOpen(false)}
                 className={`text-sm sm:text-base font-semibold hover:bg-primary-foreground/10 rounded-lg px-3 py-2.5 sm:py-3 transition-colors ${isActive("/shop") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground"
                   }`}

@@ -8,9 +8,20 @@ from app.schemas import traceability as schemas
 
 # --- Database-Driven Stats Helpers (NO hardcoded values) ---
 
+# --- Database-Driven Stats Helpers with Caching ---
+_STATS_CACHE = {}
+_STATS_CACHE_EXPIRY = 300 # 5 minutes
+
 def _get_impact_stats_from_db() -> dict[str, Any]:
-    """Fetch impact stats from the company_stats table in the database.
-    Returns empty strings for missing values — never hardcoded fallbacks."""
+    """Fetch impact stats from the company_stats table in the database."""
+    now = datetime.now().timestamp()
+    cache_key = "impact_stats"
+    
+    if cache_key in _STATS_CACHE:
+        val, expiry = _STATS_CACHE[cache_key]
+        if now < expiry:
+            return val
+
     stats = db_select("company_stats")
     result = {}
     if stats:
@@ -29,35 +40,47 @@ def _get_impact_stats_from_db() -> dict[str, Any]:
                 result["acres_pollinated"] = val
             elif key == "trees_planted":
                 result["trees_planted"] = val
+    
+    _STATS_CACHE[cache_key] = (result, now + _STATS_CACHE_EXPIRY)
     return result
 
 
 def _calc_season_total_from_db(batch_code: str, batch_data: dict) -> str:
     """Calculate season harvest total from actual harvest records in the database."""
-    try:
-        # Extract year from batch code or harvest date
-        year = None
-        for y in range(2020, 2030):
-            if str(y) in batch_code or str(y) in str(batch_data.get("harvest_date", "")):
-                year = str(y)
-                break
+    # Extract year
+    year = None
+    for y in range(2020, 2030):
+        if str(y) in batch_code or str(y) in str(batch_data.get("harvest_date", "")):
+            year = str(y)
+            break
+            
+    if not year:
+        return "0"
 
-        if year:
-            # Query harvests for this year
-            harvests = db_select(
-                "harvests",
-                columns="quantity_kg",
-                filters={"harvest_date": f"gte.{year}-01-01"},
-                limit=1000,
-            )
-            # Filter for this year only
-            total = sum(
-                float(h.get("quantity_kg", 0))
-                for h in harvests
-                if year in str(h.get("harvest_date", ""))
-            )
-            if total > 0:
-                return f"{total:.1f}"
+    now = datetime.now().timestamp()
+    cache_key = f"season_total_{year}"
+    if cache_key in _STATS_CACHE:
+        val, expiry = _STATS_CACHE[cache_key]
+        if now < expiry:
+            return val
+
+    try:
+        # Query harvests for this year
+        harvests = db_select(
+            "harvests",
+            columns="quantity_kg",
+            filters={"harvest_date": f"gte.{year}-01-01"},
+            limit=1000,
+        )
+        total = sum(
+            float(h.get("quantity_kg", 0))
+            for h in harvests
+            if year in str(h.get("harvest_date", ""))
+        )
+        if total > 0:
+            res = f"{total:.1f}"
+            _STATS_CACHE[cache_key] = (res, now + _STATS_CACHE_EXPIRY)
+            return res
     except Exception as e:
         print(f"Error calculating season total: {e}")
 
@@ -66,11 +89,20 @@ def _calc_season_total_from_db(batch_code: str, batch_data: dict) -> str:
 
 def _calc_all_time_total_from_db() -> str:
     """Calculate all-time harvest total from actual harvest records."""
+    now = datetime.now().timestamp()
+    cache_key = "all_time_total"
+    if cache_key in _STATS_CACHE:
+        val, expiry = _STATS_CACHE[cache_key]
+        if now < expiry:
+            return val
+
     try:
         harvests = db_select("harvests", columns="quantity_kg", limit=10000)
         total = sum(float(h.get("quantity_kg", 0)) for h in harvests)
         if total > 0:
-            return f"{total:.1f}"
+            res = f"{total:.1f}"
+            _STATS_CACHE[cache_key] = (res, now + _STATS_CACHE_EXPIRY)
+            return res
     except Exception as e:
         print(f"Error calculating all-time total: {e}")
     return "0"
