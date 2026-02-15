@@ -14,6 +14,7 @@ interface PollinationContactFormProps {
 
 export const PollinationContactForm = ({ type, title, description }: PollinationContactFormProps) => {
     const [loading, setLoading] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
     const formId = type === "in_land" ? "in-land-form" : "in-hive-form";
     const [formData, setFormData] = useState({
         firstName: "",
@@ -34,7 +35,7 @@ export const PollinationContactForm = ({ type, title, description }: Pollination
         setLoading(true);
 
         try {
-            await submitContactForm({
+            const response = await submitContactForm({
                 inquiry_type: type === "in_land" ? "In-Land Technology" : "In-Hive Technology",
                 first_name: formData.firstName,
                 last_name: formData.lastName,
@@ -49,10 +50,11 @@ export const PollinationContactForm = ({ type, title, description }: Pollination
             });
 
             toast({
-                title: "Request Sent!",
-                description: "We've received your interest and will be in touch shortly.",
+                title: "✅ Request Sent!",
+                description: response?.message || "We've received your interest and will be in touch shortly.",
             });
 
+            setSubmitted(true);
             setFormData({
                 firstName: "",
                 lastName: "",
@@ -62,6 +64,9 @@ export const PollinationContactForm = ({ type, title, description }: Pollination
                 message: "",
                 hive_code: ""
             });
+
+            // Reset success state after 5 seconds
+            setTimeout(() => setSubmitted(false), 5000);
         } catch (error) {
             console.error(error);
             toast({

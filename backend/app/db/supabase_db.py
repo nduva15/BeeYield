@@ -84,9 +84,22 @@ async def _request_gateway(endpoint: str, payload: dict, token: Optional[str] = 
 
 
 async def db_insert(table: str, data: dict[str, Any], token: Optional[str] = None) -> dict[str, Any]:
-    """Insert a record via the Rust/Go gateway."""
+    """Insert a record via the Rust/Go gateway, with direct SDK fallback."""
     payload = {"table": table, "data": _serialize_data(data)}
-    return await _request_gateway("/db/insert", payload, token)
+    res = await _request_gateway("/db/insert", payload, token)
+    
+    # Fallback to direct SDK if gateway fails
+    if not res.get("success"):
+        print(f"[INFO] Gateway insert failed ({res.get('error')}). Attempting direct SDK fallback.")
+        supabase = get_supabase()
+        if supabase:
+            try:
+                # Run in thread if we are in sync context, but here we are async
+                response = supabase.table(table).insert(data).execute()
+                return {"success": True, "data": response.data}
+            except Exception as e:
+                return {"success": False, "error": f"Gateway and SDK failed: {str(e)}"}
+    return res
 
 
 async def db_select(
@@ -98,7 +111,7 @@ async def db_select(
     ascending: bool = True,
     token: Optional[str] = None,
 ) -> list[dict[str, Any]]:
-    """Select records via the Rust/Go gateway."""
+    """Select records via the Rust/Go gateway, with direct SDK fallback."""
     payload = {"table": table, "columns": columns, "limit": limit}
     if filters:
         # Serialize filter values to strings for PostgREST
@@ -121,6 +134,25 @@ async def db_select(
         payload["ascending"] = ascending
         
     res = await _request_gateway("/db/select", payload, token)
+    
+    # Fallback to direct SDK if gateway fails and returned error or empty list
+    if not isinstance(res, list):
+        print(f"[INFO] Gateway select failed. Attempting direct SDK fallback.")
+        supabase = get_supabase()
+        if supabase:
+            try:
+                query = supabase.table(table).select(columns)
+                if filters:
+                    for k, v in filters.items():
+                        query = query.eq(k, v)
+                if order_by:
+                    query = query.order(order_by, desc=not ascending)
+                response = query.limit(limit).execute()
+                return response.data
+            except Exception as e:
+                print(f"[ERROR] SDK fallback failed: {e}")
+                return []
+    
     if isinstance(res, list):
         return res
     return []
@@ -132,10 +164,23 @@ async def db_update(
     filters: dict[str, Any],
     token: Optional[str] = None,
 ) -> dict[str, Any]:
-    """Update records via the Rust/Go gateway."""
+    """Update records via the Rust/Go gateway, with direct SDK fallback."""
     str_filters = {k: str(v) for k, v in filters.items()}
     payload = {"table": table, "data": _serialize_data(data), "filters": str_filters}
-    return await _request_gateway("/db/update", payload, token)
+    res = await _request_gateway("/db/update", payload, token)
+    
+    if not res.get("success"):
+        supabase = get_supabase()
+        if supabase:
+            try:
+                query = supabase.table(table).update(data)
+                for k, v in filters.items():
+                    query = query.eq(k, v)
+                response = query.execute()
+                return {"success": True, "data": response.data}
+            except Exception as e:
+                return {"success": False, "error": f"Gateway and SDK update failed: {str(e)}"}
+    return res
 
 
 async def db_delete(

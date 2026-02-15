@@ -1,4 +1,7 @@
 import time
+import json
+import os
+from datetime import datetime
 from fastapi import APIRouter, HTTPException, BackgroundTasks, Request
 from app.schemas import contact as schemas
 from app.services import email
@@ -7,7 +10,6 @@ from app.db.supabase_db import db_insert, db_select, db_upsert
 router = APIRouter()
 
 # Simple in-memory rate limiter
-# In production, use Redis or a proper library like slowapi
 _rate_limit_store = {}
 
 def check_rate_limit(client_ip: str, limit_seconds: int = 60):
@@ -19,110 +21,93 @@ def check_rate_limit(client_ip: str, limit_seconds: int = 60):
     _rate_limit_store[client_ip] = now
     return True
 
+async def _save_offline(submission_type: str, data: dict):
+    """Consistent offline fallback for all contact forms."""
+    try:
+        # Resolve project root (backend folder)
+        current_path = os.path.abspath(__file__)
+        # endpoints -> api_v1 -> api -> app -> backend
+        project_root = current_path
+        for _ in range(5):
+            project_root = os.path.dirname(project_root)
+        
+        offline_file = os.path.join(project_root, "offline_submissions.json")
+        print(f"[INFO] Attempting offline save for {submission_type} to {offline_file}")
+        
+        entry = {
+            "timestamp": datetime.now().isoformat(),
+            "type": submission_type,
+            "data": data
+        }
+        
+        existing_data = []
+        if os.path.exists(offline_file):
+            try:
+                with open(offline_file, "r") as f:
+                    content = f.read().strip()
+                    if content:
+                        existing_data = json.loads(content)
+            except Exception as e:
+                print(f"[WARNING] Could not read existing offline file: {e}")
+        
+        # Avoid exact duplicates for newsletter
+        if submission_type == "newsletter_subscription":
+            if any(x.get('data', {}).get('email') == data.get('email') and x.get('type') == 'newsletter_subscription' for x in existing_data):
+                print(f"[INFO] Newsletter sub already in offline file: {data.get('email')}")
+                return True
+
+        existing_data.append(entry)
+        with open(offline_file, "w") as f:
+            json.dump(existing_data, f, indent=2)
+        
+        print(f"[SUCCESS] Saved {submission_type} to offline file.")
+        return True
+    except Exception as e:
+        print(f"[ERROR] Critical Error in offline save: {e}")
+        return False
+
 
 @router.post("/submit", response_model=dict)
-def submit_contact_form(
+async def submit_contact_form(
     request_in: schemas.ContactSubmissionCreate, 
     background_tasks: BackgroundTasks,
     request: Request
 ):
     """
     Handle general contact forms (Grower, Beekeeper, General).
-    Uses Service Role to write to Database (Secure Gate).
-    Fallbacks to local file if DB is unreachable.
     """
-    # 0. Rate Limiting (Skip in offline mode if needed, but keeping for safety)
     try:
         client_ip = request.client.host if request.client else "unknown"
         if not check_rate_limit(client_ip, limit_seconds=5):
             raise HTTPException(status_code=429, detail="Too many submissions. Please wait a few seconds.")
+    except HTTPException:
+        raise
     except:
-        pass # Ignore rate limit errors if request object is weird
+        pass
 
-    # 1. Prepare data
     db_data = request_in.dict(exclude_unset=True)
-    
-    # Fill derived fields (avoid overwriting if already provided)
     if 'first_name' in db_data and 'last_name' in db_data:
         db_data.setdefault('name', f"{request_in.first_name} {request_in.last_name}")
-    
     if 'inquiry_type' in db_data and 'topic' in db_data:
         db_data.setdefault('subject', f"{request_in.inquiry_type.upper()}: {request_in.topic}")
-
     db_data.setdefault('status', 'new')
     
-    # 2. Try Database Save (using httpx helpers - never hangs)
     success = False
     try:
-        result = db_insert("contact_submissions", db_data)
+        result = await db_insert("contact_submissions", db_data)
         if result.get("success"):
             success = True
             print(f"[SUCCESS] DB Save Successful: {request_in.email}")
         else:
-            error_msg = result.get("error", "Unknown")
-            print(f"[WARNING] DB Insert Error: {error_msg}")
-            # Retry without derived fields if schema mismatch
-            if "column" in str(error_msg).lower() and ("name" in str(error_msg).lower() or "subject" in str(error_msg).lower()):
-                temp_data = db_data.copy()
-                temp_data.pop('name', None)
-                temp_data.pop('subject', None)
-                retry_result = db_insert("contact_submissions", temp_data)
-                if retry_result.get("success"):
-                    success = True
-                    print(f"[SUCCESS] DB Save Successful (retry without derived) for {request_in.email}")
+            print(f"[WARNING] DB Insert Error: {result.get('error')}")
     except Exception as e:
-        print(f"[WARNING] DB Connection/Save Failed: {e}. Switching to Offline Mode.")
+        print(f"[WARNING] DB Connection Failed: {e}")
     
-    # 3. Fallback to Local File if DB failed
     if not success:
-        try:
-            import json
-            import os
-            from datetime import datetime
-            
-            # Use absolute path to ensure we can write it regardless of cwd
-            # contact.py is in backend/app/api/api_v1/endpoints/ -> 5 levels up to project root
-            current_path = os.path.abspath(__file__)
-            project_root = current_path
-            for _ in range(5):
-                project_root = os.path.dirname(project_root)
-            
-            offline_file = os.path.join(project_root, "offline_submissions.json")
-            
-            print(f"[INFO] Attempting offline save to {offline_file}")
-            
-            entry = {
-                "timestamp": datetime.now().isoformat(),
-                "type": "contact_submission",
-                "data": db_data
-            }
-            
-            # Read existing
-            existing_data = []
-            if os.path.exists(offline_file):
-                try:
-                    with open(offline_file, "r") as f:
-                        file_content = f.read().strip()
-                        if file_content:
-                            existing_data = json.loads(file_content)
-                except Exception as read_err:
-                    print(f"[WARNING] Could not read existing offline file: {read_err}")
-            
-            existing_data.append(entry)
-            
-            # Write back
-            with open(offline_file, "w") as f:
-                json.dump(existing_data, f, indent=2)
-            
-            print(f"[SUCCESS] Saved submission to {offline_file} (Offline Mode)")
-            success = True
-        except Exception as file_error:
-            print(f"[ERROR] Critical Error: Failed to save to file: {file_error}")
-            # Even if file saving fails, if the DB succeeded we are fine (but success is False here)
-            if not success:
-                raise HTTPException(status_code=500, detail=f"Submission failed during database and offline fallback. Error: {str(file_error)}")
+        success = await _save_offline("contact_submission", db_data)
+        if not success:
+            raise HTTPException(status_code=500, detail="Failed to save submission.")
 
-    # 4. Attempt Notifications (wrapped in try-except)
     try:
         background_tasks.add_task(
             email.send_email,
@@ -130,74 +115,46 @@ def submit_contact_form(
             f"New {request_in.inquiry_type.capitalize()} Inquiry",
             f"From: {request_in.first_name} {request_in.last_name}\nEmail: {request_in.email}\nTopic: {request_in.topic}\nMessage: {request_in.message or 'No message provided'}"
         )
-    except Exception as t_err:
-        print(f"[WARNING] Notification task failed: {t_err}")
+    except:
+        pass
 
-    return {"status": "success", "message": "Inquiry submitted successfully" + (" (Offline Mode)" if not success else "")}
+    return {"status": "success", "message": "Thank you for contacting us! We've received your inquiry and will get back to you shortly."}
 
 
 @router.post("/pollination", response_model=dict)
-def request_pollination(
+async def request_pollination(
     request_in: schemas.PollinationRequestCreate, 
     background_tasks: BackgroundTasks,
     request: Request
 ):
     """
     Handle pollination service requests.
-    Fallbacks to local file if DB unreachable.
     """
     try:
         client_ip = request.client.host if request.client else "unknown"
         if not check_rate_limit(client_ip, limit_seconds=5):
             raise HTTPException(status_code=429, detail="Rate limit exceeded. Please wait.")
+    except HTTPException:
+        raise
     except:
         pass
 
     db_data = request_in.dict(exclude_unset=True)
-    if 'status' not in db_data:
-        db_data['status'] = 'pending'
+    db_data.setdefault('status', 'pending')
     
     success = False
     try:
-        result = db_insert("pollination_requests", db_data)
+        result = await db_insert("pollination_requests", db_data)
         if result.get("success"):
             success = True
+            print(f"[SUCCESS] Pollination request saved: {request_in.email}")
     except Exception as e:
         print(f"[WARNING] DB Connection Failed (Pollination): {e}")
 
-    # 3. Fallback
     if not success:
-        try:
-            import json, os
-            from datetime import datetime
-            
-            app_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-            offline_file = os.path.join(app_dir, "offline_submissions.json")
-            
-            print(f"[INFO] Attempting offline pollination save to {offline_file}")
-            
-            entry = {
-                "timestamp": datetime.now().isoformat(),
-                "type": "pollination_request",
-                "data": db_data
-            }
-            
-            existing_data = []
-            if os.path.exists(offline_file):
-                try: 
-                    with open(offline_file, "r") as f: 
-                        content = f.read().strip()
-                        if content:
-                            existing_data = json.loads(content)
-                except: pass
-            
-            existing_data.append(entry)
-            with open(offline_file, "w") as f: json.dump(existing_data, f, indent=2)
-            success = True
-            print(f"[SUCCESS] Saved pollination request to {offline_file} (Offline Mode)")
-        except Exception as e:
-             print(f"[ERROR] Critical Error in Pollination Offline Save: {e}")
-             raise HTTPException(status_code=500, detail=f"Submission failed. Error: {str(e)}")
+        success = await _save_offline("pollination_request", db_data)
+        if not success:
+            raise HTTPException(status_code=500, detail="Failed to save pollination request.")
 
     try:
         background_tasks.add_task(
@@ -209,7 +166,7 @@ def request_pollination(
     except:
         pass
         
-    return {"status": "success", "message": "Pollination request submitted successfully" + (" (Offline Mode)" if not success else "")}
+    return {"status": "success", "message": "Thank you for your interest in our pollination services! We've received your request and will contact you shortly to discuss your needs."}
 
 @router.post("/message", response_model=dict)
 async def submit_contact_message(
@@ -218,7 +175,6 @@ async def submit_contact_message(
 ):
     """
     Public endpoint: submit a message to the contact_messages inbox.
-    Writes to the dedicated contact_messages table (PRD Engagement Module).
     """
     try:
         client_ip = request.client.host if request.client else "unknown"
@@ -237,19 +193,23 @@ async def submit_contact_message(
         "status": "new"
     }
 
+    success = False
     try:
         result = await db_insert("contact_messages", payload)
         if result.get("success"):
+            success = True
             print(f"[SUCCESS] Contact message saved: {request_in.email}")
-            return {"status": "success", "message": "Message sent! We will get back to you shortly."}
         else:
             print(f"[WARNING] Contact message insert error: {result.get('error')}")
-            raise HTTPException(status_code=500, detail="Failed to save message. Please try again.")
-    except HTTPException:
-        raise
     except Exception as e:
         print(f"[WARNING] Contact message DB error: {e}")
-        raise HTTPException(status_code=500, detail="Something went wrong. Please try again.")
+
+    if not success:
+        success = await _save_offline("contact_message", payload)
+        if not success:
+            raise HTTPException(status_code=500, detail="Failed to send message.")
+
+    return {"status": "success", "message": "Message sent! We will get back to you shortly."}
 
 
 @router.get("/messages", response_model=list)
@@ -260,7 +220,6 @@ async def get_contact_messages(
 ):
     """
     Admin endpoint: retrieve contact messages.
-    Requires admin auth (service_role key used server-side).
     """
     filters = {}
     if status:
@@ -277,7 +236,7 @@ async def get_contact_messages(
         return messages
     except Exception as e:
         print(f"[WARNING] Error fetching contact messages: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        return [] # Return empty list on failure instead of 500
 
 
 @router.patch("/messages/{message_id}/status", response_model=dict)
@@ -306,19 +265,20 @@ async def update_message_status(
 
 
 @router.post("/newsletter", response_model=dict)
-def subscribe_newsletter(
+async def subscribe_newsletter(
     request_in: schemas.NewsletterSubscriptionCreate, 
     background_tasks: BackgroundTasks,
     request: Request
 ):
     """
     Handle newsletter subscriptions.
-    Fallbacks to local file if DB unreachable.
     """
     try:
         client_ip = request.client.host if request.client else "unknown"
         if not check_rate_limit(client_ip + ":newsletter", limit_seconds=10): 
             raise HTTPException(status_code=429, detail="Rate limit exceeded. Please try again soon.")
+    except HTTPException:
+        raise
     except:
         pass
 
@@ -326,12 +286,11 @@ def subscribe_newsletter(
     db_data = request_in.dict(exclude_unset=True)
 
     try:
-        # Check existing subscriber using httpx helper
-        existing = db_select("newsletter_subscribers", filters={"email": request_in.email}, limit=1)
+        existing = await db_select("newsletter_subscribers", filters={"email": request_in.email}, limit=1)
         if existing:
-            return {"status": "success", "message": "Already subscribed"}
+            return {"status": "success", "message": "You're already subscribed! Check your inbox for our latest updates."}
 
-        result = db_insert("newsletter_subscribers", db_data)
+        result = await db_insert("newsletter_subscribers", db_data)
         if result.get("success"):
             success = True
             print(f"[SUCCESS] Newsletter Sub DB Successful: {request_in.email}")
@@ -340,69 +299,31 @@ def subscribe_newsletter(
     except Exception as e:
         print(f"[WARNING] DB Connection Failed (Newsletter): {e}")
 
-    # Fallback
     if not success:
-        try:
-            import json, os
-            from datetime import datetime
-            
-            app_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-            offline_file = os.path.join(app_dir, "offline_submissions.json")
-            
-            print(f"[INFO] Attempting offline newsletter save to {offline_file}")
-            
-            entry = {
-                "timestamp": datetime.now().isoformat(),
-                "type": "newsletter_subscription",
-                "data": db_data
-            }
-            
-            existing_data = []
-            if os.path.exists(offline_file):
-                try: 
-                    with open(offline_file, "r") as f: 
-                        content = f.read().strip()
-                        if content:
-                            existing_data = json.loads(content)
-                except: pass
-            
-            # Check for dupes in offline file to avoid spamming file
-            is_dupe = any(x.get('data', {}).get('email') == request_in.email and x.get('type') == 'newsletter_subscription' for x in existing_data)
-            
-            if not is_dupe:
-                existing_data.append(entry)
-                with open(offline_file, "w") as f: json.dump(existing_data, f, indent=2)
-                print(f"[SUCCESS] Saved newsletter sub to {offline_file} (Offline Mode)")
-            else:
-                print(f"[INFO] Newsletter sub already in offline file: {request_in.email}")
-            
-            success = True
-        except Exception as e:
-             print(f"[ERROR] Critical Error in Newsletter Offline Save: {e}")
-             raise HTTPException(status_code=500, detail=f"Submission failed. Error: {str(e)}")
-    
+        success = await _save_offline("newsletter_subscription", db_data)
+        if not success:
+            raise HTTPException(status_code=500, detail="Failed to subscribe.")
+
+    # Notifications
     try:
-        # Wrap email in a try-except to ensure we return success if DB/Offline worked
-        try:
-            subject = "Welcome to the BeeYield Hive! 🐝"
-            body = f"Hi {request_in.first_name or 'there'},\n\nThanks for subscribing to our newsletter! You'll now be the first to know about our latest updates, honey harvests, and pollination insights.\n\nStay buzzing,\nThe BeeYield Team"
-            
-            # Special content for starter guide download
-            if request_in.source == 'starter_guide_download':
-                subject = "Your Free Beekeeping Starter Guide 🐝"
-                body = f"Hi {request_in.first_name or 'there'},\n\nThank you for requesting our Beekeeping Starter Guide! Attached (simulated) is your comprehensive 85-page PDF covering hive selection, bee health, and honey harvesting.\n\nDownload Link: https://assets.beeyield.com/guides/beekeeping-starter-guide.pdf\n\nWe hope this helps you start your journey into sustainable beekeeping!\n\nStay buzzing,\nThe BeeYield Team"
+        subject = "Welcome to the BeeYield Hive! 🐝"
+        body = f"Hi {request_in.first_name or 'there'},\n\nThanks for subscribing to our newsletter! You'll now be the first to know about our latest updates, honey harvests, and pollination insights.\n\nStay buzzing,\nThe BeeYield Team"
+        
+        if request_in.source == 'starter_guide_download':
+            subject = "Your Free Beekeeping Starter Guide 🐝"
+            body = f"Hi {request_in.first_name or 'there'},\n\nThank you for requesting our Beekeeping Starter Guide! Attached (simulated) is your comprehensive 85-page PDF covering hive selection, bee health, and honey harvesting.\n\nDownload Link: https://assets.beeyield.com/guides/beekeeping-starter-guide.pdf\n\nStay buzzing,\nThe BeeYield Team"
 
-            background_tasks.add_task(
-                email.send_email,
-                request_in.email,
-                subject,
-                body
-            )
-        except Exception as email_err:
-            print(f"[WARNING] Newsletter Email Notification failed (Non-critical): {email_err}")
+        background_tasks.add_task(
+            email.send_email,
+            request_in.email,
+            subject,
+            body
+        )
+    except Exception as email_err:
+        print(f"[WARNING] Newsletter Email Notification failed: {email_err}")
 
-        return {"status": "success", "message": "Subscribed successfully" + (" (Offline Mode)" if not success else "")}
-    except Exception as e:
-        print(f"[ERROR] Critical error in newsletter subscription completion: {e}")
-        raise HTTPException(status_code=500, detail=f"Submission failed: {str(e)}")
+    if request_in.source == 'starter_guide_download':
+        return {"status": "success", "message": "Success! Check your email for the Beekeeping Starter Guide."}
+    else:
+        return {"status": "success", "message": "Welcome to BeeYield! You're now subscribed to our newsletter."}
 

@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+﻿import { useState, useEffect } from "react";
 import { Database, TrendingUp, Check, Heart, Sprout, Globe, Wind, Sun, ArrowRight, Quote, Users, Droplets, TreePine, Bug, Package, MapPin, Shield, Leaf, Cpu, Code, Loader2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,9 +8,17 @@ import { jsPDF } from "jspdf";
 
 import { toast } from "sonner";
 import BEEYIELD_LOGO from "@/assets/Logo.png";
+import { beeyieldService } from "@/services/beeyieldService";
 
 const ESG = () => {
   const [downloading, setDownloading] = useState(false);
+  const [liveStats, setLiveStats] = useState<any>(null);
+
+  useEffect(() => {
+    beeyieldService.getImpactStats().then(data => {
+      if (data) setLiveStats(data);
+    });
+  }, []);
 
   const handleDownloadReport = () => {
     setDownloading(true);
@@ -68,11 +76,11 @@ const ESG = () => {
         doc.setTextColor(75, 85, 99);
 
         const stats = [
-          "Partner Beekeepers: 20+ (Local farmers trained)",
-          "Acres Pollinated: 25 (Precision coverage)",
+          `Partner Beekeepers: ${liveStats?.beekeepers || "20+"} (Local farmers trained)`,
+          `Acres Pollinated: ${liveStats?.acres_pollinated || "25"} (Precision coverage)`,
           "Trees Planted: 2,500+ (Ecosystem restoration)",
-          "Active Colonies: 184 (Managed hives)",
-          "Honey Produced: 943kg (Pure traceable honey)",
+          `Active Colonies: ${liveStats?.hive_count || "184"} (Managed hives)`,
+          `Honey Produced: ${liveStats?.total_honey_kg || "943kg"} (Pure traceable honey)`,
           "Bees Protected: 2M+ (Pollinators thriving)"
         ];
 
@@ -123,11 +131,11 @@ const ESG = () => {
   };
 
   const impactStats = [
-    { value: "20+", label: "Partner Beekeepers", icon: Users, description: "Local farmers trained & earning" },
-    { value: "25", label: "Acres Pollinated", icon: MapPin, description: "Precision pollination coverage" },
+    { value: liveStats?.beekeepers || "20+", label: "Partner Beekeepers", icon: Users, description: "Local farmers trained & earning" },
+    { value: liveStats?.acres_pollinated || "25", label: "Acres Pollinated", icon: MapPin, description: "Precision pollination coverage" },
     { value: "2,500+", label: "Trees Planted", icon: TreePine, description: "Ecosystem restoration" },
-    { value: "184", label: "Active Colonies", icon: Bug, description: "Managed bee colonies" },
-    { value: "943kg", label: "Honey Produced", icon: Package, description: "Pure traceable honey" },
+    { value: liveStats?.hive_count || "184", label: "Active Colonies", icon: Bug, description: "Managed bee colonies" },
+    { value: liveStats?.total_honey_kg || "943kg", label: "Honey Produced", icon: Package, description: "Pure traceable honey" },
     { value: "2M+", label: "Bees Protected", icon: Heart, description: "Pollinators saved & thriving" },
   ];
 
@@ -233,11 +241,11 @@ const ESG = () => {
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
               Our <span className="text-primary">ESG</span> Commitment
             </h1>
-            <Button size="lg" variant="default">
-              Download 2024 Report
-              <Download className="w-4 h-4 ml-2" />
+            <Button size="lg" variant="default" onClick={handleDownloadReport} disabled={downloading}>
+              {downloading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
+              {downloading ? "Preparing Report..." : "Download 2024 Report"}
             </Button>
-            <Button size="lg" variant="outline" asChild>
+            <Button size="lg" variant="outline" asChild className="ml-4">
               <Link to="/commitment">View SDG Alignment</Link>
             </Button>
 
@@ -353,7 +361,7 @@ const ESG = () => {
 
                   <div className="flex items-center gap-4 p-4 bg-background rounded-lg border border-border/50">
                     <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center">
-                      <span className="text-2xl font-bold text-amber-600">943</span>
+                      <span className="text-2xl font-bold text-amber-600">{liveStats?.total_honey_kg?.replace('kg', '') || "943"}</span>
                     </div>
                     <div>
                       <div className="font-semibold">Kilograms of Honey</div>
@@ -363,7 +371,7 @@ const ESG = () => {
 
                   <div className="flex items-center gap-4 p-4 bg-background rounded-lg border border-border/50">
                     <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center">
-                      <span className="text-2xl font-bold text-amber-600">25</span>
+                      <span className="text-2xl font-bold text-amber-600">{liveStats?.acres_pollinated || "25"}</span>
                     </div>
                     <div>
                       <div className="font-semibold">Acres Pollinated</div>
@@ -400,7 +408,7 @@ const ESG = () => {
           <div className="max-w-5xl mx-auto text-center">
             <Badge variant="secondary" className="mb-4">Social Impact</Badge>
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Empowering 20+ Local Beekeepers
+              Empowering {liveStats?.beekeepers || "20+"} Local Beekeepers
             </h2>
             <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">
               Our partner beekeeper program provides training, equipment, and a guaranteed market for honey. Each beekeeper manages 5-15 hives, creating sustainable income for their families while practicing ethical and traceable beekeeping.

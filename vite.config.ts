@@ -83,10 +83,11 @@ export default defineConfig({
         rollupOptions: {
             output: {
                 manualChunks: {
-                    vendor: ['react', 'react-dom', 'react-router-dom'],
-                    ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-tooltip'],
-                    charts: ['recharts'],
-                    utils: ['lodash', 'date-fns'],
+                    'vendor-core': ['react', 'react-dom', 'react-router-dom'],
+                    'vendor-backend': ['@supabase/supabase-js', '@tanstack/react-query', 'axios'],
+                    'vendor-ui': ['framer-motion', 'lucide-react', 'clsx', 'tailwind-merge', 'sonner'],
+                    'vendor-charts': ['recharts'],
+                    'vendor-utils': ['lodash', 'date-fns', 'jspdf'],
                 },
             },
         },

@@ -81,7 +81,7 @@ const Diseases = () => {
             const first_name = nameParts[0] || "";
             const last_name = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "Unknown";
 
-            await submitContactForm({
+            const response = await submitContactForm({
                 first_name,
                 last_name,
                 email: formData.email,
@@ -95,8 +95,8 @@ const Diseases = () => {
             });
 
             toast({
-                title: "Inquiry Sent!",
-                description: "We've received your message and will get back to you soon.",
+                title: "✅ Inquiry Sent!",
+                description: response?.message || "We've received your message and will get back to you soon.",
             });
 
             setFormData({

@@ -1,8 +1,5 @@
-import axios from 'axios';
+import { apiGet, apiPost } from './api';
 import { localIntelligence } from './localIntelligence';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL ||
-    (window.location.hostname === 'localhost' ? 'http://localhost:8000/api/v1' : '/api/v1');
 
 export interface ChatMessage {
     role: 'user' | 'assistant';
@@ -19,22 +16,16 @@ export interface AIResponse {
 
 export const aiService = {
     async chat(message: string, history: ChatMessage[] = [], language: string = 'EN'): Promise<AIResponse> {
-        console.log('Sending chat request to:', `${API_BASE_URL}/assistant/chat`);
+        console.log('Sending AI Chat request...');
         try {
-            const response = await axios.post(`${API_BASE_URL}/assistant/chat`, {
+            return await apiPost<AIResponse>('/assistant/chat', {
                 message,
                 history,
                 language,
                 include_sources: true
-            }, {
-                timeout: 120000, // Increased timeout to 120s for ultra-long AI generation
-                headers: {
-                    'Content-Type': 'application/json'
-                }
             });
-            return response.data;
         } catch (error: unknown) {
-            console.warn('Backend connection failed, switching to local intelligence.');
+            console.warn('AI Backend unreachable or error, falling back to Local Intelligence');
             const fallback = await localIntelligence.chat(message);
             return {
                 response: fallback,
@@ -46,8 +37,7 @@ export const aiService = {
 
     async getStatus() {
         try {
-            const response = await axios.get(`${API_BASE_URL}/assistant/status`, { timeout: 2000 });
-            return response.data;
+            return await apiGet<any>('/assistant/status');
         } catch (error) {
             return { status: 'online', mode: 'local' };
         }
@@ -55,21 +45,19 @@ export const aiService = {
 
     async traceBatch(batchCode: string) {
         try {
-            const response = await axios.post(`${API_BASE_URL}/assistant/trace`, { batch_code: batchCode });
-            return response.data;
+            return await apiPost<any>('/assistant/trace', { batch_code: batchCode });
         } catch (error) {
-            console.error('Traceability search failed:', error);
+            console.error('AI Traceability failed:', error);
             throw error;
         }
     },
 
     async analyzeHive(hiveId: string) {
         try {
-            const response = await axios.post(`${API_BASE_URL}/assistant/hive/analyze`, {
+            return await apiPost<any>('/assistant/hive/analyze', {
                 hive_id: hiveId,
                 include_recommendations: true
             });
-            return response.data;
         } catch (error) {
             console.error('Hive analysis failed:', error);
             throw error;

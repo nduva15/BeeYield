@@ -22,15 +22,17 @@ import Layout from '@/components/Layout'
 import ProtectedRoute from '@/components/auth/ProtectedRoute'
 import '@/index.css'
 
-// Core pages are statically imported for instant startup and zero-flicker navigation
+// Core page remains statically imported for instant initial load
 import PollinationServices from '@/pages/PollinationServices'
-import Honey from '@/pages/HoneyLanding'
-import About from '@/pages/About'
-import Shop from '@/pages/Shop'
-import Contact from '@/pages/Contact'
-import Traceability from '@/pages/Traceability'
 
-// Secondary/Private pages remain lazy-loaded to optimize bundle size
+// All other pages are lazy-loaded to keep the initial bundle small
+const Honey = lazy(() => import('@/pages/HoneyLanding'))
+const About = lazy(() => import('@/pages/About'))
+const Shop = lazy(() => import('@/pages/Shop'))
+const Contact = lazy(() => import('@/pages/Contact'))
+const Traceability = lazy(() => import('@/pages/Traceability'))
+
+// Secondary/Private pages remain lazy-loaded
 const Checkout = lazy(() => import('@/pages/Checkout'))
 const Learn = lazy(() => import('@/pages/BeeLearn'))
 const Blogs = lazy(() => import('@/pages/Blogs'))
@@ -65,6 +67,54 @@ const MeasurementData = lazy(() => import('@/pages/MeasurementData'))
 const Privacy = lazy(() => import('@/pages/Privacy'))
 const Terms = lazy(() => import('@/pages/Terms'))
 
+// 🚀 Performance Optimization: Route Prefetching Logic
+// This registry allows us to trigger the lazy dynamic imports on-demand (e.g. on link hover)
+const routeMap: Record<string, () => Promise<any>> = {
+    '/honey': () => import('@/pages/HoneyLanding'),
+    '/about': () => import('@/pages/About'),
+    '/shop': () => import('@/pages/Shop'),
+    '/contact': () => import('@/pages/Contact'),
+    '/traceability': () => import('@/pages/Traceability'),
+    '/checkout': () => import('@/pages/Checkout'),
+    '/learn': () => import('@/pages/BeeLearn'),
+    '/blogs': () => import('@/pages/Blogs'),
+    '/team': () => import('@/pages/Team'),
+    '/careers': () => import('@/pages/Careers'),
+    '/impact': () => import('@/pages/Impact'),
+    '/esg': () => import('@/pages/ESG'),
+    '/commitment': () => import('@/pages/Commitment'),
+    '/ourstory': () => import('@/pages/OurStory'),
+    '/global-hive-network': () => import('@/pages/GlobalHiveNetwork'),
+    '/precision-pollination': () => import('@/pages/PrecisionPollination'),
+    '/pollination-solutions': () => import('@/pages/PollinationSolutions'),
+    '/in-land-pollination': () => import('@/pages/InLandPollinationPlatform'),
+    '/crops-we-pollinate': () => import('@/pages/CropsWePollinate'),
+    '/pollination-request': () => import('@/pages/PollinationRequest'),
+    '/diseases': () => import('@/pages/Diseases'),
+    '/media': () => import('@/pages/Media'),
+};
+
+if (typeof window !== 'undefined') {
+    // Listen for custom prefetch events from QuickLink component
+    window.addEventListener('prefetch-route', (e: any) => {
+        const path = e.detail?.path;
+        if (path && routeMap[path]) {
+            console.log(`[Prefetch] Pre-loading route: ${path}`);
+            routeMap[path]().catch(() => { }); // Fire and forget
+        }
+    });
+
+    // Strategy: Early pre-warmup for critical pages after initial load
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            // Pre-warm the most likely first clicks
+            ['/shop', '/about', '/contact'].forEach(path => {
+                if (routeMap[path]) routeMap[path]().catch(() => { });
+            });
+        }, 2000);
+    });
+}
+
 const PageLoader = () => (
     <div className="flex items-center justify-center h-[50vh] w-full">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -95,7 +145,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                                                     <Route path="/checkout" element={<Checkout />} />
                                                     <Route path="/learn" element={<Learn />} />
                                                     <Route path="/blogs" element={<Blogs />} />
-                                                    {/* Note: React Router v6 uses :slug for parameters */}
                                                     <Route path="/blogs/:slug" element={<BlogPost />} />
                                                     <Route path="/team" element={<Team />} />
                                                     <Route path="/careers" element={<Careers />} />
@@ -146,3 +195,4 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         </BeeYieldQueryProvider>
     </React.StrictMode>
 )
+

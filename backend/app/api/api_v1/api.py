@@ -3,10 +3,10 @@ API Router - Registers all API endpoints
 """
 from fastapi import APIRouter
 from app.api.api_v1.endpoints import (
-    company, auth, traceability, contact, 
-    forms, shop, blog, careers, media, 
+    company, auth, traceability, contact,
+    forms, shop, blog, careers, media,
     services, jobs, analytics, notes, admin, iot, ai,
-    admin_extended, meters, beeyield, pollination, inspections, reports,
+    admin_extended, meters, beeyield, bee_data, pollination, inspections, reports,
     ai_assistant, ai_admin, settings, payments, labels, streaming, bluetooth,
     requests, image_analysis
 )
@@ -39,7 +39,8 @@ api_router.include_router(inspections.router, prefix="/inspections", tags=["Insp
 api_router.include_router(ai.router, prefix="/ai", tags=["AI"])
 
 # AI Assistant v2 (comprehensive)
-api_router.include_router(ai_assistant.router, prefix="/assistant", tags=["AI Assistant"])
+api_router.include_router(ai_assistant.router, prefix="/assistant", tags=["assistant"])
+api_router.include_router(bee_data.router, prefix="/bee-data", tags=["bee-data"])
 
 # AI Admin (sync, rebuild) — was orphaned, now mounted
 api_router.include_router(ai_admin.router, prefix="/ai/admin", tags=["AI Admin"])
@@ -96,30 +97,52 @@ api_router.include_router(admin_extended.router, prefix="/admin", tags=["Admin E
 
 # Stats endpoint at root level
 @api_router.get("/stats/impact")
-def get_impact_stats():
+async def get_impact_stats():
     """
     Get overall impact statistics.
+    Dynamics: Tries to fetch from company_stats, falls back to real-time aggregation.
     """
     from app.db.supabase_db import db_select
     
-    stats = db_select("company_stats")
+    try:
+        stats = await db_select("company_stats")
+        if stats:
+            return {
+                "total_honey_kg": next((s["stat_value"] for s in stats if s["stat_key"] == "honey_produced"), "50,000+"),
+                "hive_count": next((s["stat_value"] for s in stats if s["stat_key"] == "hives_managed"), "184"),
+                "beekeepers": next((s["stat_value"] for s in stats if s["stat_key"] == "beekeepers_trained"), "500+"),
+                "farmers_served": next((s["stat_value"] for s in stats if s["stat_key"] == "farmers_supported"), "1,200+"),
+                "acres_pollinated": next((s["stat_value"] for s in stats if s["stat_key"] == "acres_pollinated"), "5")
+            }
+    except Exception:
+        pass
     
-    if stats:
+    # Dynamic Fallback: Calculate from real data
+    try:
+        harvest_data = await db_select("harvests")
+        total_kg = sum(float(h.get("quantity_kg", 0)) for h in harvest_data)
+        
+        hive_data = await db_select("hives")
+        hive_count = len(hive_data)
+        
+        farmer_data = await db_select("farmers")
+        farmer_count = len(farmer_data)
+        
         return {
-            "total_honey_kg": next((s["stat_value"] for s in stats if s["stat_key"] == "honey_produced"), "50,000+"),
-            "hive_count": next((s["stat_value"] for s in stats if s["stat_key"] == "hives_managed"), "184"),
-            "beekeepers": next((s["stat_value"] for s in stats if s["stat_key"] == "beekeepers_trained"), "500+"),
-            "farmers_served": next((s["stat_value"] for s in stats if s["stat_key"] == "farmers_supported"), "1,200+"),
-            "acres_pollinated": next((s["stat_value"] for s in stats if s["stat_key"] == "acres_pollinated"), "5")
+            "total_honey_kg": f"{int(total_kg)}kg" if total_kg > 0 else "943kg",
+            "hive_count": str(hive_count) if hive_count > 0 else "184",
+            "beekeepers": str(farmer_count) if farmer_count > 0 else "3",
+            "farmers_served": "15", # Placeholder for CRM linkage
+            "acres_pollinated": "5"
         }
-    
-    return {
-        "total_honey_kg": "943",
-        "hive_count": "184",
-        "beekeepers": "3",
-        "farmers_served": "15",
-        "acres_pollinated": "5"
-    }
+    except Exception:
+        return {
+            "total_honey_kg": "943kg",
+            "hive_count": "184",
+            "beekeepers": "3",
+            "farmers_served": "15",
+            "acres_pollinated": "5"
+        }
 
 
 @api_router.get("/health")

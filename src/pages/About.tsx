@@ -1,5 +1,6 @@
 ﻿import { Card, CardContent } from "@/components/ui/card";
 import { Users, Target, ArrowRight, Sprout, Globe, ShieldCheck, Heart, History, TrendingUp, Leaf } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,205 +8,145 @@ import { Badge } from "@/components/ui/badge";
 const About = () => {
   return (
     <div className="min-h-screen bg-background">
-      {/* 1. Modern Hero Section */}
-      <section className="relative overflow-hidden py-24 sm:py-32 bg-gradient-to-b from-amber-50/50 to-background dark:from-amber-950/20 dark:to-background">
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
-        <div className="container relative mx-auto px-4 text-center">
-          <Badge className="mb-6 bg-amber-100 text-amber-800 hover:bg-amber-200 border-amber-200 px-4 py-1.5 text-sm font-medium rounded-full transition-colors">
-            Est. 2020 â€¢ Kibwezi, Kenya
-          </Badge>
-          Cultivating the <span className="text-primary">Future</span> of Food
-          <p className="mx-auto mb-10 max-w-3xl text-xl text-muted-foreground leading-relaxed">
-            Born from a family's shared vision in rural Kenya, we're on a mission to solve the global pollination crisis through precision pollination, technology, and ecosystem guardianship.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Button size="lg" className="rounded-full px-8" asChild>
-              <Link to="/ourstory">Read Our Full Story</Link>
-            </Button>
-            <Button size="lg" variant="outline" className="rounded-full px-8" asChild>
-              <Link to="/contact">Partner With Us</Link>
-            </Button>
-          </div>
+      {/* Hero Section - Zero-Trust Premium Theme */}
+      <section className="relative min-h-[60vh] flex items-center overflow-hidden py-24 sm:py-32">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#fdfbf6] to-[#f8faf8]">
+          <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(circle_at_80%_20%,#fef3c7_0%,transparent_50%)] opacity-40 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-[radial-gradient(circle_at_20%_80%,#ecfdf5_0%,transparent_50%)] opacity-40 pointer-events-none" />
+
+          {/* Vertical Text Accent */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1 }}
+            className="absolute left-8 top-1/2 -translate-y-1/2 hidden xl:block pointer-events-none"
+          >
+            <span className="text-[100px] font-black text-neutral-200/50 tracking-tighter leading-none select-none uppercase" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
+              Our Story
+            </span>
+          </motion.div>
+        </div>
+
+        <div className="container mx-auto px-4 sm:px-6 relative z-10 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="max-w-4xl mx-auto"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-50 text-green-700 text-[11px] font-black uppercase tracking-[0.2em] mb-8 border border-green-100 shadow-sm"
+            >
+              <Heart className="w-3.5 h-3.5" />
+              Est. 2020 • Kibwezi, Kenya
+            </motion.div>
+
+            <h1 className="text-5xl md:text-7xl font-black text-neutral-900 mb-8 tracking-tighter leading-[0.95]">
+              Cultivating the <span className="text-green-700">Future.</span> <br />
+              <span className="text-amber-600">Verification</span> Rooted in Nature.
+            </h1>
+
+            <p className="text-lg md:text-xl text-neutral-600 mb-10 max-w-3xl mx-auto leading-relaxed font-medium">
+              Born from a family's shared vision, we are solving the global pollination crisis through clear transparency, sensor technology, and deep ecosystem guardianship.
+            </p>
+
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Button size="lg" className="bg-green-700 hover:bg-green-800 text-white font-black rounded-2xl px-10 h-14 shadow-xl uppercase tracking-widest text-xs transition-all hover:scale-105" asChild>
+                <Link to="/ourstory">Read Full Story</Link>
+              </Button>
+              <Button size="lg" variant="outline" className="border-2 border-neutral-200 text-neutral-900 hover:bg-neutral-50 font-black rounded-2xl px-10 h-14 uppercase tracking-widest text-xs" asChild>
+                <Link to="/contact">Partner With Us</Link>
+              </Button>
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* 2. Our Story - Tree Form / Timeline */}
-      <section className="py-20 bg-muted/20">
-        <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-3xl text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4 flex items-center justify-center gap-2">
-              <History className="h-8 w-8 text-primary" /> Our Roots & Growth
-            </h2>
-            <p className="text-muted-foreground text-lg">From a humble half-acre plot to a precision pollination leader.</p>
+      {/* Zero Trust Story Sections */}
+      <section className="py-24 bg-white relative overflow-hidden">
+        {/* Decorative Grid */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+
+        <div className="container mx-auto px-4 sm:px-6 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-16 items-center mb-32">
+            <motion.div
+              initial={{ opacity: 0, x: -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1 }}
+            >
+              <Badge className="bg-green-50 text-green-700 border-none mb-6 px-4 py-1 font-black uppercase tracking-widest text-[10px]">
+                The Origin Story
+              </Badge>
+              <h2 className="text-4xl md:text-6xl font-black text-neutral-900 mb-8 leading-[0.9] tracking-tighter uppercase">
+                From 4 Hives to <span className="text-green-700">Sustainable Growth.</span>
+              </h2>
+              <div className="space-y-6 text-lg text-neutral-600 font-medium leading-relaxed">
+                <p>
+                  In 2020, Timothy Nduva saw an opportunity in the quiet of rural Kibwezi. What started as a family mission for sustainable pollination on a half-acre plot has evolved into a precision-tech apiary.
+                </p>
+                <p>
+                  Today, sisters Agatha and Carole have joined the mission, bringing practical tech and data expertise to create a clear process where every drop of honey is an open book.
+                </p>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="aspect-square rounded-[3rem] bg-neutral-100 overflow-hidden shadow-2xl">
+                <img
+                  src="https://images.unsplash.com/photo-1587334274328-64186a80aeee?q=80&w=1000&auto=format&fit=crop"
+                  alt="Beekeeping"
+                  className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000"
+                />
+              </div>
+              <motion.div
+                animate={{ y: [0, 20, 0] }}
+                transition={{ duration: 5, repeat: Infinity }}
+                className="absolute -bottom-8 -left-8 bg-white p-6 rounded-3xl shadow-2xl border border-neutral-100 max-w-[200px]"
+              >
+                <p className="text-3xl font-black text-green-700">184+</p>
+                <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Monitored Hives Managed</p>
+              </motion.div>
+            </motion.div>
           </div>
 
-          <div className="relative max-w-4xl mx-auto">
-            {/* Tree Trunk / Vertical Line */}
-            <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gradient-to-b from-primary/20 via-primary to-primary/20 rounded-full"></div>
-
-            {/* Node 1: 2020 Origin */}
-            <div className="relative mb-16 sm:mb-24">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-8 sm:gap-16">
-                <div className="sm:w-1/2 sm:text-right order-2 sm:order-1">
-                  <h3 className="text-2xl font-bold text-primary mb-2">2020: The Seed is Planted</h3>
-                  <p className="text-muted-foreground">BeeYield is born on a half-acre plot in Kibwezi with just 4 hives. Timothy Nduva sees an opportunity where others saw crisis.</p>
-                </div>
-                <div className="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 sm:translate-y-0 w-12 h-12 bg-background border-4 border-primary rounded-full flex items-center justify-center z-10 order-1 sm:order-2 mt-[-2rem] sm:mt-0">
-                  <Sprout className="h-6 w-6 text-primary" />
-                </div>
-                <div className="sm:w-1/2 order-3 sm:order-3"></div>
-              </div>
-            </div>
-
-            {/* Node 2: Family Joins */}
-            <div className="relative mb-16 sm:mb-24">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-8 sm:gap-16">
-                <div className="sm:w-1/2 order-3 sm:order-1"></div>
-                <div className="absolute left-1/2 transform -translate-x-1/2 w-12 h-12 bg-background border-4 border-primary rounded-full flex items-center justify-center z-10 mt-[-2rem] sm:mt-0">
-                  <Users className="h-6 w-6 text-primary" />
-                </div>
-                <div className="sm:w-1/2 order-2 sm:order-2">
-                  <h3 className="text-2xl font-bold text-primary mb-2">The Family Unites</h3>
-                  <p className="text-muted-foreground">Sisters Agatha and Carole bring their expertise in web development and IoT, turning a beekeeping project into a tech-driven family legacy.</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Node 3: Growth */}
-            <div className="relative mb-16 sm:mb-24">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-8 sm:gap-16">
-                <div className="sm:w-1/2 sm:text-right order-2 sm:order-1">
-                  <h3 className="text-2xl font-bold text-primary mb-2">Expansion & Impact</h3>
-                  <p className="text-muted-foreground">Growth to 184 hives across a 5-acre apiary. 2,500+ trees planted, restoring local ecosystems and pollinating 25 acres of farmland.</p>
-                </div>
-                <div className="absolute left-1/2 transform -translate-x-1/2 w-12 h-12 bg-background border-4 border-primary rounded-full flex items-center justify-center z-10 mt-[-2rem] sm:mt-0">
-                  <TrendingUp className="h-6 w-6 text-primary" />
-                </div>
-                <div className="sm:w-1/2 order-3 sm:order-3"></div>
-              </div>
-            </div>
-
-            {/* Node 4: Present Day */}
-            <div className="relative">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-8 sm:gap-16">
-                <div className="sm:w-1/2 order-3 sm:order-1"></div>
-                <div className="absolute left-1/2 transform -translate-x-1/2 w-12 h-12 bg-background border-4 border-primary rounded-full flex items-center justify-center z-10 mt-[-2rem] sm:mt-0">
-                  <Target className="h-6 w-6 text-primary" />
-                </div>
-                <div className="sm:w-1/2 order-2 sm:order-2">
-                  <h3 className="text-2xl font-bold text-primary mb-2">Today: Intelligent Technology</h3>
-                  <p className="text-muted-foreground">Evolving into a Precision Pollination leader using advanced technology and data to secure the future of food globally.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. Meet Our Team & Impact (Expanded Section) */}
-      <section className="py-24">
-        <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Explore Our Ecosystem</h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Dive deeper into the people, technology, and initiatives driving BeeYield forward.</p>
+            <h2 className="text-3xl md:text-5xl font-black text-neutral-900 uppercase tracking-tighter">Our Ecosystem</h2>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Linked Card 1: Team */}
-            <Card className="group hover:shadow-xl transition-all duration-300 border-none shadow-md bg-secondary/10">
-              <CardContent className="p-8">
-                <div className="mb-6 inline-block rounded-2xl bg-white p-4 shadow-sm group-hover:scale-110 transition-transform">
-                  <Users className="h-8 w-8 text-primary" />
+            {[
+              { title: "Meet The Team", desc: "Three founders combining tech, business, and beekeeping legacy.", icon: Users, color: "bg-amber-50 text-amber-600", link: "/team" },
+              { title: "Our Impact", desc: "2,500+ trees planted and counting. Restoring biodiversity.", icon: Leaf, color: "bg-green-50 text-green-700", link: "/impact" },
+              { title: "HoneyChain™", desc: "The verification system that tracks every drop from hive to jar.", icon: ShieldCheck, color: "bg-blue-50 text-blue-600", link: "/traceability" }
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                whileHover={{ y: -10 }}
+                className={`p-10 rounded-[2.5rem] ${item.color.split(' ')[0]} border border-transparent hover:border-neutral-200 transition-all flex flex-col items-start text-left`}
+              >
+                <div className="h-14 w-14 rounded-2xl bg-white shadow-sm flex items-center justify-center mb-6">
+                  <item.icon className={`h-7 w-7 ${item.color.split(' ')[1]}`} />
                 </div>
-                <h3 className="mb-3 text-2xl font-bold">Meet The Team</h3>
-                <p className="text-muted-foreground mb-6 line-clamp-3">
-                  Get to know the founding familyâ€”three Strathmore graduates combining tech, business, and beekeeping.
-                </p>
-                <Link to="/team" className="inline-flex items-center text-primary font-semibold group-hover:translate-x-1 transition-transform">
-                  Meet the Founders <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </CardContent>
-            </Card>
-
-            {/* Linked Card 2: Impact */}
-            <Card className="group hover:shadow-xl transition-all duration-300 border-none shadow-md bg-green-50/50 dark:bg-green-900/10">
-              <CardContent className="p-8">
-                <div className="mb-6 inline-block rounded-2xl bg-white p-4 shadow-sm group-hover:scale-110 transition-transform">
-                  <Leaf className="h-8 w-8 text-green-600" />
-                </div>
-                <h3 className="mb-3 text-2xl font-bold">Our Impact</h3>
-                <p className="text-muted-foreground mb-6 line-clamp-3">
-                  From 4 to 184 hives, protecting ecosystems and planting 2,500+ trees. See our environmental footprint.
-                </p>
-                <Link to="/impact" className="inline-flex items-center text-green-700 dark:text-green-400 font-semibold group-hover:translate-x-1 transition-transform">
-                  View Impact Report <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </CardContent>
-            </Card>
-
-            {/* Linked Card 3: Global Hive Network (New) */}
-            <Card className="group hover:shadow-xl transition-all duration-300 border-none shadow-md bg-blue-50/50 dark:bg-blue-900/10">
-              <CardContent className="p-8">
-                <div className="mb-6 inline-block rounded-2xl bg-white p-4 shadow-sm group-hover:scale-110 transition-transform">
-                  <Globe className="h-8 w-8 text-blue-600" />
-                </div>
-                <h3 className="mb-3 text-2xl font-bold">Global Hive Network</h3>
-                <p className="text-muted-foreground mb-6 line-clamp-3">
-                  Join our planetary initiative to save pollinators. Adopt a hive, support farmers, and be part of the solution.
-                </p>
-                <Link to="/global-hive-network" className="inline-flex items-center text-blue-700 dark:text-blue-400 font-semibold group-hover:translate-x-1 transition-transform">
-                  Join the Network <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </CardContent>
-            </Card>
-
-            {/* Linked Card 4: Traceability (New) */}
-            <Card className="group hover:shadow-xl transition-all duration-300 border-none shadow-md bg-amber-50/50 dark:bg-amber-900/10">
-              <CardContent className="p-8">
-                <div className="mb-6 inline-block rounded-2xl bg-white p-4 shadow-sm group-hover:scale-110 transition-transform">
-                  <ShieldCheck className="h-8 w-8 text-amber-600" />
-                </div>
-                <h3 className="mb-3 text-2xl font-bold">Honey Journey Tracking</h3>
-                <p className="text-muted-foreground mb-6 line-clamp-3">
-                  Track every drop of honey from hive to jar. See how we care for our bees and meet the beekeeper.
-                </p>
-                <Link to="/traceability" className="inline-flex items-center text-amber-700 dark:text-amber-400 font-semibold group-hover:translate-x-1 transition-transform">
-                  Trace Your Honey <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </CardContent>
-            </Card>
-
-            {/* Linked Card 5: Pollination Services (New) */}
-            <Card className="group hover:shadow-xl transition-all duration-300 border-none shadow-md bg-purple-50/50 dark:bg-purple-900/10">
-              <CardContent className="p-8">
-                <div className="mb-6 inline-block rounded-2xl bg-white p-4 shadow-sm group-hover:scale-110 transition-transform">
-                  <Sprout className="h-8 w-8 text-purple-600" />
-                </div>
-                <h3 className="mb-3 text-2xl font-bold">Pollination Services</h3>
-                <p className="text-muted-foreground mb-6 line-clamp-3">
-                  Boost crop yields with our precision pollination services. Custom solutions for mango, bean, and sisal farmers.
-                </p>
-                <Link to="/pollination-solutions" className="inline-flex items-center text-purple-700 dark:text-purple-400 font-semibold group-hover:translate-x-1 transition-transform">
-                  Services for Farmers <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </CardContent>
-            </Card>
-
-            {/* Linked Card 6: Our Values (New/Modified) */}
-            <Card className="group hover:shadow-xl transition-all duration-300 border-none shadow-md bg-zinc-50 dark:bg-zinc-800/10">
-              <CardContent className="p-8">
-                <div className="mb-6 inline-block rounded-2xl bg-white p-4 shadow-sm group-hover:scale-110 transition-transform">
-                  <Heart className="h-8 w-8 text-red-500" />
-                </div>
-                <h3 className="mb-3 text-2xl font-bold">Our Commitment</h3>
-                <p className="text-muted-foreground mb-6 line-clamp-3">
-                  Read about our core values: Sustainability, Traceability, and Community Empowerment.
-                </p>
-                <Link to="/commitment" className="inline-flex items-center text-foreground font-semibold group-hover:translate-x-1 transition-transform">
-                  Our Promise <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </CardContent>
-            </Card>
+                <h3 className="text-2xl font-black text-neutral-900 mb-4">{item.title}</h3>
+                <p className="text-neutral-500 font-medium mb-6 leading-relaxed">{item.desc}</p>
+                <Button variant="link" className={`${item.color.split(' ')[1]} font-black p-0 h-auto uppercase tracking-widest text-[10px] group`} asChild>
+                  <Link to={item.link}>Explore <ArrowRight className="ml-2 h-3 w-3 group-hover:translate-x-1 transition-transform" /></Link>
+                </Button>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>

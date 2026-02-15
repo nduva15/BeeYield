@@ -31,19 +31,14 @@ export class TraceabilityVerifier {
         // In a real implementation, this calls:
         // const result = Module.ccall('verify_batch_integrity', 'number', ['string', 'string', 'string'], [batchCode, JSON.stringify(data), prevHash]);
 
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                // Simulate C++ processing delay
-                // Simple hash simulation for demo
-                const simulatedHash = this.simpleHash(batchCode + JSON.stringify(data) + prevHash);
+        // Simple hash simulation for demo
+        const simulatedHash = this.simpleHash(batchCode + JSON.stringify(data) + prevHash);
 
-                resolve({
-                    isValid: true, // Verification passed
-                    trustScore: 98.7, // High trust score from C++ algo
-                    hash: simulatedHash
-                });
-            }, 300);
-        });
+        return {
+            isValid: true, // Verification passed
+            trustScore: 98.7, // High trust score from C++ algo
+            hash: simulatedHash
+        };
     }
 
     private simpleHash(str: string): string {
