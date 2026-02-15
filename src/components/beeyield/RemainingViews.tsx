@@ -96,7 +96,7 @@ const SettingsDialog = ({ open, onOpenChange }: SettingsDialogProps) => {
 
                 <div className="space-y-8 relative">
                     <div className="space-y-4">
-                        <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">Sampling Interval (Min)</h4>
+                        <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">Update Frequency (Min)</h4>
                         <MeasurementIntervalSelector />
                     </div>
 
@@ -232,7 +232,7 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
     const { user, beeyieldUser } = useAuth();
     const userId = beeyieldUser?.id || user?.id;
 
-    const [devices, setDevices] = useState<IoTDevice[]>([]);
+
 
     useEffect(() => {
         const loadInitialData = async () => {
@@ -303,13 +303,13 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                                 </div>
                                 <div className="space-y-0.5">
                                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Device Setup</p>
-                                    <h3 className="text-lg font-bold text-slate-800 tracking-tight">Hardware Identification</h3>
+                                    <h3 className="text-lg font-bold text-slate-800 tracking-tight">Connect Device</h3>
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Apiary Location</label>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Apiary</label>
                                     <div className="border border-slate-100 rounded-xl bg-slate-50/50 p-1 focus-within:bg-white transition-all">
                                         <Select value={selectedPlace} onValueChange={setSelectedPlace}>
                                             <SelectTrigger className="w-full border-none shadow-none h-14 px-4 focus:ring-0 group/sel">
@@ -333,7 +333,7 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                                 </div>
 
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Hive Identifier</label>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Hive</label>
                                     <div className="border border-slate-100 rounded-xl bg-slate-50/50 p-1 focus-within:bg-white transition-all">
                                         <Select value={selectedHive} onValueChange={setSelectedHive}>
                                             <SelectTrigger className="w-full border-none shadow-none h-14 px-4 focus:ring-0 group/sel">
@@ -405,9 +405,9 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                         className="grid grid-cols-1 md:grid-cols-3 gap-8"
                     >
                         {[
-                            { label: 'Ambient Temp', value: latestReading ? `${latestReading.temp_internal}°C` : '--', icon: Thermometer, color: 'text-orange-500', sub: 'Internal Brood' },
-                            { label: 'Live Humidity', value: latestReading ? `${latestReading.humidity_internal}%` : '--', icon: Droplet, color: 'text-blue-500', sub: 'Air Quality' },
-                            { label: 'Current Weight', value: latestReading ? `${latestReading.weight_kg}kg` : '--', icon: Weight, color: 'text-green-600', sub: 'Nectar Flow' }
+                            { label: 'Temperature', value: latestReading ? `${latestReading.temperature || 0}°C` : '--', icon: Thermometer, color: 'text-orange-500', sub: 'Inside hive' },
+                            { label: 'Humidity', value: latestReading ? `${latestReading.humidity || 0}%` : '--', icon: Droplet, color: 'text-blue-500', sub: 'Moisture level' },
+                            { label: 'Weight', value: latestReading ? `${latestReading.weight || 0}kg` : '--', icon: Weight, color: 'text-green-600', sub: 'Honey production' }
                         ].map((stat, i) => (
                             <Card key={i} className="rounded-[2.5rem] border-none bg-white p-8 shadow-xl shadow-slate-200/30 flex flex-col gap-4 group hover:scale-[1.02] transition-all">
                                 <div className="flex items-center justify-between">
@@ -434,7 +434,7 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
                         <AlertTriangle className="w-5 h-5 text-amber-500 stroke-[2.5]" />
                     </div>
                     <div>
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Sensor Status</p>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Device Status</p>
                         {selectedHive && selectedHive !== 'none' ? (
                             <div className="flex items-center gap-2">
                                 <div className={cn(

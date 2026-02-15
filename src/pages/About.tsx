@@ -126,7 +126,7 @@ const About = () => {
             {[
               { title: "Meet The Team", desc: "Three founders combining tech, business, and beekeeping legacy.", icon: Users, color: "bg-amber-50 text-amber-600", link: "/team" },
               { title: "Our Impact", desc: "2,500+ trees planted and counting. Restoring biodiversity.", icon: Leaf, color: "bg-green-50 text-green-700", link: "/impact" },
-              { title: "HoneyChain™", desc: "The verification system that tracks every drop from hive to jar.", icon: ShieldCheck, color: "bg-blue-50 text-blue-600", link: "/traceability" }
+              { title: "Honey History", desc: "Our system that follows every drop from hive to jar.", icon: ShieldCheck, color: "bg-blue-50 text-blue-600", link: "/traceability" }
             ].map((item, i) => (
               <motion.div
                 key={i}

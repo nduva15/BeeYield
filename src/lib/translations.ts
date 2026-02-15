@@ -72,9 +72,9 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
 
         // Navigation
         "quick_search": "Quick search...",
-        "intelligence_explorer": "Data Review",
-        "admin_core": "Admin Core",
-        "main_hub": "Main Hub",
+        "intelligence_explorer": "Data",
+        "admin_core": "Admin PANEL",
+        "main_hub": "Dashboard",
 
         "nav_ai_assistant": "BeeYield AI",
         "nav_my_places": "My Places",
@@ -240,9 +240,9 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         "error_load_apiary": "Failed to load apiary data",
 
         // AI Assistant View
-        "ai_hub_intelligence": "HIVE MONITORING HUB",
+        "ai_hub_intelligence": "HIVE MONITORING",
         "ai_assistant_title": "BeeYield AI",
-        "ai_hub_status": "Live Monitoring & Care Active",
+        "ai_hub_status": "Monitoring active",
         "new_chat": "New Chat",
         "chats_label": "Chats",
         "start_conversation": "Start a conversation!",
@@ -269,12 +269,12 @@ export const translations: Record<LanguageCode, Record<string, string>> = {
         // Header & General Dashboard
         "view_content": "View Content",
         "under_development": "This section is currently under development. Check back soon for updates!",
-        "access_denied": "Access Denied",
-        "restricted_airspace": "ACCESS RESTRICTED",
-        "auth_mandatory": "Sign in to access your dashboard",
+        "access_denied": "No Access",
+        "restricted_airspace": "ACCESS REQUIRED",
+        "auth_mandatory": "Please log in to continue",
         "authenticate_session": "LOG IN",
         "return_public_shop": "Return to Home",
-        "encrypted_kernel_access": "SECURE CONNECTION",
+        "encrypted_kernel_access": "SECURE",
         "disconnected_success": "Signed out",
 
         // My Tasks View

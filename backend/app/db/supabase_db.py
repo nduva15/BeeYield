@@ -41,11 +41,11 @@ def get_supabase():
     if _supabase_client is not None:
         return _supabase_client
 
-    url = os.environ.get("SUPABASE_URL") or os.environ.get("VITE_SUPABASE_URL")
-    key = os.environ.get("SUPABASE_KEY") or os.environ.get("SUPABASE_ANON_KEY") or os.environ.get("VITE_SUPABASE_ANON_KEY")
+    url = settings.SUPABASE_URL
+    key = settings.SUPABASE_KEY
 
     if not url or not key:
-        print("[WARNING] SUPABASE_URL or SUPABASE_KEY not configured")
+        print("[WARNING] settings.SUPABASE_URL or settings.SUPABASE_KEY not configured")
         return None
 
     create_client, _ = _lazy_import_sdk()
@@ -84,22 +84,23 @@ async def _request_gateway(endpoint: str, payload: dict, token: Optional[str] = 
 
 
 async def db_insert(table: str, data: dict[str, Any], token: Optional[str] = None) -> dict[str, Any]:
-    """Insert a record via the Rust/Go gateway, with direct SDK fallback."""
-    payload = {"table": table, "data": _serialize_data(data)}
-    res = await _request_gateway("/db/insert", payload, token)
+    """Insert a record via direct REST API."""
+    url = f"{settings.SUPABASE_URL}/rest/v1/{table}"
+    headers = {
+        "apikey": settings.SUPABASE_KEY,
+        "Authorization": f"Bearer {token or settings.SUPABASE_KEY}",
+        "Content-Type": "application/json",
+        "Prefer": "return=representation"
+    }
     
-    # Fallback to direct SDK if gateway fails
-    if not res.get("success"):
-        print(f"[INFO] Gateway insert failed ({res.get('error')}). Attempting direct SDK fallback.")
-        supabase = get_supabase()
-        if supabase:
-            try:
-                # Run in thread if we are in sync context, but here we are async
-                response = supabase.table(table).insert(data).execute()
-                return {"success": True, "data": response.data}
-            except Exception as e:
-                return {"success": False, "error": f"Gateway and SDK failed: {str(e)}"}
-    return res
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.post(url, json=data, headers=headers)
+            response.raise_for_status()
+            return {"success": True, "data": response.json()}
+    except Exception as e:
+        print(f"[ERROR] REST insert failed: {e}")
+        return {"success": False, "error": str(e)}
 
 
 async def db_select(
@@ -111,51 +112,35 @@ async def db_select(
     ascending: bool = True,
     token: Optional[str] = None,
 ) -> list[dict[str, Any]]:
-    """Select records via the Rust/Go gateway, with direct SDK fallback."""
-    payload = {"table": table, "columns": columns, "limit": limit}
-    if filters:
-        # Serialize filter values to strings for PostgREST
-        serialized_filters = {}
-        for key, value in filters.items():
-            if isinstance(value, (list, tuple)):
-                serialized_filters[key] = [str(v) for v in value]
-            elif isinstance(value, str) and "." in value and any(
-                value.startswith(op) for op in [
-                    "eq.", "neq.", "gt.", "lt.", "gte.", "lte.",
-                    "like.", "ilike.", "is.", "in.", "cs.", "cd.",
-                ]
-            ):
-                serialized_filters[key] = value
-            else:
-                serialized_filters[key] = str(value)
-        payload["filters"] = serialized_filters
+    """Select records via direct REST API."""
+    url = f"{settings.SUPABASE_URL}/rest/v1/{table}"
+    params = {"select": columns, "limit": limit}
+    
     if order_by:
-        payload["order_by"] = order_by
-        payload["ascending"] = ascending
+        params["order"] = f"{order_by}.{'asc' if ascending else 'desc'}"
         
-    res = await _request_gateway("/db/select", payload, token)
+    if filters:
+        for k, v in filters.items():
+            if isinstance(v, (list, tuple)):
+                # Handle in filter for lists
+                v_list = ",".join([str(i) for i in v])
+                params[k] = f"in.({v_list})"
+            else:
+                params[k] = f"eq.{v}"
+            
+    headers = {
+        "apikey": settings.SUPABASE_KEY,
+        "Authorization": f"Bearer {token or settings.SUPABASE_KEY}"
+    }
     
-    # Fallback to direct SDK if gateway fails and returned error or empty list
-    if not isinstance(res, list):
-        print(f"[INFO] Gateway select failed. Attempting direct SDK fallback.")
-        supabase = get_supabase()
-        if supabase:
-            try:
-                query = supabase.table(table).select(columns)
-                if filters:
-                    for k, v in filters.items():
-                        query = query.eq(k, v)
-                if order_by:
-                    query = query.order(order_by, desc=not ascending)
-                response = query.limit(limit).execute()
-                return response.data
-            except Exception as e:
-                print(f"[ERROR] SDK fallback failed: {e}")
-                return []
-    
-    if isinstance(res, list):
-        return res
-    return []
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get(url, params=params, headers=headers)
+            response.raise_for_status()
+            return response.json()
+    except Exception as e:
+        print(f"[ERROR] REST select failed: {e}")
+        return []
 
 
 async def db_update(
@@ -245,29 +230,9 @@ def _serialize_data(data: dict) -> dict:
 
 
 # ============ COMPATIBILITY SHIMS ============
-# Allow both sync and async usage from existing Python code.
-
+# Removed sync wrappers to ensure proper async behavior in FastAPI.
+# Legacy sync scripts should use asyncio.run(db_select(...)) instead.
 
 def get_client():
     """Return the lazy Supabase SDK client (or None). For auth compatibility."""
     return get_supabase()
-
-
-def _sync_wrapper(async_func):
-    """Wrap an async function so calling from sync code runs it."""
-    def wrapper(*args, **kwargs):
-        try:
-            asyncio.get_running_loop()
-            return async_func(*args, **kwargs)
-        except RuntimeError:
-            return asyncio.run(async_func(*args, **kwargs))
-    return wrapper
-
-
-# Apply sync-wrapper to all helpers so legacy sync scripts work.
-db_insert = _sync_wrapper(db_insert)
-db_select = _sync_wrapper(db_select)
-db_update = _sync_wrapper(db_update)
-db_delete = _sync_wrapper(db_delete)
-db_upsert = _sync_wrapper(db_upsert)
-db_get_by_id = _sync_wrapper(db_get_by_id)

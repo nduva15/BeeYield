@@ -42,10 +42,10 @@ const UpdatePasswordForm: React.FC = () => {
         const { error } = await updatePassword(password);
 
         if (error) {
-            toast.error('Password update failed', { description: error.message });
+            toast.error('Could not update password', { description: error.message });
         } else {
             setSuccess(true);
-            toast.success('Password updated! 🎉', {
+            toast.success('Password changed! 🎉', {
                 description: 'You can now log in with your new password.',
             });
         }
@@ -94,9 +94,9 @@ const UpdatePasswordForm: React.FC = () => {
                                 <Loader2 className="h-8 w-8 text-amber-500 animate-spin" />
                             </div>
                             <div className="space-y-2">
-                                <h2 className="text-xl font-bold">Verifying reset link...</h2>
+                                <h2 className="text-xl font-bold">Checking link...</h2>
                                 <p className="text-sm text-muted-foreground">
-                                    Please wait while we verify your password reset link.
+                                    Please wait while we check your link.
                                 </p>
                             </div>
                         </div>
@@ -115,9 +115,9 @@ const UpdatePasswordForm: React.FC = () => {
                             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
                                 <Shield className="h-8 w-8 text-primary" />
                             </div>
-                            <h2 className="text-2xl font-bold">Set New Password</h2>
+                            <h2 className="text-2xl font-bold">New Password</h2>
                             <p className="text-sm text-muted-foreground">
-                                Create a strong password for your account
+                                Choose a new password
                             </p>
                         </div>
 
@@ -164,7 +164,7 @@ const UpdatePasswordForm: React.FC = () => {
                             {loading ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Updating password...
+                                    Updating...
                                 </>
                             ) : (
                                 'Update Password'

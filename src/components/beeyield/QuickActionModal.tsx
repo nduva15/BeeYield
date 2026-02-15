@@ -118,10 +118,10 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
                     <DialogHeader className="relative z-10">
                         <DialogTitle className="text-3xl font-black flex items-center gap-3 tracking-tighter leading-none">
                             <Plus className="w-8 h-8 stroke-[3]" />
-                            Add New Asset
+                            Add New Item
                         </DialogTitle>
                         <DialogDescription className="text-white/80 font-bold text-xs uppercase tracking-[0.2em] mt-2">
-                            Register new locations and colonies
+                            Add a new apiary or hive
                         </DialogDescription>
                     </DialogHeader>
                 </div>
@@ -130,16 +130,16 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
                     <Tabs defaultValue="apiary" onValueChange={setActiveTab} className="w-full">
                         <TabsList className="grid w-full grid-cols-2 bg-slate-100 p-1.5 rounded-2xl mb-8">
                             <TabsTrigger value="apiary" className="rounded-xl font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-xl transition-all h-10">
-                                Global Apiary
+                                Apiary
                             </TabsTrigger>
                             <TabsTrigger value="hive" className="rounded-xl font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-xl transition-all h-10">
-                                Hive Colony
+                                Hive
                             </TabsTrigger>
                         </TabsList>
 
                         <TabsContent value="apiary" className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-400">
                             <div className="space-y-2">
-                                <Label htmlFor="apiary-name" className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Apiary Designation</Label>
+                                <Label htmlFor="apiary-name" className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Apiary Name</Label>
                                 <div className="relative">
                                     <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-500" />
                                     <Input
@@ -154,7 +154,7 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="apiary-location" className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Geospatial Coordinates</Label>
+                                <Label htmlFor="apiary-location" className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Location</Label>
                                 <Input
                                     id="apiary-location"
                                     name="location_name"
@@ -167,7 +167,7 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Forage Core</Label>
+                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Forage Type</Label>
                                     <Select
                                         name="forage_type"
                                         value={apiaryData.forage_type}
@@ -185,7 +185,7 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
                                     </Select>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Sun Vector</Label>
+                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Sun Exposure</Label>
                                     <Select
                                         name="sun_exposure"
                                         value={apiaryData.sun_exposure}
@@ -195,9 +195,9 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent className="rounded-2xl">
-                                            <SelectItem value="Full Sun">Total Exposure</SelectItem>
-                                            <SelectItem value="Shade">Total Shade</SelectItem>
-                                            <SelectItem value="Semi-Shade">Hybrid Exposure</SelectItem>
+                                            <SelectItem value="Full Sun">Full Sun</SelectItem>
+                                            <SelectItem value="Shade">Full Shade</SelectItem>
+                                            <SelectItem value="Semi-Shade">Semi-Shade</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -206,7 +206,7 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
 
                         <TabsContent value="hive" className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-400">
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Parent Node (Apiary)</Label>
+                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Apiary</Label>
                                 <Select
                                     name="apiary_id"
                                     value={hiveData.apiary_id}
@@ -224,7 +224,7 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
                             </div>
 
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Hive Serial Identification</Label>
+                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Hive Code</Label>
                                 <div className="relative">
                                     <Database className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-green-600" />
                                     <Input
@@ -240,7 +240,7 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Architecture</Label>
+                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Hive Type</Label>
                                     <Select
                                         name="type"
                                         value={hiveData.type}
@@ -257,7 +257,7 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
                                     </Select>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Gestation Date</Label>
+                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Date Installed</Label>
                                     <div className="relative">
                                         <Input
                                             id="queen-hatched"
@@ -273,7 +273,7 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
 
                             <div className="space-y-4 pt-4">
                                 <div className="flex justify-between items-center">
-                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Colony Density</Label>
+                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Colony Strength</Label>
                                     <span className="text-[10px] font-black text-green-700 bg-green-50 px-3 py-1 rounded-full uppercase tracking-tighter">
                                         Efficiency {Math.round(hiveData.strength * 20)}%
                                     </span>
@@ -297,13 +297,13 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
                 </div>
 
                 <div className="p-8 bg-slate-50 border-t border-slate-100 flex gap-3">
-                    <Button variant="ghost" onClick={onClose} className="flex-1 h-16 rounded-2xl font-black text-slate-400 hover:text-slate-600 hover:bg-slate-100 uppercase tracking-widest text-xs">Abort</Button>
+                    <Button variant="ghost" onClick={onClose} className="flex-1 h-16 rounded-2xl font-black text-slate-400 hover:text-slate-600 hover:bg-slate-100 uppercase tracking-widest text-xs">Cancel</Button>
                     <Button
                         onClick={activeTab === 'apiary' ? handleAddApiary : handleAddHive}
                         className="flex-[2] h-16 bg-slate-800 text-white hover:bg-slate-900 rounded-2xl px-10 font-black shadow-2xl shadow-slate-400/20 uppercase tracking-widest text-xs"
                         disabled={loading}
                     >
-                        {loading ? 'Saving...' : 'Save Asset'}
+                        {loading ? 'Saving...' : 'Save'}
                     </Button>
                 </div>
             </DialogContent>

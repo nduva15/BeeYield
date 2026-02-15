@@ -54,6 +54,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
     onLogout,
     navItems
 }) => {
+    // Manually handle expanded state for simplicity in this view
     const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set(['dashboard']));
 
     const toggleMenu = (menuId: string) => {
@@ -65,36 +66,42 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
         });
     };
 
-    const displayItems = navItems.length > 0 ? navItems : defaultNavStructure as AdminNavItem[];
+    const displayItems = navItems.length > 0 ? navItems : defaultNavStructure as any[];
 
     return (
         <div
             className={cn(
-                "flex flex-col h-full bg-white dark:bg-card border-r border-border w-[280px] text-sm",
+                "flex flex-col h-full bg-white border-r border-beeyield-green/10 w-[280px] text-sm shadow-[4px_0_24px_-12px_rgba(0,0,0,0.1)] z-20",
                 className
             )}
         >
             {/* Admin Header */}
-            <div className="px-6 py-6 border-b border-border">
+            <div className="px-6 py-8 border-b border-beeyield-green/10 bg-gradient-to-b from-beeyield-cream/50 to-transparent">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center border border-primary/20">
-                        <Shield className="w-6 h-6 text-primary" />
+                    <div className="w-10 h-10 bg-beeyield-gold/10 rounded-xl flex items-center justify-center border border-beeyield-gold/20 shadow-sm">
+                        <Shield className="w-6 h-6 text-beeyield-gold" />
                     </div>
                     <div className="flex flex-col">
-                        <h1 className="font-bold text-lg leading-none tracking-tight">BeeYield</h1>
-                        <span className="text-xs text-muted-foreground font-medium mt-1">Control Panel</span>
+                        <h1 className="font-black text-xl leading-none tracking-tight text-beeyield-green">BeeYield</h1>
+                        <span className="text-[10px] text-beeyield-green/60 font-bold uppercase tracking-widest mt-1.5">Enterprise Core</span>
                     </div>
                 </div>
             </div>
 
             {/* Navigation Body */}
-            <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-8">
+            <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-8 scrollbar-thin scrollbar-thumb-beeyield-green/10 scrollbar-track-transparent">
                 <div className="space-y-1">
                     {displayItems.filter(item => !item.hidden).map((item) => {
                         const isActive = activeTab === item.id;
                         const hasChildren = item.children && item.children.length > 0;
                         const isExpanded = expandedMenus.has(item.id);
-                        const isChildActive = hasChildren && item.children?.some(child => child.id === activeTab);
+
+                        // Check if a child is active
+                        let isChildActive = false;
+                        if (hasChildren) {
+                            isChildActive = item.children.some((child: any) => child.id === activeTab);
+                        }
+
                         const activeGroup = isActive || isChildActive;
 
                         return (
@@ -105,38 +112,38 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
                                         else onTabChange(item.id);
                                     }}
                                     className={cn(
-                                        "w-full flex items-center justify-between px-3 py-2 rounded-md transition-colors group",
+                                        "w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all duration-200 group text-sm font-medium",
                                         activeGroup
-                                            ? "bg-accent text-accent-foreground font-medium"
-                                            : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                                            ? "bg-beeyield-green/10 text-beeyield-green shadow-sm ring-1 ring-beeyield-green/20"
+                                            : "text-beeyield-green/60 hover:bg-beeyield-cream hover:text-beeyield-green hover:pl-4"
                                     )}
                                 >
                                     <div className="flex items-center gap-3">
                                         <item.icon className={cn(
-                                            "w-4 h-4",
-                                            activeGroup ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                                            "w-4 h-4 transition-colors",
+                                            activeGroup ? "text-beeyield-green" : "text-beeyield-green/40 group-hover:text-beeyield-green"
                                         )} />
                                         <span>{item.label}</span>
                                     </div>
                                     {hasChildren && (
                                         <ChevronDown className={cn(
-                                            "w-3.5 h-3.5 transition-transform duration-200",
+                                            "w-3.5 h-3.5 transition-transform duration-200 text-beeyield-green/40",
                                             isExpanded ? "" : "-rotate-90"
                                         )} />
                                     )}
                                 </button>
 
                                 {hasChildren && isExpanded && (
-                                    <div className="ml-4 pl-3 border-l border-border space-y-1 mt-1">
-                                        {item.children!.map((child) => (
+                                    <div className="ml-4 pl-3 border-l-2 border-beeyield-green/10 space-y-1 mt-1">
+                                        {item.children.map((child: any) => (
                                             <button
                                                 key={child.id}
                                                 onClick={() => onTabChange(child.id)}
                                                 className={cn(
-                                                    "w-full flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm",
+                                                    "w-full flex items-center gap-3 px-3 py-2 rounded-md transition-all text-xs font-medium",
                                                     activeTab === child.id
-                                                        ? "bg-accent/50 text-foreground font-medium"
-                                                        : "text-muted-foreground hover:bg-accent/30 hover:text-foreground"
+                                                        ? "bg-beeyield-gold/10 text-beeyield-green text-beeyield-green-dark"
+                                                        : "text-beeyield-green/50 hover:bg-beeyield-cream/50 hover:text-beeyield-green"
                                                 )}
                                             >
                                                 <span>{child.label}</span>
@@ -149,9 +156,9 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
                     })}
                 </div>
 
-                <div className="space-y-1">
-                    <div className="px-3 pb-2">
-                        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Utilities</span>
+                <div className="space-y-1 pt-4 border-t border-beeyield-green/5">
+                    <div className="px-3 pb-3">
+                        <span className="text-[10px] font-black text-beeyield-green/30 uppercase tracking-widest">System Utilities</span>
                     </div>
                     {[
                         { id: 'cms', label: 'Content Manager', icon: Edit },
@@ -163,16 +170,16 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
                             key={item.id}
                             onClick={() => onTabChange(item.id)}
                             className={cn(
-                                "w-full flex items-center justify-between px-3 py-2 rounded-md transition-colors group",
+                                "w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all duration-200 group text-sm font-medium",
                                 activeTab === item.id
-                                    ? "bg-accent text-accent-foreground font-medium"
-                                    : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                                    ? "bg-beeyield-green/10 text-beeyield-green shadow-sm ring-1 ring-beeyield-green/20"
+                                    : "text-beeyield-green/60 hover:bg-beeyield-cream hover:text-beeyield-green hover:pl-4"
                             )}
                         >
                             <div className="flex items-center gap-3">
                                 <item.icon className={cn(
-                                    "w-4 h-4",
-                                    activeTab === item.id ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                                    "w-4 h-4 transition-colors",
+                                    activeTab === item.id ? "text-beeyield-green" : "text-beeyield-green/40 group-hover:text-beeyield-green"
                                 )} />
                                 <span>{item.label}</span>
                             </div>
@@ -182,17 +189,18 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
             </nav>
 
             {/* Admin Footer */}
-            <div className="p-4 border-t border-border">
+            <div className="p-4 border-t border-beeyield-green/10 bg-beeyield-cream/30">
                 <button
                     onClick={onLogout}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors text-sm font-medium"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-beeyield-green/20 bg-white hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all text-sm font-bold text-beeyield-green/70 shadow-sm"
                 >
                     <LogOut className="w-4 h-4" />
-                    <span>Log Out</span>
+                    <span>Secure Logout</span>
                 </button>
-                <div className="text-center mt-4">
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
-                        Version 4.0.2
+                <div className="text-center mt-4 flex items-center justify-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-beeyield-green animate-pulse"></div>
+                    <p className="text-[10px] text-beeyield-green/40 uppercase tracking-widest font-bold">
+                        System Online v4.1.0
                     </p>
                 </div>
             </div>

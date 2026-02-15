@@ -29,7 +29,7 @@ interface AuthContextType {
 
     // Methods
     signIn: (email: string, password: string, backend?: AuthBackend) => Promise<{ error: AuthError | null; mfaRequired?: boolean }>;
-    signUp: (email: string, password: string, metadata?: { first_name?: string; last_name?: string; role?: string }, backend?: AuthBackend) => Promise<{ error: AuthError | null; data?: { user: User | null } }>;
+    signUp: (email: string, password: string, metadata?: Record<string, any>, backend?: AuthBackend) => Promise<{ error: AuthError | null; data?: { user: User | null } }>;
     signInWithGoogle: (metadata?: Record<string, any>, backend?: AuthBackend) => Promise<{ error: AuthError | null }>;
     signOut: (backend?: AuthBackend | 'all') => Promise<void>;
 

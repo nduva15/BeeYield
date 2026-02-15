@@ -463,7 +463,7 @@ const Checkout = () => {
                                         <ShieldCheck className="w-6 h-6 text-green-600 mt-1" />
                                         <div className="w-full">
                                             <h4 className="font-black text-green-900">
-                                                HoneyChain™ Verification {orderTraceabilityBatches.length > 1 ? 'Codes' : 'Code'}
+                                                Honey History Verification {orderTraceabilityBatches.length > 1 ? 'Codes' : 'Code'}
                                             </h4>
                                             <p className="text-green-700/80 text-sm mb-4">
                                                 {orderTraceabilityBatches.length > 1

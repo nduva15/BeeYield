@@ -1,7 +1,7 @@
 /**
  * Traceability Service - Powered by BeeYield Honey Trail
  */
-import { API_V1_URL } from "./api";
+import { AI_API_URL } from "./api";
 
 export interface Location {
     latitude: number;
@@ -131,7 +131,7 @@ export interface ImpactStats {
 
 export const traceBatch = async (code: string): Promise<TraceResponse | null> => {
     try {
-        const response = await fetch(`${API_V1_URL}/traceability/code/${code}`);
+        const response = await fetch(`${AI_API_URL}/traceability/code/${code}`);
         if (!response.ok) {
             if (response.status === 404) {
                 console.log("Batch not for record in system:", code);
@@ -157,7 +157,7 @@ export const traceBatch = async (code: string): Promise<TraceResponse | null> =>
 
 export const getImpactStats = async (): Promise<ImpactStats | null> => {
     try {
-        const response = await fetch(`${API_V1_URL}/stats/impact`);
+        const response = await fetch(`${AI_API_URL}/stats/impact`);
         if (!response.ok) {
             throw new Error("Failed to fetch impact stats");
         }
@@ -170,7 +170,7 @@ export const getImpactStats = async (): Promise<ImpactStats | null> => {
 
 export const getBlockchainStatus = async (): Promise<unknown> => {
     try {
-        const response = await fetch(`${API_V1_URL}/traceability/chain`);
+        const response = await fetch(`${AI_API_URL}/traceability/chain`);
         if (!response.ok) {
             throw new Error("Failed to fetch blockchain status");
         }

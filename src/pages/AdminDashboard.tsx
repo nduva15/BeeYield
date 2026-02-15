@@ -973,19 +973,19 @@ const AdminDashboard: React.FC = () => {
         >
             <div className="space-y-8 animate-in fade-in duration-700">
                 {/* Header Header */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                     <div>
-                        <h1 className="text-3xl font-bold text-foreground tracking-tight">BeeYield Admin</h1>
-                        <p className="text-muted-foreground text-sm mt-1">Global system metrics and analytics</p>
+                        <h1 className="text-4xl font-black text-beeyield-green tracking-tightest">Terminal <span className="text-beeyield-gold italic">Control</span></h1>
+                        <p className="text-beeyield-green/40 font-black uppercase tracking-[0.2em] text-[10px] mt-2">Neural Hive Administration Layer</p>
                     </div>
                     <div className="flex gap-2">
-                        <Button onClick={loadAllData} variant="outline" size="sm" className="rounded-xl bg-background border-border text-foreground hover:bg-accent">
-                            <RefreshCw className="h-4 w-4 mr-2" /> Refresh
+                        <Button onClick={loadAllData} variant="outline" size="sm" className="rounded-full bg-white border-beeyield-green/10 text-beeyield-green hover:bg-beeyield-cream/30 h-10 px-6">
+                            <RefreshCw className="h-4 w-4 mr-2" /> Re-Sync Data
                         </Button>
                     </div>
                 </div>
 
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-8">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-10">
                     {/* Hide original TabsList as we use Sidebar */}
                     <div className="hidden">
                         <TabsList>
@@ -1004,22 +1004,22 @@ const AdminDashboard: React.FC = () => {
                     </div>
 
                     {/* Announcement Banner */}
-                    <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl px-4 py-2.5 flex items-center justify-between text-white text-sm mb-2">
-                        <div className="flex items-center gap-2">
-                            <span>🐝</span>
-                            <span>Introducing new dashboard! Download now at <a href="#" className="underline font-semibold">BeeYield.io</a></span>
+                    <div className="bg-gradient-to-r from-beeyield-gold to-beeyield-orange rounded-[20px] px-6 py-3.5 flex items-center justify-between text-beeyield-green text-sm mb-4 shadow-lg shadow-beeyield-gold/20">
+                        <div className="flex items-center gap-3">
+                            <span className="text-xl">🐝</span>
+                            <span className="font-bold tracking-tight">Accessing the new Neural Hive dashboard. Updates live at <a href="#" className="underline font-black text-beeyield-green">BeeYield.io/nexus</a></span>
                         </div>
-                        <button className="text-white/80 hover:text-white">✕</button>
+                        <button className="text-beeyield-green/60 hover:text-beeyield-green transition-colors">✕</button>
                     </div>
 
-                    <TabsContent value="overview" className="space-y-6">
+                    <TabsContent value="overview" className="space-y-10">
                         {/* Row 1: General Report + Visitors + Users By Age */}
                         <Grid cols={12} gap="lg">
                             {/* General Report Section */}
-                            <Col span={4} className="space-y-4">
+                            <Col span={4} className="space-y-6">
                                 <div className="flex items-center justify-between">
-                                    <h3 className="text-lg font-bold text-foreground">General Report</h3>
-                                    <select aria-label="Report period" className="text-xs bg-transparent border border-border rounded-lg px-3 py-1.5 text-muted-foreground">
+                                    <h3 className="text-xs font-black uppercase tracking-[0.25em] text-beeyield-green/30">Protocol Stream</h3>
+                                    <select aria-label="Report period" className="text-[10px] font-black uppercase tracking-widest bg-beeyield-green/5 border-none rounded-full px-4 py-2 text-beeyield-green outline-none focus:ring-2 focus:ring-beeyield-gold/20">
                                         <option>Daily</option>
                                         <option>Weekly</option>
                                         <option>Monthly</option>
@@ -1031,7 +1031,7 @@ const AdminDashboard: React.FC = () => {
                                     title="Total Orders"
                                     value={(dashboardStats as any).total_orders || orders.length}
                                     icon={CreditCard}
-                                    description={`${dashboardStats.pendingOrders} Pending Orders`}
+                                    description={`${dashboardStats.pendingOrders} Processing Tokens`}
                                     className="h-auto"
                                 />
 
@@ -1041,44 +1041,44 @@ const AdminDashboard: React.FC = () => {
                                     icon={CreditCard}
                                     trend="40%"
                                     trendDirection="up"
-                                    description="Sales growth this month"
+                                    description="Economic Flux: Positive"
                                     className="h-auto"
                                 />
 
                                 <div className="flex gap-3">
-                                    <div className="flex-1 bg-card border border-border rounded-xl p-3">
-                                        <p className="text-[10px] text-muted-foreground uppercase">GROSS RENTAL VALUE</p>
-                                        <p className="text-sm font-bold">KES 72,000 <span className="text-green-500 text-xs">↑4%</span></p>
+                                    <div className="flex-1 bg-white border border-beeyield-green/5 rounded-[24px] p-5 shadow-sm shadow-beeyield-green/5">
+                                        <p className="text-[9px] font-black text-beeyield-green/20 uppercase tracking-widest">GROSS YIELD</p>
+                                        <p className="text-md font-black text-beeyield-green mt-1">KES 72K <span className="text-beeyield-green text-[10px] ml-1">↑4%</span></p>
                                     </div>
-                                    <div className="flex-1 bg-card border border-border rounded-xl p-3">
-                                        <p className="text-[10px] text-muted-foreground uppercase">BEEKEEPER PROFITS</p>
-                                        <p className="text-sm font-bold">KES 54,000 <span className="text-green-500 text-xs">↑6%</span></p>
+                                    <div className="flex-1 bg-white border border-beeyield-green/5 rounded-[24px] p-5 shadow-sm shadow-beeyield-green/5">
+                                        <p className="text-[9px] font-black text-beeyield-green/20 uppercase tracking-widest">PROFIT CORE</p>
+                                        <p className="text-md font-black text-beeyield-green mt-1">KES 54K <span className="text-beeyield-green text-[10px] ml-1">↑6%</span></p>
                                     </div>
                                 </div>
 
-                                <Button onClick={loadAllData} className="w-full rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-medium">
-                                    <RefreshCw className="w-4 h-4 mr-2" /> Refresh Dashboard
+                                <Button onClick={loadAllData} className="w-full h-14 rounded-[24px] shadow-xl shadow-beeyield-gold/20">
+                                    <RefreshCw className="w-4 h-4 mr-2" /> Sync Terminal
                                 </Button>
                             </Col>
 
                             {/* Visitors Section */}
-                            <Col span={4} className="space-y-4">
-                                <h3 className="text-lg font-bold text-foreground">Visitors</h3>
+                            <Col span={4} className="space-y-6">
+                                <h3 className="text-xs font-black uppercase tracking-[0.25em] text-beeyield-green/30">Network Traffic</h3>
 
-                                <Card className="bg-card border-border rounded-2xl p-5 shadow-sm">
-                                    <div className="flex items-center justify-between mb-4">
+                                <Card className="bg-white border-beeyield-green/5 rounded-[32px] p-8 shadow-2xl shadow-beeyield-green/[0.02] border-none">
+                                    <div className="flex items-center justify-between mb-6">
                                         <div>
-                                            <p className="text-xs text-muted-foreground">Realtime active users</p>
-                                            <p className="text-4xl font-bold text-foreground">{dashboardStats.totalUsers || 214}</p>
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-beeyield-green/30">Live Nodes</p>
+                                            <p className="text-5xl font-black text-beeyield-green tracking-tighter mt-1">{dashboardStats.totalUsers || 214}</p>
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-xs text-muted-foreground">Page per second</p>
-                                            <p className="text-lg font-bold text-foreground">2.5</p>
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-beeyield-green/30">Hz Sync</p>
+                                            <p className="text-xl font-black text-beeyield-gold mt-1">2.5</p>
                                         </div>
                                     </div>
 
                                     {/* Mini Chart */}
-                                    <div className="h-16 w-full mb-4">
+                                    <div className="h-20 w-full mb-6">
                                         <ResponsiveContainer width="100%" height="100%">
                                             <AreaChart data={[
                                                 { t: '1', v: 50 }, { t: '2', v: 80 }, { t: '3', v: 60 },
@@ -1087,11 +1087,11 @@ const AdminDashboard: React.FC = () => {
                                             ]}>
                                                 <defs>
                                                     <linearGradient id="visitorsGrad" x1="0" y1="0" x2="0" y2="1">
-                                                        <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.4} />
-                                                        <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+                                                        <stop offset="5%" stopColor="#F4D03F" stopOpacity={0.4} />
+                                                        <stop offset="95%" stopColor="#F4D03F" stopOpacity={0} />
                                                     </linearGradient>
                                                 </defs>
-                                                <Area type="monotone" dataKey="v" stroke="#f59e0b" fill="url(#visitorsGrad)" strokeWidth={2} />
+                                                <Area type="monotone" dataKey="v" stroke="#F4D03F" fill="url(#visitorsGrad)" strokeWidth={3} />
                                             </AreaChart>
                                         </ResponsiveContainer>
                                     </div>

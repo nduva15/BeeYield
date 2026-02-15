@@ -23,29 +23,29 @@ const AdminMetricCard: React.FC<MetricCardProps> = ({
 }) => {
     return (
         <div className={cn(
-            "bg-card rounded-xl border border-border p-6 flex flex-col justify-between h-full transition-all hover:border-primary/50 relative overflow-hidden",
+            "bg-white rounded-[32px] border border-beeyield-green/5 p-8 flex flex-col justify-between h-full transition-all hover:shadow-2xl hover:shadow-beeyield-green/[0.03] hover:border-beeyield-gold/20 hover:-translate-y-1 relative overflow-hidden",
             className
         )}>
             <div className="relative z-10 flex justify-between items-start">
-                <div className="p-2 bg-muted/50 rounded-lg text-muted-foreground">
-                    <Icon className="w-5 h-5" />
+                <div className="p-3 bg-beeyield-cream/50 rounded-2xl text-beeyield-green shadow-sm border border-beeyield-green/5">
+                    <Icon className="w-5 h-5 stroke-[2.5]" />
                 </div>
                 {trend && (
                     <div className={cn(
-                        "flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full",
+                        "flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-sm",
                         trendDirection === 'up'
-                            ? "bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400"
-                            : "bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400"
+                            ? "bg-beeyield-green/10 text-beeyield-green border border-beeyield-green/5"
+                            : "bg-beeyield-orange/10 text-beeyield-orange border border-beeyield-orange/5"
                     )}>
-                        {trendDirection === 'up' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                        {trendDirection === 'up' ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
                         {trend}
                     </div>
                 )}
             </div>
 
-            <div className="relative z-10 mt-4 space-y-1">
-                <h3 className="text-2xl font-bold tracking-tight text-foreground">{value}</h3>
-                <p className="text-sm font-medium text-muted-foreground">
+            <div className="relative z-10 mt-6 pt-2">
+                <h3 className="text-3xl font-black tracking-tighter text-beeyield-green leading-none">{value}</h3>
+                <p className="text-[11px] font-black uppercase tracking-[0.15em] text-beeyield-green/30 mt-3 whitespace-nowrap overflow-hidden text-ellipsis">
                     {description || title}
                 </p>
             </div>

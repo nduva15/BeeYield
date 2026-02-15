@@ -261,5 +261,88 @@
       "message": "Hello, this is a quick message!",
       "status": "new"
     }
+  },
+  {
+    "timestamp": "2026-02-15T21:30:48.258926",
+    "type": "newsletter_subscription",
+    "data": {
+      "email": "timothysubscrptions@gmail.com",
+      "source": "footer"
+    }
+  },
+  {
+    "timestamp": "2026-02-15T21:31:09.806032",
+    "type": "contact_message",
+    "data": {
+      "full_name": "Test User",
+      "email": "test@example.com",
+      "subject": "Integration Test",
+      "message": "This is a test message from the integration test script.",
+      "status": "new"
+    }
+  },
+  {
+    "timestamp": "2026-02-15T21:33:47.256129",
+    "type": "pollination_request",
+    "data": {
+      "full_name": "Timothy MATHUVA NDUVA Timothy MATHUVA NDUVA",
+      "email": "timothynduva349@gmail.com",
+      "phone": "+254742004187",
+      "farm_name": "n ",
+      "farm_location": "jnok;",
+      "crop_type": "tomatoes",
+      "acres": 6789.0,
+      "preferred_start_date": "2026-01-27",
+      "additional_info": "HI",
+      "status": "pending"
+    }
+  },
+  {
+    "timestamp": "2026-02-15T21:49:36.863319",
+    "type": "pollination_request",
+    "data": {
+      "full_name": "Timothy MATHUVA NDUVA Timothy MATHUVA NDUVA",
+      "email": "timothynduva349@gmail.com",
+      "phone": "+254742004187",
+      "farm_name": "n ",
+      "farm_location": "jnok;",
+      "crop_type": "sisal",
+      "acres": 6789.0,
+      "preferred_start_date": "2026-01-27",
+      "additional_info": "HI",
+      "status": "pending"
+    }
+  },
+  {
+    "timestamp": "2026-02-15T21:49:37.430388",
+    "type": "newsletter_subscription",
+    "data": {
+      "email": "kwetuhoms@gmail.com",
+      "source": "footer"
+    }
+  },
+  {
+    "timestamp": "2026-02-15T21:56:57.121773",
+    "type": "newsletter_subscription",
+    "data": {
+      "email": "rashidnyota@gmail.com",
+      "source": "footer"
+    }
+  },
+  {
+    "timestamp": "2026-02-15T21:57:20.201187",
+    "type": "pollination_request",
+    "data": {
+      "full_name": "Timothy MATHUVA NDUVA Timothy MATHUVA NDUVA",
+      "email": "timothynduva349@gmail.com",
+      "phone": "+254742004187",
+      "farm_name": "n ",
+      "farm_location": "jnok;",
+      "crop_type": "sisal",
+      "acres": 6789.0,
+      "preferred_start_date": "2026-01-27",
+      "additional_info": "",
+      "status": "pending"
+    }
   }
 ]

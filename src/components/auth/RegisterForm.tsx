@@ -37,21 +37,17 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
     const [googleLoading, setGoogleLoading] = useState(false);
 
     const isAdminVariant = variant === 'admin';
+    const isProVariant = variant === 'professional';
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setLoading(true);
 
         if (password !== confirmPassword) {
-            toast.error('Passwords do not match');
+            toast.error("Passwords don't match");
+            setLoading(false);
             return;
         }
-
-        if (password.length < 6) {
-            toast.error('Password must be at least 6 characters');
-            return;
-        }
-
-        setLoading(true);
 
         const backendMap: Record<string, 'shop' | 'beeyield' | 'ceba'> = {
             'shop': 'shop',
@@ -64,24 +60,20 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             first_name: firstName,
             last_name: lastName,
             role: defaultRole,
-            ...additionalMetadata,
+            ...additionalMetadata
         }, activeBackend);
 
         if (error) {
-            toast.error('Registration failed', { description: error.message });
+            toast.error("Sign up failed", { description: error.message });
         } else {
-            toast.success('Account created! 🎉', {
-                description: 'Please check your email to verify your account.',
-            });
+            toast.success("Account Created! 🎉");
             onSuccess?.();
         }
-
         setLoading(false);
     };
 
     const handleGoogleSignUp = async () => {
         setGoogleLoading(true);
-
         const backendMap: Record<string, 'shop' | 'beeyield' | 'ceba'> = {
             'shop': 'shop',
             'professional': 'beeyield',
@@ -89,16 +81,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
         };
         const activeBackend = backendMap[variant] || 'shop';
 
-        // Store current path so callback knows where to return
-        localStorage.setItem('authReturnTo', window.location.pathname);
-        localStorage.setItem('authBackend', activeBackend);
-
-        const { error } = await signInWithGoogle({
-            role: defaultRole,
-            ...additionalMetadata,
-        }, activeBackend);
+        const { error } = await signInWithGoogle(undefined, activeBackend);
         if (error) {
-            toast.error('Google sign-up failed', { description: error.message });
+            toast.error("Google sign up failed", { description: error.message });
             setGoogleLoading(false);
         }
     };
@@ -111,12 +96,12 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                     <Button
                         type="button"
                         variant="outline"
-                        className="w-full h-12 font-medium border-2 hover:bg-muted/50"
+                        className="w-full h-12 font-medium border-2 hover:bg-beeyield-cream hover:border-beeyield-gold/30 transition-all text-beeyield-green"
                         onClick={handleGoogleSignUp}
                         disabled={googleLoading}
                     >
                         {googleLoading ? (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin text-beeyield-gold" />
                         ) : (
                             <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
                                 <path
@@ -133,7 +118,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                                 />
                                 <path
                                     fill="#EA4335"
-                                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1c-4.3 0-8.1 2.5-9.8 6.1l3.6 2.8c.9-2.6 3.3-4.5 6.2-4.5z"
                                 />
                             </svg>
                         )}
@@ -142,10 +127,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
 
                     <div className="relative">
                         <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t" />
+                            <span className="w-full border-t border-beeyield-green/10" />
                         </div>
                         <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-background px-2 text-muted-foreground">Or register with email</span>
+                            <span className="bg-transparent px-2 text-beeyield-green/40 font-bold bg-white/50 backdrop-blur-sm">Or register with email</span>
                         </div>
                     </div>
                 </>
@@ -153,38 +138,38 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
 
             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                    <Label htmlFor="register-firstName">First Name</Label>
+                    <Label htmlFor="register-firstName" className="text-beeyield-green font-bold">First Name</Label>
                     <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-beeyield-green/40" />
                         <Input
                             id="register-firstName"
                             name="firstName"
                             placeholder="John"
                             value={firstName}
                             onChange={(e) => setFirstName(e.target.value)}
-                            className={`pl-10 ${isAdminVariant ? 'bg-zinc-950/50 border-white/10 text-white' : ''}`}
+                            className={`pl-10 border-beeyield-green/20 focus:border-beeyield-gold focus:ring-beeyield-gold/20 ${isAdminVariant ? 'bg-white text-beeyield-black' : 'bg-white/50 text-beeyield-black'}`}
                             required
                         />
                     </div>
                 </div>
                 <div className="space-y-2">
-                    <Label htmlFor="register-lastName">Last Name</Label>
+                    <Label htmlFor="register-lastName" className="text-beeyield-green font-bold">Last Name</Label>
                     <Input
                         id="register-lastName"
                         name="lastName"
                         placeholder="Doe"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
-                        className={`${isAdminVariant ? 'bg-zinc-950/50 border-white/10 text-white' : ''}`}
+                        className={`border-beeyield-green/20 focus:border-beeyield-gold focus:ring-beeyield-gold/20 ${isAdminVariant ? 'bg-white text-beeyield-black' : 'bg-white/50 text-beeyield-black'}`}
                         required
                     />
                 </div>
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="register-email">Email</Label>
+                <Label htmlFor="register-email" className="text-beeyield-green font-bold">Email</Label>
                 <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-beeyield-green/40" />
                     <Input
                         id="register-email"
                         name="email"
@@ -192,16 +177,16 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                         placeholder="you@example.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className={`pl-10 ${isAdminVariant ? 'bg-zinc-950/50 border-white/10 text-white' : ''}`}
+                        className={`pl-10 border-beeyield-green/20 focus:border-beeyield-gold focus:ring-beeyield-gold/20 ${isAdminVariant ? 'bg-white text-beeyield-black' : 'bg-white/50 text-beeyield-black'}`}
                         required
                     />
                 </div>
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="register-password">Password</Label>
+                <Label htmlFor="register-password" className="text-beeyield-green font-bold">Password</Label>
                 <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-beeyield-green/40" />
                     <Input
                         id="register-password"
                         name="password"
@@ -209,16 +194,16 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                         placeholder="At least 6 characters"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className={`pl-10 ${isAdminVariant ? 'bg-zinc-950/50 border-white/10 text-white' : ''}`}
+                        className={`pl-10 border-beeyield-green/20 focus:border-beeyield-gold focus:ring-beeyield-gold/20 ${isAdminVariant ? 'bg-white text-beeyield-black' : 'bg-white/50 text-beeyield-black'}`}
                         required
                     />
                 </div>
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="register-confirmPassword">Confirm Password</Label>
+                <Label htmlFor="register-confirmPassword" className="text-beeyield-green font-bold">Confirm Password</Label>
                 <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-beeyield-green/40" />
                     <Input
                         id="register-confirmPassword"
                         name="confirm-password"
@@ -226,7 +211,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                         placeholder="••••••••"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className={`pl-10 ${isAdminVariant ? 'bg-zinc-950/50 border-white/10 text-white' : ''}`}
+                        className={`pl-10 border-beeyield-green/20 focus:border-beeyield-gold focus:ring-beeyield-gold/20 ${isAdminVariant ? 'bg-white text-beeyield-black' : 'bg-white/50 text-beeyield-black'}`}
                         required
                     />
                 </div>
@@ -234,7 +219,11 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
 
             <Button
                 type="submit"
-                className={`w-full h-12 text-sm font-bold uppercase tracking-widest ${isAdminVariant ? 'bg-primary hover:bg-primary/90 shadow-glow shadow-primary/20' : ''}`}
+                className={`w-full h-12 text-sm font-black uppercase tracking-widest text-white shadow-soft hover:shadow-glow transition-all
+                    ${isAdminVariant ? 'bg-beeyield-green hover:bg-beeyield-green-dark' :
+                        isProVariant ? 'bg-gradient-to-r from-beeyield-green to-beeyield-green-dark hover:from-beeyield-green-dark hover:to-beeyield-green' :
+                            'bg-gradient-to-r from-beeyield-gold to-beeyield-orange hover:from-beeyield-orange hover:to-beeyield-gold'}
+                `}
                 disabled={loading}
             >
                 {loading ? (
@@ -243,17 +232,19 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                         Creating account...
                     </>
                 ) : (
-                    isAdminVariant ? 'Create Admin Account' : 'Create Shop Account'
+                    variant === 'admin' ? 'Create Account' :
+                        variant === 'shop' ? 'Create Account' :
+                            'Create Account'
                 )}
             </Button>
 
             {onSwitchToLogin && (
-                <p className="text-center text-sm text-muted-foreground">
+                <p className="text-center text-sm text-beeyield-green/60">
                     Already have an account?{' '}
                     <button
                         type="button"
                         onClick={onSwitchToLogin}
-                        className="text-primary hover:underline font-medium"
+                        className="text-beeyield-gold hover:text-beeyield-orange hover:underline font-bold"
                     >
                         Sign in
                     </button>

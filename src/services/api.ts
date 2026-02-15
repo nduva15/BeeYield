@@ -10,9 +10,9 @@ export const AI_API_URL = "http://localhost:8000/api/v1";
 // Rust/Go Gateway (DATA & SHOP)
 export const DATA_API_URL = "http://localhost:9090/api/v1";
 
-// Default to Data URL for generic requests, but handle routing in apiRequest
-export const API_BASE_URL = DATA_API_URL;
-export const API_V1_URL = DATA_API_URL;
+// Default to Python Backend for generic requests
+export const API_BASE_URL = AI_API_URL;
+export const API_V1_URL = AI_API_URL;
 
 /**
  * Get the active Supabase client based on URL path
@@ -108,7 +108,7 @@ export async function apiRequest<T>(
     endpoint: string,
     options?: RequestInit
 ): Promise<T> {
-    let baseUrl = DATA_API_URL;
+    let baseUrl = AI_API_URL;
 
     // Route AI and Assistant requests to Python Backend (Port 8000)
     const isAI = endpoint.includes("/ai/") ||
@@ -116,7 +116,11 @@ export async function apiRequest<T>(
         endpoint.includes("/assistant/") ||
         endpoint.startsWith("assistant/") ||
         endpoint.includes("/bee-data") ||
-        endpoint.includes("/search");
+        endpoint.includes("/search") ||
+        endpoint.includes("/contact/") ||
+        endpoint.includes("/forms/") ||
+        endpoint.includes("/pollination/") ||
+        endpoint.includes("/stats/");
 
     if (isAI) {
         baseUrl = AI_API_URL;

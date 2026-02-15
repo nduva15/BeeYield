@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Copy, User, Mail, Key, Database, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { beeyieldService } from '@/services/beeyieldService';
+import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 
 const UserDebugPanel: React.FC = () => {
     const { user } = useAuth();
@@ -66,7 +67,7 @@ const UserDebugPanel: React.FC = () => {
         toast.success(`${label} copied to clipboard`);
     };
 
-    if (!user || user.email !== 'timothynduva349@gmail.com') {
+    if (!user || (SUPER_ADMIN_EMAIL && user.email !== SUPER_ADMIN_EMAIL)) {
         return null;
     }
 

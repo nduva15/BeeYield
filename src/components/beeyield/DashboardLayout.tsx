@@ -27,7 +27,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 }) => {
     const [isQuickActionOpen, setIsQuickActionOpen] = React.useState(false);
     return (
-        <div className="flex h-screen w-full bg-[#FAF9F6] overflow-hidden font-sans text-foreground selection:bg-primary/20">
+        <div className="flex h-screen w-full bg-white overflow-hidden font-sans text-beeyield-green selection:bg-beeyield-gold/30">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(244,208,63,0.03),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(27,145,87,0.02),transparent_40%)] pointer-events-none" />
             <div className="relative z-10 flex w-full h-full">
                 <DashboardSidebar
                     activeTab={activeTab}

@@ -35,6 +35,11 @@ export default {
           "gold-dark": "#D4AC0D",   // Darker gold
           "green-light": "#2ECC71", // Lighter green
           "green-dark": "#145A32",  // Darker green
+          orange: "#FF8C42",        // Warm honey accent
+          "orange-light": "#FFAD73", // Light orange
+          "orange-dark": "#E67A2E",  // Dark orange
+          white: "#FFFFFF",         // Pure white
+          cream: "#FFF9F0",         // Warm cream
         },
         primary: {
           DEFAULT: "hsl(var(--primary))",

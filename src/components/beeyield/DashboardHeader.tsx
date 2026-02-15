@@ -40,46 +40,46 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onLogout, onTabChange
     const selectedLang = languages.find(l => l.code === language) || languages[0];
 
     return (
-        <div className="w-full flex items-center justify-between py-4 px-10 sticky top-0 z-50 bg-[#F8FAFC] border-b border-slate-200/50 backdrop-blur-md antialiased">
+        <div className="w-full flex items-center justify-between py-5 px-10 sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-beeyield-green/5 antialiased">
             {/* Left Spacer */}
             <div className="flex-1 hidden md:block" />
 
             {/* Right Actions Area */}
-            <div className="flex items-center gap-3 justify-end flex-[2]">
+            <div className="flex items-center gap-4 justify-end flex-[3]">
 
                 {/* Search - Refined to match image */}
                 <div className="relative group min-w-[320px] max-w-[420px]">
-                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-amber-500 transition-all" />
+                    <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-beeyield-green/20 group-focus-within:text-beeyield-gold transition-all" />
                     <input
                         placeholder={t('search_placeholder')}
-                        className="w-full bg-white border border-slate-200 pl-14 h-12 rounded-full text-[13px] font-medium focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500/30 transition-all placeholder:text-slate-400 shadow-sm shadow-slate-100"
+                        className="w-full bg-beeyield-green/[0.03] border border-beeyield-green/10 pl-14 pr-6 h-12 rounded-full text-[13px] font-bold text-beeyield-green focus:outline-none focus:ring-4 focus:ring-beeyield-gold/10 focus:border-beeyield-gold/30 transition-all placeholder:text-beeyield-green/20 shadow-inner"
                     />
                 </div>
 
                 {/* Language Selector - Full Name + Arrow */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-12 px-6 rounded-full bg-white border border-slate-200 gap-3 hover:bg-slate-50 transition-all shrink-0 shadow-sm shadow-slate-100">
+                        <Button variant="ghost" className="h-12 px-6 rounded-full bg-white border border-beeyield-green/10 gap-3 hover:bg-beeyield-cream/30 transition-all shrink-0 shadow-sm shadow-beeyield-green/5">
                             <div className="w-5 h-3.5 overflow-hidden shadow-sm border border-black/5 rounded-sm">
                                 <img src={selectedLang.flag} alt={selectedLang.country} className="w-full h-full object-cover" />
                             </div>
-                            <span className="text-[13px] font-semibold text-slate-700">{selectedLang.name}</span>
+                            <span className="text-[12px] font-black uppercase tracking-widest text-beeyield-green/70">{selectedLang.name}</span>
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48 rounded-3xl p-3 bg-white border border-slate-200 shadow-2xl">
+                    <DropdownMenuContent align="end" className="w-56 rounded-[24px] p-3 bg-white border border-beeyield-green/10 shadow-2xl backdrop-blur-xl">
                         {languages.map((lang) => (
                             <DropdownMenuItem
                                 key={lang.code}
                                 onClick={() => setLanguage(lang.code)}
                                 className={cn(
-                                    "flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors mb-1 last:mb-0",
-                                    language === lang.code ? "bg-amber-50 text-amber-700 font-bold" : "hover:bg-slate-50"
+                                    "flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all mb-1 last:mb-0 text-[12px] font-bold uppercase tracking-wider",
+                                    language === lang.code ? "bg-beeyield-gold/10 text-beeyield-green" : "hover:bg-beeyield-cream/50 text-beeyield-green/40"
                                 )}
                             >
-                                <div className="w-5 h-3.5 overflow-hidden border border-black/5 shrink-0 rounded-[1px]">
+                                <div className="w-5 h-3.5 overflow-hidden border border-black/5 shrink-0 rounded-[2px]">
                                     <img src={lang.flag} alt={lang.country} className="w-full h-full object-cover" />
                                 </div>
-                                <span className="text-[12px] font-medium">{lang.name}</span>
+                                <span>{lang.name}</span>
                             </DropdownMenuItem>
                         ))}
                     </DropdownMenuContent>
@@ -89,42 +89,55 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onLogout, onTabChange
                 {/* Notifications + Arrow */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-12 px-4 rounded-full bg-white border border-slate-200 hover:bg-slate-50 shadow-sm shadow-slate-100 flex items-center gap-1.5">
-                            <Bell className="w-4 h-4 text-slate-600" />
-                            <ChevronDown className="w-3 h-3 text-slate-400" />
-                            <div className="absolute top-3 right-3.5 w-1.5 h-1.5 rounded-full bg-red-500 ring-2 ring-white" />
+                        <Button variant="ghost" className="h-12 px-4 rounded-full bg-white border border-beeyield-green/10 hover:bg-beeyield-cream/30 shadow-sm shadow-beeyield-green/5 flex items-center gap-1.5 group relative">
+                            <Bell className="w-4 h-4 text-beeyield-green/40 group-hover:text-beeyield-gold transition-colors" />
+                            <ChevronDown className="w-3 h-3 text-beeyield-green/20" />
+                            <div className="absolute top-3 right-3.5 w-2 h-2 rounded-full bg-beeyield-orange ring-2 ring-white animate-pulse" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-64 rounded-3xl p-2 bg-white border border-slate-200 shadow-2xl">
-                        <div className="p-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">No Alerts</div>
+                    <DropdownMenuContent align="end" className="w-80 rounded-[24px] p-4 bg-white border border-beeyield-green/10 shadow-2xl">
+                        <div className="p-2 text-[10px] font-black text-beeyield-green/20 uppercase tracking-[0.25em] text-center">Protocol Stream: Stable</div>
+                        <div className="flex flex-col items-center justify-center py-6 opacity-40">
+                            <Check className="w-10 h-10 text-beeyield-green/10 mb-2" />
+                            <p className="text-xs font-bold text-beeyield-green/40 italic">Zero unread pings</p>
+                        </div>
                     </DropdownMenuContent>
                 </DropdownMenu>
 
                 {/* Support (Headset) */}
-                <Button variant="ghost" size="icon" onClick={() => onTabChange('support')} className="w-12 h-12 rounded-full bg-white border border-slate-200 hover:bg-slate-50 shadow-sm shadow-slate-100">
-                    <Headphones className="w-4 h-4 text-slate-600" />
+                <Button variant="ghost" size="icon" onClick={() => onTabChange('support')} className="w-12 h-12 rounded-full bg-white border border-beeyield-green/10 hover:bg-beeyield-cream/30 shadow-sm shadow-beeyield-green/5 group">
+                    <Headphones className="w-4 h-4 text-beeyield-green/40 group-hover:text-beeyield-green transition-colors" />
                 </Button>
 
                 {/* IoT Connection Status (Wifi Icon) */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-12 px-4 rounded-full bg-white border border-slate-200 hover:bg-slate-50 shadow-sm shadow-slate-100 flex items-center gap-1.5">
-                            <Wifi className="w-4 h-4 text-slate-600" />
-                            <ChevronDown className="w-3 h-3 text-slate-400" />
+                        <Button variant="ghost" className="h-12 px-4 rounded-full bg-white border border-beeyield-green/10 hover:bg-beeyield-cream/30 shadow-sm shadow-beeyield-green/5 flex items-center gap-1.5 group">
+                            <Wifi className="w-4 h-4 text-beeyield-green/40 group-hover:text-beeyield-green transition-colors" />
+                            <ChevronDown className="w-3 h-3 text-beeyield-green/20" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48 rounded-3xl p-3 bg-white border border-slate-200 shadow-2xl">
-                        <div className="flex items-center gap-2 mb-2">
-                            <div className="w-2 h-2 rounded-full bg-green-500" />
-                            <span className="text-[11px] font-bold">Bridge Connected</span>
+                    <DropdownMenuContent align="end" className="w-64 rounded-[24px] p-5 bg-white border border-beeyield-green/10 shadow-2xl">
+                        <div className="flex items-center gap-3 mb-3">
+                            <div className="relative">
+                                <div className="w-2.5 h-2.5 rounded-full bg-beeyield-green" />
+                                <div className="absolute inset-0 rounded-full bg-beeyield-green animate-ping opacity-30" />
+                            </div>
+                            <span className="text-[11px] font-black uppercase tracking-widest text-beeyield-green">Bridge Active</span>
                         </div>
-                        <div className="text-[10px] text-slate-400">Hub 42: Active</div>
+                        <div className="text-[10px] font-bold text-beeyield-green/30 tracking-wider">Node Hub-042 // KIBERA-GOLD</div>
+                        <div className="mt-4 pt-4 border-t border-beeyield-green/5">
+                            <div className="flex justify-between text-[9px] font-black text-beeyield-green/20 uppercase">
+                                <span>Signal Strength</span>
+                                <span className="text-beeyield-green/60">100%</span>
+                            </div>
+                        </div>
                     </DropdownMenuContent>
                 </DropdownMenu>
 
-                {/* Settings (Double Gear in image looks like custom or just gear) */}
-                <Button variant="ghost" size="icon" onClick={() => onTabChange('settings')} className="w-12 h-12 rounded-full bg-white border border-slate-200 hover:bg-slate-50 shadow-sm shadow-slate-100">
-                    <Settings className="w-4 h-4 text-slate-600" />
+                {/* Settings */}
+                <Button variant="ghost" size="icon" onClick={() => onTabChange('settings')} className="w-12 h-12 rounded-full bg-white border border-beeyield-green/10 hover:bg-beeyield-cream/30 shadow-sm shadow-beeyield-green/5 group">
+                    <Settings className="w-4 h-4 text-beeyield-green/40 group-hover:rotate-45 transition-all" />
                 </Button>
 
                 {/* Logout Button */}
@@ -132,9 +145,9 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onLogout, onTabChange
                     variant="ghost"
                     size="icon"
                     onClick={onLogout}
-                    className="w-12 h-12 rounded-full bg-white border border-slate-200 hover:bg-red-50 hover:text-red-500 shadow-sm shadow-slate-100 transition-all"
+                    className="w-12 h-12 rounded-full bg-white border border-beeyield-green/10 hover:bg-beeyield-orange/10 hover:text-beeyield-orange shadow-sm shadow-beeyield-green/5 transition-all group"
                 >
-                    <LogOut className="w-4 h-4" />
+                    <LogOut className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
                 </Button>
             </div>
         </div>
