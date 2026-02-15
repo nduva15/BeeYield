@@ -128,9 +128,9 @@ const AccountSettings = () => {
                 {/* Header */}
                 <div className="space-y-4 text-center lg:text-left">
                     <h1 className="text-5xl font-black text-foreground tracking-tightest leading-none">
-                        Identity <span className="text-primary">& Security</span>
+                        Account <span className="text-primary">& Security</span>
                     </h1>
-                    <p className="text-xl text-muted-foreground font-medium">Manage your account security and authentication preferences.</p>
+                    <p className="text-xl text-muted-foreground font-medium">Manage your account settings.</p>
                 </div>
 
                 {/* Profile Card */}
@@ -140,7 +140,7 @@ const AccountSettings = () => {
                             <User className="h-6 w-6 text-primary" />
                             Profile
                         </CardTitle>
-                        <CardDescription className="text-muted-foreground font-medium">Securely stored encrypted credentials</CardDescription>
+                        <CardDescription className="text-muted-foreground font-medium">Your profile details</CardDescription>
                     </CardHeader>
                     <CardContent className="p-10 space-y-8">
                         <div className="flex flex-col sm:flex-row items-center gap-8">
@@ -170,21 +170,21 @@ const AccountSettings = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="p-6 bg-white/40 dark:bg-card/40 rounded-3xl border border-border/50 space-y-1">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Honey ID</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">User ID</span>
                                 <p className="font-mono text-sm text-foreground overflow-hidden text-ellipsis">{user.id}</p>
                             </div>
                             <div className="p-6 bg-white/40 dark:bg-card/40 rounded-3xl border border-border/50 space-y-1">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Auth Provider</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Login Method</span>
                                 <p className="font-black text-lg text-foreground uppercase tracking-widest">{user.app_metadata?.provider || 'Email'}</p>
                             </div>
                             <div className="p-6 bg-white/40 dark:bg-card/40 rounded-3xl border border-border/50 space-y-1">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Security Status</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Status</span>
                                 <p className={`font-black text-lg uppercase tracking-widest ${user.email_confirmed_at ? 'text-nature-green' : 'text-honey-dark'}`}>
                                     {user.email_confirmed_at ? 'Verified' : 'Unverified'}
                                 </p>
                             </div>
                             <div className="p-6 bg-white/40 dark:bg-card/40 rounded-3xl border border-border/50 space-y-1">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Pulse Member Since</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Member Since</span>
                                 <p className="font-black text-lg text-foreground">{new Date(user.created_at).toLocaleDateString()}</p>
                             </div>
                         </div>
@@ -195,7 +195,7 @@ const AccountSettings = () => {
                 <div className="space-y-6">
                     <h2 className="text-4xl font-black flex items-center gap-4 tracking-tightest">
                         <Shield className="h-10 w-10 text-primary" />
-                        Guardian Security
+                        Security
                     </h2>
 
                     {/* 2FA Setup Component */}
@@ -207,9 +207,9 @@ const AccountSettings = () => {
                     <CardContent className="p-10">
                         <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
                             <div className="text-center sm:text-left">
-                                <p className="text-2xl font-black tracking-tightest">Session Management</p>
+                                <p className="text-2xl font-black tracking-tightest">Log Out</p>
                                 <p className="text-base text-muted-foreground font-medium">
-                                    Safely end your current session and clear local credentials.
+                                    Log out of your account.
                                 </p>
                             </div>
                             <Button
@@ -219,7 +219,7 @@ const AccountSettings = () => {
                                 onClick={handleSignOut}
                             >
                                 <LogOut className="mr-3 h-6 w-6" />
-                                End Session
+                                Log Out
                             </Button>
                         </div>
                     </CardContent>

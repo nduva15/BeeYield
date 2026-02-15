@@ -48,7 +48,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireBeeYie
     if (requireBeeYield) {
         const isBeeYieldActive =
             !!user?.user_metadata?.beeyield_active ||
-            user?.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase() ||
+            ['timothynduva349@gmail.com', SUPER_ADMIN_EMAIL.toLowerCase()].includes(user?.email?.toLowerCase() || '') ||
             !!beeyieldUser; // Also accept if user is authenticated on the beeyield backend
         if (!isBeeYieldActive) {
             return <Navigate to="/beeyield-login" replace />;

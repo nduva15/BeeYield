@@ -50,24 +50,26 @@ const ShopDashboardSidebar: React.FC<SidebarProps> = ({
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className={cn("flex flex-col h-full bg-white border-r border-gray-100 w-64 shadow-[0_0_20px_rgba(0,0,0,0.02)]", className)}
+            className={cn("flex flex-col h-full bg-white border-r border-beeyield-green/5 w-64 shadow-[10px_0_30px_rgba(27,145,87,0.03)]", className)}
         >
             {/* Logo area - More consumer friendly */}
-            <motion.div variants={itemVariants} className="p-7">
+            <motion.div variants={itemVariants} className="p-8">
                 <motion.div
                     whileHover={{ scale: 1.02 }}
                     className="flex items-center gap-3"
                 >
-                    <img src={Logo} alt="Logo" className="w-10 h-10 object-contain drop-shadow-sm" />
+                    <div className="w-10 h-10 bg-beeyield-gold/10 rounded-xl flex items-center justify-center border border-beeyield-gold/20 shadow-sm">
+                        <img src={Logo} alt="Logo" className="w-6 h-6 object-contain drop-shadow-sm" />
+                    </div>
                     <div>
-                        <h1 className="text-xl font-bold text-gray-900 tracking-tight leading-none">My Account</h1>
-                        <p className="text-[10px] font-black text-primary tracking-widest mt-1.5 uppercase opacity-80">Shop Dashboard</p>
+                        <h1 className="text-xl font-black text-beeyield-green tracking-tighter leading-none italic">My Account</h1>
+                        <p className="text-[10px] font-black text-beeyield-gold tracking-widest mt-1.5 uppercase opacity-80">Shop Dashboard</p>
                     </div>
                 </motion.div>
             </motion.div>
 
             {/* Nav */}
-            <nav className="flex-1 px-4 mt-4 space-y-1 overflow-y-auto custom-scrollbar-modern">
+            <nav className="flex-1 px-4 mt-4 space-y-1.5 overflow-y-auto custom-scrollbar-modern">
                 {navItems.filter(item => !item.hidden).map((item) => {
                     const isActive = activeTab === item.id;
 
@@ -75,20 +77,20 @@ const ShopDashboardSidebar: React.FC<SidebarProps> = ({
                         <motion.button
                             key={item.id}
                             variants={itemVariants}
-                            whileHover={{ scale: 1.01, x: 2 }}
+                            whileHover={{ scale: 1.02, x: 4 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => onTabChange(item.id)}
                             className={cn(
-                                "w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 text-[13px] font-bold group",
+                                "w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 text-[13px] font-black uppercase tracking-wider group",
                                 isActive
-                                    ? "bg-primary text-white shadow-lg shadow-primary/25 border border-primary/20"
-                                    : "text-gray-400 hover:text-gray-900 hover:bg-gray-50"
+                                    ? "bg-gradient-to-r from-beeyield-green to-beeyield-green-dark text-white shadow-xl shadow-beeyield-green/20 border border-beeyield-green/10"
+                                    : "text-beeyield-green/40 hover:text-beeyield-green hover:bg-beeyield-cream/50"
                             )}
                         >
-                            <item.icon className={cn("w-5 h-5", isActive ? "text-white" : "text-gray-400 group-hover:text-primary")} />
+                            <item.icon className={cn("w-5 h-5 transition-transform group-hover:scale-110", isActive ? "text-beeyield-gold" : "text-beeyield-green/30 group-hover:text-beeyield-green")} />
                             {item.label}
                             {item.id === 'checkout' && (
-                                <span className="ml-auto w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)] animate-pulse" />
+                                <span className="ml-auto w-2.5 h-2.5 rounded-full bg-beeyield-orange shadow-[0_0_12px_rgba(244,208,63,0.6)] animate-pulse" />
                             )}
                         </motion.button>
                     );
@@ -96,19 +98,24 @@ const ShopDashboardSidebar: React.FC<SidebarProps> = ({
             </nav>
 
             {/* Footer Section */}
-            <motion.div variants={itemVariants} className="p-5 space-y-3 border-t border-gray-100 bg-gray-50/20">
+            <motion.div variants={itemVariants} className="p-6 space-y-4 border-t border-beeyield-green/5 bg-beeyield-cream/20">
                 <motion.button
-                    whileHover={{ scale: 1.02, backgroundColor: '#FEF2F2', color: '#EF4444' }}
+                    whileHover={{ scale: 1.02, backgroundColor: '#fff', color: '#ea580c' }}
                     whileTap={{ scale: 0.98 }}
                     onClick={onLogout}
-                    className="w-full flex items-center gap-4 px-4 py-3 rounded-2xl text-gray-400 transition-all font-bold text-[13px] group"
+                    className="w-full flex items-center gap-4 px-4 py-3 rounded-2xl text-beeyield-green/50 transition-all font-black text-[12px] uppercase tracking-widest group border border-transparent hover:border-beeyield-orange/20"
                 >
                     <LogOut className="w-5 h-5" />
-                    Log out
+                    Secure Logout
                 </motion.button>
-                <p className="text-[10px] text-gray-300 font-black text-center pt-2 tracking-[0.05em] uppercase">
-                    BEE YIELD SHOP v2.0
-                </p>
+                <div className="flex flex-col items-center gap-1">
+                    <div className="flex items-center gap-1.5">
+                        <div className="w-1 h-1 rounded-full bg-beeyield-green animate-pulse" />
+                        <p className="text-[9px] text-beeyield-green/30 font-black tracking-[0.1em] uppercase">
+                            BEE YIELD SHOP v2.1.0
+                        </p>
+                    </div>
+                </div>
             </motion.div>
             <style dangerouslySetInnerHTML={{
                 __html: `

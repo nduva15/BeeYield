@@ -46,8 +46,8 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
 
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-2xl font-bold text-[#0F172A] dark:text-white">API status</h2>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Quick connectivity overview for BeeYield services.</p>
+                    <h2 className="text-2xl font-bold text-[#0F172A] dark:text-white">Service status</h2>
+                    <p className="text-gray-500 dark:text-gray-400 mt-1">Check if BeeYield services are working properly.</p>
                 </div>
                 <Button
                     variant="outline"
@@ -64,7 +64,7 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
             <Card className="border-none shadow-sm rounded-3xl overflow-hidden bg-white dark:bg-[#1e1e1e]">
                 <CardContent className="p-6">
                     <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">System health</h3>
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">System status</h3>
                         <Badge className="bg-[#DCFCE7] text-[#166534] hover:bg-[#DCFCE7] uppercase text-[10px] font-bold px-3 py-1">Online</Badge>
                     </div>
                     <div className="space-y-2">
@@ -73,7 +73,7 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
                             <span className="font-mono font-medium text-gray-900 dark:text-white">{lastRefresh}</span>
                         </div>
                         <div className="flex justify-between items-center text-sm">
-                            <span className="text-gray-500 dark:text-gray-400">Avg response time</span>
+                            <span className="text-gray-500 dark:text-gray-400">Average speed</span>
                             <span className="font-mono font-medium text-gray-900 dark:text-white">{avgResponseMs}ms</span>
                         </div>
                         <div className="flex justify-between items-center text-sm">
@@ -89,8 +89,8 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
                 <CardContent className="p-6 space-y-6">
                     <div className="flex justify-between items-start">
                         <div>
-                            <h3 className="text-lg font-bold text-gray-900 dark:text-white">API usage</h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Last 7 days usage statistics.</p>
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-white">Usage</h3>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Usage over the last 7 days.</p>
                         </div>
                         <Badge className="bg-[#DCFCE7] text-[#166534] hover:bg-[#DCFCE7] text-[12px] font-bold px-3 py-1">{usagePercent}%</Badge>
                     </div>
@@ -103,17 +103,17 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
                     {/* Stats */}
                     <div className="space-y-2">
                         <div className="flex justify-between items-center text-sm">
-                            <span className="text-gray-500 dark:text-gray-400">Total calls</span>
+                            <span className="text-gray-500 dark:text-gray-400">Total hits</span>
                             <span className="font-bold text-gray-900 dark:text-white">{totalCalls.toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between items-center text-sm">
-                            <span className="text-gray-500 dark:text-gray-400">Limit</span>
+                            <span className="text-gray-500 dark:text-gray-400">Max requests</span>
                             <span className="font-bold text-gray-900 dark:text-white">{limit.toLocaleString()}</span>
                         </div>
                     </div>
 
                     <div className="space-y-3">
-                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">TOP ENDPOINTS</p>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">MOST USED</p>
                         <div className="space-y-1">
                             {topEndpoints.length > 0 ? topEndpoints.map((ep: any, idx: number) => (
                                 <div key={idx} className={`flex justify-between items-center py-2 px-3 rounded-lg text-sm ${idx % 2 !== 0 ? 'bg-gray-50 dark:bg-white/5' : ''}`}>
@@ -142,11 +142,11 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
 
                             <div className="mt-auto space-y-3">
                                 <div>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Check path</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Address</p>
                                     <p className="font-medium text-sm text-gray-900 dark:text-white">{api.checkPath}</p>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Last check</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Last checked</p>
                                     <p className="font-mono text-[10px] sm:text-xs text-gray-900 dark:text-white truncate">{api.lastCheck}</p>
                                 </div>
                             </div>

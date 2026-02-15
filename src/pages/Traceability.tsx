@@ -223,7 +223,7 @@ const Traceability = () => {
                 ) : (
                   <div className="grid md:grid-cols-2">
                     <div className="p-10 flex flex-col justify-center border-b md:border-b-0 md:border-r border-slate-100 dark:border-slate-800">
-                      <h2 className="mb-4 text-3xl font-black tracking-tight">Manual Verification</h2>
+                      <h2 className="mb-4 text-3xl font-black tracking-tight">Find Your Honey</h2>
                       <p className="mb-8 text-muted-foreground">
                         Enter the unique batch code found on the bottom or side of your honey jar.
                       </p>
@@ -246,7 +246,7 @@ const Traceability = () => {
                           disabled={loading || !qrCode.trim()}
                           className="w-full h-16 bg-amber-600 hover:bg-amber-700 text-white text-lg font-black rounded-2xl shadow-xl hover:shadow-amber-500/20 transition-all"
                         >
-                          {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : "Trace Batch"}
+                          {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : "Search"}
                         </Button>
                       </form>
 
@@ -357,7 +357,7 @@ const Traceability = () => {
                     </div>
 
                     <div className="space-y-4">
-                      <h3 className="text-3xl font-black tracking-tight text-white uppercase italic">Confirming Records</h3>
+                      <h3 className="text-3xl font-black tracking-tight text-white uppercase italic">Checking Records</h3>
                       <p className="text-neutral-500 font-black uppercase tracking-[0.3em] text-[10px]">
                         Accessing <span className="text-amber-500">Secure Database</span> Module
                       </p>
@@ -386,7 +386,7 @@ const Traceability = () => {
                           className="flex items-center justify-center gap-3 text-green-500 font-black text-[11px] uppercase tracking-[0.2em]"
                         >
                           <ShieldCheck className="h-4 w-4" />
-                          Authentication Locked
+                          Verified
                         </motion.div>
                       </div>
                     </div>

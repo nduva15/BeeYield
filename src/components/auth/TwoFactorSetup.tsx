@@ -129,10 +129,10 @@ const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({ onComplete }) => {
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <Shield className="h-5 w-5 text-primary" />
-                        Set Up Two-Factor Authentication
+                        Set Up Extra Security
                     </CardTitle>
                     <CardDescription>
-                        Scan the QR code with your authenticator app (Google Authenticator, Authy, etc.)
+                        Scan the code with your security app (Google Authenticator, etc.)
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -150,7 +150,7 @@ const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({ onComplete }) => {
                     {/* Manual Entry */}
                     <div className="space-y-2">
                         <Label className="text-xs text-muted-foreground">
-                            Can't scan? Enter this key manually:
+                            Can't scan? Enter this code manually:
                         </Label>
                         <div className="flex items-center gap-2">
                             <code className="flex-1 p-3 bg-muted rounded-md font-mono text-sm break-all">
@@ -210,10 +210,10 @@ const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({ onComplete }) => {
                                 {loading ? (
                                     <>
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Verifying...
+                                        Checking Code...
                                     </>
                                 ) : (
-                                    'Enable 2FA'
+                                    'Turn On'
                                 )}
                             </Button>
                         </div>
@@ -227,41 +227,41 @@ const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({ onComplete }) => {
     const hasMFA = factors.length > 0;
 
     return (
-        <Card>
+        <Card className="border-beeyield-gold/20 shadow-sm">
             <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-beeyield-green">
                     {hasMFA ? (
                         <>
-                            <ShieldCheck className="h-5 w-5 text-green-500" />
-                            Two-Factor Authentication Enabled
+                            <ShieldCheck className="h-5 w-5 text-beeyield-green" />
+                            Extra Security On
                         </>
                     ) : (
                         <>
-                            <ShieldOff className="h-5 w-5 text-orange-500" />
-                            Two-Factor Authentication
+                            <ShieldOff className="h-5 w-5 text-beeyield-orange" />
+                            Extra Security
                         </>
                     )}
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-beeyield-green/60">
                     {hasMFA
-                        ? 'Your account is protected with an authenticator app.'
-                        : 'Add an extra layer of security to your account.'}
+                        ? 'Your account is protected.'
+                        : 'Add extra protection to your account.'}
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
                 {hasMFA ? (
                     <>
-                        <div className="p-4 bg-green-50 dark:bg-green-950/30 rounded-lg border border-green-200 dark:border-green-900">
-                            <p className="text-sm text-green-700 dark:text-green-300">
-                                ✓ Authenticator app is connected
+                        <div className="p-4 bg-beeyield-green/5 rounded-lg border border-beeyield-green/20">
+                            <p className="text-sm text-beeyield-green font-bold">
+                                ✓ Security app is connected
                             </p>
-                            <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                            <p className="text-xs text-beeyield-green/60 mt-1 font-medium">
                                 Added on {new Date(factors[0].created_at).toLocaleDateString()}
                             </p>
                         </div>
                         <Button
                             variant="destructive"
-                            className="w-full"
+                            className="w-full bg-beeyield-orange/10 hover:bg-beeyield-orange/20 text-beeyield-orange border border-beeyield-orange/20 hover:border-beeyield-orange/50 transition-all font-bold"
                             onClick={() => handleUnenroll(factors[0].id)}
                             disabled={loading}
                         >
@@ -273,23 +273,23 @@ const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({ onComplete }) => {
                             ) : (
                                 <>
                                     <ShieldOff className="mr-2 h-4 w-4" />
-                                    Disable 2FA
+                                    Turn Off
                                 </>
                             )}
                         </Button>
                     </>
                 ) : (
                     <>
-                        <div className="p-4 bg-orange-50 dark:bg-orange-950/30 rounded-lg border border-orange-200 dark:border-orange-900">
-                            <p className="text-sm text-orange-700 dark:text-orange-300">
-                                ⚠ Your account is not protected with 2FA
+                        <div className="p-4 bg-beeyield-orange/5 rounded-lg border border-beeyield-orange/20">
+                            <p className="text-sm text-beeyield-orange font-bold">
+                                ⚠ Your account is not protected
                             </p>
-                            <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
-                                We recommend enabling 2FA to secure your account.
+                            <p className="text-xs text-beeyield-orange/70 mt-1 font-medium">
+                                We recommend turning this on to be safe.
                             </p>
                         </div>
                         <Button
-                            className="w-full"
+                            className="w-full bg-beeyield-green hover:bg-beeyield-green-dark text-white font-bold shadow-soft hover:shadow-glow transition-all"
                             onClick={handleEnroll}
                             disabled={enrolling}
                         >
@@ -301,7 +301,7 @@ const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({ onComplete }) => {
                             ) : (
                                 <>
                                     <Shield className="mr-2 h-4 w-4" />
-                                    Enable 2FA
+                                    Turn On
                                 </>
                             )}
                         </Button>

@@ -52,7 +52,38 @@ const AuthCallback = () => {
                     // Fetch the user data to get the name for the toast
                     const { data: { user } } = await activeClient.auth.getUser();
 
-                    // Metadata Handling: Auto-Update instead of blocking
+                    if (user) {
+                        try {
+                            const profileTable = storedBackend === 'shop' ? 'shop_profiles' :
+                                storedBackend === 'beeyield' ? 'beeyield_profiles' :
+                                    'ceba_profiles';
+
+                            // Check if profile exists
+                            const { data: existingProfile } = await activeClient
+                                .from(profileTable)
+                                .select('id')
+                                .eq('id', user.id)
+                                .single();
+
+                            if (!existingProfile) {
+                                // Create the profile if it doesn't exist (e.g. first time on this platform)
+                                console.log(`Auto-creating ${storedBackend} profile for ${user.email}`);
+                                await activeClient
+                                    .from(profileTable)
+                                    .insert({
+                                        id: user.id,
+                                        first_name: user.user_metadata?.given_name || (user.user_metadata?.full_name?.split(' ')[0]) || '',
+                                        last_name: user.user_metadata?.family_name || (user.user_metadata?.full_name?.split(' ')[1]) || '',
+                                        email: user.email,
+                                        ...(storedBackend === 'beeyield' ? { is_professional: true } : {}),
+                                        ...(storedBackend === 'ceba' ? { admin_role: 'content_editor' } : {})
+                                    });
+                            }
+                        } catch (profileErr) {
+                            console.error('Error ensuring platform profile:', profileErr);
+                        }
+                    }
+
                     const requireMetadataStr = localStorage.getItem('authRequireMetadata');
                     if (requireMetadataStr && user) {
                         try {
@@ -113,8 +144,8 @@ const AuthCallback = () => {
         <div className="min-h-screen flex items-center justify-center bg-background">
             <div className="text-center space-y-4">
                 <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
-                <h2 className="text-xl font-semibold">Completing sign in...</h2>
-                <p className="text-muted-foreground">Please wait while we verify your account.</p>
+                <h2 className="text-xl font-semibold">Signing you in...</h2>
+                <p className="text-muted-foreground">Just a second...</p>
             </div>
         </div>
     );

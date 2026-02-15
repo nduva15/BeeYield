@@ -12,7 +12,7 @@ from app.schemas import traceability as schemas
 _STATS_CACHE = {}
 _STATS_CACHE_EXPIRY = 300 # 5 minutes
 
-def _get_impact_stats_from_db() -> dict[str, Any]:
+async def _get_impact_stats_from_db() -> dict[str, Any]:
     """Fetch impact stats from the company_stats table in the database."""
     now = datetime.now().timestamp()
     cache_key = "impact_stats"
@@ -22,7 +22,7 @@ def _get_impact_stats_from_db() -> dict[str, Any]:
         if now < expiry:
             return val
 
-    stats = db_select("company_stats")
+    stats = await db_select("company_stats")
     result = {}
     if stats:
         for s in stats:
@@ -45,12 +45,12 @@ def _get_impact_stats_from_db() -> dict[str, Any]:
     return result
 
 
-def _calc_season_total_from_db(batch_code: str, batch_data: dict) -> str:
+async def _calc_season_total_from_db(batch_code: str, batch_data: dict) -> str:
     """Calculate season harvest total from actual harvest records in the database."""
     # Extract year
     year = None
     for y in range(2020, 2030):
-        if str(y) in batch_code or str(y) in str(batch_data.get("harvest_date", "")):
+        if str(y) in str(batch_code) or str(y) in str(batch_data.get("harvest_date", "")):
             year = str(y)
             break
             
@@ -66,7 +66,7 @@ def _calc_season_total_from_db(batch_code: str, batch_data: dict) -> str:
 
     try:
         # Query harvests for this year
-        harvests = db_select(
+        harvests = await db_select(
             "harvests",
             columns="quantity_kg",
             filters={"harvest_date": f"gte.{year}-01-01"},
@@ -87,7 +87,7 @@ def _calc_season_total_from_db(batch_code: str, batch_data: dict) -> str:
     return "0"
 
 
-def _calc_all_time_total_from_db() -> str:
+async def _calc_all_time_total_from_db() -> str:
     """Calculate all-time harvest total from actual harvest records."""
     now = datetime.now().timestamp()
     cache_key = "all_time_total"
@@ -97,7 +97,7 @@ def _calc_all_time_total_from_db() -> str:
             return val
 
     try:
-        harvests = db_select("harvests", columns="quantity_kg", limit=10000)
+        harvests = await db_select("harvests", columns="quantity_kg", limit=10000)
         total = sum(float(h.get("quantity_kg", 0)) for h in harvests)
         if total > 0:
             res = f"{total:.1f}"
@@ -110,7 +110,7 @@ def _calc_all_time_total_from_db() -> str:
 
 # --- Write Operations (Blockchain + DB) ---
 
-def register_farmer(farmer_in: schemas.FarmerCreate) -> dict[str, Any]:
+async def register_farmer(farmer_in: schemas.FarmerCreate) -> dict[str, Any]:
     """Register a farmer in DB and Blockchain"""
     data = farmer_in.dict()
     data['farmer_id'] = f"F-{str(uuid.uuid4())[:8].upper()}" if not data.get('farmer_id') else data.get('farmer_id')
@@ -122,13 +122,13 @@ def register_farmer(farmer_in: schemas.FarmerCreate) -> dict[str, Any]:
     data['blockchain_hash'] = block.hash
     
     # 2. DB
-    res = db_insert("farmers", data)
+    res = await db_insert("farmers", data)
     if not res.get("success"):
         raise Exception(f"Database insertion failed: {res.get('error')}")
     
     return data
 
-def register_apiary(apiary_in: Any) -> dict[str, Any]:
+async def register_apiary(apiary_in: Any) -> dict[str, Any]:
     """Register an apiary"""
     # Handle both Pydantic models and raw dicts
     data = apiary_in.dict() if hasattr(apiary_in, 'dict') else dict(apiary_in)
@@ -147,7 +147,7 @@ def register_apiary(apiary_in: Any) -> dict[str, Any]:
     block = honey_blockchain.register_apiary(data)
     data['blockchain_hash'] = block.hash
     
-    res = db_insert("apiaries", data)
+    res = await db_insert("apiaries", data)
     if not res.get("success"):
         print(f"ERROR: Apiary DB insertion failed: {res.get('error')}")
         # We don't raise here to allow blockchain-only registration if DB is down
@@ -155,7 +155,7 @@ def register_apiary(apiary_in: Any) -> dict[str, Any]:
         
     return data
 
-def register_hive(hive_in: schemas.HiveCreate) -> dict[str, Any]:
+async def register_hive(hive_in: schemas.HiveCreate) -> dict[str, Any]:
     """Register a hive"""
     data = hive_in.dict()
     if isinstance(data.get('installation_date'), date):
@@ -168,7 +168,7 @@ def register_hive(hive_in: schemas.HiveCreate) -> dict[str, Any]:
     block = honey_blockchain.register_hive(data)
     data['blockchain_hash'] = block.hash
     
-    db_insert("hives", data)
+    await db_insert("hives", data)
     return data
 
 def record_sensor_data(sensor_in: schemas.HiveSensorData) -> dict[str, Any]:
@@ -186,7 +186,7 @@ def record_sensor_data(sensor_in: schemas.HiveSensorData) -> dict[str, Any]:
         "anomalies": block.data.get("anomalies_detected", [])
     }
 
-def record_harvest(harvest_in: schemas.HarvestCreate) -> dict[str, Any]:
+async def record_harvest(harvest_in: schemas.HarvestCreate) -> dict[str, Any]:
     """Record a harvest in both Blockchain and Database"""
     data = harvest_in.dict()
     data['id'] = str(uuid.uuid4()) if not data.get('id') else data.get('id')
@@ -206,13 +206,13 @@ def record_harvest(harvest_in: schemas.HarvestCreate) -> dict[str, Any]:
     data['quality_score'] = block.data.get("sustainability_score", 85)
     
     # 2. Database Record
-    res = db_insert("harvests", data)
+    res = await db_insert("harvests", data)
     if not res.get("success"):
         print(f"ERROR: Harvest DB insertion failed: {res.get('error')}")
     
     return data
 
-def create_batch(batch_data: dict[str, Any]) -> dict[str, Any]:
+async def create_batch(batch_data: dict[str, Any]) -> dict[str, Any]:
     """Create a final product batch and sync with DB"""
     # 1. Blockchain Seal
     block = honey_blockchain.create_batch(batch_data)
@@ -222,14 +222,14 @@ def create_batch(batch_data: dict[str, Any]) -> dict[str, Any]:
     # 2. Enrich for DB (Match honey_batches schema)
     # Get Harvest details
     harvest_id = batch_data.get('harvest_id')
-    harvest = db_get_by_id("harvests", harvest_id) if harvest_id else None
+    harvest = await db_get_by_id("harvests", harvest_id) if harvest_id else None
     
     # Get Farmer & Apiary details
     farmer_id = batch_data.get('farmer_id') or (harvest.get('farmer_id') if harvest else None)
-    farmer = db_get_by_id("farmers", farmer_id) if farmer_id else None
+    farmer = await db_get_by_id("farmers", farmer_id) if farmer_id else None
     
     apiary_id = batch_data.get('apiary_id') or (harvest.get('apiary_id') if harvest else None)
-    apiary = db_get_by_id("apiaries", apiary_id) if apiary_id else None
+    apiary = await db_get_by_id("apiaries", apiary_id) if apiary_id else None
     
     db_record = {
         "id": batch_data.get('id', str(uuid.uuid4())),
@@ -255,10 +255,10 @@ def create_batch(batch_data: dict[str, Any]) -> dict[str, Any]:
     
     # 3. Synchronize with Database
     # Try honey_batches first (the master record)
-    res = db_insert("honey_batches", db_record)
+    res = await db_insert("honey_batches", db_record)
     if not res.get("success"):
         # Fallback to batches if honey_batches is missing
-        db_insert("batches", db_record)
+        await db_insert("batches", db_record)
     
     # 4. Anchor to Polygon blockchain
     try:
@@ -286,7 +286,7 @@ def create_batch(batch_data: dict[str, Any]) -> dict[str, Any]:
 
 # --- Read Operations (Traceability Journey) ---
 
-def get_all_harvests(limit: int = 100) -> list[dict[str, Any]]:
+async def get_all_harvests(limit: int = 100) -> list[dict[str, Any]]:
     """
     Get all harvests with full joining (Hive -> Apiary, Farmer)
     """
@@ -294,14 +294,14 @@ def get_all_harvests(limit: int = 100) -> list[dict[str, Any]]:
     # We join hive (and its apiary) and farmer
     columns = "*,hive:hives(*,apiary:apiaries(*)),farmer:farmers(*)"
     
-    data = db_select("harvests", columns=columns, order_by="harvest_date", ascending=False, limit=limit)
+    data = await db_select("harvests", columns=columns, order_by="harvest_date", ascending=False, limit=limit)
     
     # Process data to match frontend expectations
     processed = []
     for h in data:
         # Flatten apiary for easier access if needed by frontend
         # The frontend checks harvest.apiary OR harvest.hive.apiary
-        # We'll ensure hive.apiary is present
+        # we'll ensure hive.apiary is present
         
         # Ensure honey_type and other new fields have defaults if missing in older data
         if not h.get('honey_type'): h['honey_type'] = 'Multifloral'
@@ -407,103 +407,105 @@ def _build_db_journey(harvest: dict) -> schemas.TraceResponse:
         "status": raw_health.get("status") or "Certified Healthy"
     }
 
+
+
+
+async def _build_db_journey(harvest: dict[str, Any]) -> schemas.TraceResponse:
+    """Helper to build a full journey from DB records"""
+    farmer_id = harvest.get("farmer_id")
+    apiary_id = harvest.get("apiary_id")
+    hive_id = harvest.get("hive_id")
+    batch_code = harvest.get("batch_code") or harvest.get("id")
+    
+    # Fetch linked data concurrently
+    import asyncio
+    farmer_task = db_get_by_id("farmers", farmer_id)
+    apiary_task = db_get_by_id("apiaries", apiary_id)
+    hive_task = db_get_by_id("hives", hive_id)
+    
+    results = await asyncio.gather(farmer_task, apiary_task, hive_task, return_exceptions=True)
+    farmer_data, apiary_data, hive_data = [r if isinstance(r, dict) else {} for r in results]
+    
+    # Minimal Entity Mapping
+    try:
+        farmer = schemas.Farmer(**farmer_data) if (farmer_data and isinstance(farmer_data, dict)) else None
+        apiary = schemas.Apiary(**apiary_data) if (apiary_data and isinstance(apiary_data, dict)) else None
+        hive = schemas.Hive(**hive_data) if (hive_data and isinstance(hive_data, dict)) else None
+    except Exception as e:
+        print(f"Error mapping entities: {e}")
+        farmer, apiary, hive = None, None, None
+
     # Construct Timeline
     timeline = []
     
-    # 1. Product (Now/Created)
+    # Step 1: Ready for You
     timeline.append(schemas.TraceJourneyStep(
         title="Ready for You",
         date=harvest.get("created_at") or datetime.now().isoformat(),
         location="BeeYield Distribution Center",
-        description=f"Batch {harvest.get('batch_id')} is safely bottled and ready for distribution. Purity and ethical standards verified.",
-        icon="Jar",
-        data={"batch_id": harvest.get("batch_id")}
+        description=f"Batch {batch_code} is safely bottled and ready. Purity and standards verified.",
+        icon="Jar"
     ))
     
-    # 2. Quality Check (Simulated for Now based on snapshots)
+    # Step 2: Processing
     timeline.append(schemas.TraceJourneyStep(
         title="Processing & Quality Check",
         date=harvest.get("harvest_date", ""),
         location="Makueni Processing Facility",
-        description=f"Cold-extracted to preserve enzymes. Moisture: {harvest.get('moisture_content_percent', 17.5)}%. Grade: {harvest.get('color_grade', 'Premium')}.",
-        icon="Factory",
-        data={"moisture": harvest.get("moisture_content_percent")}
+        description=f"Cold-extracted. Moisture: {harvest.get('moisture_content_percent', 17.5)}%. Grade: {harvest.get('color_grade', 'Premium')}.",
+        icon="Factory"
     ))
     
-    # 3. Harvest
+    # Step 3: Harvest
     timeline.append(schemas.TraceJourneyStep(
         title="Harvest Day",
         date=harvest.get("harvest_date", ""),
-        location=apiary_data.get("location_name", "Kibwezi Sanctuary"),
-        description=f"Ethically harvested from {harvest.get('florage_type', 'Multifloral')} blooms. {harvest.get('quantity_kg', 0)}kg collected, ensuring 50/50 balance for the bees.",
-        icon="Basket",
-        data={"quantity": harvest.get("quantity_kg"), "source": harvest.get("florage_type")}
+        location=apiary_data.get("location_name", "Local Apiary") if isinstance(apiary_data, dict) else "Local Apiary",
+        description=f"Ethically harvested from {harvest.get('florage_type', 'Multifloral')} blooms. {harvest.get('quantity_kg', 0)}kg collected.",
+        icon="Basket"
     ))
-    
-    # 4. Hive Life
-    if hive_data:
-        timeline.append(schemas.TraceJourneyStep(
-            title="Hive Life",
-            date="Real-time Monitoring",
-            location=f"Hive {hive_data.get('hive_code', 'H001')}",
-            description=f"Home to a thriving {hive_data.get('bee_type', 'African Honey Bee')} colony. Health Snapshot: {health_snapshot.get('status')}.",
-            icon="Hexagon",
-            data={**hive_data, "health": health_snapshot}
-        ))
-    
-    # 5. The Origin
-    if apiary_data:
-        timeline.append(schemas.TraceJourneyStep(
-            title="The Origin",
-            date=apiary_data.get("established_date", "Established"),
-            location=f"{apiary_data.get('location_name', 'Kibwezi')}, {apiary_data.get('region', 'Eastern')}",
-            description=f"Sourced from the {apiary_data.get('name', 'BeeYield Apiary')}. Environment: {apiary_data.get('environment_type', 'Savanna')}.",
-            icon="MapPin",
-            data=apiary_data
-        ))
 
-        # Fetch real impact stats from database
-        impact_stats = _get_impact_stats_from_db()
+    impact_stats = _get_impact_stats_from_db()
 
-        return schemas.TraceResponse(
-        batch_code=harvest.get("batch_id"),
+    return schemas.TraceResponse(
+        batch_code=batch_code,
         product_name=harvest.get("honey_type", "Premium Honey"),
         verified=True,
         blockchain_verified=True,
-        verification_url=harvest.get("qr_code_url", ""),
+        verification_url="",
         farmer=farmer,
         apiary=apiary,
         hive=hive,
         story_title="The BeeYield Story",
-        story_content=farmer_data.get('story', '') if farmer_data else '',
+        story_content=farmer_data.get('story', '') if (farmer_data and isinstance(farmer_data, dict)) else '',
         impact_stats=impact_stats,
-        sensor_snapshot=sensor_snapshot,
-        health_snapshot=health_snapshot,
-        florage_type=harvest.get("florage_type"),
-        extra_metadata=harvest.get("extra_metadata"),
+        sensor_snapshot={}, 
+        health_snapshot={"status": "Certified Healthy"},
+        florage_type=harvest.get("florage_type", ""),
+        extra_metadata=harvest.get("extra_metadata") or {},
         timeline=timeline
     )
 
 
-def get_trace_journey(batch_code: str) -> Optional[schemas.TraceResponse]:
+async def get_trace_journey(batch_code: str) -> Optional[schemas.TraceResponse]:
     """
     Reconstruct the full journey of a honey batch.
     Prioritizes DB lookup (Smart Batching), falls back to Blockchain.
     """
     # 1. Smart Batching (DB Lookup)
     try:
-        # Check harvests table (legacy/detailed records)
-        harvests = db_select("harvests", filters={"batch_id": batch_code})
+        # Check harvests table (using batch_code column)
+        harvests = await db_select("harvests", filters={"batch_code": batch_code})
         if harvests and len(harvests) > 0:
-            return _build_db_journey(harvests[0])
+            return await _build_db_journey(harvests[0])
             
         # Check batches/honey_batches table (synced blockchain records)
-        batches = db_select("honey_batches", filters={"batch_code": batch_code})
+        batches = await db_select("honey_batches", filters={"batch_code": batch_code})
         if not batches:
-            batches = db_select("batches", filters={"batch_code": batch_code})
+            batches = await db_select("batches", filters={"batch_code": batch_code})
             
         if batches and len(batches) > 0:
-            # We found a batch record, but it might not have the full harvest link in DB
+            # we found a batch record, but it might not have the full harvest link in DB
             # The blockchain fallback is better for reconstructing full history if DB is flat
             pass 
     except Exception as e:
@@ -735,13 +737,13 @@ def get_trace_journey(batch_code: str) -> Optional[schemas.TraceResponse]:
                 pass
 
         # Calculate season total from actual harvest records in DB
-        season_total = _calc_season_total_from_db(batch_code, batch_data)
+        season_total = await _calc_season_total_from_db(batch_code, batch_data)
 
         # Get all-time total from DB
-        all_time_total = _calc_all_time_total_from_db()
+        all_time_total = await _calc_all_time_total_from_db()
 
         # Get impact stats from DB
-        impact_stats = _get_impact_stats_from_db()
+        impact_stats = await _get_impact_stats_from_db()
         # Override with computed values
         if real_hive_count > 0:
             impact_stats["hive_count"] = str(real_hive_count)

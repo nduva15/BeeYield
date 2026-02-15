@@ -586,6 +586,17 @@ export const beeyieldService = {
         }
     },
 
+    async getReadings(hiveId: string, limit?: number): Promise<SensorReading[]> {
+        try {
+            const params: Record<string, unknown> = { hive_id: hiveId };
+            if (limit) params.limit = limit;
+            return await apiGet<SensorReading[]>('/iot/readings', params);
+        } catch (error) {
+            console.error('Error fetching hive readings:', error);
+            return [];
+        }
+    },
+
     async getLatestReadings(): Promise<{ infield: SensorReading | null; inland: SensorReading | null; disease: SensorReading | null }> {
         const readings = await this.getSensorReadings();
         return {

@@ -425,32 +425,32 @@ const ShopDashboard = () => {
         switch (activeTab) {
             case 'overview':
                 return (
-                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                             <div>
-                                <h1 className="text-4xl font-black tracking-tightest">Dashboard <span className="text-primary italic">Overview</span></h1>
-                                <p className="text-muted-foreground font-medium">Welcome back, {profileForm.firstName || 'Customer'}</p>
+                                <h1 className="text-5xl font-black tracking-tightest text-beeyield-green">Dashboard <span className="text-beeyield-gold italic">Overview</span></h1>
+                                <p className="text-beeyield-green/40 font-bold uppercase tracking-widest text-xs mt-2">Welcome back to the hive, {profileForm.firstName || 'Customer'}</p>
                             </div>
-                            <Button onClick={() => navigate('/shop')} className="rounded-full px-8 shadow-glow">
-                                <ShoppingBag className="w-4 h-4 mr-2" /> Start Shopping
+                            <Button onClick={() => navigate('/shop')} className="rounded-full px-10 h-14 shadow-xl shadow-beeyield-green/20 text-sm">
+                                <ShoppingBag className="w-5 h-5 mr-2" /> Start Shopping
                             </Button>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                             {[
-                                { label: 'Total Orders', value: orders.length, icon: Package, color: 'text-blue-500' },
-                                { label: 'In Transit', value: orders.filter(o => o.status === 'shipped').length, icon: Truck, color: 'text-purple-500' },
-                                { label: 'Addresses', value: addresses.length, icon: MapPin, color: 'text-green-500' }, // Replaced wallet
-                                { label: 'Favorites', value: wishlistItems.length.toString(), icon: Heart, color: 'text-red-500' },
+                                { label: 'Total Orders', value: orders.length, icon: Package, color: 'text-beeyield-green', bg: 'bg-beeyield-green/5' },
+                                { label: 'In Transit', value: orders.filter(o => o.status === 'shipped').length, icon: Truck, color: 'text-beeyield-orange', bg: 'bg-beeyield-orange/5' },
+                                { label: 'Delivery Locations', value: addresses.length, icon: MapPin, color: 'text-beeyield-green', bg: 'bg-beeyield-green/5' },
+                                { label: 'My Favorites', value: wishlistItems.length.toString(), icon: Heart, color: 'text-beeyield-orange', bg: 'bg-beeyield-orange/5' },
                             ].map((stat, i) => (
-                                <Card key={i} className="border-none shadow-premium rounded-3xl overflow-hidden group">
-                                    <CardContent className="p-6">
+                                <Card key={i} className="border-none shadow-2xl shadow-beeyield-green/[0.02] rounded-[32px] overflow-hidden group hover:scale-[1.02] transition-all duration-300">
+                                    <CardContent className="p-8">
                                         <div className="flex justify-between items-start">
                                             <div>
-                                                <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-1">{stat.label}</p>
-                                                <p className="text-3xl font-black">{stat.value}</p>
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-beeyield-green/30 mb-3">{stat.label}</p>
+                                                <p className="text-3xl font-black text-beeyield-green">{stat.value}</p>
                                             </div>
-                                            <div className={`p-3 rounded-2xl bg-muted/50 group-hover:bg-primary/10 transition-colors ${stat.color}`}>
+                                            <div className={`p-4 rounded-2xl ${stat.bg} ${stat.color} group-hover:scale-110 transition-transform`}>
                                                 <stat.icon className="w-5 h-5" />
                                             </div>
                                         </div>

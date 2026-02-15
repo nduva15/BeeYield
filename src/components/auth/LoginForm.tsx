@@ -58,6 +58,53 @@ const LoginForm: React.FC<LoginFormProps> = ({
             const { data } = await supabaseInstance.auth.getUser();
             const loggedInUser = data?.user;
 
+            if (!loggedInUser) {
+                setLoading(false);
+                return;
+            }
+
+            // 0. Platform Profile Readiness (Auto-Provisioning)
+            const profileTable = activeBackend === 'shop' ? 'shop_profiles' :
+                activeBackend === 'beeyield' ? 'beeyield_profiles' :
+                    'ceba_profiles';
+
+            const { data: profile, error: profileError } = await supabaseInstance
+                .from(profileTable)
+                .select('id')
+                .eq('id', loggedInUser.id)
+                .single();
+
+            // Auto-provision profile if missing, instead of blocking login
+            if (profileError || !profile) {
+                console.log(`Auto-provisioning ${activeBackend} profile for ${loggedInUser.email}`);
+                const { error: insertError } = await supabaseInstance
+                    .from(profileTable)
+                    .upsert({
+                        id: loggedInUser.id,
+                        email: loggedInUser.email,
+                        first_name: loggedInUser.user_metadata?.first_name || '',
+                        last_name: loggedInUser.user_metadata?.last_name || '',
+                        role: loggedInUser.user_metadata?.role || 'user',
+                        // Additional context-specific fields
+                        ...(activeBackend === 'beeyield' ? { is_professional: true } : {}),
+                        ...(activeBackend === 'ceba' ? { admin_role: 'content_editor' } : {}),
+                        updated_at: new Date().toISOString()
+                    });
+
+                if (insertError) {
+                    console.error(`Profile provisioning failed for ${activeBackend}:`, insertError);
+                    // Critical failure only if they aren't an admin
+                    const isSuperAdmin = [SUPER_ADMIN_EMAIL, 'timothynduva349@gmail.com'].includes(loggedInUser?.email?.toLowerCase() || '');
+                    if (!isSuperAdmin) {
+                        toast.error('Account Preparation Failed', {
+                            description: 'We couldn\'t set up your dashboard profile. This might be a database lock issue.'
+                        });
+                        setLoading(false);
+                        return;
+                    }
+                }
+            }
+
             // 1. Role Enforcement for Admin Variant
             if (variant === 'admin') {
                 const userRole = loggedInUser?.user_metadata?.role || 'user';
@@ -66,8 +113,8 @@ const LoginForm: React.FC<LoginFormProps> = ({
 
                 if (!isAdmin) {
                     await signOut(activeBackend);
-                    toast.error('Access Denied', {
-                        description: 'Restricted access.'
+                    toast.error('No Access', {
+                        description: 'You don\'t have permission.'
                     });
                     setLoading(false);
                     return;
@@ -82,7 +129,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
 
                 if (isAdmin) {
                     await signOut(activeBackend);
-                    toast.error('Admin Account Detected', {
+                    toast.error('Admin Account', {
                         description: 'Please use the Admin Dashboard to manage your account.'
                     });
                     setLoading(false);
@@ -119,10 +166,10 @@ const LoginForm: React.FC<LoginFormProps> = ({
         }
 
         if (error) {
-            toast.error('Login failed', { description: error.message });
+            toast.error('Could not log in', { description: error.message });
         } else if (needsMFA) {
             setShowMFAInput(true);
-            toast.info('Enter your 2FA code', { description: 'Open your authenticator app and enter the code' });
+            toast.info('Enter code', { description: 'Open your app and enter the code' });
         }
 
         setLoading(false);
@@ -142,7 +189,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
         const { error } = await verifyMFAChallenge(mfaCode, activeBackend);
 
         if (error) {
-            toast.error('Verification failed', { description: error.message });
+            toast.error('Code incorrect', { description: error.message });
         } else {
             const supabaseModule = await import('@/lib/supabase');
             const supabaseInstances = {
@@ -185,7 +232,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
 
         const { error } = await signInWithGoogle(undefined, activeBackend);
         if (error) {
-            toast.error('Google sign-in failed', { description: error.message });
+            toast.error('Could not log in with Google', { description: error.message });
             setGoogleLoading(false);
         }
     };
@@ -197,14 +244,14 @@ const LoginForm: React.FC<LoginFormProps> = ({
                     <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
                         <Shield className="h-8 w-8 text-primary" />
                     </div>
-                    <h3 className="text-xl font-bold">Two-Factor Authentication</h3>
+                    <h3 className="text-xl font-bold">Security Code</h3>
                     <p className="text-sm text-muted-foreground">
-                        Enter the 6-digit code from your authenticator app
+                        Enter the 6-digit code from your app
                     </p>
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="mfa-code">Verification Code</Label>
+                    <Label htmlFor="mfa-code">Enter Code</Label>
                     <Input
                         id="mfa-code"
                         name="mfa-code"
@@ -223,10 +270,10 @@ const LoginForm: React.FC<LoginFormProps> = ({
                     {loading ? (
                         <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Verifying...
+                            Checking Code...
                         </>
                     ) : (
-                        'Verify & Sign In'
+                        'Confirm & Log In'
                     )}
                 </Button>
 
@@ -245,6 +292,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
     }
 
     const isAdminVariant = variant === 'admin';
+    const isProVariant = variant === 'professional';
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -254,12 +302,12 @@ const LoginForm: React.FC<LoginFormProps> = ({
                     <Button
                         type="button"
                         variant="outline"
-                        className="w-full h-12 font-medium border-2 hover:bg-muted/50"
+                        className="w-full h-12 font-medium border-2 hover:bg-beeyield-cream hover:border-beeyield-gold/30 transition-all text-beeyield-green"
                         onClick={handleGoogleSignIn}
                         disabled={googleLoading}
                     >
                         {googleLoading ? (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin text-beeyield-gold" />
                         ) : (
                             <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
                                 <path
@@ -276,7 +324,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
                                 />
                                 <path
                                     fill="#EA4335"
-                                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1c-4.3 0-8.1 2.5-9.8 6.1l3.6 2.8c.9-2.6 3.3-4.5 6.2-4.5z"
                                 />
                             </svg>
                         )}
@@ -285,19 +333,19 @@ const LoginForm: React.FC<LoginFormProps> = ({
 
                     <div className="relative">
                         <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t" />
+                            <span className="w-full border-t border-beeyield-green/10" />
                         </div>
                         <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-background px-2 text-muted-foreground">Or continue with email</span>
+                            <span className="bg-transparent px-2 text-beeyield-green/40 font-bold bg-white/50 backdrop-blur-sm">Or continue with email</span>
                         </div>
                     </div>
                 </>
             )}
 
             <div className="space-y-2">
-                <Label htmlFor="login-email">{isAdminVariant ? 'Admin ID / Email' : 'Email'}</Label>
+                <Label htmlFor="login-email" className="text-beeyield-green font-bold">{isAdminVariant ? 'Email' : 'Email'}</Label>
                 <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-beeyield-green/40" />
                     <Input
                         id="login-email"
                         name="email"
@@ -305,7 +353,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
                         placeholder={isAdminVariant ? "admin@beeyield.com" : "you@example.com"}
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className={`pl-10 ${isAdminVariant ? 'bg-zinc-950/50 border-white/10 text-white' : ''}`}
+                        className={`pl-10 border-beeyield-green/20 focus:border-beeyield-gold focus:ring-beeyield-gold/20 ${isAdminVariant ? 'bg-white text-beeyield-black' : 'bg-white/50 text-beeyield-black'}`}
                         required
                     />
                 </div>
@@ -313,19 +361,19 @@ const LoginForm: React.FC<LoginFormProps> = ({
 
             <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                    <Label htmlFor="login-password">Password</Label>
+                    <Label htmlFor="login-password" className="text-beeyield-green font-bold">Password</Label>
                     {onForgotPassword && (
                         <button
                             type="button"
                             onClick={onForgotPassword}
-                            className={`text-sm font-medium hover:underline tabindex={-1} ${isAdminVariant ? 'text-primary' : 'text-primary'}`}
+                            className="text-xs font-bold hover:underline text-beeyield-gold"
                         >
                             Forgot password?
                         </button>
                     )}
                 </div>
                 <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-beeyield-green/40" />
                     <Input
                         id="login-password"
                         name="password"
@@ -333,7 +381,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
                         placeholder="••••••••"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className={`pl-10 ${isAdminVariant ? 'bg-zinc-950/50 border-white/10 text-white' : ''}`}
+                        className={`pl-10 border-beeyield-green/20 focus:border-beeyield-gold focus:ring-beeyield-gold/20 ${isAdminVariant ? 'bg-white text-beeyield-black' : 'bg-white/50 text-beeyield-black'}`}
                         required
                     />
                 </div>
@@ -341,7 +389,11 @@ const LoginForm: React.FC<LoginFormProps> = ({
 
             <Button
                 type="submit"
-                className={`w-full h-12 text-sm font-bold uppercase tracking-widest ${isAdminVariant ? 'bg-primary hover:bg-primary/90 shadow-glow shadow-primary/20' : ''}`}
+                className={`w-full h-12 text-sm font-black uppercase tracking-widest text-white shadow-soft hover:shadow-glow transition-all
+                    ${isAdminVariant ? 'bg-beeyield-green hover:bg-beeyield-green-dark' :
+                        isProVariant ? 'bg-gradient-to-r from-beeyield-green to-beeyield-green-dark hover:from-beeyield-green-dark hover:to-beeyield-green' :
+                            'bg-gradient-to-r from-beeyield-gold to-beeyield-orange hover:from-beeyield-orange hover:to-beeyield-gold'}
+                `}
                 disabled={loading}
             >
                 {loading ? (
@@ -350,17 +402,19 @@ const LoginForm: React.FC<LoginFormProps> = ({
                         Logging in...
                     </>
                 ) : (
-                    isAdminVariant ? 'Admin Login' : 'Shop Sign In'
+                    variant === 'admin' ? 'Log In' :
+                        variant === 'shop' ? 'Log In' :
+                            'Log In'
                 )}
             </Button>
 
             {onSwitchToRegister && (
-                <p className="text-center text-sm text-muted-foreground">
+                <p className="text-center text-sm text-beeyield-green/60">
                     Don't have an account?{' '}
                     <button
                         type="button"
                         onClick={onSwitchToRegister}
-                        className="text-primary hover:underline font-medium"
+                        className="text-beeyield-gold hover:text-beeyield-orange hover:underline font-bold"
                     >
                         Create one
                     </button>
@@ -369,8 +423,8 @@ const LoginForm: React.FC<LoginFormProps> = ({
 
             {isAdminVariant && (
                 <div className="mt-6 flex flex-col items-center gap-2">
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono uppercase tracking-widest font-bold">
-                        <Shield className="w-3 h-3" /> Secure Connection
+                    <div className="flex items-center gap-2 text-[10px] text-beeyield-green/40 font-mono uppercase tracking-widest font-bold">
+                        <Shield className="w-3 h-3" /> Secure
                     </div>
                 </div>
             )}

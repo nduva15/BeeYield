@@ -10,18 +10,16 @@ from app.blockchain.honey_chain import honey_blockchain
 router = APIRouter()
 
 @router.get("/code/{code}", response_model=schemas.TraceResponse)
-def get_trace_by_code(code: str, request: Request, background_tasks: BackgroundTasks):
+async def get_trace_by_code(code: str, request: Request, background_tasks: BackgroundTasks):
     """
     Public endpoint to trace honey by its batch code (e.g. from jar).
     Returns full journey: Farmer -> Apiary -> Hive -> Harvest -> Processing.
     """
     from app.db.clickhouse_db import track_traceability_scan
     
-    print(f"Trace Request for Code: {code}")
-    result = traceability_service.get_trace_journey(code)
+    result = await traceability_service.get_trace_journey(code)
     
     if result:
-        print(f"Found in Blockchain: {code}")
         background_tasks.add_task(track_traceability_scan, code)
         return result
         
@@ -43,29 +41,29 @@ def get_blockchain_status():
     }
 
 @router.post("/farmers", response_model=dict[str, Any])
-def create_farmer(farmer_in: schemas.FarmerCreate):
+async def create_farmer(farmer_in: schemas.FarmerCreate):
     """Register a new farmer/beekeeper."""
-    return traceability_service.register_farmer(farmer_in)
+    return await traceability_service.register_farmer(farmer_in)
 
 @router.post("/apiaries", response_model=dict[str, Any])
-def create_apiary(apiary_in: schemas.ApiaryCreate):
+async def create_apiary(apiary_in: schemas.ApiaryCreate):
     """Register a new apiary location."""
-    return traceability_service.register_apiary(apiary_in)
+    return await traceability_service.register_apiary(apiary_in)
 
 @router.post("/hives", response_model=dict[str, Any])
-def create_hive(hive_in: schemas.HiveCreate):
+async def create_hive(hive_in: schemas.HiveCreate):
     """Register a new hive."""
-    return traceability_service.register_hive(hive_in)
+    return await traceability_service.register_hive(hive_in)
 
 @router.post("/sensors", response_model=dict[str, Any])
-def record_sensor_data(sensor_in: schemas.HiveSensorData):
+async def record_sensor_data(sensor_in: schemas.HiveSensorData):
     """Record IoT sensor data for a hive."""
     return traceability_service.record_sensor_data(sensor_in)
 
 @router.post("/harvests", response_model=dict[str, Any])
-def record_harvest(harvest_in: schemas.HarvestCreate):
+async def record_harvest(harvest_in: schemas.HarvestCreate):
     """Record a harvest."""
-    return traceability_service.record_harvest(harvest_in)
+    return await traceability_service.record_harvest(harvest_in)
 
 @router.get("/harvests", response_model=list[dict[str, Any]])
 def get_harvests(limit: int = 100):
@@ -83,9 +81,9 @@ def get_hives(limit: int = 100):
     return traceability_service.get_all_hives(limit=limit)
 
 @router.post("/batches", response_model=dict[str, Any])
-def create_batch(batch_in: dict[str, Any]):
+async def create_batch(batch_in: dict[str, Any]):
     """Create a final product batch."""
-    return traceability_service.create_batch(batch_in)
+    return await traceability_service.create_batch(batch_in)
 
 
 @router.get("/batches", response_model=list[dict[str, Any]])

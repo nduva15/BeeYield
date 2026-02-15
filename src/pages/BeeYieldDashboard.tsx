@@ -360,7 +360,7 @@ const BeeYieldDashboard: React.FC = () => {
     }
 
     // Check if user has initialized BeeYield access
-    const isBeeYieldActive = !!user?.user_metadata?.beeyield_active || user?.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase() || !!beeyieldUser;
+    const isBeeYieldActive = !!user?.user_metadata?.beeyield_active || ['timothynduva349@gmail.com', SUPER_ADMIN_EMAIL.toLowerCase()].includes(user?.email?.toLowerCase() || '') || !!beeyieldUser;
 
 
 

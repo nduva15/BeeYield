@@ -246,7 +246,7 @@ const Receipt = () => {
                                 </div>
                                 <div className="flex-1 text-center md:text-left">
                                     <h3 className="text-xl font-black mb-2 flex items-center justify-center md:justify-start gap-2">
-                                        HoneyChain™ Verification <ShieldCheck className="w-5 h-5 text-primary" />
+                                        Honey History Verification <ShieldCheck className="w-5 h-5 text-primary" />
                                     </h3>
                                     <p className="text-slate-400 text-sm leading-relaxed max-w-xl">
                                         This honey is verified through our system. Scan the QR code or use the Transaction ID to trace your jar's journey from our hives in Kibwezi to your doorstep.

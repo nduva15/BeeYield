@@ -12,5 +12,53 @@
     "status": "cached_mock",
     "verification_url": "https://mumbai.polygonscan.com/tx/0x445fec2c57752f1cd0f890164e67d62af7959d71f657c6cf1d4d69ee406bfbf8",
     "mock_mode": true
+  },
+  "KIB-ACACIAL-26": {
+    "batch_code": "KIB-ACACIAL-26",
+    "data_hash": "b38a042f6f9560154f7e392e573f3a09ba82c46542cf3bd8a302a5fb3bf19e46",
+    "anchored_at": "2026-02-15T18:46:01.554560",
+    "network": "mumbai",
+    "chain_id": 80001,
+    "metadata": {
+      "honeychain_block": "0033ef31e36d616dd645b38aaab610a95c83d5814bccdc3177840008dafb69b5",
+      "honey_type": "Premium Acacia",
+      "farmer_id": "F-TIMOTHY-001"
+    },
+    "tx_hash": "0xf6b33cee1e1925e7cc45e6904655104e0b0d9c277d39ad43c4d5ff82f1724993",
+    "status": "cached_mock",
+    "verification_url": "https://mumbai.polygonscan.com/tx/0xf6b33cee1e1925e7cc45e6904655104e0b0d9c277d39ad43c4d5ff82f1724993",
+    "mock_mode": true
+  },
+  "KIB-SAV-2026": {
+    "batch_code": "KIB-SAV-2026",
+    "data_hash": "36b20c5378e6db13196b13f603ef545521405039de978dc084ea632bff9d2a1e",
+    "anchored_at": "2026-02-15T18:46:22.028334",
+    "network": "mumbai",
+    "chain_id": 80001,
+    "metadata": {
+      "honeychain_block": "00b65a426d3e76fb5aaf32415dba325618cb16a79dcab03e15647da6721094dc",
+      "honey_type": "Savanna Wildflower",
+      "farmer_id": "F-TIMOTHY-001"
+    },
+    "tx_hash": "0x5c597cd007341b31b49c9f4ccd634e6f281876ad93c68b83913e454ccbc7a84d",
+    "status": "cached_mock",
+    "verification_url": "https://mumbai.polygonscan.com/tx/0x5c597cd007341b31b49c9f4ccd634e6f281876ad93c68b83913e454ccbc7a84d",
+    "mock_mode": true
+  },
+  "KIB-GOLD-2026": {
+    "batch_code": "KIB-GOLD-2026",
+    "data_hash": "9d1d9a48a436b024665d23c13818fc2c9ecff73ba2a857291d00f56f4f8c161e",
+    "anchored_at": "2026-02-15T18:46:44.370983",
+    "network": "mumbai",
+    "chain_id": 80001,
+    "metadata": {
+      "honeychain_block": "0079aa6aed7e8255591e78c440439549fa60fe1bbaf795c4b78a360edabe5390",
+      "honey_type": "Golden Acacia Reserve",
+      "farmer_id": "F-TIMOTHY-001"
+    },
+    "tx_hash": "0x480d75de90410417ffc8aac1dd2e865c6a3f8ea67c9857c4c99079a96816aa45",
+    "status": "cached_mock",
+    "verification_url": "https://mumbai.polygonscan.com/tx/0x480d75de90410417ffc8aac1dd2e865c6a3f8ea67c9857c4c99079a96816aa45",
+    "mock_mode": true
   }
 }
