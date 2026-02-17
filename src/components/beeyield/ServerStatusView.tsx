@@ -38,7 +38,7 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
         { name: 'Supabase REST', checkPath: '/rest/v1/', lastCheck: lastRefresh },
         { name: 'Supabase Auth', checkPath: '/auth/v1/', lastCheck: lastRefresh },
         { name: 'BeeYield Backend', checkPath: '/api/v1/health', lastCheck: lastRefresh },
-        { name: 'AI Service', checkPath: '/api/v1/ai/health', lastCheck: lastRefresh },
+        { name: 'Analysis Service', checkPath: '/api/v1/ai/health', lastCheck: lastRefresh },
     ];
 
     return (

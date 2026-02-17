@@ -13,7 +13,7 @@ class BlogAiService:
         Generates a comprehensive outline (Book Builder style) for a blog post.
         Targeting 10-15 depth-chapters to hit the 6,000-word target.
         """
-        post = db_get_by_id("blog_posts", post_id)
+        post = await db_get_by_id("blog_posts", post_id)
         if not post:
             return {"success": False, "error": "Post not found"}
 
@@ -47,9 +47,8 @@ class BlogAiService:
                 # Fallback to manual parsing or generic error
                 return {"success": False, "error": "Failed to parse outline JSON"}
 
-            # Save chapters to database
-            db_delete_chapters = db_select("blog_chapters", filters={"post_id": post_id})
-            # (Note: we might want to ARCHIVE instead of delete, but for now we replace)
+            # Clear existing chapters for this post
+            await db_delete("blog_chapters", filters={"post_id": post_id})
             
             chapters = []
             for i, item in enumerate(outline_data):
@@ -63,7 +62,7 @@ class BlogAiService:
                     "keywords": item["keywords"],
                     "status": "pending"
                 }
-                res = db_insert("blog_chapters", chapter)
+                res = await db_insert("blog_chapters", chapter)
                 if res["success"]:
                     chapters.append(res["data"])
 
@@ -77,14 +76,14 @@ class BlogAiService:
         Generates deep-dive content for a specific chapter.
         Follows AEO/GEO/SEO optimization rules.
         """
-        post = db_get_by_id("blog_posts", post_id)
-        chapter = db_get_by_id("blog_chapters", chapter_id)
+        post = await db_get_by_id("blog_posts", post_id)
+        chapter = await db_get_by_id("blog_chapters", chapter_id)
         
         if not post or not chapter:
             return {"success": False, "error": "Post or Chapter not found"}
 
         # Get context from other chapters to maintain flow
-        other_chapters = db_select("blog_chapters", filters={"post_id": post_id}, order_by="chapter_order")
+        other_chapters = await db_select("blog_chapters", filters={"post_id": post_id}, order_by="chapter_order")
         outline_summary = "\n".join([f"{c['chapter_order']}. {c['title']}" for c in other_chapters])
 
         # RAG Search for specific chapter topic
@@ -113,7 +112,7 @@ class BlogAiService:
             content = await AIService.chat(prompt, history=[], language="EN")
             
             # Update chapter with content
-            db_update("blog_chapters", {
+            await db_update("blog_chapters", {
                 "content_markdown": content,
                 "status": "completed",
                 "generated_at": datetime.utcnow().isoformat()
@@ -128,8 +127,8 @@ class BlogAiService:
         """
         Analyzes the full post (all chapters) for SEO/AEO/GEO scores.
         """
-        post = db_get_by_id("blog_posts", post_id)
-        chapters = db_select("blog_chapters", filters={"post_id": post_id}, order_by="chapter_order")
+        post = await db_get_by_id("blog_posts", post_id)
+        chapters = await db_select("blog_chapters", filters={"post_id": post_id}, order_by="chapter_order")
         
         full_content = "\n\n".join([c.get("content_markdown", "") for c in chapters])
         word_count = len(full_content.split())
@@ -152,6 +151,6 @@ class BlogAiService:
         }
         
         # Upsert SEO metadata
-        db_upsert("seo_metadata", analysis, on_conflict="post_id")
+        await db_upsert("seo_metadata", analysis, on_conflict="post_id")
         
         return analysis

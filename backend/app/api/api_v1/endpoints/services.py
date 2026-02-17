@@ -1,23 +1,29 @@
-
 """
 Services Endpoints - Pollination, Learning, ESG, Crops
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request, Depends, status
 from typing import Optional
 from app.schemas import services as schemas
 from app.db.supabase_db import db_select, db_get_by_id
+from app.core import security
 
 router = APIRouter()
 
+def get_token(request: Request) -> Optional[str]:
+    """Extract raw token from Authorization header"""
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        return auth_header.split(" ")[1]
+    return None
 
 # ============ POLLINATION SOLUTIONS ============
 
 @router.get("/pollination", response_model=list[schemas.PollinationService])
-def get_pollination_services():
+async def get_pollination_services(token: Optional[str] = Depends(get_token)):
     """
     Get all pollination services.
     """
-    services = db_select("pollination_services", filters={"is_active": True}, order_by="display_order")
+    services = await db_select("pollination_services", filters={"is_active": True}, order_by="display_order", token=token)
     
     if not services or len(services) == 0:
         return [
@@ -52,11 +58,11 @@ def get_pollination_services():
 # ============ CROPS ============
 
 @router.get("/crops", response_model=list[schemas.Crop])
-def get_crops():
+async def get_crops(token: Optional[str] = Depends(get_token)):
     """
     Get all crops pollinated by BeeYield.
     """
-    crops = db_select("crops_pollinated", filters={"is_active": True}, order_by="display_order")
+    crops = await db_select("crops_pollinated", filters={"is_active": True}, order_by="display_order", token=token)
     
     if not crops or len(crops) == 0:
         return [
@@ -82,7 +88,7 @@ def get_crops():
 # ============ LEARNING / BEE LEARN ============
 
 @router.get("/learning/modules", response_model=list[schemas.LearningModule])
-def get_learning_modules(category: Optional[str] = None):
+async def get_learning_modules(category: Optional[str] = None, token: Optional[str] = Depends(get_token)):
     """
     Get all learning modules for Bee Learn.
     """
@@ -90,7 +96,7 @@ def get_learning_modules(category: Optional[str] = None):
     if category:
         filters["category"] = category
         
-    modules = db_select("learning_modules", filters=filters, order_by="display_order")
+    modules = await db_select("learning_modules", filters=filters, order_by="display_order", token=token)
     
     if not modules or len(modules) == 0:
         return [
@@ -153,7 +159,7 @@ def get_learning_modules(category: Optional[str] = None):
     
     # For each module, fetch its lessons
     for module in modules:
-        lessons = db_select("learning_lessons", filters={"module_id": module["id"]}, order_by="display_order")
+        lessons = await db_select("learning_lessons", filters={"module_id": module["id"]}, order_by="display_order", token=token)
         module["lessons"] = lessons if lessons else []
         
     return modules
@@ -162,11 +168,11 @@ def get_learning_modules(category: Optional[str] = None):
 # ============ ESG & IMPACT ============
 
 @router.get("/esg/metrics", response_model=list[schemas.ESGMetric])
-def get_esg_metrics():
+async def get_esg_metrics(token: Optional[str] = Depends(get_token)):
     """
     Get ESG (Environmental, Social, Governance) metrics.
     """
-    metrics = db_select("esg_metrics", order_by="metric_name")
+    metrics = await db_select("esg_metrics", order_by="metric_name", token=token)
     
     if not metrics or len(metrics) == 0:
         return [
@@ -185,11 +191,11 @@ def get_esg_metrics():
 
 
 @router.get("/impact/stories", response_model=list[dict])
-def get_impact_stories():
+async def get_impact_stories(token: Optional[str] = Depends(get_token)):
     """
     Get impact stories.
     """
-    stories = db_select("impact_stories", filters={"is_active": True}, order_by="published_at", ascending=False)
+    stories = await db_select("impact_stories", filters={"is_active": True}, order_by="published_at", ascending=False, token=token)
     
     if not stories or len(stories) == 0:
         return [
@@ -205,26 +211,26 @@ def get_impact_stories():
 
 
 @router.get("/impact/sdgs", response_model=list[dict])
-def get_sdgs():
+async def get_sdgs(token: Optional[str] = Depends(get_token)):
     """
     Get UN Sustainable Development Goals commitment.
     """
-    sdgs = db_select("sdgs", filters={"is_active": True}, order_by="display_order")
+    sdgs = await db_select("sdgs", filters={"is_active": True}, order_by="display_order", token=token)
     return sdgs if sdgs else []
 
 
 @router.get("/esg/pillars", response_model=list[dict])
-def get_esg_pillars():
+async def get_esg_pillars(token: Optional[str] = Depends(get_token)):
     """
     Get ESG pillars and their initiatives.
     """
-    pillars = db_select("esg_pillars", filters={"is_active": True}, order_by="display_order")
+    pillars = await db_select("esg_pillars", filters={"is_active": True}, order_by="display_order", token=token)
     
     # Enrich with initiatives
     result = []
     for pillar in pillars:
         try:
-            initiatives = db_select("esg_initiatives", filters={"pillar_id": pillar["id"]}, order_by="display_order")
+            initiatives = await db_select("esg_initiatives", filters={"pillar_id": pillar["id"]}, order_by="display_order", token=token)
             pillar["initiatives"] = [i["description"] for i in initiatives]
         except Exception:
             pillar["initiatives"] = []
@@ -236,11 +242,11 @@ def get_esg_pillars():
 # ============ GLOBAL HIVE NETWORK ============
 
 @router.get("/apiaries", response_model=list[dict])
-def get_apiaries():
+async def get_apiaries(token: Optional[str] = Depends(get_token)):
     """
     Get all apiary locations in the network.
     """
-    apiaries = db_select("apiaries", filters={"is_active": True})
+    apiaries = await db_select("apiaries", filters={"is_active": True}, token=token)
     
     if not apiaries or len(apiaries) == 0:
         return [
@@ -252,3 +258,4 @@ def get_apiaries():
             }
         ]
     return apiaries
+

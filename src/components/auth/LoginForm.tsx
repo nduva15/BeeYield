@@ -64,9 +64,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
             }
 
             // 0. Platform Profile Readiness (Auto-Provisioning)
-            const profileTable = activeBackend === 'shop' ? 'shop_profiles' :
-                activeBackend === 'beeyield' ? 'beeyield_profiles' :
-                    'ceba_profiles';
+            const profileTable = 'user_profiles';
 
             const { data: profile, error: profileError } = await supabaseInstance
                 .from(profileTable)
@@ -76,14 +74,14 @@ const LoginForm: React.FC<LoginFormProps> = ({
 
             // Auto-provision profile if missing, instead of blocking login
             if (profileError || !profile) {
-                console.log(`Auto-provisioning ${activeBackend} profile for ${loggedInUser.email}`);
+                const firstName = loggedInUser.user_metadata?.first_name || '';
+                const lastName = loggedInUser.user_metadata?.last_name || '';
                 const { error: insertError } = await supabaseInstance
                     .from(profileTable)
                     .upsert({
                         id: loggedInUser.id,
                         email: loggedInUser.email,
-                        first_name: loggedInUser.user_metadata?.first_name || '',
-                        last_name: loggedInUser.user_metadata?.last_name || '',
+                        full_name: `${firstName} ${lastName}`.trim() || 'New User',
                         role: loggedInUser.user_metadata?.role || 'user',
                         // Additional context-specific fields
                         ...(activeBackend === 'beeyield' ? { is_professional: true } : {}),

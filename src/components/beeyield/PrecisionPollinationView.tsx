@@ -659,7 +659,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                             <div className="flex items-center justify-between mb-3">
                                 <div className="flex items-center gap-2">
                                     <Bot className="w-4 h-4 text-[#F4D03F]" />
-                                    <h4 className="text-sm font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">BeeYield AI</h4>
+                                    <h4 className="text-sm font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">BeeYield Assistant</h4>
                                 </div>
                                 <div className="flex items-center gap-1.5">
                                     <div className="relative flex h-2 w-2">
@@ -671,7 +671,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                             </div>
                             <div className="space-y-2">
                                 <p className="text-[10px] font-medium text-slate-600 dark:text-slate-400 leading-relaxed">
-                                    <span className="font-bold text-[#1B9157]">Suggestion:</span> Moving Hive 4 closer to the center could help your crops more by <span className="font-bold text-slate-800 dark:text-white">~12%</span>.
+                                    <span className="font-bold text-[#1B9157]">Smart Suggestion:</span> Moving Hive 4 closer to the center could help your crops more by <span className="font-bold text-slate-800 dark:text-white">~12%</span>.
                                 </p>
                             </div>
                         </div>
@@ -680,7 +680,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                             onClick={() => onTabChange('assistant')}
                             className="w-full h-10 mt-5 rounded-lg bg-[#F4D03F] hover:bg-[#e0be36] text-black font-bold uppercase tracking-wider text-xs shadow-md shadow-[#F4D03F]/20"
                         >
-                            <Bot className="w-4 h-4 mr-2" /> Ask BeeYield AI
+                            <Bot className="w-4 h-4 mr-2" /> Ask BeeYield
                         </Button>
 
                         <Button

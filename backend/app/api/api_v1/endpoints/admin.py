@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from typing import Any, Optional
-from app.db.supabase_db import db_select, db_insert, db_update, db_delete, db_get_by_id, get_supabase
+from fastapi import APIRouter, Depends, HTTPException, status, Request
+from datetime import datetime
+from typing import Any, Optional, List
+from app.db.supabase_db import db_select, db_insert, db_update, db_delete, db_get_by_id, db_upsert, get_supabase
 from app.services import traceability_service
 from app.core import security
 from pydantic import BaseModel
@@ -12,9 +13,7 @@ router = APIRouter()
 def check_admin_role(current_user: dict = Depends(security.get_current_user)):
     """
     Ensure the current user has admin or superadmin role.
-    In Supabase JWT, this is often in user_metadata or app_metadata.
     """
-    # Check common locations for role in Supabase JWT
     user_metadata = current_user.get("user_metadata", {})
     app_metadata = current_user.get("app_metadata", {})
     
@@ -27,8 +26,14 @@ def check_admin_role(current_user: dict = Depends(security.get_current_user)):
         )
     return current_user
 
+def get_token(request: Request) -> Optional[str]:
+    """Extract raw token from Authorization header"""
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        return auth_header.split(" ")[1]
+    return None
+
 # --- Schemas ---
-# (Keeping schemas same as before)
 class VariantCreate(BaseModel):
     size: str
     price_kes: float
@@ -71,56 +76,58 @@ class UserUpdate(BaseModel):
 # --- Orders ---
 
 @router.get("/orders", response_model=list[dict[str, Any]])
-def get_all_orders(current_admin: dict = Depends(check_admin_role)):
+async def get_all_orders(current_admin: dict = Depends(check_admin_role), token: Optional[str] = Depends(get_token)):
     """
     Get all orders. Requires admin.
     """
-    orders = db_select("orders")
+    orders = await db_select("orders", token=token)
     for order in orders:
          if order.get("id"):
-             order["items"] = db_select("order_items", filters={"order_id": order["id"]})
+             order["items"] = await db_select("order_items", filters={"order_id": order["id"]}, token=token)
     return orders
 
 @router.put("/orders/{order_id}/status", response_model=dict[str, Any])
-def update_order_status(
+async def update_order_status(
     order_id: str, 
     status_update: dict[str, str],
-    current_admin: dict = Depends(check_admin_role)
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Update the status of an order. Requires admin.
     """
-    status = status_update.get("status")
-    if not status:
+    status_val = status_update.get("status")
+    if not status_val:
         raise HTTPException(status_code=400, detail="Status is required")
     
-    return db_update("orders", {"status": status}, {"id": order_id})
+    return await db_update("orders", {"status": status_val}, {"id": order_id}, token=token)
 
 # --- Newsletter ---
 
 @router.get("/newsletter", response_model=list[dict[str, Any]])
-def get_newsletter_subscribers(current_admin: dict = Depends(check_admin_role)):
+async def get_newsletter_subscribers(current_admin: dict = Depends(check_admin_role), token: Optional[str] = Depends(get_token)):
     """
     Get all newsletter subscribers. Requires admin.
     """
-    return db_select("newsletter_subscribers")
+    return await db_select("newsletter_subscribers", token=token)
 
 # --- Products ---
 
 @router.get("/products", response_model=list[dict[str, Any]])
-def get_all_products(current_admin: dict = Depends(check_admin_role)):
+async def get_all_products(current_admin: dict = Depends(check_admin_role), token: Optional[str] = Depends(get_token)):
     """
     Get all products (including inactive). Requires admin.
     """
-    products = db_select("products")
+    products = await db_select("products", token=token)
     for product in products:
-        product["variants"] = db_select("product_variants", filters={"product_id": product["id"]})
+        product["variants"] = await db_select("product_variants", filters={"product_id": product["id"]}, token=token)
     return products
 
 @router.post("/products", response_model=dict[str, Any])
-def create_product(
+async def create_product(
     product_in: ProductCreate,
-    current_admin: dict = Depends(check_admin_role)
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Create a new product. Requires admin.
@@ -135,7 +142,7 @@ def create_product(
         "is_active": data["is_active"],
         "images": data["images"]
     }
-    result = db_insert("products", product_data)
+    result = await db_insert("products", product_data, token=token)
     
     if not result.get("success"):
         raise HTTPException(status_code=500, detail=result.get("error", "Unknown error"))
@@ -155,7 +162,7 @@ def create_product(
                 "stock_quantity": v.get("stock_quantity", 0),
                 "is_available": v.get("is_available", True)
             }
-            db_insert("product_variants", variant_insert)
+            await db_insert("product_variants", variant_insert, token=token)
     elif product_id and (data.get("price_kes") is not None or data.get("stock_quantity") is not None):
         if data.get("price_kes") > 0 or data.get("stock_quantity") > 0:
             variant_data = {
@@ -165,15 +172,16 @@ def create_product(
                 "stock_quantity": data.get("stock_quantity", 0),
                 "is_available": True
             }
-            db_insert("product_variants", variant_data)
+            await db_insert("product_variants", variant_data, token=token)
         
     return {"status": "success", "id": product_id, "data": inserted_data[0]}
 
 @router.put("/products/{product_id}", response_model=dict[str, Any])
-def update_product(
+async def update_product(
     product_id: str, 
     product_in: ProductUpdate,
-    current_admin: dict = Depends(check_admin_role)
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Update a product. Requires admin.
@@ -182,24 +190,25 @@ def update_product(
     if not data:
         raise HTTPException(status_code=400, detail="No data to update")
         
-    result = db_update("products", data, {"id": product_id})
+    result = await db_update("products", data, {"id": product_id}, token=token)
     return result
 
 @router.delete("/products/{product_id}")
-def delete_product(
+async def delete_product(
     product_id: str,
-    current_admin: dict = Depends(check_admin_role)
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Soft delete product. Requires admin.
     """
-    return db_update("products", {"is_active": False}, {"id": product_id})
+    return await db_update("products", {"is_active": False}, {"id": product_id}, token=token)
 
 
 # --- Users / Team ---
 
 @router.get("/users", response_model=list[dict[str, Any]])
-def get_all_users(current_admin: dict = Depends(check_admin_role)):
+async def get_all_users(current_admin: dict = Depends(check_admin_role), token: Optional[str] = Depends(get_token)):
     """
     Get all users. Requires admin.
     """
@@ -208,7 +217,7 @@ def get_all_users(current_admin: dict = Depends(check_admin_role)):
         raise HTTPException(status_code=500, detail="Database connection failed")
     
     try:
-        users = db_select("profiles")
+        users = await db_select("profiles", token=token)
         if not users:
             admin_users = supabase.auth.admin.list_users()
             users = [
@@ -227,13 +236,14 @@ def get_all_users(current_admin: dict = Depends(check_admin_role)):
         return []
 
 @router.put("/users/{user_id}/role")
-def update_user_role(
+async def update_user_role(
     user_id: str, 
     role_update: dict[str, str],
-    current_admin: dict = Depends(check_admin_role)
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token)
 ):
     """
-    Update user role. Requires superadmin usually, but here checking admin.
+    Update user role. Requires admin.
     """
     role = role_update.get("role")
     if not role:
@@ -248,15 +258,16 @@ def update_user_role(
             user_id,
             attributes={"user_metadata": {"role": role}}
         )
-        db_update("profiles", {"role": role}, {"id": user_id})
+        await db_update("profiles", {"role": role}, {"id": user_id}, token=token)
         return {"status": "success", "message": f"User role updated to {role}"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/users", response_model=dict[str, Any])
-def create_user(
+async def create_user(
     user_in: UserCreate,
-    current_admin: dict = Depends(check_admin_role)
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Create user. Requires admin.
@@ -293,12 +304,10 @@ def create_user(
             "full_name": f"{user_in.first_name} {user_in.last_name}".strip(),
             "role": user_in.role
         }
-        res = db_insert("profiles", profile_data)
+        res = await db_insert("profiles", profile_data, token=token)
         if not res.get("success"):
-            # Check if it's just a duplicate (common if trigger already ran)
             if "duplicate key" not in res.get("error", "").lower():
                 print(f"Warning: Profile insertion failed: {res.get('error')}")
-                # We don't raise here because auth was successful, but we log it
         
         return {"status": "success", "user_id": user_id}
 
@@ -307,10 +316,11 @@ def create_user(
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.put("/users/{user_id}", response_model=dict[str, Any])
-def update_user_details(
+async def update_user_details(
     user_id: str, 
     user_in: UserUpdate,
-    current_admin: dict = Depends(check_admin_role)
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Update user details. Requires admin.
@@ -336,7 +346,7 @@ def update_user_details(
         if updates:
             supabase.auth.admin.update_user_by_id(user_id, attributes=updates)
             
-        db_update("profiles", data, {"id": user_id})
+        await db_update("profiles", data, {"id": user_id}, token=token)
         return {"status": "success", "message": "User updated"}
 
     except Exception as e:
@@ -344,9 +354,10 @@ def update_user_details(
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.delete("/users/{user_id}")
-def delete_user(
+async def delete_user(
     user_id: str,
-    current_admin: dict = Depends(check_admin_role)
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Delete user. Requires admin.
@@ -354,85 +365,91 @@ def delete_user(
     supabase = get_supabase()
     try:
         supabase.auth.admin.delete_user(user_id)
-        db_delete("profiles", {"id": user_id})
+        await db_delete("profiles", {"id": user_id}, token=token)
         return {"status": "success"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/contact", response_model=list[dict[str, Any]])
-def get_contact_submissions(current_admin: dict = Depends(check_admin_role)):
+async def get_contact_submissions(current_admin: dict = Depends(check_admin_role), token: Optional[str] = Depends(get_token)):
     """
     Get all contact submissions. Requires admin.
     """
-    return db_select("contact_submissions", order_by="created_at", ascending=False)
+    return await db_select("contact_submissions", order_by="created_at", ascending=False, token=token)
 
 @router.put("/contact/{contact_id}/status", response_model=dict[str, Any])
-def update_contact_status(
+async def update_contact_status(
     contact_id: str, 
     status_update: dict[str, str],
-    current_admin: dict = Depends(check_admin_role)
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Update contact request status. Requires admin.
     """
-    status = status_update.get("status")
-    if not status:
+    status_val = status_update.get("status")
+    if not status_val:
          raise HTTPException(status_code=400, detail="Status is required")
-    return db_update("contact_submissions", {"status": status}, {"id": contact_id})
+    return await db_update("contact_submissions", {"status": status_val}, {"id": contact_id}, token=token)
 
 @router.delete("/contact/{contact_id}")
-def delete_contact(
+async def delete_contact(
     contact_id: str,
-    current_admin: dict = Depends(check_admin_role)
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token)
 ):
-    return db_delete("contact_submissions", {"id": contact_id})
+    return await db_delete("contact_submissions", {"id": contact_id}, token=token)
 
 # --- Newsletter CRUD ---
 @router.delete("/newsletter/{subscriber_id}")
-def delete_subscriber(
+async def delete_subscriber(
     subscriber_id: str,
-    current_admin: dict = Depends(check_admin_role)
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token)
 ):
-    return db_delete("newsletter_subscribers", {"id": subscriber_id})
+    return await db_delete("newsletter_subscribers", {"id": subscriber_id}, token=token)
 
 # --- Pollination Requests ---
 @router.get("/pollination", response_model=list[dict[str, Any]])
-def get_pollination_requests(current_admin: dict = Depends(check_admin_role)):
-    return db_select("pollination_requests", order_by="created_at", ascending=False)
+async def get_pollination_requests(current_admin: dict = Depends(check_admin_role), token: Optional[str] = Depends(get_token)):
+    return await db_select("pollination_requests", order_by="created_at", ascending=False, token=token)
 
 @router.put("/pollination/{request_id}/status", response_model=dict[str, Any])
-def update_pollination_status(
+async def update_pollination_status(
     request_id: str, 
     status_update: dict[str, str],
-    current_admin: dict = Depends(check_admin_role)
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token)
 ):
-    status = status_update.get("status")
-    if not status:
+    status_val = status_update.get("status")
+    if not status_val:
          raise HTTPException(status_code=400, detail="Status is required")
-    return db_update("pollination_requests", {"status": status}, {"id": request_id})
+    return await db_update("pollination_requests", {"status": status_val}, {"id": request_id}, token=token)
 
 @router.delete("/pollination/{request_id}")
-def delete_pollination_request(
+async def delete_pollination_request(
     request_id: str,
-    current_admin: dict = Depends(check_admin_role)
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token)
 ):
-    return db_delete("pollination_requests", {"id": request_id})
+    return await db_delete("pollination_requests", {"id": request_id}, token=token)
 
 
 # --- Stock Movements ---
 
 @router.get("/stock", response_model=list[dict[str, Any]])
-def get_stock_movements(current_admin: dict = Depends(check_admin_role)):
+async def get_stock_movements(current_admin: dict = Depends(check_admin_role), token: Optional[str] = Depends(get_token)):
     """Get all stock movements. Requires admin."""
-    return db_select("stock_movements", order_by="created_at", ascending=False)
+    return await db_select("stock_movements", order_by="created_at", ascending=False, token=token)
 
 @router.post("/stock", response_model=dict[str, Any])
-def create_stock_movement(
+async def create_stock_movement(
     movement_in: dict[str, Any],
-    current_admin: dict = Depends(check_admin_role)
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token)
 ):
     """Register a new stock movement. Requires admin."""
-    res = db_insert("stock_movements", movement_in)
+    res = await db_insert("stock_movements", movement_in, token=token)
     if not res.get("success"):
         raise HTTPException(status_code=500, detail=f"Failed to record movement: {res.get('error')}")
     return res.get("data")[0] if res.get("data") else movement_in
@@ -441,20 +458,33 @@ def create_stock_movement(
 # --- Dashboard Stats ---
 
 @router.get("/stats", response_model=dict[str, Any])
-def get_admin_stats(current_admin: dict = Depends(check_admin_role)):
+async def get_admin_stats(current_admin: dict = Depends(check_admin_role), token: Optional[str] = Depends(get_token)):
     """Calculate high-level dashboard stats. Requires admin."""
     try:
-        orders = db_select("orders")
-        products = db_select("products")
-        users = db_select("profiles")
-        batches = db_select("honey_batches")
-        apiaries = db_select("apiaries")
-        hives = db_select("hives")
-        pollination = db_select("pollination_requests")
+        # Fallback counts if DB is empty
+        orders = await db_select("orders", token=token)
+        products = await db_select("products", token=token)
+        users = await db_select("profiles", token=token)
+        batches = await db_select("honey_batches", token=token)
+        apiaries = await db_select("apiaries", token=token)
+        hives = await db_select("hives", token=token)
+        pollination = await db_select("pollination_requests", token=token)
         
-        # Calculate some basic totals for the dashboard
+        # Blockchain counts if DB empty
+        if not batches or len(batches) == 0:
+            from app.blockchain.honey_chain import honey_blockchain
+            batches = [b["data"] for b in honey_blockchain.search_by_type(honey_blockchain.BlockType.BATCH_CREATION)]
+            
+        if not apiaries or len(apiaries) == 0:
+            from app.blockchain.honey_chain import honey_blockchain
+            apiaries = [b["data"] for b in honey_blockchain.search_by_type(honey_blockchain.BlockType.APIARY_REGISTRATION)]
+            
+        if not hives or len(hives) == 0:
+            from app.blockchain.honey_chain import honey_blockchain
+            hives = [b["data"] for b in honey_blockchain.search_by_type(honey_blockchain.BlockType.HIVE_REGISTRATION)]
+
         total_revenue = sum(float(o.get("total_amount", 0)) for o in orders if o.get("status") != "cancelled")
-        total_honey_kg = sum(float(b.get("quantity_kg", 0)) for b in batches)
+        total_honey_kg = sum(float(b.get("quantity_kg", 0) or b.get("total_quantity_kg", 0)) for b in batches)
         total_acres = sum(float(p.get("acres", 0)) for p in pollination)
         
         return {
@@ -469,46 +499,95 @@ def get_admin_stats(current_admin: dict = Depends(check_admin_role)):
             "total_honey_kg": total_honey_kg,
             "total_acres": total_acres,
             "pending_orders": len([o for o in orders if o.get("status") == "pending"]),
-            "active_products": len([p for p in products if p.get("is_active")])
+            "active_products": len([p for p in products if p.get("is_active")]),
+            "last_updated": datetime.utcnow().isoformat()
         }
     except Exception as e:
         print(f"Stats Error: {e}")
         return {"error": str(e)}
 
+@router.post("/sync-all")
+async def sync_all_data(current_admin: dict = Depends(check_admin_role), token: Optional[str] = Depends(get_token)):
+    """
+    Unified Sync: Pulls data from Blockchain and ensures critical tables are populated.
+    """
+    from app.blockchain.honey_chain import honey_blockchain
+    sync_results = {"batches": 0, "apiaries": 0, "hives": 0, "farmers": 0}
+    
+    # Sync Batches
+    bc_batches = honey_blockchain.search_by_type(honey_blockchain.BlockType.BATCH_CREATION)
+    for b in bc_batches:
+        await db_upsert("honey_batches", b["data"], on_conflict="id", token=token)
+        sync_results["batches"] += 1
+        
+    # Sync Apiaries
+    bc_apiaries = honey_blockchain.search_by_type(honey_blockchain.BlockType.APIARY_REGISTRATION)
+    for a in bc_apiaries:
+        await db_upsert("apiaries", a["data"], on_conflict="id", token=token)
+        sync_results["apiaries"] += 1
+        
+    # Sync Hives
+    bc_hives = honey_blockchain.search_by_type(honey_blockchain.BlockType.HIVE_REGISTRATION)
+    for h in bc_hives:
+        await db_upsert("hives", h["data"], on_conflict="id", token=token)
+        sync_results["hives"] += 1
 
+    return {"status": "success", "synced": sync_results}
 
+@router.post("/seed-data")
+async def seed_dashboard_data(current_admin: dict = Depends(check_admin_role), token: Optional[str] = Depends(get_token)):
+    """
+    Seed minimal demo data for Admin Dashboard if DB is empty.
+    """
+    # Seed Products
+    existing_products = await db_select("products", limit=1, token=token)
+    if not existing_products:
+        await db_insert("products", {
+            "name": "Organic Wildflower Honey", 
+            "description": "Pure raw honey from the Rift Valley.",
+            "category": "honey",
+            "price_kes": 1200,
+            "stock_quantity": 50,
+            "is_active": True,
+            "images": ["https://images.unsplash.com/photo-1587049352846-4a222e784d38"]
+        }, token=token)
+        
+    # Seed Newsletter
+    existing_subs = await db_select("newsletter_subscribers", limit=1, token=token)
+    if not existing_subs:
+        await db_insert("newsletter_subscribers", {"email": "timothynduva349@gmail.com", "status": "active"}, token=token)
+        
+    return {"status": "success", "message": "Demo data seeded where missing."}
 
 # --- Traceability (Honey Chain) ---
 
 @router.post("/batches", response_model=dict[str, Any])
-def create_batch(
+async def create_batch(
     batch_in: dict[str, Any],
-    current_admin: dict = Depends(check_admin_role)
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Create a new batch in the blockchain. Requires admin.
     """
-    return traceability_service.create_batch(batch_in)
+    return await traceability_service.create_batch(batch_in, token=token)
 
 @router.get("/batches", response_model=list[dict[str, Any]])
-def get_batches_db(current_admin: dict = Depends(check_admin_role)):
+async def get_batches_db(current_admin: dict = Depends(check_admin_role), token: Optional[str] = Depends(get_token)):
     """
     Get all batches from the DB. Requires admin.
     """
     data = []
     try:
-        # Standardize on honey_batches
-        data = db_select("honey_batches", order_by="created_at", ascending=False)
+        data = await db_select("honey_batches", order_by="created_at", ascending=False, token=token)
     except Exception as e:
         print(f"DB Batch Fetch Error: {e}")
 
     if not data or len(data) == 0:
-        # Fallback to blockchain search only if DB is truly empty
         from app.blockchain.honey_chain import honey_blockchain
         blockchain_batches = honey_blockchain.search_by_type(honey_blockchain.BlockType.BATCH_CREATION)
         if blockchain_batches:
             data = [b["data"] for b in blockchain_batches]
-            # Map alternate naming
             for item in data:
                 if 'quantity_kg' not in item and 'total_quantity_kg' in item:
                     item['quantity_kg'] = item['total_quantity_kg']
@@ -516,37 +595,39 @@ def get_batches_db(current_admin: dict = Depends(check_admin_role)):
     return data
 
 @router.put("/batches/{batch_id}", response_model=dict[str, Any])
-def update_batch_admin(
+async def update_batch_admin(
     batch_id: str,
     batch_in: dict[str, Any],
-    current_admin: dict = Depends(check_admin_role)
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Update a batch record.
     """
-    res = db_update("honey_batches", batch_in, {"id": batch_id})
+    res = await db_update("honey_batches", batch_in, {"id": batch_id}, token=token)
     if not res.get("success"):
         raise HTTPException(status_code=500, detail=f"Failed to update batch: {res.get('error')}")
     return res.get("data")[0] if res.get("data") else batch_in
 
 @router.delete("/batches/{batch_id}")
-def delete_batch(
+async def delete_batch(
     batch_id: str,
-    current_admin: dict = Depends(check_admin_role)
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token)
 ):
-    """Delete a batch. Note: Blockchain records are technically immutable."""
-    return db_delete("honey_batches", {"id": batch_id})
+    """Delete a batch."""
+    return await db_delete("honey_batches", {"id": batch_id}, token=token)
 
 # --- Farmers ---
 
 @router.get("/farmers", response_model=list[dict[str, Any]])
-def get_all_farmers(current_admin: dict = Depends(check_admin_role)):
+async def get_all_farmers(current_admin: dict = Depends(check_admin_role), token: Optional[str] = Depends(get_token)):
     """
     Get all registered farmers. Requires admin.
     """
     data = []
     try:
-        data = db_select("farmers", order_by="created_at", ascending=False)
+        data = await db_select("farmers", order_by="created_at", ascending=False, token=token)
     except Exception as e:
         print(f"DB Farmer Fetch Error: {e}")
 
@@ -559,9 +640,10 @@ def get_all_farmers(current_admin: dict = Depends(check_admin_role)):
     return data
 
 @router.post("/farmers", response_model=dict[str, Any])
-def create_farmer_admin(
+async def create_farmer_admin(
     farmer_in: dict[str, Any],
-    current_admin: dict = Depends(check_admin_role)
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Create a new farmer record. Requires admin.
@@ -569,34 +651,36 @@ def create_farmer_admin(
     from app.schemas import traceability as schemas
     try:
         f_schema = schemas.FarmerCreate(**farmer_in)
-        return traceability_service.register_farmer(f_schema)
+        return await traceability_service.register_farmer(f_schema, token=token)
     except Exception as e:
         if not farmer_in.get('farmer_id'):
             import uuid
             farmer_in['farmer_id'] = f"F-{str(uuid.uuid4())[:8].upper()}"
         
-        res = db_insert("farmers", farmer_in)
+        res = await db_insert("farmers", farmer_in, token=token)
         if not res.get("success"):
             raise HTTPException(status_code=500, detail=f"Failed to register farmer: {res.get('error') or str(e)}")
         return res.get("data")[0] if res.get("data") else farmer_in
 
 @router.put("/farmers/{farmer_id}", response_model=dict[str, Any])
-def update_farmer_admin(
+async def update_farmer_admin(
     farmer_id: str, 
     farmer_in: dict[str, Any],
-    current_admin: dict = Depends(check_admin_role)
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token)
 ):
-    res = db_update("farmers", farmer_in, {"id": farmer_id})
+    res = await db_update("farmers", farmer_in, {"id": farmer_id}, token=token)
     if not res.get("success"):
         raise HTTPException(status_code=500, detail=f"Update failed: {res.get('error')}")
     return res.get("data")[0] if res.get("data") else farmer_in
 
 @router.delete("/farmers/{farmer_id}")
-def delete_farmer_admin(
+async def delete_farmer_admin(
     farmer_id: str,
-    current_admin: dict = Depends(check_admin_role)
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token)
 ):
-    res = db_delete("farmers", {"id": farmer_id})
+    res = await db_delete("farmers", {"id": farmer_id}, token=token)
     if not res.get("success"):
         raise HTTPException(status_code=500, detail=f"Deletion failed: {res.get('error')}")
     return {"status": "success"}
@@ -604,10 +688,10 @@ def delete_farmer_admin(
 # --- Apiaries & Hives ---
 
 @router.get("/apiaries", response_model=list[dict[str, Any]])
-def get_all_apiaries(current_admin: dict = Depends(check_admin_role)):
+async def get_all_apiaries(current_admin: dict = Depends(check_admin_role), token: Optional[str] = Depends(get_token)):
     data = []
     try:
-        data = db_select("apiaries", order_by="created_at", ascending=False)
+        data = await db_select("apiaries", order_by="created_at", ascending=False, token=token)
     except: pass
     
     if not data:
@@ -617,33 +701,30 @@ def get_all_apiaries(current_admin: dict = Depends(check_admin_role)):
     return data
 
 @router.post("/apiaries", response_model=dict[str, Any])
-def create_apiary_admin(
+async def create_apiary_admin(
     apiary_in: dict[str, Any],
-    current_admin: dict = Depends(check_admin_role)
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token)
 ):
-    # If the input is a dict, we need to handle it or convert to schema
     from app.schemas import traceability as schemas
     if isinstance(apiary_in, dict):
-        # Ensure apiary_code is present or generate it
         if not apiary_in.get('apiary_code'):
             import uuid
             apiary_in['apiary_code'] = f"APY-{str(uuid.uuid4())[:8].upper()}"
         
-        # If it's a raw dict from admin panel, it might need conversion to schema or just direct register
         try:
             apiary_obj = schemas.ApiaryCreate(**apiary_in)
-            return traceability_service.register_apiary(apiary_obj)
+            return await traceability_service.register_apiary(apiary_obj, token=token)
         except Exception as e:
-            # Fallback for partial data if schema validation fails
-            return traceability_service.register_apiary(apiary_in)
+            return await traceability_service.register_apiary(apiary_in, token=token)
     
-    return traceability_service.register_apiary(apiary_in)
+    return await traceability_service.register_apiary(apiary_in, token=token)
 
 @router.get("/hives", response_model=list[dict[str, Any]])
-def get_all_hives(current_admin: dict = Depends(check_admin_role)):
+async def get_all_hives(current_admin: dict = Depends(check_admin_role), token: Optional[str] = Depends(get_token)):
     data = []
     try:
-        data = db_select("hives", order_by="created_at", ascending=False)
+        data = await db_select("hives", order_by="created_at", ascending=False, token=token)
     except: pass
     
     if not data:
@@ -653,16 +734,17 @@ def get_all_hives(current_admin: dict = Depends(check_admin_role)):
     return data
 
 @router.post("/hives", response_model=dict[str, Any])
-def create_hive_admin(
+async def create_hive_admin(
     hive_in: dict[str, Any],
-    current_admin: dict = Depends(check_admin_role)
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token)
 ):
-    return traceability_service.register_hive(hive_in)
+    return await traceability_service.register_hive(hive_in, token=token)
 
 # --- Database Cleanup (Danger Zone) ---
 
 @router.delete("/danger/clear-traceability")
-def clear_all_traceability(current_admin: dict = Depends(check_admin_role)):
+async def clear_all_traceability(current_admin: dict = Depends(check_admin_role), token: Optional[str] = Depends(get_token)):
     """Wipe all traceability data from DB. Use with caution!"""
     email = current_admin.get('email', '').lower()
     is_super = current_admin.get('role') == 'super_admin' or email in ['timothy.mathuva@strathmore.edu', 'timothynduva349@gmail.com']
@@ -671,11 +753,11 @@ def clear_all_traceability(current_admin: dict = Depends(check_admin_role)):
         raise HTTPException(status_code=403, detail="Super-admin privileges required for this action.")
         
     try:
-        # Order matters for foreign keys
-        db_delete("hives", {})
-        db_delete("apiaries", {})
-        db_delete("farmers", {})
-        db_delete("honey_batches", {})
+        await db_delete("hives", {}, token=token)
+        await db_delete("apiaries", {}, token=token)
+        await db_delete("farmers", {}, token=token)
+        await db_delete("honey_batches", {}, token=token)
         return {"success": True, "message": "All traceability records purged from database."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+

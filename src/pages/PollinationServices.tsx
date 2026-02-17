@@ -15,19 +15,10 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import { beePollinationData } from "@/data/beePollinationData";
 
 const PollinationServices = () => {
-    const crops = [
-        { name: "Maize", image: "/images/crops/maize.jpg" },
-        { name: "Sisal", image: "/images/crops/sisal.jpg" },
-        { name: "Mangoes", image: "/images/crops/mangoes.jpg" },
-        { name: "Beans", image: "/images/crops/beans.jpg" },
-        { name: "Sunflower", image: "/images/crops/sunflower.jpg" },
-        { name: "Oranges", image: "/images/crops/oranges.jpg" },
-        { name: "Vegetables", image: "/images/crops/vegetables.jpg" },
-        { name: "Tomatoes", image: "/images/crops/tomatoes.jpg" },
-        { name: "Onions", image: "/images/crops/onions.jpg" },
-    ];
+    const pollinationCrops = Object.values(beePollinationData);
 
     const differences = [
         {
@@ -255,6 +246,7 @@ const PollinationServices = () => {
                                 className="absolute inset-0 w-full h-full border-0"
                                 src="https://www.youtube.com/embed/3n_bI6L_Dk8"
                                 title="Pollination Partnerships: Swanson Farms' Growth Story"
+                                loading="lazy"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                 allowFullScreen
                             ></iframe>
@@ -266,6 +258,7 @@ const PollinationServices = () => {
                                 className="absolute inset-0 w-full h-full border-0"
                                 src="https://www.youtube.com/embed/Lq21C8u9m0o"
                                 title="BeeYield Pollination Insight Platform"
+                                loading="lazy"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                 allowFullScreen
                             ></iframe>
@@ -404,47 +397,49 @@ const PollinationServices = () => {
                 </div>
             </section>
 
-            {/* Crops Section - Improved UI/UX */}
-            <section className="py-32 bg-muted/20">
+            {/* Crops Section - Compact & Premium */}
+            <section className="py-24 bg-muted/20">
                 <div className="container mx-auto px-4">
-                    <div className="text-center mb-24 space-y-4">
-                        <Badge variant="outline" className="text-amber-600">Our Expertise</Badge>
-                        <h2 className="text-4xl md:text-6xl font-black tracking-tighter">Crops We <span className="text-amber-600">Pollinate</span></h2>
-                        <div className="pt-8">
-                            <Link to="/contact">
-                                <Button size="default" className="bg-[#FCD34D] text-black hover:bg-[#F5C518] font-bold px-4 py-3 rounded-2xl shadow-xl border-none">
-                                    Book a Pollination Consultation
-                                </Button>
-                            </Link>
-                        </div>
+                    <div className="text-center mb-16 space-y-3">
+                        <Badge variant="outline" className="text-amber-600 border-amber-200 bg-amber-50/50 px-4 py-1">Our Expertise</Badge>
+                        <h2 className="text-3xl md:text-5xl font-black tracking-tighter">Crops We <span className="text-amber-600">Pollinate</span></h2>
+                        <p className="text-muted-foreground max-w-2xl mx-auto font-medium">Selected crops benefiting from our intelligent pollination network.</p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 max-w-7xl mx-auto">
-                        {crops.map((crop, index) => (
-                            <div
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 lg:gap-6 max-w-7xl mx-auto">
+                        {pollinationCrops.map((crop, index) => (
+                            <Link
                                 key={index}
-                                className="group relative overflow-hidden rounded-[2.5rem] aspect-square cursor-pointer shadow-lg border border-amber-100 hover:border-green-200 bg-gradient-to-br from-amber-50 to-green-50 flex flex-col items-center justify-end p-0"
+                                to="/media"
+                                className="group relative overflow-hidden rounded-[2rem] aspect-[4/5] shadow-md hover:shadow-2xl transition-all duration-500 bg-white"
                             >
-                                <div className="w-full h-3/4 flex items-center justify-center">
-                                    <img
-                                        src={crop.image}
-                                        alt={crop.name}
-                                        className="w-full h-full object-cover rounded-t-[2.5rem] group-hover:scale-110 transition-transform duration-500"
-                                        loading="lazy"
-                                    />
-                                </div>
-                                <div className="w-full flex flex-col items-center justify-center p-6">
-                                    <h3 className="font-extrabold text-xl text-green-900 mb-2 tracking-tight group-hover:text-amber-700 transition-colors">
-                                        {crop.name}
+                                <img
+                                    src={crop.image}
+                                    alt={crop.cropName}
+                                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                                    loading="lazy"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/90 via-neutral-900/10 to-transparent" />
+
+                                <div className="absolute bottom-0 left-0 right-0 p-5 transform translate-y-3 group-hover:translate-y-0 transition-transform duration-500">
+                                    <Badge className="mb-2 bg-amber-500 text-neutral-900 text-[9px] font-black border-none px-2 py-0.5 opacity-0 group-hover:opacity-100 transition-all duration-500">
+                                        {crop.beeDependence.split('(')[0].trim()}
+                                    </Badge>
+                                    <h3 className="font-black text-lg text-white leading-tight uppercase tracking-tighter">
+                                        {crop.cropName}
                                     </h3>
-                                    <Link to="/media" className="w-full">
-                                        <Button size="sm" variant="default" className="w-full font-bold rounded-xl bg-green-600 hover:bg-amber-500 text-white transition-colors">
-                                            View Data
-                                        </Button>
-                                    </Link>
+                                    <div className="h-0.5 w-0 group-hover:w-12 bg-amber-500 transition-all duration-700 mt-2 rounded-full" />
                                 </div>
-                            </div>
+                            </Link>
                         ))}
+                    </div>
+
+                    <div className="mt-20 text-center">
+                        <Link to="/contact">
+                            <Button size="lg" className="bg-neutral-900 hover:bg-neutral-800 text-white font-black rounded-2xl px-12 h-14 shadow-2xl uppercase tracking-[0.2em] text-[10px] transition-all hover:scale-105 active:scale-95">
+                                Start Pollination Project
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             </section>

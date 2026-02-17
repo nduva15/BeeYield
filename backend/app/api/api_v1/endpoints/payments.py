@@ -2,7 +2,7 @@
 Stripe Payment Endpoints
 Secure card management and checkout with Stripe
 """
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from typing import Optional
 from pydantic import BaseModel
 from app.core.config import settings
@@ -15,6 +15,13 @@ from app.services.shop_service import update_order_status
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+def get_token(request: Request) -> Optional[str]:
+    """Extract raw token from Authorization header"""
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        return auth_header.split(" ")[1]
+    return None
 
 # Initialize Stripe with the secret key
 if settings.STRIPE_SECRET_KEY:
@@ -36,7 +43,7 @@ class ConfirmPaymentRequest(BaseModel):
 
 
 @router.post("/create-payment-intent")
-def create_payment_intent(
+async def create_payment_intent(
     request: PaymentIntentRequest,
     current_user: dict = Depends(security.get_current_user)
 ):
@@ -102,7 +109,7 @@ def create_payment_intent(
 
 
 @router.post("/create-setup-intent")
-def create_setup_intent(
+async def create_setup_intent(
     current_user: dict = Depends(security.get_current_user)
 ):
     """
@@ -147,9 +154,10 @@ def create_setup_intent(
 
 
 @router.post("/confirm-payment")
-def confirm_payment(
+async def confirm_payment(
     request: ConfirmPaymentRequest,
-    current_user: dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Confirm that a payment was successful and update order status.
@@ -166,10 +174,11 @@ def confirm_payment(
         
         if intent.status == "succeeded":
             # Update order status in database
-            update_order_status(
+            await update_order_status(
                 request.order_id, 
                 status="paid",
-                payment_status="completed"
+                payment_status="completed",
+                token=token
             )
             
             return {

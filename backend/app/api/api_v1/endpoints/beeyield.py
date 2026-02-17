@@ -462,11 +462,12 @@ async def get_user_hives(
 
     all_hives = owned_hives + shared_hives
 
-    # Enrich with apiary name
+    # Enrich with apiary details
     for hive in all_hives:
         if hive.get("apiary_id"):
             apiaries = await db_select("apiaries", filters={"id": hive["apiary_id"]}, token=token)
             if apiaries:
+                hive["apiary"] = apiaries[0]
                 hive["apiary_name"] = apiaries[0].get("name")
     
     return all_hives

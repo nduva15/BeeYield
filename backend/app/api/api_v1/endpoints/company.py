@@ -1,24 +1,30 @@
-
 """
 Company Endpoints - About, Story, Team, Stats
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request, Depends, status
 from typing import Optional
 from app.schemas import company as schemas
 from app.db.supabase_db import db_select, db_insert, db_get_by_id
+from app.core import security
 
 router = APIRouter()
 
+def get_token(request: Request) -> Optional[str]:
+    """Extract raw token from Authorization header"""
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        return auth_header.split(" ")[1]
+    return None
 
 # ============ COMPANY INFO ============
 
 @router.get("/info", response_model=schemas.CompanyInfo)
-def company_info():
+async def company_info(token: Optional[str] = Depends(get_token)):
     """
     Returns general company info, values, and stats for the About Us page.
     """
     # Fetch values from DB
-    db_values = db_select("company_values", filters={"is_active": True}, order_by="display_order")
+    db_values = await db_select("company_values", filters={"is_active": True}, order_by="display_order", token=token)
     values = [{"title": v["title"], "description": v["description"], "icon": v.get("icon", "Heart")} for v in db_values]
     
     if not values:
@@ -50,12 +56,12 @@ def company_info():
 # ============ TEAM ============
 
 @router.get("/team", response_model=list[schemas.TeamMember])
-def team_members():
+async def team_members(token: Optional[str] = Depends(get_token)):
     """
     Returns all active team members.
     """
     # Try to get from database first
-    db_members = db_select("team_members", filters={"is_active": True}, order_by="display_order")
+    db_members = await db_select("team_members", filters={"is_active": True}, order_by="display_order", token=token)
     
     if db_members and len(db_members) > 0:
         return db_members
@@ -102,11 +108,11 @@ def team_members():
 
 
 @router.get("/team/{member_id}", response_model=schemas.TeamMember)
-def get_team_member(member_id: str):
+async def get_team_member(member_id: str, token: Optional[str] = Depends(get_token)):
     """
     Get a specific team member by ID.
     """
-    member = db_get_by_id("team_members", member_id)
+    member = await db_get_by_id("team_members", member_id, token=token)
     if not member:
         raise HTTPException(status_code=404, detail="Team member not found")
     return member
@@ -115,11 +121,11 @@ def get_team_member(member_id: str):
 # ============ STORY / MILESTONES ============
 
 @router.get("/story", response_model=schemas.CompanyStory)
-def get_company_story():
+async def get_company_story(token: Optional[str] = Depends(get_token)):
     """
     Get company story with milestones/timeline.
     """
-    milestones = db_select("company_milestones", filters={"is_active": True}, order_by="year")
+    milestones = await db_select("company_milestones", filters={"is_active": True}, order_by="year", token=token)
     
     if not milestones or len(milestones) == 0:
         milestones = [
@@ -141,7 +147,7 @@ def get_company_story():
 # ============ STATS ============
 
 @router.get("/stats", response_model=list[schemas.CompanyStat])
-def get_company_stats(category: Optional[str] = None):
+async def get_company_stats(category: Optional[str] = None, token: Optional[str] = Depends(get_token)):
     """
     Get company statistics/impact numbers.
     """
@@ -149,7 +155,7 @@ def get_company_stats(category: Optional[str] = None):
     if category:
         filters["category"] = category
     
-    stats = db_select("company_stats", filters=filters, order_by="display_order")
+    stats = await db_select("company_stats", filters=filters, order_by="display_order", token=token)
     
     if not stats or len(stats) == 0:
         return [
@@ -166,14 +172,14 @@ def get_company_stats(category: Optional[str] = None):
 # ============ ABOUT PAGE (Combined) ============
 
 @router.get("/about", response_model=schemas.AboutPageResponse)
-def get_about_page():
+async def get_about_page(token: Optional[str] = Depends(get_token)):
     """
     Get complete about page data including company info, story, stats, and leadership.
     """
-    info = company_info()
-    story = get_company_story()
-    stats = get_company_stats()
-    team = team_members()
+    info = await company_info(token=token)
+    story = await get_company_story(token=token)
+    stats = await get_company_stats(token=token)
+    team = await team_members(token=token)
     
     return schemas.AboutPageResponse(
         company_info=info,
@@ -186,11 +192,11 @@ def get_about_page():
 # ============ PARTNERS ============
 
 @router.get("/partners", response_model=list[schemas.Partner])
-def get_partners():
+async def get_partners(token: Optional[str] = Depends(get_token)):
     """
     Get all active partners, certifications, and investors.
     """
-    partners = db_select("partners", filters={"is_active": True}, order_by="display_order")
+    partners = await db_select("partners", filters={"is_active": True}, order_by="display_order", token=token)
     
     if not partners or len(partners) == 0:
         return [
@@ -213,7 +219,7 @@ def get_partners():
 # ============ FAQs ============
 
 @router.get("/faqs", response_model=list[schemas.FAQ])
-def get_faqs(category: Optional[str] = None):
+async def get_faqs(category: Optional[str] = None, token: Optional[str] = Depends(get_token)):
     """
     Get Frequently Asked Questions.
     """
@@ -221,7 +227,7 @@ def get_faqs(category: Optional[str] = None):
     if category:
         filters["category"] = category
         
-    faqs = db_select("faqs", filters=filters, order_by="display_order")
+    faqs = await db_select("faqs", filters=filters, order_by="display_order", token=token)
     
     if not faqs or len(faqs) == 0:
         return [
@@ -237,3 +243,4 @@ def get_faqs(category: Optional[str] = None):
             }
         ]
     return faqs
+

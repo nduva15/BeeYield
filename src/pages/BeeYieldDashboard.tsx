@@ -13,7 +13,7 @@ import {
     X, ChevronDown, MapPin, Search, ClipboardList, Calculator, Receipt, LifeBuoy, Settings,
     Hand, Map, TrendingUp, Volume2, Camera, BookOpen, Droplet, Flame, Zap, Building2, Home, PieChart,
     ArrowRightLeft, FileInput, Bot, Activity, Gauge, List, Layers, BarChart3, Upload, LayoutList, Hexagon, Puzzle,
-    LogIn, UserPlus, Loader2, ArrowLeft, Shield, Lock, Bell, Banknote, Globe, Tag
+    LogIn, UserPlus, Loader2, ArrowLeft, Shield, Lock, Bell, Banknote, Globe, Tag, ShieldCheck, Server
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -29,7 +29,7 @@ import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 
 // View Imports
 import MyDevicesView from '@/components/beeyield/MyDevicesView';
-import AIAssistantView from '@/components/beeyield/AIAssistantView';
+import SmartAssistantView from '@/components/beeyield/SmartAssistantView';
 import AgroIntelligenceView from '@/components/beeyield/AgroIntelligenceView';
 import MyPlacesView from '@/components/beeyield/MyPlacesView';
 import BeeYieldHivesView from '@/components/beeyield/BeeYieldHivesView';
@@ -61,7 +61,8 @@ import SoundAnalysisView from '@/components/beeyield/SoundAnalysisView';
 import HealthGuideView from '@/components/beeyield/HealthGuideView';
 import FlightMapView from '@/components/beeyield/FlightMapView';
 import VarroaView from '@/components/beeyield/VarroaView';
-import IntelligentHiveDashboard from '@/components/beeyield/IntelligentHiveDashboard';
+
+import DashboardHomeView from '@/components/beeyield/DashboardHomeView';
 
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
@@ -80,14 +81,17 @@ const BeeYieldDashboard: React.FC = () => {
     const [readings, setReadings] = useState<SensorReading[]>([]);
     const [apiaries, setApiaries] = useState<Apiary[]>([]);
     const [hives, setHives] = useState<Hive[]>([]);
-    const [activeTab, setActiveTab] = useState('overview');
+    const [activeTab, setActiveTab] = useState('home');
     const [aiInitialMessage, setAiInitialMessage] = useState<string | null>(null);
     const [showBanner, setShowBanner] = useState(true);
 
-    const handleTabChange = (tab: string, message?: string) => {
+    const [viewParams, setViewParams] = useState<{ message?: string, action?: string } | null>(null);
+
+    const handleTabChange = (tab: string, message?: string, action?: string) => {
         if (tab === 'assistant' && message) {
             setAiInitialMessage(message);
         }
+        setViewParams({ message, action });
         setActiveTab(tab);
     };
 
@@ -166,7 +170,7 @@ const BeeYieldDashboard: React.FC = () => {
 
     // Nav Items matching screenshot precisely
     const navItems: NavItem[] = [
-        { id: 'overview', label: '🎨 Design Demo', icon: LayoutGrid },
+        { id: 'home', label: 'Home', icon: Home },
         { id: 'assistant', label: t('nav_ai_assistant'), icon: Bot },
         { id: 'agro-intelligence', label: t('nav_agro_intelligence'), icon: LayoutGrid },
         { id: 'precision-pollination', label: t('nav_precision_pollination'), icon: Calculator },
@@ -256,11 +260,11 @@ const BeeYieldDashboard: React.FC = () => {
     // Function to render content based on active tab
     const renderContent = () => {
         switch (activeTab) {
-            case 'overview':
-                return <IntelligentHiveDashboard onTabChange={handleTabChange} />;
+            case 'home':
+                return <DashboardHomeView onTabChange={handleTabChange} />;
             case 'assistant':
                 return (
-                    <AIAssistantView
+                    <SmartAssistantView
                         onTabChange={handleTabChange}
                         initialMessage={aiInitialMessage || undefined}
                         onInitialMessageConsumed={() => setAiInitialMessage(null)}
@@ -275,9 +279,9 @@ const BeeYieldDashboard: React.FC = () => {
             case 'beeyield':
                 return <BeeYieldHivesView onTabChange={handleTabChange} />;
             case 'inspections':
-                return <InspectionsView onTabChange={handleTabChange} />;
+                return <InspectionsView onTabChange={handleTabChange} initialParams={viewParams} />;
             case 'harvests':
-                return <HarvestsView onTabChange={handleTabChange} />;
+                return <HarvestsView onTabChange={handleTabChange} initialParams={viewParams} />;
             case 'flight-map':
                 return <FlightMapView />;
             case 'varroa':
@@ -325,8 +329,6 @@ const BeeYieldDashboard: React.FC = () => {
                 return <BillingView onTabChange={handleTabChange} />;
             case 'support':
                 return <SupportCenterView onTabChange={handleTabChange} />;
-            case 'server-status':
-                return <ServerStatusView onTabChange={handleTabChange} />;
             case 'settings': // Special case from top bar or banner
                 return <SettingsView onTabChange={handleTabChange} />;
             case 'image-analysis':

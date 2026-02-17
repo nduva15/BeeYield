@@ -3,56 +3,56 @@ Service layer for Precision Pollination operations
 """
 from typing import List, Optional, Dict, Any
 from datetime import datetime, date
-from app.db.supabase_db import get_supabase
+from app.db.supabase_db import db_select, db_insert, db_update, db_delete, db_get_by_id
 from app.schemas.pollination import (
+    CropPollinationRequirements,
+    PollinationCalculatorInput,
+    PollinationCalculatorResult,
     PollinationContract,
     PollinationContractCreate,
     PollinationContractUpdate,
     HiveAssignment,
     HiveAssignmentCreate,
     HiveAssignmentUpdate,
-    CropPollinationRequirements,
-    PollinationAnalytics,
-    PollinationCalculatorInput,
-    PollinationCalculatorResult,
-    HiveSensorData,
-    PollinationActivityLog,
-    HiveStatus,
     PollinationApiary,
     PollinationApiaryCreate,
-    PollinationApiaryUpdate
+    PollinationApiaryUpdate,
+    HiveSensorData,
+    HiveStatus,
+    PollinationAnalytics,
+    PollinationActivityLog
 )
 import math
+import uuid
 
 
 class PollinationService:
     """Service for managing precision pollination operations"""
     
     def __init__(self):
-        self.supabase = get_supabase()
+        pass
     
     # ========== CROP REQUIREMENTS ==========
     
-    def get_crop_requirements(self, crop_name: Optional[str] = None) -> List[CropPollinationRequirements]:
+    async def get_crop_requirements(self, crop_name: Optional[str] = None, token: Optional[str] = None) -> List[CropPollinationRequirements]:
         """Get pollination requirements for crops"""
         try:
-            query = self.supabase.table('crop_pollination_requirements').select('*')
-            
+            filters = {}
             if crop_name:
-                query = query.eq('crop_name', crop_name)
+                filters["crop_name"] = crop_name
             
-            response = query.execute()
-            return [CropPollinationRequirements(**item) for item in response.data]
+            data = await db_select('crop_pollination_requirements', filters=filters, token=token)
+            return [CropPollinationRequirements(**item) for item in data]
         except Exception as e:
             print(f"Error fetching crop requirements: {e}")
             return []
     
     # ========== POLLINATION CALCULATOR ==========
     
-    def calculate_pollination_needs(self, input_data: PollinationCalculatorInput) -> PollinationCalculatorResult:
+    async def calculate_pollination_needs(self, input_data: PollinationCalculatorInput, token: Optional[str] = None) -> PollinationCalculatorResult:
         """Calculate pollination requirements based on crop and acreage"""
         # Get crop requirements
-        crop_reqs = self.get_crop_requirements(input_data.crop_type)
+        crop_reqs = await self.get_crop_requirements(input_data.crop_type, token=token)
         
         if not crop_reqs:
             # Default values if crop not found
@@ -111,35 +111,35 @@ class PollinationService:
     
     # ========== CONTRACTS ==========
     
-    def get_contracts(
+    async def get_contracts(
         self, 
         user_id: Optional[str] = None,
         status: Optional[str] = None,
-        farmer_id: Optional[str] = None
+        farmer_id: Optional[str] = None,
+        token: Optional[str] = None
     ) -> List[PollinationContract]:
         """Get pollination contracts with optional filters"""
         try:
-            query = self.supabase.table('pollination_contracts').select('*')
-            
+            filters = {}
             if user_id:
-                query = query.eq('user_id', user_id)
+                filters['user_id'] = user_id
             if status:
-                query = query.eq('status', status)
+                filters['status'] = status
             if farmer_id:
-                query = query.eq('farmer_id', farmer_id)
+                filters['farmer_id'] = farmer_id
             
-            query = query.order('created_at', desc=True)
-            response = query.execute()
+            data = await db_select('pollination_contracts', filters=filters, order_by='created_at', ascending=False, token=token)
             
-            return [PollinationContract(**item) for item in response.data]
+            return [PollinationContract(**item) for item in data]
         except Exception as e:
             print(f"Error fetching contracts: {e}")
             return []
     
-    def create_contract(
+    async def create_contract(
         self, 
         contract_data: PollinationContractCreate,
-        user_id: str
+        user_id: str,
+        token: Optional[str] = None
     ) -> Optional[PollinationContract]:
         """Create a new pollination contract"""
         try:
@@ -154,26 +154,28 @@ class PollinationService:
                 'updated_at': datetime.now().isoformat()
             }
             
-            response = self.supabase.table('pollination_contracts').insert(data).execute()
+            result = await db_insert('pollination_contracts', data, token=token)
             
-            if response.data:
+            if result.get("success") and result.get("data"):
                 # Log activity
-                self._log_activity(
-                    contract_id=response.data[0]['id'],
+                await self._log_activity(
+                    contract_id=result['data'][0]['id'],
                     activity_type='contract_created',
                     description=f"New pollination contract created for {contract_data.crop_type} on {contract_data.farm_size_acres} acres",
-                    severity='success'
+                    severity='success',
+                    token=token
                 )
-                return PollinationContract(**response.data[0])
+                return PollinationContract(**result['data'][0])
             return None
         except Exception as e:
             print(f"Error creating contract: {e}")
             return None
     
-    def update_contract(
+    async def update_contract(
         self,
         contract_id: str,
-        contract_data: PollinationContractUpdate
+        contract_data: PollinationContractUpdate,
+        token: Optional[str] = None
     ) -> Optional[PollinationContract]:
         """Update an existing pollination contract"""
         try:
@@ -182,58 +184,57 @@ class PollinationService:
                 'updated_at': datetime.now().isoformat()
             }
             
-            response = self.supabase.table('pollination_contracts')\
-                .update(data)\
-                .eq('id', contract_id)\
-                .execute()
+            result = await db_update('pollination_contracts', data, {'id': contract_id}, token=token)
             
-            if response.data:
-                return PollinationContract(**response.data[0])
+            if result.get("success") and result.get("data"):
+                return PollinationContract(**result['data'][0])
             return None
         except Exception as e:
             print(f"Error updating contract: {e}")
             return None
     
-    def delete_contract(self, contract_id: str) -> bool:
+    async def delete_contract(self, contract_id: str, token: Optional[str] = None) -> bool:
         """Delete a pollination contract"""
         try:
-            response = self.supabase.table('pollination_contracts')\
-                .delete()\
-                .eq('id', contract_id)\
-                .execute()
-            return True
+            result = await db_delete('pollination_contracts', {'id': contract_id}, token=token)
+            return result.get("success", False)
         except Exception as e:
             print(f"Error deleting contract: {e}")
             return False
     
     # ========== HIVE ASSIGNMENTS ==========
     
-    def get_hive_assignments(
+    async def get_hive_assignments(
         self,
         contract_id: Optional[str] = None,
         hive_id: Optional[str] = None,
-        active_only: bool = False
+        active_only: bool = False,
+        token: Optional[str] = None
     ) -> List[HiveAssignment]:
         """Get hive assignments"""
         try:
-            query = self.supabase.table('hive_assignments').select('*')
-            
+            filters = {}
             if contract_id:
-                query = query.eq('contract_id', contract_id)
+                filters['contract_id'] = contract_id
             if hive_id:
-                query = query.eq('hive_id', hive_id)
-            if active_only:
-                query = query.is_('removal_date', 'null')
+                filters['hive_id'] = hive_id
             
-            response = query.execute()
-            return [HiveAssignment(**item) for item in response.data]
+            # Note: RLS handles the rest. active_only needs a special filter for IS NULL
+            # For now, we'll fetch all and filter if needed, or if db_select supports null
+            data = await db_select('hive_assignments', filters=filters, token=token)
+            
+            if active_only:
+                data = [item for item in data if item.get('removal_date') is None]
+            
+            return [HiveAssignment(**item) for item in data]
         except Exception as e:
             print(f"Error fetching hive assignments: {e}")
             return []
     
-    def assign_hive(
+    async def assign_hive(
         self,
-        assignment_data: HiveAssignmentCreate
+        assignment_data: HiveAssignmentCreate,
+        token: Optional[str] = None
     ) -> Optional[HiveAssignment]:
         """Assign a hive to a pollination contract"""
         try:
@@ -247,65 +248,62 @@ class PollinationService:
             data['created_at'] = datetime.now().isoformat()
             data['updated_at'] = datetime.now().isoformat()
             
-            response = self.supabase.table('hive_assignments').insert(data).execute()
+            result = await db_insert('hive_assignments', data, token=token)
             
-            if response.data:
+            if result.get("success") and result.get("data"):
                 # Update contract's hive_count_deployed
-                self._update_contract_hive_count(assignment_data.contract_id)
+                await self._update_contract_hive_count(assignment_data.contract_id, token=token)
                 
                 # Log activity
-                self._log_activity(
+                await self._log_activity(
                     contract_id=assignment_data.contract_id,
                     hive_id=assignment_data.hive_id,
                     activity_type='hive_deployed',
                     description=f"Hive {assignment_data.hive_id} deployed to contract",
-                    severity='success'
+                    severity='success',
+                    token=token
                 )
                 
-                return HiveAssignment(**response.data[0])
+                return HiveAssignment(**result['data'][0])
             return None
         except Exception as e:
             print(f"Error assigning hive: {e}")
             return None
     
-    def remove_hive_assignment(
+    async def remove_hive_assignment(
         self,
         assignment_id: str,
-        removal_date: date
+        removal_date: date,
+        token: Optional[str] = None
     ) -> bool:
         """Remove a hive from a pollination contract"""
         try:
             # Get the assignment first to get contract_id
-            assignment = self.supabase.table('hive_assignments')\
-                .select('*')\
-                .eq('id', assignment_id)\
-                .execute()
+            assignment = await db_get_by_id('hive_assignments', assignment_id, token=token)
             
-            if not assignment.data:
+            if not assignment:
                 return False
             
-            contract_id = assignment.data[0]['contract_id']
-            hive_id = assignment.data[0]['hive_id']
+            contract_id = assignment['contract_id']
+            hive_id = assignment['hive_id']
             
             # Update the assignment
-            response = self.supabase.table('hive_assignments')\
-                .update({
+            result = await db_update('hive_assignments', {
                     'removal_date': removal_date.isoformat(),
                     'updated_at': datetime.now().isoformat()
-                })\
-                .eq('id', assignment_id)\
-                .execute()
+                }, {'id': assignment_id}, token=token)
             
             # Update contract's hive_count_deployed
-            self._update_contract_hive_count(contract_id)
+            await self._update_contract_hive_count(contract_id, token=token)
             
             # Log activity
-            self._log_activity(
+            await self._log_activity(
                 contract_id=contract_id,
                 hive_id=hive_id,
                 activity_type='hive_removed',
                 description=f"Hive {hive_id} removed from contract",
-                severity='info'
+                severity='info',
+                token=token
             )
             
             return True
@@ -313,10 +311,11 @@ class PollinationService:
             print(f"Error removing hive assignment: {e}")
             return False
     
-    def update_hive_assignment(
+    async def update_hive_assignment(
         self,
         assignment_id: str,
-        assignment_data: HiveAssignmentUpdate
+        assignment_data: HiveAssignmentUpdate,
+        token: Optional[str] = None
     ) -> Optional[HiveAssignment]:
         """Update an existing hive assignment"""
         try:
@@ -330,13 +329,10 @@ class PollinationService:
             
             data['updated_at'] = datetime.now().isoformat()
             
-            response = self.supabase.table('hive_assignments')\
-                .update(data)\
-                .eq('id', assignment_id)\
-                .execute()
+            result = await db_update('hive_assignments', data, {'id': assignment_id}, token=token)
             
-            if response.data:
-                return HiveAssignment(**response.data[0])
+            if result.get("success") and result.get("data"):
+                return HiveAssignment(**result['data'][0])
             return None
         except Exception as e:
             print(f"Error updating hive assignment: {e}")
@@ -344,39 +340,32 @@ class PollinationService:
     
     # ========== POLLINATION APIARIES ==========
     
-    def get_pollination_apiaries(
+    async def get_pollination_apiaries(
         self,
-        user_id: Optional[str] = None
+        user_id: Optional[str] = None,
+        token: Optional[str] = None
     ) -> List[PollinationApiary]:
         """Get all apiaries available for pollination with hive availability"""
         try:
-            query = self.supabase.table('apiaries').select('*')
-            
+            filters = {}
             if user_id:
-                query = query.eq('user_id', user_id)
+                filters['user_id'] = user_id
             
-            query = query.order('created_at', desc=True)
-            response = query.execute()
+            data = await db_select('apiaries', filters=filters, order_by='created_at', ascending=False, token=token)
             
             apiaries = []
-            for apiary in response.data:
+            for apiary in data:
                 # Get hive count for this apiary
-                hives_response = self.supabase.table('hives')\
-                    .select('id')\
-                    .eq('apiary_id', apiary['id'])\
-                    .execute()
-                total_hives = len(hives_response.data) if hives_response.data else 0
+                hives_data = await db_select('hives', filters={'apiary_id': apiary['id']}, token=token)
+                total_hives = len(hives_data)
                 
                 # Get active assignments for hives in this apiary
                 assigned_hive_ids = set()
-                if hives_response.data:
-                    hive_ids = [h['id'] for h in hives_response.data]
-                    assignments = self.supabase.table('hive_assignments')\
-                        .select('hive_id')\
-                        .in_('hive_id', hive_ids)\
-                        .is_('removal_date', 'null')\
-                        .execute()
-                    assigned_hive_ids = {a['hive_id'] for a in (assignments.data or [])}
+                if hives_data:
+                    hive_ids = [h['id'] for h in hives_data]
+                    # PostgREST IN filter
+                    assignments = await db_select('hive_assignments', filters={'hive_id': hive_ids}, token=token)
+                    assigned_hive_ids = {a['hive_id'] for a in assignments if a.get('removal_date') is None}
                 
                 available_hives = total_hives - len(assigned_hive_ids)
                 
@@ -399,42 +388,32 @@ class PollinationService:
             print(f"Error fetching pollination apiaries: {e}")
             return []
     
-    def get_pollination_apiary(
+    async def get_pollination_apiary(
         self,
         apiary_id: str,
-        user_id: Optional[str] = None
+        user_id: Optional[str] = None,
+        token: Optional[str] = None
     ) -> Optional[PollinationApiary]:
         """Get a single apiary with pollination data"""
         try:
-            query = self.supabase.table('apiaries').select('*').eq('id', apiary_id)
+            apiary = await db_get_by_id('apiaries', apiary_id, token=token)
             
-            if user_id:
-                query = query.eq('user_id', user_id)
-            
-            response = query.execute()
-            
-            if not response.data:
+            if not apiary:
                 return None
             
-            apiary = response.data[0]
+            if user_id and apiary.get('user_id') != user_id:
+                return None
             
             # Get hive count
-            hives_response = self.supabase.table('hives')\
-                .select('id')\
-                .eq('apiary_id', apiary_id)\
-                .execute()
-            total_hives = len(hives_response.data) if hives_response.data else 0
+            hives_data = await db_select('hives', filters={'apiary_id': apiary_id}, token=token)
+            total_hives = len(hives_data)
             
             # Get available hives
             assigned_hive_ids = set()
-            if hives_response.data:
-                hive_ids = [h['id'] for h in hives_response.data]
-                assignments = self.supabase.table('hive_assignments')\
-                    .select('hive_id')\
-                    .in_('hive_id', hive_ids)\
-                    .is_('removal_date', 'null')\
-                    .execute()
-                assigned_hive_ids = {a['hive_id'] for a in (assignments.data or [])}
+            if hives_data:
+                hive_ids = [h['id'] for h in hives_data]
+                assignments = await db_select('hive_assignments', filters={'hive_id': hive_ids}, token=token)
+                assigned_hive_ids = {a['hive_id'] for a in assignments if a.get('removal_date') is None}
             
             available_hives = total_hives - len(assigned_hive_ids)
             
@@ -455,15 +434,15 @@ class PollinationService:
             print(f"Error fetching pollination apiary: {e}")
             return None
     
-    def create_pollination_apiary(
+    async def create_pollination_apiary(
         self,
         apiary_data: PollinationApiaryCreate,
-        user_id: str
+        user_id: str,
+        token: Optional[str] = None
     ) -> Optional[PollinationApiary]:
         """Create a new apiary for pollination"""
         try:
             # Generate apiary code
-            import uuid
             apiary_code = f"APY-{str(uuid.uuid4())[:8].upper()}"
             
             data = {
@@ -479,19 +458,20 @@ class PollinationService:
                 'updated_at': datetime.now().isoformat()
             }
             
-            response = self.supabase.table('apiaries').insert(data).execute()
+            result = await db_insert('apiaries', data, token=token)
             
-            if response.data:
-                return self.get_pollination_apiary(response.data[0]['id'])
+            if result.get("success") and result.get("data"):
+                return await self.get_pollination_apiary(result['data'][0]['id'], token=token)
             return None
         except Exception as e:
             print(f"Error creating pollination apiary: {e}")
             return None
     
-    def update_pollination_apiary(
+    async def update_pollination_apiary(
         self,
         apiary_id: str,
-        apiary_data: PollinationApiaryUpdate
+        apiary_data: PollinationApiaryUpdate,
+        token: Optional[str] = None
     ) -> Optional[PollinationApiary]:
         """Update an existing apiary"""
         try:
@@ -503,56 +483,51 @@ class PollinationService:
             
             data['updated_at'] = datetime.now().isoformat()
             
-            response = self.supabase.table('apiaries')\
-                .update(data)\
-                .eq('id', apiary_id)\
-                .execute()
+            result = await db_update('apiaries', data, {'id': apiary_id}, token=token)
             
-            if response.data:
-                return self.get_pollination_apiary(apiary_id)
+            if result.get("success") and result.get("data"):
+                return await self.get_pollination_apiary(apiary_id, token=token)
             return None
         except Exception as e:
             print(f"Error updating pollination apiary: {e}")
             return None
     
-    def delete_pollination_apiary(self, apiary_id: str) -> bool:
+    async def delete_pollination_apiary(self, apiary_id: str, token: Optional[str] = None) -> bool:
         """Soft delete a pollination apiary by setting is_active to False"""
         try:
-            response = self.supabase.table('apiaries')\
-                .update({'is_active': False, 'updated_at': datetime.now().isoformat()})\
-                .eq('id', apiary_id)\
-                .execute()
-            return bool(response.data)
+            result = await db_update('apiaries', {'is_active': False, 'updated_at': datetime.now().isoformat()}, {'id': apiary_id}, token=token)
+            return result.get("success", False)
         except Exception as e:
             print(f"Error deleting pollination apiary: {e}")
             return False
     
     # ========== HIVE SENSOR DATA ==========
     
-    def get_hive_sensor_data(
+    async def get_hive_sensor_data(
         self,
         contract_id: Optional[str] = None,
-        hive_ids: Optional[List[str]] = None
+        hive_ids: Optional[List[str]] = None,
+        token: Optional[str] = None
     ) -> List[HiveSensorData]:
         """Get real-time sensor data for hives"""
         try:
             # Get hives from assignments if contract_id provided
             if contract_id:
-                assignments = self.get_hive_assignments(contract_id=contract_id, active_only=True)
+                assignments = await self.get_hive_assignments(contract_id=contract_id, active_only=True, token=token)
                 hive_ids = [a.hive_id for a in assignments]
             
-            # Use join to get apiary details in one go
-            query = self.supabase.table('hives').select('*, apiaries(*)')
-            
+            # PostgREST IN filter for hive_ids
+            filters = {}
             if hive_ids:
-                query = query.in_('id', hive_ids)
+                filters['id'] = hive_ids
             
-            response = query.execute()
+            hives_data = await db_select('hives', filters=filters, token=token)
             
             # Transform hive data to sensor data format
             sensor_data = []
-            for hive in response.data:
-                apiary = hive.get('apiaries', {})
+            for hive in hives_data:
+                # Fetch apiary details
+                apiary = await db_get_by_id('apiaries', hive.get('apiary_id'), token=token) if hive.get('apiary_id') else {}
                 
                 # Simulate sensor readings (in production, this would come from IoT devices)
                 temp = hive.get('latest_temp', 34.5) or 34.5
@@ -592,22 +567,22 @@ class PollinationService:
     
     # ========== ANALYTICS ==========
     
-    def get_analytics(self, user_id: Optional[str] = None) -> PollinationAnalytics:
+    async def get_analytics(self, user_id: Optional[str] = None, token: Optional[str] = None) -> PollinationAnalytics:
         """Get pollination analytics"""
         try:
             # Get contracts
-            contracts = self.get_contracts(user_id=user_id)
+            contracts = await self.get_contracts(user_id=user_id, token=token)
             active_contracts = [c for c in contracts if c.status == 'active']
             
             # Get all hive assignments
             all_assignments = []
             for contract in active_contracts:
-                assignments = self.get_hive_assignments(contract_id=contract.id, active_only=True)
+                assignments = await self.get_hive_assignments(contract_id=contract.id, active_only=True, token=token)
                 all_assignments.extend(assignments)
             
             # Get sensor data for all assigned hives
             hive_ids = [a.hive_id for a in all_assignments]
-            sensor_data = self.get_hive_sensor_data(hive_ids=hive_ids) if hive_ids else []
+            sensor_data = await self.get_hive_sensor_data(hive_ids=hive_ids, token=token) if hive_ids else []
             
             # Calculate statistics
             total_hives_deployed = len(all_assignments)
@@ -664,34 +639,34 @@ class PollinationService:
     
     # ========== ACTIVITY LOGS ==========
     
-    def get_activity_logs(
+    async def get_activity_logs(
         self,
         contract_id: Optional[str] = None,
-        limit: int = 50
+        limit: int = 50,
+        token: Optional[str] = None
     ) -> List[PollinationActivityLog]:
         """Get activity logs"""
         try:
-            query = self.supabase.table('pollination_activity_logs').select('*')
-            
+            filters = {}
             if contract_id:
-                query = query.eq('contract_id', contract_id)
+                filters['contract_id'] = contract_id
             
-            query = query.order('timestamp', desc=True).limit(limit)
-            response = query.execute()
+            data = await db_select('pollination_activity_logs', filters=filters, order_by='timestamp', ascending=False, limit=limit, token=token)
             
-            return [PollinationActivityLog(**item) for item in response.data]
+            return [PollinationActivityLog(**item) for item in data]
         except Exception as e:
             print(f"Error fetching activity logs: {e}")
             return []
     
-    def _log_activity(
+    async def _log_activity(
         self,
         activity_type: str,
         description: str,
         contract_id: Optional[str] = None,
         hive_id: Optional[str] = None,
         severity: str = 'info',
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, Any]] = None,
+        token: Optional[str] = None
     ):
         """Internal method to log activities"""
         try:
@@ -709,22 +684,19 @@ class PollinationService:
             if metadata:
                 data['metadata'] = metadata
             
-            self.supabase.table('pollination_activity_logs').insert(data).execute()
+            await db_insert('pollination_activity_logs', data, token=token)
         except Exception as e:
             print(f"Error logging activity: {e}")
     
-    def _update_contract_hive_count(self, contract_id: str):
+    async def _update_contract_hive_count(self, contract_id: str, token: Optional[str] = None):
         """Update the hive_count_deployed for a contract"""
         try:
             # Count active assignments
-            assignments = self.get_hive_assignments(contract_id=contract_id, active_only=True)
+            assignments = await self.get_hive_assignments(contract_id=contract_id, active_only=True, token=token)
             count = len(assignments)
             
             # Update contract
-            self.supabase.table('pollination_contracts')\
-                .update({'hive_count_deployed': count})\
-                .eq('id', contract_id)\
-                .execute()
+            await db_update('pollination_contracts', {'hive_count_deployed': count}, {'id': contract_id}, token=token)
         except Exception as e:
             print(f"Error updating contract hive count: {e}")
 

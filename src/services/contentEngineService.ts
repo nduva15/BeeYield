@@ -34,6 +34,7 @@ export interface ContentPost {
     read_time_minutes: number;
     tags: string[];
     views_count: number;
+    priority?: boolean;
     published_at?: string;
     created_at: string;
     updated_at: string;
@@ -244,17 +245,32 @@ export const contentEngine = {
         return data as ContentPost;
     },
 
+    async publishPost(id: string): Promise<ContentPost | null> {
+        if (!supabase) return null;
+
+        // 1. Get all chapters content to ensure the post content is fresh
+        const { data: chapters } = await supabase
+            .from('blog_chapters')
+            .select('content_markdown, heading, chapter_number')
+            .eq('post_id', id)
+            .order('chapter_number', { ascending: true });
+
+        const fullMarkdown = (chapters || [])
+            .map(c => `## ${c.heading}\n\n${c.content_markdown}`)
+            .join('\n\n');
+
+        return await this.updatePost(id, {
+            status: 'published',
+            published_at: new Date().toISOString(),
+            content_markdown: fullMarkdown,
+            content_html: fullMarkdown // Fallback for simple display
+        });
+    },
+
     async deletePost(id: string): Promise<boolean> {
         if (!supabase) return false;
         const { error } = await supabase.from('blog_posts').delete().eq('id', id);
         return !error;
-    },
-
-    async publishPost(id: string): Promise<ContentPost | null> {
-        return this.updatePost(id, {
-            status: 'published',
-            published_at: new Date().toISOString()
-        } as any);
     },
 
     // ---- CHAPTERS ----

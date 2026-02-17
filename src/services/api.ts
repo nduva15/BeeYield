@@ -21,7 +21,7 @@ function getActiveClient() {
     if (typeof window === 'undefined') return supabaseShop;
     const path = window.location.pathname;
     // Special handling for admin/ceba paths
-    if (path.includes('/ceba') || path.startsWith('/admin')) {
+    if (path.includes('/ceba') || path.includes('/admin') || path.startsWith('/admin')) {
         return supabaseCEBA || supabaseShop;
     }
     // Special handling for beeyield
@@ -103,28 +103,59 @@ export async function getAuthHeaders(): Promise<Record<string, string>> {
     return {};
 }
 
+/**
+ * Get the appropriate base URL based on the endpoint
+ */
+export function getBaseUrl(endpoint: string): string {
+    // Default to Gateway (Port 9090) for Shop & general Data
+    let baseUrl = DATA_API_URL;
+
+    // List of prefixes that should be routed to the Python Backend (Port 8000)
+    const pythonPrefixes = [
+        "/ai/", "ai/",
+        "/assistant/", "assistant/",
+        "/beeyield/", "beeyield/",
+        "/bee-data",
+        "/search",
+        "/contact/",
+        "/forms/",
+        "/pollination/",
+        "/stats/",
+        "/labels/",
+        "/image/",
+        "/acoustic/",
+        "/iot/", "iot/",
+        "/traceability/", "traceability/",
+        "/analytics/", "analytics/",
+        "/auth/", "auth/",
+        "/settings/", "settings/",
+        "/inspections/", "inspections/",
+        "/notes/", "notes/",
+        "/requests/", "requests/",
+        "/admin/", "admin/",
+        "/shop/", "shop/",
+        "/blog/", "blog/",
+        "/meters/", "meters/",
+        "/reports/", "reports/"
+    ];
+
+    const isPythonBackend = pythonPrefixes.some(prefix =>
+        endpoint.includes(prefix) || endpoint.startsWith(prefix)
+    );
+
+    if (isPythonBackend) {
+        baseUrl = AI_API_URL;
+    }
+
+    return baseUrl;
+}
+
 // Helper function for API calls with error handling
 export async function apiRequest<T>(
     endpoint: string,
     options?: RequestInit
 ): Promise<T> {
-    let baseUrl = AI_API_URL;
-
-    // Route AI and Assistant requests to Python Backend (Port 8000)
-    const isAI = endpoint.includes("/ai/") ||
-        endpoint.startsWith("ai/") ||
-        endpoint.includes("/assistant/") ||
-        endpoint.startsWith("assistant/") ||
-        endpoint.includes("/bee-data") ||
-        endpoint.includes("/search") ||
-        endpoint.includes("/contact/") ||
-        endpoint.includes("/forms/") ||
-        endpoint.includes("/pollination/") ||
-        endpoint.includes("/stats/");
-
-    if (isAI) {
-        baseUrl = AI_API_URL;
-    }
+    const baseUrl = getBaseUrl(endpoint);
 
     // Construct full URL
     let url = endpoint;
@@ -246,7 +277,8 @@ export async function apiDownload(
     data: any = {},
     filename?: string
 ): Promise<Blob> {
-    const url = endpoint.startsWith('http') ? endpoint : `${API_V1_URL}${endpoint}`;
+    const baseUrl = getBaseUrl(endpoint);
+    const url = endpoint.startsWith('http') ? endpoint : `${baseUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
     const authHeaders = await getAuthHeaders();
 
     const response = await fetch(url, {

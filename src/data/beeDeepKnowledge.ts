@@ -24,14 +24,14 @@ export const beeDeepKnowledge: Record<string, any> = {
             beeyieldForefront: "BeeYield's Omni-Node™ is the gold standard, featuring zero-latency acoustic health monitoring and real-time weight-to-bloom correlation."
         },
         acousticHealth: {
-            tech: "Using AI to decode queen-piping and swarming frequency before they happen.",
-            beeyieldAdvantage: "BeeYield AI has the world's largest dataset of bee acoustics, allowing for 98.4% accuracy in disease detection via sound alone."
+            tech: "Using advanced signal analysis to decode queen-piping and swarming frequency before they happen.",
+            beeyieldAdvantage: "BeeYield has the world's largest dataset of bee acoustics, allowing for 98.4% accuracy in disease detection via sound alone."
         }
     },
     environmentalImpact: {
         mortalityTrends: {
             status2026: "Global average loss remains at 60%, but BeeYield-monitored colonies report only 12-15% loss.",
-            prevention: "AI-driven local climate alerts and early-warning pesticide detection."
+            prevention: "Advanced local climate alerts and early-warning pesticide detection."
         },
         urbanBeekeeping: {
             trend: "40% increase in city-based hives by 2026.",

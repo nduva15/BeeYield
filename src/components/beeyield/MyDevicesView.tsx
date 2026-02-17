@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input';
 import {
     Plus, Battery, Signal, Search, Filter, Cpu, Wifi,
     Moon, Sun, Bell, Headset, Settings, LogOut, ChevronDown, Check,
-    CheckCircle2, XCircle, Info, RefreshCw, Clock, FileSearch, AlertCircle
+    CheckCircle2, XCircle, Info, RefreshCw, Clock, FileSearch, AlertCircle,
+    Smartphone, Activity, Calendar, Archive
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -14,15 +15,7 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
-
-// Stat Card Component matching screenshot
-const StatCard = ({ label, value, colorClass }: { label: string, value: number | string, colorClass: string }) => (
-    <div className="bg-white dark:bg-[#111111] p-4 rounded-sm border border-gray-100 dark:border-white/5 shadow-sm relative overflow-hidden h-24 flex flex-col justify-between">
-        <div className={cn("absolute top-0 left-0 w-full h-[3px]", colorClass)} />
-        <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{label}</p>
-        <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">{value}</p>
-    </div>
-);
+import StatCard from './StatCard';
 
 // Alert Card Component matching screenshot
 const AlertCard = ({ label, value, colorClass }: { label: string, value: number | string, colorClass: string }) => (
@@ -180,20 +173,41 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                 <h1 className="text-3xl font-black text-slate-900 dark:text-white px-2 mb-8 tracking-tight">Devices</h1>
             </div>
 
-            {/* Stats Row 1 */}
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                <StatCard label={t('total_devices')} value={totalDevices} colorClass="bg-[#F4D03F]" />
-                <StatCard label={t('with_measurement')} value={withMeasurement} colorClass="bg-[#1B9157]" />
-                <StatCard label={t('measured_24h')} value={measured24h} colorClass="bg-[#1B9157]" />
-                <StatCard label={t('measured_48h')} value={measured48h} colorClass="bg-[#1B9157]" />
-                <StatCard label={t('measured_7d')} value={measured7d} colorClass="bg-[#F4D03F]" />
-            </div>
-
-            {/* Stats Row 2 */}
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 max-w-[40%]">
-                <StatCard label={t('measured_30d')} value={measured30d} colorClass="bg-[#F4D03F]" />
-                <StatCard label={t('measured_365d')} value={measured365d} colorClass="bg-red-500" />
-            </div>
+            {/* Stats Row 1 & 2 Combined */}
+            <motion.div
+                className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-8"
+                initial="hidden"
+                animate="show"
+                variants={{
+                    hidden: { opacity: 0 },
+                    show: {
+                        opacity: 1,
+                        transition: { staggerChildren: 0.1 }
+                    }
+                }}
+            >
+                <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
+                    <StatCard title={t('total_devices')} value={totalDevices} icon={Smartphone} iconColor="#F4D03F" />
+                </motion.div>
+                <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
+                    <StatCard title={t('with_measurement')} value={withMeasurement} icon={Activity} iconColor="#1B9157" />
+                </motion.div>
+                <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
+                    <StatCard title={t('measured_24h')} value={measured24h} icon={Clock} iconColor="#1B9157" />
+                </motion.div>
+                <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
+                    <StatCard title={t('measured_48h')} value={measured48h} icon={Clock} iconColor="#1B9157" />
+                </motion.div>
+                <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
+                    <StatCard title={t('measured_7d')} value={measured7d} icon={Calendar} iconColor="#F4D03F" />
+                </motion.div>
+                <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
+                    <StatCard title={t('measured_30d')} value={measured30d} icon={Calendar} iconColor="#F4D03F" />
+                </motion.div>
+                <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
+                    <StatCard title={t('measured_365d')} value={measured365d} icon={Archive} iconColor="#EF4444" />
+                </motion.div>
+            </motion.div>
 
             {/* Attention Needed Section */}
             <div className="mt-8 bg-slate-50/50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/10 p-6">

@@ -1,7 +1,7 @@
 """
 Blog/CMS Endpoints with AI Content Engine Integration
 """
-from fastapi import APIRouter, HTTPException, Query, Body, Depends
+from fastapi import APIRouter, HTTPException, Query, Body, Depends, Request
 from typing import Optional, List, Dict, Any
 from app.schemas import blog as schemas
 from app.db.supabase_db import db_select, db_insert, db_update, db_get_by_id, db_delete
@@ -10,15 +10,23 @@ from datetime import datetime
 
 router = APIRouter()
 
+def get_token(request: Request) -> Optional[str]:
+    """Extract raw token from Authorization header"""
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        return auth_header.split(" ")[1]
+    return None
+
 # ============ PUBLIC BLOG ENDPOINTS ============
 
 @router.get("/posts", response_model=list[dict])
-def get_blog_posts(
+async def get_blog_posts(
     category: Optional[str] = None,
     tag: Optional[str] = None,
     limit: int = Query(10, le=100),
     offset: int = 0,
-    status: str = "published"
+    status: str = "published",
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Get blog posts with optional filtering.
@@ -27,26 +35,27 @@ def get_blog_posts(
     if category:
         filters["category"] = category
     
-    posts = db_select(
+    posts = await db_select(
         "blog_posts", 
         filters=filters, 
         order_by="published_at" if status == "published" else "created_at", 
         ascending=False,
-        limit=limit
+        limit=limit,
+        token=token
     )
     return posts
 
 @router.get("/posts/{slug_or_id}", response_model=dict)
-def get_blog_post(slug_or_id: str):
+async def get_blog_post(slug_or_id: str, token: Optional[str] = Depends(get_token)):
     """
     Get a single blog post by slug or ID.
     """
     # Try by ID first
-    post = db_get_by_id("blog_posts", slug_or_id)
+    post = await db_get_by_id("blog_posts", slug_or_id, token=token)
     
     # Try by slug if not found or if ID look-alike is actually a slug
     if not post:
-        posts = db_select("blog_posts", filters={"slug": slug_or_id}, limit=1)
+        posts = await db_select("blog_posts", filters={"slug": slug_or_id}, limit=1, token=token)
         if posts:
             post = posts[0]
             
@@ -54,15 +63,15 @@ def get_blog_post(slug_or_id: str):
         raise HTTPException(status_code=404, detail="Blog post not found")
         
     # Increment view count
-    db_update("blog_posts", {"views_count": post.get("views_count", 0) + 1}, {"id": post["id"]})
+    await db_update("blog_posts", {"views_count": post.get("views_count", 0) + 1}, {"id": post["id"]}, token=token)
     return post
 
 @router.get("/posts/{post_id}/chapters", response_model=list[dict])
-def get_blog_chapters(post_id: str):
+async def get_blog_chapters(post_id: str, token: Optional[str] = Depends(get_token)):
     """
     Get all chapters for a specific post.
     """
-    chapters = db_select("blog_chapters", filters={"post_id": post_id}, order_by="chapter_order", ascending=True)
+    chapters = await db_select("blog_chapters", filters={"post_id": post_id}, order_by="chapter_order", ascending=True, token=token)
     return chapters
 
 @router.get("/categories", response_model=list[dict])
@@ -115,7 +124,7 @@ async def analyze_blog_seo(post_id: str):
 # ============ ADMIN CRUD ENDPOINTS ============
 
 @router.post("/posts", response_model=dict)
-def create_blog_post(post: schemas.BlogPostCreate):
+async def create_blog_post(post: schemas.BlogPostCreate, token: Optional[str] = Depends(get_token)):
     """
     Create a new blog post.
     """
@@ -126,37 +135,37 @@ def create_blog_post(post: schemas.BlogPostCreate):
         post_data["slug"] = "".join([c if c.isalnum() or c == "-" else "" for c in post_data["slug"]])
         
     post_data["created_at"] = datetime.utcnow().isoformat()
-    result = db_insert("blog_posts", post_data)
+    result = await db_insert("blog_posts", post_data, token=token)
     if not result["success"]:
         raise HTTPException(status_code=400, detail=result["error"])
     return result["data"]
 
 @router.put("/posts/{post_id}", response_model=dict)
-def update_blog_post(post_id: str, post: dict = Body(...)):
+async def update_blog_post(post_id: str, post: dict = Body(...), token: Optional[str] = Depends(get_token)):
     """
     Update an existing blog post.
     """
-    result = db_update("blog_posts", post, {"id": post_id})
+    result = await db_update("blog_posts", post, {"id": post_id}, token=token)
     if not result["success"]:
         raise HTTPException(status_code=400, detail=result["error"])
     return result["data"]
 
 @router.delete("/posts/{post_id}")
-def delete_blog_post(post_id: str):
+async def delete_blog_post(post_id: str, token: Optional[str] = Depends(get_token)):
     """
     Delete a blog post.
     """
-    result = db_delete("blog_posts", {"id": post_id})
+    result = await db_delete("blog_posts", {"id": post_id}, token=token)
     if not result["success"]:
         raise HTTPException(status_code=400, detail=result.get("error", "Delete failed"))
     return {"status": "success"}
 
 @router.get("/stats", response_model=dict)
-def get_blog_stats():
+async def get_blog_stats(token: Optional[str] = Depends(get_token)):
     """
     Get high-level blog stats for dashboard.
     """
-    posts = db_select("blog_posts", columns="id, status, target_word_count, views_count")
+    posts = await db_select("blog_posts", columns="id, status, target_word_count, views_count", token=token)
     
     total_posts = len(posts)
     published = len([p for p in posts if p["status"] == "published"])

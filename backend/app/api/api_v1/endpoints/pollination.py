@@ -1,7 +1,7 @@
 """
 API endpoints for Precision Pollination module
 """
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from typing import List, Optional
 from datetime import date
 
@@ -11,26 +11,35 @@ from app.services.pollination_service import pollination_service
 
 router = APIRouter()
 
+def get_token(request: Request) -> Optional[str]:
+    """Extract raw token from Authorization header"""
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        return auth_header.split(" ")[1]
+    return None
+
 
 # ========== CROP REQUIREMENTS ==========
 
 @router.get("/crops", response_model=List[schemas.CropPollinationRequirements])
-def get_crop_requirements(
-    crop_name: Optional[str] = Query(None, description="Filter by crop name")
+async def get_crop_requirements(
+    crop_name: Optional[str] = Query(None, description="Filter by crop name"),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Get pollination requirements for crops.
     
     - **crop_name**: Optional filter by specific crop
     """
-    return pollination_service.get_crop_requirements(crop_name)
+    return await pollination_service.get_crop_requirements(crop_name, token=token)
 
 
 # ========== POLLINATION APIARIES ==========
 
 @router.get("/apiaries", response_model=List[schemas.PollinationApiary])
-def get_pollination_apiaries(
-    current_user: dict = Depends(security.get_current_user)
+async def get_pollination_apiaries(
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Get all apiaries available for pollination.
@@ -38,17 +47,18 @@ def get_pollination_apiaries(
     Returns apiaries with hive counts and availability for pollination contracts.
     """
     user_id = current_user.get("sub")
-    return pollination_service.get_pollination_apiaries(user_id=user_id)
+    return await pollination_service.get_pollination_apiaries(user_id=user_id, token=token)
 
 
 @router.get("/apiaries/{apiary_id}", response_model=schemas.PollinationApiary)
-def get_pollination_apiary(
+async def get_pollination_apiary(
     apiary_id: str,
-    current_user: dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     """Get a specific apiary with pollination-relevant data"""
     user_id = current_user.get("sub")
-    apiary = pollination_service.get_pollination_apiary(apiary_id, user_id=user_id)
+    apiary = await pollination_service.get_pollination_apiary(apiary_id, user_id=user_id, token=token)
     
     if not apiary:
         raise HTTPException(status_code=404, detail="Apiary not found")
@@ -57,9 +67,10 @@ def get_pollination_apiary(
 
 
 @router.post("/apiaries", response_model=schemas.PollinationApiary, status_code=201)
-def create_pollination_apiary(
+async def create_pollination_apiary(
     apiary_data: schemas.PollinationApiaryCreate,
-    current_user: dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Create a new apiary for pollination operations.
@@ -67,7 +78,7 @@ def create_pollination_apiary(
     This creates a new apiary and associates it with the authenticated user.
     """
     user_id = current_user.get("sub")
-    apiary = pollination_service.create_pollination_apiary(apiary_data, user_id)
+    apiary = await pollination_service.create_pollination_apiary(apiary_data, user_id, token=token)
     
     if not apiary:
         raise HTTPException(status_code=500, detail="Failed to create apiary")
@@ -76,13 +87,14 @@ def create_pollination_apiary(
 
 
 @router.put("/apiaries/{apiary_id}", response_model=schemas.PollinationApiary)
-def update_pollination_apiary(
+async def update_pollination_apiary(
     apiary_id: str,
     apiary_data: schemas.PollinationApiaryUpdate,
-    current_user: dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     """Update an existing pollination apiary"""
-    apiary = pollination_service.update_pollination_apiary(apiary_id, apiary_data)
+    apiary = await pollination_service.update_pollination_apiary(apiary_id, apiary_data, token=token)
     
     if not apiary:
         raise HTTPException(status_code=404, detail="Apiary not found or update failed")
@@ -91,12 +103,13 @@ def update_pollination_apiary(
 
 
 @router.delete("/apiaries/{apiary_id}")
-def delete_pollination_apiary(
+async def delete_pollination_apiary(
     apiary_id: str,
-    current_user: dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     """Delete (soft-delete) a pollination apiary"""
-    success = pollination_service.delete_pollination_apiary(apiary_id)
+    success = await pollination_service.delete_pollination_apiary(apiary_id, token=token)
     
     if not success:
         raise HTTPException(status_code=404, detail="Apiary not found or deletion failed")
@@ -107,8 +120,9 @@ def delete_pollination_apiary(
 # ========== POLLINATION CALCULATOR ==========
 
 @router.post("/calculate", response_model=schemas.PollinationCalculatorResult)
-def calculate_pollination_needs(
-    input_data: schemas.PollinationCalculatorInput
+async def calculate_pollination_needs(
+    input_data: schemas.PollinationCalculatorInput,
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Calculate pollination requirements based on crop type and acreage.
@@ -125,16 +139,17 @@ def calculate_pollination_needs(
     - Foraging efficiency
     - Colony strength category
     """
-    return pollination_service.calculate_pollination_needs(input_data)
+    return await pollination_service.calculate_pollination_needs(input_data, token=token)
 
 
 # ========== CONTRACTS ==========
 
 @router.get("/contracts", response_model=List[schemas.PollinationContract])
-def get_contracts(
+async def get_contracts(
     status: Optional[str] = Query(None, description="Filter by contract status"),
     farmer_id: Optional[str] = Query(None, description="Filter by farmer ID"),
-    current_user: dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Get all pollination contracts for the authenticated user.
@@ -143,17 +158,19 @@ def get_contracts(
     - **farmer_id**: Optional filter by farmer
     """
     user_id = current_user.get("sub")
-    return pollination_service.get_contracts(
+    return await pollination_service.get_contracts(
         user_id=user_id,
         status=status,
-        farmer_id=farmer_id
+        farmer_id=farmer_id,
+        token=token
     )
 
 
 @router.post("/contracts", response_model=schemas.PollinationContract)
-def create_contract(
+async def create_contract(
     contract_data: schemas.PollinationContractCreate,
-    current_user: dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Create a new pollination contract.
@@ -161,7 +178,7 @@ def create_contract(
     Requires authentication. The contract will be associated with the authenticated user.
     """
     user_id = current_user.get("sub")
-    contract = pollination_service.create_contract(contract_data, user_id)
+    contract = await pollination_service.create_contract(contract_data, user_id, token=token)
     
     if not contract:
         raise HTTPException(status_code=500, detail="Failed to create contract")
@@ -170,13 +187,14 @@ def create_contract(
 
 
 @router.get("/contracts/{contract_id}", response_model=schemas.PollinationContract)
-def get_contract(
+async def get_contract(
     contract_id: str,
-    current_user: dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     """Get a specific pollination contract by ID"""
     user_id = current_user.get("sub")
-    contracts = pollination_service.get_contracts(user_id=user_id)
+    contracts = await pollination_service.get_contracts(user_id=user_id, token=token)
     
     contract = next((c for c in contracts if c.id == contract_id), None)
     if not contract:
@@ -186,13 +204,14 @@ def get_contract(
 
 
 @router.put("/contracts/{contract_id}", response_model=schemas.PollinationContract)
-def update_contract(
+async def update_contract(
     contract_id: str,
     contract_data: schemas.PollinationContractUpdate,
-    current_user: dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     """Update an existing pollination contract"""
-    contract = pollination_service.update_contract(contract_id, contract_data)
+    contract = await pollination_service.update_contract(contract_id, contract_data, token=token)
     
     if not contract:
         raise HTTPException(status_code=404, detail="Contract not found or update failed")
@@ -201,12 +220,13 @@ def update_contract(
 
 
 @router.delete("/contracts/{contract_id}")
-def delete_contract(
+async def delete_contract(
     contract_id: str,
-    current_user: dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     """Delete a pollination contract"""
-    success = pollination_service.delete_contract(contract_id)
+    success = await pollination_service.delete_contract(contract_id, token=token)
     
     if not success:
         raise HTTPException(status_code=404, detail="Contract not found or deletion failed")
@@ -217,11 +237,12 @@ def delete_contract(
 # ========== HIVE ASSIGNMENTS ==========
 
 @router.get("/assignments", response_model=List[schemas.HiveAssignment])
-def get_hive_assignments(
+async def get_hive_assignments(
     contract_id: Optional[str] = Query(None, description="Filter by contract ID"),
     hive_id: Optional[str] = Query(None, description="Filter by hive ID"),
     active_only: bool = Query(False, description="Show only active assignments"),
-    current_user: dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Get hive assignments.
@@ -230,17 +251,19 @@ def get_hive_assignments(
     - **hive_id**: Optional filter by hive
     - **active_only**: Show only assignments without removal date
     """
-    return pollination_service.get_hive_assignments(
+    return await pollination_service.get_hive_assignments(
         contract_id=contract_id,
         hive_id=hive_id,
-        active_only=active_only
+        active_only=active_only,
+        token=token
     )
 
 
 @router.post("/assignments", response_model=schemas.HiveAssignment)
-def assign_hive(
+async def assign_hive(
     assignment_data: schemas.HiveAssignmentCreate,
-    current_user: dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Assign a hive to a pollination contract.
@@ -250,7 +273,7 @@ def assign_hive(
     - Update the contract's deployed hive count
     - Log the activity
     """
-    assignment = pollination_service.assign_hive(assignment_data)
+    assignment = await pollination_service.assign_hive(assignment_data, token=token)
     
     if not assignment:
         raise HTTPException(status_code=500, detail="Failed to assign hive")
@@ -259,10 +282,11 @@ def assign_hive(
 
 
 @router.put("/assignments/{assignment_id}/remove")
-def remove_hive_assignment(
+async def remove_hive_assignment(
     assignment_id: str,
     removal_date: date = Query(..., description="Date when hive was removed"),
-    current_user: dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Remove a hive from a pollination contract by setting the removal date.
@@ -272,7 +296,7 @@ def remove_hive_assignment(
     - Update the contract's deployed hive count
     - Log the activity
     """
-    success = pollination_service.remove_hive_assignment(assignment_id, removal_date)
+    success = await pollination_service.remove_hive_assignment(assignment_id, removal_date, token=token)
     
     if not success:
         raise HTTPException(status_code=404, detail="Assignment not found or removal failed")
@@ -281,17 +305,18 @@ def remove_hive_assignment(
 
 
 @router.put("/assignments/{assignment_id}", response_model=schemas.HiveAssignment)
-def update_hive_assignment(
+async def update_hive_assignment(
     assignment_id: str,
     assignment_data: schemas.HiveAssignmentUpdate,
-    current_user: dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Update a hive assignment.
     
     Allows updating placement location, coordinates, and notes.
     """
-    assignment = pollination_service.update_hive_assignment(assignment_id, assignment_data)
+    assignment = await pollination_service.update_hive_assignment(assignment_id, assignment_data, token=token)
     
     if not assignment:
         raise HTTPException(status_code=404, detail="Assignment not found or update failed")
@@ -302,9 +327,10 @@ def update_hive_assignment(
 # ========== HIVE SENSOR DATA ==========
 
 @router.get("/hive-sensors", response_model=List[schemas.HiveSensorData])
-def get_hive_sensor_data(
+async def get_hive_sensor_data(
     contract_id: Optional[str] = Query(None, description="Get sensors for hives in this contract"),
-    current_user: dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Get real-time sensor data for hives.
@@ -319,14 +345,15 @@ def get_hive_sensor_data(
     - Queen status
     - Hive health status
     """
-    return pollination_service.get_hive_sensor_data(contract_id=contract_id)
+    return await pollination_service.get_hive_sensor_data(contract_id=contract_id, token=token)
 
 
 # ========== ANALYTICS ==========
 
 @router.get("/analytics", response_model=schemas.PollinationAnalytics)
-def get_analytics(
-    current_user: dict = Depends(security.get_current_user)
+async def get_analytics(
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Get comprehensive analytics for pollination operations.
@@ -341,16 +368,17 @@ def get_analytics(
     - Total revenue
     """
     user_id = current_user.get("sub")
-    return pollination_service.get_analytics(user_id=user_id)
+    return await pollination_service.get_analytics(user_id=user_id, token=token)
 
 
 # ========== ACTIVITY LOGS ==========
 
 @router.get("/activity-logs", response_model=List[schemas.PollinationActivityLog])
-def get_activity_logs(
+async def get_activity_logs(
     contract_id: Optional[str] = Query(None, description="Filter by contract ID"),
     limit: int = Query(50, ge=1, le=200, description="Maximum number of logs to return"),
-    current_user: dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Get activity logs for pollination operations.
@@ -366,17 +394,19 @@ def get_activity_logs(
     - alert
     - payment
     """
-    return pollination_service.get_activity_logs(
+    return await pollination_service.get_activity_logs(
         contract_id=contract_id,
-        limit=limit
+        limit=limit,
+        token=token
     )
 
 
 # ========== DASHBOARD DATA ==========
 
 @router.get("/dashboard", response_model=schemas.PollinationDashboardData)
-def get_dashboard_data(
-    current_user: dict = Depends(security.get_current_user)
+async def get_dashboard_data(
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Get complete dashboard data for precision pollination.
@@ -391,11 +421,11 @@ def get_dashboard_data(
     user_id = current_user.get("sub")
     
     # Get all data
-    contracts = pollination_service.get_contracts(user_id=user_id, status='active')
-    hive_sensor_data = pollination_service.get_hive_sensor_data()
-    analytics = pollination_service.get_analytics(user_id=user_id)
-    recent_activities = pollination_service.get_activity_logs(limit=20)
-    crop_requirements = pollination_service.get_crop_requirements()
+    contracts = await pollination_service.get_contracts(user_id=user_id, status='active', token=token)
+    hive_sensor_data = await pollination_service.get_hive_sensor_data(token=token)
+    analytics = await pollination_service.get_analytics(user_id=user_id, token=token)
+    recent_activities = await pollination_service.get_activity_logs(limit=20, token=token)
+    crop_requirements = await pollination_service.get_crop_requirements(token=token)
     
     return schemas.PollinationDashboardData(
         contracts=contracts,

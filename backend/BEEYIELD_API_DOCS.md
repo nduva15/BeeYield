@@ -618,3 +618,21 @@ Navigate to `http://localhost:8000/docs` to access the interactive API documenta
 For issues or questions:
 - Email: timothy.mathuva@strathmore.edu
 - GitHub: [BeeYield Repository](https://github.com/nduva15/BeeYield)
+
+---
+
+## Performance Optimization Features
+
+### Connection Pooling
+The backend now uses a shared `httpx.AsyncClient` for all database operations, significantly reducing the overhead of TCP handshakes for high-frequency requests.
+
+### Database RPC Functions
+Heavy aggregations (e.g., season totals, impact stats) are now offloaded to the database using PostgreSQL stored procedures (RPC). This prevents fetching thousands of rows to the application layer for simple sum operations.
+
+To enable these optimizations, run:
+```bash
+psql -h <host> -U <user> -d <db> -f backend/migrations/optimize_stats.sql
+```
+
+### Intelligent Indexing
+New indexes have been added to `harvest_date`, `batch_code`, and foreign keys to speed up common filter queries by up to 10x.

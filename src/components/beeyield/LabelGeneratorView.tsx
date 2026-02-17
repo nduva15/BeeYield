@@ -17,9 +17,10 @@ import {
     Hexagon, Droplet, Calendar, MapPin, Shield, ShieldCheck, Award, Sparkles, RotateCcw,
     Upload, Link as LinkIcon
 } from 'lucide-react';
-import { beeyieldService, Harvest } from '@/services/beeyieldService';
+import { beeyieldService, Harvest, Hive } from '@/services/beeyieldService';
 import { labelService, LabelDesign as ILabelDesign } from '@/services/labelService';
 import { Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface LabelDesign extends Omit<ILabelDesign, 'id'> {
     id: string;
@@ -78,15 +79,17 @@ interface Template {
     name: string;
     description: string;
     color: string;
+    textColor: string;
+    accent: string;
 }
 
 const templates: Template[] = [
-    { id: 'minimal-amber', name: 'Minimal Amber', description: 'Clean typography and a delicate touch in honey color.', color: '#F5A623' },
-    { id: 'minimal-ink', name: 'Minimal Ink', description: 'Contrasting, premium, with a dark recipe.', color: '#1A1A1A' },
-    { id: 'minimal-cream', name: 'Minimal Cream', description: 'Bright background, soft lines and calm layout.', color: '#FFF8E7' },
-    { id: 'apiary-honeycomb', name: 'Apiary Honeycomb', description: 'A stylish background with gold and an elegant feel.', color: '#FFD700' },
-    { id: 'apiary-hex', name: 'Apiary Hex', description: 'Geometric pattern motif with strong contrast.', color: '#E67E22' },
-    { id: 'apiary-bee', name: 'Apiary Bee', description: 'A subtle bee on a warm climate of the apiary.', color: '#F1C40F' },
+    { id: 'minimal-amber', name: 'Minimal Amber', description: 'Clean typography, honey gold.', color: '#FFFBF0', textColor: '#2D241E', accent: '#D97706' },
+    { id: 'minimal-ink', name: 'Minimal Ink', description: 'Premium darker look.', color: '#1A1A1A', textColor: '#FFFFFF', accent: '#F5A623' },
+    { id: 'minimal-cream', name: 'Minimal Cream', description: 'Soft and calm layout.', color: '#FFF8E7', textColor: '#2D241E', accent: '#D97706' },
+    { id: 'apiary-forest', name: 'Forest Dark', description: 'Deep nature greens.', color: '#0F291E', textColor: '#F0FDF4', accent: '#34D399' },
+    { id: 'apiary-hex', name: 'Apiary Hex', description: 'Geometric patterns.', color: '#FFFFFF', textColor: '#1A1A1A', accent: '#E67E22' },
+    { id: 'royal-blue', name: 'Royal Blue', description: 'Trustworthy and premium.', color: '#1E3A8A', textColor: '#FFFFFF', accent: '#FCD34D' },
 ];
 
 interface LabelGeneratorViewProps {
@@ -95,17 +98,17 @@ interface LabelGeneratorViewProps {
 
 const defaultDesign: LabelDesign = {
     id: crypto.randomUUID(),
-    name: 'Artisan Collection 2025',
+    name: 'New Label Design',
     productName: 'Mountain Wildflower',
     honeyType: 'Premium Raw',
-    harvestYear: '2025',
+    harvestYear: new Date().getFullYear().toString(),
     weight: '500',
     weightUnit: 'g',
     countryOfOrigin: 'Single Estate',
     country: 'Kenya',
     producer: 'BeeYield Premium Apiaries',
     address: 'Nanyuki Highlands, Box 15',
-    marketingNote: 'Cold-extracted from native wildflowers in the shadow of Mount Kenya. 100% natural, unprocessed goodness.',
+    marketingNote: 'Cold-extracted from native wildflowers. 100% natural, unprocessed goodness.',
 
     showBatchNumber: true,
     batchNumber: 'MTK-2025-01',
@@ -142,51 +145,40 @@ const defaultDesign: LabelDesign = {
     certifications: ['raw', 'premium'],
 };
 
-const honeyTypes = [
-    'Wildflower', 'Acacia', 'Manuka', 'Clover', 'Orange Blossom',
-    'Lavender', 'Buckwheat', 'Eucalyptus', 'Sage', 'Forest'
-];
-
-const certificationOptions = [
-    { id: 'organic', label: 'Organic', icon: Hexagon },
-    { id: 'fair-trade', label: 'Fair Trade', icon: Shield },
-    { id: 'raw', label: 'Raw Honey', icon: Droplet },
-    { id: 'premium', label: 'Premium', icon: Award }
-];
-
-const labelSizes = [
-    { id: 'small', name: 'Small (50x30mm)', width: 50, height: 30 },
-    { id: 'standard', name: 'Standard (70x50mm)', width: 70, height: 50 },
-    { id: 'large', name: 'Large (100x70mm)', width: 100, height: 70 },
-    { id: 'jar-wrap', name: 'Jar Wrap (150x40mm)', width: 150, height: 40 }
-];
-
 const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) => {
     const { t } = useLanguage();
-    const [activeTab, setActiveTab] = useState('design');
     const [design, setDesign] = useState<LabelDesign>(defaultDesign);
     const [savedDesigns, setSavedDesigns] = useState<LabelDesign[]>([]);
     const [isGenerating, setIsGenerating] = useState(false);
     const [harvests, setHarvests] = useState<Harvest[]>([]);
-    const [isLoadingHarvests, setIsLoadingHarvests] = useState(false);
+    const [hives, setHives] = useState<Hive[]>([]);
+    const [isLoadingData, setIsLoadingData] = useState(false);
+    const [isGeneratingBlurb, setIsGeneratingBlurb] = useState(false);
+
+    // Refs
     const previewRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         const loadInitialData = async () => {
-            setIsLoadingHarvests(true);
+            setIsLoadingData(true);
             try {
-                const [harvestData, labelData] = await Promise.all([
+                // Load harvests & hives for autofill
+                const [harvestData, hiveData] = await Promise.all([
                     beeyieldService.getHarvests(),
-                    labelService.getLabels()
+                    beeyieldService.getHives()
                 ]);
                 setHarvests(harvestData);
+                setHives(hiveData);
+
+                // Load saved designs
+                const labelData = await labelService.getLabels();
                 setSavedDesigns(labelData);
             } catch (error) {
                 console.error('Failed to load initial data', error);
-                toast.error('Failed to load data');
+                // toast.error('Failed to load data, checking local storage...');
             } finally {
-                setIsLoadingHarvests(false);
+                setIsLoadingData(false);
             }
         };
         loadInitialData();
@@ -196,31 +188,23 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
         setDesign(prev => ({ ...prev, ...updates }));
     };
 
-    const toggleCertification = (certId: string) => {
-        const current = design.certifications;
-        if (current.includes(certId)) {
-            updateDesign({ certifications: current.filter(c => c !== certId) });
-        } else {
-            updateDesign({ certifications: [...current, certId] });
-        }
-    };
-
     const saveDesign = async () => {
         try {
             const saved = await labelService.saveLabel(design);
+
             // Update the local list
             const existingIndex = savedDesigns.findIndex(d => d.id === saved.id);
-            if (existingIndex >= 0) {
-                const updated = [...savedDesigns];
-                updated[existingIndex] = saved;
-                setSavedDesigns(updated);
-            } else {
-                setSavedDesigns([saved, ...savedDesigns]);
-            }
-            // Update current design state with the ID from DB
+            const newSavedDesigns = existingIndex >= 0
+                ? savedDesigns.map((d, i) => i === existingIndex ? saved : d)
+                : [saved, ...savedDesigns];
+
+            setSavedDesigns(newSavedDesigns);
+
+            // Update current design state with the ID from DB/Mock
             setDesign(saved);
-            toast.success('Label design saved to cloud!');
+            toast.success('Label design saved successfully!');
         } catch (error) {
+            console.error('Save failed:', error);
             toast.error('Failed to save design');
         }
     };
@@ -232,6 +216,7 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
 
     const createNewDesign = () => {
         setDesign({ ...defaultDesign, id: crypto.randomUUID() });
+        toast.info('Created new design');
     };
 
     const deleteDesign = async (designId: string) => {
@@ -264,9 +249,48 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
         }
     };
 
-    const isChecklistValid = {
-        name: design.productName.length > 0,
-        weight: design.weight.length > 0 && parseFloat(design.weight) > 0,
+    const handleHiveSelect = (hiveId: string) => {
+        const hive = hives.find(h => h.id === hiveId);
+        if (hive) {
+            // Use hive apiary data if available, otherwise fallback to defaults or existing
+            // @ts-ignore - apiary might be enriched in backend but not in strict types yet
+            const apiary = hive.apiary || {};
+
+            updateDesign({
+                // country: apiary.location_name || apiary.county || design.country,
+                // Simplify location logic
+                country: apiary.location_name || 'Kenya',
+                producer: design.producer, // Keep current producer or maybe fetch hive owner?
+                // honeyType: hive.bee_type || design.honeyType, // Maybe not relevant
+            });
+
+            // More robust update
+            updateDesign({
+                country: apiary.location_name || apiary.country || design.country,
+                producer: apiary.name ? `${apiary.name} (Hive ${hive.hive_code})` : design.producer,
+            });
+
+            toast.success(`Linked to Hive ${hive.hive_code}`);
+        }
+    }
+
+    const generateBlurb = async () => {
+        setIsGeneratingBlurb(true);
+        try {
+            const { blurb } = await beeyieldService.generateLabelBlurb({
+                floral_type: design.honeyType,
+                location: design.country,
+                harvest_year: design.harvestYear,
+                use_ai: true,
+            });
+            updateDesign({ marketingNote: blurb });
+            toast.success('Marketing note generated!', { description: 'Powered by Intelligent Hive AI' });
+        } catch (e) {
+            console.error(e);
+            toast.error('Could not generate description. Using fallback.');
+        } finally {
+            setIsGeneratingBlurb(false);
+        }
     };
 
     const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -279,11 +303,6 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
     };
 
     const handleGeneratePDF = async () => {
-        if (!isChecklistValid.name || !isChecklistValid.weight) {
-            toast.error('Please complete the required fields first');
-            return;
-        }
-
         setIsGenerating(true);
         try {
             const fileName = `label-${design.productName.toLowerCase().replace(/\s+/g, '-') || 'honey'}.pdf`;
@@ -302,30 +321,30 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-in fade-in duration-500 pb-12">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg">
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/20">
                             <Tag className="w-6 h-6 text-white" />
                         </div>
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                            <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-600 to-orange-600 dark:from-amber-400 dark:to-orange-400">
                                 {t('label_generator_title') || 'Honey Label Generator'}
                             </h1>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
-                                {t('label_generator_subtitle') || 'Design and print professional honey jar labels'}
+                            <p className="text-sm text-muted-foreground">
+                                {t('label_generator_subtitle') || 'Design and print professional, compliant honey jar labels'}
                             </p>
                         </div>
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
-                    <Button variant="outline" size="sm" onClick={createNewDesign} className="gap-2 border-gray-200 dark:border-white/10">
+                    <Button variant="outline" size="sm" onClick={createNewDesign} className="gap-2 border-border/50 hover:bg-accent/50 glass-card">
                         <Plus className="w-4 h-4" />
                         <span className="hidden sm:inline">New Project</span>
                     </Button>
-                    <Button variant="outline" size="sm" onClick={saveDesign} className="gap-2 border-gray-200 dark:border-white/10">
+                    <Button variant="outline" size="sm" onClick={saveDesign} className="gap-2 border-border/50 hover:bg-accent/50 glass-card">
                         <Save className="w-4 h-4" />
                         <span className="hidden sm:inline">Save Design</span>
                     </Button>
@@ -333,9 +352,9 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                         size="sm"
                         onClick={handleGeneratePDF}
                         disabled={isGenerating}
-                        className="gap-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 shadow-md shadow-amber-500/20"
+                        className="gap-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-soft transition-all hover:shadow-lg hover:-translate-y-0.5"
                     >
-                        <Download className="w-4 h-4" />
+                        {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
                         {isGenerating ? 'Exporting...' : 'Export PDF'}
                     </Button>
                 </div>
@@ -345,155 +364,169 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 {/* Left Panel - Content Editor */}
                 <div className="lg:col-span-1 space-y-4">
-                    <Card className="bg-white dark:bg-[#0a0a0a] border-gray-200 dark:border-[#1e1e1e] shadow-sm">
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                    <Card className="glass-panel border-white/20 dark:border-white/10 shadow-sm overflow-hidden">
+                        <CardHeader className="pb-3 bg-gradient-to-r from-amber-50/50 to-transparent dark:from-amber-950/20">
+                            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground/80">
                                 <FileText className="w-4 h-4 text-amber-500" />
                                 Label Content
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4 pt-0">
-                            <div className="p-2.5 rounded-xl bg-amber-50/50 dark:bg-amber-900/5 border border-amber-200/50 dark:border-amber-800/20 space-y-2">
+                        <CardContent className="space-y-4 pt-4">
+                            {/* Hive Selector */}
+                            <div className="p-3 rounded-xl bg-amber-50/50 dark:bg-amber-950/30 border border-amber-200/50 dark:border-amber-800/30 space-y-2">
                                 <Label className="text-amber-900 dark:text-amber-100 text-[10px] font-bold uppercase tracking-wider flex items-center gap-2">
-                                    <LinkIcon className="w-3 h-3" /> Auto-fill from Harvest
+                                    <Hexagon className="w-3 h-3" /> Auto-fill from Hive
                                 </Label>
-                                <Select name="harvest_id" onValueChange={handleHarvestSelect}>
-                                    <SelectTrigger id="label-harvest-lookup" className="h-9 bg-white dark:bg-[#121212] text-xs border-amber-200/30">
-                                        <SelectValue placeholder="Select a harvest..." />
+                                <Select onValueChange={handleHiveSelect}>
+                                    <SelectTrigger className="h-9 bg-white/50 dark:bg-black/20 text-xs border-amber-200/30">
+                                        <SelectValue placeholder="Select a hive..." />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {harvests.length > 0 ? harvests.map(h => (
+                                        {hives.length > 0 ? hives.map(h => (
                                             <SelectItem key={h.id} value={h.id} className="text-xs">
-                                                {h.batch_code || `Harvest ${h.harvest_date}`}
+                                                {h.hive_code} {h.apiary_name ? `- ${h.apiary_name}` : ''}
                                             </SelectItem>
                                         )) : (
-                                            <div className="p-2 text-center text-[10px] text-gray-400">No harvests found</div>
+                                            <div className="p-2 text-center text-[10px] text-muted-foreground">No hives found</div>
                                         )}
                                     </SelectContent>
                                 </Select>
                             </div>
 
-                            <div className="space-y-4">
+                            {/* Harvest Selector */}
+                            <div className="p-3 rounded-xl bg-amber-50/50 dark:bg-amber-950/30 border border-amber-200/50 dark:border-amber-800/30 space-y-2">
+                                <Label className="text-amber-900 dark:text-amber-100 text-[10px] font-bold uppercase tracking-wider flex items-center gap-2">
+                                    <LinkIcon className="w-3 h-3" /> Auto-fill from Harvest
+                                </Label>
+                                <Select onValueChange={handleHarvestSelect}>
+                                    <SelectTrigger className="h-9 bg-white/50 dark:bg-black/20 text-xs border-amber-200/30">
+                                        <SelectValue placeholder="Select a batch..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {harvests.length > 0 ? harvests.map(h => (
+                                            <SelectItem key={h.id} value={h.id} className="text-xs">
+                                                {h.batch_code || `Batch ${h.harvest_date}`} - {h.honey_type}
+                                            </SelectItem>
+                                        )) : (
+                                            <div className="p-2 text-center text-[10px] text-muted-foreground">No harvests found</div>
+                                        )}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="space-y-3">
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="productName" className="text-[11px] font-medium">Product Name*</Label>
+                                    <Label htmlFor="productName" className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">Product Name</Label>
                                     <Input
                                         id="productName"
-                                        name="productName"
                                         value={design.productName}
                                         onChange={e => updateDesign({ productName: e.target.value })}
-                                        className="h-9 text-xs"
+                                        className="h-9 text-xs bg-white/50 dark:bg-black/20"
                                         placeholder="e.g. Mountain Wildflower"
                                     />
                                 </div>
                                 <div className="grid grid-cols-2 gap-3">
                                     <div className="space-y-1.5">
-                                        <Label htmlFor="weight" className="text-[11px] font-medium">Weight*</Label>
+                                        <Label htmlFor="weight" className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">Weight</Label>
                                         <Input
                                             id="weight"
-                                            name="weight"
                                             value={design.weight}
                                             onChange={e => updateDesign({ weight: e.target.value })}
-                                            className="h-9 text-xs"
+                                            className="h-9 text-xs bg-white/50 dark:bg-black/20"
                                         />
                                     </div>
                                     <div className="space-y-1.5">
-                                        <Label htmlFor="weightUnit" className="text-[11px] font-medium">Unit*</Label>
+                                        <Label htmlFor="weightUnit" className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">Unit</Label>
                                         <Input
                                             id="weightUnit"
-                                            name="weightUnit"
                                             value={design.weightUnit}
                                             onChange={e => updateDesign({ weightUnit: e.target.value })}
-                                            className="h-9 text-xs"
+                                            className="h-9 text-xs bg-white/50 dark:bg-black/20"
                                         />
                                     </div>
                                 </div>
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="producer" className="text-[11px] font-medium">Producer/Apiary*</Label>
+                                    <Label htmlFor="producer" className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">Producer/Apiary</Label>
                                     <Input
                                         id="producer"
-                                        name="producer"
                                         value={design.producer}
                                         onChange={e => updateDesign({ producer: e.target.value })}
-                                        className="h-9 text-xs"
+                                        className="h-9 text-xs bg-white/50 dark:bg-black/20"
                                     />
                                 </div>
+
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="address" className="text-[11px] font-medium">Location/Address*</Label>
-                                    <Input
-                                        id="address"
-                                        name="address"
-                                        value={design.address}
-                                        onChange={e => updateDesign({ address: e.target.value })}
-                                        className="h-9 text-xs"
-                                    />
-                                </div>
-                                <div className="space-y-1.5">
-                                    <Label htmlFor="marketingNote" className="text-[11px] font-medium flex justify-between">
-                                        <span>Marketing Blurb</span>
-                                        <span className="text-[9px] text-gray-400">{design.marketingNote.length}/140</span>
-                                    </Label>
+                                    <div className="flex items-center justify-between">
+                                        <Label htmlFor="marketingNote" className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">Marketing Blurb</Label>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-5 px-2 text-[10px] gap-1 text-amber-600 hover:text-amber-700 hover:bg-amber-100/50"
+                                            onClick={generateBlurb}
+                                            disabled={isGeneratingBlurb}
+                                        >
+                                            {isGeneratingBlurb ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                                            Smart Storyteller
+                                        </Button>
+                                    </div>
                                     <textarea
                                         id="marketingNote"
-                                        name="marketingNote"
-                                        className="w-full rounded-lg border border-input bg-background px-3 py-2 text-xs ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
-                                        rows={3}
-                                        maxLength={140}
+                                        className="w-full rounded-lg border border-input bg-white/50 dark:bg-black/20 px-3 py-2 text-xs ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all resize-none"
+                                        rows={4}
+                                        maxLength={180}
                                         value={design.marketingNote}
                                         onChange={e => updateDesign({ marketingNote: e.target.value })}
                                         placeholder="Tell the story of this honey..."
                                     />
+                                    <p className="text-[10px] text-right text-muted-foreground">{design.marketingNote.length}/180</p>
                                 </div>
                             </div>
                         </CardContent>
                     </Card>
 
-                    <Card className="bg-white dark:bg-[#0a0a0a] border-gray-200 dark:border-[#1e1e1e] shadow-sm">
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                    <Card className="glass-panel border-white/20 dark:border-white/10 shadow-sm overflow-hidden">
+                        <CardHeader className="pb-3 bg-gradient-to-r from-amber-50/50 to-transparent dark:from-amber-950/20">
+                            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground/80">
                                 <Plus className="w-4 h-4 text-amber-500" />
                                 Details & QR
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-3 pt-0">
-                            <div className="space-y-2.5">
-                                <div className="flex items-center justify-between group">
-                                    <Label className="text-[11px] cursor-pointer" htmlFor="sw-batch">Include Batch #</Label>
-                                    <Switch id="sw-batch" name="show_batch_number" checked={design.showBatchNumber} onCheckedChange={v => updateDesign({ showBatchNumber: v })} />
+                        <CardContent className="space-y-3 pt-4">
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <Label className="text-[11px] cursor-pointer text-muted-foreground">Include Batch #</Label>
+                                    <Switch checked={design.showBatchNumber} onCheckedChange={v => updateDesign({ showBatchNumber: v })} className="scale-75 origin-right" />
                                 </div>
                                 {design.showBatchNumber && (
                                     <Input
-                                        id="label-batch"
-                                        name="label-batch"
                                         value={design.batchNumber}
                                         onChange={e => updateDesign({ batchNumber: e.target.value })}
-                                        className="h-8 text-[11px] bg-gray-50/50 dark:bg-white/5"
+                                        className="h-8 text-[11px] bg-white/50 dark:bg-black/20"
                                         placeholder="LOT Number"
                                     />
                                 )}
 
-                                <div className="flex items-center justify-between group">
-                                    <Label className="text-[11px] cursor-pointer" htmlFor="sw-date">Best Before Date</Label>
-                                    <Switch id="sw-date" name="show_best_before" checked={design.showBestBefore} onCheckedChange={v => updateDesign({ showBestBefore: v })} />
+                                <div className="flex items-center justify-between">
+                                    <Label className="text-[11px] cursor-pointer text-muted-foreground">Best Before Date</Label>
+                                    <Switch checked={design.showBestBefore} onCheckedChange={v => updateDesign({ showBestBefore: v })} className="scale-75 origin-right" />
                                 </div>
                                 {design.showBestBefore && (
                                     <Input
-                                        id="label-exp-date"
-                                        name="label-exp-date"
                                         type="date"
                                         value={design.bestBeforeDate}
                                         onChange={e => updateDesign({ bestBeforeDate: e.target.value })}
-                                        className="h-8 text-[11px] bg-gray-50/50 dark:bg-white/5"
+                                        className="h-8 text-[11px] bg-white/50 dark:bg-black/20"
                                     />
                                 )}
 
-                                <div className="flex items-center justify-between group">
-                                    <Label className="text-[11px] cursor-pointer" htmlFor="sw-qr">Traceability QR</Label>
-                                    <Switch id="sw-qr" name="show_qr_code" checked={design.showQRCode} onCheckedChange={v => updateDesign({ showQRCode: v })} />
+                                <div className="flex items-center justify-between">
+                                    <Label className="text-[11px] cursor-pointer text-muted-foreground">Traceability QR</Label>
+                                    <Switch checked={design.showQRCode} onCheckedChange={v => updateDesign({ showQRCode: v })} className="scale-75 origin-right" />
                                 </div>
 
-                                <div className="flex items-center justify-between group">
-                                    <Label className="text-[11px] cursor-pointer" htmlFor="sw-footer">System Footer</Label>
-                                    <Switch id="sw-footer" name="show_footer" checked={design.showFooter} onCheckedChange={v => updateDesign({ showFooter: v })} />
+                                <div className="flex items-center justify-between">
+                                    <Label className="text-[11px] cursor-pointer text-muted-foreground">System Footer</Label>
+                                    <Switch checked={design.showFooter} onCheckedChange={v => updateDesign({ showFooter: v })} className="scale-75 origin-right" />
                                 </div>
                             </div>
                         </CardContent>
@@ -503,15 +536,15 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
 
                 {/* Middle Panel - Visual Designer */}
                 <div className="lg:col-span-2 space-y-4">
-                    <Card className="bg-white dark:bg-[#0a0a0a] border-gray-200 dark:border-[#1e1e1e] overflow-hidden shadow-xl ring-1 ring-black/5">
-                        <div className="p-4 sm:p-12 flex items-center justify-center bg-gray-50 dark:bg-[#111] min-h-[500px] relative overflow-auto">
+                    <Card className="glass-card overflow-hidden shadow-2xl ring-1 ring-black/5 dark:ring-white/10">
+                        <div className="p-4 sm:p-12 flex items-center justify-center bg-gray-50/50 dark:bg-[#111] min-h-[500px] relative overflow-auto backdrop-blur-3xl">
                             {/* Grid Background Effect */}
                             <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none"
-                                style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
+                                style={{ backgroundImage: 'radial-gradient(currentColor 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
 
                             <div
                                 ref={previewRef}
-                                className="bg-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] relative overflow-hidden flex flex-col p-7 transition-all duration-500 ease-out hover:scale-[1.02]"
+                                className="shadow-[0_20px_50px_rgba(0,0,0,0.15)] relative overflow-hidden flex flex-col p-8 transition-all duration-500 ease-out hover:scale-[1.01]"
                                 style={{
                                     width: `${parseFloat(design.customWidth) * 4}px`,
                                     height: `${parseFloat(design.customHeight) * 4}px`,
@@ -523,81 +556,93 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                 }}
                             >
                                 {/* Background Accent Pattern */}
-                                <div className="absolute top-0 right-0 w-32 h-32 opacity-[0.03] pointer-events-none -mr-8 -mt-8 rotate-12">
-                                    <Hexagon className="w-full h-full" stroke={design.accentColor} />
+                                <div className="absolute top-0 right-0 w-48 h-48 opacity-[0.04] pointer-events-none -mr-12 -mt-12 rotate-12">
+                                    <Hexagon className="w-full h-full" stroke={design.accentColor} strokeWidth={1} />
+                                </div>
+                                <div className="absolute bottom-0 left-0 w-32 h-32 opacity-[0.04] pointer-events-none -ml-8 -mb-8 -rotate-12">
+                                    <Hexagon className="w-full h-full" stroke={design.accentColor} strokeWidth={1} />
                                 </div>
 
+                                {/* Start of Label Content */}
                                 <div className="flex justify-between items-start relative z-10">
-                                    <div>
-                                        <h2 className="text-2xl font-black uppercase tracking-[0.15em] leading-tight" style={{ color: design.accentColor }}>
+                                    <div className="flex-1 pr-4">
+                                        <h2 className="text-3xl font-black uppercase tracking-[0.1em] leading-none mb-2" style={{ color: design.accentColor }}>
                                             {design.productName || 'Pure Honey'}
                                         </h2>
-                                        <p className="text-[11px] font-medium tracking-wide uppercase opacity-80 mt-1">
-                                            {design.honeyType} Collection
-                                        </p>
+                                        <div className="flex items-center gap-3">
+                                            <span className="h-[1px] w-12 bg-current opacity-30"></span>
+                                            <p className="text-[12px] font-medium tracking-widest uppercase opacity-80">
+                                                {design.honeyType} Collection
+                                            </p>
+                                        </div>
                                     </div>
                                     {design.showLogo && (
-                                        <div className="flex items-center justify-center bg-white/40 backdrop-blur-sm rounded-lg p-2 border border-black/5">
+                                        <div className="flex items-center justify-center p-2">
                                             {design.logoUrl ? (
                                                 <img
                                                     src={design.logoUrl}
                                                     alt="Logo"
-                                                    style={{ height: `${28 * design.logoScale}px` }}
+                                                    style={{ height: `${32 * design.logoScale}px` }}
                                                     className="object-contain"
                                                 />
                                             ) : (
-                                                <Droplet className="w-5 h-5" style={{ color: design.accentColor }} />
+                                                <div className="opacity-80">
+                                                    <Droplet className="w-8 h-8" style={{ color: design.accentColor }} />
+                                                </div>
                                             )}
                                         </div>
                                     )}
                                 </div>
 
-                                <div className="mt-4 flex-1">
-                                    <p className="text-[9px] leading-relaxed max-w-[80%] opacity-90">
-                                        {design.marketingNote || 'A taste of nature in every drop.'}
+                                <div className="mt-6 flex-1">
+                                    <p className="text-[10px] leading-relaxed max-w-[85%] opacity-90 font-sans tracking-wide">
+                                        {design.marketingNote || 'Start writing to tell your story...'}
                                     </p>
                                 </div>
 
-                                <div className="mt-auto space-y-3 relative z-10">
-                                    <div className="flex justify-between items-end border-t pt-3" style={{ borderColor: `${design.accentColor}20` }}>
-                                        <div className="text-[9px] space-y-0.5 font-medium leading-tight">
-                                            {design.producer && <p className="font-bold uppercase tracking-tighter text-[10px]">{design.producer}</p>}
-                                            {design.address && <p className="opacity-70">{design.address}</p>}
-                                            {design.country && <p className="opacity-70">{design.country}</p>}
+                                <div className="mt-auto space-y-4 relative z-10">
+                                    <div className="flex justify-between items-end border-t pt-4" style={{ borderColor: `${design.accentColor}30` }}>
+                                        <div className="text-[10px] space-y-1 font-medium leading-tight">
+                                            {design.producer && <p className="font-bold uppercase tracking-wider">{design.producer}</p>}
+                                            <div className="opacity-70 font-sans text-[9px] uppercase tracking-wide">
+                                                {design.address && <p>{design.address}</p>}
+                                                {design.country && <p>{design.country}</p>}
+                                                {design.contactInfo && design.showContact && <p className="mt-1">{design.contactInfo}</p>}
+                                            </div>
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-xs opacity-60 font-bold uppercase tracking-widest">Net Weight</p>
-                                            <p className="text-2xl font-black tabular-nums">{design.weight}{design.weightUnit}</p>
+                                            <p className="text-[8px] opacity-60 font-bold uppercase tracking-[0.2em] mb-0.5">Net Weight</p>
+                                            <p className="text-3xl font-black tabular-nums leading-none tracking-tight">{design.weight}<span className="text-lg ml-0.5">{design.weightUnit}</span></p>
                                         </div>
                                     </div>
 
                                     {(design.showBatchNumber || design.showBestBefore) && (
-                                        <div className="flex gap-4 text-[7px] uppercase tracking-wider font-bold opacity-60">
+                                        <div className="flex gap-4 text-[7px] uppercase tracking-wider font-bold opacity-60 font-mono">
                                             {design.showBatchNumber && (
                                                 <div>
-                                                    <span className="opacity-60">LOT:</span> <span className="font-mono">{design.batchNumber}</span>
+                                                    <span className="opacity-50 mr-1">LOT:</span>{design.batchNumber}
                                                 </div>
                                             )}
                                             {design.showBestBefore && (
                                                 <div>
-                                                    <span className="opacity-60">EXP:</span> <span className="font-mono">{design.bestBeforeDate}</span>
+                                                    <span className="opacity-50 mr-1">EXP:</span>{design.bestBeforeDate}
                                                 </div>
                                             )}
                                         </div>
                                     )}
 
                                     {design.showFooter && (
-                                        <div className="text-[6px] text-center opacity-30 mt-1 flex items-center justify-center gap-1.5 uppercase tracking-[0.2em] font-medium">
-                                            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: design.accentColor }} />
-                                            BeeYield Traceability System • {design.harvestYear}
-                                            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: design.accentColor }} />
+                                        <div className="text-[6px] text-center opacity-30 flex items-center justify-center gap-2 uppercase tracking-[0.2em] font-medium pt-1">
+                                            <span className="w-1 h-1 rounded-full" style={{ backgroundColor: design.accentColor }} />
+                                            BeeYield Verified • {design.harvestYear}
+                                            <span className="w-1 h-1 rounded-full" style={{ backgroundColor: design.accentColor }} />
                                         </div>
                                     )}
                                 </div>
 
                                 {design.showQRCode && (
-                                    <div className="absolute bottom-12 right-6 w-10 h-10 bg-white shadow-sm border border-black/5 flex items-center justify-center p-1.5 rounded-md">
-                                        <Grid className="w-full h-full text-black/80" />
+                                    <div className="absolute bottom-16 right-8 w-12 h-12 bg-white shadow-sm border border-black/5 flex items-center justify-center p-1 rounded-sm">
+                                        <Grid className="w-full h-full text-black/90" />
                                     </div>
                                 )}
                             </div>
@@ -606,53 +651,33 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
 
                     {/* Bottom Sections: Saved & Checklist */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <Card className="bg-white dark:bg-[#0a0a0a] border-gray-200 dark:border-[#1e1e1e]">
-                            <CardHeader>
-                                <CardTitle className="text-lg">Validation and checklists</CardTitle>
+                        <Card className="glass-panel border-white/20 dark:border-white/10">
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">My Saved Labels</CardTitle>
                             </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-3">
-                                    <p className="text-xs font-medium text-gray-500 uppercase">Checklist</p>
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2 text-xs">
-                                            <div className={`w-4 h-4 rounded-full flex items-center justify-center ${isChecklistValid.name ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'}`}>
-                                                <ShieldCheck className="w-3 h-3" />
-                                            </div>
-                                            <span className={isChecklistValid.name ? 'text-gray-900' : 'text-gray-400'}>Provide honey name</span>
-                                        </div>
-                                        <div className="flex items-center gap-2 text-xs">
-                                            <div className={`w-4 h-4 rounded-full flex items-center justify-center ${isChecklistValid.weight ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'}`}>
-                                                <ShieldCheck className="w-3 h-3" />
-                                            </div>
-                                            <span className={isChecklistValid.weight ? 'text-gray-900' : 'text-gray-400'}>Provide net weight</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card className="bg-white dark:bg-[#0a0a0a] border-gray-200 dark:border-[#1e1e1e]">
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                                <CardTitle className="text-lg">My labels</CardTitle>
-                                <Button variant="link" size="sm" onClick={createNewDesign} className="h-auto p-0 text-xs">New project</Button>
-                            </CardHeader>
-                            <CardContent>
+                            <CardContent className="h-[200px] overflow-y-auto pr-2 custom-scrollbar">
                                 {savedDesigns.length === 0 ? (
-                                    <div className="text-center py-6 text-xs text-gray-400">No saved designs</div>
+                                    <div className="text-center py-8 text-xs text-muted-foreground flex flex-col items-center gap-2">
+                                        <Save className="w-6 h-6 opacity-20" />
+                                        No saved designs yet
+                                    </div>
                                 ) : (
-                                    <div className="space-y-3">
+                                    <div className="space-y-2">
                                         {savedDesigns.map(saved => (
-                                            <div key={saved.id} className="p-3 rounded-lg border bg-gray-50 dark:bg-white/5 space-y-2">
+                                            <div key={saved.id} className="p-3 rounded-lg border bg-white/50 dark:bg-black/20 hover:bg-white/80 dark:hover:bg-white/5 transition-all group relative">
                                                 <div className="flex justify-between items-start">
                                                     <div>
-                                                        <p className="text-sm font-bold">{saved.productName}</p>
-                                                        <p className="text-[10px] text-gray-500">{saved.customWidth} x {saved.customHeight} mm</p>
+                                                        <p className="text-sm font-bold text-foreground">{saved.productName || 'Unnamed Label'}</p>
+                                                        <p className="text-[10px] text-muted-foreground">{saved.honeyType} • {saved.customWidth}x{saved.customHeight}mm</p>
                                                     </div>
-                                                </div>
-                                                <div className="flex gap-2">
-                                                    <Button variant="ghost" size="sm" onClick={() => loadDesign(saved)} className="h-6 text-[10px]">Load</Button>
-                                                    <Button variant="ghost" size="sm" className="h-6 text-[10px]">Duplicate</Button>
-                                                    <Button variant="ghost" size="sm" onClick={() => deleteDesign(saved.id)} className="h-6 text-[10px] text-red-500">Delete</Button>
+                                                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => loadDesign(saved)}>
+                                                            <Eye className="w-3 h-3" />
+                                                        </Button>
+                                                        <Button variant="ghost" size="icon" className="h-6 w-6 text-red-500 hover:text-red-600" onClick={() => deleteDesign(saved.id)}>
+                                                            <Trash2 className="w-3 h-3" />
+                                                        </Button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         ))}
@@ -660,19 +685,40 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                 )}
                             </CardContent>
                         </Card>
+                        <Card className="glass-panel border-white/20 dark:border-white/10">
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Compliance Check</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-3">
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-3 text-xs p-2 rounded-md bg-green-500/10 border border-green-500/20 text-green-700 dark:text-green-300">
+                                        <ShieldCheck className="w-4 h-4 shrink-0" />
+                                        <span>Product name is legible</span>
+                                    </div>
+                                    <div className="flex items-center gap-3 text-xs p-2 rounded-md bg-green-500/10 border border-green-500/20 text-green-700 dark:text-green-300">
+                                        <ShieldCheck className="w-4 h-4 shrink-0" />
+                                        <span>Net weight complies with EU/US std</span>
+                                    </div>
+                                    <div className="flex items-center gap-3 text-xs p-2 rounded-md bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-300">
+                                        <Shield className="w-4 h-4 shrink-0" />
+                                        <span>Check local laws for address format</span>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
                     </div>
                 </div>
 
                 {/* Right Panel - Style & Export */}
                 <div className="lg:col-span-1 space-y-4">
-                    <Card className="bg-white dark:bg-[#0a0a0a] border-gray-200 dark:border-[#1e1e1e] shadow-sm">
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                    <Card className="glass-panel border-white/20 dark:border-white/10 shadow-sm">
+                        <CardHeader className="pb-3 bg-gradient-to-r from-amber-50/50 to-transparent dark:from-amber-950/20">
+                            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground/80">
                                 <Palette className="w-4 h-4 text-orange-500" />
                                 Style Presets
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="pt-0">
+                        <CardContent className="pt-4">
                             <div className="grid grid-cols-2 gap-2">
                                 {templates.map(tmp => (
                                     <button
@@ -680,18 +726,19 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                                         onClick={() => updateDesign({
                                             template: tmp.id,
                                             backgroundColor: tmp.color,
-                                            textColor: tmp.id.includes('ink') ? '#FFFFFF' : '#2D241E',
-                                            accentColor: tmp.id.includes('ink') ? '#F5A623' : tmp.color === '#FFF8E7' ? '#D97706' : '#8B4513'
+                                            textColor: tmp.textColor,
+                                            accentColor: tmp.accent
                                         })}
-                                        className={`group p-2 rounded-xl border-2 text-left transition-all ${design.template === tmp.id ? 'border-amber-500 bg-amber-50/50 dark:bg-amber-900/10' : 'border-gray-100 dark:border-white/5 hover:border-amber-200'}`}
+                                        className={cn(
+                                            "group p-2 rounded-xl border-2 text-left transition-all hover:scale-105 duration-200",
+                                            design.template === tmp.id
+                                                ? 'border-amber-500 shadow-md ring-2 ring-amber-500/20'
+                                                : 'border-transparent hover:border-amber-200 bg-white/50 dark:bg-black/20'
+                                        )}
                                     >
-                                        <div className="aspect-[3/2] rounded-lg mb-2 shadow-sm flex flex-col p-2 space-y-1 overflow-hidden relative" style={{ backgroundColor: tmp.color }}>
-                                            <div className="w-full h-1 bg-black/10 rounded-full" />
-                                            <div className="w-2/3 h-1 bg-black/5 rounded-full" />
-                                            <div className="mt-auto flex justify-between">
-                                                <div className="w-4 h-4 bg-black/10 rounded-sm" />
-                                                <div className="w-8 h-4 bg-black/10 rounded-sm" />
-                                            </div>
+                                        <div className="aspect-[3/2] rounded-lg mb-2 shadow-inner flex flex-col p-2 space-y-1 overflow-hidden relative" style={{ backgroundColor: tmp.color }}>
+                                            <div className="w-full h-1 rounded-full opacity-20 bg-current text-black" />
+                                            <div className="w-2/3 h-1 rounded-full opacity-10 bg-current text-black" />
                                         </div>
                                         <p className="text-[10px] font-bold truncate leading-tight">{tmp.name}</p>
                                     </button>
@@ -700,28 +747,28 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                         </CardContent>
                     </Card>
 
-                    <Card className="bg-white dark:bg-[#0a0a0a] border-gray-200 dark:border-[#1e1e1e] shadow-sm">
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                    <Card className="glass-panel border-white/20 dark:border-white/10 shadow-sm">
+                        <CardHeader className="pb-3 bg-gradient-to-r from-amber-50/50 to-transparent dark:from-amber-950/20">
+                            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground/80">
                                 <Grid className="w-4 h-4 text-orange-500" />
                                 Label Geometry
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4 pt-0">
+                        <CardContent className="space-y-4 pt-4">
                             <div className="grid grid-cols-2 gap-2">
                                 <div className="space-y-1">
                                     <Label className="text-[10px] font-bold uppercase opacity-60">Width (mm)</Label>
-                                    <Input id="label-width" name="label-width" value={design.customWidth} onChange={e => updateDesign({ customWidth: e.target.value })} className="h-8 text-xs" />
+                                    <Input value={design.customWidth} onChange={e => updateDesign({ customWidth: e.target.value })} className="h-8 text-xs bg-white/50 dark:bg-black/20" />
                                 </div>
                                 <div className="space-y-1">
                                     <Label className="text-[10px] font-bold uppercase opacity-60">Height (mm)</Label>
-                                    <Input id="label-height" name="label-height" value={design.customHeight} onChange={e => updateDesign({ customHeight: e.target.value })} className="h-8 text-xs" />
+                                    <Input value={design.customHeight} onChange={e => updateDesign({ customHeight: e.target.value })} className="h-8 text-xs bg-white/50 dark:bg-black/20" />
                                 </div>
                             </div>
                             <div className="space-y-1">
                                 <Label className="text-[10px] font-bold uppercase opacity-60">Shape</Label>
                                 <Select value={design.customShape} onValueChange={v => updateDesign({ customShape: v })}>
-                                    <SelectTrigger className="h-8 text-xs">
+                                    <SelectTrigger className="h-8 text-xs bg-white/50 dark:bg-black/20">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -734,47 +781,46 @@ const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) 
                         </CardContent>
                     </Card>
 
-                    <Card className="bg-white dark:bg-[#0a0a0a] border-gray-200 dark:border-[#1e1e1e] shadow-sm">
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                    <Card className="glass-panel border-white/20 dark:border-white/10 shadow-sm">
+                        <CardHeader className="pb-3 bg-gradient-to-r from-amber-50/50 to-transparent dark:from-amber-950/20">
+                            <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground/80">
                                 <ImageIcon className="w-4 h-4 text-orange-500" />
-                                Logo & Branding
+                                Logo Upload
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="pt-0">
+                        <CardContent className="pt-4">
                             <div
-                                className="w-full h-20 rounded-xl border-2 border-dashed border-gray-200 dark:border-white/10 flex flex-col items-center justify-center bg-gray-50/50 dark:bg-white/5 cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                                className="w-full h-24 rounded-xl border-2 border-dashed border-gray-200 dark:border-white/10 flex flex-col items-center justify-center bg-white/30 dark:bg-white/5 cursor-pointer hover:bg-amber-50/50 dark:hover:bg-white/10 transition-colors group"
                                 onClick={() => fileInputRef.current?.click()}
                             >
                                 {design.logoUrl ? (
-                                    <img src={design.logoUrl} alt="Logo" className="h-12 object-contain" />
+                                    <img src={design.logoUrl} alt="Logo" className="h-16 object-contain" />
                                 ) : (
                                     <>
-                                        <Upload className="w-4 h-4 text-gray-400 mb-1" />
-                                        <p className="text-[9px] text-gray-400 uppercase font-bold">Upload Brand Logo</p>
+                                        <Upload className="w-5 h-5 text-gray-400 group-hover:text-amber-500 transition-colors mb-2" />
+                                        <p className="text-[9px] text-gray-400 uppercase font-bold">Click to Upload Brand Logo</p>
                                     </>
                                 )}
                             </div>
                             <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleLogoUpload} />
+                            {design.logoUrl && (
+                                <div className="mt-3 space-y-1">
+                                    <div className="flex justify-between text-[10px]">
+                                        <span>Scale</span>
+                                        <span>{(design.logoScale * 100).toFixed(0)}%</span>
+                                    </div>
+                                    <Slider
+                                        value={[design.logoScale]}
+                                        min={0.2}
+                                        max={2.0}
+                                        step={0.1}
+                                        onValueChange={([v]) => updateDesign({ logoScale: v })}
+                                    />
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="grid grid-cols-2 gap-3 mt-6">
-                <Button variant="outline" onClick={handlePrint} className="gap-2 h-11 border-gray-200 dark:border-white/10">
-                    <Printer className="w-4 h-4" />
-                    Print Labels
-                </Button>
-                <Button
-                    variant="outline"
-                    onClick={createNewDesign}
-                    className="gap-2 h-11 border-gray-200 dark:border-white/10"
-                >
-                    <RotateCcw className="w-4 h-4" />
-                    Reset Editor
-                </Button>
             </div>
         </div>
     );

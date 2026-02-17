@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from typing import List, Any, Dict, Optional
 from app.db.supabase_db import db_select, db_insert, db_update, db_delete
 from app.core.security import get_current_user
@@ -6,10 +6,17 @@ from app.schemas.notes import NoteCreate, NoteUpdate
 
 router = APIRouter()
 
+def get_token(request: Request) -> Optional[str]:
+    """Extract raw token from Authorization header"""
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        return auth_header.split(" ")[1]
+    return None
+
 @router.get("/", response_model=List[Any])
 async def read_notes(
     current_user: Dict[str, Any] = Depends(get_current_user),
-    token: Optional[str] = Depends(lambda r: r.headers.get("Authorization", "").replace("Bearer ", "") if r.headers.get("Authorization") else None)
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Retrieve notes for the authenticated user.
@@ -24,7 +31,7 @@ async def read_notes(
 async def create_note(
     note_in: NoteCreate,
     current_user: Dict[str, Any] = Depends(get_current_user),
-    token: Optional[str] = Depends(lambda r: r.headers.get("Authorization", "").replace("Bearer ", "") if r.headers.get("Authorization") else None)
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Create a new note for the authenticated user.
@@ -49,7 +56,7 @@ async def update_note(
     note_id: str,
     note_in: NoteUpdate,
     current_user: Dict[str, Any] = Depends(get_current_user),
-    token: Optional[str] = Depends(lambda r: r.headers.get("Authorization", "").replace("Bearer ", "") if r.headers.get("Authorization") else None)
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Update a note. RLS ensures only owner can modify.
@@ -68,7 +75,7 @@ async def update_note(
 async def delete_note(
     note_id: str,
     current_user: Dict[str, Any] = Depends(get_current_user),
-    token: Optional[str] = Depends(lambda r: r.headers.get("Authorization", "").replace("Bearer ", "") if r.headers.get("Authorization") else None)
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Delete a note. RLS ensures only owner can delete.

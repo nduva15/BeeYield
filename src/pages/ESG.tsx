@@ -42,7 +42,7 @@ const ESG = () => {
 
         doc.setFontSize(10);
         doc.setTextColor(107, 114, 128);
-        doc.text('Bio-Digital ESG Report 2026', 50, 32);
+        doc.text('Ecological ESG Report 2026', 50, 32);
         doc.text('Provenance: Kibwezi Apiary, Kenya', 50, 38);
 
         // Title
@@ -78,7 +78,7 @@ const ESG = () => {
 
         const stats = [
           `Strategic Partners: ${liveStats?.beekeepers || "20+"} Local Custodians`,
-          `Managed Bio-Mass: ${liveStats?.hive_count || "184"} Neural Hives`,
+          `Managed Inventory: ${liveStats?.hive_count || "184"} Smart Hives`,
           `Ecological Coverage: ${liveStats?.acres_pollinated || "25"} Verified Acres`,
           `Integrity Score: 99.9% System Uptime`,
           `Harvest Yield: ${liveStats?.total_honey_kg || "943kg"} Traceable Units`,
@@ -101,7 +101,7 @@ const ESG = () => {
         doc.setTextColor(107, 114, 128);
 
         const pillars = [
-          "1. Bio-Digital Intelligence - Predictive hive health sensing",
+          "1. Ecological Intelligence - Predictive hive health sensing",
           "2. Radical Transparency - Wasm-verified cryptographic records",
           "3. The 50/50 Anchor - Resource management for colony resilience",
           "4. Precision Pollination - Data-driven agricultural support",
@@ -135,21 +135,21 @@ const ESG = () => {
     { value: liveStats?.beekeepers || "20+", label: "Custodians", icon: Users, description: "Strategic partners trained" },
     { value: liveStats?.acres_pollinated || "25", label: "Acres", icon: MapPin, description: "Bio-verified coverage" },
     { value: "2,500+", label: "Trees", icon: TreePine, description: "Flora restoration" },
-    { value: liveStats?.hive_count || "184", label: "Neural Hives", icon: Bug, description: "AI-monitored colonies" },
+    { value: liveStats?.hive_count || "184", label: "Smart Hives", icon: Bug, description: "Digitally monitored colonies" },
     { value: liveStats?.total_honey_kg || "943kg", label: "Yield", icon: Package, description: "High-fidelity production" },
     { value: "2.4M+", label: "Pollinators", icon: Heart, description: "System bio-mass protected" },
   ];
 
   const esgPillars = [
     {
-      title: "Bio-Digital Intelligence",
+      title: "Ecological Intelligence",
       icon: Cpu,
       color: "from-emerald-950 to-emerald-900 border-emerald-500/20",
       initiatives: [
-        "Advanced acoustic inference for early disease detection",
+        "Advanced acoustic analysis for early disease detection",
         "Real-time hive condition snapshots (Temp, Humidity, Mass)",
         "Predictive swarming analytics to mitigate colony exit",
-        "Automated colony health scoring via edge-AI nodes",
+        "Automated colony health scoring via edge-computing nodes",
         "Open-source data contribution to pollinator research"
       ],
       impact: "System-wide 15% increase in colony resilience vs. regional baselines"
@@ -308,7 +308,7 @@ const ESG = () => {
               <Badge variant="outline" className="mb-6 border-beeyield-gold/40 text-beeyield-gold font-black uppercase tracking-[0.2em] text-[10px]">
                 Strategic Focus: SDG 2
               </Badge>
-              <h2 className="text-4xl md:text-6xl font-black mb-8 tracking-tighter">Bio-Digital <br />Food Security.</h2>
+              <h2 className="text-4xl md:text-6xl font-black mb-8 tracking-tighter">Data-Driven <br />Food Security.</h2>
               <p className="text-slate-400 text-lg font-medium leading-relaxed mb-10 max-w-xl">
                 In semi-arid Makueni, pollination isn't just a service—it's survival. By deploying 184 sensor-optimized hives, we've increased regional food resilience by providing stable, high-performance pollination for mango and avocado smallholders.
               </p>

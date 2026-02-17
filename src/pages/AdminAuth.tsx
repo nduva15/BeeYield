@@ -32,7 +32,7 @@ const AdminAuth = () => {
     const [searchParams] = useSearchParams();
     const [authMode, setAuthMode] = useState<AuthMode>('login');
 
-    const redirectPath = searchParams.get('redirect') || '/admin';
+    const redirectPath = searchParams.get('redirect') || '/ceba';
 
     useEffect(() => {
         if (!loading && user) {
@@ -99,10 +99,8 @@ const AdminAuth = () => {
                             <span className="text-[10px] font-black text-beeyield-gold tracking-[0.5em] uppercase">Admin Access</span>
                             <div className="h-px w-8 bg-beeyield-gold/50" />
                         </div>
-                        <h1 className="text-5xl font-black text-beeyield-black tracking-tightest leading-none flex flex-col">
-                            <span className="text-beeyield-green/40 text-sm tracking-[0.8em] font-normal mb-1">ADMIN</span>
-                            ADMIN PANEL
-                        </h1>
+                        <h1 className="text-5xl font-black text-beeyield-green tracking-tightest">Secure <span className="text-beeyield-gold italic font-normal">Terminal</span></h1>
+                        <p className="text-sm font-medium text-beeyield-green/40 max-w-xs mx-auto">Authorized access only for BeeYield administration.</p>
                     </div>
                 </motion.div>
 

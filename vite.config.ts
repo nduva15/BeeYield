@@ -60,8 +60,7 @@ export default defineConfig({
             'date-fns',
             'lodash',
             'clsx',
-            'tailwind-merge',
-            'jspdf'
+            'tailwind-merge'
         ],
         exclude: ['@tauri-apps/api', '@tauri-apps/plugin-shell']
     },
@@ -87,7 +86,8 @@ export default defineConfig({
                     'vendor-backend': ['@supabase/supabase-js', '@tanstack/react-query', 'axios'],
                     'vendor-ui': ['framer-motion', 'lucide-react', 'clsx', 'tailwind-merge', 'sonner'],
                     'vendor-charts': ['recharts'],
-                    'vendor-utils': ['lodash', 'date-fns', 'jspdf'],
+                    'vendor-utils': ['lodash', 'date-fns'],
+                    'vendor-pdf': ['jspdf', 'jspdf-autotable'],
                 },
             },
         },

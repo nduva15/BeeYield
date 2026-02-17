@@ -49,7 +49,7 @@ interface Message {
     suggestions?: string[];
 }
 
-const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialMessage, onInitialMessageConsumed }) => {
+const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialMessage, onInitialMessageConsumed }) => {
     const [chats, setChats] = useState<Chat[]>(() => {
         const saved = localStorage.getItem('beeyield_chats');
         return saved ? JSON.parse(saved) : [];
@@ -338,7 +338,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                     <div className="space-y-6 max-w-2xl">
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full">
                             <Zap className="h-3 w-3 text-primary" />
-                            <span className="text-xs font-black text-primary uppercase tracking-[0.2em]">BeeYield AI</span>
+                            <span className="text-xs font-black text-primary uppercase tracking-[0.2em]">BeeYield Assistant</span>
                         </div>
                         <h2 className="text-4xl lg:text-5xl font-black text-white uppercase tracking-tight leading-[1.1]">
                             {t('ai_hub_intelligence')}
@@ -453,7 +453,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                                 </div>
                                 <div>
                                     <h3 className="font-black text-2xl text-gray-900 dark:text-white uppercase tracking-tighter">
-                                        BeeYield AI
+                                        BeeYield Assistant
                                     </h3>
                                 </div>
                                 <p className="text-xs text-amber-500 font-black uppercase tracking-[0.2em] flex items-center gap-2">
@@ -475,7 +475,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                                     <CardContent className="p-10 text-center space-y-8">
                                         <div className="flex flex-col items-center gap-4">
                                             <div className="w-24 h-24 bg-white dark:bg-amber-900/20 rounded-[2.5rem] flex items-center justify-center shadow-2xl border-2 border-amber-100 dark:border-amber-900/30 p-5 rotate-3 hover:rotate-0 transition-transform duration-500">
-                                                <img src={Logo} alt="BeeYield AI" className="w-full h-full object-contain" />
+                                                <img src={Logo} alt="BeeYield Assistant" className="w-full h-full object-contain" />
                                             </div>
                                             <h3 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tighter mb-2">
                                                 {t('ai_hub_title')}
@@ -535,7 +535,7 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
                                                 <div className="relative group">
                                                     <div className="absolute -inset-1 bg-primary/20 rounded-2xl blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
                                                     <div className="w-14 h-14 rounded-2xl bg-white/80 backdrop-blur-md dark:bg-amber-900/40 flex items-center justify-center shrink-0 shadow-premium p-3 border border-amber-100 dark:border-amber-900/50 animate-in fade-in zoom-in duration-500 relative z-10">
-                                                        <img src={Logo} alt="BeeYield AI" className="w-full h-full object-contain" />
+                                                        <img src={Logo} alt="BeeYield Assistant" className="w-full h-full object-contain" />
                                                     </div>
                                                 </div>
                                             )}
@@ -678,4 +678,4 @@ const AIAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialM
     );
 };
 
-export default AIAssistantView;
+export default SmartAssistantView;

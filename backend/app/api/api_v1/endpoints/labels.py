@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Response
+from fastapi import APIRouter, Depends, HTTPException, status, Response, Request
 from typing import List, Optional
-from app.db.supabase_db import db_select, db_insert, db_update, db_delete
+from app.db.supabase_db import db_select, db_insert, db_update, db_delete, db_upsert
 from app.core import security
 from app.services import label_studio_service
 from pydantic import BaseModel, Field
@@ -75,6 +75,10 @@ class LabelDesignInternal(BaseModel):
 # HELPERS
 # ============================================
 
+def get_token(token: str = Depends(security.oauth2_scheme)) -> str:
+    """Extract raw token from request headers"""
+    return token
+
 def get_user_id(current_user: dict = Depends(security.get_current_user)) -> str:
     user_id = current_user.get("sub")
     if not user_id:
@@ -88,33 +92,34 @@ def get_user_id(current_user: dict = Depends(security.get_current_user)) -> str:
 # ENDPOINTS
 # ============================================
 
-@router.get("/", response_model=List[dict])
-def get_user_labels(user_id: str = Depends(get_user_id)):
+@router.get("", response_model=List[dict])
+async def get_user_labels(
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token)
+):
     """Get all saved label designs for the current user"""
-    return db_select("saved_labels", filters={"user_id": user_id}, order_by="created_at", ascending=False)
+    return await db_select("saved_labels", filters={"user_id": user_id}, order_by="created_at", ascending=False, token=token)
 
-@router.post("/", response_model=dict, status_code=status.HTTP_201_CREATED)
-def save_label_design(
+@router.post("", response_model=dict, status_code=status.HTTP_201_CREATED)
+async def save_label_design(
     label_in: LabelDesignSchema,
-    user_id: str = Depends(get_user_id)
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token)
 ):
     """Save or update a label design"""
     design_data = label_in.dict()
     label_id = design_data.get("id")
     
     payload = {
+        "id": label_id,
         "user_id": user_id,
-        "name": design_data.get("name", "Untitled Label"),
         "design_json": design_data,
-        "updated_at": datetime.datetime.utcnow().isoformat()
+        "harvest_batch_id": design_data.get("batchNumber"),
+        "include_qr": design_data.get("showQRCode", False)
     }
 
-    if label_id:
-        # Update existing
-        result = db_update("saved_labels", payload, {"id": label_id, "user_id": user_id})
-    else:
-        # Insert new
-        result = db_insert("saved_labels", payload)
+    # Use db_upsert for both insert and update
+    result = await db_upsert("saved_labels", payload, token=token)
     
     if not result.get("success"):
         raise HTTPException(status_code=500, detail=result.get("error", "Failed to save label design"))
@@ -122,18 +127,19 @@ def save_label_design(
     return result.get("data", [{}])[0]
 
 @router.delete("/{label_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_label_design(
+async def delete_label_design(
     label_id: str,
-    user_id: str = Depends(get_user_id)
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token)
 ):
     """Delete a saved label design"""
-    result = db_delete("saved_labels", {"id": label_id, "user_id": user_id})
+    result = await db_delete("saved_labels", {"id": label_id, "user_id": user_id}, token=token)
     if not result.get("success"):
         raise HTTPException(status_code=500, detail=result.get("error", "Failed to delete label design"))
     return None
 
 @router.post("/export")
-def export_label_pdf(
+async def export_label_pdf(
     label_in: LabelDesignSchema,
     current_user: dict = Depends(security.get_current_user)
 ):
@@ -149,3 +155,4 @@ def export_label_pdf(
         media_type="application/pdf",
         headers={"Content-Disposition": f"attachment; filename={filename}"},
     )
+

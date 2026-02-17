@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -169,6 +169,12 @@ const AdminDashboard: React.FC = () => {
     const initDashboard = async () => {
         setIsLoading(true);
         try {
+            // AUTOMATIC DEEP SYNC: Guaranteed data freshness on entry
+            await Promise.allSettled([
+                adminService.syncAll(),
+                adminService.seedData()
+            ]);
+
             const stats = await adminService.getDashboardStats();
             if (stats) {
                 setDashboardStats({
@@ -976,12 +982,7 @@ const AdminDashboard: React.FC = () => {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                     <div>
                         <h1 className="text-4xl font-black text-beeyield-green tracking-tightest">Terminal <span className="text-beeyield-gold italic">Control</span></h1>
-                        <p className="text-beeyield-green/40 font-black uppercase tracking-[0.2em] text-[10px] mt-2">Neural Hive Administration Layer</p>
-                    </div>
-                    <div className="flex gap-2">
-                        <Button onClick={loadAllData} variant="outline" size="sm" className="rounded-full bg-white border-beeyield-green/10 text-beeyield-green hover:bg-beeyield-cream/30 h-10 px-6">
-                            <RefreshCw className="h-4 w-4 mr-2" /> Re-Sync Data
-                        </Button>
+                        <p className="text-beeyield-green/40 font-black uppercase tracking-[0.2em] text-[10px] mt-2">BeeYield Administration Layer</p>
                     </div>
                 </div>
 
@@ -1007,7 +1008,7 @@ const AdminDashboard: React.FC = () => {
                     <div className="bg-gradient-to-r from-beeyield-gold to-beeyield-orange rounded-[20px] px-6 py-3.5 flex items-center justify-between text-beeyield-green text-sm mb-4 shadow-lg shadow-beeyield-gold/20">
                         <div className="flex items-center gap-3">
                             <span className="text-xl">🐝</span>
-                            <span className="font-bold tracking-tight">Accessing the new Neural Hive dashboard. Updates live at <a href="#" className="underline font-black text-beeyield-green">BeeYield.io/nexus</a></span>
+                            <span className="font-bold tracking-tight">Accessing the new BeeYield dashboard. Updates live at <a href="#" className="underline font-black text-beeyield-green">BeeYield.io/nexus</a></span>
                         </div>
                         <button className="text-beeyield-green/60 hover:text-beeyield-green transition-colors">✕</button>
                     </div>

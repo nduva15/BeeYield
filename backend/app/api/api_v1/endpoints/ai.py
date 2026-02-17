@@ -15,6 +15,12 @@ class ChatRequest(BaseModel):
 class SearchRequest(BaseModel):
     query: str
 
+class BlurbRequest(BaseModel):
+    floral_type: str
+    location: str
+    harvest_year: str
+    tone: Optional[str] = "luxury"
+
 @router.post("/chat")
 async def chat_with_assistant(request: ChatRequest):
     """
@@ -46,6 +52,22 @@ async def search_web(request: SearchRequest):
     try:
         results = await AIService.search_google(request.query)
         return {"results": results}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/generate-blurb")
+async def generate_blurb(request: BlurbRequest):
+    """
+    Generate a marketing blurb for honey labels.
+    """
+    try:
+        blurb = await AIService.generate_marketing_blurb(
+            floral_type=request.floral_type,
+            location=request.location,
+            harvest_year=request.harvest_year,
+            tone=request.tone
+        )
+        return {"blurb": blurb}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

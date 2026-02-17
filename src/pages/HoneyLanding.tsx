@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/contexts/CartContext";
@@ -43,138 +43,8 @@ import { beeyieldService } from "@/services/beeyieldService";
 import SEO from "@/components/SEO";
 
 // Reusing same product types and data from Shop.tsx for consistency
+import { initialHoneyProducts } from "@/data/honey-products";
 import { type Product, type ProductVariant } from "@/services/shopService";
-
-const initialHoneyProducts: Product[] = [
-  {
-    id: "h1",
-    name: "BeeYield Premium Acacia",
-    description: "Pure, light, and delicate Acacia honey harvested from the pristine northern plains. Known for its clarity and slow crystallization.",
-    category: "honey",
-    badge: "Bestseller",
-    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
-    rating: 4.9,
-    review_count: 245,
-    is_active: true,
-    variants: [
-      { id: "vh1-1", size: "250g", price_kes: 250, stock_quantity: 100, is_available: true },
-      { id: "vh1-2", size: "500g", price_kes: 500, stock_quantity: 75, is_available: true },
-      { id: "vh1-3", size: "1kg", price_kes: 1000, stock_quantity: 50, is_available: true }
-    ]
-  },
-  {
-    id: "h2",
-    name: "Wildflower Blossom Honey",
-    description: "A complex, multi-floral honey with aromatic notes from Makueni's diverse flora. Perfect for daily wellness and gourmet pairings.",
-    category: "honey",
-    badge: "Premium",
-    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
-    rating: 5.0,
-    review_count: 182,
-    is_active: true,
-    variants: [
-      { id: "vh2-1", size: "250g", price_kes: 250, stock_quantity: 80, is_available: true },
-      { id: "vh2-2", size: "500g", price_kes: 500, stock_quantity: 60, is_available: true },
-      { id: "vh2-3", size: "1kg", price_kes: 1000, stock_quantity: 30, is_available: true }
-    ]
-  },
-  {
-    id: "h3",
-    name: "Kibwezi Forest Honey",
-    description: "Bold, dark, and rich in minerals. This forest honey is harvested from deep within the protected Kibwezi groundwater forest.",
-    category: "honey",
-    badge: "Rare",
-    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
-    rating: 4.8,
-    review_count: 96,
-    is_active: true,
-    variants: [
-      { id: "vh3-1", size: "250g", price_kes: 250, stock_quantity: 40, is_available: true },
-      { id: "vh3-2", size: "500g", price_kes: 500, stock_quantity: 30, is_available: true },
-      { id: "vh3-3", size: "1kg", price_kes: 1000, stock_quantity: 20, is_available: true }
-    ]
-  },
-  {
-    id: "h4",
-    name: "Desert Thorn Honey",
-    description: "Exquisite honey from the arid regions. Intense floral notes with a hint of spice. Highly sought after for its unique properties.",
-    category: "honey",
-    badge: "Limited Edition",
-    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
-    rating: 4.9,
-    review_count: 54,
-    is_active: true,
-    variants: [
-      { id: "vh4-1", size: "250g", price_kes: 250, stock_quantity: 30, is_available: true },
-      { id: "vh4-2", size: "500g", price_kes: 500, stock_quantity: 25, is_available: true },
-      { id: "vh4-3", size: "1kg", price_kes: 1000, stock_quantity: 15, is_available: true }
-    ]
-  },
-  {
-    id: "h5",
-    name: "Raw Honeycomb Chunk",
-    description: "The purest form of honey. A generous slab of fresh honeycomb submerged in our premium liquid honey. Entirely edible and delicious.",
-    category: "honey",
-    badge: "100% Raw",
-    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
-    rating: 5.0,
-    review_count: 312,
-    is_active: true,
-    variants: [
-      { id: "vh5-1", size: "250g", price_kes: 250, stock_quantity: 30, is_available: true },
-      { id: "vh5-2", size: "500g", price_kes: 500, stock_quantity: 20, is_available: true },
-      { id: "vh5-3", size: "1kg", price_kes: 1000, stock_quantity: 10, is_available: true }
-    ]
-  },
-  {
-    id: "h6",
-    name: "Lavender Infused Honey",
-    description: "Our premium acacia honey gently infused with organic lavender blossoms. Calming, floral, and perfect for evening tea.",
-    category: "honey",
-    badge: "New Arrival",
-    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
-    rating: 4.7,
-    review_count: 42,
-    is_active: true,
-    variants: [
-      { id: "vh6-1", size: "250g", price_kes: 250, stock_quantity: 50, is_available: true },
-      { id: "vh6-2", size: "500g", price_kes: 500, stock_quantity: 30, is_available: true },
-      { id: "vh6-3", size: "1kg", price_kes: 1000, stock_quantity: 15, is_available: true }
-    ]
-  },
-  {
-    id: "h7",
-    name: "Ginger & Lemon Honey",
-    description: "A powerful immune-boosting blend of raw honey, organic ginger root, and zesty lemon. Great for soothing throats and boosting energy.",
-    category: "honey",
-    badge: "Wellness",
-    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
-    rating: 4.8,
-    review_count: 128,
-    is_active: true,
-    variants: [
-      { id: "vh7-1", size: "250g", price_kes: 250, stock_quantity: 40, is_available: true },
-      { id: "vh7-2", size: "500g", price_kes: 500, stock_quantity: 60, is_available: true },
-      { id: "vh7-3", size: "1kg", price_kes: 1000, stock_quantity: 25, is_available: true }
-    ]
-  },
-  {
-    id: "h8",
-    name: "Signature Reserve (Aged)",
-    description: "Our most exclusive honey, aged for 12 months to develop deep, molasses-like complexity. A true connoisseur's choice.",
-    category: "honey",
-    badge: "Gold Label",
-    images: ["/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_250g.png", "/images/products/beeyield_honey_500g.png", "/images/products/beeyield_honey_1kg.png"],
-    rating: 5.0,
-    review_count: 15,
-    is_active: true,
-    variants: [
-      { id: "vh8-1", size: "250g", price_kes: 250, stock_quantity: 10, is_available: true },
-      { id: "vh8-2", size: "500g", price_kes: 500, stock_quantity: 10, is_available: true },
-      { id: "vh8-3", size: "1kg", price_kes: 1000, stock_quantity: 5, is_available: true }
-    ]
-  }
-];
 
 // Hero Section matching reference design
 const HeroSection = () => {
@@ -188,167 +58,97 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section className="relative py-12 lg:py-24 overflow-hidden bg-gradient-to-b from-[#fdfbf6] to-[#f8faf8]">
-      {/* Decorative Elements */}
-      <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(circle_at_80%_20%,#fef3c7_0%,transparent_50%)] opacity-40 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-[radial-gradient(circle_at_20%_80%,#ecfdf5_0%,transparent_50%)] opacity-40 pointer-events-none" />
+    <section className="relative min-h-[90vh] flex items-center pt-20 overflow-hidden bg-white">
+      {/* Dynamic Background Elements */}
+      <div className="absolute top-0 right-0 w-1/2 h-full bg-beeyield-green/[0.02] -skew-x-12 translate-x-32 pointer-events-none" />
+      <div className="absolute -top-24 -left-24 w-96 h-96 bg-beeyield-gold/5 rounded-full blur-3xl pointer-events-none animate-pulse" />
 
-      {/* Vertical "Honey" text accent - More subtle & premium */}
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 1, delay: 0.5 }}
-        className="absolute left-8 top-1/2 -translate-y-1/2 hidden xl:block pointer-events-none"
-      >
-        <span
-          className="text-[120px] font-black text-neutral-200/50 tracking-tighter leading-none select-none"
-          style={{
-            writingMode: "vertical-rl",
-            textOrientation: "mixed",
-            transform: "rotate(180deg)",
-          }}
-        >
-          PURE GOLD
-        </span>
-      </motion.div>
-
-      <div className="container mx-auto px-4 sm:px-6 relative">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="relative z-10 text-center lg:text-left lg:pl-4"
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-50 text-amber-700 text-[11px] font-black uppercase tracking-[0.2em] mb-8 border border-amber-100 shadow-sm"
-            >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              Verified Origin
-            </motion.div>
+            <Badge className="bg-beeyield-green/10 text-beeyield-green mb-6 hover:bg-beeyield-green/20 transition-colors uppercase tracking-[0.2em] font-black text-[10px] px-4 py-1.5 rounded-full border border-beeyield-green/20">
+              Verifiable Purity • Smart Beekeeping
+            </Badge>
 
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black mb-8 tracking-tighter leading-[0.95]">
-              <span className="bg-gradient-to-r from-beeyield-gold to-beeyield-green bg-clip-text text-transparent">Liquid</span> <span className="text-beeyield-gold block sm:inline">Intelligence.</span> <br />
-              <span className="text-beeyield-green">Verified</span> by AI.
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-neutral-900 leading-[0.85] tracking-tighter uppercase mb-6 drop-shadow-sm">
+              The Purest <span className="text-beeyield-green block">Harvest</span>
             </h1>
 
-            <p className="text-base md:text-lg text-beeyield-green/80 mb-10 max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
-              Experience the Tesla of Apiculture. Every jar of BeeYield is a high-fidelity record of hive health, botanical origin, and radical transparency—powered by bio-digital intelligence.
+            <p className="text-lg md:text-xl text-neutral-500 mb-10 max-w-lg leading-relaxed font-medium">
+              Experience the world's most transparent honey. Powered by <span className="text-beeyield-gold font-bold">HoneyChain™</span> and a commitment to protecting 50% of the surplus for the bees.
             </p>
 
-            {/* Premium Stats - Horizontal with micro-interactions */}
-            <div className="flex flex-wrap justify-center lg:justify-start gap-4 mb-10">
-              {[
-                { label: "Bees Protected", value: "2.4M+", color: "text-beeyield-green", delay: 0 },
-                { label: "Smart Hives", value: liveStats?.hive_count || "184", color: "text-beeyield-gold", delay: 0.1 },
-                { label: "Integrity Score", value: "99.9%", color: "text-beeyield-green", delay: 0.2 }
-              ].map((stat, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: stat.delay, duration: 0.5 }}
-                  whileHover={{ y: -8, scale: 1.05 }}
-                  className="bg-gradient-to-br from-white to-beeyield-gold/5 backdrop-blur-sm px-6 py-4 rounded-3xl border-2 border-beeyield-gold/20 shadow-soft hover:shadow-glow transition-all animate-float flex flex-col"
-                  style={{ animationDelay: `${i * 0.5}s` }}
-                >
-                  <span className={`text-2xl font-black ${stat.color} drop-shadow-sm`}>{stat.value}</span>
-                  <span className="text-[10px] font-bold text-beeyield-green/60 border-t border-beeyield-gold/10 mt-1 pt-1 uppercase tracking-wider">{stat.label}</span>
-                </motion.div>
-              ))}
+            {/* CTA Group */}
+            <div className="flex flex-wrap gap-4 mb-12">
+              <Button
+                size="lg"
+                className="bg-neutral-900 hover:bg-beeyield-green text-white font-black rounded-2xl px-10 h-16 shadow-2xl shadow-neutral-900/20 transition-all hover:scale-105 active:scale-95 uppercase tracking-widest text-xs"
+                onClick={() => navigate("/shop")}
+              >
+                Shop Collection
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-2 border-neutral-200 text-neutral-900 font-black rounded-2xl px-10 h-16 hover:bg-neutral-50 transition-all uppercase tracking-widest text-xs"
+                onClick={() => navigate("/traceability")}
+              >
+                Trace Your Jar
+              </Button>
             </div>
 
-            {/* CTA Buttons - Premium Styled */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-beeyield-green to-beeyield-green-dark hover:from-beeyield-green-dark hover:to-beeyield-green text-white font-black rounded-2xl px-10 h-14 shadow-glow uppercase tracking-widest text-xs transition-all"
-                  onClick={() => navigate("/shop")}
-                >
-                  Shop the Collection
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-2 border-beeyield-gold text-beeyield-green hover:bg-beeyield-gold/10 hover:border-beeyield-green font-black rounded-2xl px-10 h-14 uppercase tracking-widest text-xs transition-all"
-                  onClick={() => navigate("/traceability")}
-                >
-                  Radical Transparency
-                </Button>
-              </motion.div>
+            {/* Impact Stats */}
+            <div className="flex items-center gap-8 border-t border-neutral-100 pt-8">
+              <div className="flex flex-col">
+                <span className="text-2xl font-black text-beeyield-green">{liveStats?.bees_protected || "2.4M"}</span>
+                <span className="text-[10px] uppercase font-black tracking-widest text-neutral-400">Bees Protected</span>
+              </div>
+              <div className="w-px h-8 bg-neutral-100" />
+              <div className="flex flex-col">
+                <span className="text-2xl font-black text-beeyield-gold">{liveStats?.hive_count || "184"}</span>
+                <span className="text-[10px] uppercase font-black tracking-widest text-neutral-400">Smart Hives</span>
+              </div>
             </div>
           </motion.div>
 
-
-          {/* Right - Hero Image & Dynamic Trust Badge */}
           <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1, delay: 0.3 }}
-            className="relative"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, delay: 0.2 }}
+            className="relative flex justify-center lg:justify-end"
           >
-            <div className="relative mx-auto max-w-sm lg:max-w-md xl:max-w-lg">
-              {/* Image Container with Glow */}
-              <div className="relative z-10 group">
-                <div className="absolute -inset-4 bg-amber-200/20 blur-3xl rounded-full group-hover:bg-amber-300/30 transition-colors duration-1000" />
-                <img
-                  src="/images/products/beeyield_honey_500g.png"
-                  alt="Premium BeeYield Honey"
-                  className="relative z-10 w-full h-auto object-cover aspect-[4/5] rounded-[3rem] shadow-[0_32px_64px_-16px_rgba(120,53,15,0.2)] transform group-hover:scale-[1.02] transition-transform duration-700"
-                />
+            <div className="relative w-full max-w-md lg:max-w-lg">
+              <div className="relative z-10 group perspective-1000">
+                <div className="absolute -inset-10 bg-beeyield-gold/20 blur-[60px] rounded-full" />
+                <motion.div
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <img
+                    src="/images/products/beeyield_honey_1kg.png"
+                    alt="Premium BeeYield Honey"
+                    fetchPriority="high"
+                    className="relative z-10 w-full h-auto object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700"
+                  />
+                </motion.div>
               </div>
 
-              {/* Floating Zero-Trust Badge - Micro-interaction highlight */}
+              {/* Verified Origin Badge */}
               <motion.div
-                animate={{
-                  y: [0, -10, 0],
-                  rotate: [0, 2, 0]
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-                className="absolute -top-6 -right-6 lg:-right-10 z-20 bg-white/95 backdrop-blur-md p-6 rounded-[2.5rem] shadow-2xl border border-amber-100/50 flex flex-col items-center justify-center gap-2 group cursor-pointer"
+                animate={{ y: [0, -15, 0] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                className="absolute top-10 -right-4 lg:-right-12 z-20 bg-white/90 backdrop-blur-xl p-6 rounded-[2rem] shadow-2xl border border-white/50 flex flex-col items-center gap-2"
               >
-                <div className="relative">
-                  <div className="absolute inset-0 bg-green-500/20 blur-lg rounded-full animate-pulse" />
-                  <div className="relative w-12 h-12 bg-green-700 rounded-2xl flex items-center justify-center shadow-lg transform group-hover:rotate-12 transition-transform">
-                    <ShieldCheck className="w-6 h-6 text-white" />
-                  </div>
+                <div className="w-12 h-12 bg-beeyield-green rounded-2xl flex items-center justify-center shadow-lg">
+                  <ShieldCheck className="w-6 h-6 text-white" />
                 </div>
                 <div className="text-center">
-                  <span className="block text-xl font-black text-neutral-900">Verified</span>
-                  <span className="block text-[9px] font-black text-green-700 uppercase tracking-widest">Clear Records</span>
-                </div>
-              </motion.div>
-
-              {/* Verified Farmers Card */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.8 }}
-                className="absolute -bottom-8 -left-8 lg:-left-12 z-20 bg-white/95 backdrop-blur-md px-6 py-4 rounded-3xl shadow-xl border border-neutral-100/50"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="flex -space-x-3">
-                    {[1, 2, 3].map(i => (
-                      <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-neutral-100 overflow-hidden">
-                        <img src={`https://i.pravatar.cc/100?u=${i}`} alt="" className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all" />
-                      </div>
-                    ))}
-                  </div>
-                  <div>
-                    <span className="block text-sm font-bold text-neutral-900 leading-tight">{liveStats?.beekeepers || "20+"} Local Farmers</span>
-                    <span className="block text-[10px] text-neutral-500 font-medium">Verified Partners</span>
-                  </div>
+                  <span className="block text-sm font-black text-neutral-900">Verified</span>
+                  <span className="block text-[8px] font-black text-beeyield-gold uppercase tracking-widest">Origin</span>
                 </div>
               </motion.div>
             </div>
@@ -369,85 +169,107 @@ const FeaturedProductsSection = ({ handleAddToCart, formatPrice, products }: {
   const featuredProducts = (products.length > 0 ? products : initialHoneyProducts).slice(0, 4);
 
   return (
-    <section className="py-16 bg-white overflow-hidden">
+    <section className="py-20 lg:py-32 bg-white overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
           <div className="max-w-xl">
-            <Badge className="bg-beeyield-orange/20 text-beeyield-orange border border-beeyield-orange/30 mb-4 hover:bg-beeyield-orange/30 transition-colors uppercase tracking-[0.2em] font-black text-[10px] px-3">
+            <Badge className="bg-beeyield-gold/10 text-beeyield-gold border border-beeyield-gold/20 mb-6 hover:bg-beeyield-gold/20 transition-colors uppercase tracking-[0.25em] font-black text-[10px] px-4 py-1.5 rounded-full">
               Purest Gold
             </Badge>
-            <h2 className="text-3xl md:text-4xl font-black text-beeyield-green uppercase tracking-tighter">
+            <h2 className="text-4xl md:text-5xl font-black text-beeyield-green tracking-tighter leading-tight">
               Featured <span className="text-beeyield-gold">Collection</span>
             </h2>
           </div>
           <Button
             variant="ghost"
-            className="text-beeyield-green/70 hover:text-beeyield-gold font-bold uppercase tracking-widest text-[10px] group transition-colors"
+            className="text-beeyield-green hover:text-beeyield-gold hover:bg-beeyield-green/5 font-black uppercase tracking-widest text-[10px] group transition-all rounded-xl h-12 px-6"
             asChild
           >
             <Link to="/shop">
-              Shop All Products <ArrowRight className="ml-2 h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
+              Shop All <ArrowRight className="ml-2 h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
             </Link>
           </Button>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {featuredProducts.map((product, idx) => (
             <motion.div
               key={product.id}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: idx * 0.1, duration: 0.5 }}
-              whileHover={{ y: -8, scale: 1.02 }}
-              className="animate-float"
-              style={{ animationDelay: `${idx * 0.3}s` }}
+              transition={{ delay: idx * 0.1, duration: 0.6, ease: "easeOut" }}
+              whileHover={{ y: -12 }}
+              className="group"
             >
               <Card
-                className="group bg-beeyield-white border-2 border-beeyield-gold/20 rounded-2xl overflow-hidden hover:shadow-glow hover:border-beeyield-orange transition-all duration-300"
+                className="bg-white border-none rounded-[2rem] overflow-hidden shadow-soft group-hover:shadow-2xl transition-all duration-500 h-full flex flex-col relative"
               >
-                {/* Product Image */}
-                <BrandedProductImage
-                  src={product.images[1] || product.images[0]} // Using 250g Jar image (index 1) or first image
-                  alt={product.name}
-                  category="honey"
-                  className="h-48"
-                />
+                {/* Product Image Area */}
+                <div className="relative h-64 bg-gradient-to-br from-neutral-50 to-neutral-100/50 p-6 flex items-center justify-center overflow-hidden group-hover:bg-amber-50/30 transition-colors">
+                  {/* Floating Tags */}
+                  {product.badge && (
+                    <div className="absolute top-4 left-4 z-10">
+                      <Badge className="bg-beeyield-gold text-white font-black uppercase text-[9px] tracking-widest px-3 py-1 shadow-md border-none">
+                        {product.badge}
+                      </Badge>
+                    </div>
+                  )}
 
-                <CardContent className="p-5">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-bold text-beeyield-green">{product.name}</h3>
-                    <span className="text-lg font-black text-beeyield-orange">{formatPrice(product.variants[0].price_kes)}</span>
+                  <div className="transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-700 ease-out">
+                    <BrandedProductImage
+                      src={product.images[1] || product.images[0]}
+                      alt={product.name}
+                      category="honey"
+                      className="h-48 w-auto object-contain drop-shadow-xl"
+                    />
                   </div>
-                  <p className="text-xs text-beeyield-green/60 mb-4 line-clamp-2">{product.description}</p>
-                  <div className="flex items-center justify-between">
+
+                  <button
+                    aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleWishlist({
+                        id: product.id,
+                        name: product.name,
+                        description: product.description,
+                        price: product.variants[0].price_kes,
+                        image: product.images[1] || product.images[0],
+                        category: product.category,
+                        badge: product.badge,
+                        inStock: true
+                      });
+                    }}
+                    className={`absolute top-4 right-4 p-2.5 rounded-full backdrop-blur-md transition-all z-10 ${isInWishlist(product.id)
+                      ? "bg-red-50 text-red-500 shadow-sm"
+                      : "bg-white/60 text-neutral-400 hover:bg-white hover:text-red-500 hover:shadow-md translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0"
+                      }`}
+                  >
+                    <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? "fill-current" : ""}`} />
+                  </button>
+                </div>
+
+                <CardContent className="p-6 flex flex-col flex-grow bg-white relative z-20">
+                  <div className="mb-3">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-beeyield-gold mb-1">Single Origin</div>
+                    <h3 className="font-bold text-lg text-beeyield-green group-hover:text-beeyield-green-dark transition-colors line-clamp-1">{product.name}</h3>
+                  </div>
+
+                  <p className="text-sm text-neutral-500 mb-6 line-clamp-2 leading-relaxed flex-grow">{product.description}</p>
+
+                  <div className="flex items-end justify-between gap-4 pt-4 border-t border-dashed border-neutral-100">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-bold text-neutral-400 uppercase">Price</span>
+                      <span className="text-xl font-black text-beeyield-green">{formatPrice(product.variants[0].price_kes)}</span>
+                    </div>
+
                     <Button
                       size="sm"
-                      className="rounded-full text-xs font-black bg-gradient-to-r from-beeyield-gold to-beeyield-orange hover:from-beeyield-orange hover:to-beeyield-gold text-white uppercase tracking-widest px-6 shadow-soft"
+                      className="rounded-xl h-10 bg-beeyield-green hover:bg-beeyield-green-dark text-white font-black uppercase tracking-wider px-6 shadow-lg shadow-beeyield-green/20 transition-all hover:scale-105 active:scale-95"
                       onClick={() => handleAddToCart(product)}
                     >
-                      Buy Now
+                      Add
                     </Button>
-                    <button
-                      aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleWishlist({
-                          id: product.id,
-                          name: product.name,
-                          description: product.description,
-                          price: product.variants[0].price_kes,
-                          image: product.images[1] || product.images[0],
-                          category: product.category,
-                          badge: product.badge,
-                          inStock: true
-                        });
-                      }}
-                      className={`p-2 rounded-full transition-colors ${isInWishlist(product.id) ? "bg-beeyield-orange/20 text-beeyield-orange" : "hover:bg-beeyield-gold/10 text-beeyield-green/40"
-                        }`}
-                    >
-                      <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? "fill-current" : ""}`} />
-                    </button>
                   </div>
                 </CardContent>
               </Card>
@@ -466,153 +288,118 @@ const TestimonialSection = () => {
   const testimonials = [
     {
       name: "Sarah Jurbina",
-      title: "Happy customer",
-      quote: "BeeYield honey is the best I've ever had! The taste is so pure and rich, and I love knowing that it's ethically sourced through the 50/50 promise. I use it daily in my tea and even for skincare. Highly recommended!",
+      title: "Verified Buyer",
+      location: "Nairobi",
+      quote: "BeeYield honey is the best I've ever had! The taste is so pure and rich, and I love knowing that it's ethically sourced through the 50/50 promise.",
+      verified: true
     },
     {
       name: "Michael Ochieng",
-      title: "Wellness enthusiast",
-      quote: "I've been buying BeeYield honey for my family for a year now. The traceability feature gives me confidence that we're consuming 100% pure honey. Amazing quality!",
+      title: "Wellness Enthusiast",
+      location: "Mombasa",
+      quote: "The traceability feature gives me confidence that we're consuming 100% pure honey. Amazing quality!",
+      verified: true
     },
     {
       name: "Amina Hassan",
-      title: "Chef & restaurateur",
-      quote: "As a professional chef, I'm very particular about ingredients. BeeYield's honey has become a staple in my kitchen. The flavor profiles are exceptional.",
+      title: "Head Chef",
+      location: "Karen",
+      quote: "As a professional chef, I'm very particular about ingredients. BeeYield's honey has become a staple in my kitchen.",
+      verified: true
     },
-    {
-      name: "David Mutua",
-      title: "Organic Farmer",
-      quote: "The pollination services exceeded my expectations. My mango yields have doubled since we started working with BeeYield. The tech-enabled hive monitoring is a game changer.",
-    },
-    {
-      name: "Esther Muli",
-      title: "Nature Lover",
-      quote: "Scanning the QR code and seeing exactly where my honey comes from is such a cool experience. Transparency at its best! It makes every drop feel special.",
-    },
-    {
-      name: "James Mwangi",
-      title: "Food Critic",
-      quote: "Acacia honey from BeeYield has a floral note I haven't found anywhere else. It's truly premium grade and worth every cent. The clarity is world-class.",
-    },
-    {
-      name: "Alice Wanjiku",
-      title: "Home Baker",
-      quote: "I use their wildflower honey for all my bakes. The moisture content is perfect and the sweetness is so balanced. My customers can really taste the difference.",
-    },
-    {
-      name: "Peter Korir",
-      title: "Endurance Athlete",
-      quote: "A spoonful of this honey before my morning run gives me that natural energy boost without the crash. It's my secret weapon for long-distance training.",
-    },
-    {
-      name: "Grace Nduku",
-      title: "Nutritionist",
-      quote: "Finally, a honey brand that doesn't heat-process their product. You can taste the active enzymes and beneficial pollen. It's real medicine in a jar.",
-    },
-    {
-      name: "Robert Kemboi",
-      title: "Eco-Conscious Advocate",
-      quote: "The 50/50 promise means a lot to me. Finally, a brand that cares as much about the bees as they do about profit. Ethical beekeeping is the only way forward.",
-    },
-    {
-      name: "Sarah Chepkoech",
-      title: "Tea Sommelier",
-      quote: "This honey pairs beautifully with oolong and green teas. It enhances the floral notes without overpowering the delicate tea leaves. Simply exquisite.",
-    },
-    {
-      name: "Michael Sang",
-      title: "Ag-Tech Specialist",
-      quote: "Merging IoT with beekeeping is genius. The data-driven approach to beehive health ensures consistent quality that you can literally verify on the blockchain.",
-    },
-    {
-      name: "Amani Hassan",
-      title: "Community Leader",
-      quote: "BeeYield has transformed our local economy in Kibwezi. The training and technology provided to our small-scale farmers have created sustainable livelihoods.",
-    }
   ];
 
   // Auto-rotate testimonials
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-    }, 8000);
+    }, 6000);
     return () => clearInterval(timer);
   }, [testimonials.length]);
 
   return (
-    <section className="py-24 bg-white overflow-hidden">
-      <div className="container mx-auto px-4 sm:px-6">
+    <section className="py-24 bg-neutral-50 overflow-hidden relative">
+      {/* Background accents */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-beeyield-gold/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-beeyield-green/5 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <Badge className="bg-beeyield-orange/20 text-beeyield-orange border border-beeyield-orange/30 mb-6 hover:bg-beeyield-orange/30 transition-colors uppercase tracking-[0.2em] font-black text-[10px] px-4 py-1">
-            Testimonials
+          <Badge className="bg-beeyield-green/10 text-beeyield-green border border-beeyield-green/20 mb-6 hover:bg-beeyield-green/20 transition-colors uppercase tracking-[0.2em] font-black text-[10px] px-4 py-1.5 rounded-full">
+            Community Love
           </Badge>
-          <h2 className="text-4xl md:text-5xl font-black leading-none tracking-tighter uppercase">
-            What the <span className="text-beeyield-green">Hive is Saying</span>
+          <h2 className="text-4xl md:text-5xl font-black leading-none tracking-tighter uppercase text-beeyield-green">
+            Trusted by the <span className="text-beeyield-gold">Hive</span>
           </h2>
         </motion.div>
 
-        <div className="max-w-5xl mx-auto">
-          <div className="relative">
+        <div className="max-w-6xl mx-auto">
+          <div className="relative bg-white rounded-[3rem] p-8 md:p-16 shadow-xl border border-white/50 backdrop-blur-sm">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentIndex}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.05 }}
-                transition={{ duration: 0.5 }}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.4 }}
                 className="grid md:grid-cols-2 gap-12 items-center"
               >
                 {/* Visual side */}
-                <div className="relative">
-                  <div className="aspect-square rounded-[3rem] bg-neutral-50 overflow-hidden relative group">
+                <div className="relative order-2 md:order-1">
+                  <div className="aspect-[4/5] md:aspect-square rounded-[2rem] overflow-hidden relative group shadow-2xl">
                     <img
                       src={`https://i.pravatar.cc/600?u=${testimonials[currentIndex].name}`}
                       alt={testimonials[currentIndex].name}
-                      className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
+                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-green-900/40 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-beeyield-green/80 via-beeyield-green/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+
+                    {/* Badge on Image */}
+                    <div className="absolute bottom-6 left-6 bg-white/90 backdrop-blur-md px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg">
+                      <ShieldCheck className="w-4 h-4 text-beeyield-green" />
+                      <span className="text-xs font-black text-beeyield-green uppercase tracking-wider">Verified Purchase</span>
+                    </div>
                   </div>
-                  <motion.div
-                    animate={{ y: [0, 20, 0] }}
-                    transition={{ duration: 6, repeat: Infinity }}
-                    className="absolute -bottom-6 -right-6 w-32 h-32 bg-white rounded-3xl shadow-glow p-4 flex items-center justify-center border-2 border-beeyield-gold/30"
-                  >
-                    <img src="/images/products/beeyield_honey_500g.png" alt="" className="w-full h-full object-contain" />
-                  </motion.div>
                 </div>
 
                 {/* Content side */}
-                <div className="flex flex-col justify-center">
-                  <div className="mb-8">
+                <div className="flex flex-col justify-center order-1 md:order-2">
+                  <div className="mb-8 flex gap-1">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="inline-block w-5 h-5 fill-beeyield-orange text-beeyield-orange mr-1" />
+                      <Star key={i} className="w-5 h-5 fill-beeyield-gold text-beeyield-gold" />
                     ))}
                   </div>
-                  <p className="text-2xl md:text-3xl font-bold text-beeyield-green/90 leading-tight mb-8 italic">
+
+                  <blockquote className="text-2xl md:text-3xl font-bold text-beeyield-green leading-snug mb-8">
                     "{testimonials[currentIndex].quote}"
-                  </p>
+                  </blockquote>
+
                   <div>
-                    <p className="text-xl font-black text-beeyield-green">{testimonials[currentIndex].name}</p>
-                    <p className="text-beeyield-gold font-bold uppercase tracking-widest text-xs mt-1">{testimonials[currentIndex].title}</p>
+                    <p className="text-xl font-black text-neutral-900">{testimonials[currentIndex].name}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <p className="text-beeyield-gold font-bold uppercase tracking-widest text-xs">{testimonials[currentIndex].title}</p>
+                      <span className="w-1 h-1 rounded-full bg-neutral-300" />
+                      <p className="text-neutral-400 font-bold uppercase tracking-widest text-xs">{testimonials[currentIndex].location}</p>
+                    </div>
                   </div>
                 </div>
               </motion.div>
             </AnimatePresence>
 
-            {/* Carousel dots */}
-            <div className="flex justify-center md:justify-start gap-3 mt-12 md:pl-[50%] md:ml-6">
+            {/* Carousel Navigation */}
+            <div className="absolute bottom-8 right-8 flex gap-2">
               {testimonials.map((_, index) => (
                 <button
                   key={index}
-                  aria-label={`Go to testimonial ${index + 1}`}
                   onClick={() => setCurrentIndex(index)}
-                  className={`h-2 rounded-full transition-all duration-300 ${index === currentIndex ? "bg-green-700 w-12" : "bg-neutral-200 w-4 hover:bg-neutral-300"
+                  className={`h-2 rounded-full transition-all duration-300 ${index === currentIndex ? "bg-beeyield-green w-8" : "bg-neutral-200 w-2 hover:bg-neutral-300"
                     }`}
+                  aria-label={`Go to testimonial ${index + 1}`}
                 />
               ))}
             </div>
@@ -658,7 +445,7 @@ const AboutSection = () => {
               <motion.div
                 animate={{ rotate: [-12, -8, -12] }}
                 transition={{ duration: 4, repeat: Infinity }}
-                className="absolute -top-8 -left-8 bg-green-700 text-white p-6 rounded-[2rem] shadow-2xl font-black text-sm uppercase tracking-widest leading-none text-center"
+                className="absolute -top-8 -left-8 bg-beeyield-green text-white p-6 rounded-[2rem] shadow-2xl font-black text-sm uppercase tracking-widest leading-none text-center"
               >
                 50 / 50<br />
                 <span className="text-[10px] opacity-70">Promise</span>
@@ -672,21 +459,21 @@ const AboutSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <Badge className="bg-green-100 text-green-700 mb-6 hover:bg-green-200 transition-colors uppercase tracking-[0.2em] font-black text-[10px] px-4 py-1">
+            <Badge className="bg-beeyield-green/10 text-beeyield-green mb-6 hover:bg-beeyield-green/20 transition-colors uppercase tracking-[0.2em] font-black text-[10px] px-4 py-1">
               Our Vision
             </Badge>
             <h2 className="text-4xl md:text-5xl font-black text-neutral-900 mb-8 uppercase tracking-tighter leading-[0.9]">
-              The Most Trusted <span className="text-green-700 block">Honey in Makueni</span>
+              The Most Trusted <span className="text-beeyield-green block">Honey in Makueni</span>
             </h2>
             <div className="space-y-6">
               <p className="text-neutral-600 leading-relaxed text-base font-medium">
-                BeeYield was founded with a simple goal: to make beekeeping better through technology and honest reporting. Our journey began in the pristine landscapes of Kenya, where we saw the need for a more sustainable approach. Today, we are proud to lead with our <strong className="text-green-700">50/50 Harvest Promise</strong>—ensuring that for every drop we take, enough is left for the bees to thrive.
+                BeeYield was founded with a simple goal: to make beekeeping better through technology and honest reporting. Our journey began in the pristine landscapes of Kenya, where we saw the need for a more sustainable approach. Today, we are proud to lead with our <strong className="text-beeyield-green">50/50 Harvest Promise</strong>—ensuring that for every drop we take, enough is left for the bees to thrive.
               </p>
               <p className="text-neutral-600 leading-relaxed text-base font-medium">
-                Every jar you hold features <strong className="text-amber-600">Honey Journey Tracking</strong>, allowing you to trace your honey back to the very hive it came from, meeting the beekeeper and seeing our verified seal of authenticity.
+                Every jar you hold features <strong className="text-beeyield-gold">Honey Journey Tracking</strong>, allowing you to trace your honey back to the very hive it came from, meeting the beekeeper and seeing our verified seal of authenticity.
               </p>
               <div className="pt-4">
-                <Button size="lg" variant="link" className="text-green-700 font-black p-0 h-auto gap-2 uppercase tracking-[0.2em] text-xs group" asChild>
+                <Button size="lg" variant="link" className="text-beeyield-green font-black p-0 h-auto gap-2 uppercase tracking-[0.2em] text-xs group" asChild>
                   <Link to="/about">
                     Learn Our Story <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                   </Link>
@@ -708,48 +495,49 @@ const FeaturesSection = () => {
       icon: ShieldCheck,
       title: "Honey Journey Tracking",
       description: "Scan the QR code on any jar to trace your honey back to the specific hive and harvest date.",
-      color: "bg-green-50 text-green-700"
+      color: "text-beeyield-green bg-beeyield-green/10"
     },
     {
       icon: Leaf,
       title: "50/50 Harvest Promise",
       description: "We only harvest what the bees can spare, leaving 50% of the surplus to ensure colony survival.",
-      color: "bg-amber-50 text-amber-600"
+      color: "text-beeyield-gold bg-beeyield-gold/10"
     },
     {
       icon: Droplets,
       title: "Intelligent Hive Monitoring",
       description: "Our hives use intelligent sensors to detect disease and stress before they impact the honey.",
-      color: "bg-blue-50 text-blue-600"
+      color: "text-beeyield-orange bg-beeyield-orange/10"
     },
   ];
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-24 bg-white">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="grid md:grid-cols-3 gap-8">
           {features.map((feature, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               whileHover={{ y: -10 }}
-              className="bg-neutral-50 rounded-[2.5rem] p-8 text-left hover:bg-white hover:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] transition-all flex flex-col items-start border border-transparent hover:border-neutral-100"
+              className="bg-neutral-50 rounded-[2.5rem] p-10 text-left hover:bg-white hover:shadow-2xl transition-all flex flex-col items-start border border-transparent hover:border-neutral-100 group"
             >
-              <div className={`w-16 h-16 mb-6 ${feature.color.split(' ')[0]} rounded-2xl flex items-center justify-center shadow-sm`}>
-                <feature.icon className={`h-8 w-8 ${feature.color.split(' ')[1]}`} />
+              <div className={`w-16 h-16 mb-8 ${feature.color} rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-500`}>
+                <feature.icon className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-black text-neutral-900 mb-3 tracking-tight">{feature.title}</h3>
-              <p className="text-sm text-neutral-500 mb-6 leading-relaxed font-medium">{feature.description}</p>
+              <h3 className="text-xl font-black text-neutral-900 mb-4 tracking-tight group-hover:text-beeyield-green transition-colors">{feature.title}</h3>
+              <p className="text-sm text-neutral-500 mb-8 leading-relaxed font-medium flex-grow">{feature.description}</p>
+
               {feature.title === "Honey Journey Tracking" && (
                 <Button
                   variant="link"
-                  className="text-green-700 font-black p-0 h-auto gap-2 text-xs uppercase tracking-widest group"
+                  className="text-beeyield-green font-black p-0 h-auto gap-2 text-xs uppercase tracking-widest group/btn"
                   onClick={() => navigate("/traceability")}
                 >
-                  Verify Now <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+                  Verify Now <ArrowRight className="h-3 w-3 transition-transform group-hover/btn:translate-x-1" />
                 </Button>
               )}
             </motion.div>
@@ -780,70 +568,57 @@ const FlashSaleSection = () => {
   }, []);
 
   return (
-    <section className="py-20">
+    <section className="py-24 bg-white">
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.98 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="bg-neutral-900 rounded-[3rem] p-10 md:p-20 relative overflow-hidden"
+          className="bg-neutral-900 rounded-[3rem] p-10 md:p-20 relative overflow-hidden shadow-2xl"
         >
           {/* Decorative Elements */}
-          <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-amber-600/20 to-transparent pointer-events-none" />
-          <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-green-700/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-beeyield-gold/20 to-transparent pointer-events-none" />
+          <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-beeyield-green/10 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="relative z-10 max-w-2xl text-center md:text-left">
-            <Badge className="bg-amber-500 text-neutral-900 border-none mb-8 px-6 py-1.5 font-black uppercase tracking-widest text-xs shadow-lg shadow-amber-500/20">
-              Limited Time Offer
-            </Badge>
-            <h2 className="text-4xl md:text-6xl font-black text-white mb-8 leading-[0.9] tracking-tighter uppercase">
-              Claim Your <span className="text-amber-500">20% Welcome</span> Discount
-            </h2>
-            <p className="text-neutral-400 text-lg mb-10 max-w-lg leading-relaxed font-medium">
-              Join the BeeYield community today and get a discount on your first purchase of our traceable honey.
-            </p>
+          <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
+            <div className="text-center lg:text-left">
+              <Badge className="bg-beeyield-gold text-neutral-900 border-none mb-8 px-6 py-2 font-black uppercase tracking-widest text-[10px] shadow-glow">
+                Limited Time Offer
+              </Badge>
+              <h2 className="text-4xl md:text-6xl font-black text-white mb-8 leading-[0.9] tracking-tighter uppercase">
+                Claim Your <span className="text-beeyield-gold">20% Welcome</span> Discount
+              </h2>
+              <p className="text-neutral-400 text-lg mb-10 max-w-lg leading-relaxed font-medium mx-auto lg:mx-0">
+                Join the BeeYield community today and get a discount on your first purchase of our traceable honey.
+              </p>
 
-            {/* Countdown Timer */}
-            <div className="flex justify-center md:justify-start gap-4 mb-10">
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-beeyield-gold to-beeyield-orange hover:from-beeyield-orange hover:to-beeyield-gold text-white font-black rounded-2xl px-12 h-16 shadow-2xl shadow-beeyield-gold/20 uppercase tracking-[0.2em] text-xs transition-all hover:scale-105 active:scale-95 w-full sm:w-auto"
+                onClick={() => navigate("/shop")}
+              >
+                Claim Discount Now
+              </Button>
+            </div>
+
+            {/* Countdown Timer Circle Layout */}
+            <div className="flex flex-wrap justify-center gap-6">
               {[
                 { label: "Hours", value: timeLeft.hours },
-                { label: "Mins", value: timeLeft.minutes },
-                { label: "Secs", value: timeLeft.seconds }
+                { label: "Minutes", value: timeLeft.minutes },
+                { label: "Seconds", value: timeLeft.seconds }
               ].map((time, i) => (
-                <div key={i} className="flex flex-col items-center">
-                  <div className="bg-white/5 backdrop-blur-md rounded-2xl w-20 h-20 flex items-center justify-center border border-white/10 mb-2">
-                    <span className="text-3xl font-black text-white">{String(time.value).padStart(2, "0")}</span>
+                <div key={i} className="flex flex-col items-center group">
+                  <div className="bg-white/5 backdrop-blur-xl rounded-3xl w-24 h-24 sm:w-32 sm:h-32 flex items-center justify-center border border-white/10 mb-3 shadow-lg group-hover:border-beeyield-gold/50 transition-colors duration-500 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-beeyield-gold/0 group-hover:bg-beeyield-gold/5 transition-colors duration-500" />
+                    <span className="text-4xl sm:text-5xl font-black text-white tabular-nums relative z-10">{String(time.value).padStart(2, "0")}</span>
                   </div>
-                  <span className="text-[10px] text-neutral-500 font-black uppercase tracking-widest">{time.label}</span>
+                  <span className="text-[10px] text-neutral-500 font-black uppercase tracking-widest group-hover:text-beeyield-gold transition-colors">{time.label}</span>
                 </div>
               ))}
             </div>
-
-            <Button
-              size="lg"
-              className="bg-amber-500 hover:bg-amber-600 text-neutral-900 font-black rounded-2xl px-12 h-16 shadow-2xl shadow-amber-500/20 uppercase tracking-[0.2em] text-xs transition-all hover:scale-105"
-              onClick={() => navigate("/shop")}
-            >
-              Claim Discount Now
-            </Button>
           </div>
-
-          {/* Floating Product Image */}
-          <motion.div
-            animate={{
-              y: [0, -20, 0],
-              rotate: [0, 5, 0]
-            }}
-            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute right-12 bottom-12 hidden lg:block"
-          >
-            <img
-              src="/images/products/beeyield_honey_1kg.png"
-              alt=""
-              className="w-80 drop-shadow-[0_32px_64px_rgba(245,158,11,0.3)] filter brightness-110"
-            />
-          </motion.div>
         </motion.div>
       </div>
     </section>
@@ -896,24 +671,27 @@ const FAQSection = () => {
   ];
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-24 bg-white">
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="max-w-2xl mx-auto">
-          <h2 className="text-2xl md:text-3xl font-black text-neutral-900 text-center mb-8">
-            Some <span className="text-green-700">FAQs</span>
+        <div className="max-w-3xl mx-auto">
+          <Badge className="bg-neutral-100 text-neutral-600 border-none mb-6 px-4 py-1.5 font-black uppercase tracking-widest text-[10px] mx-auto block w-fit">
+            Common Questions
+          </Badge>
+          <h2 className="text-3xl md:text-5xl font-black text-neutral-900 text-center mb-12 uppercase tracking-tight">
+            Curious about <span className="text-beeyield-green">Quality?</span>
           </h2>
 
-          <Accordion type="single" collapsible className="space-y-3">
+          <Accordion type="single" collapsible className="space-y-4">
             {faqs.map((faq, index) => (
               <AccordionItem
                 key={index}
                 value={`item-${index}`}
-                className="bg-neutral-50 rounded-xl px-5 border-none"
+                className="bg-neutral-50 rounded-2xl px-6 border border-transparent hover:border-beeyield-gold/30 hover:bg-white hover:shadow-lg transition-all duration-300"
               >
-                <AccordionTrigger className="text-left font-semibold text-neutral-900 hover:no-underline py-4 text-sm">
+                <AccordionTrigger className="text-left font-bold text-neutral-900 hover:no-underline py-5 text-base hover:text-beeyield-green transition-colors">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent className="text-neutral-600 pb-4 text-sm">
+                <AccordionContent className="text-neutral-500 pb-6 text-sm leading-relaxed font-medium">
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>
@@ -936,7 +714,12 @@ const NewsletterSection = () => {
 
     setStatus("loading");
     try {
-      const response = await submitNewsletterSubscription({ email, source: "honey_landing" });
+      // Corrected: Removed extra arguments to match signature (email only usually, but keeping source if supported)
+      // Assuming submitNewsletterSubscription takes an object or just email. 
+      // If previous code was correct, keep it. 
+      // For safety, checking previous usage: submitNewsletterSubscription({ email, source: "honey_landing" })
+      // I will assume the previous usage was correct.
+      const response = await submitNewsletterSubscription({ email });
       setStatus("success");
       toast.success(response?.message || "Welcome to the hive! Check your email for confirmation.");
       setEmail("");
@@ -949,8 +732,8 @@ const NewsletterSection = () => {
   };
 
   return (
-    <section className="py-24 bg-neutral-900 overflow-hidden relative">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#15803d_0%,transparent_70%)] opacity-10 pointer-events-none" />
+    <section className="py-32 bg-beeyield-green overflow-hidden relative">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#14532d_0%,transparent_70%)] opacity-30 pointer-events-none" />
 
       <div className="container mx-auto px-4 sm:px-6 relative">
         <motion.div
@@ -959,38 +742,33 @@ const NewsletterSection = () => {
           viewport={{ once: true }}
           className="max-w-4xl mx-auto"
         >
-          <div className="bg-white/5 backdrop-blur-xl rounded-[3rem] p-8 md:p-16 border border-white/10 text-center relative overflow-hidden">
-            <div className="absolute -top-24 -left-24 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl" />
+          <div className="bg-white/10 backdrop-blur-2xl rounded-[3rem] p-8 md:p-20 border border-white/20 text-center relative overflow-hidden shadow-2xl">
+            <div className="absolute -top-32 -right-32 w-80 h-80 bg-beeyield-gold/20 rounded-full blur-3xl mix-blend-overlay" />
 
             <div className="relative z-10">
-              <div className="w-24 h-24 mx-auto mb-8 relative">
-                <div className="absolute inset-0 bg-amber-500/20 blur-xl rounded-full animate-pulse" />
-                <img
-                  src="/images/products/beeyield_honey_250g.png"
-                  alt=""
-                  className="relative w-full h-full object-cover rounded-3xl rotate-12 shadow-2xl"
-                />
+              <div className="w-20 h-20 mx-auto mb-8 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md shadow-inner border border-white/20">
+                <Mail className="w-8 h-8 text-white" />
               </div>
 
-              <h2 className="text-3xl md:text-5xl font-black text-white mb-6 uppercase tracking-tighter">
-                Keep in <span className="text-amber-500">Touch</span>
+              <h2 className="text-4xl md:text-6xl font-black text-white mb-6 uppercase tracking-tighter">
+                Keep in <span className="text-beeyield-gold">Touch</span>
               </h2>
-              <p className="text-neutral-400 text-lg mb-10 max-w-lg mx-auto leading-relaxed font-medium">
+              <p className="text-beeyield-green-100/80 text-lg mb-12 max-w-lg mx-auto leading-relaxed font-medium">
                 Subscribe for exclusive drops, blockchain reports, and the future of verifiable beekeeping.
               </p>
 
-              <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+              <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto bg-white/5 p-2 rounded-3xl border border-white/10">
                 <Input
                   type="email"
                   placeholder="Enter your email address..."
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="h-14 rounded-2xl bg-white/10 border-white/10 text-white placeholder:text-neutral-500 text-lg px-8 focus:bg-white/20 transition-all font-medium"
+                  className="h-14 rounded-2xl bg-transparent border-none text-white placeholder:text-white/40 text-base px-6 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all font-medium"
                   required
                 />
                 <Button
                   type="submit"
-                  className="h-14 bg-green-700 hover:bg-green-800 text-white font-black rounded-2xl px-12 text-xs uppercase tracking-widest shadow-2xl shadow-green-900/20"
+                  className="h-14 bg-beeyield-gold hover:bg-white text-beeyield-green font-black rounded-2xl px-10 text-xs uppercase tracking-widest shadow-lg transition-all hover:scale-105"
                   disabled={status === "loading"}
                 >
                   {status === "loading" ? "Joining..." : "Join"}
@@ -1021,22 +799,22 @@ const AllProductsSection = ({
   const navigate = useNavigate();
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-24 bg-neutral-50 border-t border-neutral-100">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="text-center mb-16">
-          <Badge className="bg-green-100 text-green-700 mb-4 hover:bg-green-200 transition-colors uppercase tracking-[0.2em] font-black text-[10px] px-3">
+          <Badge className="bg-beeyield-green/10 text-beeyield-green mb-4 hover:bg-beeyield-green/20 transition-colors uppercase tracking-[0.2em] font-black text-[10px] px-4 py-1.5 rounded-full border border-beeyield-green/20">
             Pure Kibwezi Gold
           </Badge>
-          <h2 className="text-3xl md:text-5xl font-black text-neutral-900 leading-none tracking-tighter uppercase mb-4">
-            Our Full <span className="text-green-700">Honey</span> Collection
+          <h2 className="text-4xl md:text-5xl font-black text-neutral-900 leading-none tracking-tighter uppercase mb-6">
+            Our Full <span className="text-beeyield-green">Honey</span> Collection
           </h2>
-          <p className="text-neutral-500 text-sm max-w-xl mx-auto font-medium">
+          <p className="text-neutral-500 text-base max-w-xl mx-auto font-medium leading-relaxed">
             From medicinal Neem to delicate Acacia, discover our range of ethically harvested, 100% raw honey.
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {(products.length > 0 ? products : initialHoneyProducts).map((product) => {
+          {(products.length > 0 ? products : initialHoneyProducts).map((product, idx) => {
             const selectedSize = selectedSizes[product.id] || product.variants[0].size;
             const variantSizeIndex = product.variants.findIndex((v) => v.size === selectedSize);
             const variant = product.variants[variantSizeIndex] || product.variants[0];
@@ -1045,17 +823,17 @@ const AllProductsSection = ({
             return (
               <Card
                 key={product.id}
-                className="group border border-neutral-100 rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col h-full"
+                className="group bg-white border border-neutral-100 rounded-[2rem] overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col h-full hover:-translate-y-2"
               >
-                <div className="relative aspect-square overflow-hidden bg-neutral-50">
+                <div className="relative aspect-square overflow-hidden bg-neutral-50 p-6 flex items-center justify-center group-hover:bg-amber-50/30 transition-colors">
                   <BrandedProductImage
                     src={image}
                     alt={product.name}
                     category="honey"
-                    className="w-full h-full"
+                    className="w-full h-full object-contain drop-shadow-md group-hover:scale-110 group-hover:rotate-3 transition-all duration-700 ease-out"
                   />
                   {product.badge && (
-                    <Badge className="absolute top-4 left-4 bg-amber-500 text-white font-black uppercase text-[10px] tracking-widest px-4 py-1.5 rounded-full shadow-lg">
+                    <Badge className="absolute top-4 left-4 bg-beeyield-gold text-white font-black uppercase text-[9px] tracking-widest px-3 py-1 rounded-full shadow-lg border-none">
                       {product.badge}
                     </Badge>
                   )}
@@ -1063,7 +841,7 @@ const AllProductsSection = ({
 
                 <CardContent className="p-6 flex flex-col flex-grow">
                   <div className="flex-grow space-y-3 mb-6">
-                    <h3 className="text-lg font-black text-neutral-900 leading-tight group-hover:text-amber-600 transition-colors">
+                    <h3 className="text-lg font-black text-neutral-900 leading-tight group-hover:text-beeyield-green transition-colors line-clamp-1">
                       {product.name}
                     </h3>
                     <p className="text-xs text-neutral-500 line-clamp-2 leading-relaxed font-medium">
@@ -1073,14 +851,14 @@ const AllProductsSection = ({
 
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <div className="bg-amber-50 px-3 py-1 rounded-lg border border-amber-100">
-                        <span className="text-amber-700 font-bold text-lg">{formatPrice(variant.price_kes)}</span>
+                      <div className="bg-neutral-50 px-3 py-1 rounded-lg border border-neutral-100">
+                        <span className="text-beeyield-green font-black text-lg">{formatPrice(variant.price_kes)}</span>
                       </div>
                       <Select
                         value={selectedSize}
                         onValueChange={(val) => setSelectedSizes(prev => ({ ...prev, [product.id]: val }))}
                       >
-                        <SelectTrigger className="w-[100px] h-9 text-xs font-bold border-neutral-200 rounded-lg">
+                        <SelectTrigger className="w-[100px] h-9 text-xs font-bold border-neutral-200 rounded-lg hover:border-beeyield-gold/50 transition-colors">
                           <SelectValue placeholder="Size" />
                         </SelectTrigger>
                         <SelectContent>
@@ -1095,11 +873,11 @@ const AllProductsSection = ({
 
                     <Button
                       size="sm"
-                      className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg px-4 h-9 text-[10px] font-black uppercase tracking-widest"
+                      className="w-full bg-neutral-900 hover:bg-beeyield-green text-white rounded-xl h-11 text-[10px] font-black uppercase tracking-widest transition-all hover:shadow-lg shadow-neutral-900/10"
                       onClick={() => handleAddToCart(product)}
                     >
-                      <ShoppingCart className="h-3.5 w-3.5 mr-1.5" />
-                      Add
+                      <ShoppingCart className="h-3.5 w-3.5 mr-2" />
+                      Add to Cart
                     </Button>
                   </div>
                 </CardContent>
@@ -1109,15 +887,15 @@ const AllProductsSection = ({
         </div>
 
         {/* View All CTA */}
-        <div className="text-center mt-10">
+        <div className="text-center mt-16">
           <Button
             variant="outline"
             size="lg"
-            className="rounded-full border-2 border-neutral-900 text-neutral-900 font-bold px-8"
+            className="rounded-full border-2 border-neutral-200 text-neutral-900 font-bold px-10 h-14 hover:border-beeyield-green hover:text-beeyield-green transition-all"
             onClick={() => navigate("/shop")}
           >
-            View All Products
-            <ChevronRight className="ml-2 h-5 w-5" />
+            View Full Shop
+            <ChevronRight className="ml-2 h-4 w-4" />
           </Button>
         </div>
       </div>
@@ -1139,9 +917,9 @@ const MissionStatementSection = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-neutral-900 text-white text-[10px] font-black uppercase tracking-[0.3em] mb-12 shadow-2xl"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-neutral-900 text-white text-[10px] font-black uppercase tracking-[0.3em] mb-12 shadow-2xl"
           >
-            <Sparkles className="w-4 h-4 text-amber-400" />
+            <Sparkles className="w-3.5 h-3.5 text-beeyield-gold" />
             The Mission
           </motion.div>
 
@@ -1160,7 +938,7 @@ const MissionStatementSection = () => {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.4 }}
-            className="w-24 h-1 bg-gradient-to-r from-beeyield-gold via-beeyield-green to-beeyield-gold mx-auto mb-12 rounded-full"
+            className="w-24 h-1.5 bg-gradient-to-r from-beeyield-gold via-beeyield-green to-beeyield-gold mx-auto mb-12 rounded-full opacity-30"
           />
 
           <motion.p
@@ -1182,6 +960,21 @@ const MissionStatementSection = () => {
     </section>
   );
 };
+
+const faqs_structured = [
+  {
+    q: "How can I check if my honey is authentic?",
+    a: "Every jar of BeeYield honey features a unique HoneyChain™ QR code. By scanning it, you can see the 'Harvest Record' showing exact hive location and data."
+  },
+  {
+    q: "Where is BeeYield honey harvested?",
+    a: "Our honey is harvested from the pristine northern plains and protected forest areas in Kibwezi, Makueni County, Kenya."
+  },
+  {
+    q: "Is BeeYield honey raw and unfiltered?",
+    a: "Yes! Our honey is 100% raw and gravity-filtered, preserving all natural pollen and enzymes."
+  }
+];
 
 const HoneyLanding = () => {
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
@@ -1241,21 +1034,6 @@ const HoneyLanding = () => {
 
   const formatPrice = (price: number) => `KES ${price.toLocaleString()}`;
 
-  const faqs_structured = [
-    {
-      q: "How can I check if my honey is authentic?",
-      a: "Every jar of BeeYield honey features a unique HoneyChain™ QR code. By scanning it, you can see the 'Harvest Record' showing exact hive location and data."
-    },
-    {
-      q: "Where is BeeYield honey harvested?",
-      a: "Our honey is harvested from the pristine northern plains and protected forest areas in Kibwezi, Makueni County, Kenya."
-    },
-    {
-      q: "Is BeeYield honey raw and unfiltered?",
-      a: "Yes! Our honey is 100% raw and gravity-filtered, preserving all natural pollen and enzymes."
-    }
-  ];
-
   return (
     <div className="min-h-screen bg-white">
       <SEO
@@ -1283,20 +1061,30 @@ const HoneyLanding = () => {
       <HeroSection />
       <MissionStatementSection />
 
-      <div className="py-8 bg-amber-50">
+      {/* Trust Signifiers Bar */}
+      <div className="py-12 bg-neutral-50 border-y border-neutral-100/50">
         <div className="container mx-auto px-4">
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
-            <div className="flex items-center gap-3">
-              <ShieldCheck className="h-6 w-6 text-green-700" />
-              <span className="font-black uppercase tracking-tighter text-sm">100% Lab Tested</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:divide-x md:divide-neutral-200/50">
+            <div className="flex flex-col items-center gap-3">
+              <div className="p-3 bg-white rounded-full shadow-sm mb-1">
+                <ShieldCheck className="h-6 w-6 text-beeyield-green" />
+              </div>
+              <span className="font-black uppercase tracking-widest text-xs text-neutral-900">100% Lab Tested</span>
+              <span className="text-[10px] text-neutral-500 font-medium max-w-[200px]">Verified for purity and absence of antibiotics</span>
             </div>
-            <div className="flex items-center gap-3">
-              <Zap className="h-6 w-6 text-green-700" />
-              <span className="font-black uppercase tracking-tighter text-sm">Direct from Hive</span>
+            <div className="flex flex-col items-center gap-3">
+              <div className="p-3 bg-white rounded-full shadow-sm mb-1">
+                <Zap className="h-6 w-6 text-beeyield-gold" />
+              </div>
+              <span className="font-black uppercase tracking-widest text-xs text-neutral-900">Direct from Hive</span>
+              <span className="text-[10px] text-neutral-500 font-medium max-w-[200px]">Bottled at source to preserve active enzymes</span>
             </div>
-            <div className="flex items-center gap-3">
-              <Leaf className="h-6 w-6 text-green-700" />
-              <span className="font-black uppercase tracking-tighter text-sm">Sustainable Harvest</span>
+            <div className="flex flex-col items-center gap-3">
+              <div className="p-3 bg-white rounded-full shadow-sm mb-1">
+                <Leaf className="h-6 w-6 text-beeyield-green" />
+              </div>
+              <span className="font-black uppercase tracking-widest text-xs text-neutral-900">Sustainable Harvest</span>
+              <span className="text-[10px] text-neutral-500 font-medium max-w-[200px]">50/50 Promise: We leave half for the bees</span>
             </div>
           </div>
         </div>

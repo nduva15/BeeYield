@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Body
+from fastapi import APIRouter, Depends, HTTPException, status, Body, Request
 from typing import List, Optional, Dict, Any
 from uuid import UUID
 from datetime import datetime
@@ -18,6 +18,13 @@ def get_user_id(current_user: dict = Depends(security.get_current_user)) -> str:
         )
     return user_id
 
+def get_token(request: Request) -> Optional[str]:
+    """Extract raw token from Authorization header"""
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        return auth_header.split(" ")[1]
+    return None
+
 class HubDeviceRegister(BaseModel):
     serial_number: str
     firmware_version: Optional[str] = "1.0.0"
@@ -33,16 +40,17 @@ class SyncSessionComplete(BaseModel):
     duration_sec: int
 
 @router.post("/handshake", response_model=dict)
-def handshake_device(
+async def handshake_device(
     device: HubDeviceRegister,
-    user_id: str = Depends(get_user_id)
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Handle USB device connection.
     Register if new, update last_connected if exists.
     """
     # Check if device exists
-    existing = db_select("hub_devices", filters={"serial_number": device.serial_number})
+    existing = await db_select("hub_devices", filters={"serial_number": device.serial_number}, token=token)
     
     if existing:
         hub = existing[0]
@@ -55,7 +63,7 @@ def handshake_device(
             "last_connected_at": datetime.utcnow().isoformat(),
             "firmware_version": device.firmware_version
         }
-        db_update("hub_devices", update_data, {"serial_number": device.serial_number})
+        await db_update("hub_devices", update_data, {"serial_number": device.serial_number}, token=token)
         
         return {"status": "connected", "device": hub, "is_new": False}
     else:
@@ -67,20 +75,21 @@ def handshake_device(
             "last_connected_at": datetime.utcnow().isoformat(),
             "config_json": device.config_json or {}
         }
-        res = db_insert("hub_devices", new_hub)
+        res = await db_insert("hub_devices", new_hub, token=token)
         if not res.get("success"):
             raise HTTPException(status_code=500, detail="Failed to register device")
             
         return {"status": "registered", "device": res["data"][0], "is_new": True}
 
 @router.post("/sync/start", response_model=dict)
-def start_sync_session(
+async def start_sync_session(
     session: SyncSessionStart,
-    user_id: str = Depends(get_user_id)
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token)
 ):
     """Start a data sync session"""
     # Verify ownership
-    hub = db_select("hub_devices", filters={"serial_number": session.hub_sn, "user_id": user_id})
+    hub = await db_select("hub_devices", filters={"serial_number": session.hub_sn, "user_id": user_id}, token=token)
     if not hub:
         raise HTTPException(status_code=404, detail="Hub not found or access denied")
         
@@ -93,20 +102,21 @@ def start_sync_session(
         "started_at": datetime.utcnow().isoformat()
     }
     
-    res = db_insert("sync_sessions", new_session)
+    res = await db_insert("sync_sessions", new_session, token=token)
     if not res.get("success"):
         raise HTTPException(status_code=500, detail="Failed to start sync session")
         
     return res["data"][0] if res.get("data") else new_session
 
 @router.post("/sync/complete", response_model=dict)
-def complete_sync_session(
+async def complete_sync_session(
     data: SyncSessionComplete,
-    user_id: str = Depends(get_user_id)
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token)
 ):
     """Complete a sync session"""
     # Verify session ownership
-    sess = db_select("sync_sessions", filters={"id": data.session_id, "user_id": user_id})
+    sess = await db_select("sync_sessions", filters={"id": data.session_id, "user_id": user_id}, token=token)
     if not sess:
         raise HTTPException(status_code=404, detail="Session not found")
         
@@ -116,16 +126,20 @@ def complete_sync_session(
         "finished_at": datetime.utcnow().isoformat()
     }
     
-    res = db_update("sync_sessions", update_data, {"id": data.session_id})
+    res = await db_update("sync_sessions", update_data, {"id": data.session_id}, token=token)
     
     # Update hub last_sync_at if success
     if data.status.lower() == "success":
         hub_sn = sess[0]["hub_sn"]
-        db_update("hub_devices", {"last_sync_at": datetime.utcnow().isoformat()}, {"serial_number": hub_sn})
+        await db_update("hub_devices", {"last_sync_at": datetime.utcnow().isoformat()}, {"serial_number": hub_sn}, token=token)
         
     return res["data"][0] if res.get("data") else {"status": "ok"}
 
 @router.get("/devices", response_model=List[dict])
-def get_my_devices(user_id: str = Depends(get_user_id)):
+async def get_my_devices(
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token)
+):
     """Get all devices owned by user"""
-    return db_select("hub_devices", filters={"user_id": user_id})
+    return await db_select("hub_devices", filters={"user_id": user_id}, token=token)
+

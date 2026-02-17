@@ -1,5 +1,5 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { supabaseShop, supabaseBeeYield, supabaseCEBA } from '@/lib/supabase';
 import { Session, User, AuthError, AuthMFAEnrollResponse, AuthMFAChallengeResponse, AuthMFAVerifyResponse, Factor, SupabaseClient } from '@supabase/supabase-js';
 
@@ -58,6 +58,15 @@ export const useAuth = () => {
     return context;
 };
 
+// Internal sync component that uses useLocation from Router
+const BackendSynchronizer = ({ onPathChange }: { onPathChange: (path: string) => void }) => {
+    const location = useLocation();
+    useEffect(() => {
+        onPathChange(location.pathname);
+    }, [location.pathname, onPathChange]);
+    return null;
+};
+
 interface AuthProviderProps {
     children: ReactNode;
 }
@@ -75,41 +84,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
 
     // Determine current backend based on path
-    const getActiveBackendFromPath = (): AuthBackend => {
-        const path = window.location.pathname;
+    const getActiveBackendFromPath = (path: string): AuthBackend => {
         if (path.includes('/ceba') || path.startsWith('/admin')) return 'ceba';
         if (path.includes('/beeyield')) return 'beeyield';
         return 'shop';
     };
 
-    const [activeBackend, setActiveBackend] = useState<AuthBackend>(getActiveBackendFromPath());
+    const [activeBackend, setActiveBackend] = useState<AuthBackend>(getActiveBackendFromPath(window.location.pathname));
 
-    // Keep activeBackend in sync with URL on ALL navigation types
-    // React Router's navigate() doesn't fire popstate, so we also observe DOM changes
-    useEffect(() => {
-        const syncBackend = () => {
-            const newBackend = getActiveBackendFromPath();
-            setActiveBackend(prev => prev !== newBackend ? newBackend : prev);
-        };
-
-        // popstate covers browser back/forward
-        window.addEventListener('popstate', syncBackend);
-
-        // MutationObserver on <title> or body to detect SPA route changes
-        let observer: MutationObserver | null = null;
-        try {
-            observer = new MutationObserver(syncBackend);
-            observer.observe(document.body, { childList: true, subtree: true });
-        } catch { /* noop if observer unavailable */ }
-
-        // Also run a short interval as a fallback (cheap because it only does a string check)
-        const interval = setInterval(syncBackend, 500);
-
-        return () => {
-            window.removeEventListener('popstate', syncBackend);
-            observer?.disconnect();
-            clearInterval(interval);
-        };
+    const handlePathChange = useMemo(() => (path: string) => {
+        const newBackend = getActiveBackendFromPath(path);
+        setActiveBackend(prev => prev !== newBackend ? newBackend : prev);
     }, []);
 
     const getClient = (backend?: AuthBackend): SupabaseClient => {
@@ -121,23 +106,34 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     useEffect(() => {
         const initAuth = async () => {
-            setLoading(true);
+            // Short-circuit if no supabase clients exist
+            if (!supabaseShop && !supabaseBeeYield && !supabaseCEBA) {
+                setLoading(false);
+                return;
+            }
+
             try {
-                // Initial sessions - handle each independently so one failure doesn't block others
-                const [shopRes, beeyieldRes, cebaRes] = await Promise.all([
-                    supabaseShop?.auth.getSession().catch(() => null),
-                    supabaseBeeYield?.auth.getSession().catch(() => null),
-                    supabaseCEBA?.auth.getSession().catch(() => null)
+                // Fetch sessions in parallel - handle errors gracefully
+                const results = await Promise.allSettled([
+                    supabaseShop?.auth.getSession(),
+                    supabaseBeeYield?.auth.getSession(),
+                    supabaseCEBA?.auth.getSession()
                 ]);
 
-                setShopSession(shopRes?.data?.session ?? null);
-                setShopUser(shopRes?.data?.session?.user ?? null);
+                if (results[0].status === 'fulfilled' && results[0].value?.data?.session) {
+                    setShopSession(results[0].value.data.session);
+                    setShopUser(results[0].value.data.session.user);
+                }
 
-                setBeeyieldSession(beeyieldRes?.data?.session ?? null);
-                setBeeyieldUser(beeyieldRes?.data?.session?.user ?? null);
+                if (results[1].status === 'fulfilled' && results[1].value?.data?.session) {
+                    setBeeyieldSession(results[1].value.data.session);
+                    setBeeyieldUser(results[1].value.data.session.user);
+                }
 
-                setCebaSession(cebaRes?.data?.session ?? null);
-                setCebaUser(cebaRes?.data?.session?.user ?? null);
+                if (results[2].status === 'fulfilled' && results[2].value?.data?.session) {
+                    setCebaSession(results[2].value.data.session);
+                    setCebaUser(results[2].value.data.session.user);
+                }
             } catch (err) {
                 console.error('Auth initialization error:', err);
             } finally {
@@ -145,7 +141,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             }
         };
 
-        // Initialize even if some clients are null - at least initialize those that exist
         initAuth();
 
         const subscriptions: Array<{ data: { subscription: { unsubscribe: () => void } } }> = [];
@@ -361,7 +356,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         hasMFAEnabled,
     };
 
-    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+    return (
+        <AuthContext.Provider value={value}>
+            {children}
+            {/* Note: This component MUST be rendered inside a Router. 
+                Move AuthProvider inside BrowserRouter in main.tsx if using this. */}
+            <BackendSynchronizer onPathChange={handlePathChange} />
+        </AuthContext.Provider>
+    );
 };
 
 export default AuthContext;

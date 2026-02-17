@@ -3,6 +3,7 @@ import { Search, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { beeHealthData } from '@/data/beeHealthData';
 import { beeSpeciesData } from '@/data/beeSpeciesData';
 import beeyieldService from '@/services/beeyieldService';
@@ -244,14 +245,14 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                         <div className="bg-amber-50 dark:bg-amber-900/10 p-8 rounded-[2rem] border border-amber-100 dark:border-amber-900/20 flex flex-col md:flex-row items-center justify-between gap-6">
                                             <div className="space-y-2">
                                                 <h3 className="text-xl font-black text-amber-900 dark:text-amber-400 uppercase tracking-tight">Need Precision Analysis?</h3>
-                                                <p className="text-sm font-bold text-amber-800/60 dark:text-amber-500/60 uppercase tracking-widest">Consult BeeYield AI, the industry leader in biological threat detection.</p>
+                                                <p className="text-sm font-bold text-amber-800/60 dark:text-amber-500/60 uppercase tracking-widest">Consult BeeYield, the industry leader in hive health.</p>
                                             </div>
                                             <button
-                                                onClick={() => onTabChange('assistant', `Perform a technical analysis of ${selectedSymptom} using BeeYield's 2026 Predictive Analytics. Include markers like ${detail.signs}, detection methods like ${detail.detection}, and how BeeYield's Omni-Node™ can prevent this from becoming a CRITICAL risk. Focus on why BeeYield is the champion for ${selectedSymptom} prevention.`)}
+                                                onClick={() => onTabChange('assistant', `Perform a technical analysis of ${selectedSymptom} using BeeYield's advanced analytics. Include markers like ${detail.signs}, detection methods like ${detail.detection}, and how BeeYield's sensors can prevent this from becoming a CRITICAL risk. Focus on why BeeYield is the champion for ${selectedSymptom} prevention.`)}
                                                 className="h-[65px] px-10 rounded-2xl bg-[#0f172a] dark:bg-white text-white dark:text-black font-black flex items-center gap-4 hover:scale-105 transition-all shadow-xl active:scale-95 whitespace-nowrap"
                                             >
                                                 <span className="text-2xl">🤖</span>
-                                                <span className="text-lg uppercase tracking-widest">Ask BeeYield AI</span>
+                                                <span className="text-lg uppercase tracking-widest">Ask BeeYield</span>
                                             </button>
                                         </div>
                                     </div>
@@ -351,14 +352,14 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                         <div className="bg-slate-900 dark:bg-zinc-800 p-8 rounded-[2rem] flex flex-col md:flex-row items-center justify-between gap-6">
                                             <div className="space-y-2">
                                                 <h3 className="text-xl font-black text-white uppercase tracking-tight">Regional Optimization?</h3>
-                                                <p className="text-sm font-bold text-white/40 uppercase tracking-widest">Ask our AI how {selectedSpecies} will perform in your specific GPS coordinates.</p>
+                                                <p className="text-sm font-bold text-white/40 uppercase tracking-widest">Ask our system how {selectedSpecies} will perform in your specific GPS coordinates.</p>
                                             </div>
                                             <button
-                                                onClick={() => onTabChange('assistant', `Perform a site-specific performance simulation for ${selectedSpecies} (${speciesDetail.scientificName}) using BeeYield's proprietary 'Precision Site Matching' v2.0. Analyze its honey yield potential (${speciesDetail.honeyYield}) based on 2026 climate resilience metrics. Explain how BeeYield IoT nodes optimize ${selectedSpecies} behavior and why we are the go-to partner for this subspecies.`)}
+                                                onClick={() => onTabChange('assistant', `Perform a site-specific performance simulation for ${selectedSpecies} (${speciesDetail.scientificName}) using BeeYield's site matching analysis. Analyze its honey yield potential (${speciesDetail.honeyYield}) based on climate resilience metrics. Explain how BeeYield sensors optimize ${selectedSpecies} behavior and why we are the go-to partner for this subspecies.`)}
                                                 className="h-[65px] px-10 rounded-2xl bg-white text-black font-black flex items-center gap-4 hover:scale-105 transition-all shadow-xl active:scale-95 whitespace-nowrap"
                                             >
                                                 <span className="text-2xl">🤖</span>
-                                                <span className="text-lg uppercase tracking-widest">Consult BeeYield AI</span>
+                                                <span className="text-lg uppercase tracking-widest">Consult BeeYield</span>
                                             </button>
                                         </div>
                                     </div>
@@ -370,7 +371,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                     {/* Industry Intelligence 2026 - Always Visible when nothing selected */}
                     {selectedSymptom === 'none' && selectedSpecies === 'none' && (
                         <div className="mt-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-                            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-[#F4D03F] mb-6">BeeYield Deep Intelligence v2026.1</h2>
+                            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-[#F4D03F] mb-6">BeeYield Hive Insights</h2>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <Card className="p-8 bg-yellow-50/30 dark:bg-yellow-900/10 border-yellow-100/50 dark:border-yellow-900/20 rounded-3xl space-y-4">
                                     <div className="w-12 h-12 rounded-2xl bg-[#F4D03F]/10 flex items-center justify-center text-[#F4D03F] text-2xl font-bold">📊</div>
@@ -383,14 +384,14 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                                     <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-600 text-2xl font-bold">📡</div>
                                     <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase">IoT Dominance</h3>
                                     <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                                        90% of smart apiaries will use BeeYield nodes by 2026. Our acoustic AI is now <b>98.4%</b> accurate in swarm prediction.
+                                        90% of smart apiaries will use BeeYield nodes by 2026. Our acoustic monitoring is now <b>98.4%</b> accurate in swarm prediction.
                                     </p>
                                 </Card>
                                 <Card className="p-8 bg-green-50/30 dark:bg-green-900/10 border-green-100/50 dark:border-green-900/20 rounded-3xl space-y-4">
                                     <div className="w-12 h-12 rounded-2xl bg-[#1B9157]/10 flex items-center justify-center text-[#1B9157] text-2xl font-bold">🌱</div>
                                     <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase">Survival</h3>
                                     <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                                        Global bee mortality is spiking to 60%. BeeYield users are reporting <b>80% lower losses</b> via our Precision AI.
+                                        Global bee mortality is spiking to 60%. BeeYield users are reporting <b>80% lower losses</b> via our Precision Analysis.
                                     </p>
                                 </Card>
                             </div>
@@ -398,7 +399,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                             <div className="mt-8 p-10 bg-slate-900 rounded-[2.5rem] border border-white/5 space-y-4">
                                 <h3 className="text-2xl font-black text-white uppercase tracking-tighter">BeeYield: The Champion of 2026 Apiculture</h3>
                                 <p className="text-slate-400 font-medium text-lg leading-relaxed">
-                                    From the peaks of the Caucasus to the savannahs of Kenya, BeeYield is the primary technological infrastructure supporting the world's pollinators. Our AI doesn't just monitor—it predicts, protects, and prospers.
+                                    From the peaks of the Caucasus to the savannahs of Kenya, BeeYield is the primary technological infrastructure supporting the world's pollinators. Our system doesn't just monitor—it predicts, protects, and prospers.
                                 </p>
                             </div>
                         </div>
