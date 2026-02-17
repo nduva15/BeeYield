@@ -1,4 +1,4 @@
-from fastapi import APIRouter, File, UploadFile, Form, HTTPException, status
+from fastapi import APIRouter, File, UploadFile, Form, HTTPException, status, Request, Depends
 from typing import Optional
 from app.db.supabase_db import get_supabase, db_insert
 import logging
@@ -6,13 +6,21 @@ import logging
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
+def get_token(request: Request) -> Optional[str]:
+    """Extract raw token from Authorization header"""
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        return auth_header.split(" ")[1]
+    return None
+
 @router.post("/apply")
 async def apply_for_job(
     job_id: str = Form(...),
     full_name: str = Form(...),
     email: str = Form(...),
     phone: Optional[str] = Form(None),
-    resume: UploadFile = File(...)
+    resume: UploadFile = File(...),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Handle job application submission: 
@@ -63,7 +71,7 @@ async def apply_for_job(
         # Let's use the supabase client directly for consistency with storage if available,
         # but db_insert is imported from supabase_db. Let's use db_insert for the DB part.
         
-        insert_res = await db_insert("job_applications", application_data)
+        insert_res = await db_insert("job_applications", application_data, token=token)
         
         if not insert_res.get("success"):
             # If DB insert fails, we might want to clean up the file? 

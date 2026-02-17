@@ -48,46 +48,49 @@ const Header = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-beeyield-gold/20 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl shadow-sm">
       <nav className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6 lg:px-8">
         {/* Left side - Logo (all devices) */}
-        <Link to="/" className="flex items-center space-x-2 flex-shrink-0 transition-transform active:scale-95" aria-label="BeeYield home">
-          <img
-            src={Logo}
-            alt="BeeYield logo"
-            className="h-8 w-8 lg:h-9 lg:w-9 object-contain"
-          />
-          <span className="text-lg lg:text-xl font-bold text-foreground">BeeYield</span>
+        <Link to="/" className="flex items-center space-x-2.5 flex-shrink-0 transition-all hover:scale-105 active:scale-95 group" aria-label="BeeYield home">
+          <div className="relative">
+            <div className="absolute inset-0 bg-beeyield-gold/20 blur-md rounded-full group-hover:bg-beeyield-gold/30 transition-colors" />
+            <img
+              src={Logo}
+              alt="BeeYield logo"
+              className="h-9 w-9 lg:h-10 lg:w-10 object-contain relative z-10"
+            />
+          </div>
+          <span className="text-lg lg:text-xl font-black text-beeyield-green tracking-tight">BeeYield</span>
         </Link>
 
         {/* Center - Navigation Links (Desktop only) */}
-        <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
+        <div className="hidden lg:flex items-center space-x-1 xl:space-x-2">
           <Link
             to="/crops-we-pollinate"
-            className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/crops-we-pollinate") ? "text-primary" : "text-foreground"
+            className={`text-sm font-bold transition-all px-3 py-2 rounded-lg hover:bg-beeyield-gold/10 ${isActive("/crops-we-pollinate") ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green/80 hover:text-beeyield-green"
               }`}
           >
             Professional Pollination
           </Link>
 
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium transition-colors hover:text-primary">
+            <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-bold transition-all px-3 py-2 rounded-lg hover:bg-beeyield-gold/10 text-beeyield-green/80 hover:text-beeyield-green">
               Pollination Solutions
-              <ChevronDown className="h-4 w-4" />
+              <ChevronDown className="h-3.5 w-3.5" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="center" className="w-72 flex flex-col p-4 bg-primary border-none rounded-2xl shadow-xl z-[100]">
-              <DropdownMenuItem asChild className="focus:bg-primary/80 focus:text-primary-foreground">
-                <Link to="/in-land-pollination" className="w-full cursor-pointer px-4 py-3 text-base font-medium text-primary-foreground hover:bg-primary/80 rounded-lg">
+            <DropdownMenuContent align="center" className="w-72 flex flex-col p-3 bg-gradient-to-br from-beeyield-gold to-beeyield-green border-none rounded-2xl shadow-2xl z-[100]">
+              <DropdownMenuItem asChild className="focus:bg-white/20 focus:text-white">
+                <Link to="/in-land-pollination" className="w-full cursor-pointer px-4 py-3 text-sm font-bold text-white hover:bg-white/20 rounded-xl transition-all">
                   In Land Pollination
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild className="focus:bg-primary/80 focus:text-primary-foreground">
-                <Link to="/precision-pollination" className="w-full cursor-pointer px-4 py-3 text-base font-medium text-primary-foreground hover:bg-primary/80 rounded-lg">
+              <DropdownMenuItem asChild className="focus:bg-white/20 focus:text-white">
+                <Link to="/precision-pollination" className="w-full cursor-pointer px-4 py-3 text-sm font-bold text-white hover:bg-white/20 rounded-xl transition-all">
                   In Hive Pollination
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild className="focus:bg-primary/80 focus:text-primary-foreground">
-                <Link to="/diseases" className="w-full cursor-pointer px-4 py-3 text-base font-medium text-primary-foreground hover:bg-primary/80 rounded-lg">
+              <DropdownMenuItem asChild className="focus:bg-white/20 focus:text-white">
+                <Link to="/diseases" className="w-full cursor-pointer px-4 py-3 text-sm font-bold text-white hover:bg-white/20 rounded-xl transition-all">
                   Diseases
                 </Link>
               </DropdownMenuItem>
@@ -96,7 +99,7 @@ const Header = () => {
 
           <Link
             to="/pollination-solutions"
-            className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/pollination-solutions") ? "text-primary" : "text-foreground"
+            className={`text-sm font-bold transition-all px-3 py-2 rounded-lg hover:bg-beeyield-gold/10 ${isActive("/pollination-solutions") ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green/80 hover:text-beeyield-green"
               }`}
           >
             Beekeeping Network
@@ -104,7 +107,7 @@ const Header = () => {
           <Link
             to="/shop"
             onPrefetch={prefetchShop}
-            className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/shop") ? "text-primary" : "text-foreground"
+            className={`text-sm font-bold transition-all px-3 py-2 rounded-lg hover:bg-beeyield-gold/10 ${isActive("/shop") ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green/80 hover:text-beeyield-green"
               }`}
           >
             Shop
@@ -112,23 +115,23 @@ const Header = () => {
         </div>
 
         {/* Right side - Traceability Button & Menu (all devices) */}
-        <div className="flex items-center space-x-2 sm:space-x-4">
+        <div className="flex items-center space-x-2 sm:space-x-3">
           <Link
             to="/beeyield-dashboard"
-            className="p-2 hover:bg-muted rounded-full transition-all active:scale-95 group mr-1 flex items-center justify-center"
+            className="p-2 hover:bg-beeyield-gold/10 rounded-xl transition-all active:scale-95 group flex items-center justify-center"
             title="BeeYield Dashboard"
           >
-            <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
+            <Shield className="h-5 w-5 sm:h-5 sm:w-5 text-beeyield-green group-hover:text-beeyield-gold transition-colors" />
           </Link>
 
           <button
             onClick={toggleCart}
-            className="p-2 hover:bg-muted rounded-full transition-all active:scale-95 group relative"
+            className="p-2 hover:bg-beeyield-gold/10 rounded-xl transition-all active:scale-95 group relative"
             aria-label="View shopping cart"
           >
-            <ShoppingBag className="h-5 w-5 sm:h-6 sm:w-6 text-foreground group-hover:text-primary transition-colors" />
+            <ShoppingBag className="h-5 w-5 sm:h-5 sm:w-5 text-beeyield-green group-hover:text-beeyield-gold transition-colors" />
             {getTotalItems() > 0 && (
-              <span className="absolute top-1 right-1 bg-primary text-primary-foreground text-[10px] font-bold h-4 w-4 flex items-center justify-center rounded-full border-2 border-background">
+              <span className="absolute -top-1 -right-1 bg-gradient-to-br from-beeyield-orange to-beeyield-gold text-white text-[10px] font-black h-5 w-5 flex items-center justify-center rounded-full shadow-lg animate-pulse">
                 {getTotalItems()}
               </span>
             )}
@@ -137,23 +140,23 @@ const Header = () => {
           <Button
             variant="default"
             size="sm"
-            className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-3 sm:px-6 text-xs sm:text-sm h-8 sm:h-9 transition-transform active:scale-95"
+            className="bg-gradient-to-r from-beeyield-green to-beeyield-green-dark hover:from-beeyield-green-dark hover:to-beeyield-green text-white font-black px-4 sm:px-6 text-xs sm:text-sm h-9 sm:h-10 transition-all active:scale-95 rounded-xl shadow-md hover:shadow-lg uppercase tracking-wider"
             asChild
           >
             <Link to="/traceability">
-              Traceability
+              Verify
             </Link>
           </Button>
 
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
-            className="p-2 hover:bg-muted rounded-md transition-all active:scale-95"
+            className="p-2 hover:bg-beeyield-gold/10 rounded-xl transition-all active:scale-95"
           >
             {isMenuOpen ? (
-              <X className="h-5 w-5 sm:h-6 sm:w-6 text-foreground" />
+              <X className="h-5 w-5 sm:h-6 sm:w-6 text-beeyield-green" />
             ) : (
-              <Menu className="h-5 w-5 sm:h-6 sm:w-6 text-foreground" />
+              <Menu className="h-5 w-5 sm:h-6 sm:w-6 text-beeyield-green" />
             )}
           </button>
         </div>
@@ -164,19 +167,19 @@ const Header = () => {
         <>
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
             onClick={() => setIsMenuOpen(false)}
           />
 
           {/* Menu Panel */}
-          <div className="fixed right-2 sm:right-4 top-14 sm:top-16 z-50 w-[calc(100%-1rem)] sm:w-80 max-h-[calc(100vh-4rem)] overflow-y-auto rounded-2xl bg-primary p-4 sm:p-6 shadow-xl animate-in fade-in slide-in-from-top-2">
+          <div className="fixed right-2 sm:right-4 top-14 sm:top-16 z-50 w-[calc(100%-1rem)] sm:w-80 max-h-[calc(100vh-4rem)] overflow-y-auto rounded-3xl bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl border border-beeyield-gold/20 p-4 sm:p-6 shadow-2xl animate-in fade-in slide-in-from-top-2">
             {/* Main Navigation Section */}
-            <div className="flex flex-col space-y-1 pb-4 border-b border-primary-foreground/20">
-              <span className="text-xs uppercase tracking-wider text-primary-foreground/60 px-3 py-1 font-medium">Main Navigation</span>
+            <div className="flex flex-col space-y-1 pb-4 border-b border-beeyield-gold/20">
+              <span className="text-xs uppercase tracking-wider text-beeyield-green/60 px-3 py-1 font-black">Main Navigation</span>
               <Link
                 to="/crops-we-pollinate"
                 onClick={() => setIsMenuOpen(false)}
-                className={`text-sm sm:text-base font-semibold hover:bg-primary-foreground/10 rounded-lg px-3 py-2.5 sm:py-3 transition-colors ${isActive("/crops-we-pollinate") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground"
+                className={`text-sm sm:text-base font-bold hover:bg-beeyield-gold/10 rounded-xl px-3 py-2.5 sm:py-3 transition-all ${isActive("/crops-we-pollinate") ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green"
                   }`}
               >
                 Professional Pollination
@@ -184,7 +187,7 @@ const Header = () => {
 
               {/* Pollination Solutions Sub-menu */}
               <div className="flex flex-col">
-                <span className="text-sm sm:text-base font-semibold text-primary-foreground px-3 py-2.5 sm:py-3 flex items-center gap-1">
+                <span className="text-sm sm:text-base font-bold text-beeyield-green px-3 py-2.5 sm:py-3 flex items-center gap-1">
                   Pollination Solutions
                   <ChevronDown className="h-4 w-4" />
                 </span>
@@ -192,7 +195,7 @@ const Header = () => {
                   <Link
                     to="/in-land-pollination"
                     onClick={() => setIsMenuOpen(false)}
-                    className={`text-sm font-medium hover:bg-primary-foreground/10 rounded-lg px-3 py-2 transition-colors ${isActive("/in-land-pollination") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground/90"
+                    className={`text-sm font-bold hover:bg-beeyield-gold/10 rounded-xl px-3 py-2 transition-all ${isActive("/in-land-pollination") ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green/80"
                       }`}
                   >
                     In Land Pollination
@@ -200,7 +203,7 @@ const Header = () => {
                   <Link
                     to="/precision-pollination"
                     onClick={() => setIsMenuOpen(false)}
-                    className={`text-sm font-medium hover:bg-primary-foreground/10 rounded-lg px-3 py-2 transition-colors ${isActive("/precision-pollination") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground/90"
+                    className={`text-sm font-bold hover:bg-beeyield-gold/10 rounded-xl px-3 py-2 transition-all ${isActive("/precision-pollination") ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green/80"
                       }`}
                   >
                     In Hive Pollination
@@ -208,7 +211,7 @@ const Header = () => {
                   <Link
                     to="/diseases"
                     onClick={() => setIsMenuOpen(false)}
-                    className={`text-sm font-medium hover:bg-primary-foreground/10 rounded-lg px-3 py-2 transition-colors ${isActive("/diseases") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground/90"
+                    className={`text-sm font-bold hover:bg-beeyield-gold/10 rounded-xl px-3 py-2 transition-all ${isActive("/diseases") ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green/80"
                       }`}
                   >
                     Diseases
@@ -219,7 +222,7 @@ const Header = () => {
               <Link
                 to="/pollination-solutions"
                 onClick={() => setIsMenuOpen(false)}
-                className={`text-sm sm:text-base font-semibold hover:bg-primary-foreground/10 rounded-lg px-3 py-2.5 sm:py-3 transition-colors ${isActive("/pollination-solutions") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground"
+                className={`text-sm sm:text-base font-bold hover:bg-beeyield-gold/10 rounded-xl px-3 py-2.5 sm:py-3 transition-all ${isActive("/pollination-solutions") ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green"
                   }`}
               >
                 Beekeeping Network
@@ -228,7 +231,7 @@ const Header = () => {
                 to="/shop"
                 onPrefetch={prefetchShop}
                 onClick={() => setIsMenuOpen(false)}
-                className={`text-sm sm:text-base font-semibold hover:bg-primary-foreground/10 rounded-lg px-3 py-2.5 sm:py-3 transition-colors ${isActive("/shop") ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground"
+                className={`text-sm sm:text-base font-bold hover:bg-beeyield-gold/10 rounded-xl px-3 py-2.5 sm:py-3 transition-all ${isActive("/shop") ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green"
                   }`}
               >
                 Shop
@@ -237,24 +240,25 @@ const Header = () => {
 
             {/* Secondary Links Section */}
             <div className="flex flex-col space-y-1 pt-4">
-              <span className="text-xs uppercase tracking-wider text-primary-foreground/60 px-3 py-1 font-medium mt-2">My Dashboard</span>
+              <span className="text-xs uppercase tracking-wider text-beeyield-green/60 px-3 py-1 font-black mt-2">My Dashboard</span>
               <Link
                 to="/beeyield-dashboard"
                 onClick={() => setIsMenuOpen(false)}
-                className={`text-sm sm:text-base font-black hover:bg-white/20 rounded-lg px-3 py-2.5 sm:py-3 transition-colors bg-white/10 text-yellow-300 border border-yellow-300/30 flex items-center justify-between mb-2 ${isActive("/beeyield-dashboard") ? "ring-2 ring-yellow-300" : ""}`}
+                className={`text-sm sm:text-base font-black hover:bg-beeyield-gold/20 rounded-xl px-3 py-2.5 sm:py-3 transition-all bg-gradient-to-r from-beeyield-gold/10 to-beeyield-green/10 text-beeyield-green border-2 border-beeyield-gold/30 flex items-center justify-between mb-2 shadow-sm ${isActive("/beeyield-dashboard") ? "ring-2 ring-beeyield-gold" : ""
+                  }`}
               >
                 Dashboard
                 <Shield className="h-4 w-4" />
               </Link>
 
-              <span className="text-xs uppercase tracking-wider text-primary-foreground/60 px-3 py-1 font-medium mt-2">More</span>
+              <span className="text-xs uppercase tracking-wider text-beeyield-green/60 px-3 py-1 font-black mt-2">More</span>
 
               {menuLinks.map((link) => (
                 <Link
                   key={link.to}
                   to={link.to}
                   onClick={() => setIsMenuOpen(false)}
-                  className={`text-sm sm:text-base font-semibold hover:bg-primary-foreground/10 rounded-lg px-3 py-2.5 sm:py-3 transition-colors ${isActive(link.to) ? "text-yellow-300 bg-primary-foreground/10" : "text-primary-foreground"
+                  className={`text-sm sm:text-base font-bold hover:bg-beeyield-gold/10 rounded-xl px-3 py-2.5 sm:py-3 transition-all ${isActive(link.to) ? "text-beeyield-gold bg-beeyield-gold/10" : "text-beeyield-green"
                     }`}
                 >
                   {link.label}

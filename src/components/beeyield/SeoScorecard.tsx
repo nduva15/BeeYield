@@ -116,7 +116,7 @@ const SeoScorecard: React.FC<SeoScorecardProps> = ({ analysis, focusKeywords }) 
                     <ScoreRing
                         score={analysis.geo.score}
                         color="#10b981"
-                        label="GEO (AI)"
+                        label="GEO (Insight)"
                         icon={Globe}
                     />
                 </div>
@@ -153,7 +153,7 @@ const SeoScorecard: React.FC<SeoScorecardProps> = ({ analysis, focusKeywords }) 
 
                     <TabsContent value="geo" className="mt-4">
                         <div className="bg-muted/30 p-3 rounded-lg text-xs mb-4 border border-dashed">
-                            "GEO optimizes for Generative AI engines (ChatGPT, Gemini). Focus on authority & data."
+                            "GEO optimizes for Generative search engines (ChatGPT, Gemini). Focus on authority & data."
                         </div>
                         <IssueList issues={analysis.geo.issues} passes={analysis.geo.passes} />
                     </TabsContent>

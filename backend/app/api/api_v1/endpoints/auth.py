@@ -23,6 +23,7 @@ class Token(BaseModel):
 
 @router.post("/register", response_model=dict)
 def register(user_in: UserCreate):
+    print(f"DEBUG: Registering user {user_in.email}")
     supabase = get_supabase()
     
     # Check if user already exists

@@ -371,3 +371,63 @@ class AIService:
 
         return final_answer
 
+    @staticmethod
+    async def generate_marketing_blurb(
+        floral_type: str,
+        location: str,
+        harvest_year: str,
+        tone: str = "luxury"
+    ) -> str:
+        """
+        Generate a short, captivating marketing blurb for honey labels.
+        """
+        prompt = (
+            f"Write a short, captivating {tone} marketing blurb (max 40 words) for {floral_type} honey "
+            f"harvested in {location} in {harvest_year}. "
+            f"Highlight its unique terroir or tasting notes. "
+            f"Do not use hashtags. Do not use quotes."
+        )
+
+        # Try OpenAI First (Better creative writing)
+        openai_key = settings.OPENAI_API_KEY
+        if openai_key and not openai_key.startswith("sk-proj-REPLACE"):
+            try:
+                async with httpx.AsyncClient() as client:
+                    url = "https://api.openai.com/v1/chat/completions"
+                    headers = {"Authorization": f"Bearer {openai_key}", "Content-Type": "application/json"}
+                    payload = {
+                        "model": "gpt-4o",
+                        "messages": [
+                            {"role": "system", "content": "You are a poetic copywriter for a luxury honey brand."},
+                            {"role": "user", "content": prompt}
+                        ],
+                        "temperature": 0.7,
+                        "max_tokens": 100
+                    }
+                    resp = await client.post(url, headers=headers, json=payload, timeout=10.0)
+                    data = resp.json()
+                    if "choices" in data:
+                        return data["choices"][0]["message"]["content"].strip().strip('"')
+            except Exception as e:
+                print(f"OpenAI Blurb Error: {e}")
+
+        # Fallback to Gemini
+        google_key = settings.GOOGLE_API_KEY
+        if google_key:
+            try:
+                from google.genai import types
+                client = genai.Client(api_key=google_key)
+                response = client.models.generate_content(
+                    model="gemini-2.0-flash",
+                    contents=[prompt],
+                    config=types.GenerateContentConfig(
+                        temperature=0.8,
+                        max_output_tokens=100
+                    )
+                )
+                return response.text.strip().strip('"')
+            except Exception as e:
+                print(f"Gemini Blurb Error: {e}")
+
+        return f"Pure {floral_type} honey from {location}. Verified harvest of {harvest_year}."
+

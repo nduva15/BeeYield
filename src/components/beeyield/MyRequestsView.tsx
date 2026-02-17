@@ -29,7 +29,7 @@ interface MyRequestsViewProps {
 
 const CATEGORIES = [
     { id: 'Hardware', label: 'Hardware', icon: HardDrive, description: 'Sensor issues, battery, physical hive damage', color: 'text-blue-500', bg: 'bg-blue-500/10' },
-    { id: 'Software', label: 'Software', icon: Cpu, description: 'Dashboard bugs, sync issues, AI predictions', color: 'text-purple-500', bg: 'bg-purple-500/10' },
+    { id: 'Software', label: 'Software', icon: Cpu, description: 'Dashboard bugs, sync issues, smart analytics', color: 'text-purple-500', bg: 'bg-purple-500/10' },
     { id: 'Traceability', label: 'Traceability', icon: ShieldCheck, description: 'HoneyChain™ verification, batch sealing errors', color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
     { id: 'General', label: 'General', icon: HelpCircle, description: 'Billing, account, or other general questions', color: 'text-orange-500', bg: 'bg-orange-500/10' },
 ];

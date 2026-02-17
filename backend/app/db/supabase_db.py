@@ -20,6 +20,40 @@ DB_GATEWAY_URL = settings.DB_GATEWAY_URL
 _supabase_client = None
 _sdk_import_failed = False
 
+# ============ SHARED HTTP CLIENT (Connection Pooling) ============
+_async_client: Optional[httpx.AsyncClient] = None
+
+def init_db_client():
+    """Initialize the shared AsyncClient. Call this on app startup."""
+    global _async_client
+    if _async_client is None:
+        _async_client = httpx.AsyncClient(
+            timeout=15.0, 
+            limits=httpx.Limits(max_keepalive_connections=20, max_connections=100)
+        )
+        print("[DB] Shared HTTP client initialized.")
+
+async def close_db_client():
+    """Close the shared AsyncClient. Call this on app shutdown."""
+    global _async_client
+    if _async_client:
+        await _async_client.aclose()
+        _async_client = None
+        print("[DB] Shared HTTP client closed.")
+
+async def _execute_request(method: str, url: str, **kwargs) -> httpx.Response:
+    """
+    Execute an HTTP request using the shared client if available,
+    otherwise create a temporary client (fallback for scripts).
+    """
+    global _async_client
+    if _async_client and not _async_client.is_closed:
+        return await _async_client.request(method, url, **kwargs)
+    
+    # Fallback for one-off scripts
+    async with httpx.AsyncClient(timeout=15.0) as client:
+        return await client.request(method, url, **kwargs)
+
 
 def _lazy_import_sdk():
     """Import Supabase SDK lazily — only needed for auth sign-up/sign-in."""
@@ -63,23 +97,30 @@ def get_supabase():
 # All operations go through the Rust/Go gateway — no direct Supabase calls.
 
 async def _request_gateway(endpoint: str, payload: dict, token: Optional[str] = None) -> dict:
-    """Helper to send request to gateway with ephemeral async client."""
+    """Helper to send request to gateway."""
     try:
         if token:
             payload["token"] = token
             
-        async with httpx.AsyncClient(base_url=DB_GATEWAY_URL, timeout=15.0) as client:
-            if endpoint == "/db/delete":
-                # DELETE often requires body, so we use build_request
-                request = client.build_request("DELETE", endpoint, json=payload)
-                response = await client.send(request)
-            elif endpoint == "/db/update":
-                response = await client.patch(endpoint, json=payload)
-            else:
-                response = await client.post(endpoint, json=payload)
-                
-            return response.json()
+        kwargs = {"json": payload}
+        
+        if endpoint == "/db/delete":
+            # DELETE often requires body
+             # httpx 'request' supports 'content' or 'json' for DELETE too
+            response = await _execute_request("DELETE", f"{DB_GATEWAY_URL}{endpoint}", **kwargs)
+        elif endpoint == "/db/update":
+            response = await _execute_request("PATCH", f"{DB_GATEWAY_URL}{endpoint}", **kwargs)
+        else:
+            response = await _execute_request("POST", f"{DB_GATEWAY_URL}{endpoint}", **kwargs)
+        
+        response.raise_for_status()
+        return response.json()
+    except httpx.HTTPStatusError as e:
+        error_msg = f"Gateway {endpoint} failed: {e.response.status_code} - {e.response.text}"
+        print(f"[ERROR] {error_msg}")
+        return {"success": False, "error": error_msg}
     except Exception as e:
+        print(f"[ERROR] Gateway {endpoint} request failed: {str(e)}")
         return {"success": False, "error": str(e)}
 
 
@@ -94,12 +135,14 @@ async def db_insert(table: str, data: dict[str, Any], token: Optional[str] = Non
     }
     
     try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            response = await client.post(url, json=data, headers=headers)
-            response.raise_for_status()
-            return {"success": True, "data": response.json()}
+        response = await _execute_request("POST", url, json=data, headers=headers)
+        response.raise_for_status()
+        return {"success": True, "data": response.json()}
+    except httpx.HTTPStatusError as e:
+        print(f"[ERROR] REST insert failed: {e.response.status_code} - {e.response.text}")
+        return {"success": False, "error": f"{e.response.status_code}: {e.response.text}"}
     except Exception as e:
-        print(f"[ERROR] REST insert failed: {e}")
+        print(f"[ERROR] REST insert failed: {str(e)}")
         return {"success": False, "error": str(e)}
 
 
@@ -108,38 +151,52 @@ async def db_select(
     columns: str = "*",
     filters: Optional[dict[str, Any]] = None,
     limit: int = 1000,
+    offset: int = 0,
     order_by: Optional[str] = None,
     ascending: bool = True,
     token: Optional[str] = None,
 ) -> list[dict[str, Any]]:
     """Select records via direct REST API."""
     url = f"{settings.SUPABASE_URL}/rest/v1/{table}"
-    params = {"select": columns, "limit": limit}
+    params = {"select": columns}
     
     if order_by:
         params["order"] = f"{order_by}.{'asc' if ascending else 'desc'}"
         
     if filters:
         for k, v in filters.items():
-            if isinstance(v, (list, tuple)):
-                # Handle in filter for lists
-                v_list = ",".join([str(i) for i in v])
-                params[k] = f"in.({v_list})"
+            if v is None:
+                params[k] = "is.null"
+            elif isinstance(v, (list, tuple)):
+                v_clean = [i for i in v if i is not None]
+                if v_clean:
+                    v_list = ",".join([str(i) for i in v_clean])
+                    params[k] = f"in.({v_list})"
+                else:
+                    params[k] = "is.null"
             else:
                 params[k] = f"eq.{v}"
             
     headers = {
         "apikey": settings.SUPABASE_KEY,
-        "Authorization": f"Bearer {token or settings.SUPABASE_KEY}"
+        "Authorization": f"Bearer {token or settings.SUPABASE_KEY}",
+        "Range": f"{offset}-{offset + limit - 1}" if limit else "0-999"
     }
     
     try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            response = await client.get(url, params=params, headers=headers)
-            response.raise_for_status()
-            return response.json()
+        response = await _execute_request("GET", url, params=params, headers=headers)
+        response.raise_for_status()
+        return response.json()
+    except httpx.HTTPStatusError as e:
+        print(f"[ERROR] REST select failed: {e.response.status_code}")
+        print(f"  URL: {url}")
+        print(f"  Params: {params}")
+        print(f"  Response: {e.response.text}")
+        return []
     except Exception as e:
-        print(f"[ERROR] REST select failed: {e}")
+        print(f"[ERROR] REST select failed: {str(e)}")
+        print(f"  URL: {url}")
+        print(f"  Params: {params}")
         return []
 
 
@@ -164,6 +221,7 @@ async def db_update(
                 response = query.execute()
                 return {"success": True, "data": response.data}
             except Exception as e:
+                print(f"[ERROR] SDK update fallback failed: {str(e)}")
                 return {"success": False, "error": f"Gateway and SDK update failed: {str(e)}"}
     return res
 
@@ -183,13 +241,32 @@ async def db_upsert(
     on_conflict: str = "id",
     token: Optional[str] = None,
 ) -> dict[str, Any]:
-    """Upsert a record via the Rust/Go gateway."""
-    payload = {
-        "table": table,
-        "data": _serialize_data(data),
-        "on_conflict": on_conflict,
+    """Upsert a record via direct REST API."""
+    url = f"{settings.SUPABASE_URL}/rest/v1/{table}"
+    
+    headers = {
+        "apikey": settings.SUPABASE_KEY,
+        "Authorization": f"Bearer {token or settings.SUPABASE_KEY}",
+        "Content-Type": "application/json",
+        "Prefer": "return=representation,resolution=merge-duplicates"
     }
-    return await _request_gateway("/db/upsert", payload, token)
+    
+    # Ensure data is serialized
+    serialized_data = _serialize_data(data)
+    
+    try:
+        response = await _execute_request("POST", url, json=serialized_data, headers=headers)
+        response.raise_for_status()
+        return {"success": True, "data": response.json()}
+    except Exception as e:
+        print(f"[ERROR] REST upsert failed: {e}")
+        # Try fall back to gateway if REST fails (though gateway is likely down)
+        payload = {
+            "table": table,
+            "data": serialized_data,
+            "on_conflict": on_conflict,
+        }
+        return await _request_gateway("/db/upsert", payload, token)
 
 
 async def db_get_by_id(
@@ -205,6 +282,30 @@ async def db_get_by_id(
         return res
     return None
 
+async def db_rpc(
+    function_name: str,
+    params: Optional[dict[str, Any]] = None,
+    token: Optional[str] = None
+) -> Any:
+    """Call a Postgres RPC function."""
+    url = f"{settings.SUPABASE_URL}/rest/v1/rpc/{function_name}"
+    headers = {
+        "apikey": settings.SUPABASE_KEY,
+        "Authorization": f"Bearer {token or settings.SUPABASE_KEY}",
+        "Content-Type": "application/json",
+        "Prefer": "return=representation"
+    }
+    
+    try:
+        response = await _execute_request("POST", url, json=params or {}, headers=headers)
+        response.raise_for_status()
+        return response.json()
+    except httpx.HTTPStatusError as e:
+        print(f"[ERROR] RPC {function_name} failed: {e.response.status_code} - {e.response.text}")
+        return None
+    except Exception as e:
+        print(f"[ERROR] RPC {function_name} failed: {str(e)}")
+        return None
 
 # ============ SERIALIZATION HELPERS ============
 

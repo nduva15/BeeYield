@@ -2,10 +2,11 @@ import time
 import json
 import os
 from datetime import datetime
-from fastapi import APIRouter, HTTPException, BackgroundTasks, Request
+from typing import Optional
+from fastapi import APIRouter, HTTPException, BackgroundTasks, Request, Depends
 from app.schemas import contact as schemas
 from app.services import email
-from app.db.supabase_db import db_insert, db_select, db_upsert
+from app.db.supabase_db import db_insert, db_select, db_upsert, db_update
 
 router = APIRouter()
 
@@ -20,6 +21,13 @@ def check_rate_limit(client_ip: str, limit_seconds: int = 60):
             return False
     _rate_limit_store[client_ip] = now
     return True
+
+def get_token(request: Request) -> Optional[str]:
+    """Extract raw token from Authorization header"""
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        return auth_header.split(" ")[1]
+    return None
 
 async def _save_offline(submission_type: str, data: dict):
     """Consistent offline fallback for all contact forms."""
@@ -55,7 +63,7 @@ async def _save_offline(submission_type: str, data: dict):
             if any(x.get('data', {}).get('email') == data.get('email') and x.get('type') == 'newsletter_subscription' for x in existing_data):
                 print(f"[INFO] Newsletter sub already in offline file: {data.get('email')}")
                 return True
-
+ 
         existing_data.append(entry)
         with open(offline_file, "w") as f:
             json.dump(existing_data, f, indent=2)
@@ -71,7 +79,8 @@ async def _save_offline(submission_type: str, data: dict):
 async def submit_contact_form(
     request_in: schemas.ContactSubmissionCreate, 
     background_tasks: BackgroundTasks,
-    request: Request
+    request: Request,
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Handle general contact forms (Grower, Beekeeper, General).
@@ -94,7 +103,7 @@ async def submit_contact_form(
     
     success = False
     try:
-        result = await db_insert("contact_submissions", db_data)
+        result = await db_insert("contact_submissions", db_data, token=token)
         if result.get("success"):
             success = True
             print(f"[SUCCESS] DB Save Successful: {request_in.email}")
@@ -125,7 +134,8 @@ async def submit_contact_form(
 async def request_pollination(
     request_in: schemas.PollinationRequestCreate, 
     background_tasks: BackgroundTasks,
-    request: Request
+    request: Request,
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Handle pollination service requests.
@@ -144,7 +154,7 @@ async def request_pollination(
     
     success = False
     try:
-        result = await db_insert("pollination_requests", db_data)
+        result = await db_insert("pollination_requests", db_data, token=token)
         if result.get("success"):
             success = True
             print(f"[SUCCESS] Pollination request saved: {request_in.email}")
@@ -171,7 +181,8 @@ async def request_pollination(
 @router.post("/message", response_model=dict)
 async def submit_contact_message(
     request_in: schemas.ContactMessageCreate,
-    request: Request
+    request: Request,
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Public endpoint: submit a message to the contact_messages inbox.
@@ -195,7 +206,7 @@ async def submit_contact_message(
 
     success = False
     try:
-        result = await db_insert("contact_messages", payload)
+        result = await db_insert("contact_messages", payload, token=token)
         if result.get("success"):
             success = True
             print(f"[SUCCESS] Contact message saved: {request_in.email}")
@@ -216,7 +227,7 @@ async def submit_contact_message(
 async def get_contact_messages(
     status: str = None,
     limit: int = 50,
-    request: Request = None
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Admin endpoint: retrieve contact messages.
@@ -231,7 +242,8 @@ async def get_contact_messages(
             filters=filters if filters else None,
             limit=limit,
             order_by="created_at",
-            ascending=False
+            ascending=False,
+            token=token
         )
         return messages
     except Exception as e:
@@ -242,17 +254,18 @@ async def get_contact_messages(
 @router.patch("/messages/{message_id}/status", response_model=dict)
 async def update_message_status(
     message_id: str,
-    request_in: schemas.ContactMessageUpdate
+    request_in: schemas.ContactMessageUpdate,
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Admin endpoint: update a contact message's status.
     """
-    from app.db.supabase_db import db_update
     try:
         result = await db_update(
             "contact_messages",
             {"status": request_in.status},
-            {"id": message_id}
+            {"id": message_id},
+            token=token
         )
         if result.get("success"):
             return {"status": "success", "message": f"Message marked as '{request_in.status}'."}
@@ -268,7 +281,8 @@ async def update_message_status(
 async def subscribe_newsletter(
     request_in: schemas.NewsletterSubscriptionCreate, 
     background_tasks: BackgroundTasks,
-    request: Request
+    request: Request,
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Handle newsletter subscriptions.
@@ -286,11 +300,11 @@ async def subscribe_newsletter(
     db_data = request_in.dict(exclude_unset=True)
 
     try:
-        existing = await db_select("newsletter_subscribers", filters={"email": request_in.email}, limit=1)
+        existing = await db_select("newsletter_subscribers", filters={"email": request_in.email}, limit=1, token=token)
         if existing:
             return {"status": "success", "message": "You're already subscribed! Check your inbox for our latest updates."}
 
-        result = await db_insert("newsletter_subscribers", db_data)
+        result = await db_insert("newsletter_subscribers", db_data, token=token)
         if result.get("success"):
             success = True
             print(f"[SUCCESS] Newsletter Sub DB Successful: {request_in.email}")
@@ -326,4 +340,5 @@ async def subscribe_newsletter(
         return {"status": "success", "message": "Success! Check your email for the Beekeeping Starter Guide."}
     else:
         return {"status": "success", "message": "Welcome to BeeYield! You're now subscribed to our newsletter."}
+
 

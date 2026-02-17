@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, Header
-from typing import Optional, Any
+from fastapi import APIRouter, Depends, HTTPException, Header, Request
+from typing import Optional, Any, List
 from jose import jwt
 from app.core.config import settings
 from app.core import security
@@ -9,35 +9,43 @@ from app.db.clickhouse_db import track_order_event
 
 router = APIRouter()
 
+def get_token(request: Request) -> Optional[str]:
+    """Extract raw token from Authorization header"""
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        return auth_header.split(" ")[1]
+    return None
+
 @router.get("/products", response_model=list[schemas.Product])
-def get_products(category: Optional[str] = None):
+async def get_products(category: Optional[str] = None, token: Optional[str] = Depends(get_token)):
     """
     Get all active products, optionally filtered by category.
     """
-    products = shop_service.get_products(category)
+    products = await shop_service.get_products(category, token=token)
     return products
 
 @router.get("/products/{product_id}", response_model=schemas.Product)
-def get_product_detail(product_id: str):
+async def get_product_detail(product_id: str, token: Optional[str] = Depends(get_token)):
     """
     Get single product details.
     """
-    product = shop_service.get_product_by_id(product_id)
+    product = await shop_service.get_product_by_id(product_id, token=token)
     if not product:
          raise HTTPException(status_code=404, detail="Product not found")
     return product
 
 @router.post("/cart/add", response_model=dict)
-def add_to_cart(item: schemas.CartItemAdd):
+async def add_to_cart(item: schemas.CartItemAdd):
     """
     Add item to session cart.
     """
     return {"status": "success", "message": "Item added to cart"}
 
 @router.post("/checkout/init", response_model=dict)
-def initialize_checkout(
+async def initialize_checkout(
     order_in: schemas.OrderCreate,
-    current_user: Optional[dict] = Depends(security.get_optional_current_user)
+    current_user: Optional[dict] = Depends(security.get_optional_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Initialize payment for order.
@@ -71,7 +79,7 @@ def initialize_checkout(
     # SECURITY: Validate price on server
     calculated_total = 0
     for item in order_in.items:
-        product = shop_service.get_product_by_id(item.product_id)
+        product = await shop_service.get_product_by_id(item.product_id, token=token)
         if not product:
             raise HTTPException(status_code=400, detail=f"Product {item.product_id} not found")
         
@@ -91,7 +99,7 @@ def initialize_checkout(
             detail=f"Price mismatch. Minimum required {calculated_total}, got {order_in.total_kes}."
         )
 
-    order_result = shop_service.create_order(order_in, user_id=user_id)
+    order_result = await shop_service.create_order(order_in, user_id=user_id, token=token)
     if order_result["status"] == "error":
         raise HTTPException(status_code=500, detail=order_result["message"])
 
@@ -120,27 +128,29 @@ def initialize_checkout(
     }
 
 @router.get("/orders", response_model=list[schemas.Order])
-def get_user_orders(
+async def get_user_orders(
     email: Optional[str] = None,
-    current_user: dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Get orders for the current user.
     """
     user_id = current_user.get("sub")
-    orders = shop_service.get_user_orders(user_id=user_id)
+    orders = await shop_service.get_user_orders(user_id=user_id, token=token)
     return orders
 
 @router.get("/orders/{order_id}", response_model=schemas.Order)
-def get_order_detail(
+async def get_order_detail(
     order_id: str,
-    current_user: Optional[dict] = Depends(security.get_optional_current_user)
+    current_user: Optional[dict] = Depends(security.get_optional_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Get full order details including items.
     """
     # Security check: If logged in, must own the order or be guest bypass
-    order = shop_service.get_order(order_id)
+    order = await shop_service.get_order(order_id, token=token)
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
 
@@ -163,85 +173,90 @@ def get_order_detail(
 
 # --- Wallet ---
 @router.get("/wallet", response_model=schemas.Wallet)
-def get_wallet(current_user: dict = Depends(security.get_current_user)):
+async def get_wallet(current_user: dict = Depends(security.get_current_user), token: Optional[str] = Depends(get_token)):
     user_id = current_user.get("sub")
-    return shop_service.get_user_wallet(user_id)
+    return await shop_service.get_user_wallet(user_id, token=token)
 
 @router.get("/wallet/transactions", response_model=list[schemas.WalletTransaction])
-def get_transactions(current_user: dict = Depends(security.get_current_user)):
+async def get_transactions(current_user: dict = Depends(security.get_current_user), token: Optional[str] = Depends(get_token)):
     user_id = current_user.get("sub")
-    return shop_service.get_wallet_transactions(user_id)
+    return await shop_service.get_wallet_transactions(user_id, token=token)
 
 @router.post("/wallet/topup")
-def top_up_wallet(
+async def top_up_wallet(
     amount: float, 
     reference: str = "Self-Topup",
-    current_user: dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     user_id = current_user.get("sub")
-    return shop_service.top_up_wallet(user_id, amount, reference)
+    return await shop_service.top_up_wallet(user_id, amount, reference, token=token)
 
 # --- Wishlist ---
 @router.get("/wishlist", response_model=list[schemas.WishlistItem])
-def get_wishlist(current_user: dict = Depends(security.get_current_user)):
+async def get_wishlist(current_user: dict = Depends(security.get_current_user), token: Optional[str] = Depends(get_token)):
     user_id = current_user.get("sub")
-    return shop_service.get_user_wishlist(user_id)
+    return await shop_service.get_user_wishlist(user_id, token=token)
 
 @router.post("/wishlist/{product_id}")
-def toggle_wishlist(
+async def toggle_wishlist(
     product_id: str,
-    current_user: dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     user_id = current_user.get("sub")
-    return shop_service.toggle_wishlist_item(user_id, product_id)
+    return await shop_service.toggle_wishlist_item(user_id, product_id, token=token)
 
 # --- Addresses ---
 @router.get("/addresses", response_model=list[schemas.Address])
-def get_addresses(current_user: dict = Depends(security.get_current_user)):
+async def get_addresses(current_user: dict = Depends(security.get_current_user), token: Optional[str] = Depends(get_token)):
     user_id = current_user.get("sub")
-    return shop_service.get_user_addresses(user_id)
+    return await shop_service.get_user_addresses(user_id, token=token)
 
 @router.post("/addresses", response_model=schemas.Address)
-def add_address(
+async def add_address(
     address_in: schemas.AddressCreate,
-    current_user: dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     user_id = current_user.get("sub")
-    return shop_service.add_user_address(user_id, address_in.dict())
+    return await shop_service.add_user_address(user_id, address_in.dict(), token=token)
 
 @router.delete("/addresses/{address_id}")
-def delete_address(
+async def delete_address(
     address_id: str,
-    current_user: dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     user_id = current_user.get("sub")
-    shop_service.delete_user_address(user_id, address_id)
+    await shop_service.delete_user_address(user_id, address_id, token=token)
     return {"status": "success"}
 
 # --- Tracking ---
 @router.get("/orders/{order_id}/tracking", response_model=schemas.TrackingInfo)
-def track_order(
+async def track_order(
     order_id: str,
-    current_user: dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     user_id = current_user.get("sub")
-    orders = shop_service.get_user_orders(user_id)
+    orders = await shop_service.get_user_orders(user_id, token=token)
     if not any(str(o["id"]) == str(order_id) for o in orders):
          raise HTTPException(status_code=403, detail="Order not found or access denied")
 
-    info = shop_service.get_order_tracking(order_id)
+    info = await shop_service.get_order_tracking(order_id, token=token)
     if not info:
         raise HTTPException(status_code=404, detail="Tracking info not found")
     return info
 
 # --- Suggestions ---
 @router.get("/suggestions", response_model=list[schemas.Product])
-def get_suggestions(current_user: dict = Depends(security.get_current_user)):
+async def get_suggestions(current_user: dict = Depends(security.get_current_user), token: Optional[str] = Depends(get_token)):
     """
     Get personalized suggestions.
     For MVP, we shuffle products or pick 'Featured'.
     """
-    all_products = shop_service.get_products()
+    all_products = await shop_service.get_products(token=token)
     # Simple Shuffle for variety
     import random
     random.shuffle(all_products)
@@ -249,32 +264,35 @@ def get_suggestions(current_user: dict = Depends(security.get_current_user)):
 
 # --- Payment Methods ---
 @router.get("/payment-methods", response_model=list[schemas.PaymentMethod])
-def get_payment_methods(current_user: dict = Depends(security.get_current_user)):
+async def get_payment_methods(current_user: dict = Depends(security.get_current_user), token: Optional[str] = Depends(get_token)):
     user_id = current_user.get("sub")
-    return shop_service.get_user_payment_methods(user_id)
+    return await shop_service.get_user_payment_methods(user_id, token=token)
 
 @router.post("/payment-methods", response_model=schemas.PaymentMethod)
-def add_payment_method(
+async def add_payment_method(
     method_in: schemas.PaymentMethodCreate,
-    current_user: dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     user_id = current_user.get("sub")
-    return shop_service.add_user_payment_method(user_id, method_in.dict())
+    return await shop_service.add_user_payment_method(user_id, method_in.dict(), token=token)
 
 @router.delete("/payment-methods/{method_id}")
-def delete_payment_method(
+async def delete_payment_method(
     method_id: str,
-    current_user: dict = Depends(security.get_current_user)
+    current_user: dict = Depends(security.get_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     user_id = current_user.get("sub")
-    shop_service.delete_user_payment_method(user_id, method_id)
+    await shop_service.delete_user_payment_method(user_id, method_id, token=token)
     return {"status": "success"}
 
 # --- Invoice ---
 @router.get("/orders/{order_id}/invoice")
-def download_invoice(
+async def download_invoice(
     order_id: str,
-    current_user: Optional[dict] = Depends(security.get_optional_current_user)
+    current_user: Optional[dict] = Depends(security.get_optional_current_user),
+    token: Optional[str] = Depends(get_token)
 ):
     """Download PDF Invoice"""
     from fastapi.responses import StreamingResponse
@@ -282,7 +300,7 @@ def download_invoice(
     # Security check
     user_id = current_user.get("sub") if current_user else None
     
-    order = shop_service.get_order(order_id)
+    order = await shop_service.get_order(order_id, token=token)
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
 
@@ -294,9 +312,9 @@ def download_invoice(
         # If logged in, must own the order
         if str(order.get("user_id")) != str(user_id):
              raise HTTPException(status_code=403, detail="Access denied")
-         
+          
     try:
-        pdf_buffer = shop_service.generate_invoice_pdf(order_id)
+        pdf_buffer = await shop_service.generate_invoice_pdf(order_id, token=token)
         return StreamingResponse(
             pdf_buffer, 
             media_type="application/pdf",

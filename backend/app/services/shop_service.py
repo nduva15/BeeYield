@@ -13,12 +13,12 @@ from app.core.config import settings
 # Products and orders now come exclusively from the database.
 TOTAL_HARVEST_LIMIT_GRAMS = settings.TOTAL_HARVEST_LIMIT_GRAMS
 
-def get_total_honey_sold_grams() -> int:
+async def get_total_honey_sold_grams(token: Optional[str] = None) -> int:
     """Calculate total grams of honey sold across all completed orders."""
     # Fetch all honey items from order_items
     # In a real app we'd filter by successful payment status in the 'orders' table first.
     # Increased limit to ensure we get all items for accurate stats
-    items = db_select("order_items", limit=10000)
+    items = await db_select("order_items", limit=10000, token=token)
     total_grams = 0
     for item in items:
         name = str(item.get("product_name", "")).lower()
@@ -31,23 +31,23 @@ def get_total_honey_sold_grams() -> int:
             else: total_grams += 500 * qty
     return total_grams
 
-def get_products(category: Optional[str] = None) -> List[Dict[str, Any]]:
+async def get_products(category: Optional[str] = None, token: Optional[str] = None) -> List[Dict[str, Any]]:
     """Fetch all active products with their variants from Supabase"""
     filters = {"is_active": True}
     if category:
         filters["category"] = category
     
-    products = db_select("products", filters=filters)
+    products = await db_select("products", filters=filters, token=token)
     
     if not products:
         return []
     
-    total_sold = get_total_honey_sold_grams()
+    total_sold = await get_total_honey_sold_grams(token=token)
     is_out_of_stock = total_sold >= TOTAL_HARVEST_LIMIT_GRAMS
 
     # Fetch variants for each product
     for product in products:
-        product["variants"] = db_select("product_variants", filters={"product_id": product["id"]})
+        product["variants"] = await db_select("product_variants", filters={"product_id": product["id"]}, token=token)
         
         # If honey and out of stock, mark all variants as out of stock
         if product.get("category") == "honey" and is_out_of_stock:
@@ -64,20 +64,20 @@ def get_products(category: Optional[str] = None) -> List[Dict[str, Any]]:
     return products
 
 
-def get_product_by_id(product_id: str) -> Optional[Dict[str, Any]]:
+async def get_product_by_id(product_id: str, token: Optional[str] = None) -> Optional[Dict[str, Any]]:
     """Fetch a single product with variants from the database.
     Returns None if product not found — no hardcoded fallbacks."""
     product = None
     
     try:
-        product = db_get_by_id("products", product_id)
+        product = await db_get_by_id("products", product_id, token=token)
     except Exception:
         pass
     
     if not product:
         # Try searching by slug as a fallback
         try:
-            results = db_select("products", filters={"slug": product_id})
+            results = await db_select("products", filters={"slug": product_id}, token=token)
             if results:
                 product = results[0]
         except Exception:
@@ -85,7 +85,7 @@ def get_product_by_id(product_id: str) -> Optional[Dict[str, Any]]:
     
     if product:
         if not product.get("variants"):
-            product["variants"] = db_select("product_variants", filters={"product_id": product["id"]})
+            product["variants"] = await db_select("product_variants", filters={"product_id": product["id"]}, token=token)
         if not product.get("images"):
             product["images"] = []
         
@@ -100,7 +100,7 @@ def is_valid_uuid(val: Any) -> bool:
     except (ValueError, TypeError):
         return False
 
-def get_batches_for_items(items: List[Dict[str, Any]]) -> List[str]:
+async def get_batches_for_items(items: List[Dict[str, Any]], token: Optional[str] = None) -> List[str]:
     """Calculate which hive batches were used based on honey weight (2kg per hive)."""
     batches = set()
     category_weights = {} # grams
@@ -140,7 +140,7 @@ def get_batches_for_items(items: List[Dict[str, Any]]) -> List[str]:
     # Fetch actual hives from DB instead of hardcoded ranges
     try:
         # Get all active hives (limit increased to cover all)
-        all_hives = db_select("hives", filters={"status": "active"}, limit=1000)
+        all_hives = await db_select("hives", filters={"status": "active"}, limit=1000, token=token)
         if not all_hives:
              # Fallback if no hives in DB yet (prevent crash)
              all_hives = [{"hive_code": "KIB-H101"}]
@@ -180,7 +180,7 @@ def get_batches_for_items(items: List[Dict[str, Any]]) -> List[str]:
             
     return sorted(list(batches))
 
-def create_order(order_in: schemas.OrderCreate, user_id: Optional[str] = None) -> Dict[str, Any]:
+async def create_order(order_in: schemas.OrderCreate, user_id: Optional[str] = None, token: Optional[str] = None) -> Dict[str, Any]:
     """Create a new order and order items, return order details. Robust against invalid UUIDs."""
     order_id = str(uuid.uuid4())
     order_number = f"BY-{datetime.now().strftime('%Y%m%d%H%M')}-{str(uuid.uuid4())[:4].upper()}"
@@ -201,7 +201,7 @@ def create_order(order_in: schemas.OrderCreate, user_id: Optional[str] = None) -
         "created_at": datetime.utcnow().isoformat()
     }
     
-    result = db_insert("orders", order_data)
+    result = await db_insert("orders", order_data, token=token)
     
     if not result.get("success"):
         # If it still fails, it might be the shipping_address JSONB or other columns
@@ -209,23 +209,13 @@ def create_order(order_in: schemas.OrderCreate, user_id: Optional[str] = None) -
         return {"status": "error", "message": result.get("error", "Failed to create order")}
 
     # Validate stock before proceeding
-    total_sold = get_total_honey_sold_grams()
+    total_sold = await get_total_honey_sold_grams(token=token)
     order_honey_grams = 0
-    for item in order_in.items:
-        p = get_product_by_id(item.product_id)
-        if p and p.get("category") == "honey":
-            # Estimate item weight
-            # (Simplification: we use the items passed in)
-            pass 
-    
-    # Actually we'll calculate it from current items
-    batches_calculated = get_batches_for_items([{"product_id": i.product_id, "quantity": i.quantity} for i in order_in.items]) # This is crude, let's fix
-    
-    # Better: Calculate additional weight
+    # Calculate additional weight
     new_weight = 0
     for item in order_in.items:
         # We need the variant to know size
-        product = get_product_by_id(item.product_id)
+        product = await get_product_by_id(item.product_id, token=token)
         variant = next((v for v in product.get("variants", []) if v.get("id") == item.variant_id), None)
         if product and product.get("category") == "honey" and variant:
             size = str(variant.get("size", "")).lower()
@@ -245,7 +235,7 @@ def create_order(order_in: schemas.OrderCreate, user_id: Optional[str] = None) -
     
     for item in order_in.items:
         # Get product and variant details (with fallback)
-        product = get_product_by_id(item.product_id)
+        product = await get_product_by_id(item.product_id, token=token)
         variant = None
         if product:
             for v in product.get("variants", []):
@@ -272,18 +262,18 @@ def create_order(order_in: schemas.OrderCreate, user_id: Optional[str] = None) -
             "unit_price": variant.get("price_kes", 0) if variant else 0,
             "total_price": (variant.get("price_kes", 0) if variant else 0) * item.quantity
         }
-        db_insert("order_items", item_data)
+        await db_insert("order_items", item_data, token=token)
         
         if product and product.get("category") == "honey":
             has_honey = True
 
     # Smart batch calculation based on total weight and hive yield
     if has_honey:
-        batches = set(get_batches_for_items(order_in.items))
+        batches = set(await get_batches_for_items(order_in.items, token=token))
     
     # Send confirmation email
     try:
-        full_order = get_order(order_id)
+        full_order = await get_order(order_id, token=token)
         if full_order:
             batch_list = list(batches) if batches else None
             # For backward compatibility with email service if it expects string
@@ -303,18 +293,18 @@ def create_order(order_in: schemas.OrderCreate, user_id: Optional[str] = None) -
     }
 
 
-def get_order(order_id: str) -> Optional[Dict[str, Any]]:
+async def get_order(order_id: str, token: Optional[str] = None) -> Optional[Dict[str, Any]]:
     """Get order with items. Supports both UUID and order_number."""
     order = None
     # Try UUID lookup first
     try:
-        order = db_get_by_id("orders", order_id)
+        order = await db_get_by_id("orders", order_id, token=token)
     except:
         pass
         
     # If not found or not a UUID, try searching by order_number
     if not order:
-        orders = db_select("orders", filters={"order_number": order_id})
+        orders = await db_select("orders", filters={"order_number": order_id}, token=token)
         if orders:
             order = orders[0]
             order_id = order["id"] # Use the real UUID for items fetch
@@ -322,13 +312,13 @@ def get_order(order_id: str) -> Optional[Dict[str, Any]]:
     if not order:
         return None
         
-    order["items"] = db_select("order_items", filters={"order_id": order_id})
+    order["items"] = await db_select("order_items", filters={"order_id": order_id}, token=token)
     return order
 
 
-def get_user_orders(user_id: str) -> List[Dict[str, Any]]:
+async def get_user_orders(user_id: str, token: Optional[str] = None) -> List[Dict[str, Any]]:
     """Get all orders for a user"""
-    orders = db_select("orders", filters={"user_id": user_id})
+    orders = await db_select("orders", filters={"user_id": user_id}, token=token)
     
     # If no orders in DB, return mock orders for demo
     if not orders:
@@ -338,13 +328,13 @@ def get_user_orders(user_id: str) -> List[Dict[str, Any]]:
     return sorted(orders, key=lambda x: x.get('created_at', ''), reverse=True)
 
 
-def update_order_status(order_id: str, status: str, payment_status: Optional[str] = None) -> Dict[str, Any]:
+async def update_order_status(order_id: str, status: str, payment_status: Optional[str] = None, token: Optional[str] = None) -> Dict[str, Any]:
     """Update order status"""
     update_data = {"status": status}
     if payment_status:
         update_data["payment_status"] = payment_status
     
-    return db_update("orders", update_data, {"id": order_id})
+    return await db_update("orders", update_data, {"id": order_id}, token=token)
 
 
 
@@ -353,9 +343,9 @@ def update_order_status(order_id: str, status: str, payment_status: Optional[str
 # ==========================================
 
 # --- Wallet Services ---
-def get_user_wallet(user_id: str) -> Dict[str, Any]:
+async def get_user_wallet(user_id: str, token: Optional[str] = None) -> Dict[str, Any]:
     """Get user wallet balance, create if not exists"""
-    wallet = db_select("user_wallets", filters={"user_id": user_id})
+    wallet = await db_select("user_wallets", filters={"user_id": user_id}, token=token)
     if wallet and len(wallet) > 0:
         return wallet[0]
     
@@ -366,24 +356,24 @@ def get_user_wallet(user_id: str) -> Dict[str, Any]:
         "currency": "KES"
     }
     # Try inserting (might fail if table doesn't exist yet, return mock in that case)
-    res = db_insert("user_wallets", new_wallet)
+    res = await db_insert("user_wallets", new_wallet, token=token)
     if res.get("success"):
         return new_wallet
     
     return new_wallet
 
-def get_wallet_transactions(user_id: str) -> List[Dict[str, Any]]:
+async def get_wallet_transactions(user_id: str, token: Optional[str] = None) -> List[Dict[str, Any]]:
     """Get wallet history"""
-    return db_select("wallet_transactions", filters={"user_id": user_id}, order_by="created_at", ascending=False)
+    return await db_select("wallet_transactions", filters={"user_id": user_id}, order_by="created_at", ascending=False, token=token)
 
-def top_up_wallet(user_id: str, amount: float, reference: str) -> Dict[str, Any]:
+async def top_up_wallet(user_id: str, amount: float, reference: str, token: Optional[str] = None) -> Dict[str, Any]:
     """Credit wallet balance"""
-    wallet = get_user_wallet(user_id)
+    wallet = await get_user_wallet(user_id, token=token)
     current_balance = float(wallet.get("balance", 0))
     new_balance = current_balance + amount
     
     # Update wallet
-    db_update("user_wallets", {"balance": new_balance}, {"user_id": user_id})
+    await db_update("user_wallets", {"balance": new_balance}, {"user_id": user_id}, token=token)
     
     # Record transaction
     txn = {
@@ -393,20 +383,20 @@ def top_up_wallet(user_id: str, amount: float, reference: str) -> Dict[str, Any]
         "description": "Wallet Top-up",
         "reference_id": reference
     }
-    db_insert("wallet_transactions", txn)
+    await db_insert("wallet_transactions", txn, token=token)
     
     return {"status": "success", "new_balance": new_balance}
 
 # --- Wishlist Services ---
-def get_user_wishlist(user_id: str) -> List[Dict[str, Any]]:
+async def get_user_wishlist(user_id: str, token: Optional[str] = None) -> List[Dict[str, Any]]:
     """Get wishlist items with product details"""
     # Get raw wishlist items
-    items = db_select("wishlists", filters={"user_id": user_id})
+    items = await db_select("wishlists", filters={"user_id": user_id}, token=token)
     
     result = []
     for item in items:
         # Fetch product details for UI
-        prod = get_product_by_id(item["product_id"])
+        prod = await get_product_by_id(item["product_id"], token=token)
         if prod:
             # Safe access to variants
             variants = prod.get("variants", [])
@@ -421,50 +411,50 @@ def get_user_wishlist(user_id: str) -> List[Dict[str, Any]]:
             
     return result
 
-def toggle_wishlist_item(user_id: str, product_id: str) -> Dict[str, Any]:
+async def toggle_wishlist_item(user_id: str, product_id: str, token: Optional[str] = None) -> Dict[str, Any]:
     """Add or remove item from wishlist"""
-    existing = db_select("wishlists", filters={"user_id": user_id, "product_id": product_id})
+    existing = await db_select("wishlists", filters={"user_id": user_id, "product_id": product_id}, token=token)
     
     if existing and len(existing) > 0:
         # Remove
-        db_delete("wishlists", {"id": existing[0]["id"]})
+        await db_delete("wishlists", {"id": existing[0]["id"]}, token=token)
         return {"action": "removed", "product_id": product_id}
     else:
         # Add
-        db_insert("wishlists", {"user_id": user_id, "product_id": product_id})
+        await db_insert("wishlists", {"user_id": user_id, "product_id": product_id}, token=token)
         return {"action": "added", "product_id": product_id}
 
 # --- Address Services ---
-def get_user_addresses(user_id: str) -> List[Dict[str, Any]]:
-    return db_select("user_addresses", filters={"user_id": user_id})
+async def get_user_addresses(user_id: str, token: Optional[str] = None) -> List[Dict[str, Any]]:
+    return await db_select("user_addresses", filters={"user_id": user_id}, token=token)
 
-def add_user_address(user_id: str, address_data: Dict[str, Any]) -> Dict[str, Any]:
+async def add_user_address(user_id: str, address_data: Dict[str, Any], token: Optional[str] = None) -> Dict[str, Any]:
     address_data["user_id"] = user_id
     
     # If set as default, unset others
     if address_data.get("is_default"):
         # This update logic is a bit manual without a transaction, but OK for now
-        existing = get_user_addresses(user_id)
+        existing = await get_user_addresses(user_id, token=token)
         for addr in existing:
             if addr.get("is_default"):
-                db_update("user_addresses", {"is_default": False}, {"id": addr["id"]})
+                await db_update("user_addresses", {"is_default": False}, {"id": addr["id"]}, token=token)
 
-    res = db_insert("user_addresses", address_data)
+    res = await db_insert("user_addresses", address_data, token=token)
     if res.get("success") and res.get("data"):
          return res["data"][0]
     return address_data
 
-def delete_user_address(user_id: str, address_id: str):
-    return db_delete("user_addresses", {"id": address_id, "user_id": user_id})
+async def delete_user_address(user_id: str, address_id: str, token: Optional[str] = None):
+    return await db_delete("user_addresses", {"id": address_id, "user_id": user_id}, token=token)
 
 # --- Order Tracking ---
-def get_order_tracking(order_id: str) -> Dict[str, Any]:
+async def get_order_tracking(order_id: str, token: Optional[str] = None) -> Dict[str, Any]:
     """Get full tracking history for an order"""
-    order = get_order(order_id)
+    order = await get_order(order_id, token=token)
     if not order:
         return None
         
-    events = db_select("order_tracking_events", filters={"order_id": order_id}, order_by="created_at", ascending=False)
+    events = await db_select("order_tracking_events", filters={"order_id": order_id}, order_by="created_at", ascending=False, token=token)
     
     # If no events, generate pseudo-events based on status
     if not events:
@@ -513,30 +503,30 @@ def get_order_tracking(order_id: str) -> Dict[str, Any]:
 
 
 # --- Payment Method Services ---
-def get_user_payment_methods(user_id: str) -> List[Dict[str, Any]]:
-    return db_select("user_payment_methods", filters={"user_id": user_id})
+async def get_user_payment_methods(user_id: str, token: Optional[str] = None) -> List[Dict[str, Any]]:
+    return await db_select("user_payment_methods", filters={"user_id": user_id}, token=token)
 
-def add_user_payment_method(user_id: str, method_data: Dict[str, Any]) -> Dict[str, Any]:
+async def add_user_payment_method(user_id: str, method_data: Dict[str, Any], token: Optional[str] = None) -> Dict[str, Any]:
     method_data["user_id"] = user_id
     
     # Handle defaults
     if method_data.get("is_default"):
-        existing = get_user_payment_methods(user_id)
+        existing = await get_user_payment_methods(user_id, token=token)
         for pm in existing:
             if pm.get("is_default"):
-                db_update("user_payment_methods", {"is_default": False}, {"id": pm["id"]})
+                await db_update("user_payment_methods", {"is_default": False}, {"id": pm["id"]}, token=token)
                 
-    res = db_insert("user_payment_methods", method_data)
+    res = await db_insert("user_payment_methods", method_data, token=token)
     if res.get("success") and res.get("data"):
          return res["data"][0]
     return method_data
 
-def delete_user_payment_method(user_id: str, method_id: str):
-    return db_delete("user_payment_methods", {"id": method_id, "user_id": user_id})
+async def delete_user_payment_method(user_id: str, method_id: str, token: Optional[str] = None):
+    return await db_delete("user_payment_methods", {"id": method_id, "user_id": user_id}, token=token)
 
 
 # --- Invoice Generation ---
-def generate_invoice_pdf(order_id: str) -> io.BytesIO:
+async def generate_invoice_pdf(order_id: str, token: Optional[str] = None) -> io.BytesIO:
     """
     Generates a premium PDF receipt/invoice for the given order.
     Includes BeeYield branding, 16% VAT details, and delivery terms.
@@ -549,7 +539,7 @@ def generate_invoice_pdf(order_id: str) -> io.BytesIO:
     from reportlab.platypus import Table, TableStyle
     
     try:
-        order = get_order(order_id)
+        order = await get_order(order_id, token=token)
     except Exception as e:
         print(f"Error fetching order {order_id}: {e}")
         raise ValueError(f"Failed to fetch order: {e}")
@@ -654,7 +644,7 @@ def generate_invoice_pdf(order_id: str) -> io.BytesIO:
         name = f"{item.get('product_name')} ({item.get('variant_size')})"
         product_id = item.get("product_id")
         
-        prod_data = get_product_by_id(product_id)
+        prod_data = await get_product_by_id(product_id, token=token)
         if prod_data and prod_data.get("category") == "honey":
             # Just mark honey presence, we calculate batches globally
             pass
@@ -728,7 +718,7 @@ def generate_invoice_pdf(order_id: str) -> io.BytesIO:
     c.drawRightString(550, y_total, f"KES {vat_inclusive_total:,.2f}")
 
     # --- 6. TRACEABILITY ---
-    batches = get_batches_for_items(items)
+    batches = await get_batches_for_items(items, token=token)
     if batches:
         c.setStrokeColor(colors.black)
         c.setLineWidth(1)

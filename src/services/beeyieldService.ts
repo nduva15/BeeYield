@@ -245,6 +245,7 @@ export interface Apiary {
     location_name?: string | null;
     county?: string | null;
     region?: string | null;
+    country?: string | null;
     latitude?: number | null;
     longitude?: number | null;
     forage_type?: string;
@@ -289,6 +290,7 @@ export interface Hive {
     created_at?: string;
     updated_at?: string;
     apiary?: Apiary | null;
+    apiary_name?: string;
     farmer?: Farmer | null;
     latest_temp?: number;
     latest_humidity?: number;
@@ -897,7 +899,7 @@ export const beeyieldService = {
 
     async getInspectionById(id: string): Promise<Inspection | null> {
         try {
-            return await apiGet<Inspection>(`/ beeyield / inspections / ${id} `, {});
+            return await apiGet<Inspection>(`/beeyield/inspections/${id}`, {});
         } catch (error) {
             console.error('Error fetching inspection:', error);
             return null;
@@ -918,7 +920,7 @@ export const beeyieldService = {
 
     async updateInspection(id: string, updates: Partial<InspectionCreateInput>): Promise<{ data: Inspection | null; error: any }> {
         try {
-            const data = await apiPut<Inspection>(`/ beeyield / inspections / ${id} `, updates);
+            const data = await apiPut<Inspection>(`/beeyield/inspections/${id}`, updates);
             toast.success('Inspection updated successfully');
             return { data, error: null };
         } catch (error) {
@@ -930,7 +932,7 @@ export const beeyieldService = {
 
     async deleteInspection(id: string): Promise<{ error: any }> {
         try {
-            await apiDelete(`/ beeyield / inspections / ${id} `);
+            await apiDelete(`/beeyield/inspections/${id}`);
             toast.success('Inspection deleted');
             return { error: null };
         } catch (error) {
@@ -1471,6 +1473,30 @@ export const beeyieldService = {
         }
     },
 
+    // ========== AI GENERATION ==========
+    async generateLabelBlurb(input: {
+        floral_type: string;
+        location: string;
+        harvest_year: string;
+        tone?: string;
+        use_ai?: boolean;
+    }): Promise<{ blurb: string }> {
+        try {
+            const payload = {
+                floral_type: input.floral_type,
+                location: input.location,
+                harvest_year: input.harvest_year,
+                tone: input.tone || 'luxury'
+            };
+            // Note: Endpoint is mounted at /api/v1/ai/generate-blurb
+            // apiPost appends /api/v1 base URL if configured, but here we use /ai which matches api.py prefix
+            return await apiPost<{ blurb: string }>('/ai/generate-blurb', payload);
+        } catch (error) {
+            console.error('Error generating blurb:', error);
+            throw error;
+        }
+    },
+
     async analyzeImage(
         request: ImageAnalysisRequest
     ): Promise<ImageAnalysisResult> {
@@ -1545,6 +1571,50 @@ export const beeyieldService = {
         }
     },
 
+    // ========== AI MODELS ==========
+    async getAIModels(): Promise<any[]> {
+        try {
+            return await apiGet<any[]>('/ai/models', {});
+        } catch (error) {
+            console.error('Error fetching AI models:', error);
+            return [];
+        }
+    },
+
+    // ========== ACOUSTIC ANALYSIS ==========
+    async analyzeAcoustic(file: File, hiveId?: string): Promise<any> {
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            if (hiveId) formData.append('hive_id', hiveId);
+
+            // We use fetch directly here because apiPost handles JSON, not FormData efficiently in all cases without modification
+            const { getAuthHeaders } = await import('./api');
+            const headers = await getAuthHeaders();
+            // Remove Content-Type so browser sets it with boundary for FormData
+            delete headers['Content-Type'];
+
+            const { getBaseUrl } = await import('./api');
+            const baseUrl = getBaseUrl('/acoustic/analyze');
+
+            const response = await fetch(`${baseUrl}/acoustic/analyze`, {
+                method: 'POST',
+                headers: headers as any,
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.detail || 'Analysis failed');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Error analyzing acoustic data:', error);
+            throw error;
+        }
+    },
+
     // ========== NOTES ==========
     async getNotes(): Promise<Note[]> {
         try {
@@ -1588,6 +1658,36 @@ export const beeyieldService = {
             console.error('Error deleting note:', error);
             toast.error('Failed to delete note');
             return { error };
+        }
+    },
+
+    // ========== STATS ==========
+    async getStats(): Promise<{
+        total_apiaries: number;
+        total_hives: number;
+        active_hives: number;
+        total_harvests: number;
+        total_honey_kg: number;
+        total_acres: number;
+        total_tasks: number;
+        pending_tasks: number;
+        active_apiaries: number;
+    }> {
+        try {
+            return await apiGet<any>('/beeyield/stats', {});
+        } catch (error) {
+            console.error('Error fetching stats:', error);
+            return {
+                total_apiaries: 0,
+                total_hives: 0,
+                active_hives: 0,
+                total_harvests: 0,
+                total_honey_kg: 0,
+                total_acres: 0,
+                total_tasks: 0,
+                pending_tasks: 0,
+                active_apiaries: 0
+            };
         }
     },
 

@@ -101,7 +101,7 @@ const ChartsView: React.FC = () => {
                         <p className="text-[13px] font-medium text-slate-400">Usage over time with issues marked</p>
                     </div>
                     <div className="h-[350px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                             <LineChart data={chartData} margin={{ top: 20, right: 30, left: -20, bottom: 0 }}>
                                 <CartesianGrid strokeDasharray="0 0" vertical={false} stroke="#F1F5F9" />
                                 <XAxis

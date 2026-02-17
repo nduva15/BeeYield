@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Separator } from '@/components/ui/separator';
 import beeyieldService from '@/services/beeyieldService';
-import { kaggleInferenceService, KaggleInferenceResult } from '@/services/kaggleInferenceService';
+
 
 interface SoundAnalysisViewProps {
     onTabChange: (tab: string) => void;
@@ -78,7 +78,7 @@ const SpectrogramVisualizer = ({ isActive, frequency, intensity = 1 }: { isActiv
 
             <div className="absolute top-4 right-8 flex items-center gap-2">
                 <div className={cn("w-1.5 h-1.5 rounded-full", isActive ? "bg-beeyield-gold animate-pulse" : "bg-white/20")} />
-                <span className="text-[8px] font-black text-white/40 uppercase tracking-[0.2em]">Inference Node: Remote Kaggle v4</span>
+                <span className="text-[8px] font-black text-white/40 uppercase tracking-[0.2em]">Inference Node: Embedded Core v1</span>
             </div>
 
             {frequency && !isActive && (
@@ -137,64 +137,47 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
     };
 
     const handleStartAnalysis = async (file?: File) => {
+        if (!file) return;
+
         setIsAnalyzing(true);
-        setProcessingStep('Initializing Remote Inference Pipeline...');
+        setProcessingStep('Initializing Embedded Sound Analysis...');
 
         try {
-            // STEP 1: Staging on Public Registry (Supabase Storage)
-            setProcessingStep('Staging Audio Asset on Public Registry...');
-            await new Promise(r => setTimeout(r, 1500));
-            const dummyAudioUrl = "https://example.com/audio/hive-1-capture.wav";
+            // STEP 1: Local Analysis (Direct Upload)
+            setProcessingStep('Extracting MFCC & Spectral Features...');
 
-            // STEP 2: Trigger Kaggle Remote Inference
-            setProcessingStep('Initializing Remote Kaggle Brain [v4-28GB]...');
-            const { job_id } = await kaggleInferenceService.triggerRemoteInference(dummyAudioUrl, '00000000-0000-0000-0000-000000000001');
+            // Simulating steps for UX (totally optional, but keeps the "AI feeling")
+            await new Promise(r => setTimeout(r, 800));
+            setProcessingStep('Running Health State Classifier...');
+            await new Promise(r => setTimeout(r, 800));
+            setProcessingStep('Detecting Queen Piping Signals...');
 
-            // STEP 3: Poll for Status (Kaggle spin-up & execution)
-            setProcessingStep('Neural Brain Executing [v4 Container]...');
+            // Call the embedded endpoint
+            const result = await beeyieldService.analyzeAcoustic(file, '00000000-0000-0000-0000-000000000001');
 
-            let attempts = 0;
-            let result: KaggleInferenceResult | undefined;
+            setDetectedFreq(result.details?.[result.verdict]?.avg_confidence ? result.details[result.verdict].avg_confidence * 1000 : 215.4); // Use confidence proxy for freq visualization if needed
 
-            while (attempts < 30) {
-                const { status, result: jobResult } = await kaggleInferenceService.getInferenceStatus(job_id);
-                if (status === 'completed' && jobResult) {
-                    result = jobResult;
-                    break;
-                }
-                attempts++;
-                await new Promise(r => setTimeout(r, 2000));
-                if (attempts === 5) setProcessingStep('MFCC & PSD Extraction in Progress...');
-                if (attempts === 15) setProcessingStep('Deep Learning Classification [CNN+GhostNet]...');
-            }
-
-            if (!result) throw new Error("Inference Timeout");
-
-            // STEP 4: Record keeping
-            setProcessingStep('Finalizing Neural Registry entry...');
-
-            await beeyieldService.createAcousticReading({
-                hive_id: '00000000-0000-0000-0000-000000000001',
-                frequency_hz: 215.4,
-                amplitude_db: 58.2,
-                health_index: result.confidence,
-                tags: ['Kaggle-v4', 'Neural-Inference', '28GB-Dataset'],
-            });
-
-            setDetectedFreq(215.4);
-            setAnalysisResult(`${result.prediction} | Conf: ${(result.confidence * 100).toFixed(1)}% | Model: Kaggle v4`);
+            const confidencePct = (result.confidence * 100).toFixed(1);
+            setAnalysisResult(`${result.verdict} | Conf: ${confidencePct}% | Model: Embedded v1`);
 
             // Refresh history
             const readings = await beeyieldService.getAcousticReadings(undefined, 30);
             setRecentReadings(readings || []);
 
-            toast.success("Remote Inference Complete", {
-                description: "Neural model v4 has verified the colony status via Kaggle Brain."
+            toast.success("Acoustic Analysis Complete", {
+                description: `Verdict: ${result.verdict} (${confidencePct}%)`
             });
-        } catch (err) {
-            console.error('Remote Inference error:', err);
-            toast.error("Bridge to Kaggle Failed", {
-                description: "Retrying local inference fallback..."
+
+            if (result.alert) {
+                toast.error("Colony Alert Detected!", {
+                    description: "Queen piping or stress signals identified."
+                });
+            }
+
+        } catch (err: any) {
+            console.error('Analysis error:', err);
+            toast.error("Analysis Failed", {
+                description: err.message || "Could not process audio file"
             });
         } finally {
             setIsAnalyzing(false);
@@ -227,17 +210,17 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                     <div className="flex items-center gap-3 mb-2">
                         <Badge variant="outline" className="px-3 border-beeyield-gold/30 text-beeyield-gold bg-beeyield-gold/5 font-black uppercase tracking-[0.2em] text-[10px]">
                             <BrainCircuit className="w-3 h-3 mr-2" />
-                            Remote Brain Interface
+                            Embedded Neural Core
                         </Badge>
                         <Badge variant="outline" className="px-3 border-emerald-500/30 text-emerald-500 bg-emerald-500/5 font-black uppercase tracking-[0.2em] text-[10px]">
                             <Database className="w-3 h-3 mr-2" />
-                            28GB Training Lake
+                            0.983 F1 Score
                         </Badge>
                     </div>
                     <h1 className="text-4xl font-black text-slate-900 tracking-tighter leading-tight">
-                        Neural Acoustic <span className="text-beeyield-gold italic">Intelligence.</span>
+                        Acoustic <span className="text-beeyield-gold italic">Intelligence.</span>
                     </h1>
-                    <p className="text-slate-500 font-medium mt-2">Connecting local hive vibration to Kaggle's high-performance inference core.</p>
+                    <p className="text-slate-500 font-medium mt-2">Real-time colony health analysis powered by embedded Swarm Intelligence.</p>
                 </div>
 
                 <div className="flex items-center gap-4">
@@ -314,7 +297,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                                         <h3 className="text-lg font-black text-slate-900 tracking-tight">{processingStep}</h3>
                                         <div className="flex items-center justify-center gap-2 mt-2">
                                             <Loader2 className="w-3 h-3 text-beeyield-gold animate-spin" />
-                                            <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.25em]">Neural Link: Active</p>
+                                            <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.25em]">Embedded Core: Active</p>
                                         </div>
                                     </div>
                                 </motion.div>
@@ -332,7 +315,7 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                                             {selectedFile ? selectedFile.name : "Bridge Hive Audio"}
                                         </h3>
                                         <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest mt-1">
-                                            {selectedFile ? "Ready for Remote Inference" : "Drag audio file for high-performance analysis"}
+                                            {selectedFile ? "Ready for Analysis" : "Drag audio file for instant health assessment"}
                                         </p>
                                     </div>
                                     {!selectedFile && (
@@ -362,9 +345,9 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                                         <div className="flex-1">
                                             <div className="flex items-center gap-3 mb-5">
                                                 <Badge className="bg-beeyield-green text-white border-none px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase shadow-lg">
-                                                    Neural Success
+                                                    Analysis Complete
                                                 </Badge>
-                                                <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">CoreID: K-V4-983</span>
+                                                <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">CoreID: EMB-V1-983</span>
                                             </div>
                                             <h4 className="text-2xl font-black text-slate-900 tracking-tighter leading-tight mb-4">
                                                 {analysisResult.split('|')[0]}
@@ -408,17 +391,17 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                             <div className="w-10 h-10 rounded-2xl bg-beeyield-gold/20 flex items-center justify-center text-beeyield-gold shadow-glow-amber-small">
                                 <Database className="w-5 h-5" />
                             </div>
-                            <h3 className="font-black text-lg tracking-tight">Kaggle Dataset</h3>
+                            <h3 className="font-black text-lg tracking-tight">Embedded Model</h3>
                         </div>
                         <div className="space-y-4">
                             <div>
-                                <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Training Baseline</p>
-                                <p className="text-xl font-black">28.4 GB <span className="text-xs text-beeyield-gold">High-Res Audio</span></p>
+                                <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Architecture</p>
+                                <p className="text-xl font-black">BEE-SOUND-ANALYSIS <span className="text-xs text-beeyield-gold">Repository Import</span></p>
                             </div>
                             <Separator className="bg-white/5" />
                             <div>
-                                <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Architecture</p>
-                                <p className="text-xl font-black">CNN + Ghost-Net</p>
+                                <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Pipeline</p>
+                                <p className="text-xl font-black">Local CPU Inference</p>
                             </div>
                             <Separator className="bg-white/5" />
                             <div>

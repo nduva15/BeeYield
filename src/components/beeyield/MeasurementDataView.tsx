@@ -115,7 +115,7 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
                     </div>
 
                     <div className="h-[400px] w-full mt-4">
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                             <AreaChart data={displayData}>
                                 <defs>
                                     <linearGradient id="colorTemp" x1="0" y1="0" x2="0" y2="1">
@@ -158,7 +158,7 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
                 <Card className="rounded-[2.5rem] border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm p-8">
                     <h3 className="text-xl font-bold mb-6">Colony Weight (kg)</h3>
                     <div className="h-[250px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                             <LineChart data={displayData}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" opacity={0.5} />
                                 <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#9CA3AF' }} dy={10} />
@@ -176,7 +176,7 @@ const MeasurementDataView: React.FC<MeasurementDataViewProps> = ({ onTabChange }
                         <Badge className="bg-[#1B9157]/10 text-[#1B9157] border-none font-black text-[10px] uppercase">Stable</Badge>
                     </div>
                     <div className="h-[250px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                             <AreaChart data={displayData}>
                                 <defs>
                                     <linearGradient id="colorHum" x1="0" y1="0" x2="0" y2="1">

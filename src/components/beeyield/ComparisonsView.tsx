@@ -212,7 +212,7 @@ const ComparisonsView: React.FC = () => {
                                 <p className="font-bold text-sm">No comparison data available for this selection.</p>
                             </div>
                         ) : (
-                            <ResponsiveContainer width="100%" height="100%">
+                            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                                 <LineChart data={comparisonData}>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
                                     <XAxis

@@ -1,9 +1,11 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 
 from app.core.config import settings
 from app.api.api_v1.api import api_router
+from app.db.supabase_db import init_db_client, close_db_client
 
 # Import and apply DNS Patch if needed (Fixes [Errno 11001] getaddrinfo failed on some Windows/Network setups)
 try:
@@ -16,10 +18,19 @@ try:
 except Exception as e:
     print(f"[WARNING] Could not apply DNS patch: {e}")
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Initialize shared DB client
+    init_db_client()
+    yield
+    # Shutdown: Close shared DB client
+    await close_db_client()
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
-    description="Backend API for BeeYield - Honey Traceability and E-commerce Platform"
+    description="Backend API for BeeYield - Honey Traceability and E-commerce Platform",
+    lifespan=lifespan
 )
 
 # Mount static files for reports

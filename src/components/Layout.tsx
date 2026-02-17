@@ -5,6 +5,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 import CartDrawer from "./CartDrawer";
 
+
 interface LayoutProps {
   children: ReactNode;
 }
@@ -13,6 +14,8 @@ const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
   const standalonePaths = ['/beeyield-dashboard', '/buyer-dashboard', '/shop-dashboard', '/my-account', '/ceba', '/ceba/login', '/admin', '/login', '/signup', '/beeyield-login'];
   const isStandalone = standalonePaths.includes(location.pathname) || location.pathname.startsWith('/admin');
+
+
 
   const pageVariants = {
     initial: {
@@ -37,17 +40,10 @@ const Layout = ({ children }: LayoutProps) => {
     return (
       <>
         <CartDrawer />
-        <AnimatePresence>
-          <motion.div
-            key={location.pathname}
-            initial="initial"
-            animate="enter"
-            exit="exit"
-            variants={pageVariants}
-          >
-            {children}
-          </motion.div>
-        </AnimatePresence>
+
+        <div className="animate-in fade-in duration-300">
+          {children}
+        </div>
       </>
     );
   }
@@ -56,19 +52,9 @@ const Layout = ({ children }: LayoutProps) => {
     <div className="flex min-h-screen flex-col">
       <CartDrawer />
       <Header />
-      <main className="flex-1 overflow-x-hidden">
-        <AnimatePresence>
-          <motion.div
-            key={location.pathname}
-            initial="initial"
-            animate="enter"
-            exit="exit"
-            variants={pageVariants}
-            className="w-full"
-          >
-            {children}
-          </motion.div>
-        </AnimatePresence>
+
+      <main className="flex-1 overflow-x-hidden animate-in fade-in duration-500">
+        {children}
       </main>
       <Footer />
     </div>

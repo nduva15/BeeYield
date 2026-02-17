@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from typing import List, Optional
 from pydantic import BaseModel, Field
 from uuid import UUID
@@ -57,14 +57,22 @@ def get_user_id(current_user: dict = Depends(security.get_current_user)) -> str:
         )
     return user_id
 
+def get_token(request: Request) -> Optional[str]:
+    """Extract raw token from Authorization header"""
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        return auth_header.split(" ")[1]
+    return None
+
 # ============================================
 # ENDPOINTS
 # ============================================
 
 @router.post("/", response_model=RequestResponse, status_code=status.HTTP_201_CREATED)
-def create_request(
+async def create_request(
     request_in: RequestCreate,
-    user_id: str = Depends(get_user_id)
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Submit a new support request.
@@ -74,7 +82,7 @@ def create_request(
     data["user_id"] = user_id
     
     # Insert into database
-    result = db_insert("requests", data)
+    result = await db_insert("requests", data, token=token)
     
     if not result.get("success"):
         raise HTTPException(
@@ -87,8 +95,7 @@ def create_request(
     # Send Email Notification
     try:
         # Determine admin email - checking config or defaulting
-        # For now, we'll send to the configured generic FROM address or specific admin
-        admin_email = "support@beeyield.com" # Could be configurable
+        admin_email = "support@beeyield.com" 
         
         subject = f"New Support Request: {new_request.get('subject')} ({new_request.get('category')})"
         
@@ -109,52 +116,37 @@ def create_request(
         </html>
         """
         
-        # We send this to the admin. 
-        # Using the email service which might default to SMTP or Resend based on impl.
-        # Ideally we send to a support email.
-        # For now, let's send to the 'from_email' itself if it acts as admin, or a hardcoded one.
-        # Since I can't easily change the recipient in 'email_service' without knowing who receives, 
-        # I'll rely on the assumption that support@beeyield.com is monitored.
-        
         email_service.send_email(
             to_email=admin_email, 
             subject=subject, 
             html_content=html_content
         )
         
-        # Also confirm to user?
-        # email_service.send_email(user_email, "Request Received", ...) 
-        # (Need to fetch user email first, skipping for now as per immediate prompt)
-        
     except Exception as e:
         print(f"Failed to send notification email: {e}")
-        # Don't fail the request if email fails
         
     return new_request
 
 @router.get("/", response_model=List[RequestResponse])
-def get_my_requests(
-    user_id: str = Depends(get_user_id)
+async def get_my_requests(
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Get all requests submitted by the current user.
     """
-    # RLS should handle isolation, but we filter here too for double safety/performance
-    requests = db_select("requests", filters={"user_id": user_id}, order_by="created_at", ascending=False)
-    return requests
+    return await db_select("requests", filters={"user_id": user_id}, order_by="created_at", ascending=False, token=token)
 
 @router.get("/{request_id}", response_model=RequestResponse)
-def get_request_details(
+async def get_request_details(
     request_id: str,
-    user_id: str = Depends(get_user_id)
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Get details of a specific request.
     """
-    # Verify ownership via logic or trust RLS policies (db_select usually uses service role if not careful, 
-    # but wrapper might utilize headers. 'db_select' in this codebase seems to use service_role client 
-    # so we MUST filter manually).
-    requests = db_select("requests", filters={"id": request_id, "user_id": user_id})
+    requests = await db_select("requests", filters={"id": request_id, "user_id": user_id}, token=token)
     
     if not requests:
         raise HTTPException(status_code=404, detail="Request not found")
@@ -162,16 +154,17 @@ def get_request_details(
     return requests[0]
 
 @router.post("/{request_id}/comments", response_model=CommentResponse)
-def add_comment(
+async def add_comment(
     request_id: str,
     comment_in: RequestCommentCreate,
-    user_id: str = Depends(get_user_id)
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Add a comment/reply to a request.
     """
     # Verify request exists and belongs to user
-    requests = db_select("requests", filters={"id": request_id, "user_id": user_id})
+    requests = await db_select("requests", filters={"id": request_id, "user_id": user_id}, token=token)
     if not requests:
         raise HTTPException(status_code=404, detail="Request not found")
         
@@ -181,7 +174,7 @@ def add_comment(
         "message": comment_in.message
     }
     
-    result = db_insert("request_comments", data)
+    result = await db_insert("request_comments", data, token=token)
     
     if not result.get("success"):
          raise HTTPException(
@@ -192,17 +185,19 @@ def add_comment(
     return result["data"][0] if result.get("data") else data
 
 @router.get("/{request_id}/comments", response_model=List[CommentResponse])
-def get_request_comments(
+async def get_request_comments(
     request_id: str,
-    user_id: str = Depends(get_user_id)
+    user_id: str = Depends(get_user_id),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Get all comments for a specific request.
     """
     # Verify request exists and belongs to user
-    requests = db_select("requests", filters={"id": request_id, "user_id": user_id})
+    requests = await db_select("requests", filters={"id": request_id, "user_id": user_id}, token=token)
     if not requests:
         raise HTTPException(status_code=404, detail="Request not found")
         
-    comments = db_select("request_comments", filters={"request_id": request_id}, order_by="created_at", ascending=True)
+    comments = await db_select("request_comments", filters={"request_id": request_id}, order_by="created_at", ascending=True, token=token)
     return comments
+

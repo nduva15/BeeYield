@@ -116,7 +116,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                 throw new Error("Analysis failed on server");
             }
         } catch (err) {
-            console.error("AI Error:", err);
+            console.error("Analysis Error:", err);
             setError("Analysis Failed");
             const errMsg = err instanceof Error ? err.message : "Could not complete image analysis.";
             toast.error("Analysis Error", {
@@ -168,7 +168,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
 
                     <div className="space-y-4">
                         <div className="space-y-1 text-sm text-slate-500 dark:text-slate-400 font-medium">
-                            <p>Results are AI indications and are not a veterinary diagnosis.</p>
+                            <p>Results are system indications and are not a veterinary diagnosis.</p>
                             <p>Each label is a probability estimate. Lower confidence means less certainty.</p>
                         </div>
 
@@ -268,7 +268,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                                 <div className="space-y-3">
                                     <h3 className="text-2xl font-black text-[#0F172A] dark:text-white uppercase tracking-tight leading-tight">Scanning specimen...</h3>
                                     <p className="text-slate-400 dark:text-slate-500 font-medium leading-relaxed max-w-[280px]">
-                                        Our AI Meta-Scanner is isolating biological signatures across the hive structure.
+                                        Our health scanner is isolating biological signatures across the hive structure.
                                     </p>
                                 </div>
                                 <div className="w-full max-w-[200px] h-1.5 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
@@ -286,7 +286,7 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                                 <div className="space-y-3">
                                     <h3 className="text-2xl font-black text-red-600 dark:text-red-400 uppercase tracking-tight">Detection Failed</h3>
                                     <p className="text-red-800/60 dark:text-red-400/60 font-medium leading-relaxed max-w-[320px]">
-                                        Our AI meta-scanner could not identify any honey bees or hive structures in this image.
+                                        Our health scanner could not identify any honey bees or hive structures in this image.
                                         Only biological data is permitted.
                                     </p>
                                 </div>

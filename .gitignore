@@ -85,3 +85,6 @@ brain/
 node_modules/
 .venv/
 venv/
+
+# BEE-SOUND-ANALYSIS (cloned locally for model reference, deployed to Kaggle)
+beeyield-sound-analysis/

@@ -1,5 +1,6 @@
 import React from 'react';
-import DashboardSidebar, { NavItem } from './DashboardSidebar';
+import GlassSidebar from './GlassSidebar';
+import { NavItem } from './DashboardSidebar';
 import DashboardHeader from './DashboardHeader';
 import QuickActionModal from './QuickActionModal';
 import FirstStepsBanner from './FirstStepsBanner';
@@ -27,18 +28,19 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 }) => {
     const [isQuickActionOpen, setIsQuickActionOpen] = React.useState(false);
     return (
-        <div className="flex h-screen w-full bg-white overflow-hidden font-sans text-beeyield-green selection:bg-beeyield-gold/30">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(244,208,63,0.03),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(27,145,87,0.02),transparent_40%)] pointer-events-none" />
+        <div className="flex h-screen w-full bg-gray-50 dark:bg-slate-950 overflow-hidden font-sans text-gray-900 dark:text-gray-100 selection:bg-amber-500/30">
+            {/* Background Gradient */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(245,158,11,0.05),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.05),transparent_40%)] pointer-events-none" />
+
             <div className="relative z-10 flex w-full h-full">
-                <DashboardSidebar
+                <GlassSidebar
                     activeTab={activeTab}
                     onTabChange={onTabChange}
                     onLogout={onLogout}
                     navItems={navItems}
-                    isAdmin={isAdmin}
                 />
 
-                <main className="flex-1 flex flex-col h-full overflow-hidden relative">
+                <main className="flex-1 flex flex-col h-full overflow-hidden relative md:pl-[320px] transition-all duration-300">
                     {!hideHeader && (
                         <DashboardHeader
                             onLogout={onLogout}

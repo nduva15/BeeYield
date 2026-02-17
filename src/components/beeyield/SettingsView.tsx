@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSettings } from '@/contexts/SettingsContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { LanguageCode } from '@/lib/translations';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from '@/lib/supabase';
@@ -46,6 +47,7 @@ const languages = [
 const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
     const { user, signOut } = useAuth();
     const { language, setLanguage, t } = useLanguage();
+    const { theme, setTheme } = useTheme();
     const { showGuides, setShowGuides } = useSettings();
     const [uploading, setUploading] = useState(false);
     const [emailUpdating, setEmailUpdating] = useState(false);
@@ -396,16 +398,19 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                         <Label htmlFor="theme" className="absolute left-4 top-3 text-[9px] font-bold text-gray-400 uppercase tracking-widest z-40 pointer-events-none">Theme</Label>
                                         <Select
                                             name="theme"
-                                            value={localSettings.theme || settings?.theme || 'System'}
-                                            onValueChange={(val) => setLocalSettings(prev => ({ ...prev, theme: val as any }))}
+                                            value={theme}
+                                            onValueChange={(val: any) => {
+                                                setTheme(val);
+                                                setLocalSettings(prev => ({ ...prev, theme: val }));
+                                            }}
                                         >
                                             <SelectTrigger className="w-full pt-8 pb-3 px-4 rounded-2xl bg-gray-50/30 dark:bg-[#09090b] border-gray-100 dark:border-gray-800 h-[4.5rem] shadow-none font-bold hover:border-amber-500/30 focus:border-amber-500 transition-all outline-none focus:ring-0">
                                                 <SelectValue placeholder="Theme" />
                                             </SelectTrigger>
                                             <SelectContent className="rounded-2xl border-gray-100 dark:border-gray-800">
-                                                <SelectItem value="System">Auto (System)</SelectItem>
-                                                <SelectItem value="Light">Light</SelectItem>
-                                                <SelectItem value="Dark">Dark</SelectItem>
+                                                <SelectItem value="system">Auto (System)</SelectItem>
+                                                <SelectItem value="light">Light</SelectItem>
+                                                <SelectItem value="dark">Dark</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -452,7 +457,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                         whileTap={{ scale: 0.98 }}
                                         onClick={handleSaveGeneral}
                                         disabled={updateSettingsMutation.isPending || Object.keys(localSettings).length === 0}
-                                        className="bg-[#B48428]/10 text-[#B48428] border-2 border-[#B48428]/20 hover:bg-[#B48428] hover:text-white rounded-2xl px-12 py-3 font-bold text-sm transition-all shadow-sm hover:shadow-lg hover:shadow-amber-500/20 disabled:opacity-50"
+                                        className="bg-amber-600/10 text-amber-600 border-2 border-amber-600/20 hover:bg-amber-600 hover:text-white rounded-2xl px-12 py-3 font-bold text-sm transition-all shadow-sm hover:shadow-lg hover:shadow-amber-500/20 disabled:opacity-50"
                                     >
                                         {updateSettingsMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2inline" /> : null}
                                         {t('save_changes')}
@@ -464,7 +469,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
 
                     {/* PRD: IoT Alert Thresholds Section */}
                     <motion.div variants={itemVariants}>
-                        <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500 border-l-[10px] border-l-[#F4D03F]">
+                        <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500 border-l-[10px] border-l-primary">
                             <CardHeader className="p-10 pb-4">
                                 <CardTitle className="text-2xl font-black leading-tight flex items-center gap-2">
                                     <Thermometer className="w-6 h-6" />
@@ -547,7 +552,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                         <Card className="rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] bg-white dark:bg-[#09090b] shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500 border-l-[10px] border-l-[#171717]">
                             <CardHeader className="p-10 pb-4 text-white bg-[#171717]">
                                 <CardTitle className="text-2xl font-black leading-tight flex items-center gap-2">
-                                    <BellRing className="w-6 h-6 text-[#F4D03F]" />
+                                    <BellRing className="w-6 h-6 text-primary" />
                                     Notifications
                                 </CardTitle>
                                 <p className="text-sm text-gray-400 font-medium pt-2">Manage how the system talks to you.</p>
@@ -556,7 +561,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                 {/* Master Switches */}
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pb-8 border-b border-gray-100 dark:border-gray-800">
                                     <div className="flex flex-col items-center p-6 bg-gray-50 dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/5 group hover:border-[#F4D03F]/50 transition-all">
-                                        <Mail className="w-6 h-6 mb-4 text-[#737373] group-hover:text-[#F4D03F]" />
+                                        <Mail className="w-6 h-6 mb-4 text-[#737373] group-hover:text-primary" />
                                         <span className="text-[10px] font-black uppercase tracking-widest mb-4">Email</span>
                                         <Switch
                                             id="notify-email"
@@ -566,7 +571,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                         />
                                     </div>
                                     <div className="flex flex-col items-center p-6 bg-gray-50 dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/5 group hover:border-[#F4D03F]/50 transition-all">
-                                        <Smartphone className="w-6 h-6 mb-4 text-[#737373] group-hover:text-[#F4D03F]" />
+                                        <Smartphone className="w-6 h-6 mb-4 text-[#737373] group-hover:text-primary" />
                                         <span className="text-[10px] font-black uppercase tracking-widest mb-4">Push</span>
                                         <Switch
                                             id="notify-push"
@@ -578,7 +583,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
                                     <div className="flex flex-col items-center p-6 bg-gray-50 dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/5 opacity-50 relative group">
                                         <Zap className="w-6 h-6 mb-4 text-[#737373]" />
                                         <span className="text-[10px] font-black uppercase tracking-widest mb-4">SMS</span>
-                                        <Badge className="absolute top-2 right-2 bg-black text-[#F4D03F] text-[8px] font-black">PRO</Badge>
+                                        <Badge className="absolute top-2 right-2 bg-black text-primary text-[8px] font-black">PRO</Badge>
                                         <Switch disabled checked={false} />
                                     </div>
                                 </div>

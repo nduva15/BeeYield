@@ -1,22 +1,29 @@
 """
 Careers Endpoints - Connected to Supabase
 """
-from fastapi import APIRouter, HTTPException, UploadFile, File, Form, BackgroundTasks
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form, BackgroundTasks, Request, Depends
 from typing import Optional
 from datetime import date
 from app.schemas import careers as schemas
 from app.db.supabase_db import db_select, db_insert, get_supabase
 from app.services import email
+from app.core import security
 
 router = APIRouter()
 
+def get_token(request: Request) -> Optional[str]:
+    """Extract raw token from Authorization header"""
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        return auth_header.split(" ")[1]
+    return None
 
 @router.get("/", response_model=list[schemas.Joblisting])
-def get_job_listings():
+async def get_job_listings(token: Optional[str] = Depends(get_token)):
     """
     Get all active job listings from database.
     """
-    jobs = db_select("job_listings", filters={"is_active": True}, order_by="posted_date", ascending=False)
+    jobs = await db_select("job_listings", filters={"is_active": True}, order_by="posted_date", ascending=False, token=token)
     
     # If no jobs in DB, return fallback mock data
     if not jobs:
@@ -97,11 +104,11 @@ def get_job_listings():
 
 
 @router.get("/{slug}", response_model=schemas.Joblisting)
-def get_job_by_slug(slug: str):
+async def get_job_by_slug(slug: str, token: Optional[str] = Depends(get_token)):
     """
     Get a single job listing by slug.
     """
-    jobs = db_select("job_listings", filters={"slug": slug, "is_active": True}, limit=1)
+    jobs = await db_select("job_listings", filters={"slug": slug, "is_active": True}, limit=1, token=token)
     
     if not jobs:
         raise HTTPException(status_code=404, detail="Job not found")
@@ -111,6 +118,7 @@ def get_job_by_slug(slug: str):
 
 @router.post("/apply", response_model=dict)
 async def apply_for_job(
+    request: Request,
     background_tasks: BackgroundTasks,
     job_id: str = Form(...),
     full_name: str = Form(...),
@@ -120,7 +128,8 @@ async def apply_for_job(
     linkedin_url: str = Form(None),
     portfolio_url: str = Form(None),
     experience_years: int = Form(None),
-    resume: UploadFile = File(None)
+    resume: UploadFile = File(None),
+    token: Optional[str] = Depends(get_token)
 ):
     """
     Submit a job application with optional resume upload.
@@ -132,6 +141,9 @@ async def apply_for_job(
         try:
             supabase = get_supabase()
             if supabase:
+                # If we have a token, we should use it for storage too if it's restricted
+                # but get_supabase() returns a client with settings.SUPABASE_KEY (service key probably)
+                # For public buckets it's fine.
                 file_ext = resume.filename.split(".")[-1] if resume.filename else "pdf"
                 file_name = f"{job_id}_{full_name.replace(' ', '_')}_{date.today().isoformat()}.{file_ext}"
                 
@@ -157,7 +169,7 @@ async def apply_for_job(
         "status": "new"
     }
     
-    result = db_insert("job_applications", application_data)
+    result = await db_insert("job_applications", application_data, token=token)
     
     if not result.get("success"):
         raise HTTPException(status_code=500, detail=f"Database error: {result.get('error')}")
@@ -183,4 +195,5 @@ async def apply_for_job(
         "message": "Application submitted successfully",
         "application_id": result.get("data", [{}])[0].get("id") if result.get("data") else None
     }
+
 

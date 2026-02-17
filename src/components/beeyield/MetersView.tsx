@@ -226,7 +226,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                     </div>
 
                     <div className="h-[400px] w-full mt-4">
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                             <AreaChart data={usageTrendData}>
                                 <defs>
                                     <linearGradient id="colorUsage" x1="0" y1="0" x2="0" y2="1">

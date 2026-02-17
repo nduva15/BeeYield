@@ -28,6 +28,7 @@ export const BrandedProductImage: React.FC<BrandedProductImageProps> = ({
             <img
                 src={src}
                 alt={alt}
+                loading="lazy"
                 className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110"
                 onError={(e) => {
                     e.currentTarget.src = "/placeholder.svg";

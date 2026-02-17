@@ -41,7 +41,11 @@ const Impact = () => {
 
       doc.setFontSize(10);
       doc.setTextColor(107, 114, 128);
-      doc.text('Bio-Digital Impact Report 2026', 50, 32);
+      doc.text('BeeYield', 50, 25);
+
+      doc.setFontSize(10);
+      doc.setTextColor(107, 114, 128);
+      doc.text('Ecological Impact Report 2026', 50, 32);
       doc.text('Provenance: Kibwezi Apiary, Kenya', 50, 38);
 
       // Title
@@ -62,7 +66,7 @@ const Impact = () => {
 
       doc.setFontSize(11);
       doc.setTextColor(75, 85, 99);
-      const summaryText = 'BeeYield represents the confluence of high-fidelity engineering and tangible planetary restoration. By deploying acoustic AI and cryptographic traceability, we are ensuring that apiculture serves its primary purpose: the stabilization of our global food systems through pollinator protection.';
+      const summaryText = 'BeeYield represents the confluence of high-fidelity engineering and tangible planetary restoration. By deploying acoustic monitoring and cryptographic traceability, we are ensuring that apiculture serves its primary purpose: the stabilization of our global food systems through pollinator protection.';
       const summaryLines = doc.splitTextToSize(summaryText, pageWidth - 28);
       doc.text(summaryLines, 14, yPos);
       yPos += summaryLines.length * 7 + 10;
@@ -70,7 +74,7 @@ const Impact = () => {
       // Key Statistics
       doc.setFontSize(14);
       doc.setTextColor(15, 23, 42);
-      doc.text('Bio-Digital Metrics', 14, yPos);
+      doc.text('Ecological Metrics', 14, yPos);
       yPos += 10;
 
       doc.setFillColor(248, 250, 252); // slate-50
@@ -78,7 +82,7 @@ const Impact = () => {
 
       doc.setFontSize(11);
       doc.setTextColor(75, 85, 99);
-      doc.text(`• Neural Hives Protected: ${liveStats?.hive_count || "184"}`, 20, yPos + 5);
+      doc.text(`• Smart Hives Protected: ${liveStats?.hive_count || "184"}`, 20, yPos + 5);
       doc.text('• Indigenous Flora Restored: 2,500+ Trees', 20, yPos + 15);
       doc.text('• Pollinator Bio-Mass Saved: 2.4M+ Bees', 20, yPos + 25);
       doc.text('• Carbon Sequestration: 2.1 Tons (Projected)', 20, yPos + 35);
@@ -146,11 +150,11 @@ const Impact = () => {
               Global Impact Registry
             </Badge>
             <h1 className="text-5xl md:text-7xl font-black text-slate-900 mb-8 tracking-tighter leading-[0.95]">
-              Bio-Digital <span className="text-beeyield-green">Impact.</span> <br />
+              Ecological <span className="text-beeyield-green">Impact.</span> <br />
               <span className="text-beeyield-gold italic">Quantified.</span>
             </h1>
             <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed font-medium mb-12">
-              Every drop of BeeYield honey is a verifiable record of environmental restoration. We use neural analytics to turn nature's health into hard data.
+              Every drop of BeeYield honey is a verifiable record of environmental restoration. We use advanced analytics to turn nature's health into hard data.
             </p>
 
             <div className="flex flex-wrap justify-center gap-4">
