@@ -8,7 +8,7 @@ from app.api.api_v1.endpoints import (
     services, jobs, analytics, notes, admin, iot, ai,
     admin_extended, meters, beeyield, bee_data, pollination, inspections, reports,
     ai_assistant, ai_admin, settings, payments, labels, streaming, bluetooth,
-    requests, image_analysis
+    requests, image_analysis, acoustic
 )
 
 
@@ -85,6 +85,9 @@ api_router.include_router(settings.router, prefix="/settings", tags=["Settings"]
 
 # Image Analysis
 api_router.include_router(image_analysis.router, prefix="/image", tags=["Image Analysis"])
+
+# Acoustic Analysis (Kaggle Remote Brain)
+api_router.include_router(acoustic.router, prefix="/acoustic", tags=["Acoustic Analysis"])
 
 # Notes
 api_router.include_router(notes.router, prefix="/notes", tags=["Notes"])

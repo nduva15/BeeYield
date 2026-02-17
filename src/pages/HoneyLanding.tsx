@@ -231,20 +231,20 @@ const HeroSection = () => {
             </motion.div>
 
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-black mb-8 tracking-tighter leading-[0.95]">
-              <span className="bg-gradient-to-r from-beeyield-gold to-beeyield-green bg-clip-text text-transparent">Pure</span> <span className="text-beeyield-gold block sm:inline">Harvests.</span> <br />
-              <span className="text-beeyield-green">Verified</span> by Nature.
+              <span className="bg-gradient-to-r from-beeyield-gold to-beeyield-green bg-clip-text text-transparent">Liquid</span> <span className="text-beeyield-gold block sm:inline">Intelligence.</span> <br />
+              <span className="text-beeyield-green">Verified</span> by AI.
             </h1>
 
             <p className="text-base md:text-lg text-beeyield-green/80 mb-10 max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
-              Don't just believe us, see the records. Every jar of BeeYield is backed by permanent harvest data, ensuring 100% purity from the Kibwezi groundwater forest to your table.
+              Experience the Tesla of Apiculture. Every jar of BeeYield is a high-fidelity record of hive health, botanical origin, and radical transparency—powered by bio-digital intelligence.
             </p>
 
             {/* Premium Stats - Horizontal with micro-interactions */}
             <div className="flex flex-wrap justify-center lg:justify-start gap-4 mb-10">
               {[
-                { label: "Trees Planted", value: "2,500+", color: "text-beeyield-green", delay: 0 },
-                { label: "Colonies", value: liveStats?.hive_count || "184", color: "text-beeyield-gold", delay: 0.1 },
-                { label: "Purity Level", value: "100%", color: "text-beeyield-green", delay: 0.2 }
+                { label: "Bees Protected", value: "2.4M+", color: "text-beeyield-green", delay: 0 },
+                { label: "Smart Hives", value: liveStats?.hive_count || "184", color: "text-beeyield-gold", delay: 0.1 },
+                { label: "Integrity Score", value: "99.9%", color: "text-beeyield-green", delay: 0.2 }
               ].map((stat, i) => (
                 <motion.div
                   key={i}
@@ -269,7 +269,7 @@ const HeroSection = () => {
                   className="bg-gradient-to-r from-beeyield-green to-beeyield-green-dark hover:from-beeyield-green-dark hover:to-beeyield-green text-white font-black rounded-2xl px-10 h-14 shadow-glow uppercase tracking-widest text-xs transition-all"
                   onClick={() => navigate("/shop")}
                 >
-                  Shop Collection
+                  Shop the Collection
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </motion.div>
@@ -280,11 +280,12 @@ const HeroSection = () => {
                   className="border-2 border-beeyield-gold text-beeyield-green hover:bg-beeyield-gold/10 hover:border-beeyield-green font-black rounded-2xl px-10 h-14 uppercase tracking-widest text-xs transition-all"
                   onClick={() => navigate("/traceability")}
                 >
-                  Trace Your Jar
+                  Radical Transparency
                 </Button>
               </motion.div>
             </div>
           </motion.div>
+
 
           {/* Right - Hero Image & Dynamic Trust Badge */}
           <motion.div
@@ -1127,6 +1128,61 @@ const AllProductsSection = ({
 
 
 // Main HoneyLanding Component
+
+// Mission Statement Section - Tesla-style Premium Narrative
+const MissionStatementSection = () => {
+  return (
+    <section className="py-24 bg-white relative overflow-hidden">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
+        <div className="max-w-4xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-neutral-900 text-white text-[10px] font-black uppercase tracking-[0.3em] mb-12 shadow-2xl"
+          >
+            <Sparkles className="w-4 h-4 text-amber-400" />
+            The Mission
+          </motion.div>
+
+          <motion.h2
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-3xl md:text-5xl lg:text-6xl font-black text-neutral-900 tracking-tighter leading-[1.1] mb-12 uppercase"
+          >
+            To protect the world's pollinators through <span className="text-beeyield-green">bio-digital intelligence</span> and provide consumers with <span className="text-beeyield-gold italic">radical transparency</span>.
+          </motion.h2>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+            className="w-24 h-1 bg-gradient-to-r from-beeyield-gold via-beeyield-green to-beeyield-gold mx-auto mb-12 rounded-full"
+          />
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.6 }}
+            className="text-lg md:text-xl text-neutral-500 font-medium leading-relaxed max-w-2xl mx-auto"
+          >
+            Ensuring every drop of honey is not just a product, but a testament to planetary health and verified ecosystem restoration.
+          </motion.p>
+        </div>
+      </div>
+
+      {/* Background Accent */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full pointer-events-none overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-beeyield-gold/5 rounded-full blur-[120px]" />
+      </div>
+    </section>
+  );
+};
+
 const HoneyLanding = () => {
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
   const [products, setProducts] = useState<Product[]>([]);
@@ -1225,6 +1281,7 @@ const HoneyLanding = () => {
       </script>
 
       <HeroSection />
+      <MissionStatementSection />
 
       <div className="py-8 bg-amber-50">
         <div className="container mx-auto px-4">

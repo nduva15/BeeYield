@@ -903,91 +903,146 @@ const Traceability = () => {
                       </Badge>
                     </div>
 
-                    <div className="space-y-12 relative px-4 sm:px-8">
-                      {/* Vertical Line */}
-                      <div className="absolute left-[4rem] sm:left-[5rem] top-4 bottom-4 w-1 bg-gradient-to-b from-amber-500 to-amber-100/20" />
+
+                    <div className="space-y-12 relative px-4 sm:px-12">
+                      {/* The Golden Thread - High Fidelity Animated Line */}
+                      <div className="absolute left-[4rem] sm:left-[6rem] top-4 bottom-4 w-1 bg-neutral-100 dark:bg-white/5 overflow-hidden rounded-full">
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-b from-transparent via-beeyield-gold to-transparent opacity-80"
+                          animate={{
+                            top: ["-100%", "100%"]
+                          }}
+                          transition={{
+                            duration: 3,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-beeyield-gold/20 blur-[1px]" />
+                      </div>
 
                       {/* 1. Hive Origin Step */}
                       {traceData?.hive && (
-                        <div className="flex gap-6 sm:gap-10 group relative">
+                        <div className="flex gap-8 sm:gap-14 group relative">
                           <div className="relative z-10 shrink-0">
-                            <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-white border-4 border-amber-500 flex items-center justify-center text-amber-600 shadow-xl group-hover:scale-110 transition-transform duration-300">
-                              <Home className="h-6 w-6 sm:h-7 sm:w-7" />
-                            </div>
-                            <div className="mt-2 text-center text-[10px] font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full inline-block w-full">
+                            <motion.div
+                              whileInView={{ scale: [0.9, 1], opacity: [0, 1] }}
+                              className="h-16 w-16 sm:h-20 sm:w-20 rounded-[2rem] bg-white dark:bg-slate-900 border-4 border-beeyield-gold flex items-center justify-center text-beeyield-gold shadow-glow-amber group-hover:scale-110 transition-transform duration-500"
+                            >
+                              <Home className="h-8 w-8 sm:h-10 sm:w-10" />
+                            </motion.div>
+                            <div className="mt-3 text-center text-[10px] font-black text-beeyield-gold uppercase tracking-[0.2em]">
                               Origin
                             </div>
                           </div>
-                          <div className="flex-1 pb-8 border-b border-slate-100">
-                            <div className="flex flex-wrap items-center gap-3 mb-2">
-                              <h4 className="font-black text-xl sm:text-2xl text-slate-900 tracking-tight">Hive #{traceData.hive.hive_code}</h4>
-                              <Badge className="bg-amber-100 text-amber-800 border-amber-200">Source</Badge>
+                          <div className="flex-1 pb-12 border-b border-slate-50 dark:border-white/5">
+                            <div className="flex flex-wrap items-center gap-3 mb-4">
+                              <h4 className="font-black text-2xl sm:text-3xl text-slate-900 dark:text-white tracking-tighter">Hive #{traceData.hive.hive_code}</h4>
+                              <Badge className="bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-100 border-none font-black text-[10px] px-3 py-1">SOURCE NODE</Badge>
                             </div>
-                            <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-medium mb-3">
-                              Nectar collection began in the <span className="text-slate-900 font-bold">{traceData.apiary?.name}</span>. <br />
-                              <span className="text-sm text-slate-500">Bee Species: <span className="font-bold">{traceData.hive.bee_type}</span></span>
+                            <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 leading-relaxed font-medium mb-4">
+                              Deep within the <span className="text-slate-900 dark:text-white font-black italic">{traceData.apiary?.name}</span>, a resilient colony of <span className="text-beeyield-gold font-bold">{traceData.hive.bee_type}</span> began their harvest.
                             </p>
-                            <div className="flex items-center gap-2">
-                              <div className="bg-slate-100 text-slate-500 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                                <MapPin className="h-3 w-3" /> {traceData.apiary?.location_name}
+                            <div className="flex items-center gap-4">
+                              <div className="bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center gap-2 border border-slate-200 dark:border-white/10">
+                                <Globe className="h-3.5 w-3.5" /> {traceData.apiary?.location_name}
                               </div>
                             </div>
                           </div>
                         </div>
                       )}
 
-                      {/* 2. Ethical Harvest Metrics Step */}
-                      <div className="flex gap-6 sm:gap-10 group relative">
+                      {/* 2. Flora Step - Connecting the Thread to Botanical Origin */}
+                      <div className="flex gap-8 sm:gap-14 group relative">
                         <div className="relative z-10 shrink-0">
-                          <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-white border-4 border-amber-500 flex items-center justify-center text-amber-600 shadow-xl group-hover:scale-110 transition-transform duration-300">
-                            <Scale className="h-6 w-6 sm:h-7 sm:w-7" />
-                          </div>
-                          <div className="mt-2 text-center text-[10px] font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full inline-block w-full">
-                            Metrics
+                          <motion.div
+                            whileInView={{ scale: [0.9, 1], opacity: [0, 1] }}
+                            className="h-16 w-16 sm:h-20 sm:w-20 rounded-[2rem] bg-white dark:bg-slate-900 border-4 border-beeyield-green flex items-center justify-center text-beeyield-green shadow-glow-green group-hover:scale-110 transition-transform duration-500"
+                          >
+                            <Leaf className="h-8 w-8 sm:h-10 sm:w-10" />
+                          </motion.div>
+                          <div className="mt-3 text-center text-[10px] font-black text-beeyield-green uppercase tracking-[0.2em]">
+                            Flora
                           </div>
                         </div>
-                        <div className="flex-1 pb-8 border-b border-slate-100">
-                          <div className="flex flex-wrap items-center gap-3 mb-2">
-                            <h4 className="font-black text-xl sm:text-2xl text-slate-900 tracking-tight">Ethical Harvest Verified</h4>
-                            <Badge className="bg-green-100 text-green-800 border-green-200">50/50 Promise</Badge>
+                        <div className="flex-1 pb-12 border-b border-slate-50 dark:border-white/5">
+                          <div className="flex flex-wrap items-center gap-3 mb-4">
+                            <h4 className="font-black text-2xl sm:text-3xl text-slate-900 dark:text-white tracking-tighter">Botanical Record</h4>
+                            <Badge className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100 border-none font-black text-[10px] px-3 py-1">BIO-VERIFIED</Badge>
                           </div>
-                          <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-medium mb-3">
-                            Total Yield: <span className="text-slate-900 font-black">{traceData?.sensor_snapshot?.weight_kg || "45.2"}kg</span>. <br />
-                            Exactly 50% left for the colony.
+                          <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 leading-relaxed font-medium mb-4">
+                            Nectar sourced from <span className="text-beeyield-green font-black">{traceData?.apiary?.flora_types?.join(' & ') || 'Mixed Wildflowers'}</span> during peak blooming cycles.
                           </p>
-                          <div className="p-3 bg-green-50 rounded-xl border border-green-100 inline-block">
-                            <div className="flex items-center gap-2">
-                              <ShieldCheck className="h-4 w-4 text-green-600" />
-                              <span className="text-xs font-bold text-green-800">Scale Verified</span>
+                          <p className="text-sm text-slate-400 font-medium italic">Verified by ecosystem acoustic patterns and environmental sensor snapshots.</p>
+                        </div>
+                      </div>
+
+                      {/* 3. Ethical Harvest Step */}
+                      <div className="flex gap-8 sm:gap-14 group relative">
+                        <div className="relative z-10 shrink-0">
+                          <motion.div
+                            whileInView={{ scale: [0.9, 1], opacity: [0, 1] }}
+                            className="h-16 w-16 sm:h-20 sm:w-20 rounded-[2rem] bg-white dark:bg-slate-900 border-4 border-amber-600 flex items-center justify-center text-amber-600 shadow-glow-amber group-hover:scale-110 transition-transform duration-500"
+                          >
+                            <Scale className="h-8 w-8 sm:h-10 sm:w-10" />
+                          </motion.div>
+                          <div className="mt-3 text-center text-[10px] font-black text-amber-600 uppercase tracking-[0.2em]">
+                            Ethics
+                          </div>
+                        </div>
+                        <div className="flex-1 pb-12 border-b border-slate-50 dark:border-white/5">
+                          <div className="flex flex-wrap items-center gap-3 mb-4">
+                            <h4 className="font-black text-2xl sm:text-3xl text-slate-900 dark:text-white tracking-tighter">Harvest Protocol</h4>
+                            <Badge className="bg-beeyield-gold text-white border-none font-black text-[10px] px-3 py-1 shadow-lg">50/50 PROMISE</Badge>
+                          </div>
+                          <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 leading-relaxed font-medium mb-4">
+                            Precision harvest of <span className="text-slate-900 dark:text-white font-black">{traceData?.impact_stats?.total_honey_kg || "60"}kg</span>. Exactly half remains for colony vitality.
+                          </p>
+                          <div className="inline-flex items-center gap-2 p-3 bg-white dark:bg-slate-900 rounded-2xl border border-beeyield-gold/30 shadow-glow-amber-small">
+                            <div className="relative">
+                              <ShieldCheck className="h-4 w-4 text-beeyield-gold" />
+                              <motion.div
+                                animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+                                transition={{ duration: 2, repeat: Infinity }}
+                                className="absolute inset-0 bg-beeyield-gold/30 rounded-full"
+                              />
                             </div>
+                            <span className="text-[10px] font-black text-beeyield-gold uppercase tracking-[0.2em]">Verified Registry Entry</span>
                           </div>
                         </div>
                       </div>
 
-                      {/* 3. Standard Timeline Steps */}
-                      {traceData?.timeline?.map((step: TraceJourneyStep, idx: number) => (
-                        <div key={idx} className="flex gap-6 sm:gap-10 group relative">
-                          <div className="relative z-10 shrink-0">
-                            <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-white border-4 border-amber-500 flex items-center justify-center text-amber-600 shadow-xl group-hover:scale-110 transition-transform duration-300">
-                              <CheckCircle2 className="h-6 w-6 sm:h-7 sm:w-7" />
-                            </div>
-                            <div className="mt-2 text-center text-[10px] font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full inline-block w-full">
-                              {step.date}
-                            </div>
-                          </div>
-                          <div className="flex-1 pb-8 border-b border-slate-100 last:border-0 last:pb-0">
-                            <div className="flex flex-wrap items-center gap-3 mb-2">
-                              <h4 className="font-black text-xl sm:text-2xl text-slate-900 tracking-tight">{step.title}</h4>
-                            </div>
-                            <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-medium mb-3">{step.description}</p>
-                            <div className="flex items-center gap-2">
-                              <div className="bg-slate-100 text-slate-500 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                                <MapPin className="h-3 w-3" /> {step.location}
-                              </div>
-                            </div>
+                      {/* 4. Journey Closure: Your Jar */}
+                      <div className="flex gap-8 sm:gap-14 group relative">
+                        <div className="relative z-10 shrink-0">
+                          <motion.div
+                            whileInView={{ scale: [0.9, 1], opacity: [0, 1] }}
+                            className="h-16 w-16 sm:h-20 sm:w-20 rounded-[2.5rem] bg-slate-900 border-4 border-amber-400 flex items-center justify-center text-amber-400 shadow-glow-amber group-hover:scale-110 transition-transform duration-500"
+                          >
+                            <Box className="h-8 w-8 sm:h-10 sm:w-10" />
+                          </motion.div>
+                          <div className="mt-3 text-center text-[10px] font-black text-amber-400 uppercase tracking-[0.2em]">
+                            Your Jar
                           </div>
                         </div>
-                      ))}
+                        <div className="flex-1 last:pb-0">
+                          <div className="flex flex-wrap items-center gap-3 mb-4">
+                            <h4 className="font-black text-2xl sm:text-3xl text-slate-900 dark:text-white tracking-tighter">Final Custody</h4>
+                            <Badge className="bg-slate-900 text-white border-none font-black text-[10px] px-3 py-1">END NODE</Badge>
+                          </div>
+                          <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 leading-relaxed font-medium mb-4">
+                            Hand-bottled and assigned to batch <span className="text-beeyield-gold font-black underline underline-offset-4 decoration-2">{traceData?.batch_code}</span>. Destination: Excellence.
+                          </p>
+                          <motion.div
+                            animate={{ opacity: [0.5, 1, 0.5] }}
+                            transition={{ duration: 2, repeat: Infinity }}
+                            className="flex items-center gap-2 text-beeyield-gold font-black text-[10px] uppercase tracking-[0.3em]"
+                          >
+                            <div className="h-1 w-1 rounded-full bg-beeyield-gold" />
+                            RADICAL TRANSPARENCY ACHIEVED
+                          </motion.div>
+                        </div>
+                      </div>
                     </div>
                   </div>
 

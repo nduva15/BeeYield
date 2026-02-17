@@ -99,7 +99,7 @@ export interface TraceResponse {
     story_content: string;
 
     // Stats / Impact
-    impact_stats: ImpactStats | Record<string, unknown>;
+    impact_stats?: ImpactStats;
 
 
     // Sensor Snapshot

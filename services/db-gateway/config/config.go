@@ -26,6 +26,10 @@ type Config struct {
 	ClickHouseDatabase string
 	ClickHouseSecure   bool
 
+	// Kaggle
+	KaggleUsername  string
+	KaggleAPIKey    string
+
 	// JWT
 	JWTSecret    string
 	SupabaseJWTSecret string
@@ -50,6 +54,9 @@ func LoadFromEnv() *Config {
 		ClickHousePassword: os.Getenv("CLICKHOUSE_PASSWORD"),
 		ClickHouseDatabase: getEnvDefault("CLICKHOUSE_DATABASE", "beeyield_analytics"),
 		ClickHouseSecure:   getEnvBoolDefault("CLICKHOUSE_SECURE", true),
+
+		KaggleUsername: os.Getenv("KAGGLE_USERNAME"),
+		KaggleAPIKey:   os.Getenv("KAGGLE_KEY"),
 
 		JWTSecret:    os.Getenv("SECRET_KEY"),
 		SupabaseJWTSecret: os.Getenv("SUPABASE_JWT_SECRET"),

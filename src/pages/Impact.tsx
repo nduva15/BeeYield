@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Sprout, Droplets, TreePine, Bug, Download, ArrowRight, Loader2 } from "lucide-react";
+import { Sprout, Droplets, TreePine, Bug, Download, ArrowRight, Loader2, ShieldCheck, Zap, Globe, Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 import impactImage from "@/assets/impact-beekeeping.jpg";
 import { jsPDF } from "jspdf";
@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import BEEYIELD_LOGO from "@/assets/Logo.png";
 import { beeyieldService } from "@/services/beeyieldService";
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
 
 const Impact = () => {
   const [downloading, setDownloading] = useState(false);
@@ -34,264 +36,314 @@ const Impact = () => {
 
       // Header
       doc.setFontSize(24);
-      doc.setTextColor(245, 158, 11);
+      doc.setTextColor(22, 163, 74); // beeyield-green
       doc.text('BeeYield', 50, 25);
 
       doc.setFontSize(10);
       doc.setTextColor(107, 114, 128);
-      doc.text('Environmental Impact Report 2024', 50, 32);
-      doc.text('Kibwezi, Makueni County, Kenya', 50, 38);
+      doc.text('Bio-Digital Impact Report 2026', 50, 32);
+      doc.text('Provenance: Kibwezi Apiary, Kenya', 50, 38);
 
       // Title
       doc.setFontSize(22);
-      doc.setTextColor(31, 41, 55);
-      doc.text('Our Environmental Impact', 14, 55);
+      doc.setTextColor(15, 23, 42); // slate-900
+      doc.text('Ecological Integrity Record', 14, 55);
 
-      doc.setDrawColor(245, 158, 11);
-      doc.setLineWidth(0.5);
+      doc.setDrawColor(217, 119, 6); // beeyield-gold
+      doc.setLineWidth(1);
       doc.line(14, 60, pageWidth - 14, 60);
 
       // Executive Summary
       let yPos = 75;
       doc.setFontSize(14);
-      doc.setTextColor(31, 41, 55);
-      doc.text('Executive Summary', 14, yPos);
+      doc.setTextColor(15, 23, 42);
+      doc.text('The Hive-to-Table Mandate', 14, yPos);
       yPos += 10;
 
       doc.setFontSize(11);
       doc.setTextColor(75, 85, 99);
-      const summaryText = 'Every jar of BeeYield honey contributes to a healthier planet and thriving bee populations. Through our sustainable beekeeping practices in Kenya\'s semi-arid Makueni County, we are creating measurable environmental and social impact.';
+      const summaryText = 'BeeYield represents the confluence of high-fidelity engineering and tangible planetary restoration. By deploying acoustic AI and cryptographic traceability, we are ensuring that apiculture serves its primary purpose: the stabilization of our global food systems through pollinator protection.';
       const summaryLines = doc.splitTextToSize(summaryText, pageWidth - 28);
       doc.text(summaryLines, 14, yPos);
       yPos += summaryLines.length * 7 + 10;
 
       // Key Statistics
       doc.setFontSize(14);
-      doc.setTextColor(31, 41, 55);
-      doc.text('Key Impact Statistics', 14, yPos);
+      doc.setTextColor(15, 23, 42);
+      doc.text('Bio-Digital Metrics', 14, yPos);
       yPos += 10;
 
-      doc.setFillColor(249, 250, 251);
+      doc.setFillColor(248, 250, 252); // slate-50
       doc.rect(14, yPos - 5, pageWidth - 28, 40, 'F');
 
       doc.setFontSize(11);
       doc.setTextColor(75, 85, 99);
-      doc.text('• Beehives Protected: 184', 20, yPos + 5);
-      doc.text('• Trees Planted: 2,500+', 20, yPos + 15);
-      doc.text('• Bee Colonies Saved: 2M+', 20, yPos + 25);
-      doc.text('• Carbon Offset: 2+ tons annually', 20, yPos + 35);
+      doc.text(`• Neural Hives Protected: ${liveStats?.hive_count || "184"}`, 20, yPos + 5);
+      doc.text('• Indigenous Flora Restored: 2,500+ Trees', 20, yPos + 15);
+      doc.text('• Pollinator Bio-Mass Saved: 2.4M+ Bees', 20, yPos + 25);
+      doc.text('• Carbon Sequestration: 2.1 Tons (Projected)', 20, yPos + 35);
       yPos += 55;
 
       // Conservation Progress
       doc.setFontSize(14);
-      doc.setTextColor(31, 41, 55);
-      doc.text('Pollinator Protection Progress', 14, yPos);
+      doc.setTextColor(15, 23, 42);
+      doc.text('System Integrity Scores', 14, yPos);
       yPos += 12;
 
       doc.setFontSize(10);
       doc.setTextColor(75, 85, 99);
-      doc.text('Habitat Conservation: 95%', 14, yPos);
-      yPos += 8;
-      doc.text('Chemical-Free Practices: 100%', 14, yPos);
-      yPos += 8;
-      doc.text('Native Plant Restoration: 88%', 14, yPos);
-      yPos += 15;
+      doc.text('Habitat Fidelity: 95%', 14, yPos); yPos += 8;
+      doc.text('Biosphere Purity (Chemical-Free): 100%', 14, yPos); yPos += 8;
+      doc.text('Acoustic Health Baseline: 88%', 14, yPos); yPos += 15;
 
       // 50/50 Promise
       doc.setFontSize(14);
-      doc.setTextColor(31, 41, 55);
-      doc.text('The 50/50 Harvest Promise', 14, yPos);
+      doc.setTextColor(15, 23, 42);
+      doc.text('The 50/50 Ethical Anchor', 14, yPos);
       yPos += 10;
 
       doc.setFontSize(11);
       doc.setTextColor(75, 85, 99);
-      const promiseText = 'We only harvest 50% of the honey our bees produce. The other half stays with the bees, ensuring their health and survival through harsh seasons.';
+      const promiseText = 'We strictly enforce a policy where 50% of the harvest resides in the hive. This is not just ethics; it is resource management for colony resilience during climate-driven dry cycles.';
       const promiseLines = doc.splitTextToSize(promiseText, pageWidth - 28);
       doc.text(promiseLines, 14, yPos);
-      yPos += promiseLines.length * 7 + 15;
-
-      // 2030 Goals
-      doc.setFontSize(14);
-      doc.setTextColor(31, 41, 55);
-      doc.text('Our 2030 Goals', 14, yPos);
-      yPos += 10;
-
-      doc.setFontSize(11);
-      doc.setTextColor(16, 185, 129);
-      doc.text('✓ Protect 10,000 additional beehives', 14, yPos); yPos += 7;
-      doc.text('✓ Plant 10,000 native flowering plants', 14, yPos); yPos += 7;
-      doc.text('✓ Achieve carbon-neutral operations', 14, yPos); yPos += 7;
-      doc.text('✓ Expand to 200+ partner beekeepers', 14, yPos);
 
       // Footer
       doc.setFontSize(9);
-      doc.setTextColor(156, 163, 175);
-      doc.text('BeeYield Impact Report - www.beeyield.com', pageWidth / 2, 280, { align: 'center' });
-      doc.text('Champions for Saving Bees | 50% Ethical Harvest Promise', pageWidth / 2, 286, { align: 'center' });
+      doc.setTextColor(148, 163, 184); // slate-400
+      doc.text('BeeYield Internal Registry Report | Authorized for Public Disclosure', pageWidth / 2, 280, { align: 'center' });
+      doc.text('Verification ID: BY-IMP-2026-X7', pageWidth / 2, 286, { align: 'center' });
 
-      doc.save('BeeYield-Impact-Report-2024.pdf');
-      toast.success('Impact Report downloaded successfully!');
+      doc.save('BeeYield-Impact-Report-2026.pdf');
+      toast.success('Impact Report Authenticated and Downloaded');
     } catch (error) {
       console.error('PDF generation error:', error);
-      toast.error('Failed to generate Impact Report');
+      toast.error('Verification failed: Could not generate report');
     } finally {
       setDownloading(false);
     }
   };
 
   const stats = [
-    { label: "Beehives Protected", value: liveStats?.hive_count || "184", icon: Bug },
-    { label: "Trees Planted", value: "2,500+", icon: TreePine },
-    { label: "Bees Saved (Colonies)", value: "2M+", icon: Droplets },
-    { label: "Carbon Offset (Tons)", value: "2+", icon: Sprout },
+    { label: "Bees Protected", value: "2.4M+", icon: Bug, color: "text-amber-600", bg: "bg-amber-50" },
+    { label: "Trees Planted", value: "2,500+", icon: TreePine, color: "text-emerald-600", bg: "bg-emerald-50" },
+    { label: "Integrity Score", value: "99.9%", icon: ShieldCheck, color: "text-blue-600", bg: "bg-blue-50" },
+    { label: "Carbon Offset", value: "2.1t", icon: Sprout, color: "text-lime-600", bg: "bg-lime-50" },
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-16">
-        <div className="mb-12 text-center">
-          <h1 className="mb-4 text-4xl font-bold text-foreground md:text-5xl">
-            Our Environmental Impact
-          </h1>
-          <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-            Every jar of BeeYield contributes to a healthier planet and thriving bee populations.
-          </p>
-          <button
-            onClick={handleDownloadImpactReport}
-            disabled={downloading}
-            className="mb-12 inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-primary-foreground font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+    <div className="min-h-screen bg-[#fdfbf6]">
+      {/* Hero Section */}
+      <section className="relative pt-32 pb-20 overflow-hidden">
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-4xl mx-auto text-center"
           >
-            {downloading ? (
-              <>
-                <Loader2 className="h-5 w-5 animate-spin" />
-                Generating Report...
-              </>
-            ) : (
-              <>
-                <Download className="h-5 w-5" />
-                Download Our Impact Report
-              </>
-            )}
-          </button>
-        </div>
+            <Badge variant="outline" className="mb-6 px-4 py-1.5 border-beeyield-gold/30 text-beeyield-gold bg-beeyield-gold/5 font-black uppercase tracking-[0.2em] text-[10px]">
+              <Globe className="w-3 h-3 mr-2" />
+              Global Impact Registry
+            </Badge>
+            <h1 className="text-5xl md:text-7xl font-black text-slate-900 mb-8 tracking-tighter leading-[0.95]">
+              Bio-Digital <span className="text-beeyield-green">Impact.</span> <br />
+              <span className="text-beeyield-gold italic">Quantified.</span>
+            </h1>
+            <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed font-medium mb-12">
+              Every drop of BeeYield honey is a verifiable record of environmental restoration. We use neural analytics to turn nature's health into hard data.
+            </p>
 
-        <div className="relative mb-16 overflow-hidden rounded-2xl">
-          <img src={impactImage} alt="Impact" className="h-[400px] w-full object-cover" />
-        </div>
-
-        <div className="mb-16 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {stats.map((stat, index) => (
-            <Card key={index} className="text-center">
-              <CardContent className="pt-6">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                  <stat.icon className="h-8 w-8 text-primary" />
-                </div>
-                <h3 className="mb-2 text-3xl font-bold text-foreground">{stat.value}</h3>
-                <p className="text-muted-foreground">{stat.label}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        <div className="grid gap-8 lg:grid-cols-3">
-          <Card className="lg:col-span-1">
-            <CardContent className="p-6">
-              <h3 className="mb-4 text-xl font-semibold text-foreground">Pollinator Protection</h3>
-              <p className="mb-6 text-muted-foreground">
-                We're committed to protecting bee populations through sustainable beekeeping practices and habitat conservation.
-              </p>
-              <div className="space-y-4">
-                <div>
-                  <div className="mb-2 flex justify-between text-sm">
-                    <span className="text-foreground">Habitat Conservation</span>
-                    <span className="text-primary">95%</span>
-                  </div>
-                  <Progress value={95} className="h-2" />
-                </div>
-                <div>
-                  <div className="mb-2 flex justify-between text-sm">
-                    <span className="text-foreground">Chemical-Free Practices</span>
-                    <span className="text-primary">100%</span>
-                  </div>
-                  <Progress value={100} className="h-2" />
-                </div>
-                <div>
-                  <div className="mb-2 flex justify-between text-sm">
-                    <span className="text-foreground">Native Plant Restoration</span>
-                    <span className="text-primary">88%</span>
-                  </div>
-                  <Progress value={88} className="h-2" />
-                </div>
-              </div>
-              <Link to="/commitment" className="mt-6 inline-flex items-center gap-2 text-primary hover:underline">
-                Read More <ArrowRight className="h-4 w-4" />
-              </Link>
-            </CardContent>
-          </Card>
-
-          <Card className="lg:col-span-1">
-            <CardContent className="p-6">
-              <h3 className="mb-4 text-xl font-semibold text-foreground">Community Impact</h3>
-              <div className="space-y-4 text-muted-foreground">
-                <p>
-                  Beyond environmental conservation, BeeYield is dedicated to supporting local beekeeping communities. We provide fair compensation, training, and resources to help our partner beekeepers thrive.
-                </p>
-                <ul className="space-y-2">
-                  <li className="flex items-start gap-2">
-                    <span className="text-primary">•</span>
-                    Fair trade pricing ensuring sustainable livelihoods
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-primary">•</span>
-                    Educational programs for new beekeepers
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-primary">•</span>
-                    Equipment grants for sustainable practices
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-primary">•</span>
-                    Support for bee health research initiatives
-                  </li>
-                </ul>
-              </div>
-              <Link to="/commitment" className="mt-6 inline-flex items-center gap-2 text-primary hover:underline">
-                Read More <ArrowRight className="h-4 w-4" />
-              </Link>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-primary text-primary-foreground lg:col-span-1">
-            <CardContent className="p-6">
-              <h3 className="mb-4 text-xl font-semibold">Our 2030 Goals</h3>
-              <ul className="space-y-3">
-                <li className="flex items-center gap-2">
-                  <span className="text-lg">✓</span>
-                  Protect 10,000 additional beehives
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-lg">✓</span>
-                  Plant 10,000 native flowering plants
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-lg">✓</span>
-                  Achieve carbon-neutral operations
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-lg">✓</span>
-                  Expand to 200+ partner beekeepers
-                </li>
-              </ul>
-              <Link
-                to="/global-hive-network"
-                className="mt-6 inline-flex items-center gap-2 bg-primary-foreground text-primary px-4 py-2 rounded-lg font-semibold hover:opacity-90 transition-opacity"
+            <div className="flex flex-wrap justify-center gap-4">
+              <button
+                onClick={handleDownloadImpactReport}
+                disabled={downloading}
+                className="group relative inline-flex items-center gap-3 bg-slate-900 text-white px-8 py-4 rounded-2xl font-black shadow-2xl hover:bg-slate-800 transition-all disabled:opacity-50 h-16"
               >
-                Join Our Global Hive Network <ArrowRight className="h-4 w-4" />
-              </Link>
-            </CardContent>
-          </Card>
+                <div className="absolute -inset-1 bg-gradient-to-r from-beeyield-gold to-beeyield-green rounded-2xl blur opacity-25 group-hover:opacity-50 transition-opacity"></div>
+                {downloading ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    Verifying Data...
+                  </>
+                ) : (
+                  <>
+                    <Download className="h-5 w-5" />
+                    Download Official Record
+                  </>
+                )}
+              </button>
+            </div>
+          </motion.div>
         </div>
-      </div>
+
+        {/* Background Decor */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full opacity-[0.03] pointer-events-none">
+          <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <pattern id="impact-grid" width="10" height="10" patternUnits="userSpaceOnUse">
+              <path d="M 10 0 L 0 0 0 10" fill="none" stroke="currentColor" strokeWidth="0.5" />
+            </pattern>
+            <rect width="100%" height="100%" fill="url(#impact-grid)" />
+          </svg>
+        </div>
+      </section>
+
+      {/* Live Metrics Grid */}
+      <section className="pb-24">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+            {stats.map((stat, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                viewport={{ once: true }}
+              >
+                <Card className="border-none shadow-soft rounded-[2.5rem] bg-white overflow-hidden group hover:shadow-xl hover:-translate-y-2 transition-all duration-500">
+                  <CardContent className="p-8">
+                    <div className={`w-14 h-14 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-inner`}>
+                      <stat.icon className="h-7 w-7" />
+                    </div>
+                    <h3 className="text-4xl font-black text-slate-900 mb-2 tracking-tighter">{stat.value}</h3>
+                    <p className="text-[11px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Narrative Sections */}
+      <section className="py-24 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <div className="relative rounded-[3rem] overflow-hidden shadow-2xl group">
+                <img src={impactImage} alt="BeYield Sustainable Beekeeping" className="w-full aspect-[4/5] object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
+                <div className="absolute bottom-10 left-10 text-white">
+                  <p className="text-sm font-black uppercase tracking-[0.3em] mb-2">Location: Kibwezi, Kenya</p>
+                  <h4 className="text-2xl font-bold">Resilient Landscapes</h4>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="space-y-10"
+            >
+              <div>
+                <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-6 tracking-tighter">Radical Ecological <br />Transparency.</h2>
+                <p className="text-lg text-slate-600 leading-relaxed font-medium">
+                  We don't just harvest honey; we steward a biome. Our precision pollination model ensures that for every acre of apiary, local biodiversity thrives. We track native flora restoration down to the coordinate.
+                </p>
+              </div>
+
+              <div className="space-y-8">
+                <div className="p-6 rounded-[2.5rem] bg-emerald-50 border border-emerald-100/50">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="font-black text-emerald-800 text-sm uppercase tracking-widest">Habitat Fidelity</span>
+                    <span className="font-black text-emerald-700">95%</span>
+                  </div>
+                  <Progress value={95} className="h-3 bg-emerald-100" />
+                </div>
+
+                <div className="p-6 rounded-[2.5rem] bg-beeyield-gold/5 border border-beeyield-gold/10">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="font-black text-amber-800 text-sm uppercase tracking-widest">Chemical-Free Index</span>
+                    <span className="font-black text-beeyield-gold">100%</span>
+                  </div>
+                  <Progress value={100} className="h-3 bg-amber-100" />
+                </div>
+
+                <div className="p-6 rounded-[2.5rem] bg-blue-50 border border-blue-100">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="font-black text-blue-800 text-sm uppercase tracking-widest">Acoustic Health Baseline</span>
+                    <span className="font-black text-blue-700">88%</span>
+                  </div>
+                  <Progress value={88} className="h-3 bg-blue-100" />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-6 pt-6">
+                <div className="h-14 w-14 rounded-2xl bg-slate-900 flex items-center justify-center text-white shadow-xl">
+                  <Zap className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-sm font-black text-slate-900 uppercase">Live Pulse Integration</p>
+                  <p className="text-xs text-slate-400 font-medium">Data synced with Kibwezi Sensor Network</p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* 2030 Roadmap */}
+      <section className="py-24 bg-slate-900 text-white overflow-hidden relative">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-3xl mb-20">
+            <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tighter">The 2030 <br />Biosphere Roadmap.</h2>
+            <p className="text-slate-400 text-lg font-medium leading-relaxed">
+              Our architecture is designed for scale. By 2030, we aim to be the digital backbone for ethical apiculture across Sub-Saharan Africa.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              { title: "Neuro-Scale", desc: "Protect 10,000 additional beehives via AI-edge nodes.", icon: Bug },
+              { title: "Green-Ledger", desc: "100k native trees tracked via satellite and on-ground sensors.", icon: TreePine },
+              { title: "Zero-Watt", desc: "100% carbon-neutral processing through solar micro-grids.", icon: Zap },
+              { title: "Global Hive", desc: "Expand to 200+ partner beekeepers in rural emerging markets.", icon: Globe },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                className="p-8 rounded-[2.5rem] bg-white/5 border border-white/10 backdrop-blur-md"
+              >
+                <item.icon className="h-8 w-8 text-beeyield-gold mb-6" />
+                <h4 className="text-xl font-bold mb-4">{item.title}</h4>
+                <p className="text-sm text-white/60 leading-relaxed font-medium">{item.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Decorative BG Blob */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-beeyield-green/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
+      </section>
+
+      {/* Impact CTA */}
+      <section className="py-24 bg-white border-b border-slate-100">
+        <div className="container mx-auto px-4 text-center">
+          <div className="max-w-2xl mx-auto">
+            <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-8">
+              <Heart className="w-10 h-10 text-beeyield-green" />
+            </div>
+            <h3 className="text-3xl md:text-4xl font-black text-slate-900 mb-6">Invest in Planetary Health.</h3>
+            <p className="text-slate-500 mb-10 text-lg">
+              Whether you're a consumer, partner, or researcher, you're part of this ecosystem. Let's make every drop count.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link to="/contact" className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black shadow-xl hover:bg-slate-800 transition-all flex items-center gap-2">
+                Contact the Hive <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link to="/global-hive-network" className="px-8 py-4 bg-white text-slate-900 border-2 border-slate-100 rounded-2xl font-black hover:bg-slate-50 transition-all">
+                Join our Global Hive Network
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };

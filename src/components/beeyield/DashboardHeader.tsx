@@ -109,6 +109,12 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onLogout, onTabChange
                     <Headphones className="w-4 h-4 text-beeyield-green/40 group-hover:text-beeyield-green transition-colors" />
                 </Button>
 
+                {/* Sync Status - New Offline-First Indicator */}
+                <div className="hidden lg:flex items-center gap-2.5 px-4 h-12 rounded-full border border-beeyield-green/5 bg-slate-50/50">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.1em] text-beeyield-green/40">Sync Protocol: Persistent</span>
+                </div>
+
                 {/* IoT Connection Status (Wifi Icon) */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>

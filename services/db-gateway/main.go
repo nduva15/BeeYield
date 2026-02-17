@@ -44,6 +44,10 @@ func main() {
 	mux.HandleFunc("GET /ch/analytics/summary", gw.GetAnalyticsSummary)
 	mux.HandleFunc("POST /ch/init-tables", gw.InitClickHouseTables)
 
+	// ===== Kaggle Remote Inference =====
+	mux.HandleFunc("POST /inference/kaggle/trigger", gw.TriggerKaggleInference)
+	mux.HandleFunc("GET /inference/kaggle/status/", gw.GetKaggleInferenceStatus)
+
 	// ===== Health =====
 	mux.HandleFunc("GET /health", gw.HealthCheck)
 
