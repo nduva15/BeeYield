@@ -82,8 +82,8 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
                         <Shield className="w-6 h-6 text-beeyield-gold" />
                     </div>
                     <div className="flex flex-col">
-                        <h1 className="font-black text-xl leading-none tracking-tight text-beeyield-green">BeeYield</h1>
-                        <span className="text-[10px] text-beeyield-green/60 font-bold uppercase tracking-widest mt-1.5">Enterprise Core</span>
+                        <h1 className="font-black text-xl leading-none tracking-tight text-beeyield-green">CEBA</h1>
+                        <span className="text-[10px] text-beeyield-green/60 font-bold uppercase tracking-widest mt-1.5">Admin Command</span>
                     </div>
                 </div>
             </div>
