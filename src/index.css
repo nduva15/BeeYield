@@ -247,6 +247,37 @@ All colors MUST be HSL.
   }
 }
 
+/* ===== "INTELLIGENT HIVE" DESIGN SYSTEM ===== */
+/* Glass & Gold Aesthetic with Framer Motion Physics */
+
+:root {
+  /* Honey Gold Enhanced Palette */
+  --honey-gold: 38 92% 50%;
+  /* #F59E0B */
+  --pollen-yellow: 45 93% 58%;
+  /* #FBBF24 */
+  --hive-dark: 222 47% 11%;
+  /* #0F172A */
+  --card-glass: 215 25% 27%;
+  /* #1E293B */
+  --slate-dark: 215 25% 17%;
+  /* #1E293B */
+  --slate-light: 210 40% 98%;
+  /* #F8FAFC */
+  --leaf-green: 158 64% 52%;
+  /* #10B981 */
+  --varroa-red: 0 84% 60%;
+  /* #EF4444 */
+
+  /* Motion Curves (Framer-like) */
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  /* Bouncy interactions */
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Standard UI motion */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Satisfying deceleration */
+}
+
 /* ===== ANIMATIONS ===== */
 @keyframes float {
 
@@ -375,6 +406,44 @@ All colors MUST be HSL.
   animation: scale-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* === INTELLIGENT HIVE MICRO-INTERACTIONS === */
+
+/* Pulse effect for live IoT status */
+@keyframes pulse-gold {
+  0% {
+    box-shadow: 0 0 0 0 hsla(var(--honey-gold), 0.7);
+  }
+
+  70% {
+    box-shadow: 0 0 0 6px hsla(var(--honey-gold), 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 hsla(var(--honey-gold), 0);
+  }
+}
+
+/* Page entrance animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-pulse-gold {
+  animation: pulse-gold 2s infinite;
+}
+
+.animate-enter {
+  animation: fadeIn 0.5s var(--ease-smooth) forwards;
+}
+
 /* ===== SHADOW UTILITIES ===== */
 @layer utilities {
   .shadow-soft {
@@ -403,6 +472,60 @@ All colors MUST be HSL.
 
   .glass-morphism {
     @apply bg-white/70 dark:bg-black/70 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg;
+  }
+
+  /* === INTELLIGENT HIVE COMPONENT STYLES === */
+
+  /* 1. Interactive Button Physics */
+  .btn-interactive {
+    transition: transform 0.2s var(--ease-spring), box-shadow 0.2s var(--ease-smooth);
+  }
+
+  .btn-interactive:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px hsla(var(--honey-gold), 0.3);
+  }
+
+  .btn-interactive:active {
+    transform: scale(0.96);
+  }
+
+  /* 2. Card Hover Lift Effect */
+  .card-hover {
+    transition: all 0.3s var(--ease-smooth);
+    border: 1px solid hsl(var(--border));
+  }
+
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+      0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border-color: hsl(var(--honey-gold));
+  }
+
+  /* 3. Status Dot for Live IoT Data */
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    background-color: hsl(var(--honey-gold));
+    border-radius: 50%;
+  }
+
+  /* 4. Honey Gold Badge */
+  .badge-gold {
+    background-color: hsla(var(--honey-gold), 0.1);
+    color: hsl(var(--honey-gold));
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.75rem;
+  }
+
+  /* 5. Glass Hive Card */
+  .glass-hive {
+    @apply bg-white dark:bg-[#1E293B] rounded-[20px] border border-gray-100 dark:border-gray-800;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
   /* Mobile touch-friendly spacing */

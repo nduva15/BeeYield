@@ -61,6 +61,8 @@ import SoundAnalysisView from '@/components/beeyield/SoundAnalysisView';
 import HealthGuideView from '@/components/beeyield/HealthGuideView';
 import FlightMapView from '@/components/beeyield/FlightMapView';
 import VarroaView from '@/components/beeyield/VarroaView';
+import IntelligentHiveDashboard from '@/components/beeyield/IntelligentHiveDashboard';
+
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 
@@ -78,7 +80,7 @@ const BeeYieldDashboard: React.FC = () => {
     const [readings, setReadings] = useState<SensorReading[]>([]);
     const [apiaries, setApiaries] = useState<Apiary[]>([]);
     const [hives, setHives] = useState<Hive[]>([]);
-    const [activeTab, setActiveTab] = useState('devices');
+    const [activeTab, setActiveTab] = useState('overview');
     const [aiInitialMessage, setAiInitialMessage] = useState<string | null>(null);
     const [showBanner, setShowBanner] = useState(true);
 
@@ -164,6 +166,7 @@ const BeeYieldDashboard: React.FC = () => {
 
     // Nav Items matching screenshot precisely
     const navItems: NavItem[] = [
+        { id: 'overview', label: '🎨 Design Demo', icon: LayoutGrid },
         { id: 'assistant', label: t('nav_ai_assistant'), icon: Bot },
         { id: 'agro-intelligence', label: t('nav_agro_intelligence'), icon: LayoutGrid },
         { id: 'precision-pollination', label: t('nav_precision_pollination'), icon: Calculator },
@@ -253,6 +256,8 @@ const BeeYieldDashboard: React.FC = () => {
     // Function to render content based on active tab
     const renderContent = () => {
         switch (activeTab) {
+            case 'overview':
+                return <IntelligentHiveDashboard onTabChange={handleTabChange} />;
             case 'assistant':
                 return (
                     <AIAssistantView
