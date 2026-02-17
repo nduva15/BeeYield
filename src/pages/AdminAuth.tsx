@@ -96,11 +96,11 @@ const AdminAuth = () => {
                     <div className="space-y-2">
                         <div className="flex items-center justify-center gap-3">
                             <div className="h-px w-8 bg-beeyield-gold/50" />
-                            <span className="text-[10px] font-black text-beeyield-gold tracking-[0.5em] uppercase">Admin Access</span>
+                            <span className="text-[10px] font-black text-beeyield-gold tracking-[0.5em] uppercase">CEBA Entry</span>
                             <div className="h-px w-8 bg-beeyield-gold/50" />
                         </div>
                         <h1 className="text-5xl font-black text-beeyield-green tracking-tightest">Secure <span className="text-beeyield-gold italic font-normal">Terminal</span></h1>
-                        <p className="text-sm font-medium text-beeyield-green/40 max-w-xs mx-auto">Authorized access only for BeeYield administration.</p>
+                        <p className="text-sm font-medium text-beeyield-green/40 max-w-xs mx-auto">Authorized access only for CEBA administrators.</p>
                     </div>
                 </motion.div>
 

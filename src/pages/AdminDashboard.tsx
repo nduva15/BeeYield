@@ -981,8 +981,8 @@ const AdminDashboard: React.FC = () => {
                 {/* Header Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                     <div>
-                        <h1 className="text-4xl font-black text-beeyield-green tracking-tightest">Terminal <span className="text-beeyield-gold italic">Control</span></h1>
-                        <p className="text-beeyield-green/40 font-black uppercase tracking-[0.2em] text-[10px] mt-2">BeeYield Administration Layer</p>
+                        <h1 className="text-4xl font-black text-beeyield-green tracking-tightest">CEBA <span className="text-beeyield-gold italic">Terminal</span></h1>
+                        <p className="text-beeyield-green/40 font-black uppercase tracking-[0.2em] text-[10px] mt-2">Central Intelligence & Data Command</p>
                     </div>
                 </div>
 

@@ -355,6 +355,16 @@ export const adminService = {
         return await apiDelete<any>(`/admin/farmers/${id}`);
     },
 
+    // ============== STOCK MOVEMENTS ==============
+    getStockMovements: async () => {
+        try { return await apiGet<any[]>('/admin/stock-movements'); }
+        catch { return (await supabase?.from('stock_movements').select('*'))?.data || []; }
+    },
+
+    createStockMovement: async (data: any) => {
+        return await apiPost<any>('/admin/stock-movements', data);
+    },
+
     // ============== APIARIES & HIVES ==============
     getApiaries: async () => {
         try { return await apiGet<any[]>('/admin/apiaries'); }
@@ -366,16 +376,56 @@ export const adminService = {
         catch { return (await supabase?.from('hives').select('*'))?.data || []; }
     },
 
+    createApiary: async (data: any) => {
+        return await apiPost<any>('/admin/apiaries', data);
+    },
+
+    updateApiary: async (id: string, data: any) => {
+        return await apiPut<any>(`/admin/apiaries/${id}`, data);
+    },
+
+    deleteApiary: async (id: string) => {
+        return await apiDelete<any>(`/admin/apiaries/${id}`);
+    },
+
+    createHive: async (data: any) => {
+        return await apiPost<any>('/admin/hives', data);
+    },
+
+    updateHive: async (id: string, data: any) => {
+        return await apiPut<any>(`/admin/hives/${id}`, data);
+    },
+
+    deleteHive: async (id: string) => {
+        return await apiDelete<any>(`/admin/hives/${id}`);
+    },
+
     // ============== POLLINATION ==============
     getPollinationRequests: async () => {
         try { return await apiGet<any[]>('/admin/pollination'); }
         catch { return (await supabase?.from('pollination_requests').select('*'))?.data || []; }
     },
 
+    updatePollinationRequestStatus: async (id: string, status: string) => {
+        return await apiPut<any>(`/admin/pollination/${id}/status`, { status });
+    },
+
+    deletePollinationRequest: async (id: string) => {
+        return await apiDelete<any>(`/admin/pollination/${id}`);
+    },
+
     // ============== CONTACT ==============
     getContactRequests: async () => {
         try { return await apiGet<any[]>('/admin/contact'); }
         catch { return (await supabase?.from('contact_submissions').select('*'))?.data || []; }
+    },
+
+    updateContactRequestStatus: async (id: string, status: string) => {
+        return await apiPut<any>(`/admin/contact/${id}/status`, { status });
+    },
+
+    deleteContactRequest: async (id: string) => {
+        return await apiDelete<any>(`/admin/contact/${id}`);
     },
 
     // ============== ACTIVITY LOGS ==============
@@ -406,6 +456,10 @@ export const adminService = {
     // ============== USER MANAGEMENT ==============
     getUsers: async () => {
         return await apiGet<any[]>('/admin/users');
+    },
+
+    createUser: async (userData: any) => {
+        return await apiPost<any>('/admin/users', userData);
     },
 
     updateUserRole: async (userId: string, role: string) => {
