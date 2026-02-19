@@ -39,8 +39,8 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from "@/components/ui/progress";
-import LoginForm from '@/components/auth/LoginForm';
-import RegisterForm from '@/components/auth/RegisterForm';
+import ShopLoginForm from '@/components/auth/shop/ShopLoginForm';
+import ShopRegisterForm from '@/components/auth/shop/ShopRegisterForm';
 import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
 import { StripeCardForm } from '@/components/payments/StripeCardForm';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -1334,42 +1334,63 @@ const ShopDashboard = () => {
     }
 
     if (!user) {
-        // Show login/signup modal for BeeYield dashboard
+        // Show login/signup modal for Shop dashboard
         return (
-            <div className="min-h-screen flex items-center justify-center bg-background">
-                <div className="max-w-md w-full p-6 rounded-2xl shadow-lg bg-white dark:bg-zinc-900">
-                    <div className="flex justify-center mb-6">
-                        <img src="/logo.png" alt="BeeYield Logo" className="w-16 h-16" />
+            <div className="min-h-screen flex items-center justify-center bg-beeyield-cream/50 relative overflow-hidden">
+                {/* Background Decoration */}
+                <div className="absolute top-0 right-0 w-96 h-96 bg-beeyield-gold/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
+                <div className="absolute bottom-0 left-0 w-96 h-96 bg-beeyield-orange/5 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2" />
+
+                <div className="max-w-md w-full p-8 rounded-[2.5rem] shadow-premium bg-white border border-beeyield-gold/20 relative z-10 mx-4">
+                    <div className="flex justify-center mb-8 relative">
+                        <div className="absolute inset-0 bg-beeyield-gold/20 blur-xl rounded-full scale-150 animate-pulse" />
+                        <img src="/logo.png" alt="BeeYield Logo" className="w-20 h-20 relative z-10" />
                     </div>
-                    <div className="mb-4 text-center">
-                        <h1 className="text-2xl font-black">BeeYield Dashboard Login</h1>
-                        <p className="text-muted-foreground">Sign in or create an account to access your hives, orders, and analytics.</p>
+                    <div className="mb-8 text-center space-y-2">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-beeyield-gold/10 border border-beeyield-gold/20 mb-2">
+                            <Lock className="w-3 h-3 text-beeyield-gold" />
+                            <span className="text-[10px] font-black text-beeyield-gold tracking-widest uppercase">Secure Portal</span>
+                        </div>
+                        <h1 className="text-3xl font-black text-beeyield-green tracking-tightest">Shop <span className="text-beeyield-gold italic">Access</span></h1>
+                        <p className="text-sm font-medium text-beeyield-green/60 pb-6">Authenticate to view your orders, track deliveries, and manage your premium honey subscription.</p>
+
+                        {authMode === 'login' && (
+                            <div className="animate-fade-in-up">
+                                <ShopLoginForm
+                                    onSuccess={() => window.location.reload()}
+                                    onSwitchToRegister={() => setAuthMode('register')}
+                                    onForgotPassword={() => setAuthMode('forgot-password')}
+                                />
+                            </div>
+                        )}
+
+                        {authMode === 'register' && (
+                            <div className="animate-fade-in-up">
+                                <ShopRegisterForm
+                                    onSuccess={() => setAuthMode('login')}
+                                    onSwitchToLogin={() => setAuthMode('login')}
+                                />
+                            </div>
+                        )}
+                        {authMode === 'forgot-password' && (
+                            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <ForgotPasswordForm
+                                    variant="shop"
+                                    onBackToLogin={() => setAuthMode('login')}
+                                />
+                            </div>
+                        )}
+
+                        <div className="mt-8 pt-6 border-t border-beeyield-gold/10">
+                            <Button
+                                variant="ghost"
+                                onClick={() => navigate('/shop')}
+                                className="w-full text-beeyield-green/40 hover:text-beeyield-green group font-bold text-xs uppercase tracking-widest"
+                            >
+                                <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" /> Back to Public Shop
+                            </Button>
+                        </div>
                     </div>
-                    {authMode === 'login' && (
-                        <LoginForm
-                            variant="professional"
-                            onSuccess={() => {
-                                navigate('/beeyield-ai');
-                                window.location.reload();
-                            }}
-                            onSwitchToRegister={() => setAuthMode('register')}
-                        />
-                    )}
-                    {authMode === 'register' && (
-                        <RegisterForm
-                            variant="professional"
-                            onSuccess={() => setAuthMode('login')}
-                        />
-                    )}
-                    {authMode === 'register' && (
-                        <RegisterForm
-                            variant="professional"
-                            onSuccess={() => setAuthMode('login')}
-                        />
-                    )}
-                    {authMode === 'forgot-password' && (
-                        <ForgotPasswordForm />
-                    )}
                 </div>
             </div>
         );

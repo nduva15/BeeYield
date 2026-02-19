@@ -312,9 +312,9 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
         const totalFPARequired = targetFPA * acreage;
         const adjustedFOB = effectiveFOB * weatherPenalty;
         const hivesNeeded = Math.ceil(totalFPARequired / adjustedFOB);
-        const actualFPA = (hivesNeeded * avgFrames * weatherPenalty) / acreage;
+        const actualFPA = (hives.length * avgFrames * weatherPenalty) / acreage;
         const coverageHealth = Math.min(100, Math.round((actualFPA / targetFPA) * 100));
-        const foragingEfficiency = Math.min(98, Math.round(75 + (avgFrames - 6) * 3.2));
+        const foragingEfficiency = hives.length > 0 ? Math.min(98, Math.round(75 + (avgFrames - 6) * 3.2)) : 0;
         const healthyHives = hives.filter(h => h.status === 'healthy').length;
         const warningHives = hives.filter(h => h.status === 'warning').length;
         const criticalHives = hives.filter(h => h.status === 'critical').length;
@@ -1030,7 +1030,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                             </div>
                             <div>
                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Colony Varroa Pressure</p>
-                                <p className="text-sm font-bold text-slate-800 dark:text-white">LOW (1.2%)</p>
+                                <p className="text-sm font-bold text-slate-800 dark:text-white">{hives.length > 0 ? "LOW (1.2%)" : "0.0%"}</p>
                             </div>
                         </div>
                         <Badge className="bg-[#F4D03F]/20 text-[#9a7f1e] border-none text-[8px] font-black uppercase">MONITORING</Badge>

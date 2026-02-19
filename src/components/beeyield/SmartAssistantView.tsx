@@ -62,8 +62,7 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
     const { language, t } = useLanguage();
     const navigate = useNavigate();
 
-    // Check system health on mount
-    React.useEffect(() => {
+    useEffect(() => {
         const checkStatus = async () => {
             const status = await aiService.getStatus();
             setSystemStatus(status);
@@ -71,17 +70,14 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
         checkStatus();
     }, []);
 
-    // Persist chats to localStorage
-    React.useEffect(() => {
+    useEffect(() => {
         localStorage.setItem('beeyield_chats', JSON.stringify(chats));
     }, [chats]);
 
-    // Handle initial message from other views
-    React.useEffect(() => {
+    useEffect(() => {
         if (initialMessage) {
             setInputValue(initialMessage);
             onInitialMessageConsumed?.();
-            // Automatically send the message after a short delay to ensure UI is ready
             const timer = setTimeout(() => {
                 const sendButton = document.getElementById('send-ai-message');
                 if (sendButton) sendButton.click();
@@ -90,7 +86,6 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
         }
     }, [initialMessage, onInitialMessageConsumed]);
 
-    // Load messages when selecting a chat
     const switchChat = (chatId: string) => {
         const chat = chats.find(c => c.id === chatId);
         if (chat) {
@@ -112,12 +107,12 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
     };
 
     const topicCategories = [
-        { icon: '🌸', label: t('topic_pollination'), color: 'bg-gray-50 dark:bg-gray-800/10' },
-        { icon: '📋', label: t('topic_blockchain'), color: 'bg-gray-50 dark:bg-gray-800/10' },
-        { icon: '🩺', label: t('topic_bee_health'), color: 'bg-gray-50 dark:bg-gray-800/10' },
-        { icon: '🛰️', label: t('topic_iot_hive'), color: 'bg-gray-50 dark:bg-gray-800/10' },
-        { icon: '🎓', label: t('topic_training'), color: 'bg-gray-50 dark:bg-gray-800/10' },
-        { icon: '🌍', label: t('topic_global_network'), color: 'bg-gray-50 dark:bg-gray-800/10' },
+        { icon: '🌸', label: t('topic_pollination'), color: 'bg-beeyield-forest/5' },
+        { icon: '📋', label: t('topic_blockchain'), color: 'bg-beeyield-forest/5' },
+        { icon: '🩺', label: t('topic_bee_health'), color: 'bg-beeyield-forest/5' },
+        { icon: '🛰️', label: t('topic_iot_hive'), color: 'bg-beeyield-forest/5' },
+        { icon: '🎓', label: t('topic_training'), color: 'bg-beeyield-forest/5' },
+        { icon: '🌍', label: t('topic_global_network'), color: 'bg-beeyield-forest/5' },
     ];
 
     const handleNewChat = () => {
@@ -147,7 +142,6 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
         const updatedMessages = [...messages, userMessage];
         setMessages(updatedMessages);
 
-        // If this is the first message, update the chat title
         const currentId = selectedChat || Date.now().toString();
 
         if (!selectedChat) {
@@ -178,7 +172,6 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
         setInputValue('');
         setShowWelcome(false);
 
-        // Convert messages for API
         const history: ChatMessage[] = updatedMessages.map(m => ({
             role: m.role,
             content: m.content
@@ -216,7 +209,6 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
     const handleTopicClick = (topic: string) => {
         setInputValue(topic);
         setShowWelcome(false);
-        // Use a timeout to ensure state is updated before sending
         setTimeout(() => {
             const sendButton = document.getElementById('send-ai-message');
             if (sendButton) sendButton.click();
@@ -224,18 +216,18 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
     };
 
     const FormattedMessage: React.FC<{ content: string, isUser: boolean }> = ({ content, isUser }) => {
-        if (isUser) return <p className="text-sm leading-relaxed whitespace-pre-wrap">{content}</p>;
+        if (isUser) return <p className="text-[15px] leading-relaxed font-medium">{content}</p>;
 
         const processBoldAndLinks = (text: string) => {
             const boldParts = text.split(/(\*\*[^*]+\*\*|\[.*?\]\(.*?\))/g);
             return boldParts.map((part, i) => {
                 if (part.startsWith('**') && part.endsWith('**')) {
-                    return <strong key={i} className="font-black text-gray-900 dark:text-white">{part.slice(2, -2)}</strong>;
+                    return <strong key={i} className="font-bold text-beeyield-forest">{part.slice(2, -2)}</strong>;
                 }
                 const linkMatch = part.match(/\[(.*?)\]\((.*?)\)/);
                 if (linkMatch) {
                     return (
-                        <a key={i} href={linkMatch[2]} target="_blank" rel="noopener noreferrer" className="text-[#1B9157] dark:text-[#F4D03F] font-bold hover:underline">
+                        <a key={i} href={linkMatch[2]} target="_blank" rel="noopener noreferrer" className="shadow-underline text-beeyield-forest font-bold">
                             {linkMatch[1]}
                         </a>
                     );
@@ -251,7 +243,7 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
                 const match = part.match(/\[Insert Link: beeyield\.com([a-zA-Z0-9\-\/\?\=\&]+)\]/);
                 if (match) {
                     const path = match[1];
-                    const displayName = path.split('?')[0].split('/').pop()?.replace(/-/g, ' ').toUpperCase() || 'VIEW PAGE';
+                    const displayName = path.split('?')[0].split('/').pop()?.replace(/-/g, ' ').toUpperCase() || 'NAVIGATE';
 
                     return (
                         <button
@@ -263,9 +255,9 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
                                     window.open(path, '_blank');
                                 }
                             }}
-                            className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-[#F4D03F] text-black font-black text-[10px] rounded uppercase tracking-wider hover:bg-[#1B9157] hover:text-white transition-colors mx-1 align-middle"
+                            className="inline-flex items-center gap-2 px-3 py-1.5 bg-beeyield-forest text-white font-bold text-[10px] rounded-lg uppercase tracking-wider hover:bg-opacity-90 transition-all mx-1 align-middle"
                         >
-                            <LinkIcon className="h-2.5 w-2.5" />
+                            <LinkIcon className="h-3 w-3" />
                             {displayName}
                         </button>
                     );
@@ -277,25 +269,25 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
         const lines = content.split('\n');
 
         return (
-            <div className="text-sm leading-relaxed space-y-4">
+            <div className="text-[15px] leading-[1.6] space-y-5 text-gray-700">
                 {lines.map((line, i) => {
                     const trimmedLine = line.trim();
                     if (!trimmedLine) return <div key={i} className="h-2" />;
 
                     if (trimmedLine.startsWith('###')) {
-                        return <h4 key={i} className="text-base font-black mt-4 mb-2 uppercase tracking-tight text-[#1B9157]">{trimmedLine.replace('###', '').trim()}</h4>;
+                        return <h4 key={i} className="text-lg font-bold mt-6 mb-3 text-beeyield-forest">{trimmedLine.replace('###', '').trim()}</h4>;
                     }
                     if (trimmedLine.startsWith('##')) {
-                        return <h3 key={i} className="text-lg font-black mt-6 mb-3 uppercase tracking-tighter text-[#1B9157] border-b-2 border-[#1B9157]/10 pb-1">{trimmedLine.replace('##', '').trim()}</h3>;
+                        return <h3 key={i} className="text-xl font-bold mt-8 mb-4 text-beeyield-forest tracking-tight">{trimmedLine.replace('##', '').trim()}</h3>;
                     }
                     if (trimmedLine.startsWith('#')) {
-                        return <h2 key={i} className="text-xl font-black mt-8 mb-4 uppercase tracking-tighter text-[#1B9157]">{trimmedLine.replace('#', '').trim()}</h2>;
+                        return <h2 key={i} className="text-2xl font-bold mt-10 mb-5 text-beeyield-forest tracking-tighter">{trimmedLine.replace('#', '').trim()}</h2>;
                     }
 
                     if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
                         return (
-                            <div key={i} className="flex gap-3 ml-2">
-                                <span className="text-[#F4D03F] mt-1.5">•</span>
+                            <div key={i} className="flex gap-4 ml-2">
+                                <span className="text-beeyield-forest font-bold mt-1.5">•</span>
                                 <div className="flex-1">
                                     {processInternalLinks(trimmedLine.substring(2))}
                                 </div>
@@ -310,336 +302,205 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
     };
 
     return (
-        <div className="flex flex-col animate-in fade-in duration-500 pb-12">
-
-            {/* Page Title */}
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3 mb-8">
-                {t('ai_assistant_title')} <span role="img" aria-label="assistant">🐝</span>
-            </h1>
-
-            {/* Orange Hero Card */}
-            <div className="relative mb-8 overflow-hidden rounded-[3rem] bg-[#0F172A] p-12 shadow-2xl group border border-white/5">
-                {/* Visual Accent Background */}
-                <div className="absolute top-0 right-0 w-1/2 h-full bg-[#F4D03F]/10 rounded-l-full blur-[100px] group-hover:bg-[#F4D03F]/20 transition-all duration-1000" />
-                <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-primary/20 rounded-full blur-[80px]" />
-
-                {/* Pattern Overlay */}
-                <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
-                    <svg className="w-full h-full" viewBox="0 0 100 100">
-                        <pattern id="hive-grid" width="20" height="20" patternUnits="userSpaceOnUse">
-                            <circle cx="1" cy="1" r="0.5" fill="white" />
-                            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="white" strokeWidth="0.1" />
-                        </pattern>
-                        <rect width="100%" height="100%" fill="url(#hive-grid)" />
-                    </svg>
+        <div className="flex flex-col animate-in fade-in duration-700 pb-16">
+            {/* Header Area */}
+            <div className="flex items-center justify-between mb-8">
+                <div>
+                    <h1 className="text-4xl font-bold text-beeyield-charcoal flex items-center gap-3">
+                        Smart Assistant
+                    </h1>
+                    <p className="text-gray-500 font-medium mt-1">Ecosystem Intelligence Node active.</p>
                 </div>
-
-                <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-10">
-                    <div className="space-y-6 max-w-2xl">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full">
-                            <Zap className="h-3 w-3 text-primary" />
-                            <span className="text-xs font-black text-primary uppercase tracking-[0.2em]">BeeYield Assistant</span>
-                        </div>
-                        <h2 className="text-4xl lg:text-5xl font-black text-white uppercase tracking-tight leading-[1.1]">
-                            {t('ai_hub_intelligence')}
-                        </h2>
-                        <div className="flex items-center gap-3">
-                            <div className="flex -space-x-2">
-                                {[1, 2, 3].map(i => (
-                                    <div key={i} className="w-8 h-8 rounded-full border-2 border-[#0F172A] bg-primary/20 flex items-center justify-center text-xs font-black text-white">PRO</div>
-                                ))}
-                            </div>
-                            <p className="text-white font-bold opacity-70 uppercase tracking-widest text-sm">
-                                {t('ai_hub_status')}
-                            </p>
-                        </div>
-                        <div className="flex flex-wrap gap-2 mt-4">
-                            {topicCategories.slice(0, 4).map((topic, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => handleTopicClick(topic.label)}
-                                    className="flex items-center gap-2 px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-black uppercase tracking-widest rounded-xl transition-all duration-300 backdrop-blur-md"
-                                >
-                                    <span>{topic.icon}</span>
-                                    <span>{topic.label}</span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                    <Button
-                        onClick={handleNewChat}
-                        className="bg-primary hover:bg-primary/90 text-black rounded-2xl px-10 h-16 font-black text-lg flex items-center gap-3 shadow-[0_0_30px_rgba(244,208,63,0.3)] transition-all hover:scale-[1.02] active:scale-[0.98] shrink-0 uppercase tracking-tight"
-                    >
-                        <Plus className="w-6 h-6 stroke-[3px]" />
-                        {t('new_chat')}
-                    </Button>
+                <div className="flex items-center gap-2 px-4 py-2 bg-beeyield-forest/5 border border-beeyield-forest/10 rounded-full">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-[11px] font-bold text-beeyield-forest uppercase tracking-widest">Neural Sync Stable</span>
                 </div>
             </div>
 
+            {/* Forest Theme Hero Card */}
+            <div className="relative mb-12 overflow-hidden rounded-[2.5rem] bg-beeyield-forest p-12 text-white shadow-xl shadow-beeyield-forest/10 group">
+                <div className="absolute top-0 right-0 w-80 h-full bg-white/10 rounded-l-full blur-[100px] group-hover:bg-white/20 transition-all duration-1000" />
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5 pointer-events-none" />
 
-            {/* Main Chat Interface Layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[600px]">
-                {/* Left Sidebar - Chats List */}
-                <div className="lg:col-span-3 bg-white dark:bg-[#141414] rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] overflow-hidden flex flex-col shadow-sm">
-                    <div className="p-6 border-b border-gray-50 dark:border-[#1e1e1e]">
-                        <div className="flex items-center gap-3 text-gray-900 dark:text-white">
-                            <MessageSquare className="w-5 h-5 text-gray-400" />
-                            <span className="font-bold">{t('chats_label')}</span>
+                <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-12">
+                    <div className="space-y-6 max-w-2xl">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
+                            <Sparkles className="h-3 w-3 text-white" />
+                            <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Floaria™ Intelligence</span>
+                        </div>
+                        <h2 className="text-5xl font-bold tracking-tighter leading-[1.05]">
+                            Consult the <br />Hive Mind.
+                        </h2>
+                        <p className="text-white/70 font-medium leading-relaxed max-w-lg">
+                            An expert retrieval system specialized in apiculture, pollination forensics, and IoT telemetry interpretation.
+                        </p>
+                    </div>
+
+                    <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={handleNewChat}
+                        className="bg-white text-beeyield-forest rounded-2xl px-10 h-16 font-bold text-lg flex items-center justify-center gap-3 shadow-2xl transition-all"
+                    >
+                        <Plus className="w-6 h-6 stroke-[3px]" />
+                        Initialize Node
+                    </motion.button>
+                </div>
+            </div>
+
+            {/* Main Chat Interface */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 min-h-[700px]">
+                {/* Sidebar - Chat History */}
+                <div className="lg:col-span-3 bg-white rounded-[2rem] border border-[#E0E0E0] overflow-hidden flex flex-col shadow-sm">
+                    <div className="p-7 px-8 border-b border-[#F5F5F5] flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <MessageSquare className="w-5 h-5 text-beeyield-forest/40" />
+                            <span className="text-sm font-bold text-beeyield-charcoal">Conversations</span>
                         </div>
                     </div>
-                    <div className="flex-1 overflow-y-auto">
+                    <div className="flex-1 overflow-y-auto custom-scrollbar-slim p-4 pt-6 space-y-2">
                         {chats.length === 0 ? (
-                            <div className="p-8 text-center">
-                                <p className="text-gray-400 text-sm font-medium">{t('start_conversation')}</p>
+                            <div className="text-center py-20 px-6">
+                                <p className="text-xs font-bold text-gray-300 uppercase tracking-widest">No Active Nodes</p>
                             </div>
                         ) : (
-                            <div className="p-3 space-y-2">
-                                {chats.map((chat) => (
-                                    <div key={chat.id} className="relative group/chat">
-                                        <button
-                                            key={chat.id}
-                                            onClick={() => switchChat(chat.id)}
-                                            className={cn(
-                                                "w-full text-left p-4 rounded-3xl transition-all duration-200 pr-12",
-                                                selectedChat === chat.id
-                                                    ? "bg-[#FFF8F0] border border-amber-100 dark:bg-amber-900/10 dark:border-amber-900/20 shadow-sm"
-                                                    : "hover:bg-gray-50 dark:hover:bg-gray-800 border border-transparent"
-                                            )}
-                                        >
-                                            <div className="flex gap-3 items-center mb-1">
-                                                <div className="w-8 h-8 rounded-full bg-white p-1.5 border border-gray-100 flex items-center justify-center shrink-0">
-                                                    <img src={Logo} alt="Icon" className="w-full h-full object-contain" />
-                                                </div>
-                                                <p className="font-bold text-sm text-gray-900 dark:text-white truncate flex-1">
-                                                    {chat.title}
-                                                </p>
-                                            </div>
-                                            <div className="flex justify-between items-center ml-11">
-                                                <p className="text-xs text-gray-400 font-medium">
-                                                    {chat.date}
-                                                </p>
-                                                <p className="text-xs text-[#F4D03F]/60 font-bold group-hover/chat:opacity-100 opacity-0 transition-opacity">
-                                                    {chat.messages.length} {t('msgs_count')}
-                                                </p>
-                                            </div>
-                                        </button>
-                                        <button
-                                            onClick={(e) => deleteChat(e, chat.id)}
-                                            className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-xl opacity-0 group-hover/chat:opacity-100 transition-all"
-                                            title="Delete Chat"
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
+                            chats.map((chat) => (
+                                <div key={chat.id} className="relative group">
+                                    <button
+                                        onClick={() => switchChat(chat.id)}
+                                        className={cn(
+                                            "w-full text-left p-5 rounded-[1.25rem] transition-all duration-300",
+                                            selectedChat === chat.id
+                                                ? "bg-beeyield-forest/[0.04] border border-beeyield-forest/10"
+                                                : "hover:bg-beeyield-sand/50 border border-transparent"
+                                        )}
+                                    >
+                                        <div className="flex flex-col gap-1">
+                                            <p className={cn(
+                                                "text-[13px] font-bold truncate",
+                                                selectedChat === chat.id ? "text-beeyield-forest" : "text-beeyield-charcoal"
+                                            )}>
+                                                {chat.title}
+                                            </p>
+                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{chat.date}</p>
+                                        </div>
+                                    </button>
+                                    <button
+                                        onClick={(e) => deleteChat(e, chat.id)}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                                    >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                </div>
+                            ))
                         )}
                     </div>
                 </div>
 
-                {/* Main Chat Area */}
-                <div className="lg:col-span-9 bg-white dark:bg-[#141414] rounded-[2.5rem] border border-gray-100 dark:border-[#1e1e1e] overflow-hidden flex flex-col shadow-sm">
-                    {/* Chat Header */}
-                    {!showWelcome && (
-                        <div className="p-8 border-b border-gray-50 dark:border-[#1e1e1e] flex items-center justify-between bg-white dark:bg-white/5 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-8 opacity-5">
-                                <Bot className="h-24 w-24 text-primary" />
-                            </div>
-
-                            <div className="flex items-center gap-6 relative z-10">
-                                <div className="w-16 h-16 rounded-[1.25rem] bg-indigo-50 dark:bg-[#F4D03F]/20 border-[#F4D03F]/20 dark:border-[#F4D03F]/30 flex items-center justify-center p-3 shadow-premium animate-in fade-in zoom-in duration-500 relative group">
-                                    <div className="absolute -inset-2 bg-primary/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity animate-pulse" />
-                                    <img src={Logo} alt="BEEYIELD" className="w-full h-full object-contain relative z-10" />
-                                </div>
-                                <div>
-                                    <h3 className="font-black text-2xl text-gray-900 dark:text-white uppercase tracking-tighter">
-                                        BeeYield Assistant
-                                    </h3>
-                                </div>
-                                <p className="text-xs text-amber-500 font-black uppercase tracking-[0.2em] flex items-center gap-2">
-                                    <span className={cn(
-                                        "w-2 h-2 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)] animate-[pulse-fast_1s_infinite]",
-                                        systemStatus.status === 'healthy' ? "bg-green-500" : "bg-amber-500"
-                                    )} />
-                                    {systemStatus.status === 'healthy' ? t('system_status_synchronized') : t('system_status_online')}
-                                </p>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Messages Window */}
-                    <div className="flex-1 overflow-y-auto p-10 bg-gray-50/30 dark:bg-black/20">
+                {/* Main Content Area */}
+                <div className="lg:col-span-9 bg-white rounded-[2rem] border border-[#E0E0E0] overflow-hidden flex flex-col shadow-sm relative">
+                    <div className="flex-1 overflow-y-auto p-12 custom-scrollbar shadow-inner bg-beeyield-sand/20">
                         {showWelcome ? (
                             <div className="flex items-center justify-center h-full">
-                                <Card className="w-full max-w-lg bg-white dark:bg-[#09090b] border-none rounded-[2.5rem] shadow-xl overflow-hidden animate-in zoom-in-95 duration-300">
-                                    <CardContent className="p-10 text-center space-y-8">
-                                        <div className="flex flex-col items-center gap-4">
-                                            <div className="w-24 h-24 bg-white dark:bg-amber-900/20 rounded-[2.5rem] flex items-center justify-center shadow-2xl border-2 border-amber-100 dark:border-amber-900/30 p-5 rotate-3 hover:rotate-0 transition-transform duration-500">
-                                                <img src={Logo} alt="BeeYield Assistant" className="w-full h-full object-contain" />
-                                            </div>
-                                            <h3 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tighter mb-2">
-                                                {t('ai_hub_title')}
-                                            </h3>
-                                        </div>
-                                        <p className="text-gray-500 dark:text-gray-400 font-bold text-sm uppercase tracking-[0.15em] opacity-70">
-                                            {t('ai_expert_assistant')}
-                                        </p>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            {topicCategories.map((category, index) => (
-                                                <button
-                                                    key={index}
-                                                    onClick={() => handleTopicClick(category.label)}
-                                                    className="p-6 rounded-3xl bg-gray-50 dark:bg-[#1a1a1a] border border-gray-100 dark:border-gray-800 text-left transition-all duration-200 hover:border-[#F4D03F] hover:shadow-md hover:bg-white dark:hover:bg-[#222]"
-                                                >
-                                                    <div className="flex items-start gap-4">
-                                                        <span className="text-2xl shrink-0">{category.icon}</span>
-                                                        <span className="text-xs font-bold text-gray-700 dark:text-gray-200 leading-snug">
-                                                            {category.label}
-                                                        </span>
-                                                    </div>
-                                                </button>
-                                            ))}
-                                        </div>
-                                        <div className="space-y-4 pt-4">
-                                            <p className="text-gray-400 font-bold text-xs uppercase tracking-widest leading-relaxed px-10">
-                                                {t('ai_proprietary_ml')}
-                                            </p>
-                                        </div>
-                                        <Button
-                                            onClick={handleNewChat}
-                                            className="bg-[#F4D03F] hover:bg-[#FFA000] text-gray-900 rounded-2xl px-10 h-14 font-extrabold shadow-lg shadow-[#F4D03F]/20 transition-all hover:scale-105"
-                                        >
-                                            {t('new_chat')}
-                                        </Button>
-                                    </CardContent>
-                                </Card>
+                                <div className="text-center max-w-xl animate-in zoom-in-95 duration-500">
+                                    <div className="w-24 h-24 bg-beeyield-forest rounded-[2rem] flex items-center justify-center shadow-xl mx-auto mb-10 group-hover:rotate-6 transition-transform">
+                                        <Hexagon className="w-10 h-10 text-white" />
+                                    </div>
+                                    <h3 className="text-4xl font-bold text-beeyield-charcoal mb-4">Neural Hive Node</h3>
+                                    <p className="text-gray-500 font-medium mb-12">Search our proprietary apiculture knowledge graph.</p>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        {topicCategories.map((topic, i) => (
+                                            <button
+                                                key={i}
+                                                onClick={() => handleTopicClick(topic.label)}
+                                                className="p-8 rounded-[2rem] bg-white border border-[#EBEBEB] text-left hover:border-beeyield-forest hover:shadow-md transition-all group"
+                                            >
+                                                <div className="flex items-center gap-4">
+                                                    <span className="text-2xl">{topic.icon}</span>
+                                                    <span className="text-[13px] font-bold text-gray-600 group-hover:text-beeyield-forest uppercase tracking-tighter">{topic.label}</span>
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
                         ) : (
-                            <div className="space-y-6 max-w-4xl mx-auto h-full flex flex-col">
-                                {messages.length === 0 ? (
-                                    <div className="flex-1 flex items-center justify-center">
-                                        <div className="px-6 py-3 bg-gray-200/50 dark:bg-gray-800 rounded-full text-gray-500 font-bold text-sm">
-                                            {t('new_chat')}
-                                        </div>
-                                    </div>
-                                ) : (
-                                    messages.map((message) => (
-                                        <div
-                                            key={message.id}
-                                            className={cn(
-                                                "flex gap-4",
-                                                message.role === 'user' ? "justify-end" : "justify-start"
+                            <div className="max-w-4xl mx-auto space-y-10">
+                                {messages.map((message) => (
+                                    <div
+                                        key={message.id}
+                                        className={cn(
+                                            "flex gap-6",
+                                            message.role === 'user' ? "flex-row-reverse" : "flex-row"
+                                        )}
+                                    >
+                                        <div className={cn(
+                                            "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border",
+                                            message.role === 'user' ? "bg-white border-[#E0E0E0]" : "bg-beeyield-forest border-beeyield-forest shadow-md shadow-beeyield-forest/10"
+                                        )}>
+                                            {message.role === 'user' ? (
+                                                <span className="text-xs font-bold text-beeyield-charcoal">ME</span>
+                                            ) : (
+                                                <Bot className="w-6 h-6 text-white" />
                                             )}
-                                        >
-                                            {message.role === 'assistant' && (
-                                                <div className="relative group">
-                                                    <div className="absolute -inset-1 bg-primary/20 rounded-2xl blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
-                                                    <div className="w-14 h-14 rounded-2xl bg-white/80 backdrop-blur-md dark:bg-amber-900/40 flex items-center justify-center shrink-0 shadow-premium p-3 border border-amber-100 dark:border-amber-900/50 animate-in fade-in zoom-in duration-500 relative z-10">
-                                                        <img src={Logo} alt="BeeYield Assistant" className="w-full h-full object-contain" />
-                                                    </div>
+                                        </div>
+
+                                        <div className={cn(
+                                            "flex-1 p-8 rounded-[2rem] shadow-sm",
+                                            message.role === 'user'
+                                                ? "bg-beeyield-forest/5 border border-beeyield-forest/10 rounded-tr-none text-beeyield-charcoal"
+                                                : "bg-white border border-[#E0E0E0] rounded-tl-none shadow-md"
+                                        )}>
+                                            <FormattedMessage content={message.content} isUser={message.role === 'user'} />
+
+                                            {message.role === 'assistant' && message.sources && message.sources.length > 0 && (
+                                                <div className="mt-8 pt-6 border-t border-[#F0F0F0] flex flex-wrap gap-2.5">
+                                                    {message.sources.map((source, idx) => (
+                                                        <div key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg border border-[#E0E0E0]">
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-beeyield-forest" />
+                                                            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{source.name}</span>
+                                                        </div>
+                                                    ))}
                                                 </div>
                                             )}
-                                            <div
-                                                className={cn(
-                                                    "max-w-[80%] p-7 rounded-[2.25rem] shadow-lg relative overflow-hidden",
-                                                    message.role === 'user'
-                                                        ? "bg-primary text-black font-semibold rounded-br-none"
-                                                        : "bg-white/80 backdrop-blur-xl dark:bg-slate-50 text-gray-800 dark:text-slate-900 font-medium rounded-bl-none border border-white/40 dark:border-slate-200 shadow-xl"
-                                                )}
-                                            >
-                                                {message.role === 'assistant' && (
-                                                    <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
-                                                        <Zap className="h-12 w-12 text-primary" />
-                                                    </div>
-                                                )}
-                                                <FormattedMessage content={message.content} isUser={message.role === 'user'} />
 
-                                                {/* Sources Tooltip/Icons */}
-                                                {message.role === 'assistant' && message.sources && message.sources.length > 0 && (
-                                                    <div className="mt-4 flex flex-wrap gap-2">
-                                                        {message.sources.map((source, idx) => (
-                                                            <div
-                                                                key={idx}
-                                                                className="flex items-center gap-1.5 px-2 py-1 bg-black/5 dark:bg-white/5 rounded-lg border border-black/5 dark:border-white/10 group/source hover:bg-primary/10 transition-colors"
-                                                            >
-                                                                {source.type === 'origin' && <ShieldCheck className="w-3 h-3 text-emerald-500" />}
-                                                                {source.type === 'iot' && <Cpu className="w-3 h-3 text-indigo-500" />}
-                                                                {source.type === 'database' && <Database className="w-3 h-3 text-amber-500" />}
-                                                                {source.type === 'web' && <Globe className="w-3 h-3 text-blue-500" />}
-                                                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 group-hover/source:text-primary transition-colors">
-                                                                    {source.name}
-                                                                </span>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                )}
+                                            {message.role === 'assistant' && message.suggestions && message.suggestions.length > 0 && (
+                                                <div className="mt-8 flex flex-wrap gap-2">
+                                                    {message.suggestions.map((suggestion, idx) => (
+                                                        <button
+                                                            key={idx}
+                                                            onClick={() => handleTopicClick(suggestion)}
+                                                            className="px-4 py-2 bg-beeyield-forest/10 text-beeyield-forest text-[11px] font-bold uppercase tracking-widest rounded-full border border-beeyield-forest/20 hover:bg-beeyield-forest hover:text-white transition-all"
+                                                        >
+                                                            {suggestion}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
 
-                                                {/* Suggestions Chips */}
-                                                {message.role === 'assistant' && message.suggestions && message.suggestions.length > 0 && (
-                                                    <div className="mt-6 flex flex-wrap gap-2 animate-in slide-in-from-bottom-2 duration-500">
-                                                        {message.suggestions.map((suggestion, idx) => (
-                                                            <button
-                                                                key={idx}
-                                                                onClick={() => handleTopicClick(suggestion)}
-                                                                className="px-3 py-1.5 bg-primary/5 hover:bg-primary/20 border border-primary/20 rounded-full text-xs font-black text-primary uppercase tracking-wider transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
-                                                            >
-                                                                <Sparkles className="w-3 h-3" />
-                                                                {suggestion}
-                                                            </button>
-                                                        ))}
-                                                    </div>
-                                                )}
-
-                                                <div className="flex items-center justify-between mt-4 border-t border-black/5 dark:border-white/5 pt-3">
-                                                    <p className={cn(
-                                                        "text-xs uppercase tracking-widest font-black opacity-40",
-                                                        message.role === 'user' ? "text-black" : "text-gray-400"
-                                                    )}>
-                                                        {message.timestamp} — Verified Search
-                                                    </p>
-                                                    {message.role === 'assistant' && (
-                                                        <div className="flex gap-1">
-                                                            <div className="h-1 w-1 rounded-full bg-primary" />
-                                                            <div className="h-1 w-1 rounded-full bg-primary/40" />
-                                                            <div className="h-1 w-1 rounded-full bg-primary/20" />
-                                                        </div>
-                                                    )}
+                                            <div className="mt-6 flex items-center justify-between opacity-30">
+                                                <span className="text-[10px] font-bold uppercase tracking-widest">{message.timestamp}</span>
+                                                <div className="flex gap-1">
+                                                    {[1, 2, 3].map(i => <div key={i} className="w-1 h-1 rounded-full bg-beeyield-forest" />)}
                                                 </div>
                                             </div>
                                         </div>
-                                    ))
-                                )}
+                                    </div>
+                                ))}
                             </div>
                         )}
                     </div>
 
                     {/* Chat Input Area */}
-                    <div className="p-8 bg-white dark:bg-[#141414] border-t border-gray-50 dark:border-[#1e1e1e]">
-                        <div className="max-w-4xl mx-auto relative group flex items-center gap-3">
-                            <div className="flex items-center gap-1">
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="w-12 h-12 rounded-2xl text-gray-400 hover:text-primary hover:bg-primary/5 transition-all"
-                                    title="Upload Document"
-                                >
+                    <div className="p-10 bg-white border-t border-[#F5F5F5]">
+                        <div className="max-w-4xl mx-auto flex items-center gap-4">
+                            <div className="flex items-center gap-2">
+                                <Button variant="ghost" size="icon" className="w-12 h-12 rounded-xl text-gray-400 hover:text-beeyield-forest hover:bg-beeyield-forest/5 transition-all">
                                     <Paperclip className="w-5 h-5" />
                                 </Button>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="w-12 h-12 rounded-2xl text-gray-400 hover:text-primary hover:bg-primary/5 transition-all"
-                                    title="Upload Photo"
-                                >
+                                <Button variant="ghost" size="icon" className="w-12 h-12 rounded-xl text-gray-400 hover:text-beeyield-forest hover:bg-beeyield-forest/5 transition-all">
                                     <ImageIcon className="w-5 h-5" />
-                                </Button>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="w-12 h-12 rounded-2xl text-gray-400 hover:text-primary hover:bg-primary/5 transition-all"
-                                    title="Add Link"
-                                >
-                                    <LinkIcon className="w-5 h-5" />
                                 </Button>
                             </div>
                             <div className="relative flex-1">
@@ -647,16 +508,15 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
                                     value={inputValue}
                                     onChange={(e) => setInputValue(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                                    placeholder={t('ask_ai_placeholder')}
-                                    className="w-full h-16 pl-6 pr-16 rounded-3xl bg-gray-50 dark:bg-slate-50 border-gray-100 dark:border-slate-200 focus-visible:ring-[#F4D03F]/20 border-[#F4D03F]/20 transition-all text-base font-medium"
+                                    placeholder="Type a research vector or query..."
+                                    className="w-full h-14 pl-6 pr-14 rounded-2xl bg-beeyield-sand/30 border-[#E0E0E0] focus:ring-beeyield-forest/20 font-medium placeholder:text-gray-300"
                                 />
                                 <Button
                                     id="send-ai-message"
                                     onClick={handleSendMessage}
-                                    size="icon"
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 rounded-2xl bg-primary hover:bg-primary/90 text-black shadow-lg transition-all active:scale-95 flex items-center justify-center"
+                                    className="absolute right-1.5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-xl bg-beeyield-forest hover:bg-opacity-90 text-white shadow-lg transition-transform active:scale-95"
                                 >
-                                    <Send className="w-5 h-5" />
+                                    <Send className="w-4 h-4" />
                                 </Button>
                             </div>
                         </div>
@@ -664,17 +524,11 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
                 </div>
             </div>
 
-            {/* Terms and Regulations Footer */}
-            <div className="mt-8 text-center bg-white dark:bg-[#141414] py-4 rounded-3xl border border-gray-50 dark:border-[#1e1e1e] shadow-sm">
-                <p className="text-xs font-bold text-gray-400 flex items-center justify-center gap-1">
-                    By chatting, you agree to our terms.
-                    <a href="#" className="text-amber-500 hover:underline">
-                        {t('terms_regulations')}
-                    </a>
-                    .
-                </p>
+            {/* Regulatory Footer */}
+            <div className="mt-8 text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-white py-4 rounded-2xl border border-[#F5F5F5] shadow-sm">
+                Neural Retrieval Layer — AI outputs may be nondeterministic. <a href="#" className="text-beeyield-forest hover:underline ml-1">Terms of Protocol</a>
             </div>
-        </div >
+        </div>
     );
 };
 

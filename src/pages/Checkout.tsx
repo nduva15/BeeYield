@@ -14,8 +14,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import LoginForm from '@/components/auth/LoginForm';
-import RegisterForm from '@/components/auth/RegisterForm';
+import ShopLoginForm from '@/components/auth/shop/ShopLoginForm';
+import ShopRegisterForm from '@/components/auth/shop/ShopRegisterForm';
 import { StripeCardForm } from '@/components/payments/StripeCardForm';
 import { initializeCheckout, CheckoutOrder, downloadInvoice, createStripePaymentIntent } from '@/services/shopService';
 import { adminService } from '@/services/adminService';
@@ -1251,15 +1251,13 @@ const Checkout = () => {
                             <TabsTrigger value="register" className="rounded-full">Create Account</TabsTrigger>
                         </TabsList>
                         <TabsContent value="login" className="p-6 pt-4">
-                            <LoginForm
-                                variant="shop"
+                            <ShopLoginForm
                                 onSuccess={handleAuthSuccess}
                                 onSwitchToRegister={() => setAuthTab('register')}
                             />
                         </TabsContent>
                         <TabsContent value="register" className="p-6 pt-4">
-                            <RegisterForm
-                                variant="shop"
+                            <ShopRegisterForm
                                 onSuccess={handleAuthSuccess}
                                 onSwitchToLogin={() => setAuthTab('login')}
                             />

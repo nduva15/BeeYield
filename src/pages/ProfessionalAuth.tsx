@@ -20,8 +20,8 @@ import {
     LineChart,
     Layers
 } from 'lucide-react';
-import LoginForm from '@/components/auth/LoginForm';
-import RegisterForm from '@/components/auth/RegisterForm';
+import BeeYieldLoginForm from '@/components/auth/beeyield/BeeYieldLoginForm';
+import BeeYieldRegisterForm from '@/components/auth/beeyield/BeeYieldRegisterForm';
 import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
@@ -179,26 +179,22 @@ const ProfessionalAuth: React.FC = () => {
                                     <div className="space-y-6">
                                         {authMode === 'login' && (
                                             <div className="animate-fade-in-up">
-                                                <LoginForm
-                                                    variant="professional"
+                                                <BeeYieldLoginForm
                                                     onSuccess={() => navigate('/beeyield-dashboard')}
                                                     onSwitchToRegister={() => setAuthMode('register')}
                                                     onForgotPassword={() => setAuthMode('forgot-password')}
-                                                    requireMetadata={{ beeyield_active: true }}
                                                 />
                                             </div>
                                         )}
 
                                         {authMode === 'register' && (
                                             <div className="animate-fade-in-up">
-                                                <RegisterForm
-                                                    variant="professional"
+                                                <BeeYieldRegisterForm
                                                     onSuccess={() => {
                                                         toast.success("Account Created");
                                                         setAuthMode('login');
                                                     }}
                                                     onSwitchToLogin={() => setAuthMode('login')}
-                                                    additionalMetadata={{ beeyield_active: true }}
                                                 />
                                             </div>
                                         )}

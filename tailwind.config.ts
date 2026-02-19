@@ -40,6 +40,11 @@ export default {
           "orange-dark": "#E67A2E",  // Dark orange
           white: "#FFFFFF",         // Pure white
           cream: "#FFF9F0",         // Warm cream
+          // Sand and Forest Theme
+          sand: "#F9F7F2",          // Off-white/beige background
+          forest: "#1B4332",        // Deep forest green primary accent
+          "forest-muted": "#2D6A4F", // Muted forest green
+          charcoal: "#262626",      // Soft charcoal text
         },
         primary: {
           DEFAULT: "hsl(var(--primary))",

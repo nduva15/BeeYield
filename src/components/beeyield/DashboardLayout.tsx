@@ -28,9 +28,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 }) => {
     const [isQuickActionOpen, setIsQuickActionOpen] = React.useState(false);
     return (
-        <div className="flex h-screen w-full bg-gray-50 dark:bg-slate-950 overflow-hidden font-sans text-gray-900 dark:text-gray-100 selection:bg-amber-500/30">
-            {/* Background Gradient */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(245,158,11,0.05),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.05),transparent_40%)] pointer-events-none" />
+        <div className="flex h-screen w-full bg-beeyield-sand dark:bg-[#0a0a0a] overflow-hidden font-sans text-beeyield-charcoal dark:text-gray-100 selection:bg-beeyield-forest/20">
+            {/* Subtle Texture/Grain could go here if needed, but keeping it clean for now */}
 
             <div className="relative z-10 flex w-full h-full">
                 <GlassSidebar
@@ -40,7 +39,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                     navItems={navItems}
                 />
 
-                <main className="flex-1 flex flex-col h-full overflow-hidden relative md:pl-[320px] transition-all duration-300">
+                <main className="flex-1 flex flex-col h-full overflow-hidden relative md:pl-[280px] transition-all duration-500">
                     {!hideHeader && (
                         <DashboardHeader
                             onLogout={onLogout}
@@ -54,18 +53,17 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                         isOpen={isQuickActionOpen}
                         onClose={() => setIsQuickActionOpen(false)}
                         onSuccess={() => {
-                            // Optionally trigger a refresh of the current view
                             console.log('Refresh current view data');
                         }}
                     />
 
-                    <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
-                        <div className="max-w-[1600px] mx-auto">
+                    <div className="flex-1 overflow-y-auto p-4 md:p-10 custom-scrollbar">
+                        <div className="max-w-[1680px] mx-auto">
                             {!isAdmin && <FirstStepsBanner onTabChange={onTabChange} />}
                             <motion.div
-                                initial={{ opacity: 0, scale: 0.98 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ duration: 0.4, delay: 0.2 }}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                             >
                                 {children}
                             </motion.div>

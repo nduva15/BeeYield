@@ -64,7 +64,9 @@ const LoginForm: React.FC<LoginFormProps> = ({
             }
 
             // 0. Platform Profile Readiness (Auto-Provisioning)
-            const profileTable = 'user_profiles';
+            const profileTable = variant === 'shop' ? 'shop_profiles' :
+                variant === 'professional' ? 'beeyield_profiles' :
+                    'ceba_profiles';
 
             const { data: profile, error: profileError } = await supabaseInstance
                 .from(profileTable)
@@ -81,6 +83,8 @@ const LoginForm: React.FC<LoginFormProps> = ({
                     .upsert({
                         id: loggedInUser.id,
                         email: loggedInUser.email,
+                        first_name: firstName || 'New',
+                        last_name: lastName || 'User',
                         full_name: `${firstName} ${lastName}`.trim() || 'New User',
                         role: loggedInUser.user_metadata?.role || 'user',
                         // Additional context-specific fields
@@ -220,7 +224,14 @@ const LoginForm: React.FC<LoginFormProps> = ({
         const activeBackend = backendMap[variant] || 'shop';
 
         // Store current path and metadata requirements so callback knows where to return and what to verify
-        localStorage.setItem('authReturnTo', window.location.pathname);
+        const returnPathMap: Record<string, string> = {
+            'shop': '/shop-dashboard',
+            'professional': '/beeyield-dashboard',
+            'admin': '/ceba'
+        };
+        const returnTo = returnPathMap[variant] || '/';
+
+        localStorage.setItem('authReturnTo', returnTo);
         localStorage.setItem('authBackend', activeBackend);
         if (requireMetadata) {
             localStorage.setItem('authRequireMetadata', JSON.stringify(requireMetadata));
@@ -340,48 +351,53 @@ const LoginForm: React.FC<LoginFormProps> = ({
                 </>
             )}
 
-            <div className="space-y-2">
-                <Label htmlFor="login-email" className="text-beeyield-green font-bold">{isAdminVariant ? 'Email' : 'Email'}</Label>
-                <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-beeyield-green/40" />
-                    <Input
-                        id="login-email"
-                        name="email"
-                        type="email"
-                        placeholder={isAdminVariant ? "admin@beeyield.com" : "you@example.com"}
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className={`pl-10 border-beeyield-green/20 focus:border-beeyield-gold focus:ring-beeyield-gold/20 ${isAdminVariant ? 'bg-white text-beeyield-black' : 'bg-white/50 text-beeyield-black'}`}
-                        required
-                    />
+            <div className="space-y-4">
+                <div className="space-y-2">
+                    <Label htmlFor="email" className="text-beeyield-green font-bold">
+                        {isAdminVariant ? 'Admin ID / Email' : isProVariant ? 'Professional ID' : 'Email Address'}
+                    </Label>
+                    <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-beeyield-green/40" />
+                        <Input
+                            id="email"
+                            name="email"
+                            type="email"
+                            placeholder={isAdminVariant ? 'admin@beeyield.com' : isProVariant ? 'cloud_node@beeyield.network' : 'customer@hive.com'}
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className={`pl-10 h-12 border-beeyield-green/20 focus:border-beeyield-gold focus:ring-beeyield-gold/20 ${isAdminVariant ? 'bg-white font-mono' : 'bg-white/50'}`}
+                            required
+                            autoFocus
+                        />
+                    </div>
                 </div>
-            </div>
 
-            <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                    <Label htmlFor="login-password" className="text-beeyield-green font-bold">Password</Label>
-                    {onForgotPassword && (
-                        <button
-                            type="button"
-                            onClick={onForgotPassword}
-                            className="text-xs font-bold hover:underline text-beeyield-gold"
-                        >
-                            Forgot password?
-                        </button>
-                    )}
-                </div>
-                <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-beeyield-green/40" />
-                    <Input
-                        id="login-password"
-                        name="password"
-                        type="password"
-                        placeholder="••••••••"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className={`pl-10 border-beeyield-green/20 focus:border-beeyield-gold focus:ring-beeyield-gold/20 ${isAdminVariant ? 'bg-white text-beeyield-black' : 'bg-white/50 text-beeyield-black'}`}
-                        required
-                    />
+                <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                        <Label htmlFor="login-password" className="text-beeyield-green font-bold">Password</Label>
+                        {onForgotPassword && (
+                            <button
+                                type="button"
+                                onClick={onForgotPassword}
+                                className="text-xs font-bold hover:underline text-beeyield-gold"
+                            >
+                                Forgot password?
+                            </button>
+                        )}
+                    </div>
+                    <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-beeyield-green/40" />
+                        <Input
+                            id="login-password"
+                            name="password"
+                            type="password"
+                            placeholder="••••••••"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className={`pl-10 border-beeyield-green/20 focus:border-beeyield-gold focus:ring-beeyield-gold/20 ${isAdminVariant ? 'bg-white text-beeyield-black' : 'bg-white/50 text-beeyield-black'}`}
+                            required
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -422,7 +438,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
             {isAdminVariant && (
                 <div className="mt-6 flex flex-col items-center gap-2">
                     <div className="flex items-center gap-2 text-[10px] text-beeyield-green/40 font-mono uppercase tracking-widest font-bold">
-                        <Shield className="w-3 h-3" /> Secure
+                        <Shield className="w-3 h-3" /> Secure Admin Access
                     </div>
                 </div>
             )}

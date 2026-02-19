@@ -31,33 +31,33 @@ const StatCard: React.FC<StatCardProps> = ({
 }) => {
     // Handle legacy props
     const displayTitle = title || label;
-    const finalIconColor = iconColor || (color === 'primary' ? '#F4D03F' : color === 'green' ? '#1B9157' : '#EF4444');
+    // Update default colors for forest theme
+    const defaultIconColor = color === 'primary' ? '#1B4332' : color === 'green' ? '#2D6A4F' : '#E67A2E';
+    const finalIconColor = iconColor || defaultIconColor;
 
     return (
         <motion.div
-            whileHover={{ y: -5, scale: 1.02 }}
+            whileHover={{ y: -4, scale: 1.01 }}
             className={cn("h-full", className)}
         >
-            <Card className="h-full border border-white/40 dark:border-white/5 bg-white/60 dark:bg-black/20 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[24px] overflow-hidden group hover:shadow-2xl hover:shadow-amber-500/5 transition-all duration-300">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-white/10 to-white/0 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
-
-                <CardContent className="p-6 relative z-10 flex flex-col justify-between h-full">
-                    <div className="flex justify-between items-start mb-4">
+            <Card className="h-full border border-[#E0E0E0] bg-white shadow-sm rounded-[2rem] overflow-hidden group hover:shadow-xl hover:shadow-beeyield-forest/5 transition-all duration-500">
+                <CardContent className="p-7 relative z-10 flex flex-col justify-between h-full">
+                    <div className="flex justify-between items-start mb-6">
                         <div className={cn(
-                            "p-3 rounded-2xl flex items-center justify-center transition-all duration-300",
-                            "bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 shadow-sm group-hover:scale-110"
+                            "p-3.5 rounded-2xl flex items-center justify-center transition-all duration-500",
+                            "bg-beeyield-forest/5 border border-beeyield-forest/10 group-hover:bg-beeyield-forest group-hover:text-white"
                         )}>
                             <Icon
-                                className="w-6 h-6 stroke-[2.5]"
+                                className="w-5 h-5 stroke-[2] transition-colors duration-500 group-hover:text-white"
                                 style={{ color: finalIconColor }}
                             />
                         </div>
                         {trend && (
                             <div className={cn(
-                                "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border",
-                                trendType === 'positive' ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" :
-                                    trendType === 'negative' ? "bg-rose-500/10 text-rose-600 border-rose-500/20" :
-                                        "bg-slate-500/10 text-slate-600 border-slate-500/20"
+                                "flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border",
+                                trendType === 'positive' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
+                                    trendType === 'negative' ? "bg-red-50 text-red-600 border-red-100" :
+                                        "bg-gray-50 text-gray-500 border-gray-100"
                             )}>
                                 {trendType === 'positive' && <TrendingUp className="w-3 h-3" />}
                                 {trendType === 'negative' && <TrendingDown className="w-3 h-3" />}
@@ -68,13 +68,13 @@ const StatCard: React.FC<StatCardProps> = ({
                     </div>
 
                     <div>
-                        <h3 className="text-3xl font-black text-slate-800 dark:text-white tracking-tighter mb-1 font-sans">
+                        <h3 className="text-3xl font-bold text-beeyield-charcoal tracking-tight mb-1">
                             {value}
                         </h3>
-                        <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+                        <p className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em]">
                             {displayTitle}
                         </p>
-                        {subtitle && <p className="text-[10px] text-slate-400 mt-1">{subtitle}</p>}
+                        {subtitle && <p className="text-[10px] text-gray-400 mt-2 font-medium">{subtitle}</p>}
                     </div>
                 </CardContent>
             </Card>

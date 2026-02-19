@@ -107,18 +107,3 @@ npm run dev
 ---
 *Built with ❤️ for the bees and the engineers who protect them.*
 
-## 🔧 Recent Operational Updates (Feb 2026)
-
-### 🧹 Data Restoration & Schema Alignment
-- **Timothy Nduva Restoration**: Successfully purged and restored full historical data for `timothynduva349@gmail.com`, including:
-  - 184 Hives (KIB-H101 to KIB-H284)
-  - 35 Harvest records (2020-2026) totaling ~943kg of honey.
-  - Custom batch codes following the `Hivename-Year-Date` convention.
-  - Active Macadamia Pollination Contract for 25 acres in Kibwezi.
-- **Schema Harmonization**: Rectified discrepancies between backend models and live database schemas, specifically mapping `quantity_kg` and `first_name`/`last_name` correctly.
-- **Auth Metadata Sync**: Updated Supabase Auth metadata for administrative accounts to ensure seamless frontend profile rendering.
-
-### 🛠️ Backend API Fixes
-- **Farmer Name Resolution**: Fixed a critical bug in `beeyield.py` where the API was querying a non-existent `full_name` field. It now dynamically reconstructs the name from `first_name` and `last_name` from the `profiles` table.
-- **REST Protocol Stability**: Switched administrative scripts to direct HTTP/PostgREST interfaces to bypass schema cache invalidation issues on edge instances.
-
