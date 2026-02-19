@@ -3166,9 +3166,14 @@ const AdminDashboard: React.FC = () => {
                                                         <TableCell className="px-6 text-sm">{req.email}</TableCell>
                                                         <TableCell className="px-6 text-sm font-mono">{req.phone}</TableCell>
                                                         <TableCell className="px-6"><Badge variant="outline" className="rounded-xl">{req.crop_type || req.crop}</Badge></TableCell>
-                                                        <TableCell className="px-6 text-sm">{req.farm_size || req.acreage} acres</TableCell>
+                                                        <TableCell className="px-6 text-sm">{req.farm_size || req.acreage || req.farm_size_acres} acres</TableCell>
                                                         <TableCell className="px-6 text-sm text-muted-foreground">{req.location || req.county}</TableCell>
-                                                        <TableCell className="px-6 text-xs font-mono">{new Date(req.created_at).toLocaleDateString()}</TableCell>
+                                                        <TableCell className="px-6 text-xs font-mono">
+                                                            {req.contract_start_date
+                                                                ? `${new Date(req.contract_start_date).toLocaleDateString()} - ${new Date(req.contract_end_date).toLocaleDateString()}`
+                                                                : new Date(req.created_at).toLocaleDateString()
+                                                            }
+                                                        </TableCell>
                                                         <TableCell className="px-6">
                                                             <Select defaultValue={req.status || 'pending'} onValueChange={(val) => adminService.updatePollinationRequestStatus(req.id, val).then(() => { toast.success('Status updated'); loadAllData(); })}>
                                                                 <SelectTrigger className="h-8 w-[120px] rounded-xl text-[10px] font-black uppercase"><SelectValue /></SelectTrigger>

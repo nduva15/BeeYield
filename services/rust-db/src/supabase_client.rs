@@ -203,7 +203,7 @@ impl SupabaseClient {
         }
     }
 
-    /// UPSERT — POST with merge-duplicates
+    /// UPSERT — POST with merge-duplicates, optionally specifying conflict columns
     pub async fn upsert(&self, req: &DbUpsertRequest) -> DbResponse {
         let url = format!("{}/{}", self.config.rest_url(), req.table);
         let headers = self.build_headers(
@@ -211,7 +211,14 @@ impl SupabaseClient {
             Some("resolution=merge-duplicates,return=representation"),
         );
 
-        match self.client.post(&url).headers(headers).json(&req.data).send().await {
+        // Build the request, appending the on_conflict query param if provided.
+        // PostgREST uses ?on_conflict=col1,col2 to know which columns to match on.
+        let mut request = self.client.post(&url).headers(headers).json(&req.data);
+        if let Some(ref conflict_cols) = req.on_conflict {
+            request = request.query(&[("on_conflict", conflict_cols.as_str())]);
+        }
+
+        match request.send().await {
             Ok(resp) => {
                 let status = resp.status();
                 let body = resp.text().await.unwrap_or_default();

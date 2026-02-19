@@ -696,7 +696,10 @@ async def log_harvest_batch(
         profiles = await db_select("profiles", filters={"id": user_id}, limit=1, token=token)
         if profiles:
             p = profiles[0]
-            farmer_name = p.get("full_name") or p.get("display_name") or p.get("email") or "Unknown"
+            first = p.get("first_name") or ""
+            last = p.get("last_name") or ""
+            full = f"{first} {last}".strip()
+            farmer_name = full or p.get("display_name") or p.get("username") or p.get("email") or "Unknown"
     except Exception:
         pass
     

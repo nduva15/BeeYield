@@ -403,7 +403,7 @@ export const adminService = {
     // ============== POLLINATION ==============
     getPollinationRequests: async () => {
         try { return await apiGet<any[]>('/admin/pollination'); }
-        catch { return (await supabase?.from('pollination_requests').select('*'))?.data || []; }
+        catch { return (await supabase?.from('pollination_contracts').select('*'))?.data || []; }
     },
 
     updatePollinationRequestStatus: async (id: string, status: string) => {
