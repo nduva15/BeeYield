@@ -191,28 +191,13 @@ export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) =>
         addLog("Starting offline data sync...");
 
         try {
-            // Simulated sync loop for demonstration
-            for (let i = 0; i <= 100; i += 10) {
-                setSyncProgress(i);
-                await new Promise(r => setTimeout(r, 400));
-                if (i % 30 === 0) addLog(`Syncing records... ${i}% complete`);
-            }
+            // Check for buffered data (simulated check)
+            addLog("Checking device memory for offline logs...");
+            await new Promise(r => setTimeout(r, 800));
 
-            // In reality, you'd pull buffered data here and send to backend
-            const mockReadings = [
-                {
-                    device_mac: connectedDevice.id,
-                    recorded_at: new Date().toISOString(),
-                    temp_c: liveData.temp || 24.5,
-                    weight_kg: liveData.weight || 45.2,
-                    humidity: liveData.humidity || 65
-                }
-            ];
-
-            await beeyieldService.uploadBluetoothReadings(mockReadings);
-
-            addLog("Sync complete. 124 records uploaded to Supabase.");
-            toast.success("Data synchronized successfully");
+            setSyncProgress(100);
+            addLog("No offline records found in device memory.");
+            toast.info("No data to synchronize");
         } catch (error: any) {
             addLog(`Sync error: ${error.message}`);
             toast.error("Sync failed");

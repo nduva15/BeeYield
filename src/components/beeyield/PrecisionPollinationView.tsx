@@ -65,69 +65,7 @@ interface HiveData {
     lastSync: string;
 }
 
-// --- Generate realistic hive data for fallback ---
-const generateFallbackHives = (hiveCount: number): HiveData[] => {
-    const hives: HiveData[] = [];
-    const baseLat = -1.2921;
-    const baseLng = 36.8219;
 
-    for (let i = 0; i < hiveCount; i++) {
-        const hiveNum = i + 1;
-        const row = Math.floor(i / 10);
-        const col = i % 10;
-
-        // Use deterministic seed based on hive number for "Perfect Sync"
-        const seed = (hiveNum * 13) % 100;
-
-        const baseAcoustics = 220 + (seed % 30);
-        const baseTemp = 33.5 + (seed % 30) / 10;
-        const baseHumidity = 55 + (seed % 20);
-        const baseVPM = 25 + (seed % 25);
-
-        const trends: ('up' | 'down' | 'stable')[] = ['up', 'down', 'stable'];
-        const getTrend = (s: number) => trends[s % 3];
-        const getTrendValue = (trend: 'up' | 'down' | 'stable', s: number) => {
-            const val = ((s % 50) / 10 + 0.5).toFixed(1);
-            return trend === 'stable' ? 'Stable' : `${trend === 'up' ? '+' : '-'}${val}%`;
-        };
-
-        let status: 'healthy' | 'warning' | 'critical' = 'healthy';
-        if (baseTemp < 33 || baseTemp > 36 || baseHumidity > 72 || baseVPM < 20) {
-            status = 'warning';
-        }
-        if (baseTemp < 32 || baseTemp > 37 || baseVPM < 12) {
-            status = 'critical';
-        }
-
-        const acousticsTrend = getTrend(seed);
-        const tempTrend = getTrend(seed + 1);
-        const humidityTrend = getTrend(seed + 2);
-        const vpmTrend = getTrend(seed + 3);
-
-        hives.push({
-            id: `H-${String(hiveNum).padStart(3, '0')}`,
-            name: `Hive ${hiveNum}`,
-            location: {
-                lat: baseLat + (row * 0.0005) + ((seed % 10) * 0.00002),
-                lng: baseLng + (col * 0.0008) + ((seed % 10) * 0.00002)
-            },
-            x: 5 + (col * 9) + (seed % 5),
-            y: 10 + (row * 15) + (seed % 5),
-            status,
-            sensors: {
-                acoustics: { value: Math.round(baseAcoustics), trend: acousticsTrend, trendValue: getTrendValue(acousticsTrend, seed) },
-                temperature: { value: parseFloat(baseTemp.toFixed(1)), trend: tempTrend, trendValue: getTrendValue(tempTrend, seed + 5) },
-                humidity: { value: Math.round(baseHumidity), trend: humidityTrend, trendValue: getTrendValue(humidityTrend, seed + 10) },
-                flightActivity: { value: parseFloat(baseVPM.toFixed(1)), trend: vpmTrend, trendValue: getTrendValue(vpmTrend, seed + 15) }
-            },
-            framesOfBees: Math.floor(6 + (seed % 6)),
-            queenStatus: (seed % 10) > 1 ? 'present' : ((seed % 2) === 0 ? 'absent' : 'unknown'),
-            lastSync: `${(seed % 10) + 1}m ago`
-        });
-    }
-
-    return hives;
-};
 
 // --- Stat Card matching MyDevicesView style exactly ---
 const StatCard = ({ label, value, colorClass }: { label: string, value: number | string, colorClass: string }) => (
@@ -282,9 +220,9 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                         const mappedHives: HiveData[] = realHives.map((h, i) => {
                             const row = Math.floor(i / 10);
                             const col = i % 10;
-                            const temp = h.latest_temp || (33.5 + Math.random() * 3);
-                            const humidity = h.latest_humidity || (55 + Math.random() * 20);
-                            const status = (temp < 32 || temp > 38) ? 'critical' : (temp < 33 || temp > 36) ? 'warning' : 'healthy';
+                            const temp = h.latest_temp || 0;
+                            const humidity = h.latest_humidity || 0;
+                            const status = (temp < 10) ? 'critical' : 'healthy'; // Placeholder logic for real but empty data
 
                             return {
                                 id: h.hive_code,
@@ -297,30 +235,30 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                                 y: 10 + (row * 15) + Math.random() * 5,
                                 status: status,
                                 sensors: {
-                                    acoustics: { value: 235 + Math.random() * 30, trend: 'stable', trendValue: 'Stable' },
-                                    temperature: { value: parseFloat(temp.toFixed(1)), trend: 'stable', trendValue: 'Stable' },
-                                    humidity: { value: Math.round(humidity), trend: 'stable', trendValue: 'Stable' },
-                                    flightActivity: { value: 32 + Math.random() * 10, trend: 'up', trendValue: '+5%' }
+                                    acoustics: { value: h.latest_acoustics || 0, trend: 'stable', trendValue: 'Stable' },
+                                    temperature: { value: temp, trend: 'stable', trendValue: 'Stable' },
+                                    humidity: { value: humidity, trend: 'stable', trendValue: 'Stable' },
+                                    flightActivity: { value: h.latest_activity || 0, trend: 'stable', trendValue: 'Stable' }
                                 },
-                                framesOfBees: h.frame_count || 8,
+                                framesOfBees: h.frame_count || 0,
                                 queenStatus: 'present',
-                                lastSync: 'Just now'
+                                lastSync: 'N/A'
                             };
                         });
                         setHives(mappedHives);
                     } else {
-                        console.log("No real pollination data found, using fallback simulation.");
+                        console.log("No pollination data found.");
                         setUsingRealData(false);
-                        setHives(generateFallbackHives(184));
+                        setHives([]);
                     }
                 }
             } catch (error) {
                 console.error("Error fetching pollination data:", error);
-                toast.error("Failed to load real data. Using simulation mode.");
-                setHives(generateFallbackHives(184));
+                setHives([]);
             } finally {
                 setIsLoading(false);
             }
+
         };
 
         fetchRealData();
