@@ -409,14 +409,14 @@ async def delete_subscriber(
 ):
     return await db_delete("newsletter_subscribers", {"id": subscriber_id}, token=token)
 
-# --- Pollination Requests ---
+# --- Pollination Contracts ---
 @router.get("/pollination", response_model=list[dict[str, Any]])
-async def get_pollination_requests(current_admin: dict = Depends(check_admin_role), token: Optional[str] = Depends(get_token)):
-    return await db_select("pollination_requests", order_by="created_at", ascending=False, token=token)
+async def get_pollination_contracts(current_admin: dict = Depends(check_admin_role), token: Optional[str] = Depends(get_token)):
+    return await db_select("pollination_contracts", order_by="created_at", ascending=False, token=token)
 
-@router.put("/pollination/{request_id}/status", response_model=dict[str, Any])
+@router.put("/pollination/{contract_id}/status", response_model=dict[str, Any])
 async def update_pollination_status(
-    request_id: str, 
+    contract_id: str, 
     status_update: dict[str, str],
     current_admin: dict = Depends(check_admin_role),
     token: Optional[str] = Depends(get_token)
@@ -424,15 +424,15 @@ async def update_pollination_status(
     status_val = status_update.get("status")
     if not status_val:
          raise HTTPException(status_code=400, detail="Status is required")
-    return await db_update("pollination_requests", {"status": status_val}, {"id": request_id}, token=token)
+    return await db_update("pollination_contracts", {"status": status_val}, {"id": contract_id}, token=token)
 
-@router.delete("/pollination/{request_id}")
-async def delete_pollination_request(
-    request_id: str,
+@router.delete("/pollination/{contract_id}")
+async def delete_pollination_contract(
+    contract_id: str,
     current_admin: dict = Depends(check_admin_role),
     token: Optional[str] = Depends(get_token)
 ):
-    return await db_delete("pollination_requests", {"id": request_id}, token=token)
+    return await db_delete("pollination_contracts", {"id": contract_id}, token=token)
 
 
 # --- Stock Movements ---
@@ -455,6 +455,41 @@ async def create_stock_movement(
     return res.get("data")[0] if res.get("data") else movement_in
 
 
+
+# --- Generic Table Data ---
+
+@router.get("/table/{table_name}")
+async def get_admin_table_data(
+    table_name: str,
+    current_admin: dict = Depends(check_admin_role),
+    token: Optional[str] = Depends(get_token)
+):
+    """
+    General purpose table fetcher with specific logic for honey data.
+    """
+    try:
+        supabase = get_supabase()
+        if not supabase:
+            raise HTTPException(status_code=500, detail="Database connection failed")
+
+        if table_name == "pollination_requests" or table_name == "pollination_contracts":
+            res = supabase.table("pollination_contracts").select("*, farmer:farmers(name)").order("created_at", desc=True).execute()
+            data = res.data if res.data else []
+            for item in data:
+                if item.get("farmer"):
+                    item["name"] = item["farmer"].get("name")
+                    item["farmer_name"] = item["farmer"].get("name")
+            return data
+            
+        if table_name == "honey_batches" or table_name == "products":
+            return await db_select(table_name, order_by="created_at", ascending=False, token=token)
+
+        # Default select
+        return await db_select(table_name, token=token)
+    except Exception as e:
+        print(f"Table fetch error for {table_name}: {e}")
+        return []
+
 # --- Dashboard Stats ---
 
 @router.get("/stats", response_model=dict[str, Any])
@@ -468,8 +503,21 @@ async def get_admin_stats(current_admin: dict = Depends(check_admin_role), token
         batches = await db_select("honey_batches", token=token)
         apiaries = await db_select("apiaries", token=token)
         hives = await db_select("hives", token=token)
-        pollination = await db_select("pollination_requests", token=token)
         
+        # Fetch pollination contracts with farmer name
+        supabase = get_supabase()
+        if not supabase:
+            raise HTTPException(status_code=500, detail="Database connection failed")
+        
+        res = supabase.table("pollination_contracts").select("*, farmer:farmers(name)").order("created_at", desc=True).execute()
+        pollination = res.data if res.data else []
+        
+        # Flatten farmer name into the record for UI compatibility
+        for item in pollination:
+            if item.get("farmer"):
+                item["farmer_name"] = item["farmer"].get("name")
+            del item["farmer"] # Remove the nested farmer object
+
         # Blockchain counts if DB empty
         if not batches or len(batches) == 0:
             from app.blockchain.honey_chain import honey_blockchain
@@ -485,7 +533,7 @@ async def get_admin_stats(current_admin: dict = Depends(check_admin_role), token
 
         total_revenue = sum(float(o.get("total_amount", 0)) for o in orders if o.get("status") != "cancelled")
         total_honey_kg = sum(float(b.get("quantity_kg", 0) or b.get("total_quantity_kg", 0)) for b in batches)
-        total_acres = sum(float(p.get("acres", 0)) for p in pollination)
+        total_acres = sum(float(p.get("farm_size_acres", 0)) for p in pollination)
         
         return {
             "total_orders": len(orders),

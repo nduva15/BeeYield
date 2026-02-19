@@ -17,7 +17,8 @@ from app.db.supabase_db import get_supabase, db_insert, db_select
 from app.schemas.image_analysis import (
     ImageAnalysisResponse,
     AnalysisHistoryResponse,
-    AnalysisHistoryItem
+    AnalysisHistoryItem,
+    AnalysisType
 )
 
 router = APIRouter()
@@ -40,7 +41,7 @@ async def analyze_image(
     apiary_id: Optional[str] = Form(None, description="Associated apiary UUID"),
     confidence_threshold: float = Form(0.4, ge=0.1, le=1.0),
     overlap_threshold: float = Form(0.5, ge=0.1, le=1.0),
-    analysis_type: str = Form("full", regex="^(full|detection_only|health_only)$"),
+    analysis_type: AnalysisType = Form(AnalysisType.FULL),
     user_id: str = Depends(get_current_user_id)
 ):
     """
