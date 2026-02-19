@@ -56,16 +56,7 @@ const ComparisonsView: React.FC = () => {
                 setComparisonData(data || []);
             } catch (err) {
                 console.error('Failed to fetch comparisons', err);
-                // Fallback mock data for demo
-                setComparisonData([
-                    { label: 'Day 1', primary_value: 45, secondary_value: 40 },
-                    { label: 'Day 2', primary_value: 52, secondary_value: 48 },
-                    { label: 'Day 3', primary_value: 48, secondary_value: 52 },
-                    { label: 'Day 4', primary_value: 61, secondary_value: 55 },
-                    { label: 'Day 5', primary_value: 55, secondary_value: 50 },
-                    { label: 'Day 6', primary_value: 67, secondary_value: 60 },
-                    { label: 'Day 7', primary_value: 72, secondary_value: 65 },
-                ]);
+                setComparisonData([]);
             } finally {
                 setIsLoading(false);
             }
