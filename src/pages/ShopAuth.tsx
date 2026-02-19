@@ -18,8 +18,8 @@ import {
     ArrowRight,
     Hexagon
 } from 'lucide-react';
-import LoginForm from '@/components/auth/LoginForm';
-import RegisterForm from '@/components/auth/RegisterForm';
+import ShopLoginForm from '@/components/auth/shop/ShopLoginForm';
+import ShopRegisterForm from '@/components/auth/shop/ShopRegisterForm';
 import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
 import Logo from '@/assets/Logo.png';
 
@@ -216,8 +216,7 @@ const ShopAuth: React.FC = () => {
                                     <div className="max-w-md mx-auto w-full">
                                         {authMode === 'login' && (
                                             <div className="animate-fade-in-up">
-                                                <LoginForm
-                                                    variant="shop"
+                                                <ShopLoginForm
                                                     onSuccess={() => {
                                                         toast.success("Logged In");
                                                         // Redirection handled by useEffect
@@ -230,8 +229,7 @@ const ShopAuth: React.FC = () => {
 
                                         {authMode === 'register' && (
                                             <div className="animate-fade-in-up">
-                                                <RegisterForm
-                                                    variant="shop"
+                                                <ShopRegisterForm
                                                     onSuccess={() => {
                                                         toast.success("Account Created Successfully");
                                                         setAuthMode('login');

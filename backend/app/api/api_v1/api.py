@@ -132,19 +132,19 @@ async def get_impact_stats():
         farmer_count = len(farmer_data)
         
         return {
-            "total_honey_kg": f"{int(total_kg)}kg" if total_kg > 0 else "943kg",
-            "hive_count": str(hive_count) if hive_count > 0 else "184",
-            "beekeepers": str(farmer_count) if farmer_count > 0 else "3",
-            "farmers_served": "15", # Placeholder for CRM linkage
-            "acres_pollinated": "5"
+            "total_honey_kg": f"{int(total_kg)}kg" if total_kg > 0 else "0kg",
+            "hive_count": str(hive_count) if hive_count > 0 else "0",
+            "beekeepers": str(farmer_count) if farmer_count > 0 else "0",
+            "farmers_served": "0", # Placeholder for CRM linkage
+            "acres_pollinated": "0"
         }
     except Exception:
         return {
-            "total_honey_kg": "943kg",
-            "hive_count": "184",
-            "beekeepers": "3",
-            "farmers_served": "15",
-            "acres_pollinated": "5"
+            "total_honey_kg": "0kg",
+            "hive_count": "0",
+            "beekeepers": "0",
+            "farmers_served": "0",
+            "acres_pollinated": "0"
         }
 
 

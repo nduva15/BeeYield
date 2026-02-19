@@ -34,7 +34,12 @@ import {
   Award,
   ChevronRight,
   Mail,
-  Zap
+  Zap,
+  Database,
+  MapPin,
+  Activity,
+  Droplet,
+  Search
 } from "lucide-react";
 import { toast } from "sonner";
 import { BrandedProductImage } from "@/components/BrandedProductImage";
@@ -46,9 +51,10 @@ import SEO from "@/components/SEO";
 import { initialHoneyProducts } from "@/data/honey-products";
 import { type Product, type ProductVariant } from "@/services/shopService";
 
+import MailtrixHero from "@/components/MailtrixHero";
+
 // Hero Section matching reference design
 const HeroSection = () => {
-  const navigate = useNavigate();
   const [liveStats, setLiveStats] = useState<any>(null);
 
   useEffect(() => {
@@ -58,104 +64,29 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section className="relative min-h-[90vh] flex items-center pt-20 overflow-hidden bg-white">
-      {/* Dynamic Background Elements */}
-      <div className="absolute top-0 right-0 w-1/2 h-full bg-beeyield-green/[0.02] -skew-x-12 translate-x-32 pointer-events-none" />
-      <div className="absolute -top-24 -left-24 w-96 h-96 bg-beeyield-gold/5 rounded-full blur-3xl pointer-events-none animate-pulse" />
-
-      <div className="container mx-auto px-4 sm:px-6 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-          >
-            <Badge className="bg-beeyield-green/10 text-beeyield-green mb-6 hover:bg-beeyield-green/20 transition-colors uppercase tracking-[0.2em] font-black text-[10px] px-4 py-1.5 rounded-full border border-beeyield-green/20">
-              Verifiable Purity • Smart Beekeeping
-            </Badge>
-
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-neutral-900 leading-[0.85] tracking-tighter uppercase mb-6 drop-shadow-sm">
-              The Purest <span className="text-beeyield-green block">Harvest</span>
-            </h1>
-
-            <p className="text-lg md:text-xl text-neutral-500 mb-10 max-w-lg leading-relaxed font-medium">
-              Experience the world's most transparent honey. Powered by <span className="text-beeyield-gold font-bold">HoneyChain™</span> and a commitment to protecting 50% of the surplus for the bees.
-            </p>
-
-            {/* CTA Group */}
-            <div className="flex flex-wrap gap-4 mb-12">
-              <Button
-                size="lg"
-                className="bg-neutral-900 hover:bg-beeyield-green text-white font-black rounded-2xl px-10 h-16 shadow-2xl shadow-neutral-900/20 transition-all hover:scale-105 active:scale-95 uppercase tracking-widest text-xs"
-                onClick={() => navigate("/shop")}
-              >
-                Shop Collection
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-2 border-neutral-200 text-neutral-900 font-black rounded-2xl px-10 h-16 hover:bg-neutral-50 transition-all uppercase tracking-widest text-xs"
-                onClick={() => navigate("/traceability")}
-              >
-                Trace Your Jar
-              </Button>
-            </div>
-
-            {/* Impact Stats */}
-            <div className="flex items-center gap-8 border-t border-neutral-100 pt-8">
-              <div className="flex flex-col">
-                <span className="text-2xl font-black text-beeyield-green">{liveStats?.bees_protected || "2.4M"}</span>
-                <span className="text-[10px] uppercase font-black tracking-widest text-neutral-400">Bees Protected</span>
-              </div>
-              <div className="w-px h-8 bg-neutral-100" />
-              <div className="flex flex-col">
-                <span className="text-2xl font-black text-beeyield-gold">{liveStats?.hive_count || "184"}</span>
-                <span className="text-[10px] uppercase font-black tracking-widest text-neutral-400">Smart Hives</span>
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.2 }}
-            className="relative flex justify-center lg:justify-end"
-          >
-            <div className="relative w-full max-w-md lg:max-w-lg">
-              <div className="relative z-10 group perspective-1000">
-                <div className="absolute -inset-10 bg-beeyield-gold/20 blur-[60px] rounded-full" />
-                <motion.div
-                  animate={{ y: [0, -10, 0] }}
-                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  <img
-                    src="/images/products/beeyield_honey_1kg.png"
-                    alt="Premium BeeYield Honey"
-                    fetchPriority="high"
-                    className="relative z-10 w-full h-auto object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700"
-                  />
-                </motion.div>
-              </div>
-
-              {/* Verified Origin Badge */}
-              <motion.div
-                animate={{ y: [0, -15, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                className="absolute top-10 -right-4 lg:-right-12 z-20 bg-white/90 backdrop-blur-xl p-6 rounded-[2rem] shadow-2xl border border-white/50 flex flex-col items-center gap-2"
-              >
-                <div className="w-12 h-12 bg-beeyield-green rounded-2xl flex items-center justify-center shadow-lg">
-                  <ShieldCheck className="w-6 h-6 text-white" />
-                </div>
-                <div className="text-center">
-                  <span className="block text-sm font-black text-neutral-900">Verified</span>
-                  <span className="block text-[8px] font-black text-beeyield-gold uppercase tracking-widest">Origin</span>
-                </div>
-              </motion.div>
-            </div>
-          </motion.div>
-        </div>
-      </div>
-    </section>
+    <MailtrixHero
+      badge="Verifiable Purity • Smart Beekeeping"
+      title={["The Purest", "Harvest"]}
+      description="Experience the world's most transparent honey. Powered by HoneyChain™ and a commitment to protecting 50% of the surplus for the bees."
+      ctaText="Shop Collection"
+      ctaLink="/shop"
+      secondaryCtaText="Trace Your Jar"
+      secondaryCtaLink="/traceability"
+      variant="honey"
+      centralImage="/images/products/beeyield_honey_1kg.png"
+      stats={[
+        { label: "Bees Protected", value: liveStats?.bees_protected || "2.4M" },
+        { label: "Smart Hives", value: liveStats?.hive_count || "184" }
+      ]}
+      floatingBadges={[
+        { icon: Database, text: "HoneyChain™" },
+        { icon: ShieldCheck, text: "50/50 Promise" },
+        { icon: MapPin, text: "Verified Origin" },
+        { icon: Activity, text: "Smart Sensors" },
+        { icon: Droplet, text: "Raw & Unfiltered" },
+        { icon: Search, text: "Traceability" },
+      ]}
+    />
   );
 };
 
@@ -1059,36 +990,139 @@ const HoneyLanding = () => {
       </script>
 
       <HeroSection />
+
+      {/* Visual Impact Section 1 - The Bio-Digital Frontier */}
+      <section className="relative h-[80vh] flex items-center overflow-hidden">
+        <motion.div
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: "url('https://images.unsplash.com/photo-1587334274328-64186a80aeee?auto=format&fit=crop&w=2000&q=80')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+          initial={{ scale: 1.1 }}
+          whileInView={{ scale: 1 }}
+          transition={{ duration: 1.5, ease: "easeOut" }}
+        />
+        <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] z-10" />
+        <div className="container mx-auto px-4 relative z-20">
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1 }}
+            className="max-w-2xl text-white"
+          >
+            <Badge className="bg-beeyield-gold text-neutral-900 border-none px-6 py-2 rounded-full font-black text-xs uppercase tracking-widest mb-8">
+              Radical Transparency
+            </Badge>
+            <h2 className="text-5xl md:text-7xl font-black mb-8 leading-[0.9] uppercase tracking-tighter">
+              From Hive to Heart. <br />
+              <span className="text-beeyield-gold">Directly.</span>
+            </h2>
+            <p className="text-xl text-white/80 font-medium leading-relaxed max-w-lg mb-12">
+              We've eliminated the middleman and the uncertainty. Every drop is tracked by HoneyChain™ sensors, ensuring you get the exact minerals and enzymes the bees intended.
+            </p>
+            <div className="flex gap-6">
+              <div className="flex flex-col">
+                <span className="text-3xl font-black text-beeyield-gold">100%</span>
+                <span className="text-[10px] uppercase font-black tracking-widest text-white/60">Lab Verified</span>
+              </div>
+              <div className="w-px h-12 bg-white/20" />
+              <div className="flex flex-col">
+                <span className="text-3xl font-black text-beeyield-gold">0.0</span>
+                <span className="text-[10px] uppercase font-black tracking-widest text-white/60">Antibiotics</span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       <MissionStatementSection />
 
-      {/* Trust Signifiers Bar */}
-      <div className="py-12 bg-neutral-50 border-y border-neutral-100/50">
+      {/* The Kibwezi Origin - Grounding the product in its source */}
+      <section className="relative py-32 bg-white overflow-hidden">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:divide-x md:divide-neutral-200/50">
-            <div className="flex flex-col items-center gap-3">
-              <div className="p-3 bg-white rounded-full shadow-sm mb-1">
-                <ShieldCheck className="h-6 w-6 text-beeyield-green" />
-              </div>
-              <span className="font-black uppercase tracking-widest text-xs text-neutral-900">100% Lab Tested</span>
-              <span className="text-[10px] text-neutral-500 font-medium max-w-[200px]">Verified for purity and absence of antibiotics</span>
+          <div className="flex flex-col lg:flex-row gap-20 items-center">
+            <div className="lg:w-1/2 order-2 lg:order-1">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                className="relative rounded-[3rem] overflow-hidden"
+              >
+                <img
+                  src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80"
+                  alt="Kibwezi Landscape"
+                  className="w-full h-[500px] object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                <div className="absolute top-8 left-8">
+                  <Badge className="bg-white/90 text-neutral-900 border-none font-black text-[10px] tracking-widest uppercase px-4">Origin Verified</Badge>
+                </div>
+              </motion.div>
             </div>
-            <div className="flex flex-col items-center gap-3">
-              <div className="p-3 bg-white rounded-full shadow-sm mb-1">
-                <Zap className="h-6 w-6 text-beeyield-gold" />
-              </div>
-              <span className="font-black uppercase tracking-widest text-xs text-neutral-900">Direct from Hive</span>
-              <span className="text-[10px] text-neutral-500 font-medium max-w-[200px]">Bottled at source to preserve active enzymes</span>
-            </div>
-            <div className="flex flex-col items-center gap-3">
-              <div className="p-3 bg-white rounded-full shadow-sm mb-1">
-                <Leaf className="h-6 w-6 text-beeyield-green" />
-              </div>
-              <span className="font-black uppercase tracking-widest text-xs text-neutral-900">Sustainable Harvest</span>
-              <span className="text-[10px] text-neutral-500 font-medium max-w-[200px]">50/50 Promise: We leave half for the bees</span>
+            <div className="lg:w-1/2 order-1 lg:order-2">
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+              >
+                <span className="text-beeyield-green font-black uppercase tracking-[0.4em] text-[10px] mb-4 block">The Terroir</span>
+                <h2 className="text-4xl md:text-6xl font-black text-neutral-900 uppercase tracking-tighter leading-none mb-8">
+                  The Pristine <br />
+                  <span className="text-neutral-400">Kibwezi Plains.</span>
+                </h2>
+                <p className="text-lg text-neutral-600 font-medium leading-relaxed mb-8">
+                  Our bees forage across the protected Kibwezi groundwater forest and the surrounding arid plains. This unique intersection of ecosystems produces honey with a mineral profile found nowhere else on Earth.
+                </p>
+                <div className="space-y-6">
+                  {[
+                    "Zero Industrial Runoff",
+                    "Protected Groundwater Forest",
+                    "Wild Acacia & Desert Flora"
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-4">
+                      <div className="w-6 h-6 rounded-full bg-beeyield-green/10 flex items-center justify-center">
+                        <Leaf className="w-3.5 h-3.5 text-beeyield-green" />
+                      </div>
+                      <span className="font-bold text-neutral-800 uppercase tracking-tight text-sm">{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* Trust Signifiers Bar */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="py-16 bg-neutral-900 border-y border-white/5"
+      >
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:divide-x md:divide-white/10">
+            <div className="flex flex-col items-center gap-4">
+              <ShieldCheck className="h-10 w-10 text-beeyield-green mb-2" />
+              <span className="font-black uppercase tracking-[0.2em] text-xs text-white">100% Lab Tested</span>
+              <span className="text-[10px] text-white/40 font-bold max-w-[200px] leading-loose">VERIFIED FOR PURITY AND ABSENCE OF ALL SYNTHETIC ADDITIVES</span>
+            </div>
+            <div className="flex flex-col items-center gap-4">
+              <Zap className="h-10 w-10 text-beeyield-gold mb-2" />
+              <span className="font-black uppercase tracking-[0.2em] text-xs text-white">Direct from Hive</span>
+              <span className="text-[10px] text-white/40 font-bold max-w-[200px] leading-loose">BOTTLED AT SOURCE IN KIBWEZI TO PRESERVE ACTIVE PHYTONUTRIENTS</span>
+            </div>
+            <div className="flex flex-col items-center gap-4">
+              <Leaf className="h-10 w-10 text-beeyield-green mb-2" />
+              <span className="font-black uppercase tracking-[0.2em] text-xs text-white">50/50 Promise</span>
+              <span className="text-[10px] text-white/40 font-bold max-w-[200px] leading-loose">WE LEAVE HALF FOR THE BEES, ENSURING COLONY REGENERATION</span>
+            </div>
+          </div>
+        </div>
+      </motion.div>
 
       <FeaturedProductsSection
         handleAddToCart={handleAddToCart}
@@ -1096,8 +1130,103 @@ const HoneyLanding = () => {
         products={products}
       />
 
+      {/* Visual Impact Section 2 - Technical Superiority */}
+      <section className="relative py-32 overflow-hidden bg-neutral-50 px-4">
+        <div className="container mx-auto">
+          <div className="grid lg:grid-cols-2 gap-20 items-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="relative rounded-[3rem] overflow-hidden shadow-2xl group"
+            >
+              <img
+                src="https://images.unsplash.com/photo-1589710751893-f9a6770ad71b?auto=format&fit=crop&w=1200&q=80"
+                alt="Apiary Monitoring"
+                className="w-full h-[600px] object-cover group-hover:scale-110 transition-transform duration-[3s]"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/80 to-transparent" />
+              <div className="absolute bottom-12 left-12 right-12">
+                <Badge className="bg-beeyield-green text-white mb-6">IoT Integrated</Badge>
+                <h3 className="text-3xl font-black text-white uppercase tracking-tighter mb-4">Real-Time Vital Monitoring</h3>
+                <p className="text-white/70 font-medium">We monitor hive frequency, temperature, and weight every 60 seconds.</p>
+              </div>
+            </motion.div>
+
+            <div className="space-y-12">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+              >
+                <span className="text-beeyield-gold font-black uppercase tracking-widest text-xs mb-4 block">The Ecosystem</span>
+                <h2 className="text-4xl md:text-6xl font-black text-neutral-900 uppercase leading-[0.95] tracking-tighter mb-8">
+                  Nature and Technology, <br />
+                  <span className="text-neutral-400">Perfectly Balanced.</span>
+                </h2>
+              </motion.div>
+
+              <div className="grid gap-8">
+                {[
+                  { title: "HoneyChain™ Traceability", desc: "Blockchain-backed harvest records for every individual jar." },
+                  { title: "Acoustic AI Detection", desc: "Machine learning models predicting swarm patterns and queen health." },
+                  { title: "50/50 Harvest Logic", desc: "Sustainable extraction algorithms that calculate colony needs first." }
+                ].map((feature, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: 30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.2 }}
+                    className="flex gap-6 items-start"
+                  >
+                    <div className="w-12 h-12 rounded-2xl bg-white shadow-xl flex items-center justify-center shrink-0 border border-neutral-100">
+                      <Activity className="w-5 h-5 text-beeyield-green" />
+                    </div>
+                    <div>
+                      <h4 className="font-black text-neutral-900 uppercase tracking-tight mb-2">{feature.title}</h4>
+                      <p className="text-neutral-500 text-sm font-medium leading-relaxed">{feature.desc}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <TestimonialSection />
       <AboutSection />
+
+      {/* High Conversion Banner */}
+      <section className="py-24 bg-beeyield-green relative overflow-hidden">
+        <motion.div
+          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+          transition={{ duration: 8, repeat: Infinity }}
+          className="absolute top-0 right-0 w-96 h-96 bg-white/20 rounded-full blur-[100px]"
+        />
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+            <div className="text-center lg:text-left">
+              <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter leading-[0.9] mb-6">
+                Ready to taste <br />the future of honey?
+              </h2>
+              <p className="text-white/80 text-xl font-medium max-w-xl mx-auto lg:mx-0">
+                Join 12,000+ conscious consumers who prioritize transparency.
+              </p>
+            </div>
+            <Button
+              size="lg"
+              className="bg-white hover:bg-neutral-100 text-beeyield-green font-black rounded-2xl px-16 h-20 text-lg uppercase tracking-widest shadow-2xl transition-all hover:scale-105"
+              onClick={() => navigate("/shop")}
+            >
+              Shop Collection
+              <ArrowRight className="ml-4 w-6 h-6" />
+            </Button>
+          </div>
+        </div>
+      </section>
+
       <FeaturesSection />
 
       <AllProductsSection

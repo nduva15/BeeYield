@@ -56,7 +56,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
         };
         const activeBackend = backendMap[variant] || 'shop';
 
-        const { error } = await signUp(email, password, {
+        const { data: signupData, error } = await signUp(email, password, {
             first_name: firstName,
             last_name: lastName,
             role: defaultRole,
@@ -66,7 +66,46 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
         if (error) {
             toast.error("Sign up failed", { description: error.message });
         } else {
-            toast.success("Account Created! 🎉");
+            // Check if auto-login happened (session exists)
+            const hasSession = !!signupData?.session;
+
+            // Auto-provision profile based on platform
+            const supabaseModule = await import('@/lib/supabase');
+            const supabaseInstances = {
+                'shop': supabaseModule.supabaseShop,
+                'beeyield': supabaseModule.supabaseBeeYield,
+                'ceba': supabaseModule.supabaseCEBA
+            };
+            const supabaseInstance = supabaseInstances[activeBackend];
+
+            if (supabaseInstance) {
+                const { data: { user } } = await supabaseInstance.auth.getUser();
+                if (user) {
+                    const profileTable = variant === 'shop' ? 'shop_profiles' :
+                        variant === 'professional' ? 'beeyield_profiles' :
+                            'ceba_profiles';
+
+                    await supabaseInstance
+                        .from(profileTable)
+                        .upsert({
+                            id: user.id,
+                            email: user.email,
+                            first_name: firstName,
+                            last_name: lastName,
+                            full_name: `${firstName} ${lastName}`.trim(),
+                            role: defaultRole,
+                            ...(activeBackend === 'beeyield' ? { is_professional: true } : {}),
+                            ...(activeBackend === 'ceba' ? { admin_role: 'content_editor' } : {}),
+                            updated_at: new Date().toISOString()
+                        });
+                }
+            }
+
+            if (hasSession) {
+                toast.success("Welcome to the hive! 🎉");
+            } else {
+                toast.success("Account Created! Please check your email. 🎉");
+            }
             onSuccess?.();
         }
         setLoading(false);
@@ -80,6 +119,16 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             'admin': 'ceba'
         };
         const activeBackend = backendMap[variant] || 'shop';
+
+        const returnPathMap: Record<string, string> = {
+            'shop': '/shop-dashboard',
+            'professional': '/beeyield-dashboard',
+            'admin': '/ceba'
+        };
+        const returnTo = returnPathMap[variant] || '/';
+
+        localStorage.setItem('authReturnTo', returnTo);
+        localStorage.setItem('authBackend', activeBackend);
 
         const { error } = await signInWithGoogle(undefined, activeBackend);
         if (error) {

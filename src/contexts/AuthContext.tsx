@@ -29,7 +29,7 @@ interface AuthContextType {
 
     // Methods
     signIn: (email: string, password: string, backend?: AuthBackend) => Promise<{ error: AuthError | null; mfaRequired?: boolean }>;
-    signUp: (email: string, password: string, metadata?: Record<string, any>, backend?: AuthBackend) => Promise<{ error: AuthError | null; data?: { user: User | null } }>;
+    signUp: (email: string, password: string, metadata?: Record<string, any>, backend?: AuthBackend) => Promise<{ error: AuthError | null; data?: { user: User | null; session: Session | null } }>;
     signInWithGoogle: (metadata?: Record<string, any>, backend?: AuthBackend) => Promise<{ error: AuthError | null }>;
     signOut: (backend?: AuthBackend | 'all') => Promise<void>;
 
@@ -87,6 +87,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const getActiveBackendFromPath = (path: string): AuthBackend => {
         if (path.includes('/ceba') || path.startsWith('/admin')) return 'ceba';
         if (path.includes('/beeyield')) return 'beeyield';
+        if (path.includes('/auth/callback')) {
+            const stored = localStorage.getItem('authBackend') as AuthBackend;
+            if (stored && ['shop', 'beeyield', 'ceba'].includes(stored)) return stored;
+        }
         return 'shop';
     };
 
@@ -212,7 +216,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             password,
             options: { data: metadata },
         });
-        return { error, data: { user: data.user } };
+        return { error, data: { user: data.user, session: data.session } };
     };
 
     const signInWithGoogle = async (metadata?: Record<string, any>, backend?: AuthBackend) => {

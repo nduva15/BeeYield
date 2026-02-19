@@ -19,23 +19,24 @@ import StatCard from './StatCard';
 
 // Alert Card Component matching screenshot
 const AlertCard = ({ label, value, colorClass }: { label: string, value: number | string, colorClass: string }) => (
-    <div className="bg-white dark:bg-[#111111] p-4 rounded-lg border border-gray-100 dark:border-white/5 shadow-sm h-24 flex flex-col justify-between">
-        <div className={cn("w-full h-[2px] mb-2 rounded-full", colorClass)} />
-        <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-tighter leading-tight">{label}</p>
-        <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">{value}</p>
+    <div className="bg-white p-5 rounded-3xl border border-[#E0E0E0] shadow-sm h-28 flex flex-col justify-between group hover:border-beeyield-forest/20 transition-all">
+        <div className={cn("w-2 h-2 mb-2 rounded-full", colorClass)} />
+        <div>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-tight">{label}</p>
+            <p className="text-2xl font-bold text-beeyield-charcoal mt-1">{value}</p>
+        </div>
     </div>
 );
 
-// KPI Card Component
 const KPICard = ({ label, value, icon: Icon, color, bg }: { label: string, value: string, icon: React.ElementType, color: string, bg: string }) => (
-    <div className={cn("p-4 rounded-lg flex items-center justify-between", bg)}>
-        <div className="flex items-center gap-3">
-            <div className={cn("p-2 rounded-full", color, bg.replace('dark:bg-white/5', 'dark:bg-white/10'))}>
+    <div className={cn("p-5 rounded-3xl flex items-center justify-between border border-[#E0E0E0] bg-white shadow-sm")}>
+        <div className="flex items-center gap-4">
+            <div className={cn("p-3 rounded-2xl bg-beeyield-forest/5 text-beeyield-forest border border-beeyield-forest/10")}>
                 <Icon className="w-5 h-5" />
             </div>
             <div>
-                <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{label}</p>
-                <p className={cn("text-lg font-bold", color)}>{value}</p>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{label}</p>
+                <p className={cn("text-lg font-bold text-beeyield-charcoal")}>{value}</p>
             </div>
         </div>
     </div>
@@ -58,9 +59,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
     const [selectedApiaryId, setSelectedApiaryId] = useState<string>('all');
     const { t, language } = useLanguage();
     const { signOut } = useAuth();
-    const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
-    // Sync local devices when initialDevices changes
     useEffect(() => {
         setLocalDevices(initialDevices);
     }, [initialDevices]);
@@ -75,20 +74,11 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
             }
         } catch (error) {
             console.error('Failed to add device:', error);
-            // Fallback for demo if API fails
             setLocalDevices([newDeviceData as IoTDevice, ...localDevices]);
             toast.info(`Local fallback: Device ${newDeviceData.device_code} added.`);
         }
     };
 
-    const toggleTheme = () => {
-        const newTheme = theme === 'light' ? 'dark' : 'light';
-        setTheme(newTheme);
-        if (newTheme === 'dark') document.documentElement.classList.add('dark');
-        else document.documentElement.classList.remove('dark');
-    };
-
-    // Filter devices based on apiary and search
     const filteredDevices = localDevices.filter(d => {
         const matchesApiary = selectedApiaryId === 'all' || d.linked_apiary_id === selectedApiaryId || d.apiary_id === selectedApiaryId;
         const matchesSearch = d.device_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -152,7 +142,6 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
         return `${days}d ago`;
     };
 
-    // Stats calculations
     const totalDevices = localDevices.length;
     const withMeasurement = localDevices.filter(d => readings.some(r => r.device_id === d.id)).length;
     const now = new Date();
@@ -168,116 +157,80 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
     const lowBattery = localDevices.filter(d => d.battery_level < 20).length;
 
     return (
-        <div className="space-y-6 pb-20 -mt-2">
+        <div className="space-y-10 pb-20 -mt-2 animate-in fade-in duration-700">
             <div>
-                <h1 className="text-3xl font-black text-slate-900 dark:text-white px-2 mb-8 tracking-tight">Devices</h1>
+                <h1 className="text-4xl font-bold text-beeyield-charcoal mb-2 tracking-tight">Ecosystem Nodes</h1>
+                <p className="text-gray-500 font-medium">Monitoring IoT telemetry across global apiary clusters.</p>
             </div>
 
-            {/* Stats Row 1 & 2 Combined */}
+            {/* Stats Row */}
             <motion.div
-                className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-8"
+                className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4"
                 initial="hidden"
                 animate="show"
                 variants={{
                     hidden: { opacity: 0 },
                     show: {
                         opacity: 1,
-                        transition: { staggerChildren: 0.1 }
+                        transition: { staggerChildren: 0.05 }
                     }
                 }}
             >
-                <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
-                    <StatCard title={t('total_devices')} value={totalDevices} icon={Smartphone} iconColor="#F4D03F" />
+                <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}>
+                    <StatCard title={t('total_devices')} value={totalDevices} icon={Smartphone} iconColor="#1B4332" />
                 </motion.div>
-                <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
-                    <StatCard title={t('with_measurement')} value={withMeasurement} icon={Activity} iconColor="#1B9157" />
+                <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}>
+                    <StatCard title={t('with_measurement')} value={withMeasurement} icon={Activity} iconColor="#1B4332" />
                 </motion.div>
-                <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
-                    <StatCard title={t('measured_24h')} value={measured24h} icon={Clock} iconColor="#1B9157" />
+                <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}>
+                    <StatCard title={t('measured_24h')} value={measured24h} icon={Clock} iconColor="#1B4332" />
                 </motion.div>
-                <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
-                    <StatCard title={t('measured_48h')} value={measured48h} icon={Clock} iconColor="#1B9157" />
+                <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}>
+                    <StatCard title={t('measured_48h')} value={measured48h} icon={Clock} iconColor="#1B4332" />
                 </motion.div>
-                <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
-                    <StatCard title={t('measured_7d')} value={measured7d} icon={Calendar} iconColor="#F4D03F" />
+                <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}>
+                    <StatCard title={t('measured_7d')} value={measured7d} icon={Calendar} iconColor="#1B4332" />
                 </motion.div>
-                <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
-                    <StatCard title={t('measured_30d')} value={measured30d} icon={Calendar} iconColor="#F4D03F" />
+                <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}>
+                    <StatCard title={t('measured_30d')} value={measured30d} icon={Calendar} iconColor="#1B4332" />
                 </motion.div>
-                <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
-                    <StatCard title={t('measured_365d')} value={measured365d} icon={Archive} iconColor="#EF4444" />
+                <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}>
+                    <StatCard title={t('measured_365d')} value={measured365d} icon={Archive} iconColor="#E67A2E" />
                 </motion.div>
             </motion.div>
 
             {/* Attention Needed Section */}
-            <div className="mt-8 bg-slate-50/50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/10 p-6">
-                <h3 className="text-sm font-black text-slate-800 dark:text-slate-200 tracking-tight">Needs attention</h3>
-                <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 mt-1">Check these devices to stay connected.</p>
-
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                    <AlertCard label={t('no_measurement_5d')} value={noMeasurement5d} colorClass="bg-red-500" />
-                    <AlertCard label={t('no_measurement_24h_5d')} value={0} colorClass="bg-[#F4D03F]" />
-                    <AlertCard label={t('low_battery')} value={lowBattery} colorClass="bg-[#F4D03F]" />
-                    <AlertCard label={t('weak_signal')} value={0} colorClass="bg-[#F4D03F]" />
+            <div className="bg-white rounded-[2.5rem] border border-[#E0E0E0] p-10 shadow-sm">
+                <div className="flex items-center gap-3 mb-8">
+                    <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
+                        <AlertCircle className="w-5 h-5 text-red-500" />
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-bold text-beeyield-charcoal tracking-tight">Network Anomalies</h3>
+                        <p className="text-sm font-medium text-gray-400">Nodes requiring immediate maintenance or recalibration.</p>
+                    </div>
                 </div>
 
-                <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mt-6 px-1">{t('all_healthy')}</p>
-            </div>
-
-            {/* Network Stability KPI Cards */}
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4">
-                {[
-                    {
-                        label: 'Online Hubs',
-                        value: `${localDevices.filter(d => d.status === 'active').length}/${localDevices.length}`,
-                        icon: CheckCircle2,
-                        color: 'text-emerald-500',
-                        bg: 'bg-emerald-50 dark:bg-emerald-900/10'
-                    },
-                    {
-                        label: 'Signal status',
-                        value: (() => {
-                            const strengths = localDevices.map(d => parseInt(getSignalStrength(d.id))).filter(s => !isNaN(s));
-                            if (strengths.length === 0) return '-';
-                            const avg = strengths.reduce((a, b) => a + b, 0) / strengths.length;
-                            return getSignalQuality(avg.toString());
-                        })(),
-                        icon: Signal,
-                        color: 'text-blue-500',
-                        bg: 'bg-blue-50 dark:bg-blue-900/10'
-                    },
-                    {
-                        label: 'System uptime',
-                        value: localDevices.length > 0 ? '99.9%' : '-',
-                        icon: Clock,
-                        color: 'text-[#F4D03F]',
-                        bg: 'bg-[#F4D03F]/10 dark:bg-[#F4D03F]/20'
-                    },
-                    {
-                        label: 'Recent alerts',
-                        value: lowBattery.toString(),
-                        icon: AlertCircle,
-                        color: 'text-slate-400',
-                        bg: 'bg-slate-50 dark:bg-white/5'
-                    },
-                ].map((stat, i) => (
-                    <KPICard key={i} {...stat} />
-                ))}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <AlertCard label={t('no_measurement_5d')} value={noMeasurement5d} colorClass="bg-red-500" />
+                    <AlertCard label={t('no_measurement_24h_5d')} value={0} colorClass="bg-beeyield-forest" />
+                    <AlertCard label={t('low_battery')} value={lowBattery} colorClass="bg-orange-500" />
+                    <AlertCard label={t('weak_signal')} value={0} colorClass="bg-blue-500" />
+                </div>
             </div>
 
             {/* Actions Bar */}
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4 mt-8">
-                <div className="flex items-center gap-2">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-4">
+                <div className="flex items-center gap-4">
                     <div className="relative">
-                        <span className="absolute -top-2 left-3 bg-white dark:bg-[#000000] px-1 text-[10px] font-bold text-slate-400 z-10">{t('apiary')}</span>
                         <Select value={selectedApiaryId} onValueChange={setSelectedApiaryId}>
-                            <SelectTrigger className="w-64 h-11 rounded-lg border-slate-300 dark:border-white/10 bg-white dark:bg-black/20 font-bold text-slate-700 dark:text-slate-300">
+                            <SelectTrigger className="w-64 h-12 rounded-xl border-[#E0E0E0] bg-white font-bold text-beeyield-charcoal shadow-sm">
                                 <SelectValue placeholder={t('all_apiaries')} />
                             </SelectTrigger>
-                            <SelectContent className="rounded-xl">
+                            <SelectContent className="rounded-2xl border-[#E0E0E0] shadow-xl">
                                 <SelectItem value="all">{t('all_apiaries')}</SelectItem>
                                 {apiaries && apiaries.map(apiary => (
-                                    <SelectItem key={apiary.id} value={apiary.id}>
+                                    <SelectItem key={apiary.id} value={apiary.id} className="rounded-xl">
                                         {apiary.name}
                                     </SelectItem>
                                 ))}
@@ -289,108 +242,93 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                 <div className="flex items-center gap-3">
                     <Button
                         onClick={() => setIsAddModalOpen(true)}
-                        className="h-11 px-6 rounded-full bg-[#1B9157] hover:bg-[#146c43] text-white font-bold shadow-lg shadow-green-500/10"
+                        className="h-12 px-8 rounded-xl bg-beeyield-forest hover:bg-opacity-90 text-white font-bold shadow-lg shadow-beeyield-forest/10"
                     >
-                        <Plus className="w-4 h-4 mr-2" /> {t('add_device')}
+                        <Plus className="w-4 h-4 mr-2 stroke-[3]" /> Register Node
                     </Button>
                     <Button
                         variant="outline"
                         onClick={() => setShowShortId(!showShortId)}
                         className={cn(
-                            "h-11 px-6 rounded-full font-bold shadow-sm transition-all",
-                            showShortId
-                                ? "bg-[#F4D03F] hover:bg-[#e0be36] text-[#1A1A1A] border-transparent"
-                                : "bg-white dark:bg-black/20 border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-200"
+                            "h-12 px-6 rounded-xl font-bold shadow-sm transition-all border-[#E0E0E0]",
+                            showShortId ? "bg-beeyield-forest text-white border-beeyield-forest" : "bg-white text-gray-600"
                         )}
                     >
-                        {showShortId ? (
-                            <div className="w-2.5 h-2.5 rounded-full bg-[#4ADE80] mr-2 shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
-                        ) : (
-                            <div className="w-3 h-3 rounded-full border-2 border-slate-200 flex items-center justify-center mr-2">
-                                <div className="w-1.5 h-1.5 rounded-full bg-[#F4D03F]" />
-                            </div>
-                        )}
-                        {t('show_short_id')}
+                        Node ID
                     </Button>
                     <Button
                         onClick={() => setShowLastVal(!showLastVal)}
                         className={cn(
-                            "h-11 px-6 rounded-full font-bold shadow-lg transition-all",
-                            showLastVal
-                                ? "bg-[#F4D03F] hover:bg-[#e0be36] text-[#1A1A1A] shadow-yellow-500/20"
-                                : "bg-white dark:bg-black/20 border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-200 border"
+                            "h-12 px-6 rounded-xl font-bold shadow-sm transition-all border-[#E0E0E0]",
+                            showLastVal ? "bg-beeyield-forest text-white border-beeyield-forest" : "bg-white text-gray-600 border"
                         )}
                     >
-                        {showLastVal ? (
-                            <div className="w-2.5 h-2.5 rounded-full bg-[#4ADE80] mr-2 shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
-                        ) : (
-                            <div className="w-3 h-3 rounded-full border-2 border-slate-200 flex items-center justify-center mr-2">
-                                <div className="w-1.5 h-1.5 rounded-full bg-[#F4D03F]" />
-                            </div>
-                        )}
-                        {t('show_last_measurement')}
+                        Telemetry
                     </Button>
                 </div>
             </div>
 
-            {/* Table */}
-            <div className="mt-8">
-                <div className="bg-[#FFF9F6] dark:bg-[#1A1816]/50 rounded-t-2xl border-b border-rose-100 dark:border-rose-900/20">
-                    <table className="w-full text-left">
-                        <thead>
-                            <tr className="h-14">
-                                {showShortId && <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap pl-8">{t('table_device_id')}</th>}
-                                <th className={cn("text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap", !showShortId && "pl-8")}>{t('table_status')}</th>
-                                <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">{t('table_battery')}</th>
-                                <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">Signal</th>
-                                <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">Status</th>
-                                <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">Uptime</th>
-                                <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">{t('table_last_ago')}</th>
-                                <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">{t('table_apiary')}</th>
-                                <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">{t('table_hive')}</th>
-                                {showLastVal && <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap">{t('table_last_val')}</th>}
-                                <th className="text-[12px] font-bold text-slate-600 dark:text-slate-400 px-6 uppercase tracking-tight whitespace-nowrap text-right">Actions</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
+            {/* Table Area */}
+            <div className="bg-white rounded-[2.5rem] border border-[#E0E0E0] shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
+                        <thead>
+                            <tr className="h-16 bg-beeyield-sand/30 border-b border-[#E0E0E0]">
+                                {showShortId && <th className="text-[11px] font-bold text-gray-400 px-8 uppercase tracking-widest">ID</th>}
+                                <th className="text-[11px] font-bold text-gray-400 px-8 uppercase tracking-widest">Status</th>
+                                <th className="text-[11px] font-bold text-gray-400 px-8 uppercase tracking-widest">Battery</th>
+                                <th className="text-[11px] font-bold text-gray-400 px-8 uppercase tracking-widest">Signal</th>
+                                <th className="text-[11px] font-bold text-gray-400 px-8 uppercase tracking-widest">Quality</th>
+                                <th className="text-[11px] font-bold text-gray-400 px-8 uppercase tracking-widest">Uptime</th>
+                                <th className="text-[11px] font-bold text-gray-400 px-8 uppercase tracking-widest">Last Ping</th>
+                                <th className="text-[11px] font-bold text-gray-400 px-8 uppercase tracking-widest">Apiary</th>
+                                <th className="text-[11px] font-bold text-gray-400 px-8 uppercase tracking-widest">Hive</th>
+                                {showLastVal && <th className="text-[11px] font-bold text-gray-400 px-8 uppercase tracking-widest">Value</th>}
+                                <th className="text-[11px] font-bold text-gray-400 px-8 uppercase tracking-widest text-right">Actions</th>
+                            </tr>
+                        </thead>
                         <tbody>
                             {filteredDevices.length === 0 ? (
                                 <tr>
-                                    <td colSpan={11} className="py-24 text-center text-slate-400 font-bold uppercase tracking-widest text-xs">
-                                        No devices found
+                                    <td colSpan={11} className="py-24 text-center text-gray-300 font-bold uppercase tracking-widest text-xs">
+                                        No active telemetry found
                                     </td>
                                 </tr>
                             ) : (
-                                filteredDevices.map((device, i) => (
-                                    <tr key={device.id} className="h-16 border-b border-slate-50 dark:border-white/5 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
-                                        {showShortId && <td className="px-8 font-mono text-xs font-bold text-slate-500">{device.device_code}</td>}
-                                        <td className={cn("px-6", !showShortId && "pl-8")}>
+                                filteredDevices.map((device) => (
+                                    <tr key={device.id} className="h-20 border-b border-[#F5F5F5] last:border-0 hover:bg-beeyield-sand/10 transition-colors">
+                                        {showShortId && <td className="px-8 font-mono text-xs font-bold text-gray-400">{device.device_code}</td>}
+                                        <td className="px-8">
                                             <div className="flex items-center gap-2">
-                                                <div className={cn("w-2 h-2 rounded-full", device.status === 'active' ? 'bg-[#1B9157]' : 'bg-slate-300')} />
-                                                <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-tight">{device.status === 'active' ? t('online') : t('offline')}</span>
+                                                <div className={cn("w-2 h-2 rounded-full", device.status === 'active' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 'bg-gray-300')} />
+                                                <span className="text-xs font-bold text-beeyield-charcoal uppercase tracking-tight">{device.status === 'active' ? 'Online' : 'Offline'}</span>
                                             </div>
                                         </td>
-                                        <td className="px-6 font-bold text-xs text-slate-600">{device.battery_level}%</td>
-                                        <td className="px-6 font-bold text-xs text-slate-600">{getSignalStrength(device.id)}</td>
-                                        <td className="px-6 font-bold text-xs text-slate-600">{getSignalQuality(getSignalStrength(device.id))}</td>
-                                        <td className="px-6 font-bold text-xs text-slate-600">{calculateUptime(device.id)}</td>
-                                        <td className="px-6 font-bold text-xs text-slate-600">{timeAgo(device.last_ping)}</td>
-                                        <td className="px-6 font-bold text-xs text-slate-600">{getApiaryName(device.linked_apiary_id || device.apiary_id, device.location_name)}</td>
-                                        <td className="px-6 font-bold text-xs text-slate-600">{getHiveName(device.hive_id)}</td>
-                                        {showLastVal && <td className="px-6 font-bold text-sm text-slate-800 dark:text-slate-200">
+                                        <td className="px-8 font-bold text-xs text-beeyield-charcoal">{device.battery_level}%</td>
+                                        <td className="px-8 font-bold text-xs text-gray-500">{getSignalStrength(device.id)}</td>
+                                        <td className="px-8">
+                                            <span className={cn(
+                                                "px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase",
+                                                getSignalQuality(getSignalStrength(device.id)) === 'Excellent' ? "bg-emerald-50 text-emerald-600" : "bg-orange-50 text-orange-600"
+                                            )}>
+                                                {getSignalQuality(getSignalStrength(device.id))}
+                                            </span>
+                                        </td>
+                                        <td className="px-8 font-bold text-xs text-gray-500">{calculateUptime(device.id)}</td>
+                                        <td className="px-8 font-bold text-xs text-gray-500">{timeAgo(device.last_ping)}</td>
+                                        <td className="px-8 font-bold text-xs text-beeyield-charcoal">{getApiaryName(device.linked_apiary_id || device.apiary_id, device.location_name)}</td>
+                                        <td className="px-8 font-bold text-xs text-beeyield-charcoal">{getHiveName(device.hive_id)}</td>
+                                        {showLastVal && <td className="px-8 font-bold text-sm text-beeyield-forest">
                                             {getDeviceReadings(device.id).length > 0 ?
                                                 `${Object.values(getDeviceReadings(device.id)[0].readings)[0]}` : '-'
                                             }
                                         </td>}
-                                        <td className="py-4 text-right pr-4">
+                                        <td className="px-8 text-right">
                                             <div className="flex justify-end gap-2">
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600" title="Get help">
+                                                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-beeyield-forest/5 text-beeyield-forest">
                                                     <FileSearch className="w-4 h-4" />
                                                 </Button>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-[#F4D03F]/10 text-[#F4D03F]" title="Settings">
+                                                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-beeyield-forest/5 text-gray-400">
                                                     <Settings className="w-4 h-4" />
                                                 </Button>
                                             </div>
@@ -413,5 +351,5 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
         </div>
     );
 };
-
 export default MyDevicesView;
+

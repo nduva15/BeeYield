@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent } from '@/components/ui/card';
-import LoginForm from '@/components/auth/LoginForm';
-import RegisterForm from '@/components/auth/RegisterForm';
+import CebaLoginForm from '@/components/auth/ceba/CebaLoginForm';
+import CebaRegisterForm from '@/components/auth/ceba/CebaRegisterForm';
 import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
 import {
     Shield,
@@ -147,8 +147,7 @@ const AdminAuth = () => {
                             {/* Forms */}
                             {authMode === 'login' && (
                                 <div className="animate-fade-in-up">
-                                    <LoginForm
-                                        variant="admin"
+                                    <CebaLoginForm
                                         onSuccess={() => navigate(redirectPath)}
                                         onSwitchToRegister={() => setAuthMode('register')}
                                         onForgotPassword={() => setAuthMode('forgot-password')}
@@ -158,15 +157,12 @@ const AdminAuth = () => {
 
                             {authMode === 'register' && (
                                 <div className="animate-fade-in-up">
-                                    <RegisterForm
-                                        variant="admin"
-                                        defaultRole="admin"
+                                    <CebaRegisterForm
                                         onSuccess={() => {
-                                            toast.success("Welcome! Account created.");
+                                            toast.success("Admin Node Requested.");
                                             setAuthMode('login');
                                         }}
                                         onSwitchToLogin={() => setAuthMode('login')}
-                                        additionalMetadata={{ ceba_active: true }}
                                     />
                                 </div>
                             )}

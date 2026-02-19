@@ -36,13 +36,12 @@ async def company_info(token: Optional[str] = Depends(get_token)):
 
     return schemas.CompanyInfo(
         name="BeeYield",
-        tagline="From Hive to Table, Traced with Trust",
-        mission="Revolutionizing beekeeping through blockchain traceability and sustainable practices.",
-        vision="To create a world where every drop of honey tells a story of ethical sourcing and environmental stewardship.",
+        tagline="Your Partner in pollination",
+        vision="BeeYield aims to be an ecosystem guardian, creating sustainable solutions that empower farmers and preserve global biodiversity.",
         founded_year=2020,
         headquarters="Kibwezi, Makueni, Kenya",
-        contact_email="hello@beeyield.com",
-        contact_phone="+254 700 000 000",
+        contact_email="info@beeyield.com",
+        contact_phone="+254 742004187",
         values=values,
         social_links={
             "twitter": "https://twitter.com/beeyield",
@@ -158,13 +157,7 @@ async def get_company_stats(category: Optional[str] = None, token: Optional[str]
     stats = await db_select("company_stats", filters=filters, order_by="display_order", token=token)
     
     if not stats or len(stats) == 0:
-        return [
-            {"id": "stat-1", "stat_key": "farmers_supported", "stat_value": "500+", "stat_label": "Farmers Supported", "icon": "users", "category": "impact", "display_order": 1, "updated_at": "2024-01-01T00:00:00Z"},
-            {"id": "stat-2", "stat_key": "hives_managed", "stat_value": "184", "stat_label": "Hives Managed", "icon": "hexagon", "category": "impact", "display_order": 2, "updated_at": "2024-01-01T00:00:00Z"},
-            {"id": "stat-3", "stat_key": "trees_planted", "stat_value": "2,500+", "stat_label": "Trees Planted", "icon": "tree-pine", "category": "environment", "display_order": 3, "updated_at": "2024-01-01T00:00:00Z"},
-            {"id": "stat-4", "stat_key": "acres_pollinated", "stat_value": "25+", "stat_label": "Acres Pollinated", "icon": "flower", "category": "impact", "display_order": 4, "updated_at": "2024-01-01T00:00:00Z"},
-            {"id": "stat-5", "stat_key": "beekeepers", "stat_value": "50+", "stat_label": "Partner Beekeepers", "icon": "users", "category": "community", "display_order": 5, "updated_at": "2024-01-01T00:00:00Z"}
-        ]
+        return []
     
     return stats
 
@@ -243,4 +236,3 @@ async def get_faqs(category: Optional[str] = None, token: Optional[str] = Depend
             }
         ]
     return faqs
-

@@ -35,20 +35,20 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
     };
 
     const containerVariants = {
-        hidden: { opacity: 0, x: -50 },
+        hidden: { opacity: 0, x: -20 },
         visible: {
             opacity: 1,
             x: 0,
             transition: {
                 duration: 0.8,
                 ease: [0.16, 1, 0.3, 1],
-                staggerChildren: 0.05
+                staggerChildren: 0.04
             }
         }
     };
 
     const itemVariants = {
-        hidden: { opacity: 0, x: -10 },
+        hidden: { opacity: 0, x: -5 },
         visible: { opacity: 1, x: 0 }
     };
 
@@ -58,95 +58,83 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
             initial="hidden"
             animate="visible"
             className={cn(
-                "fixed left-4 top-4 bottom-4 w-[280px] rounded-[30px] bg-white/60 dark:bg-black/40 backdrop-blur-xl border border-white/40 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.05)] overflow-hidden z-40 hidden md:flex flex-col",
+                "fixed left-0 top-0 bottom-0 w-[260px] bg-white border-r border-[#E0E0E0] z-40 hidden md:flex flex-col antialiased",
                 className
             )}
         >
-            {/* Glass Reflection */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent pointer-events-none z-0" />
-
-            {/* Header Area */}
-            <div className="relative z-10 px-6 pt-8 pb-6">
-                <motion.div variants={itemVariants} className="flex flex-col gap-6 mb-6">
-                    <div className="flex items-center justify-between">
-                        <motion.div
-                            whileHover={{ rotate: -2, scale: 1.05 }}
-                            className="flex items-center gap-3 cursor-pointer"
-                            onClick={() => onTabChange('home')}
-                        >
-                            <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20">
-                                <Zap className="w-5 h-5 text-white fill-white/20 stroke-[2.5]" />
-                            </div>
-                            <div className="flex flex-col">
-                                <h1 className="text-lg font-black text-slate-800 dark:text-white tracking-tight leading-none">
-                                    {t('dashboard_title')}
-                                </h1>
-                                <span className="text-[9px] font-bold text-amber-600 dark:text-amber-400 tracking-[0.2em] uppercase mt-1">
-                                    Intelligent Hive
-                                </span>
-                            </div>
-                        </motion.div>
+            {/* Logo Area */}
+            <div className="px-7 pt-10 pb-8">
+                <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    className="flex items-center gap-3 cursor-pointer group"
+                    onClick={() => onTabChange('home')}
+                >
+                    <div className="w-10 h-10 bg-beeyield-forest rounded-xl flex items-center justify-center transition-transform duration-500 group-hover:rotate-12">
+                        <Hexagon className="w-6 h-6 text-white" />
                     </div>
-
-                    {/* Search Input */}
-                    <div className="relative group">
-                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 group-focus-within:text-amber-500 transition-colors" />
-                        <input
-                            type="text"
-                            placeholder="Quick Command..."
-                            className="w-full bg-white/40 dark:bg-black/20 border border-white/20 dark:border-white/5 rounded-xl py-2.5 pl-10 pr-4 text-xs font-medium placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:bg-white/60 transition-all"
-                        />
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <kbd className="px-1.5 py-0.5 rounded bg-white/50 border border-white/20 text-[9px] font-bold text-gray-400 shadow-sm">⌘K</kbd>
-                        </div>
+                    <div className="flex flex-col">
+                        <h1 className="text-lg font-bold text-beeyield-charcoal tracking-tight leading-none">
+                            Floaria™
+                        </h1>
+                        <span className="text-[10px] font-medium text-beeyield-forest uppercase tracking-widest mt-1 opacity-70">
+                            BeeYield Core
+                        </span>
                     </div>
                 </motion.div>
             </div>
 
             {/* Navigation Body */}
-            <div className="relative z-10 flex-1 px-3 overflow-y-auto custom-scrollbar-glass space-y-1 pb-4">
+            <div className="flex-1 px-4 overflow-y-auto custom-scrollbar-slim space-y-1 pb-6 pt-2">
+                <div className="px-4 mb-4">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">
+                        {t('main_menu') || 'Navigation'}
+                    </span>
+                </div>
+
                 {navItems.filter(item => !item.hidden).map((item) => {
                     const isActive = activeTab === item.id;
                     const isExpanded = pinnedItems.includes(item.id);
 
                     return (
-                        <div key={item.id} className="mb-1">
+                        <div key={item.id} className="relative">
                             <motion.button
                                 variants={itemVariants}
-                                whileHover={{ scale: 1.02, x: 2 }}
+                                whileHover={{ x: 3 }}
                                 whileTap={{ scale: 0.98 }}
                                 onClick={() => {
                                     onTabChange(item.id);
                                     if (item.hasSubmenu) toggleExpand(item.id);
                                 }}
                                 className={cn(
-                                    "w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 relative group overflow-hidden",
+                                    "w-full flex items-center justify-between px-4 py-2.5 rounded-lg transition-all duration-200 group relative",
                                     isActive
-                                        ? "bg-gradient-to-r from-amber-500/10 to-amber-500/5 text-amber-700 dark:text-amber-400 font-bold border border-amber-500/10"
-                                        : "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-white/40 dark:hover:bg-white/5"
+                                        ? "bg-beeyield-forest/[0.04] text-beeyield-forest font-semibold"
+                                        : "text-gray-500 hover:text-beeyield-forest hover:bg-beeyield-forest/[0.02]"
                                 )}
                             >
+                                {/* Active Indicator Bar */}
                                 {isActive && (
                                     <motion.div
-                                        layoutId="glass-active-pill"
-                                        className="absolute left-0 top-0 bottom-0 w-1 bg-amber-500"
+                                        layoutId="sidebar-active-indicator"
+                                        className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-beeyield-forest rounded-r-full"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ duration: 0.3 }}
                                     />
                                 )}
 
-                                <div className="flex items-center gap-3 relative z-10">
-                                    <div className={cn(
-                                        "transition-colors duration-300",
-                                        isActive ? "text-amber-500" : "text-gray-400 group-hover:text-amber-500"
-                                    )}>
-                                        <item.icon className="w-4 h-4 stroke-[2]" />
-                                    </div>
-                                    <span className="text-xs tracking-wide">{item.label}</span>
+                                <div className="flex items-center gap-3.5">
+                                    <item.icon className={cn(
+                                        "w-[18px] h-[18px] stroke-[1.5] transition-all duration-300",
+                                        isActive ? "text-beeyield-forest" : "text-gray-400 group-hover:text-beeyield-forest"
+                                    )} />
+                                    <span className="text-[13px] tracking-tight">{item.label}</span>
                                 </div>
 
                                 {item.hasSubmenu && (
                                     <ChevronDown className={cn(
-                                        "w-3.5 h-3.5 transition-transform duration-300 opacity-50",
-                                        isExpanded ? "rotate-0 text-amber-500" : "-rotate-90"
+                                        "w-3.5 h-3.5 transition-transform duration-300 opacity-40",
+                                        isExpanded ? "rotate-180" : "rotate-0"
                                     )} />
                                 )}
                             </motion.button>
@@ -157,27 +145,26 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                                         initial={{ height: 0, opacity: 0 }}
                                         animate={{ height: "auto", opacity: 1 }}
                                         exit={{ height: 0, opacity: 0 }}
-                                        className="overflow-hidden ml-4 pl-4 border-l border-gray-200/50 dark:border-white/5"
+                                        className="overflow-hidden ml-9 pl-3 border-l border-gray-100 mt-1 mb-1"
                                     >
                                         <div className="py-1 space-y-0.5">
                                             {item.submenuItems.map((subItem) => (
-                                                <motion.button
+                                                <button
                                                     key={subItem.id}
-                                                    whileHover={{ x: 2 }}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         onTabChange(subItem.id);
                                                     }}
                                                     className={cn(
-                                                        "w-full text-left py-2 px-3 text-[11px] rounded-lg transition-all flex items-center gap-2",
+                                                        "w-full text-left py-2 px-3 text-[12px] rounded-lg transition-all flex items-center gap-2.5",
                                                         activeTab === subItem.id
-                                                            ? "text-amber-600 bg-amber-500/5 font-bold"
-                                                            : "text-gray-500 hover:text-gray-900 hover:bg-white/30"
+                                                            ? "text-beeyield-forest bg-beeyield-forest/[0.03] font-semibold"
+                                                            : "text-gray-500 hover:text-beeyield-forest hover:bg-beeyield-forest/[0.01]"
                                                     )}
                                                 >
-                                                    {subItem.icon && <subItem.icon className="w-3 h-3 opacity-70" />}
+                                                    {subItem.icon && <subItem.icon className="w-3.5 h-3.5 opacity-60" />}
                                                     {subItem.label}
-                                                </motion.button>
+                                                </button>
                                             ))}
                                         </div>
                                     </motion.div>
@@ -188,12 +175,22 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
                 })}
             </div>
 
-            {/* Footer */}
-            <div className="relative z-10 p-4 border-t border-white/20 dark:border-white/5 bg-white/20 dark:bg-black/20 backdrop-blur-md text-center">
+            {/* User Profile / Footer */}
+            <div className="p-6 border-t border-[#F0F0F0] bg-gray-50/30">
+                <div className="flex items-center gap-3 mb-6 px-1">
+                    <div className="w-9 h-9 rounded-full bg-beeyield-forest/10 border border-beeyield-forest/20 flex items-center justify-center text-beeyield-forest font-bold text-xs shadow-sm">
+                        JD
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="text-xs font-bold text-beeyield-charcoal">John Doe</span>
+                        <span className="text-[10px] text-gray-400 font-medium">Owner</span>
+                    </div>
+                </div>
+
                 <motion.button
-                    whileHover={{ scale: 1.02 }}
+                    whileHover={{ backgroundColor: '#F9F9F9' }}
                     onClick={onLogout}
-                    className="w-full py-3 rounded-xl bg-white/50 hover:bg-white/80 dark:bg-white/5 dark:hover:bg-white/10 border border-white/20 text-xs font-bold text-gray-600 dark:text-gray-300 flex items-center justify-center gap-2 transition-all shadow-sm"
+                    className="w-full py-2.5 rounded-lg border border-gray-200 text-[11px] font-bold text-gray-500 flex items-center justify-center gap-2.5 transition-all active:scale-[0.98]"
                 >
                     <LogOut className="w-3.5 h-3.5" />
                     {t('logout')}
@@ -202,18 +199,15 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
 
             <style dangerouslySetInnerHTML={{
                 __html: `
-                .custom-scrollbar-glass::-webkit-scrollbar {
-                    width: 4px;
+                .custom-scrollbar-slim::-webkit-scrollbar {
+                    width: 2px;
                 }
-                .custom-scrollbar-glass::-webkit-scrollbar-track {
+                .custom-scrollbar-slim::-webkit-scrollbar-track {
                     background: transparent;
                 }
-                .custom-scrollbar-glass::-webkit-scrollbar-thumb {
-                    background: rgba(255, 255, 255, 0.2);
+                .custom-scrollbar-slim::-webkit-scrollbar-thumb {
+                    background: #E0E0E0;
                     border-radius: 10px;
-                }
-                .custom-scrollbar-glass::-webkit-scrollbar-thumb:hover {
-                    background: rgba(255, 255, 255, 0.4);
                 }
             `}} />
         </motion.div>

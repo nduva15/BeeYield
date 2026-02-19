@@ -26,36 +26,45 @@ All colors MUST be HSL.
     --secondary: 153 68% 34%;
     --secondary-foreground: 0 0% 100%;
 
+    /* Sand and Forest Theme Variables */
+    --sand-bg: 45 33% 96%;
+    /* #F9F7F2 */
+    --forest-green: 153 42% 19%;
+    /* #1B4332 */
+    --charcoal-text: 0 0% 15%;
+    /* #262626 */
+
     /* Warm cream muted */
-    --muted: 48 30% 92%;
+    --muted: 45 33% 92%;
     --muted-foreground: 0 0% 35%;
 
-    /* Accent - lighter gold variant */
-    --accent: 48 80% 55%;
-    --accent-foreground: 0 0% 10%;
+    /* Accent - forest variant */
+    --accent: 153 42% 19%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 48 30% 88%;
-    --input: 48 30% 88%;
-    --ring: 48 87% 60%;
+    --border: 45 33% 88%;
+    --input: 45 33% 88%;
+    --ring: 153 42% 19%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
+    /* 16px */
 
     /* Custom tokens - BeeYield Logo Colors */
     --honey-light: 48 85% 85%;
     --honey-dark: 48 75% 45%;
-    --nature-green: 153 68% 34%;
-    --nature-green-light: 153 50% 85%;
+    --nature-green: 153 42% 19%;
+    --nature-green-light: 153 42% 90%;
 
-    /* Gradients - BeeYield brand */
-    --gradient-hero: linear-gradient(135deg, hsl(48 87% 60%) 0%, hsl(153 68% 34%) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(48 30% 97%) 0%, hsl(48 30% 92%) 100%);
+    /* Gradients - Forest and Sand */
+    --gradient-hero: linear-gradient(135deg, hsl(153 42% 19%) 0%, hsl(153 68% 34%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(45 33% 97%) 0%, hsl(45 33% 92%) 100%);
 
-    /* Shadows */
-    --shadow-soft: 0 4px 20px -2px hsl(48 87% 60% / 0.15);
-    --shadow-glow: 0 8px 32px -4px hsl(48 90% 65% / 0.3);
+    /* Shadows - softer for premium look */
+    --shadow-soft: 0 10px 30px -5px rgba(27, 67, 50, 0.05);
+    --shadow-glow: 0 8px 32px -4px rgba(27, 67, 50, 0.1);
 
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
