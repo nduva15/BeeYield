@@ -5,8 +5,16 @@ Pydantic models for request/response validation.
 """
 
 from pydantic import BaseModel, Field
+from enum import Enum
 from typing import List, Optional, Any
 from datetime import datetime
+
+
+class AnalysisType(str, Enum):
+    """Types of image analysis supported."""
+    FULL = "full"
+    DETECTION_ONLY = "detection_only"
+    HEALTH_ONLY = "health_only"
 
 
 class BoundingBox(BaseModel):
