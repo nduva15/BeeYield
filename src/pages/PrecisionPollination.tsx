@@ -3,15 +3,66 @@ import { Link } from "react-router-dom";
 import {
   Cpu, Wifi, LayoutDashboard, ArrowRight,
   Quote, Check, BookOpen, Mail, ChevronRight,
-  BarChart3, Thermometer, Mic, Globe, Activity
+  BarChart3, Thermometer, Mic, Globe, Activity,
+  ChevronDown, Calculator, Navigation, FileBarChart, Layers, Zap
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PollinationContactForm } from "@/components/PollinationContactForm";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const PrecisionPollination = () => {
+  const [isProfessionalOpen, setIsProfessionalOpen] = useState(false);
+
+  const professionalTools = [
+    { label: 'Tactical Grid', icon: Layers, path: '/beeyield-dashboard', description: 'Real-time node monitoring' },
+    { label: 'Pollination Calcs', icon: Calculator, path: '/precision-pollination/calcs', description: 'Yield & FPA analysis' },
+    { label: 'Flight Mapping', icon: Navigation, path: '/precision-pollination/map', description: 'Geospatial movement' },
+    { label: 'Site Reports', icon: FileBarChart, path: '/precision-pollination/reports', description: 'Audit & compliance' }
+  ];
+
   return (
-    <div className="pt-8">
+    <div className="pt-24 min-h-screen bg-white">
+      {/* Dynamic Nav Bar / Sticky Sub-header */}
+      <div className="sticky top-20 z-50 bg-white/80 backdrop-blur-md border-b-4 border-[#064e3b] py-4">
+        <div className="container mx-auto px-4 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-[#facc15] border-2 border-[#064e3b] flex items-center justify-center">
+              <Zap className="w-4 h-4 text-[#064e3b]" />
+            </div>
+            <span className="font-black uppercase tracking-widest text-[10px] text-[#064e3b]">Precision System 2.4</span>
+          </div>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center gap-4 px-6 py-2 bg-[#064e3b] text-white border-2 border-[#064e3b] font-black uppercase text-[10px] tracking-widest hover:bg-[#10b981] transition-all shadow-[4px_4px_0px_0px_rgba(16,185,129,1)]">
+                Professional Suite
+                <ChevronDown className="w-3 h-3" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-72 p-2 bg-white border-4 border-[#064e3b] rounded-none shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
+              {professionalTools.map((tool) => (
+                <DropdownMenuItem key={tool.path} asChild>
+                  <Link to={tool.path} className="flex items-start gap-4 p-4 hover:bg-[#facc15]/10 cursor-pointer group outline-none">
+                    <div className="mt-1 w-8 h-8 shrink-0 bg-[#064e3b]/5 flex items-center justify-center group-hover:bg-[#10b981]/20 transition-colors">
+                      <tool.icon className="w-4 h-4 text-[#064e3b] group-hover:text-[#10b981]" />
+                    </div>
+                    <div>
+                      <p className="font-black uppercase text-[10px] tracking-widest text-[#064e3b]">{tool.label}</p>
+                      <p className="text-[9px] font-bold text-[#064e3b]/40 mt-1 uppercase">{tool.description}</p>
+                    </div>
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
       {/* Hero Section */}
       <section className="relative py-24 bg-gradient-to-br from-secondary via-background to-primary/10 overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">

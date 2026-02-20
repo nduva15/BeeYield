@@ -13,7 +13,10 @@ import {
     X, ChevronDown, MapPin, Search, ClipboardList, Calculator, Receipt, LifeBuoy, Settings,
     Hand, Map, TrendingUp, Volume2, Camera, BookOpen, Droplet, Flame, Zap, Building2, Home, PieChart,
     ArrowRightLeft, FileInput, Bot, Activity, Gauge, List, Layers, BarChart3, Upload, LayoutList, Hexagon, Puzzle,
-    LogIn, UserPlus, Loader2, ArrowLeft, Shield, Lock, Bell, Banknote, Globe, Tag, ShieldCheck, Server
+    LogIn, UserPlus, Loader2, ArrowLeft, Shield, Lock, Bell, Banknote, Globe, Tag, ShieldCheck, Server,
+    Navigation, FileBarChart,
+    Brain,
+    Crosshair
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -34,6 +37,7 @@ import GlobalHiveNetwork from '@/pages/GlobalHiveNetwork';
 import MeasurementDataView from '@/components/beeyield/MeasurementDataView';
 import SettingsView from '@/components/beeyield/SettingsView';
 import PrecisionPollinationView from '@/components/beeyield/PrecisionPollinationView';
+import BloomTrackingView from '@/components/beeyield/BloomTrackingView';
 import {
     BeeYieldOnlineView,
     USBView
@@ -58,6 +62,19 @@ import SoundAnalysisView from '@/components/beeyield/SoundAnalysisView';
 import HealthGuideView from '@/components/beeyield/HealthGuideView';
 import FlightMapView from '@/components/beeyield/FlightMapView';
 import VarroaView from '@/components/beeyield/VarroaView';
+import SensorHealthView from '@/components/beeyield/SensorHealthView';
+import ContinuousMonitor from '@/components/beeyield/ContinuousMonitor';
+import YardOperations from '@/components/beeyield/YardOperations';
+import GeospatialSecurity from '@/components/beeyield/GeospatialSecurity';
+import PollinationIntelligence from '@/components/beeyield/PollinationIntelligence';
+import OrchardMapper from '@/components/beeyield/OrchardMapper';
+import SeasonSummary from '@/components/beeyield/SeasonSummary';
+import PollinationEngine from '@/components/beeyield/PollinationEngine';
+
+import LiveActivityHeatmap from '@/components/beeyield/LiveActivityHeatmap';
+import PredictiveSuccessEngine from '@/components/beeyield/PredictiveSuccessEngine';
+import HealthyHiveIndex from '@/components/beeyield/HealthyHiveIndex';
+import DeploymentPlanning from '@/components/beeyield/DeploymentPlanning';
 
 import DashboardHomeView from '@/components/beeyield/DashboardHomeView';
 
@@ -170,7 +187,37 @@ const BeeYieldDashboard: React.FC = () => {
         { id: 'home', label: 'Home', icon: Home },
         { id: 'assistant', label: t('nav_ai_assistant'), icon: Bot },
         { id: 'agro-intelligence', label: t('nav_agro_intelligence'), icon: LayoutGrid },
-        { id: 'precision-pollination', label: t('nav_precision_pollination'), icon: Calculator },
+        {
+            id: 'precision-pollination-folder',
+            label: t('nav_precision_pollination'),
+            icon: Calculator,
+            hasSubmenu: true,
+            submenuItems: [
+                // ── Mission Control ──────────────────────
+                { id: 'precision-pollination-home', label: 'Mission Control', icon: Activity },
+                // ── Field Intelligence ───────────────────
+                { id: 'bloom-tracking', label: 'Bloom Tracking', icon: Zap },
+                { id: 'precision-pollination-grid', label: 'Tactical Grid', icon: Layers },
+                { id: 'intelligence', label: 'Intelligence', icon: Brain },
+                { id: 'heat-map', label: 'PIP Heatmap', icon: Layers },
+                { id: 'yield-predict', label: 'Yield Predict', icon: Cpu },
+                { id: 'hhi-audit', label: 'HHI Audit', icon: ShieldCheck },
+                { id: 'deployment', label: 'War Room', icon: Crosshair },
+                // ── BaaS Command Centre ───────────────────
+                { id: 'sensor-vitals', label: 'Sensor Vitals', icon: Zap },
+                { id: 'continuous-monitor', label: 'Live Monitor', icon: Activity },
+                { id: 'yard-management', label: 'Yard Operations', icon: ClipboardList },
+                { id: 'fleet-security', label: 'Fleet Security', icon: Shield },
+                // ── Planning & Logistics ─────────────────
+                { id: 'orchard-mapper', label: 'Orchard Setup', icon: MapPin },
+                { id: 'pollination-calcs', label: 'Bee Calculator', icon: Calculator },
+                { id: 'season-summary', label: 'Season Report', icon: FileBarChart },
+                // ── Other ────────────────────────────────
+                { id: 'flight-mapping-tactical', label: 'Flight Mapping', icon: Navigation },
+                { id: 'site-reports-tactical', label: 'Site Reports', icon: FileBarChart },
+            ]
+        },
+
         { id: 'places', label: t('nav_my_places'), icon: MapPin },
         {
             id: 'beeyield',
@@ -269,8 +316,45 @@ const BeeYieldDashboard: React.FC = () => {
                 );
             case 'agro-intelligence':
                 return <AgroIntelligenceView onTabChange={handleTabChange} />;
-            case 'precision-pollination':
-                return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} />;
+            case 'precision-pollination-folder':
+            case 'precision-pollination-home':
+                return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} activeSubPageOverride="home" />;
+            case 'precision-pollination-grid':
+                return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} activeSubPageOverride="grid" />;
+            case 'bloom-tracking':
+                return <BloomTrackingView onTabChange={handleTabChange} />;
+            case 'pollination-calcs':
+            case 'pollination-engine':
+                return <PollinationEngine onTabChange={handleTabChange} />;
+            case 'flight-mapping-tactical':
+                return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} activeSubPageOverride="map" />;
+            case 'site-reports-tactical':
+                return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} activeSubPageOverride="reports" />;
+            case 'pollination-intelligence':
+            case 'intelligence':
+                return <PollinationIntelligence onTabChange={handleTabChange} />;
+            case 'heat-map':
+                return <LiveActivityHeatmap onTabChange={handleTabChange} />;
+            case 'yield-predict':
+                return <PredictiveSuccessEngine onTabChange={handleTabChange} />;
+            case 'hhi-audit':
+                return <HealthyHiveIndex onTabChange={handleTabChange} />;
+            case 'deployment':
+                return <DeploymentPlanning onTabChange={handleTabChange} />;
+            case 'sensor-vitals':
+                return <SensorHealthView onTabChange={handleTabChange} />;
+            case 'continuous-monitor':
+                return <ContinuousMonitor onTabChange={handleTabChange} />;
+            case 'yard-management':
+                return <YardOperations onTabChange={handleTabChange} />;
+            case 'fleet-security':
+            case 'baas-command':
+                return <GeospatialSecurity onTabChange={handleTabChange} />;
+            case 'orchard-mapper':
+                return <OrchardMapper onTabChange={handleTabChange} />;
+            case 'season-summary':
+                return <SeasonSummary onTabChange={handleTabChange} />;
+
             case 'places':
                 return <MyPlacesView onTabChange={handleTabChange} />;
             case 'beeyield':

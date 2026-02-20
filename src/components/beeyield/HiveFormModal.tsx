@@ -99,29 +99,29 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
     const isSaving = createHive.isPending || updateHive.isPending;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#064e3b]/40 backdrop-blur-sm p-4">
             <div className="w-full max-w-4xl">
                 <div className="mb-6 flex items-center justify-between">
                     <h2 className="text-4xl font-black text-white uppercase tracking-tighter">
-                        {editingHive ? 'Edit Hive' : 'Add Hive'}
+                        {editingHive ? 'Modify Asset' : 'Register Asset'}
                     </h2>
                     <Button
                         variant="ghost"
                         onClick={onClose}
-                        className="text-white hover:bg-white/10 rounded-none border-2 border-transparent hover:border-white transition-none"
+                        className="text-white hover:bg-white/10 rounded-none border-2 border-white/20 hover:border-white transition-none h-12 w-12"
                     >
                         <X className="w-6 h-6" />
                     </Button>
                 </div>
 
-                <Card className="border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none overflow-hidden">
+                <Card className="border-4 border-[#064e3b] shadow-[12px_12px_0px_0px_rgba(6,78,59,1)] bg-white rounded-none overflow-hidden">
                     <CardContent className="p-10">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
                             {/* Left Column */}
                             <div className="space-y-6">
                                 <div className="space-y-2">
-                                    <Label htmlFor="hive_code" className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
-                                        Hive Code<span className="text-[#FF4F00] ml-1">*</span>
+                                    <Label htmlFor="hive_code" className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em]">
+                                        ASSET CODE<span className="text-[#10b981] ml-1">*</span>
                                     </Label>
                                     <Input
                                         id="hive_code"
@@ -129,46 +129,46 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                         value={formData.hive_code}
                                         onChange={(e) => setFormData({ ...formData, hive_code: e.target.value })}
                                         placeholder="e.g. ALPHA-001"
-                                        className="h-12 rounded-none border-2 border-black bg-neutral-50 font-bold uppercase text-xs transition-none focus:ring-0"
+                                        className="h-12 rounded-none border-4 border-[#064e3b] bg-neutral-50/50 font-black uppercase text-xs transition-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:bg-[#facc15]/5"
                                     />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="apiary_id" className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
-                                        Location<span className="text-[#FF4F00] ml-1">*</span>
+                                    <Label htmlFor="apiary_id" className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em]">
+                                        SECTOR LOCATION<span className="text-[#10b981] ml-1">*</span>
                                     </Label>
                                     <Select name="apiary_id" value={formData.apiary_id} onValueChange={(val) => setFormData({ ...formData, apiary_id: val })}>
-                                        <SelectTrigger id="hive-apiary" className="h-12 rounded-none border-2 border-black bg-neutral-50 font-bold uppercase text-xs">
+                                        <SelectTrigger id="hive-apiary" className="h-12 rounded-none border-4 border-[#064e3b] bg-neutral-50/50 font-black uppercase text-xs focus:ring-0">
                                             <SelectValue placeholder="Select location" />
                                         </SelectTrigger>
-                                        <SelectContent className="rounded-none border-2 border-black shadow-lg">
+                                        <SelectContent className="rounded-none border-4 border-[#064e3b] shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] bg-white p-0">
                                             {apiaries.map(apiary => (
-                                                <SelectItem key={apiary.id} value={apiary.id} className="font-bold py-3 uppercase text-[10px]">{apiary.name}</SelectItem>
+                                                <SelectItem key={apiary.id} value={apiary.id} className="hover:bg-[#facc15]/10 transition-none p-4 font-black uppercase text-[10px] tracking-widest focus:bg-[#10b981] focus:text-white rounded-none">{apiary.name}</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="hive_type" className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
-                                        Hive Type
+                                    <Label htmlFor="hive_type" className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em]">
+                                        ASSET ARCHITECTURE
                                     </Label>
                                     <Select name="hive_type" value={formData.hive_type} onValueChange={(val) => setFormData({ ...formData, hive_type: val })}>
-                                        <SelectTrigger id="hive-type" className="h-12 rounded-none border-2 border-black bg-neutral-50 font-bold uppercase text-xs">
+                                        <SelectTrigger id="hive-type" className="h-12 rounded-none border-4 border-[#064e3b] bg-neutral-50/50 font-black uppercase text-xs">
                                             <SelectValue placeholder="Select type" />
                                         </SelectTrigger>
-                                        <SelectContent className="rounded-none border-2 border-black">
-                                            <SelectItem value="Langstroth" className="font-bold py-3 uppercase text-[10px]">Langstroth</SelectItem>
-                                            <SelectItem value="KTBH" className="font-bold py-3 uppercase text-[10px]">Kenya Top-Bar</SelectItem>
-                                            <SelectItem value="Traditional Log" className="font-bold py-3 uppercase text-[10px]">Traditional Log</SelectItem>
-                                            <SelectItem value="Warre" className="font-bold py-3 uppercase text-[10px]">Warré</SelectItem>
+                                        <SelectContent className="rounded-none border-4 border-[#064e3b] shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] bg-white p-0">
+                                            <SelectItem value="Langstroth" className="hover:bg-[#facc15]/10 p-4 font-black uppercase text-[10px] focus:bg-[#10b981] focus:text-white rounded-none">Langstroth</SelectItem>
+                                            <SelectItem value="KTBH" className="hover:bg-[#facc15]/10 p-4 font-black uppercase text-[10px] focus:bg-[#10b981] focus:text-white rounded-none">Kenya Top-Bar</SelectItem>
+                                            <SelectItem value="Traditional Log" className="hover:bg-[#facc15]/10 p-4 font-black uppercase text-[10px] focus:bg-[#10b981] focus:text-white rounded-none">Traditional Log</SelectItem>
+                                            <SelectItem value="Warre" className="hover:bg-[#facc15]/10 p-4 font-black uppercase text-[10px] focus:bg-[#10b981] focus:text-white rounded-none">Warré</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="frame_count" className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
-                                        Frames
+                                    <Label htmlFor="frame_count" className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em]">
+                                        UNIT CAPACITY (FRAMES)
                                     </Label>
                                     <Input
                                         id="frame_count"
@@ -177,7 +177,7 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                         value={formData.frame_count || ''}
                                         onChange={(e) => setFormData({ ...formData, frame_count: parseInt(e.target.value) || 0 })}
                                         placeholder="10"
-                                        className="h-12 rounded-none border-2 border-black bg-neutral-50 font-bold uppercase text-xs transition-none focus:ring-0"
+                                        className="h-12 rounded-none border-4 border-[#064e3b] bg-neutral-50/50 font-black uppercase text-xs transition-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:bg-[#facc15]/5"
                                     />
                                 </div>
                             </div>
@@ -185,58 +185,58 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                             {/* Right Column */}
                             <div className="space-y-6">
                                 <div className="space-y-2">
-                                    <Label htmlFor="bee_type" className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
-                                        Bee Type
+                                    <Label htmlFor="bee_type" className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em]">
+                                        BIOLOGICAL TYPE
                                     </Label>
                                     <Select name="bee_type" value={formData.bee_type} onValueChange={(val) => setFormData({ ...formData, bee_type: val })}>
-                                        <SelectTrigger id="hive-bee-type" className="h-12 rounded-none border-2 border-black bg-neutral-50 font-bold uppercase text-xs">
+                                        <SelectTrigger id="hive-bee-type" className="h-12 rounded-none border-4 border-[#064e3b] bg-neutral-50/50 font-black uppercase text-xs">
                                             <SelectValue placeholder="Select type" />
                                         </SelectTrigger>
-                                        <SelectContent className="rounded-none border-2 border-black">
-                                            <SelectItem value="African Honey Bee" className="font-bold py-3 uppercase text-[10px]">African Honey Bee</SelectItem>
-                                            <SelectItem value="Italian Bee" className="font-bold py-3 uppercase text-[10px]">Italian Bee</SelectItem>
-                                            <SelectItem value="Carniolan Bee" className="font-bold py-3 uppercase text-[10px]">Carniolan Bee</SelectItem>
-                                            <SelectItem value="Buckfast Bee" className="font-bold py-3 uppercase text-[10px]">Buckfast Bee</SelectItem>
+                                        <SelectContent className="rounded-none border-4 border-[#064e3b] shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] bg-white p-0">
+                                            <SelectItem value="African Honey Bee" className="hover:bg-[#facc15]/10 p-4 font-black uppercase text-[10px] focus:bg-[#10b981] focus:text-white rounded-none">African Honey Bee</SelectItem>
+                                            <SelectItem value="Italian Bee" className="hover:bg-[#facc15]/10 p-4 font-black uppercase text-[10px] focus:bg-[#10b981] focus:text-white rounded-none">Italian Bee</SelectItem>
+                                            <SelectItem value="Carniolan Bee" className="hover:bg-[#facc15]/10 p-4 font-black uppercase text-[10px] focus:bg-[#10b981] focus:text-white rounded-none">Carniolan Bee</SelectItem>
+                                            <SelectItem value="Buckfast Bee" className="hover:bg-[#facc15]/10 p-4 font-black uppercase text-[10px] focus:bg-[#10b981] focus:text-white rounded-none">Buckfast Bee</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="status" className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
-                                        Status
+                                    <Label htmlFor="status" className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em]">
+                                        OPERATIONAL STATUS
                                     </Label>
                                     <Select name="status" value={formData.status} onValueChange={(val) => setFormData({ ...formData, status: val })}>
-                                        <SelectTrigger id="hive-status" className="h-12 rounded-none border-2 border-black bg-neutral-50 font-bold uppercase text-xs">
+                                        <SelectTrigger id="hive-status" className="h-12 rounded-none border-4 border-[#064e3b] bg-neutral-50/50 font-black uppercase text-xs">
                                             <SelectValue placeholder="Select status" />
                                         </SelectTrigger>
-                                        <SelectContent className="rounded-none border-2 border-black">
-                                            <SelectItem value="ACTIVE" className="font-bold py-3 uppercase text-[10px]">Active</SelectItem>
-                                            <SelectItem value="WEAK" className="font-bold py-3 uppercase text-[10px]">Weak</SelectItem>
-                                            <SelectItem value="INACTIVE" className="font-bold py-3 uppercase text-[10px]">Inactive</SelectItem>
-                                            <SelectItem value="QUEENLESS" className="font-bold py-3 uppercase text-[10px]">Queenless</SelectItem>
+                                        <SelectContent className="rounded-none border-4 border-[#064e3b] shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] bg-white p-0">
+                                            <SelectItem value="ACTIVE" className="hover:bg-[#facc15]/10 p-4 font-black uppercase text-[10px] focus:bg-[#10b981] focus:text-white rounded-none">Active</SelectItem>
+                                            <SelectItem value="WEAK" className="hover:bg-[#facc15]/10 p-4 font-black uppercase text-[10px] focus:bg-[#10b981] focus:text-white rounded-none">Weak</SelectItem>
+                                            <SelectItem value="INACTIVE" className="hover:bg-[#facc15]/10 p-4 font-black uppercase text-[10px] focus:bg-[#10b981] focus:text-white rounded-none">Inactive</SelectItem>
+                                            <SelectItem value="QUEENLESS" className="hover:bg-[#facc15]/10 p-4 font-black uppercase text-[10px] focus:bg-[#10b981] focus:text-white rounded-none">Queenless</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="material" className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
-                                        Material
+                                    <Label htmlFor="material" className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em]">
+                                        CHASSIS MATERIAL
                                     </Label>
                                     <Select name="material" value={formData.material} onValueChange={(val) => setFormData({ ...formData, material: val })}>
-                                        <SelectTrigger id="hive-material" className="h-12 rounded-none border-2 border-black bg-neutral-50 font-bold uppercase text-xs">
+                                        <SelectTrigger id="hive-material" className="h-12 rounded-none border-4 border-[#064e3b] bg-neutral-50/50 font-black uppercase text-xs">
                                             <SelectValue placeholder="Select material" />
                                         </SelectTrigger>
-                                        <SelectContent className="rounded-none border-2 border-black">
-                                            <SelectItem value="Wood" className="font-bold py-3 uppercase text-[10px]">Wood</SelectItem>
-                                            <SelectItem value="Plastic" className="font-bold py-3 uppercase text-[10px]">Plastic</SelectItem>
-                                            <SelectItem value="Bamboo" className="font-bold py-3 uppercase text-[10px]">Bamboo</SelectItem>
+                                        <SelectContent className="rounded-none border-4 border-[#064e3b] shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] bg-white p-0">
+                                            <SelectItem value="Wood" className="hover:bg-[#facc15]/10 p-4 font-black uppercase text-[10px] focus:bg-[#10b981] focus:text-white rounded-none">Wood</SelectItem>
+                                            <SelectItem value="Plastic" className="hover:bg-[#facc15]/10 p-4 font-black uppercase text-[10px] focus:bg-[#10b981] focus:text-white rounded-none">Plastic</SelectItem>
+                                            <SelectItem value="Bamboo" className="hover:bg-[#facc15]/10 p-4 font-black uppercase text-[10px] focus:bg-[#10b981] focus:text-white rounded-none">Bamboo</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="installation_date" className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
-                                        Installation Date
+                                    <Label htmlFor="installation_date" className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em]">
+                                        REGISTRY DATE
                                     </Label>
                                     <Input
                                         id="installation_date"
@@ -244,28 +244,28 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
                                         type="date"
                                         value={formData.installation_date || ''}
                                         onChange={(e) => setFormData({ ...formData, installation_date: e.target.value })}
-                                        className="h-12 rounded-none border-2 border-black bg-neutral-50 font-bold uppercase text-xs transition-none focus:ring-0"
+                                        className="h-12 rounded-none border-4 border-[#064e3b] bg-neutral-50/50 font-black uppercase text-xs transition-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:bg-[#facc15]/5"
                                     />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="mt-12 pt-8 border-t-2 border-neutral-100 flex items-center justify-end gap-4">
+                        <div className="mt-12 pt-8 border-t-4 border-[#064e3b]/10 flex items-center justify-end gap-6">
                             <Button
                                 variant="ghost"
                                 onClick={onClose}
-                                className="h-12 px-6 rounded-none font-bold text-neutral-400 hover:text-black uppercase text-[10px] tracking-widest transition-none"
+                                className="h-12 px-6 rounded-none font-black text-[#064e3b]/40 hover:text-[#064e3b] hover:bg-[#facc15]/10 uppercase text-[10px] tracking-widest transition-none"
                                 disabled={isSaving}
                             >
-                                Discard
+                                Abort Registry
                             </Button>
                             <Button
                                 onClick={handleSubmit}
                                 disabled={isSaving}
-                                className="h-12 px-8 rounded-none bg-black text-white hover:bg-[#FF4F00] border-2 border-black font-black uppercase text-xs tracking-widest transition-none"
+                                className="h-12 px-8 rounded-none bg-[#064e3b] text-white hover:bg-[#10b981] border-2 border-[#064e3b] font-black uppercase text-xs tracking-widest transition-none shadow-[6px_6px_0px_0px_rgba(16,185,129,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
                             >
                                 {isSaving ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
-                                {editingHive ? 'Save Changes' : 'Add Hive'}
+                                {editingHive ? 'COMMIT CHANGES' : 'EXECUTE REGISTRY'}
                             </Button>
                         </div>
                     </CardContent>

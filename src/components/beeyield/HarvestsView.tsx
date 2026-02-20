@@ -104,12 +104,12 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
 
     const getColorGradeStyles = (grade?: string) => {
         const styles: Record<string, string> = {
-            'Extra Light Amber': 'bg-amber-50 text-amber-600 border-amber-100',
-            'Light Amber': 'bg-amber-100/50 text-amber-700 border-amber-200',
-            'Amber': 'bg-amber-500/10 text-amber-800 border-amber-500/20',
-            'Dark Amber': 'bg-amber-900/10 text-amber-950 border-amber-900/20',
+            'Extra Light Amber': 'bg-[#facc15]/10 text-[#064e3b] border-[#facc15]/20',
+            'Light Amber': 'bg-[#facc15]/20 text-[#064e3b] border-[#facc15]/40',
+            'Amber': 'bg-[#10b981]/10 text-[#064e3b] border-[#10b981]/20',
+            'Dark Amber': 'bg-[#064e3b]/10 text-[#064e3b] border-[#064e3b]/20',
         };
-        return styles[grade || ''] || 'bg-gray-50 text-gray-600 border-gray-100';
+        return styles[grade || ''] || 'bg-neutral-50 text-neutral-400 border-neutral-200';
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -146,62 +146,62 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                         variant="ghost"
                         size="icon"
                         onClick={() => setIsAddingHarvest(false)}
-                        className="h-14 w-14 rounded-2xl border border-beeyield-sand bg-white text-beeyield-charcoal hover:bg-beeyield-forest/5 hover:text-beeyield-forest"
+                        className="h-14 w-14 rounded-none border-4 border-[#064e3b] bg-white text-[#064e3b] hover:bg-[#facc15]/10 transition-none"
                     >
-                        <ChevronLeft className="w-6 h-6" />
+                        <ChevronLeft className="w-8 h-8" />
                     </Button>
                     <div>
-                        <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-beeyield-forest/5 border border-beeyield-forest/10 mb-2">
-                            <Package className="w-3.5 h-3.5 text-beeyield-forest" />
-                            <span className="text-[10px] font-bold text-beeyield-forest uppercase tracking-[0.1em]">Yield Inventory</span>
+                        <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b] mb-2">
+                            <Package className="w-3.5 h-3.5 text-[#facc15]" />
+                            <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Yield Inventory</span>
                         </div>
-                        <h1 className="text-4xl font-bold text-beeyield-charcoal tracking-tight">Log Extraction</h1>
+                        <h1 className="text-5xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">Log <span className="text-[#10b981]">Extraction</span></h1>
                     </div>
                 </div>
 
-                <Card className="rounded-[3rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden max-w-5xl">
-                    <CardHeader className="p-12 pb-6">
-                        <CardTitle className="text-sm font-bold uppercase tracking-[0.2em] text-gray-400">Harvest Parametrics</CardTitle>
+                <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[12px_12px_0px_0px_rgba(6,78,59,1)] overflow-hidden max-w-5xl">
+                    <CardHeader className="p-10 pb-6 border-b-4 border-[#064e3b]/10">
+                        <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-[#064e3b]/30">Harvest Parametrics</CardTitle>
                     </CardHeader>
-                    <CardContent className="p-12 pt-0">
+                    <CardContent className="p-10 pt-8">
                         <form onSubmit={handleSubmit} className="space-y-10">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                <div className="space-y-3">
-                                    <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Archive Date</Label>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em] ml-1">Archive Date</Label>
                                     <Input
                                         type="date"
                                         value={formData.harvest_date}
                                         onChange={(e) => setFormData({ ...formData, harvest_date: e.target.value })}
-                                        className="h-14 rounded-2xl border-[#E0E0E0] font-bold text-beeyield-charcoal"
+                                        className="h-12 rounded-none border-4 border-[#064e3b] font-black text-[#064e3b] transition-none"
                                         required
                                     />
                                 </div>
-                                <div className="space-y-3">
-                                    <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Net Weight (kg)</Label>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em] ml-1">Net Weight (kg)</Label>
                                     <div className="relative">
-                                        <TrendingUp className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-500" />
+                                        <TrendingUp className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#10b981]" />
                                         <Input
                                             type="number"
                                             step="0.1"
                                             placeholder="0.0"
                                             value={formData.quantity_kg || ''}
                                             onChange={(e) => setFormData({ ...formData, quantity_kg: parseFloat(e.target.value) })}
-                                            className="h-14 pl-10 rounded-2xl border-[#E0E0E0] font-bold text-beeyield-charcoal"
+                                            className="h-12 pl-10 rounded-none border-4 border-[#064e3b] font-black text-[#064e3b] transition-none focus-visible:bg-[#facc15]/5"
                                             required
                                         />
                                     </div>
                                 </div>
-                                <div className="space-y-3">
-                                    <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Varietal Feed</Label>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em] ml-1">Varietal Feed</Label>
                                     <Select
                                         value={formData.honey_type}
                                         onValueChange={(val) => setFormData({ ...formData, honey_type: val })}
                                     >
-                                        <SelectTrigger className="h-14 rounded-2xl border-[#E0E0E0] font-bold text-beeyield-charcoal">
-                                            <Layers className="w-4 h-4 mr-2 text-beeyield-forest" />
+                                        <SelectTrigger className="h-12 rounded-none border-4 border-[#064e3b] font-black text-xs uppercase transition-none">
+                                            <Layers className="w-4 h-4 mr-2 text-[#10b981]" />
                                             <SelectValue placeholder="Select type" />
                                         </SelectTrigger>
-                                        <SelectContent className="rounded-2xl">
+                                        <SelectContent className="rounded-none border-2 border-[#064e3b]">
                                             <SelectItem value="Acacia">Acacia</SelectItem>
                                             <SelectItem value="Multifloral">Multifloral</SelectItem>
                                             <SelectItem value="Sunflower">Sunflower</SelectItem>
@@ -210,17 +210,17 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                <div className="space-y-3">
-                                    <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Chromatic Grade</Label>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em] ml-1">Chromatic Grade</Label>
                                     <Select
                                         value={formData.color_grade}
                                         onValueChange={(val) => setFormData({ ...formData, color_grade: val })}
                                     >
-                                        <SelectTrigger className="h-14 rounded-2xl border-[#E0E0E0] font-bold text-beeyield-charcoal">
-                                            <div className="w-3 h-3 rounded-full mr-2 bg-amber-400" />
+                                        <SelectTrigger className="h-12 rounded-none border-4 border-[#064e3b] font-black text-xs uppercase transition-none">
+                                            <div className="w-3 h-3 rounded-none mr-2 bg-[#facc15]" />
                                             <SelectValue placeholder="Select grade" />
                                         </SelectTrigger>
-                                        <SelectContent className="rounded-2xl">
+                                        <SelectContent className="rounded-none border-2 border-[#064e3b]">
                                             <SelectItem value="Extra Light Amber">Extra Light Amber</SelectItem>
                                             <SelectItem value="Light Amber">Light Amber</SelectItem>
                                             <SelectItem value="Amber">Amber</SelectItem>
@@ -228,49 +228,49 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                <div className="space-y-3">
-                                    <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Extraction Protocol</Label>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em] ml-1">Extraction Protocol</Label>
                                     <div className="relative">
-                                        <Cpu className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                        <Cpu className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#064e3b]/40" />
                                         <Input
                                             placeholder="e.g. Cold Centrifugue"
                                             value={formData.extraction_method || ''}
                                             onChange={(e) => setFormData({ ...formData, extraction_method: e.target.value })}
-                                            className="h-14 pl-10 rounded-2xl border-[#E0E0E0] font-bold text-beeyield-charcoal"
+                                            className="h-12 pl-10 rounded-none border-4 border-[#064e3b] font-black text-[#064e3b] transition-none"
                                         />
                                     </div>
                                 </div>
-                                <div className="space-y-3">
-                                    <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Extraction Environment</Label>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em] ml-1">Extraction Environment</Label>
                                     <Input
                                         placeholder="e.g. Sunny / Temp Controlled"
                                         value={formData.weather_conditions || ''}
                                         onChange={(e) => setFormData({ ...formData, weather_conditions: e.target.value })}
-                                        className="h-14 rounded-2xl border-[#E0E0E0] font-bold text-beeyield-charcoal"
+                                        className="h-12 rounded-none border-4 border-[#064e3b] font-black text-[#064e3b] transition-none"
                                     />
                                 </div>
                             </div>
 
-                            <div className="flex justify-end gap-4 pt-10 border-t border-[#F5F5F5]">
+                            <div className="flex justify-end gap-6 pt-10 border-t-4 border-[#064e3b]/10">
                                 <Button
                                     type="button"
                                     variant="ghost"
                                     onClick={() => setIsAddingHarvest(false)}
-                                    className="h-14 px-8 rounded-2xl font-bold text-gray-400 hover:text-beeyield-charcoal"
+                                    className="h-12 px-6 rounded-none font-black text-[#064e3b]/40 hover:text-[#064e3b] hover:bg-[#facc15]/10 uppercase text-[10px] tracking-widest transition-none"
                                 >
-                                    Discard
+                                    Abort Registry
                                 </Button>
                                 <Button
                                     type="submit"
                                     disabled={isCreating}
-                                    className="h-16 px-12 rounded-2xl bg-beeyield-forest text-white gap-3 font-bold text-lg shadow-xl shadow-beeyield-forest/20"
+                                    className="h-14 px-12 rounded-none bg-[#064e3b] text-white hover:bg-[#10b981] border-2 border-[#064e3b] font-black uppercase text-xs tracking-widest transition-none shadow-[6px_6px_0px_0px_rgba(16,185,129,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
                                 >
                                     {isCreating ? (
-                                        <RefreshCw className="w-5 h-5 animate-spin" />
+                                        <RefreshCw className="w-5 h-5 animate-spin mr-3" />
                                     ) : (
-                                        <ShieldCheck className="w-5 h-5" />
+                                        <ShieldCheck className="w-5 h-5 mr-3 text-[#facc15]" />
                                     )}
-                                    Commit Production Log
+                                    COMMIT PRODUCTION LOG
                                 </Button>
                             </div>
                         </form>
@@ -285,86 +285,86 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
-                    <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-beeyield-forest/5 border border-beeyield-forest/10 mb-6">
-                        <Package className="w-3.5 h-3.5 text-beeyield-forest" />
-                        <span className="text-[10px] font-bold text-beeyield-forest uppercase tracking-[0.15em]">Yield Management</span>
+                    <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b] mb-6">
+                        <Package className="w-3.5 h-3.5 text-[#facc15]" />
+                        <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Yield Management Registry</span>
                     </div>
-                    <h1 className="text-5xl font-bold text-beeyield-charcoal tracking-tight">Extraction Records</h1>
-                    <p className="text-gray-500 font-medium mt-3 text-lg">
-                        Biometric tracking of honey production and varietal classification.
+                    <h1 className="text-6xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">Extraction <span className="text-[#10b981]">Records</span></h1>
+                    <p className="text-[#064e3b]/40 font-black mt-3 text-xl uppercase tracking-tight">
+                        Biometric tracking of production and varietal classification.
                     </p>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                     <Button
-                        variant="ghost"
+                        variant="outline"
                         size="icon"
                         onClick={() => window.location.reload()}
-                        className="h-14 w-14 rounded-2xl border border-beeyield-sand bg-white text-beeyield-charcoal hover:bg-beeyield-forest/5 hover:text-beeyield-forest"
+                        className="h-12 w-12 rounded-none border-2 border-[#064e3b] text-[#064e3b] hover:bg-[#064e3b] hover:text-white transition-none"
                     >
                         <RefreshCw className="w-5 h-5" />
                     </Button>
                     <Button
                         onClick={() => setIsAddingHarvest(true)}
-                        className="h-14 px-8 rounded-2xl bg-beeyield-forest hover:opacity-90 text-white shadow-lg shadow-beeyield-forest/20 gap-3 font-bold text-sm tracking-wide"
+                        className="h-12 px-8 rounded-none bg-[#064e3b] hover:bg-[#10b981] text-white border-2 border-[#064e3b] gap-3 font-black text-xs uppercase tracking-widest transition-none shadow-[4px_4px_0px_0px_rgba(16,185,129,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
                     >
                         <Plus className="w-5 h-5" />
-                        Log Extraction
+                        LOG EXTRACTION
                     </Button>
                 </div>
             </div>
 
             {/* Statistics */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {[
-                    { label: 'Cumulative Yield', value: `${stats.totalHoney}kg`, icon: Zap, color: 'text-amber-500', bg: 'bg-amber-50' },
-                    { label: 'Extraction Cycles', value: stats.totalHarvests, icon: Package, color: 'text-beeyield-forest', bg: 'bg-beeyield-forest/5' },
-                    { label: 'Active Cycle', value: stats.thisMonth, icon: Calendar, color: 'text-blue-500', bg: 'bg-blue-50' },
-                    { label: 'Yield Coefficient', value: `${stats.avgPerHarvest}kg`, icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50' }
+                    { label: 'Cumulative Yield', value: `${stats.totalHoney}kg`, icon: Zap, color: 'text-[#facc15]' },
+                    { label: 'Extraction Cycles', value: stats.totalHarvests, icon: Package, color: 'text-[#10b981]' },
+                    { label: 'Active Cycle', value: stats.thisMonth, icon: Calendar, color: 'text-white' },
+                    { label: 'Yield Coefficient', value: `${stats.avgPerHarvest}kg`, icon: TrendingUp, color: 'text-[#10b981]' }
                 ].map((stat, i) => (
-                    <motion.div key={i} whileHover={{ y: -4, scale: 1.01 }}>
-                        <Card className="rounded-[2rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden group">
-                            <CardContent className="p-8">
-                                <div className="flex items-center gap-4 mb-6">
-                                    <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center border transition-all duration-500 group-hover:bg-beeyield-forest group-hover:border-beeyield-forest group-hover:text-white", stat.bg)}>
-                                        <stat.icon className={cn("w-6 h-6 stroke-[2] transition-colors duration-500 group-hover:text-white", stat.color)} />
+                    <div key={i}>
+                        <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] overflow-hidden group hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
+                            <CardContent className="p-6">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="w-10 h-10 rounded-none bg-[#064e3b] flex items-center justify-center border-2 border-[#10b981]">
+                                        <stat.icon className={cn("w-5 h-5", stat.color)} />
                                     </div>
-                                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em]">{stat.label}</p>
+                                    <p className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em]">{stat.label}</p>
                                 </div>
-                                <h3 className="text-4xl font-bold text-beeyield-charcoal tracking-tighter">{stat.value}</h3>
+                                <h3 className="text-4xl font-black text-[#064e3b] tracking-tighter uppercase">{stat.value}</h3>
                             </CardContent>
                         </Card>
-                    </motion.div>
+                    </div>
                 ))}
             </div>
 
             {/* Filters */}
-            <Card className="rounded-[2.5rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden">
-                <CardContent className="p-8">
-                    <div className="flex flex-col md:flex-row gap-6">
+            <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] overflow-hidden">
+                <CardContent className="p-6">
+                    <div className="flex flex-col md:flex-row gap-4">
                         <div className="flex-1 relative">
-                            <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#064e3b]/30" />
                             <Input
                                 placeholder="Search by batch identifier or honey varietal..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-12 h-14 rounded-2xl border-[#E0E0E0] bg-white font-medium text-sm focus:ring-beeyield-forest/20 focus:border-beeyield-forest/30 transition-all shadow-sm"
+                                className="pl-10 h-12 rounded-none border-4 border-[#064e3b] bg-neutral-50/50 font-black text-xs uppercase transition-none focus-visible:ring-0 focus-visible:bg-[#facc15]/5"
                             />
                         </div>
                         <Select value={filterYear} onValueChange={setFilterYear}>
-                            <SelectTrigger className="h-14 md:w-[220px] rounded-2xl border-[#E0E0E0] font-bold text-sm bg-white shadow-sm">
-                                <Calendar className="w-4 h-4 mr-2 text-beeyield-forest" />
+                            <SelectTrigger className="h-12 md:w-[220px] rounded-none border-4 border-[#064e3b] font-black text-xs uppercase transition-none bg-white">
+                                <Calendar className="w-4 h-4 mr-2 text-[#10b981]" />
                                 <SelectValue placeholder="Harvest Year" />
                             </SelectTrigger>
-                            <SelectContent className="rounded-2xl border-[#E0E0E0] shadow-xl">
-                                <SelectItem value="all">Across All Cycles</SelectItem>
-                                <SelectItem value="2025">2025 Cycle</SelectItem>
-                                <SelectItem value="2024">2024 Cycle</SelectItem>
-                                <SelectItem value="2023">2023 Cycle</SelectItem>
+                            <SelectContent className="rounded-none border-2 border-[#064e3b] shadow-xl">
+                                <SelectItem value="all" className="uppercase font-black text-[10px]">Across All Cycles</SelectItem>
+                                <SelectItem value="2025" className="uppercase font-black text-[10px]">2025 Cycle</SelectItem>
+                                <SelectItem value="2024" className="uppercase font-black text-[10px]">2024 Cycle</SelectItem>
+                                <SelectItem value="2023" className="uppercase font-black text-[10px]">2023 Cycle</SelectItem>
                             </SelectContent>
                         </Select>
-                        <Button variant="outline" className="h-14 px-8 rounded-2xl border-[#E0E0E0] text-beeyield-charcoal hover:bg-beeyield-forest/5 hover:border-beeyield-forest/20 hover:text-beeyield-forest transition-all gap-2 font-bold text-sm">
+                        <Button variant="outline" className="h-12 px-8 rounded-none border-2 border-[#064e3b] text-[#064e3b] hover:bg-[#064e3b] hover:text-white transition-none gap-2 font-black text-xs uppercase tracking-widest">
                             <Download className="w-4 h-4" />
-                            Export Data
+                            EXPORT DATA
                         </Button>
                     </div>
                 </CardContent>
@@ -391,9 +391,9 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
             ) : (
                 <div className="space-y-8">
                     <div className="flex items-center gap-3">
-                        <h3 className="text-xl font-bold text-beeyield-charcoal px-2">Archive Feed</h3>
-                        <div className="h-[1px] flex-1 bg-[#F5F5F5]" />
-                        <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">{filteredHarvests.length} Batch Records</span>
+                        <h3 className="text-base font-black text-[#064e3b] px-2 uppercase tracking-tighter">Archive Feed</h3>
+                        <div className="h-1 flex-1 bg-[#064e3b]/5" />
+                        <span className="text-[10px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em]">{filteredHarvests.length} Batch Records</span>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -406,60 +406,56 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
                                     transition={{ duration: 0.4, delay: index * 0.05 }}
                                 >
                                     <Card
-                                        className="rounded-[2.5rem] border-[#E0E0E0] bg-white group hover:shadow-xl hover:shadow-beeyield-forest/5 hover:border-beeyield-forest/20 transition-all duration-300 border-l-4 border-l-beeyield-forest overflow-hidden relative"
+                                        className="rounded-none border-4 border-[#064e3b] bg-white group hover:shadow-[12px_12px_0px_0px_rgba(6,78,59,1)] transition-all duration-300 border-l-[12px] border-l-[#10b981] overflow-hidden relative"
                                     >
-                                        <CardContent className="p-10">
-                                            <div className="flex items-start justify-between mb-8">
+                                        <CardContent className="p-8">
+                                            <div className="flex items-start justify-between mb-6">
                                                 <div className="flex-1">
-                                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-beeyield-sand/30 border border-[#E8E0D5] mb-4">
-                                                        <Package className="w-3.5 h-3.5 text-beeyield-forest" />
-                                                        <span className="text-[9px] font-black text-beeyield-charcoal uppercase tracking-[0.15em]">
+                                                    <div className="inline-flex items-center gap-2 px-2.5 py-0.5 border-2 border-[#10b981] bg-[#064e3b] mb-4">
+                                                        <Package className="w-3 h-3 text-[#facc15]" />
+                                                        <span className="text-[9px] font-black text-white uppercase tracking-[0.2em]">
                                                             {harvest.batch_code || 'UNIDENTIFIED'}
                                                         </span>
                                                     </div>
                                                     <div className="flex items-baseline gap-2">
-                                                        <h3 className="text-4xl font-bold text-beeyield-charcoal tracking-tight">
+                                                        <h3 className="text-5xl font-black text-[#064e3b] tracking-tighter">
                                                             {harvest.quantity_kg}
                                                         </h3>
-                                                        <span className="text-lg font-bold text-gray-400">kg</span>
+                                                        <span className="text-xl font-black text-[#064e3b]/20 uppercase">kg</span>
                                                     </div>
-                                                    <p className="text-base font-bold text-beeyield-forest mt-1">
+                                                    <p className="text-xs font-black text-[#10b981] mt-1 uppercase tracking-tight">
                                                         {harvest.honey_type || 'Mixed Flora'} Varietal
                                                     </p>
                                                 </div>
                                                 {harvest.is_verified && (
-                                                    <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100">
-                                                        <ShieldCheck className="w-6 h-6" />
+                                                    <div className="w-12 h-12 rounded-none bg-[#10b981] text-white flex items-center justify-center border-2 border-[#064e3b] shadow-[4px_4px_0px_0px_rgba(6,78,59,1)]">
+                                                        <ShieldCheck className="w-7 h-7" />
                                                     </div>
                                                 )}
                                             </div>
 
-                                            <div className="space-y-4">
-                                                <div className="flex items-center gap-3 py-3 border-y border-[#F8F8F8]">
-                                                    <Calendar className="w-4 h-4 text-gray-400" />
-                                                    <span className="text-sm font-bold text-beeyield-charcoal">
+                                            <div className="space-y-6">
+                                                <div className="flex items-center gap-3 py-3 border-y-2 border-neutral-50">
+                                                    <Calendar className="w-4 h-4 text-[#064e3b]/30" />
+                                                    <span className="text-[10px] font-black text-[#064e3b] uppercase tracking-widest">
                                                         {format(new Date(harvest.harvest_date), 'MMM dd, yyyy')}
                                                     </span>
                                                 </div>
 
                                                 <div className="grid grid-cols-2 gap-4">
                                                     {harvest.hive && (
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="w-8 h-8 rounded-lg bg-beeyield-sand/30 flex items-center justify-center text-beeyield-forest">
-                                                                <Hexagon className="w-4 h-4" />
-                                                            </div>
-                                                            <span className="text-xs font-bold text-beeyield-charcoal">
+                                                        <div className="flex items-center gap-3 px-3 py-2 bg-neutral-50/50 border-2 border-transparent group-hover:border-[#064e3b]/10 transition-none">
+                                                            <Hexagon className="w-4 h-4 text-[#10b981]" />
+                                                            <span className="text-[10px] font-black text-[#064e3b] uppercase">
                                                                 #{harvest.hive.hive_code}
                                                             </span>
                                                         </div>
                                                     )}
 
                                                     {harvest.apiary && (
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="w-8 h-8 rounded-lg bg-beeyield-sand/30 flex items-center justify-center text-beeyield-forest">
-                                                                <MapPin className="w-4 h-4" />
-                                                            </div>
-                                                            <span className="text-xs font-bold text-beeyield-charcoal truncate">
+                                                        <div className="flex items-center gap-3 px-3 py-2 bg-neutral-50/50 border-2 border-transparent group-hover:border-[#064e3b]/10 transition-none">
+                                                            <MapPin className="w-4 h-4 text-[#10b981]" />
+                                                            <span className="text-[10px] font-black text-[#064e3b] uppercase truncate">
                                                                 {harvest.apiary.name}
                                                             </span>
                                                         </div>
@@ -468,17 +464,17 @@ const HarvestsView: React.FC<HarvestsViewProps> = ({ initialParams }) => {
 
                                                 {harvest.color_grade && (
                                                     <div className="pt-2">
-                                                        <Badge className={cn("rounded-lg px-3 py-1 border font-bold text-[9px] uppercase tracking-widest", getColorGradeStyles(harvest.color_grade))}>
-                                                            <div className="w-2 h-2 rounded-full bg-current mr-2 opacity-40" />
+                                                        <Badge className={cn("rounded-none px-3 py-1 border-2 font-black text-[8px] uppercase tracking-[0.2em] shadow-[3px_3px_0px_0px_rgba(6,78,59,1)]", getColorGradeStyles(harvest.color_grade))}>
+                                                            <div className="w-2 h-2 rounded-none bg-current mr-2 opacity-40" />
                                                             {harvest.color_grade}
                                                         </Badge>
                                                     </div>
                                                 )}
                                             </div>
 
-                                            <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0 transition-all duration-500">
-                                                <div className="w-10 h-10 rounded-xl bg-beeyield-forest text-white flex items-center justify-center shadow-lg shadow-beeyield-forest/20">
-                                                    <ArrowRight className="w-5 h-5" />
+                                            <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0 transition-all duration-300">
+                                                <div className="w-12 h-12 rounded-none bg-[#064e3b] text-white flex items-center justify-center border-2 border-[#10b981] shadow-[4px_4px_0px_0px_rgba(16,185,129,1)]">
+                                                    <ArrowRight className="w-6 h-6" />
                                                 </div>
                                             </div>
                                         </CardContent>

@@ -93,10 +93,16 @@ const MetersReports: React.FC = () => {
 
     return (
         <div className="space-y-12 bg-white text-[#064e3b] p-8 min-h-screen antialiased">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b-4 border-[#064e3b] pb-8">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b-8 border-[#064e3b] pb-10">
                 <div>
-                    <h1 className="text-5xl font-black uppercase tracking-tighter leading-none">Export Desk</h1>
-                    <p className="text-[#10b981] font-black uppercase text-[10px] tracking-[0.4em] mt-4">Registry Download Station</p>
+                    <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b] mb-6">
+                        <Database className="w-3.5 h-3.5 text-[#facc15]" />
+                        <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Operational Archive Hub</span>
+                    </div>
+                    <h1 className="text-6xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">Export <span className="text-[#10b981]">Desk</span></h1>
+                    <p className="text-[#064e3b]/40 font-black mt-3 text-xl uppercase tracking-tight">
+                        Encapsulated registry download and audit station.
+                    </p>
                 </div>
             </div>
 
@@ -127,28 +133,30 @@ const MetersReports: React.FC = () => {
             {/* History Registry */}
             <div className="space-y-6">
                 <div className="flex items-center gap-4">
-                    <ShieldCheck className="w-6 h-6 text-[#10b981]" />
-                    <h3 className="text-2xl font-black uppercase tracking-tight">Audit History</h3>
+                    <ShieldCheck className="w-8 h-8 text-[#10b981]" />
+                    <h3 className="text-3xl font-black uppercase tracking-tighter text-[#064e3b]">Audit History <span className="text-[#10b981]">Registry</span></h3>
                 </div>
-                <div className="border-2 border-[#064e3b]">
-                    <div className="bg-[#064e3b] text-white p-4 grid grid-cols-4 text-[10px] font-black uppercase tracking-widest">
-                        <span>Report</span>
-                        <span>Timestamp</span>
-                        <span>Type</span>
-                        <span className="text-right">Action</span>
+                <div className="border-4 border-[#064e3b] bg-white shadow-[12px_12px_0px_0px_rgba(6,78,59,1)]">
+                    <div className="bg-[#064e3b] text-white p-6 grid grid-cols-4 text-[10px] font-black uppercase tracking-[0.2em] border-b-4 border-[#10b981]">
+                        <span>REPORT_IDENTIFIER</span>
+                        <span>ARCHIVE_TIMESTAMP</span>
+                        <span>FORMAT_PROTOCOL</span>
+                        <span className="text-right">RETRIEVAL_ACTION</span>
                     </div>
-                    <div className="divide-y-2 divide-[#064e3b]/10">
+                    <div className="divide-y-4 divide-neutral-50">
                         {generatedReports.map((report) => (
-                            <div key={report.id} className="p-4 grid grid-cols-4 items-center hover:bg-[#facc15]/5">
-                                <span className="text-xs font-black uppercase">{report.name}</span>
-                                <span className="text-[10px] font-black uppercase text-[#064e3b]/40">{report.date}</span>
-                                <span className="text-[10px] font-black uppercase">{report.type}</span>
+                            <div key={report.id} className="p-6 grid grid-cols-4 items-center hover:bg-[#facc15]/5 transition-none group">
+                                <span className="text-sm font-black uppercase text-[#064e3b] tracking-tighter">{report.name}</span>
+                                <span className="text-[10px] font-black uppercase text-[#064e3b]/30 tracking-widest">{report.date}</span>
+                                <div className="flex">
+                                    <span className="px-2 py-0.5 border-2 border-[#064e3b] text-[8px] font-black uppercase text-[#064e3b] bg-white group-hover:bg-[#064e3b] group-hover:text-white transition-none">{report.type}</span>
+                                </div>
                                 <div className="text-right">
                                     <button
                                         onClick={() => handleDownload(report.name, report.data)}
-                                        className="px-4 py-2 border-2 border-[#064e3b] bg-white text-[#064e3b] font-black uppercase text-[10px] tracking-widest hover:bg-[#facc15]"
+                                        className="h-10 px-6 border-2 border-[#064e3b] bg-white text-[#064e3b] font-black uppercase text-[10px] tracking-widest hover:bg-[#10b981] hover:text-white transition-none shadow-[4px_4px_0px_0px_rgba(6,78,59,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
                                     >
-                                        Pull
+                                        PULL ARCHIVE
                                     </button>
                                 </div>
                             </div>

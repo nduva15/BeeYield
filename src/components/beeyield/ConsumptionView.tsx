@@ -22,63 +22,63 @@ const summaryItems = [
 
 const ConsumptionView: React.FC = () => {
     return (
-        <div className="space-y-6 animate-in fade-in duration-500">
+        <div className="space-y-10 animate-in fade-in duration-500">
             {/* Filters Section */}
-            <Card className="rounded-3xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm">
-                <CardContent className="p-6">
-                    <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-4">Filters</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                        <div className="space-y-1.5">
-                            <label className="text-xs text-slate-400 font-bold">Area</label>
+            <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
+                <CardContent className="p-8">
+                    <h3 className="text-[10px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] mb-6">Aggregate Parameters</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] ml-1">Area_Zone</label>
                             <Input
                                 defaultValue="Kibwezi Main Area A"
-                                className="rounded-xl border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 h-10 text-sm font-bold text-slate-600 dark:text-slate-800"
+                                className="rounded-none border-4 border-[#064e3b] bg-white h-12 text-xs font-black uppercase focus-visible:ring-0 focus-visible:bg-[#facc15]/5 transition-none"
                             />
                         </div>
-                        <div className="space-y-1.5">
-                            <label className="text-xs text-slate-400 font-bold">Type</label>
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] ml-1">Logic_Type</label>
                             <Select defaultValue="water">
-                                <SelectTrigger className="rounded-xl border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 h-10 text-sm font-bold text-slate-600 dark:text-slate-800">
+                                <SelectTrigger className="rounded-none border-4 border-[#064e3b] bg-white h-12 text-xs font-black uppercase focus:ring-0 transition-none">
                                     <SelectValue placeholder="Select type" />
                                 </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="water">Water</SelectItem>
-                                    <SelectItem value="heat">Heat</SelectItem>
-                                    <SelectItem value="energy">Energy</SelectItem>
+                                <SelectContent className="rounded-none border-2 border-[#064e3b]">
+                                    <SelectItem value="water" className="uppercase font-black text-[10px]">Water</SelectItem>
+                                    <SelectItem value="heat" className="uppercase font-black text-[10px]">Heat</SelectItem>
+                                    <SelectItem value="energy" className="uppercase font-black text-[10px]">Energy</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="space-y-1.5">
-                            <label className="text-xs text-gray-400 font-bold">Time period</label>
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] ml-1">Temporal_Bin</label>
                             <Select defaultValue="7days">
-                                <SelectTrigger className="rounded-xl border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 h-10 text-sm font-bold">
+                                <SelectTrigger className="rounded-none border-4 border-[#064e3b] bg-white h-12 text-xs font-black uppercase focus:ring-0 transition-none">
                                     <SelectValue placeholder="Select range" />
                                 </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="7days">Last 7 days</SelectItem>
-                                    <SelectItem value="30days">Last 30 days</SelectItem>
+                                <SelectContent className="rounded-none border-2 border-[#064e3b]">
+                                    <SelectItem value="7days" className="uppercase font-black text-[10px]">Last 7 days</SelectItem>
+                                    <SelectItem value="30days" className="uppercase font-black text-[10px]">Last 30 days</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="space-y-1.5">
-                            <label className="text-xs text-slate-400 font-bold">Compare with</label>
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] ml-1">Recursive_Comp</label>
                             <Select defaultValue="main">
-                                <SelectTrigger className="rounded-xl border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 h-10 text-sm font-bold text-slate-600 dark:text-slate-800">
+                                <SelectTrigger className="rounded-none border-4 border-[#064e3b] bg-white h-12 text-xs font-black uppercase focus:ring-0 transition-none">
                                     <SelectValue placeholder="Select comparison" />
                                 </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="main">Main area</SelectItem>
+                                <SelectContent className="rounded-none border-2 border-[#064e3b]">
+                                    <SelectItem value="main" className="uppercase font-black text-[10px]">Main Area</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="space-y-1.5">
-                            <label className="text-xs text-slate-400 font-bold">Export</label>
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] ml-1">Archive_Desk</label>
                             <div className="flex gap-2">
-                                <Button variant="outline" className="flex-1 rounded-xl h-10 border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 gap-2 font-bold text-[10px] uppercase text-slate-900 dark:text-slate-800">
-                                    <FileText className="w-3.5 h-3.5" /> CSV
+                                <Button variant="outline" className="flex-1 rounded-none h-12 border-2 border-[#064e3b] bg-white font-black text-[10px] uppercase text-[#064e3b] tracking-widest hover:bg-[#10b981] hover:text-white transition-none shadow-[3px_3px_0px_0px_rgba(6,78,59,1)] active:shadow-none active:translate-x-0.5 active:translate-y-0.5">
+                                    CSV
                                 </Button>
-                                <Button variant="outline" className="flex-1 rounded-xl h-10 border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 gap-2 font-bold text-[10px] uppercase text-slate-900 dark:text-slate-800">
-                                    <FileSpreadsheet className="w-3.5 h-3.5" /> XLS
+                                <Button variant="outline" className="flex-1 rounded-none h-12 border-2 border-[#064e3b] bg-white font-black text-[10px] uppercase text-[#064e3b] tracking-widest hover:bg-[#10b981] hover:text-white transition-none shadow-[3px_3px_0px_0px_rgba(6,78,59,1)] active:shadow-none active:translate-x-0.5 active:translate-y-0.5">
+                                    XLS
                                 </Button>
                             </div>
                         </div>
@@ -88,12 +88,17 @@ const ConsumptionView: React.FC = () => {
 
 
             {/* Chart Section */}
-            <Card className="rounded-3xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm overflow-hidden min-h-[500px]">
-                <div className="p-6 border-b border-gray-50 dark:border-gray-900 flex items-center gap-2">
-                    <Search className="w-4 h-4 text-gray-400" />
-                    <p className="text-xs font-medium text-gray-400">Usage by type</p>
+            <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[12px_12px_0px_0px_rgba(6,78,59,1)] overflow-hidden min-h-[500px]">
+                <div className="p-8 border-b-4 border-[#064e3b]/10 bg-neutral-50/30 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <Search className="w-5 h-5 text-[#10b981]" />
+                        <p className="text-2xl font-black text-[#064e3b] uppercase tracking-tighter">Usage Volumetric Density</p>
+                    </div>
+                    <div className="px-3 py-1 border-2 border-[#064e3b] bg-[#facc15] text-[10px] font-black uppercase tracking-widest">
+                        LIVE_SIGNAL_ARRAY
+                    </div>
                 </div>
-                <CardContent className="p-8">
+                <CardContent className="p-10">
                     <div className="h-[400px] w-full">
                         <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                             <BarChart data={consumptionData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
@@ -102,28 +107,33 @@ const ConsumptionView: React.FC = () => {
                                     dataKey="name"
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: '#9CA3AF', fontSize: 10, fontWeight: 500 }}
+                                    tick={{ fill: '#064e3b', fontSize: 11, fontWeight: 900 }}
                                     dy={10}
                                 />
                                 <YAxis
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: '#9CA3AF', fontSize: 10, fontWeight: 500 }}
+                                    tick={{ fill: '#064e3b', fontSize: 11, fontWeight: 900 }}
                                     dx={-10}
                                 />
                                 <Tooltip
-                                    cursor={{ fill: 'transparent' }}
+                                    cursor={{ fill: '#facc15', fillOpacity: 0.1 }}
                                     contentStyle={{
-                                        borderRadius: '12px',
-                                        border: 'none',
-                                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                                        fontSize: '12px',
-                                        fontWeight: 600
+                                        borderRadius: '0px',
+                                        border: '4px solid #064e3b',
+                                        boxShadow: '8px 8px 0px 0px rgba(6,78,59,0.1)',
+                                        padding: '12px',
+                                        fontSize: '11px',
+                                        fontWeight: 900,
+                                        textTransform: 'uppercase'
                                     }}
                                 />
-                                <Bar dataKey="value" radius={[4, 4, 0, 0]} barSize={180}>
+                                <Bar dataKey="value" radius={0} barSize={140} stroke="#064e3b" strokeWidth={4}>
                                     {consumptionData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.color} />
+                                        <Cell
+                                            key={`cell-${index}`}
+                                            fill={entry.name === 'Energy' ? '#facc15' : entry.name === 'Water' ? '#10b981' : '#064e3b'}
+                                        />
                                     ))}
                                 </Bar>
                             </BarChart>
@@ -132,18 +142,17 @@ const ConsumptionView: React.FC = () => {
                 </CardContent>
             </Card>
 
-            {/* Summary Section */}
-            <div className="space-y-4">
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white px-2">Usage summary</h3>
-                <Card className="rounded-3xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm divide-y divide-gray-50 dark:divide-slate-200">
+            <div className="space-y-6">
+                <h3 className="text-xl font-black text-[#064e3b] uppercase tracking-tighter px-2">Recursive Summary <span className="text-[#10b981]">Log</span></h3>
+                <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] divide-y-4 divide-neutral-50 overflow-hidden">
                     {summaryItems.map((item, idx) => (
-                        <div key={idx} className="p-5 flex items-center justify-between">
+                        <div key={idx} className="p-6 flex items-center justify-between hover:bg-[#facc15]/5 transition-none group">
                             <div>
-                                <p className="text-sm font-bold text-gray-900 dark:text-slate-800">{item.label}</p>
-                                <p className="text-[10px] text-gray-400 font-medium">{item.subtext}</p>
+                                <p className="text-lg font-black text-[#064e3b] uppercase tracking-tighter italic">{item.label}</p>
+                                <p className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] mt-0.5">{item.subtext}_BIN</p>
                             </div>
-                            <div className="bg-gray-50 dark:bg-slate-100 px-3 py-1.5 rounded-lg border border-gray-100 dark:border-slate-200">
-                                <p className="text-xs font-bold text-gray-900 dark:text-slate-800">{item.value}</p>
+                            <div className="bg-[#064e3b] px-6 py-2 rounded-none border-2 border-[#10b981] shadow-[4px_4px_0px_0px_rgba(16,185,129,1)]">
+                                <p className="text-sm font-black text-white uppercase tracking-widest">{item.value}</p>
                             </div>
                         </div>
                     ))}

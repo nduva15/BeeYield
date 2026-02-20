@@ -1,474 +1,334 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from "@/components/ui/badge";
 import {
     Search,
-    Loader2,
-    HeartPulse,
-    ShieldCheck,
+    Stethoscope,
     Bug,
-    Zap,
+    ShieldAlert,
+    BookOpen,
+    Info,
+    CheckCircle2,
+    AlertCircle,
     Activity,
-    Wind,
-    ArrowRight,
-    Bot,
-    Database,
-    Binary,
-    Globe,
-    Cpu,
-    Dna,
-    Stethoscope
+    Syringe,
+    HeartPulse,
+    Microscope,
+    ShieldCheck,
+    ChevronRight,
+    Search as SearchIcon,
+    Dna
 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { beeHealthData } from '@/data/beeHealthData';
-import { beeSpeciesData } from '@/data/beeSpeciesData';
-import beeyieldService from '@/services/beeyieldService';
 import { cn } from '@/lib/utils';
 
-interface HealthGuideViewProps {
-    onTabChange: (tab: string, message?: string) => void;
-}
+// Mock data for health guide
+const diseaseData = [
+    {
+        id: 'afb',
+        name: 'American Foulbrood (AFB)',
+        type: 'Bacterial',
+        severity: 'Critical',
+        symptoms: ['Sunken cappings', 'Ropiness test positive', 'Foul odor', 'Patchy brood pattern'],
+        prevention: 'Hygienic queen selection, regular inspection',
+        treatment: 'Burning of infected equipment, antibiotics (where allowed)',
+        code: 'PAT-AFB-001'
+    },
+    {
+        id: 'efb',
+        name: 'European Foulbrood (EFB)',
+        type: 'Bacterial',
+        severity: 'High',
+        symptoms: ['Displaced larvae', 'Yellowish discoloration', 'Sour smell'],
+        prevention: 'Maintain strong colonies, avoid stress',
+        treatment: 'Requeening, shook swarm technique',
+        code: 'PAT-EFB-002'
+    },
+    {
+        id: 'varroa',
+        name: 'Varroa Mites',
+        type: 'Parasitic',
+        severity: 'High',
+        symptoms: ['Mites visible on bees', 'Deformed Wing Virus', 'Rapid population decline'],
+        prevention: 'Drone brood removal, screen bottom boards',
+        treatment: 'Formic acid, Oxalic acid, Amitraz',
+        code: 'PAR-VAR-003'
+    },
+    {
+        id: 'nosema',
+        name: 'Nosema Disease',
+        type: 'Fungal',
+        severity: 'Medium',
+        symptoms: ['Dysentery streaks on hive', 'K-wing appearance', 'Poor spring buildup'],
+        prevention: 'Clean water source, adequate winter stores',
+        treatment: 'Fumagillin (under vet guidance)',
+        code: 'FUN-NOS-004'
+    },
+    {
+        id: 'shb',
+        name: 'Small Hive Beetle (SHB)',
+        type: 'Pest',
+        severity: 'Medium',
+        symptoms: ['Slime on combs', 'Fermenting honey', 'Beetles visible in crevices'],
+        prevention: 'Keep hives in sun, maintain strong colonies',
+        treatment: 'Oil traps, ground treatments',
+        code: 'PST-SHB-005'
+    }
+];
 
-const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedSymptom, setSelectedSymptom] = useState('none');
-    const [selectedSpecies, setSelectedSpecies] = useState('none');
-    const [communityKnowledge, setCommunityKnowledge] = useState<any[]>([]);
-    const [loadingKB, setLoadingKB] = useState(false);
+const speciesData = [
+    {
+        id: 'apis_mellifera',
+        name: 'Apis Mellifera',
+        commonName: 'Western Honey Bee',
+        traits: ['High productivity', 'Moderate temperament', 'Strong wintering capacity'],
+        suitability: 'Global / Multi-climate',
+        code: 'SP-AM-001'
+    },
+    {
+        id: 'apis_cerana',
+        name: 'Apis Cerana',
+        commonName: 'Eastern Honey Bee',
+        traits: ['Varroa resistance', 'Small colony size', 'Frequent swarming'],
+        suitability: 'Tropical / Sub-tropical Asia',
+        code: 'SP-AC-002'
+    },
+    {
+        id: 'apis_dorsata',
+        name: 'Apis Dorsata',
+        commonName: 'Giant Honey Bee',
+        traits: ['Open nesting', 'Highly defensive', 'High honey yield per nest'],
+        suitability: 'Wild / Jungle ecosystems',
+        code: 'SP-AD-003'
+    },
+    {
+        id: 'apis_florea',
+        name: 'Apis Florea',
+        commonName: 'Dwarf Honey Bee',
+        traits: ['Single comb nests', 'Low productivity', 'Gentle temperament'],
+        suitability: 'Warm / Arid lowlands',
+        code: 'SP-AF-004'
+    }
+];
 
-    // Fetch dynamic knowledge base articles from backend
-    useEffect(() => {
-        const fetchKB = async () => {
-            setLoadingKB(true);
-            try {
-                const results = await beeyieldService.getHealthKnowledgeBase(searchTerm || undefined);
-                setCommunityKnowledge(results || []);
-            } catch (err) {
-                console.error('Error fetching data:', err);
-            } finally {
-                setLoadingKB(false);
-            }
-        };
-        // Debounce search
-        const timeout = setTimeout(fetchKB, 500);
-        return () => clearTimeout(timeout);
-    }, [searchTerm]);
+const HealthGuideView: React.FC = () => {
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedItem, setSelectedItem] = useState<any>(null);
+    const [activeTab, setActiveTab] = useState<'diseases' | 'species'>('diseases');
 
-    const detail = beeHealthData[selectedSymptom] || {
-        signs: "N/A",
-        symptoms: "N/A",
-        treatment: "N/A",
-        prevention: "N/A",
-        steps: [],
-        riskLevel: "MEDIUM",
-        detection: "Visual inspection",
-        transmission: "Contact",
-        scientificName: ""
-    };
-
-    const speciesDetail = beeSpeciesData[selectedSpecies] || {
-        scientificName: "N/A",
-        commonName: "N/A",
-        origin: "N/A",
-        characteristics: "N/A",
-        honeyYield: "N/A",
-        temperament: "N/A",
-        climateSuitability: "N/A",
-        pros: [],
-        cons: [],
-        description: "N/A"
-    };
-
-    const filteredSymptoms = Object.keys(beeHealthData).filter(s =>
-        s.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredItems = (activeTab === 'diseases' ? diseaseData : speciesData).filter(item =>
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.code.toLowerCase().includes(searchQuery.toLowerCase())
     );
-
-    const filteredSpecies = Object.keys(beeSpeciesData).filter(s =>
-        s.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    const getRiskStyles = (risk?: string) => {
-        switch (risk) {
-            case 'CRITICAL': return 'bg-red-500 text-white border-black';
-            case 'HIGH': return 'bg-[#FF4F00] text-white border-black';
-            case 'MEDIUM': return 'bg-white text-black border-black';
-            default: return 'bg-neutral-100 text-black border-black';
-        }
-    };
 
     return (
-        <div className="space-y-10 animate-in fade-in duration-700 pb-20">
-            {/* Header Section */}
-            <div className="flex items-center gap-4 border-b-4 border-black pb-6">
-                <div className="w-12 h-12 bg-black flex items-center justify-center border-2 border-black">
-                    <Database className="w-6 h-6 text-white" />
+        <div className="flex flex-col h-screen bg-white text-[#064e3b] overflow-hidden">
+            {/* Top Command Bar */}
+            <div className="h-32 border-b-4 border-[#064e3b] px-10 flex items-center justify-between shrink-0">
+                <div className="space-y-1">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b] mb-1">
+                        <Microscope className="w-3.5 h-3.5 text-[#facc15]" />
+                        <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Bio-Medical Audit Protocol</span>
+                    </div>
+                    <h1 className="text-5xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">
+                        Health <span className="text-[#10b981]">Matrix</span>
+                    </h1>
                 </div>
-                <h1 className="text-5xl font-black text-black uppercase tracking-tighter">
-                    Health
-                </h1>
-            </div>
 
-            <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest pl-1">
-                Colony pathology and sub-species data.
-            </p>
-
-            {/* Tactical Search & Selectors */}
-            <div className="space-y-8">
-                <div className="border-4 border-black bg-white p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] space-y-10">
-                    <div className="relative max-w-2xl">
-                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-black" />
+                <div className="flex items-center gap-6">
+                    <div className="relative w-96">
+                        <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#064e3b]/30" />
                         <Input
-                            placeholder="Search diseases or species..."
-                            className="h-16 pl-14 pr-6 rounded-none border-4 border-black text-lg font-black text-black uppercase tracking-tight focus:ring-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
+                            placeholder="SEARCH BIO-ARCHIVE..."
+                            className="pl-12 h-14 rounded-none border-4 border-[#064e3b] bg-neutral-50 font-black uppercase text-xs tracking-widest placeholder:text-neutral-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:bg-[#facc15]/5 transition-none"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                         />
-                        {loadingKB && (
-                            <div className="absolute right-6 top-1/2 -translate-y-1/2">
-                                <Loader2 className="w-6 h-6 text-black animate-spin" />
-                            </div>
-                        )}
                     </div>
+                    <div className="flex border-4 border-[#064e3b] p-1.5 bg-neutral-50">
+                        <button
+                            onClick={() => { setActiveTab('diseases'); setSelectedItem(null); }}
+                            className={cn(
+                                "h-10 px-8 font-black text-[10px] uppercase tracking-widest transition-none",
+                                activeTab === 'diseases' ? "bg-[#064e3b] text-white shadow-[4px_4px_0px_0px_rgba(16,185,129,1)]" : "text-[#064e3b]/40 hover:text-[#064e3b]"
+                            )}
+                        >
+                            Pathogens
+                        </button>
+                        <button
+                            onClick={() => { setActiveTab('species'); setSelectedItem(null); }}
+                            className={cn(
+                                "h-10 px-8 font-black text-[10px] uppercase tracking-widest transition-none",
+                                activeTab === 'species' ? "bg-[#064e3b] text-white shadow-[4px_4px_0px_0px_rgba(16,185,129,1)]" : "text-[#064e3b]/40 hover:text-[#064e3b]"
+                            )}
+                        >
+                            Taxonomy
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                        <div className="space-y-3">
-                            <label className="text-[10px] font-black text-neutral-400 uppercase tracking-widest ml-1">Diseases</label>
-                            <Select value={selectedSymptom} onValueChange={(val) => {
-                                setSelectedSymptom(val);
-                                if (val !== 'none') setSelectedSpecies('none');
-                            }}>
-                                <SelectTrigger className="h-16 px-6 rounded-none border-4 border-black text-base font-black text-black uppercase tracking-tight transition-none focus:ring-0">
-                                    <div className="flex items-center gap-3">
-                                        <Bug className="w-5 h-5 text-black" />
-                                        <SelectValue placeholder="Condition" />
-                                    </div>
-                                </SelectTrigger>
-                                <SelectContent className="rounded-none border-4 border-black p-0 max-h-[400px]">
-                                    <SelectItem value="none" className="font-black uppercase py-4 px-6 text-neutral-400">None</SelectItem>
-                                    {filteredSymptoms.map(s => (
-                                        <SelectItem key={s} value={s} className="font-black uppercase py-4 px-6">{s}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+            <div className="flex-1 flex overflow-hidden">
+                {/* Protocol Selector Sidebar */}
+                <div className="w-1/3 border-r-4 border-[#064e3b] overflow-y-auto bg-neutral-50/50 p-10">
+                    <div className="space-y-6">
+                        <div className="flex items-center gap-3 border-b-4 border-[#064e3b]/10 pb-4">
+                            <Activity className="w-5 h-5 text-[#064e3b]" />
+                            <h3 className="text-xl font-black uppercase tracking-tighter">Registry Index</h3>
                         </div>
-
-                        <div className="space-y-3">
-                            <label className="text-[10px] font-black text-neutral-400 uppercase tracking-widest ml-1">Species</label>
-                            <Select value={selectedSpecies} onValueChange={(val) => {
-                                setSelectedSpecies(val);
-                                if (val !== 'none') setSelectedSymptom('none');
-                            }}>
-                                <SelectTrigger className="h-16 px-6 rounded-none border-4 border-black text-base font-black text-black uppercase tracking-tight transition-none focus:ring-0">
-                                    <div className="flex items-center gap-3">
-                                        <Dna className="w-5 h-5 text-black" />
-                                        <SelectValue placeholder="Genetic Profile" />
+                        <div className="space-y-4">
+                            {filteredItems.map((item) => (
+                                <button
+                                    key={item.id}
+                                    onClick={() => setSelectedItem(item)}
+                                    className={cn(
+                                        "w-full p-6 text-left border-4 transition-all group flex flex-col gap-2",
+                                        selectedItem?.id === item.id
+                                            ? "bg-[#064e3b] border-[#064e3b] text-white shadow-[6px_6px_0px_0px_rgba(16,185,129,1)]"
+                                            : "bg-white border-[#064e3b] text-[#064e3b] shadow-[4px_4px_0px_0px_rgba(6,78,59,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
+                                    )}
+                                >
+                                    <div className="flex justify-between items-start">
+                                        <span className={cn(
+                                            "text-[9px] font-black uppercase tracking-widest",
+                                            selectedItem?.id === item.id ? "text-[#facc15]" : "text-[#064e3b]/40"
+                                        )}>
+                                            {item.code}
+                                        </span>
+                                        {activeTab === 'diseases' && (
+                                            <span className={cn(
+                                                "text-[8px] px-2 py-0.5 border-2 font-black uppercase tracking-widest",
+                                                item.severity === 'Critical' ? "bg-red-500 text-white border-red-500" :
+                                                    item.severity === 'High' ? "bg-[#facc15] text-[#064e3b] border-[#facc15]" :
+                                                        "bg-[#10b981] text-white border-[#10b981]"
+                                            )}>
+                                                {item.severity}
+                                            </span>
+                                        )}
                                     </div>
-                                </SelectTrigger>
-                                <SelectContent className="rounded-none border-4 border-black p-0 max-h-[400px]">
-                                    <SelectItem value="none" className="font-black uppercase py-4 px-6 text-neutral-400">None</SelectItem>
-                                    {filteredSpecies.map(s => (
-                                        <SelectItem key={s} value={s} className="font-black uppercase py-4 px-6">{s}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                                    <h4 className="text-xl font-black uppercase tracking-tighter leading-tight">{item.name}</h4>
+                                    <div className="flex items-center gap-2 mt-2 opacity-40">
+                                        <ChevronRight className="w-3 h-3" />
+                                        <span className="text-[9px] font-black uppercase tracking-widest">ACCESS_PROTOCOL</span>
+                                    </div>
+                                </button>
+                            ))}
                         </div>
                     </div>
                 </div>
 
-                {/* Community Knowledge Results */}
-                <AnimatePresence>
-                    {communityKnowledge.length > 0 && searchTerm && (
-                        <div className="space-y-6 pt-4">
-                            <div className="flex items-center gap-3 border-b-2 border-black pb-4">
-                                <h3 className="text-xs font-black uppercase tracking-widest text-black">Articles</h3>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {communityKnowledge.map((article: any) => (
-                                    <div key={article.id} className="p-8 border-4 border-black bg-white hover:bg-neutral-50 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-none cursor-pointer group">
-                                        <div className="flex justify-between items-start mb-4">
-                                            <h4 className="font-black text-black text-lg uppercase tracking-tight group-hover:text-[#FF4F00]">{article.title}</h4>
-                                            <div className="text-[10px] uppercase font-black tracking-widest bg-black text-white px-3 py-1 border-2 border-black">{article.category}</div>
-                                        </div>
-                                        <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-tight line-clamp-2">{article.description}</p>
-                                        <div className="mt-6 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#FF4F00] opacity-0 group-hover:opacity-100 transition-none">
-                                            Read <ArrowRight className="w-3 h-3" />
-                                        </div>
+                {/* Registry Detail Panel */}
+                <div className="flex-1 overflow-y-auto bg-white p-20">
+                    {selectedItem ? (
+                        <div className="max-w-4xl space-y-16 animate-in fade-in duration-500">
+                            {/* Detail Header */}
+                            <div className="space-y-8">
+                                <div className="flex items-center gap-6">
+                                    <div className="w-20 h-20 bg-[#064e3b] border-4 border-[#10b981] flex items-center justify-center text-[#facc15]">
+                                        {activeTab === 'diseases' ? <Bug className="w-10 h-10" /> : <Dna className="w-10 h-10" />}
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </AnimatePresence>
-            </div>
-
-            {/* Condition/Species Details */}
-            <AnimatePresence mode="wait">
-                {selectedSymptom !== 'none' && (
-                    <div className="animate-in fade-in slide-in-from-top-4 duration-500 border-4 border-black bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
-                        <div className="p-12 md:p-16 space-y-16">
-                            {/* Header Detail */}
-                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b-4 border-black pb-10">
-                                <div className="space-y-4">
-                                    <h1 className="text-6xl md:text-8xl font-black text-black tracking-tighter uppercase leading-none">
-                                        {selectedSymptom}
-                                    </h1>
-                                    {detail.scientificName && (
+                                    <div className="space-y-1">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-2 h-2 bg-[#FF4F00]" />
-                                            <p className="text-xl font-black text-neutral-400 uppercase italic">
-                                                {detail.scientificName}
-                                            </p>
+                                            <h2 className="text-6xl font-black uppercase tracking-tighter text-[#064e3b]">{selectedItem.name}</h2>
                                         </div>
-                                    )}
-                                </div>
-                                {detail.riskLevel && (
-                                    <div className={cn("px-10 py-5 border-4 font-black tracking-widest uppercase text-lg", getRiskStyles(detail.riskLevel))}>
-                                        Risk: {detail.riskLevel}
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Body Content */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-                                <div className="space-y-6">
-                                    <div className="inline-flex items-center gap-3 px-4 py-2 border-2 border-black bg-neutral-100">
-                                        <Search className="w-4 h-4 text-black" />
-                                        <span className="text-[10px] font-black text-black uppercase tracking-widest">Signs</span>
-                                    </div>
-                                    <h2 className="text-4xl font-black text-black uppercase tracking-tighter">Visual Markers</h2>
-                                    <p className="text-lg text-neutral-500 font-bold leading-relaxed uppercase tracking-tight">
-                                        {detail.signs}
-                                    </p>
-                                </div>
-                                <div className="space-y-6">
-                                    <div className="inline-flex items-center gap-3 px-4 py-2 border-2 border-black bg-neutral-100">
-                                        <Stethoscope className="w-4 h-4 text-black" />
-                                        <span className="text-[10px] font-black text-black uppercase tracking-widest">Symptoms</span>
-                                    </div>
-                                    <h2 className="text-4xl font-black text-black uppercase tracking-tighter">Physiological</h2>
-                                    <p className="text-lg text-neutral-500 font-bold leading-relaxed uppercase tracking-tight">
-                                        {detail.symptoms}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-16 p-12 border-4 border-black bg-neutral-50">
-                                <div className="space-y-6">
-                                    <h2 className="text-2xl font-black text-black flex items-center gap-3 uppercase tracking-tighter">
-                                        <Binary className="w-6 h-6" /> Detection
-                                    </h2>
-                                    <p className="text-lg text-black font-black uppercase tracking-tight leading-relaxed">
-                                        {detail.detection}
-                                    </p>
-                                </div>
-                                <div className="space-y-6">
-                                    <h2 className="text-2xl font-black text-black flex items-center gap-3 uppercase tracking-tighter">
-                                        <Wind className="w-6 h-6" /> Vector
-                                    </h2>
-                                    <p className="text-lg text-black font-black uppercase tracking-tight leading-relaxed">
-                                        {detail.transmission}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-                                <div className="space-y-6">
-                                    <h2 className="text-4xl font-black text-[#FF4F00] uppercase tracking-tighter border-b-2 border-black pb-2">Treatment</h2>
-                                    <p className="text-lg text-black font-black uppercase tracking-tight leading-relaxed bg-white p-8 border-4 border-black">
-                                        {detail.treatment}
-                                    </p>
-                                </div>
-                                <div className="space-y-6">
-                                    <h2 className="text-4xl font-black text-black uppercase tracking-tighter border-b-2 border-black pb-2">Prevention</h2>
-                                    <p className="text-lg text-black font-black uppercase tracking-tight leading-relaxed bg-white p-8 border-4 border-black">
-                                        {detail.prevention}
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Protocol List */}
-                            <div className="space-y-8 pt-8">
-                                <h2 className="text-4xl font-black text-black uppercase tracking-tighter flex items-center gap-4 border-b-4 border-black pb-4">
-                                    <Cpu className="w-10 h-10 text-black" /> Steps
-                                </h2>
-                                <div className="grid grid-cols-1 gap-4">
-                                    {detail.steps && detail.steps.map((step: string, i: number) => (
-                                        <div key={i} className="flex gap-8 items-center p-8 border-4 border-black bg-white hover:bg-neutral-50 transition-none group shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                                            <div className="w-12 h-12 bg-black text-white flex items-center justify-center font-black text-xl shrink-0">
-                                                {i + 1}
-                                            </div>
-                                            <span className="text-xl text-black font-black uppercase tracking-tight">{step}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Ask assistant Call to Action */}
-                            <div className="pt-12">
-                                <div className="bg-[#FF4F00] p-12 border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden group">
-                                    <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
-                                        <div className="space-y-4 flex-1">
-                                            <div className="inline-flex items-center gap-2 px-4 py-1 bg-black text-white border-2 border-black mb-2">
-                                                <Bot className="w-4 h-4" />
-                                                <span className="text-[10px] font-black uppercase tracking-widest">Assistant</span>
-                                            </div>
-                                            <h3 className="text-5xl font-black text-black tracking-tighter uppercase leading-none">Access Analysis</h3>
-                                            <p className="text-[11px] font-black text-white/80 uppercase tracking-widest leading-relaxed">
-                                                Initiate a site-specific pathology analysis for your exact coordinates.
-                                            </p>
-                                        </div>
-                                        <button
-                                            onClick={() => onTabChange('assistant', `Perform a technical analysis of ${selectedSymptom} using BeeYield's advanced analytics. Include markers like ${detail.signs}, detection methods like ${detail.detection}, and how BeeYield's sensors can prevent this from becoming a ${detail.riskLevel} risk.`)}
-                                            className="h-24 px-12 bg-black text-white font-black text-2xl uppercase tracking-widest flex items-center gap-4 hover:bg-white hover:text-black transition-none shadow-[8px_8px_0px_0px_rgba(0,0,0,0.3)] active:shadow-none"
-                                        >
-                                            <Bot className="w-8 h-8" />
-                                            Analyze
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {selectedSpecies !== 'none' && (
-                    <div className="animate-in fade-in slide-in-from-top-4 duration-500 border-4 border-black bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
-                        <div className="p-12 md:p-16 space-y-16">
-                            {/* Header Detail */}
-                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b-4 border-black pb-10">
-                                <div className="space-y-4">
-                                    <h1 className="text-6xl md:text-8xl font-black text-black tracking-tighter uppercase leading-none">
-                                        {selectedSpecies}
-                                    </h1>
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-2 h-2 bg-[#FF4F00]" />
-                                        <p className="text-xl font-black text-neutral-400 uppercase italic">
-                                            {speciesDetail.scientificName}
+                                        <p className="text-2xl font-black text-[#10b981] uppercase tracking-tight">
+                                            {activeTab === 'diseases' ? `Classification: ${selectedItem.type}` : `Common Alias: ${selectedItem.commonName}`}
                                         </p>
                                     </div>
                                 </div>
+                                <div className="h-1 bg-[#064e3b]/10 w-full" />
                             </div>
 
-                            {/* Body Content */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-                                <div className="space-y-6">
-                                    <div className="inline-flex items-center gap-3 px-4 py-2 border-2 border-black bg-neutral-100">
-                                        <Globe className="w-4 h-4 text-black" />
-                                        <span className="text-[10px] font-black text-black uppercase tracking-widest">Origin</span>
-                                    </div>
-                                    <h2 className="text-4xl font-black text-black uppercase tracking-tighter">Native Habitat</h2>
-                                    <p className="text-lg text-neutral-500 font-bold leading-relaxed uppercase tracking-tight">
-                                        {speciesDetail.origin}
-                                    </p>
-                                </div>
-                                <div className="space-y-6">
-                                    <div className="inline-flex items-center gap-3 px-4 py-2 border-2 border-black bg-neutral-100">
-                                        <Zap className="w-4 h-4 text-black" />
-                                        <span className="text-[10px] font-black text-black uppercase tracking-widest">Traits</span>
-                                    </div>
-                                    <h2 className="text-4xl font-black text-black uppercase tracking-tighter">Behavioral</h2>
-                                    <p className="text-lg text-neutral-500 font-bold leading-relaxed uppercase tracking-tight">
-                                        {speciesDetail.characteristics}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 p-12 border-4 border-black bg-neutral-50">
-                                <div className="space-y-4">
-                                    <h4 className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Honey Yield</h4>
-                                    <p className="text-2xl font-black text-black uppercase tracking-tight">{speciesDetail.honeyYield}</p>
-                                </div>
-                                <div className="space-y-4">
-                                    <h4 className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Temperament</h4>
-                                    <p className="text-2xl font-black text-black uppercase tracking-tight">{speciesDetail.temperament}</p>
-                                </div>
-                                <div className="space-y-4">
-                                    <h4 className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Climate</h4>
-                                    <p className="text-2xl font-black text-black uppercase tracking-tight">{speciesDetail.climateSuitability}</p>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-                                <div className="space-y-8">
-                                    <h2 className="text-4xl font-black text-[#FF4F00] uppercase tracking-tighter border-b-2 border-black pb-2">Advantages</h2>
-                                    <ul className="space-y-6">
-                                        {speciesDetail.pros.map((pro: string, i: number) => (
-                                            <li key={i} className="flex gap-4">
-                                                <div className="w-6 h-6 bg-black text-white flex items-center justify-center font-black text-xs shrink-0">
-                                                    +
-                                                </div>
-                                                <span className="text-lg font-black text-black uppercase tracking-tight">{pro}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                                <div className="space-y-8">
-                                    <h2 className="text-4xl font-black text-black uppercase tracking-tighter border-b-2 border-black pb-2">Challenges</h2>
-                                    <ul className="space-y-6">
-                                        {speciesDetail.cons.map((con: string, i: number) => (
-                                            <li key={i} className="flex gap-4">
-                                                <div className="w-6 h-6 border-2 border-black flex items-center justify-center font-black text-xs shrink-0">
-                                                    -
-                                                </div>
-                                                <span className="text-lg font-black text-neutral-500 uppercase tracking-tight">{con}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
-
-                            {/* Species CTA */}
-                            <div className="pt-12">
-                                <div className="bg-black p-12 border-4 border-black shadow-[12px_12px_0px_0px_rgba(255,79,0,1)] relative overflow-hidden group">
-                                    <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
-                                        <div className="space-y-4 flex-1">
-                                            <div className="inline-flex items-center gap-2 px-4 py-1 bg-[#FF4F00] text-black border-2 border-black mb-2">
-                                                <Zap className="w-4 h-4" />
-                                                <span className="text-[10px] font-black uppercase tracking-widest">Optimization</span>
+                            {activeTab === 'diseases' ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                                    <div className="space-y-10">
+                                        <section className="space-y-6">
+                                            <div className="flex items-center gap-3 border-[#064e3b] border-l-8 pl-6">
+                                                <AlertCircle className="w-6 h-6 text-[#064e3b]" />
+                                                <h3 className="text-3xl font-black uppercase tracking-tighter">Clinical Symptoms</h3>
                                             </div>
-                                            <h3 className="text-5xl font-black text-white tracking-tighter uppercase leading-none">Management Plan</h3>
-                                            <p className="text-[11px] font-black text-neutral-400 uppercase tracking-widest leading-relaxed">
-                                                Generate a sub-species specific deployment strategy for {selectedSpecies}.
-                                            </p>
-                                        </div>
-                                        <button
-                                            onClick={() => onTabChange('assistant', `Create a management strategy for ${selectedSpecies} colonies. Address their ${speciesDetail.temperament} temperament, optimize for ${speciesDetail.honeyYield} honey yield expectations, and mitigate challenges like ${speciesDetail.cons.join(', ')}.`)}
-                                            className="h-24 px-12 bg-[#FF4F00] text-black font-black text-2xl uppercase tracking-widest flex items-center gap-4 hover:bg-white hover:text-black transition-none shadow-[8px_8px_0px_0px_rgba(255,255,255,0.2)] active:shadow-none"
-                                        >
-                                            <ArrowRight className="w-8 h-8" />
-                                            Request
-                                        </button>
+                                            <ul className="space-y-4">
+                                                {selectedItem.symptoms.map((symptom: string, i: number) => (
+                                                    <li key={i} className="flex gap-4 items-center p-4 bg-neutral-50 border-4 border-[#064e3b] shadow-[4px_4px_0px_0px_rgba(6,78,59,1)]">
+                                                        <div className="w-4 h-4 bg-[#10b981]" />
+                                                        <span className="text-xs font-black uppercase tracking-widest">{symptom}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </section>
+                                        <section className="space-y-6">
+                                            <div className="flex items-center gap-3 border-[#10b981] border-l-8 pl-6">
+                                                <ShieldCheck className="w-6 h-6 text-[#10b981]" />
+                                                <h3 className="text-3xl font-black uppercase tracking-tighter">Counter-Measures</h3>
+                                            </div>
+                                            <div className="p-8 border-4 border-[#064e3b] bg-[#064e3b] text-white shadow-[8px_8px_0px_0px_rgba(16,185,129,1)]">
+                                                <p className="text-sm font-black uppercase tracking-loose leading-relaxed">{selectedItem.treatment}</p>
+                                            </div>
+                                        </section>
+                                    </div>
+
+                                    <div className="space-y-10">
+                                        <section className="space-y-6">
+                                            <div className="flex items-center gap-3 border-[#facc15] border-l-8 pl-6">
+                                                <Info className="w-6 h-6 text-[#facc15]" />
+                                                <h3 className="text-3xl font-black uppercase tracking-tighter">Proactive Shield</h3>
+                                            </div>
+                                            <div className="p-8 border-4 border-[#064e3b] bg-white shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
+                                                <p className="text-sm font-black text-[#064e3b] uppercase tracking-loose leading-relaxed">{selectedItem.prevention}</p>
+                                            </div>
+                                        </section>
+                                        <section className="p-10 border-4 border-[#064e3b] bg-neutral-50 flex flex-col items-center text-center gap-6">
+                                            <div className="w-16 h-16 bg-[#064e3b] flex items-center justify-center border-2 border-[#10b981] text-[#facc15]">
+                                                <Activity className="w-8 h-8" />
+                                            </div>
+                                            <h4 className="text-xl font-black uppercase tracking-tighter">Log Inspection</h4>
+                                            <Button className="w-full h-14 bg-[#064e3b] text-white hover:bg-[#10b981] uppercase font-black tracking-widest transition-none shadow-[6px_6px_0px_0px_rgba(250,204,21,1)]">
+                                                EXECUTE_AUDIT_REQUEST
+                                            </Button>
+                                        </section>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </AnimatePresence>
-
-            {/* Bottom Stats Grid */}
-            <div className="space-y-8 pt-10">
-                <div className="flex items-center gap-3 border-b-4 border-black pb-4">
-                    <Activity className="w-8 h-8 text-black" />
-                    <h3 className="text-3xl font-black text-black uppercase tracking-tighter">Stats</h3>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {[
-                        { label: 'Samples', value: '14,204', desc: 'Verified cases', icon: Database },
-                        { label: 'Latency', value: '42ms', desc: 'Knowledge retrieval', icon: Zap },
-                        { label: 'Sensors', value: '890', desc: 'Deployments', icon: HeartPulse },
-                        { label: 'Accuracy', value: '99.4%', desc: 'Pathogen ID', icon: ShieldCheck }
-                    ].map((stat, i) => (
-                        <div key={i} className="border-4 border-black bg-white p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="w-10 h-10 bg-black flex items-center justify-center">
-                                    <stat.icon className="w-5 h-5 text-white" />
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                                    <section className="space-y-8">
+                                        <div className="flex items-center gap-3 border-[#064e3b] border-l-8 pl-6">
+                                            <Dna className="w-6 h-6 text-[#064e3b]" />
+                                            <h3 className="text-3xl font-black uppercase tracking-tighter">Genetic Markers</h3>
+                                        </div>
+                                        <ul className="space-y-4">
+                                            {selectedItem.traits.map((trait: string, i: number) => (
+                                                <li key={i} className="flex gap-4 items-center p-6 border-4 border-[#064e3b] bg-white shadow-[6px_6px_0px_0px_rgba(6,78,59,1)]">
+                                                    <div className="w-4 h-4 bg-[#facc15]" />
+                                                    <span className="text-sm font-black uppercase tracking-widest">{trait}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </section>
+                                    <section className="space-y-8">
+                                        <div className="flex items-center gap-3 border-[#10b981] border-l-8 pl-6">
+                                            <Globe className="w-6 h-6 text-[#10b981]" />
+                                            <h3 className="text-3xl font-black uppercase tracking-tighter">Ecological Sector</h3>
+                                        </div>
+                                        <div className="p-10 border-4 border-[#064e3b] bg-[#064e3b] text-white shadow-[10px_10px_0px_0px_rgba(16,185,129,1)]">
+                                            <span className="block text-[10px] text-white/40 font-black uppercase tracking-widest mb-4">DEPLOYMENT_VIABILITY</span>
+                                            <p className="text-2xl font-black uppercase tracking-tighter">{selectedItem.suitability}</p>
+                                        </div>
+                                    </section>
                                 </div>
-                                <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">{stat.label}</p>
-                            </div>
-                            <h4 className="text-3xl font-black text-black tracking-tighter mb-1">{stat.value}</h4>
-                            <p className="text-[9px] font-black text-neutral-400 uppercase tracking-widest">{stat.desc}</p>
+                            )}
                         </div>
-                    ))}
+                    ) : (
+                        <div className="h-full flex flex-col items-center justify-center text-center space-y-8 animate-in fade-in duration-1000">
+                            <div className="w-32 h-32 bg-[#064e3b] border-4 border-[#10b981] flex items-center justify-center shadow-[12px_12px_0px_0px_rgba(250,204,21,1)]">
+                                <Search className="w-16 h-16 text-[#facc15]" />
+                            </div>
+                            <div className="space-y-2">
+                                <h3 className="text-4xl font-black uppercase tracking-tighter text-[#064e3b]">Pending Selection</h3>
+                                <p className="text-[#064e3b]/30 font-black uppercase text-[10px] tracking-[0.3em]">Interrogate bio-archive registry for data.</p>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
