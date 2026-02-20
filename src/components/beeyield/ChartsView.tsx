@@ -28,7 +28,7 @@ const CustomDot = (props: any) => {
     if (value > 0.55) {
         return (
             <g>
-                <circle cx={cx} cy={cy} r={6} fill="#ef4444" stroke="white" strokeWidth={2} />
+                <circle cx={cx} cy={cy} r={6} fill="#ef4444" stroke="#064e3b" strokeWidth={3} />
             </g>
         );
     }
@@ -40,80 +40,82 @@ const ChartsView: React.FC = () => {
         <div className="space-y-8 animate-in fade-in duration-500">
             {/* Header */}
             <div>
-                <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-beeyield-forest/5 border border-beeyield-forest/10 mb-6">
-                    <BarChart3 className="w-3.5 h-3.5 text-beeyield-forest" />
-                    <span className="text-[10px] font-bold text-beeyield-forest uppercase tracking-[0.15em]">Analytics Suite</span>
+                <div>
+                    <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b] mb-4">
+                        <BarChart3 className="w-3.5 h-3.5 text-[#facc15]" />
+                        <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Telemetry Diagnostics</span>
+                    </div>
+                    <h1 className="text-5xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">Usage <span className="text-[#10b981]">Archive</span></h1>
+                    <p className="text-[#064e3b]/40 font-black mt-3 text-xl uppercase tracking-tight">
+                        Granular consumption analysis and anomaly markers.
+                    </p>
                 </div>
-                <h1 className="text-5xl font-bold text-beeyield-charcoal tracking-tight">Usage Telemetry</h1>
-                <p className="text-gray-500 font-medium mt-3 text-lg">
-                    Granular consumption analysis and anomaly detection across all monitored sectors.
-                </p>
             </div>
 
             {/* Filters Section */}
-            <Card className="rounded-[2.5rem] border-[#E0E0E0] bg-white shadow-sm">
-                <CardContent className="p-10">
-                    <h3 className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-8">Filter Parameters</h3>
+            <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
+                <CardContent className="p-8">
+                    <h3 className="text-[10px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] mb-6">Filtering Parameters</h3>
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-                        <div className="space-y-3">
-                            <label className="text-[11px] text-gray-400 font-bold uppercase tracking-[0.15em]">Area</label>
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] ml-1">Area</label>
                             <Input
                                 defaultValue="Kibwezi Main Area A"
-                                className="rounded-xl border-[#E0E0E0] bg-white h-12 text-[13px] font-bold text-beeyield-charcoal focus:ring-beeyield-forest/20 focus:border-beeyield-forest/30"
+                                className="rounded-none border-4 border-[#064e3b] bg-white h-12 text-xs font-black uppercase focus-visible:ring-0 focus-visible:bg-[#facc15]/5 transition-none"
                             />
                         </div>
-                        <div className="space-y-3">
-                            <label className="text-[11px] text-gray-400 font-bold uppercase tracking-[0.15em]">Type</label>
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] ml-1">Tele-Type</label>
                             <Select defaultValue="water">
-                                <SelectTrigger className="rounded-xl border-[#E0E0E0] bg-white h-12 text-[13px] font-bold text-beeyield-charcoal">
+                                <SelectTrigger className="rounded-none border-4 border-[#064e3b] bg-white h-12 text-xs font-black uppercase focus:ring-0 transition-none">
                                     <SelectValue placeholder="Select type" />
                                 </SelectTrigger>
-                                <SelectContent className="rounded-2xl border-[#E0E0E0] shadow-xl">
-                                    <SelectItem value="water">Water</SelectItem>
-                                    <SelectItem value="heat">Heat</SelectItem>
-                                    <SelectItem value="electricity">Electricity</SelectItem>
+                                <SelectContent className="rounded-none border-2 border-[#064e3b]">
+                                    <SelectItem value="water" className="uppercase font-black text-[10px]">Water</SelectItem>
+                                    <SelectItem value="heat" className="uppercase font-black text-[10px]">Heat</SelectItem>
+                                    <SelectItem value="electricity" className="uppercase font-black text-[10px]">Electricity</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="space-y-3">
-                            <label className="text-[11px] text-gray-400 font-bold uppercase tracking-[0.15em]">Time Period</label>
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] ml-1">Temporal Scope</label>
                             <Select defaultValue="7days">
-                                <SelectTrigger className="rounded-xl border-[#E0E0E0] bg-white h-12 text-[13px] font-bold text-beeyield-charcoal">
+                                <SelectTrigger className="rounded-none border-4 border-[#064e3b] bg-white h-12 text-xs font-black uppercase focus:ring-0 transition-none">
                                     <SelectValue placeholder="Select range" />
                                 </SelectTrigger>
-                                <SelectContent className="rounded-2xl border-[#E0E0E0] shadow-xl">
-                                    <SelectItem value="7days">Last 7 days</SelectItem>
-                                    <SelectItem value="30days">Last 30 days</SelectItem>
-                                    <SelectItem value="90days">Last 90 days</SelectItem>
+                                <SelectContent className="rounded-none border-2 border-[#064e3b]">
+                                    <SelectItem value="7days" className="uppercase font-black text-[10px]">Last 7 days</SelectItem>
+                                    <SelectItem value="30days" className="uppercase font-black text-[10px]">Last 30 days</SelectItem>
+                                    <SelectItem value="90days" className="uppercase font-black text-[10px]">Last 90 days</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="space-y-3">
-                            <label className="text-[11px] text-gray-400 font-bold uppercase tracking-[0.15em]">Compare With</label>
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] ml-1">Comparison</label>
                             <Select defaultValue="main">
-                                <SelectTrigger className="rounded-xl border-[#E0E0E0] bg-white h-12 text-[13px] font-bold text-beeyield-charcoal">
+                                <SelectTrigger className="rounded-none border-4 border-[#064e3b] bg-white h-12 text-xs font-black uppercase focus:ring-0 transition-none">
                                     <SelectValue placeholder="Select comparison" />
                                 </SelectTrigger>
-                                <SelectContent className="rounded-2xl border-[#E0E0E0] shadow-xl">
-                                    <SelectItem value="main">Main area</SelectItem>
-                                    <SelectItem value="prev">Previous period</SelectItem>
+                                <SelectContent className="rounded-none border-2 border-[#064e3b]">
+                                    <SelectItem value="main" className="uppercase font-black text-[10px]">Main Area</SelectItem>
+                                    <SelectItem value="prev" className="uppercase font-black text-[10px]">Previous Period</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="space-y-3">
-                            <label className="text-[11px] text-gray-400 font-bold uppercase tracking-[0.15em]">Export</label>
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] ml-1">Archival Export</label>
                             <div className="flex gap-2">
                                 <Button
                                     variant="outline"
-                                    className="flex-1 h-12 rounded-xl border-[#E0E0E0] bg-white gap-2 font-bold text-[11px] text-beeyield-charcoal uppercase tracking-wider hover:bg-beeyield-forest/5 hover:border-beeyield-forest/20 hover:text-beeyield-forest transition-all"
+                                    className="flex-1 h-12 rounded-none border-2 border-[#064e3b] bg-white font-black text-[10px] text-[#064e3b] uppercase tracking-widest hover:bg-[#10b981] hover:text-white transition-none shadow-[3px_3px_0px_0px_rgba(6,78,59,1)] active:shadow-none active:translate-x-0.5 active:translate-y-0.5"
                                 >
-                                    <FileText className="w-4 h-4" /> CSV
+                                    CSV
                                 </Button>
                                 <Button
                                     variant="outline"
-                                    className="flex-1 h-12 rounded-xl border-[#E0E0E0] bg-white gap-2 font-bold text-[11px] text-beeyield-charcoal uppercase tracking-wider hover:bg-beeyield-forest/5 hover:border-beeyield-forest/20 hover:text-beeyield-forest transition-all"
+                                    className="flex-1 h-12 rounded-none border-2 border-[#064e3b] bg-white font-black text-[10px] text-[#064e3b] uppercase tracking-widest hover:bg-[#10b981] hover:text-white transition-none shadow-[3px_3px_0px_0px_rgba(6,78,59,1)] active:shadow-none active:translate-x-0.5 active:translate-y-0.5"
                                 >
-                                    <FileSpreadsheet className="w-4 h-4" /> XLS
+                                    XLS
                                 </Button>
                             </div>
                         </div>
@@ -122,21 +124,21 @@ const ChartsView: React.FC = () => {
             </Card>
 
             {/* Charts Section */}
-            <Card className="rounded-[2.5rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden">
-                <div className="p-10 pb-0 border-b border-[#F5F5F5]">
-                    <div className="flex items-center justify-between pb-8">
+            <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[12px_12px_0px_0px_rgba(6,78,59,1)] overflow-hidden">
+                <div className="p-10 pb-4 border-b-4 border-[#064e3b]/10 bg-neutral-50/30">
+                    <div className="flex items-center justify-between">
                         <div>
-                            <h3 className="text-xl font-bold text-beeyield-charcoal">Usage Trend Analysis</h3>
-                            <p className="text-sm text-gray-400 font-medium mt-1">Consumption patterns with flagged anomaly markers</p>
+                            <h3 className="text-2xl font-black text-[#064e3b] uppercase tracking-tighter">Usage Trend Analysis</h3>
+                            <p className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] mt-1">Telemetry patterns with recursive anomaly detection</p>
                         </div>
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-6">
                             <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-beeyield-forest" />
-                                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Baseline</span>
+                                <div className="w-3 h-3 rounded-none border-2 border-[#064e3b] bg-[#10b981]" />
+                                <span className="text-[9px] font-black text-[#064e3b]/40 uppercase tracking-widest">Baseline_Sig</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-red-500" />
-                                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Anomaly</span>
+                                <div className="w-3 h-3 rounded-none border-2 border-[#064e3b] bg-red-500 animate-pulse" />
+                                <span className="text-[9px] font-black text-[#064e3b]/40 uppercase tracking-widest">Anomaly_Sig</span>
                             </div>
                         </div>
                     </div>
@@ -147,43 +149,44 @@ const ChartsView: React.FC = () => {
                             <LineChart data={chartData} margin={{ top: 20, right: 20, left: -20, bottom: 0 }}>
                                 <defs>
                                     <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
-                                        <stop offset="0%" stopColor="#1B4332" />
-                                        <stop offset="100%" stopColor="#52B788" />
+                                        <stop offset="0%" stopColor="#064e3b" />
+                                        <stop offset="100%" stopColor="#10b981" />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#F5F5F5" />
+                                <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#E5E7EB" />
                                 <XAxis
                                     dataKey="name"
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: '#9CA3AF', fontSize: 12, fontWeight: 700 }}
+                                    tick={{ fill: '#064e3b', fontSize: 10, fontWeight: 900 }}
                                     dy={12}
                                 />
                                 <YAxis
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: '#9CA3AF', fontSize: 12, fontWeight: 700 }}
+                                    tick={{ fill: '#064e3b', fontSize: 10, fontWeight: 900 }}
                                     domain={[0, 1.0]}
                                     ticks={[0, 0.2, 0.4, 0.6, 0.8, 1.0]}
                                 />
                                 <Tooltip
                                     contentStyle={{
-                                        borderRadius: '24px',
-                                        border: '1px solid #E0E0E0',
-                                        boxShadow: '0 20px 25px -5px rgba(0,0,0,0.08)',
-                                        padding: '16px 20px',
-                                        fontSize: '13px',
-                                        fontWeight: 700
+                                        borderRadius: '0px',
+                                        border: '4px solid #064e3b',
+                                        boxShadow: '8px 8px 0px 0px rgba(6,78,59,0.1)',
+                                        padding: '12px',
+                                        fontSize: '11px',
+                                        fontWeight: 900,
+                                        textTransform: 'uppercase'
                                     }}
                                 />
-                                <ReferenceLine y={0.55} stroke="#E0E0E0" strokeDasharray="6 4" label={{ value: 'Threshold', fill: '#9CA3AF', fontSize: 11, fontWeight: 700 }} />
+                                <ReferenceLine y={0.55} stroke="#064e3b" strokeDasharray="8 8" label={{ value: 'PROTOCOL_CAP', fill: '#064e3b', fontSize: 9, fontWeight: 900, position: 'insideTopRight' }} />
                                 <Line
                                     type="monotone"
                                     dataKey="value"
                                     stroke="url(#lineGrad)"
-                                    strokeWidth={4}
+                                    strokeWidth={6}
                                     dot={<CustomDot />}
-                                    activeDot={{ r: 8, fill: '#1B4332', stroke: 'white', strokeWidth: 3 }}
+                                    activeDot={{ r: 10, fill: '#facc15', stroke: '#064e3b', strokeWidth: 4 }}
                                 />
                             </LineChart>
                         </ResponsiveContainer>
@@ -196,31 +199,31 @@ const ChartsView: React.FC = () => {
                 {/* System Issues */}
                 <div className="space-y-6">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-2xl bg-red-50 border border-red-100 flex items-center justify-center">
-                            <AlertCircle className="w-5 h-5 text-red-500" />
+                        <div className="w-12 h-12 rounded-none bg-red-500 border-4 border-[#064e3b] flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(6,78,59,1)]">
+                            <AlertCircle className="w-6 h-6 text-white" />
                         </div>
-                        <h3 className="text-xl font-bold text-beeyield-charcoal">System Anomalies</h3>
+                        <h3 className="text-2xl font-black text-[#064e3b] uppercase tracking-tighter italic">Anomaly Queue</h3>
                     </div>
-                    <Card className="rounded-[2.5rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden">
-                        <CardContent className="p-6 space-y-3">
-                            <div className="p-6 rounded-2xl bg-red-50/30 border border-red-100 flex items-center justify-between group hover:bg-red-50 transition-colors cursor-pointer">
+                    <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] overflow-hidden">
+                        <CardContent className="p-6 space-y-4">
+                            <div className="p-6 rounded-none bg-red-50 border-2 border-[#064e3b] flex items-center justify-between group hover:bg-[#facc15]/10 transition-none cursor-pointer shadow-[4px_4px_0px_0px_rgba(239,68,68,0.2)]">
                                 <div className="space-y-1">
-                                    <h4 className="text-base font-bold text-beeyield-charcoal">Sudden usage jump</h4>
-                                    <p className="text-sm text-gray-400 font-medium">Kibwezi Main Area C · 3 hours ago</p>
+                                    <h4 className="text-sm font-black text-[#064e3b] uppercase tracking-tight">Recursive Usage Spike</h4>
+                                    <p className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-widest">KIB_MAIN_C · T+03:00</p>
                                 </div>
-                                <div className="bg-red-50 border border-red-100 px-4 py-1.5 rounded-full flex items-center gap-2">
-                                    <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                                    <span className="text-[10px] font-bold text-red-600 tracking-widest uppercase">Alert</span>
+                                <div className="bg-red-500 border-2 border-[#064e3b] px-4 py-1 rounded-none flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-none bg-white animate-pulse" />
+                                    <span className="text-[9px] font-black text-white tracking-[0.2em] uppercase">High_Sev</span>
                                 </div>
                             </div>
-                            <div className="p-6 rounded-2xl bg-amber-50/30 border border-amber-100 flex items-center justify-between group hover:bg-amber-50 transition-colors cursor-pointer">
+                            <div className="p-6 rounded-none bg-white border-2 border-[#064e3b]/10 flex items-center justify-between group hover:bg-[#facc15]/10 transition-none cursor-pointer">
                                 <div className="space-y-1">
-                                    <h4 className="text-base font-bold text-beeyield-charcoal">Unexpected drop</h4>
-                                    <p className="text-sm text-gray-400 font-medium">Kibwezi Main Area B · 12 hours ago</p>
+                                    <h4 className="text-sm font-black text-[#064e3b] uppercase tracking-tight">Signal Drop Isolation</h4>
+                                    <p className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-widest">KIB_MAIN_B · T+12:00</p>
                                 </div>
-                                <div className="bg-amber-50 border border-amber-100 px-4 py-1.5 rounded-full flex items-center gap-2">
-                                    <div className="w-2 h-2 rounded-full bg-amber-500" />
-                                    <span className="text-[10px] font-bold text-amber-600 tracking-widest uppercase">Warning</span>
+                                <div className="bg-[#facc15] border-2 border-[#064e3b] px-4 py-1 rounded-none flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-none bg-[#064e3b]" />
+                                    <span className="text-[9px] font-black text-[#064e3b] tracking-[0.2em] uppercase">Med_Sev</span>
                                 </div>
                             </div>
                         </CardContent>
@@ -230,31 +233,31 @@ const ChartsView: React.FC = () => {
                 {/* Insights */}
                 <div className="space-y-6">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-2xl bg-beeyield-forest/5 border border-beeyield-forest/10 flex items-center justify-center">
-                            <Lightbulb className="w-5 h-5 text-beeyield-forest" />
+                        <div className="w-12 h-12 rounded-none bg-[#10b981] border-4 border-[#064e3b] flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(6,78,59,1)]">
+                            <Lightbulb className="w-6 h-6 text-white" />
                         </div>
-                        <h3 className="text-xl font-bold text-beeyield-charcoal">Analytical Insights</h3>
+                        <h3 className="text-2xl font-black text-[#064e3b] uppercase tracking-tighter italic">Optimization Hub</h3>
                     </div>
-                    <Card className="rounded-[2.5rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden">
-                        <CardContent className="p-6 space-y-3">
-                            <div className="p-6 rounded-2xl border border-[#F0F0F0] bg-beeyield-sand/20 flex items-center justify-between group hover:bg-beeyield-sand/40 transition-colors cursor-pointer">
+                    <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] overflow-hidden">
+                        <CardContent className="p-6 space-y-4">
+                            <div className="p-6 rounded-none border-2 border-[#064e3b]/10 bg-neutral-50/50 flex items-center justify-between group hover:bg-[#facc15]/10 transition-none cursor-pointer">
                                 <div className="space-y-1">
-                                    <h4 className="text-base font-bold text-beeyield-charcoal">Peak consumption window</h4>
-                                    <p className="text-sm text-gray-400 font-medium">Highest usage hour of the day</p>
+                                    <h4 className="text-sm font-black text-[#064e3b] uppercase tracking-tight">Efficiency Peak Phase</h4>
+                                    <p className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-widest">Optimized recursive window detected</p>
                                 </div>
-                                <div className="bg-emerald-50 border border-emerald-100 px-4 py-2 rounded-xl flex items-center gap-2">
-                                    <TrendingUp className="w-4 h-4 text-emerald-600" />
-                                    <span className="text-[13px] font-bold text-emerald-600">+18%</span>
+                                <div className="bg-[#10b981] border-2 border-[#064e3b] px-4 py-2 rounded-none flex items-center gap-2">
+                                    <TrendingUp className="w-4 h-4 text-white" />
+                                    <span className="text-[11px] font-black text-white">+18%_GAIN</span>
                                 </div>
                             </div>
-                            <div className="p-6 rounded-2xl border border-[#F0F0F0] bg-beeyield-sand/20 flex items-center justify-between group hover:bg-beeyield-sand/40 transition-colors cursor-pointer">
+                            <div className="p-6 rounded-none border-2 border-[#064e3b]/10 bg-neutral-50/50 flex items-center justify-between group hover:bg-[#facc15]/10 transition-none cursor-pointer">
                                 <div className="space-y-1">
-                                    <h4 className="text-base font-bold text-beeyield-charcoal">Lowest activity signal</h4>
-                                    <p className="text-sm text-gray-400 font-medium">Most efficient day of the week</p>
+                                    <h4 className="text-sm font-black text-[#064e3b] uppercase tracking-tight">Load Compression Baseline</h4>
+                                    <p className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-widest">Minimum signal overhead window</p>
                                 </div>
-                                <div className="bg-red-50 border border-red-100 px-4 py-2 rounded-xl flex items-center gap-2">
-                                    <TrendingDown className="w-4 h-4 text-red-500" />
-                                    <span className="text-[13px] font-bold text-red-500">-9%</span>
+                                <div className="bg-red-500 border-2 border-[#064e3b] px-4 py-2 rounded-none flex items-center gap-2">
+                                    <TrendingDown className="w-4 h-4 text-white" />
+                                    <span className="text-[11px] font-black text-white">-9%_LOSS</span>
                                 </div>
                             </div>
                         </CardContent>

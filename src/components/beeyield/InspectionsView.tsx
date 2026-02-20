@@ -282,29 +282,29 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ initialParams }) => {
                         variant="ghost"
                         size="icon"
                         onClick={() => { setIsAddingInspection(false); resetForm(); }}
-                        className="h-14 w-14 rounded-2xl border border-beeyield-sand bg-white text-beeyield-charcoal hover:bg-beeyield-forest/5 hover:text-beeyield-forest"
+                        className="h-14 w-14 rounded-none border-4 border-[#064e3b] bg-white text-[#064e3b] hover:bg-[#facc15]/10 transition-none"
                     >
-                        <ChevronLeft className="w-6 h-6" />
+                        <ChevronLeft className="w-8 h-8" />
                     </Button>
                     <div>
-                        <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-beeyield-forest/5 border border-beeyield-forest/10 mb-2">
-                            <ClipboardList className="w-3.5 h-3.5 text-beeyield-forest" />
-                            <span className="text-[10px] font-bold text-beeyield-forest uppercase tracking-[0.1em]">{editingId ? 'Edit Draft' : 'New Entry'}</span>
+                        <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b] mb-2">
+                            <ClipboardList className="w-3.5 h-3.5 text-[#facc15]" />
+                            <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">{editingId ? 'Modify Entry' : 'Log Registry'}</span>
                         </div>
-                        <h1 className="text-4xl font-bold text-beeyield-charcoal tracking-tight">Colony Diagnostics</h1>
+                        <h1 className="text-5xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">Colony <span className="text-[#10b981]">Audit</span></h1>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                     {/* Left Panel: Scope & Metadata */}
                     <div className="lg:col-span-1 space-y-8">
-                        <Card className="rounded-[2.5rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden">
-                            <CardHeader className="p-10 pb-6">
-                                <CardTitle className="text-sm font-bold uppercase tracking-[0.2em] text-gray-400">Contextual Scope</CardTitle>
+                        <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] overflow-hidden">
+                            <CardHeader className="p-8 border-b-4 border-[#064e3b]/10">
+                                <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-[#064e3b]/30">Registry Scope</CardTitle>
                             </CardHeader>
-                            <CardContent className="p-10 pt-0 space-y-8">
-                                <div className="space-y-3">
-                                    <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Target Apiary</Label>
+                            <CardContent className="p-8 space-y-8 mt-6">
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em]">Target Sector</Label>
                                     <Select
                                         value={hives.find(h => h.id === formData.hive_id)?.apiary_id || 'unselected'}
                                         onValueChange={(val) => {
@@ -312,63 +312,62 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ initialParams }) => {
                                             if (firstHive) setFormData({ ...formData, hive_id: firstHive.id });
                                         }}
                                     >
-                                        <SelectTrigger className="h-14 rounded-2xl border-[#E0E0E0] font-bold text-beeyield-charcoal">
+                                        <SelectTrigger className="h-12 rounded-none border-4 border-[#064e3b] font-black text-xs uppercase transition-none">
                                             <SelectValue placeholder="Select Location" />
                                         </SelectTrigger>
-                                        <SelectContent className="rounded-2xl shadow-xl">
-                                            {apiaries.map(a => <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>)}
+                                        <SelectContent className="rounded-none border-2 border-[#064e3b] shadow-xl">
+                                            {apiaries.map(a => <SelectItem key={a.id} value={a.id} className="uppercase font-black text-[10px]">{a.name}</SelectItem>)}
                                         </SelectContent>
                                     </Select>
                                 </div>
 
-                                <div className="space-y-3">
-                                    <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Specific Hive</Label>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em]">Specific Asset</Label>
                                     <Select
                                         value={formData.hive_id}
                                         onValueChange={(val) => setFormData({ ...formData, hive_id: val })}
                                     >
-                                        <SelectTrigger className="h-14 rounded-2xl border-[#E0E0E0] font-bold text-beeyield-charcoal">
+                                        <SelectTrigger className="h-12 rounded-none border-4 border-[#064e3b] font-black text-xs uppercase transition-none">
                                             <SelectValue placeholder="Identify Hive" />
                                         </SelectTrigger>
-                                        <SelectContent className="rounded-2xl shadow-xl">
+                                        <SelectContent className="rounded-none border-2 border-[#064e3b] shadow-xl">
                                             {hives
                                                 .filter(h => !hives.find(xh => xh.id === formData.hive_id)?.apiary_id || h.apiary_id === hives.find(xh => xh.id === formData.hive_id)?.apiary_id)
-                                                .map(h => <SelectItem key={h.id} value={h.id}>Hive #{h.hive_code}</SelectItem>)
+                                                .map(h => <SelectItem key={h.id} value={h.id} className="uppercase font-black text-[10px]">HIVE #{h.hive_code}</SelectItem>)
                                             }
                                         </SelectContent>
                                     </Select>
                                 </div>
 
-                                <div className="space-y-3">
-                                    <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Archive Date</Label>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em]">Archive Date</Label>
                                     <Input
                                         type="date"
                                         value={formData.inspection_date}
                                         onChange={(e) => setFormData({ ...formData, inspection_date: e.target.value })}
-                                        className="h-14 rounded-2xl border-[#E0E0E0] font-bold text-beeyield-charcoal"
+                                        className="h-12 rounded-none border-4 border-[#064e3b] font-black text-xs transition-none"
                                     />
                                 </div>
 
-                                <div className="space-y-3">
-                                    <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Inspector</Label>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em]">Audit Personnel</Label>
                                     <Input
                                         placeholder="Certified Inspector Name"
                                         value={formData.inspector_name}
                                         onChange={(e) => setFormData({ ...formData, inspector_name: e.target.value })}
-                                        className="h-14 rounded-2xl border-[#E0E0E0] font-bold text-beeyield-charcoal"
+                                        className="h-12 rounded-none border-4 border-[#064e3b] font-black text-xs transition-none focus-visible:bg-[#facc15]/5"
                                     />
                                 </div>
                             </CardContent>
                         </Card>
 
-                        <Card className="rounded-[2.5rem] border-none bg-beeyield-forest shadow-xl shadow-beeyield-forest/20 overflow-hidden relative group">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:scale-125 transition-transform duration-700" />
-                            <CardContent className="p-10 relative z-10 flex items-start gap-5">
-                                <Bot className="w-8 h-8 text-emerald-300 mt-1" />
+                        <Card className="rounded-none border-4 border-[#064e3b] bg-[#064e3b] shadow-[8px_8px_0px_0px_rgba(16,185,129,1)] overflow-hidden relative group">
+                            <CardContent className="p-8 relative z-10 flex items-start gap-5">
+                                <Bot className="w-10 h-10 text-[#facc15] mt-1" />
                                 <div className="space-y-2">
-                                    <h3 className="font-bold text-white text-lg">Neural Co-Pilot</h3>
-                                    <p className="text-emerald-100/70 text-sm leading-relaxed">
-                                        Submitting this log triggers the bio-model to update the hive's health score and varroa risk vector in real-time.
+                                    <h3 className="font-black text-white text-xl uppercase tracking-tighter">Neural Co-Pilot</h3>
+                                    <p className="text-white/60 text-[10px] font-black uppercase tracking-[0.1em] leading-relaxed">
+                                        SUBMISSION TRIGGER: ARCHIVING THIS LOG WILL RE-CALIBRATE ASSET VITALITY SCORES AND VARROA VECTOR ANALYSIS.
                                     </p>
                                 </div>
                             </CardContent>
@@ -377,25 +376,25 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ initialParams }) => {
 
                     {/* Right Panel: Biometric Data */}
                     <div className="lg:col-span-2 space-y-10">
-                        <Card className="rounded-[3rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden">
+                        <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[12px_12px_0px_0px_rgba(6,78,59,1)] overflow-hidden">
                             <CardHeader className="p-10 pb-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                                 <div>
-                                    <CardTitle className="text-2xl font-bold text-beeyield-charcoal flex items-center gap-3">
-                                        <HeartPulse className="w-6 h-6 text-beeyield-forest" />
+                                    <CardTitle className="text-4xl font-black text-[#064e3b] uppercase tracking-tighter flex items-center gap-4">
+                                        <HeartPulse className="w-8 h-8 text-[#10b981]" />
                                         Health Vector
                                     </CardTitle>
-                                    <p className="text-gray-400 font-medium text-sm mt-1 uppercase tracking-widest px-1">Vital Colony Parameters</p>
+                                    <p className="text-[#064e3b]/30 font-black text-[10px] mt-2 uppercase tracking-[0.2em] px-1">COLONY BIOMETRICS PROTOCOL</p>
                                 </div>
-                                <div className="flex bg-beeyield-sand/30 border border-[#E8E0D5] rounded-2xl p-1.5 gap-1">
+                                <div className="flex bg-[#064e3b]/5 border-4 border-[#064e3b] p-1.5 gap-1.5">
                                     {['healthy', 'weak', 'diseased', 'critical'].map(s => (
                                         <button
                                             key={s}
                                             onClick={() => setFormData({ ...formData, health_status: s })}
                                             className={cn(
-                                                "h-10 px-6 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all",
+                                                "h-12 px-6 rounded-none text-[10px] font-black uppercase tracking-widest transition-none",
                                                 formData.health_status === s
-                                                    ? "bg-beeyield-forest text-white shadow-md shadow-beeyield-forest/20"
-                                                    : "text-gray-400 hover:text-beeyield-charcoal hover:bg-white"
+                                                    ? "bg-[#064e3b] text-white shadow-[4px_4px_0px_0px_rgba(16,185,129,1)]"
+                                                    : "text-[#064e3b]/40 hover:text-[#064e3b] hover:bg-white"
                                             )}
                                         >
                                             {s}
@@ -406,42 +405,42 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ initialParams }) => {
                             <CardContent className="p-10 space-y-10">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                                     {/* Swaps & Toggles */}
-                                    <div className="space-y-5">
+                                    <div className="space-y-6">
                                         {[
                                             { id: 'queen_seen', label: 'Queen Verified', sub: 'Visual presence confirmed', icon: ShieldCheck },
                                             { id: 'eggs_seen', label: 'Egg Presence', sub: 'Oviposition cycle active', icon: CheckCircle2 },
                                             { id: 'queen_cells_seen', label: 'Queen Cells', sub: 'Active swarming markers', icon: AlertCircle }
                                         ].map(item => (
-                                            <div key={item.id} className="flex items-center justify-between p-6 rounded-[1.5rem] bg-beeyield-sand/20 border border-transparent hover:border-[#E8E0D5] transition-all group">
+                                            <div key={item.id} className="flex items-center justify-between p-6 rounded-none bg-neutral-50/50 border-4 border-[#064e3b]/10 hover:border-[#064e3b] transition-none group shadow-[4px_4px_0px_0px_rgba(0,0,0,0)] hover:shadow-[4px_4px_0px_0px_rgba(6,78,59,1)]">
                                                 <div className="flex items-center gap-5">
-                                                    <div className="w-10 h-10 rounded-xl bg-white border border-[#F0F0F0] flex items-center justify-center text-gray-400 group-hover:text-beeyield-forest transition-colors">
-                                                        <item.icon className="w-5 h-5" />
+                                                    <div className="w-12 h-12 rounded-none border-2 border-[#064e3b]/20 bg-white flex items-center justify-center text-[#064e3b]/40 group-hover:text-[#10b981] group-hover:border-[#10b981] transition-none">
+                                                        <item.icon className="w-6 h-6" />
                                                     </div>
                                                     <div className="flex flex-col">
-                                                        <span className="text-sm font-bold text-beeyield-charcoal">{item.label}</span>
-                                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{item.sub}</span>
+                                                        <span className="text-base font-black text-[#064e3b] uppercase tracking-tighter">{item.label}</span>
+                                                        <span className="text-[9px] font-black text-[#064e3b]/40 uppercase tracking-[0.1em]">{item.sub}</span>
                                                     </div>
                                                 </div>
                                                 <Switch
                                                     checked={(formData as any)[item.id]}
                                                     onCheckedChange={(val) => setFormData({ ...formData, [item.id]: val })}
-                                                    className="data-[state=checked]:bg-beeyield-forest"
+                                                    className="data-[state=checked]:bg-[#10b981] border-2 border-[#064e3b]"
                                                 />
                                             </div>
                                         ))}
 
                                         <div className="pt-4 space-y-3">
-                                            <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Temperament Profile</Label>
-                                            <div className="flex bg-beeyield-sand/30 border border-[#E8E0D5] rounded-2xl p-1.5 gap-1">
+                                            <Label className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em] ml-1">Temperament Profile</Label>
+                                            <div className="flex bg-[#064e3b]/5 border-4 border-[#064e3b] p-1.5 gap-1.5">
                                                 {['calm', 'nervous', 'aggressive'].map(t => (
                                                     <button
                                                         key={t}
                                                         onClick={() => setFormData({ ...formData, temperament: t })}
                                                         className={cn(
-                                                            "flex-1 h-12 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all",
+                                                            "flex-1 h-12 rounded-none text-[10px] font-black uppercase tracking-widest transition-none",
                                                             formData.temperament === t
-                                                                ? "bg-beeyield-forest text-white shadow-md shadow-beeyield-forest/20"
-                                                                : "text-gray-400 hover:text-beeyield-charcoal hover:bg-white"
+                                                                ? "bg-[#064e3b] text-white shadow-[4px_4px_0px_0px_rgba(16,185,129,1)]"
+                                                                : "text-[#064e3b]/40 hover:text-[#064e3b] hover:bg-white"
                                                         )}
                                                     >
                                                         {t}
@@ -454,25 +453,25 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ initialParams }) => {
                                     {/* Physical Metrics */}
                                     <div className="space-y-6">
                                         <div className="grid grid-cols-2 gap-6">
-                                            <div className="space-y-3">
-                                                <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Internal Temp (°C)</Label>
+                                            <div className="space-y-2">
+                                                <Label className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em] ml-1">Core Temp (°C)</Label>
                                                 <div className="relative">
-                                                    <Thermometer className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                                    <Thermometer className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#10b981]" />
                                                     <Input
                                                         type="number"
                                                         value={formData.temperature_celsius}
                                                         onChange={(e) => setFormData({ ...formData, temperature_celsius: parseFloat(e.target.value) })}
-                                                        className="h-14 pl-10 rounded-2xl border-[#E0E0E0] font-bold text-beeyield-charcoal"
+                                                        className="h-12 pl-10 rounded-none border-4 border-[#064e3b] font-black text-[#064e3b] transition-none"
                                                     />
                                                 </div>
                                             </div>
-                                            <div className="space-y-3">
-                                                <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Sky Conditions</Label>
+                                            <div className="space-y-2">
+                                                <Label className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em] ml-1">Sky Condition</Label>
                                                 <Select value={formData.weather_condition} onValueChange={(v) => setFormData({ ...formData, weather_condition: v })}>
-                                                    <SelectTrigger className="h-14 rounded-2xl border-[#E0E0E0] font-bold text-beeyield-charcoal">
+                                                    <SelectTrigger className="h-12 rounded-none border-4 border-[#064e3b] font-black text-xs uppercase transition-none">
                                                         <SelectValue />
                                                     </SelectTrigger>
-                                                    <SelectContent className="rounded-2xl">
+                                                    <SelectContent className="rounded-none border-2 border-[#064e3b]">
                                                         <SelectItem value="sunny">Sunny</SelectItem>
                                                         <SelectItem value="cloudy">Cloudy</SelectItem>
                                                         <SelectItem value="rainy">Rainy</SelectItem>
@@ -483,27 +482,27 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ initialParams }) => {
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-6">
-                                            <div className="space-y-3">
-                                                <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Liquid Honey (kg)</Label>
+                                            <div className="space-y-2">
+                                                <Label className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em] ml-1">Honey Mass (kg)</Label>
                                                 <div className="relative">
-                                                    <Zap className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-500" />
+                                                    <Zap className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#facc15]" />
                                                     <Input
                                                         type="number"
                                                         value={formData.honey_stores}
                                                         onChange={(e) => setFormData({ ...formData, honey_stores: parseFloat(e.target.value) })}
-                                                        className="h-14 pl-10 rounded-2xl border-[#E0E0E0] font-bold text-beeyield-charcoal"
+                                                        className="h-12 pl-10 rounded-none border-4 border-[#064e3b] font-black text-[#064e3b] transition-none"
                                                     />
                                                 </div>
                                             </div>
-                                            <div className="space-y-3">
-                                                <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Pollen Load</Label>
+                                            <div className="space-y-2">
+                                                <Label className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em] ml-1">Pollen Ratio</Label>
                                                 <div className="relative">
                                                     <Sun className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-orange-400" />
                                                     <Input
                                                         type="number"
                                                         value={formData.pollen_stores}
                                                         onChange={(e) => setFormData({ ...formData, pollen_stores: parseFloat(e.target.value) })}
-                                                        className="h-14 pl-10 rounded-2xl border-[#E0E0E0] font-bold text-beeyield-charcoal placeholder:font-medium"
+                                                        className="h-12 pl-10 rounded-none border-4 border-[#064e3b] font-black text-[#064e3b] transition-none placeholder:text-neutral-300"
                                                         placeholder="Frames"
                                                     />
                                                 </div>
@@ -511,25 +510,25 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ initialParams }) => {
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-6">
-                                            <div className="space-y-3">
-                                                <Label className="text-[11px] font-bold text-red-500 uppercase tracking-[0.15em] ml-1">Varroa Count</Label>
+                                            <div className="space-y-2">
+                                                <Label className="text-[10px] font-black text-red-500 uppercase tracking-[0.2em] ml-1">Varroa Count</Label>
                                                 <div className="relative">
                                                     <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-red-500" />
                                                     <Input
                                                         type="number"
                                                         value={formData.varroa_mite_count}
                                                         onChange={(e) => setFormData({ ...formData, varroa_mite_count: parseInt(e.target.value) })}
-                                                        className="h-14 pl-10 rounded-2xl border-red-100 bg-red-50/10 font-bold text-red-600 focus-visible:ring-red-500"
+                                                        className="h-12 pl-10 rounded-none border-4 border-red-500 bg-red-500/5 font-black text-red-600 transition-none focus-visible:ring-0"
                                                     />
                                                 </div>
                                             </div>
-                                            <div className="space-y-3">
-                                                <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">SH Beetles</Label>
+                                            <div className="space-y-2">
+                                                <Label className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em] ml-1">SH Beetles</Label>
                                                 <Input
                                                     type="number"
                                                     value={formData.small_hive_beetles_seen}
                                                     onChange={(e) => setFormData({ ...formData, small_hive_beetles_seen: parseInt(e.target.value) })}
-                                                    className="h-14 rounded-2xl border-[#E0E0E0] font-bold text-beeyield-charcoal"
+                                                    className="h-12 rounded-none border-4 border-[#064e3b] font-black text-[#064e3b] transition-none"
                                                 />
                                             </div>
                                         </div>
@@ -538,35 +537,35 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ initialParams }) => {
 
                                 <div className="h-[1px] w-full bg-[#F5F5F5]" />
 
-                                <div className="space-y-8">
-                                    <div className="space-y-3">
-                                        <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Observational Findings</Label>
+                                <div className="space-y-6">
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em] ml-1">Diagnostic Findings</Label>
                                         <Textarea
                                             placeholder="Environmental anomalies, brood capping quality, odor, etc."
                                             value={formData.findings}
                                             onChange={(e) => setFormData({ ...formData, findings: e.target.value })}
-                                            className="min-h-[120px] rounded-3xl border-[#E0E0E0] p-8 font-medium text-lg focus:ring-beeyield-forest/20 focus:border-beeyield-forest/30 transition-all resize-none"
+                                            className="min-h-[120px] rounded-none border-4 border-[#064e3b] p-6 font-black text-xs uppercase transition-none focus-visible:ring-0 focus-visible:bg-[#facc15]/5"
                                         />
                                     </div>
-                                    <div className="space-y-3">
-                                        <Label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Bio-Manipulations (Actions)</Label>
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em] ml-1">Biometric Interventions (Actions)</Label>
                                         <Textarea
                                             placeholder="Splits performed, supers modified, thermal treatment initiated..."
                                             value={formData.actions_taken}
                                             onChange={(e) => setFormData({ ...formData, actions_taken: e.target.value })}
-                                            className="min-h-[120px] rounded-3xl border-[#E0E0E0] p-8 font-medium text-lg focus:ring-beeyield-forest/20 focus:border-beeyield-forest/30 transition-all resize-none"
+                                            className="min-h-[120px] rounded-none border-4 border-[#064e3b] p-6 font-black text-xs uppercase transition-none focus-visible:ring-0 focus-visible:bg-[#facc15]/5"
                                         />
                                     </div>
                                 </div>
 
-                                <div className="flex justify-end pt-4">
+                                <div className="flex justify-end pt-8 border-t-4 border-[#064e3b]/10">
                                     <Button
                                         onClick={handleSave}
                                         disabled={isSaving}
-                                        className="h-16 px-12 rounded-2xl bg-beeyield-forest text-white gap-3 font-bold text-lg shadow-xl shadow-beeyield-forest/20"
+                                        className="h-16 px-12 rounded-none bg-[#064e3b] text-white hover:bg-[#10b981] gap-4 font-black text-base uppercase tracking-widest shadow-[8px_8px_0px_0px_rgba(16,185,129,1)] transition-none active:shadow-none active:translate-x-1 active:translate-y-1 border-2 border-[#064e3b]"
                                     >
-                                        {isSaving ? <Loader2 className="w-6 h-6 animate-spin" /> : <ShieldCheck className="w-6 h-6" />}
-                                        {editingId ? 'Commit Record Changes' : 'Finalize & Archive Log'}
+                                        {isSaving ? <Loader2 className="w-6 h-6 animate-spin" /> : <ShieldCheck className="w-6 h-6 text-[#facc15]" />}
+                                        {editingId ? 'COMMIT RECORD UPDATES' : 'FINALIZE & ARCHIVE LOG'}
                                     </Button>
                                 </div>
                             </CardContent>
@@ -582,13 +581,13 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ initialParams }) => {
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
-                    <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-beeyield-forest/5 border border-beeyield-forest/10 mb-6">
-                        <ClipboardList className="w-3.5 h-3.5 text-beeyield-forest" />
-                        <span className="text-[10px] font-bold text-beeyield-forest uppercase tracking-[0.15em]">Observational Archive</span>
+                    <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b] mb-6">
+                        <ClipboardList className="w-3.5 h-3.5 text-[#facc15]" />
+                        <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Diagnostic Archive</span>
                     </div>
-                    <h1 className="text-5xl font-bold text-beeyield-charcoal tracking-tight">Diagnostic Logs</h1>
-                    <p className="text-gray-500 font-medium mt-3 text-lg">
-                        Systematic health records and colonial history for every sector.
+                    <h1 className="text-6xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">Health <span className="text-[#10b981]">Logs</span></h1>
+                    <p className="text-[#064e3b]/40 font-black mt-3 text-xl uppercase tracking-tight">
+                        Systematic colony biometrics and history.
                     </p>
                 </div>
                 <Button
@@ -596,31 +595,31 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ initialParams }) => {
                         resetForm();
                         setIsAddingInspection(true);
                     }}
-                    className="h-14 px-8 rounded-2xl bg-beeyield-forest hover:opacity-90 text-white shadow-lg shadow-beeyield-forest/20 gap-3 font-bold text-sm tracking-wide"
+                    className="h-14 px-10 rounded-none bg-[#064e3b] hover:bg-[#10b981] text-white border-4 border-[#064e3b] gap-3 font-black text-xs uppercase tracking-widest transition-none shadow-[8px_8px_0px_0px_rgba(16,185,129,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
                 >
                     <Plus className="w-5 h-5" />
-                    New Inspection
+                    NEW INSPECTION
                 </Button>
             </div>
 
             {/* Stats Overview */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                 {[
-                    { label: 'Total Records', value: stats.total, icon: ClipboardList, color: 'text-beeyield-forest', bg: 'bg-beeyield-forest/5' },
-                    { label: 'Healthy State', value: stats.healthy, icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-                    { label: 'Stress Signals', value: stats.issues, icon: AlertCircle, color: 'text-red-500', bg: 'bg-red-50' },
-                    { label: 'Current Cycle', value: stats.thisMonth, icon: Calendar, color: 'text-blue-500', bg: 'bg-blue-50' }
+                    { label: 'Total Records', value: stats.total, icon: ClipboardList, color: 'text-[#064e3b]', bg: 'bg-white' },
+                    { label: 'Healthy State', value: stats.healthy, icon: CheckCircle2, color: 'text-[#10b981]', bg: 'bg-white' },
+                    { label: 'Stress Signals', value: stats.issues, icon: AlertCircle, color: 'text-red-500', bg: 'bg-white' },
+                    { label: 'Current Cycle', value: stats.thisMonth, icon: Calendar, color: 'text-[#064e3b]', bg: 'bg-white' }
                 ].map((stat, i) => (
-                    <motion.div key={i} whileHover={{ y: -4, scale: 1.01 }}>
-                        <Card className="rounded-[2rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden group">
+                    <motion.div key={i} whileHover={{ y: -4 }}>
+                        <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] overflow-hidden group">
                             <CardContent className="p-8">
                                 <div className="flex items-center gap-4 mb-6">
-                                    <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center border transition-all duration-500 group-hover:bg-beeyield-forest group-hover:border-beeyield-forest group-hover:text-white", stat.bg)}>
-                                        <stat.icon className={cn("w-6 h-6 stroke-[2] transition-colors duration-500 group-hover:text-white", stat.color)} />
+                                    <div className={cn("w-12 h-12 rounded-none border-4 border-[#064e3b] flex items-center justify-center transition-none group-hover:bg-[#064e3b] group-hover:text-white", stat.bg)}>
+                                        <stat.icon className={cn("w-6 h-6 stroke-[3] transition-colors transition-none group-hover:text-white", stat.color)} />
                                     </div>
-                                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em]">{stat.label}</p>
+                                    <p className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em]">{stat.label}</p>
                                 </div>
-                                <h3 className="text-4xl font-bold text-beeyield-charcoal tracking-tighter">{stat.value}</h3>
+                                <h3 className="text-5xl font-black text-[#064e3b] tracking-tighter">{stat.value}</h3>
                             </CardContent>
                         </Card>
                     </motion.div>
@@ -628,36 +627,40 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ initialParams }) => {
             </div>
 
             {/* Filters */}
-            <Card className="rounded-[2.5rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden">
+            <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] overflow-hidden">
                 <CardContent className="p-8">
                     <div className="flex flex-col md:flex-row gap-6">
                         <div className="flex-1 relative">
-                            <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                            <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#064e3b]" />
                             <Input
                                 placeholder="Search by inspector, findings, or hive code..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-12 h-14 rounded-2xl border-[#E0E0E0] bg-white font-medium text-sm focus:ring-beeyield-forest/20 focus:border-beeyield-forest/30 transition-all shadow-sm"
+                                className="pl-12 h-14 rounded-none border-4 border-[#064e3b] bg-white font-black text-xs uppercase transition-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:bg-[#facc15]/5"
                             />
                         </div>
                         <Select value={selectedPlaceId} onValueChange={setSelectedPlaceId}>
-                            <SelectTrigger className="h-14 md:w-[220px] rounded-2xl border-[#E0E0E0] font-bold text-sm bg-white shadow-sm">
-                                <MapPin className="w-4 h-4 mr-2 text-beeyield-forest" />
-                                <SelectValue placeholder="Network Focus" />
+                            <SelectTrigger className="h-14 md:w-[260px] rounded-none border-4 border-[#064e3b] font-black text-xs uppercase transition-none">
+                                <div className="flex items-center gap-3">
+                                    <MapPin className="w-4 h-4 text-[#10b981]" />
+                                    <SelectValue placeholder="Network Focus" />
+                                </div>
                             </SelectTrigger>
-                            <SelectContent className="rounded-2xl border-[#E0E0E0] shadow-xl">
-                                <SelectItem value="all_places">Global Network Focus</SelectItem>
-                                {apiaries.map(a => <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>)}
+                            <SelectContent className="rounded-none border-2 border-[#064e3b] shadow-xl">
+                                <SelectItem value="all_places">GLOBAL NETWORK</SelectItem>
+                                {apiaries.map(a => <SelectItem key={a.id} value={a.id} className="uppercase font-black text-[10px]">{a.name}</SelectItem>)}
                             </SelectContent>
                         </Select>
                         <Select value={selectedHiveId} onValueChange={setSelectedHiveId}>
-                            <SelectTrigger className="h-14 md:w-[220px] rounded-2xl border-[#E0E0E0] font-bold text-sm bg-white shadow-sm">
-                                <Hexagon className="w-4 h-4 mr-2 text-beeyield-forest" />
-                                <SelectValue placeholder="Colony Filter" />
+                            <SelectTrigger className="h-14 md:w-[260px] rounded-none border-4 border-[#064e3b] font-black text-xs uppercase transition-none">
+                                <div className="flex items-center gap-3">
+                                    <Hexagon className="w-4 h-4 text-[#10b981]" />
+                                    <SelectValue placeholder="Colony Filter" />
+                                </div>
                             </SelectTrigger>
-                            <SelectContent className="rounded-2xl border-[#E0E0E0] shadow-xl">
-                                <SelectItem value="all_hives">All Colony Filter</SelectItem>
-                                {filteredHivesForSelect.map(h => <SelectItem key={h.id} value={h.id}>Hive #{h.hive_code}</SelectItem>)}
+                            <SelectContent className="rounded-none border-2 border-[#064e3b] shadow-xl">
+                                <SelectItem value="all_hives">ALL COLONIES</SelectItem>
+                                {filteredHivesForSelect.map(h => <SelectItem key={h.id} value={h.id} className="uppercase font-black text-[10px]">HIVE #{h.hive_code}</SelectItem>)}
                             </SelectContent>
                         </Select>
                     </div>
@@ -684,10 +687,10 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ initialParams }) => {
                 </div>
             ) : (
                 <div className="space-y-8">
-                    <div className="flex items-center gap-3">
-                        <h3 className="text-xl font-bold text-beeyield-charcoal px-2">Cycle Feed</h3>
-                        <div className="h-[1px] flex-1 bg-[#F5F5F5]" />
-                        <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">{filteredInspections.length} Entry Results</span>
+                    <div className="flex items-center gap-4">
+                        <h3 className="text-2xl font-black text-[#064e3b] uppercase tracking-tighter">Event Stream</h3>
+                        <div className="h-1 flex-1 bg-[#064e3b]/10" />
+                        <span className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em]">{filteredInspections.length} AUDIT RESULTS</span>
                     </div>
                     <div className="grid grid-cols-1 gap-6">
                         <AnimatePresence mode="popLayout">
@@ -703,7 +706,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ initialParams }) => {
                                         transition={{ delay: index * 0.05 }}
                                     >
                                         <Card
-                                            className="rounded-[2.5rem] border-[#E0E0E0] bg-white hover:shadow-xl hover:shadow-beeyield-forest/5 hover:border-beeyield-forest/20 transition-all duration-300 cursor-pointer group"
+                                            className="rounded-none border-4 border-[#064e3b] bg-white hover:bg-neutral-50/50 transition-none cursor-pointer group shadow-[4px_4px_0px_0px_rgba(6,78,59,1)] hover:shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] active:shadow-none"
                                             onClick={() => handleEdit(inspection)}
                                         >
                                             <CardContent className="p-8">
@@ -711,29 +714,28 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ initialParams }) => {
                                                     {/* Hive & Basic Context */}
                                                     <div className="w-full lg:w-80 flex-shrink-0">
                                                         <div className="flex items-start gap-5">
-                                                            <div className="w-14 h-14 rounded-2xl bg-beeyield-forest/5 flex items-center justify-center text-beeyield-forest group-hover:bg-beeyield-forest group-hover:text-white transition-all duration-500 overflow-hidden relative">
-                                                                <Hexagon className="w-6 h-6 stroke-[2.5]" />
-                                                                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                            <div className="w-16 h-16 rounded-none border-4 border-[#064e3b] bg-white flex items-center justify-center text-[#064e3b] group-hover:bg-[#064e3b] group-hover:text-white transition-none overflow-hidden relative">
+                                                                <Hexagon className="w-7 h-7 stroke-[3]" />
                                                             </div>
                                                             <div>
-                                                                <h3 className="font-bold text-beeyield-charcoal text-xl leading-none pt-1">
+                                                                <h3 className="font-black text-[#064e3b] text-2xl uppercase tracking-tighter leading-none pt-1">
                                                                     {apiary?.name || 'Local Sector'}
                                                                 </h3>
-                                                                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-2">Hive #{hive?.hive_code || '---'}</p>
+                                                                <p className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-[0.2em] mt-3">ASSET ID: {hive?.hive_code || '---'}</p>
                                                             </div>
                                                         </div>
 
-                                                        <div className="flex flex-wrap gap-2.5 mt-8">
-                                                            <Badge className={cn(
-                                                                "rounded-full px-3.5 py-1.5 border-none font-bold text-[9px] uppercase tracking-widest",
-                                                                inspection.health_status === 'healthy' ? "bg-emerald-50 text-emerald-600" :
-                                                                    inspection.health_status === 'weak' ? "bg-amber-50 text-amber-600" :
-                                                                        "bg-red-50 text-red-600"
+                                                        <div className="flex flex-wrap gap-2 mt-8">
+                                                            <div className={cn(
+                                                                "px-3 py-1 border-2 font-black text-[9px] uppercase tracking-widest",
+                                                                inspection.health_status === 'healthy' ? "bg-[#10b981]/10 border-[#10b981] text-[#064e3b]" :
+                                                                    inspection.health_status === 'weak' ? "bg-[#facc15]/10 border-[#facc15] text-[#064e3b]" :
+                                                                        "bg-red-500/10 border-red-500 text-red-600"
                                                             )}>
-                                                                {inspection.health_status} Status
-                                                            </Badge>
-                                                            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-beeyield-sand/30 border border-[#E8E0D5] text-[9px] font-bold text-beeyield-charcoal uppercase tracking-widest">
-                                                                <Calendar className="w-3 h-3 text-beeyield-forest" />
+                                                                {inspection.health_status} STATUS
+                                                            </div>
+                                                            <div className="flex items-center gap-2 px-3 py-1 bg-neutral-100 border-2 border-[#064e3b]/10 text-[9px] font-black text-[#064e3b] uppercase tracking-widest">
+                                                                <Calendar className="w-3 h-3 text-[#10b981]" />
                                                                 {new Date(inspection.inspection_date).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
                                                             </div>
                                                         </div>
@@ -742,49 +744,49 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ initialParams }) => {
                                                     {/* Metrics Snapshot */}
                                                     <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-8 py-2">
                                                         <div className="space-y-1">
-                                                            <p className="text-[10px] text-gray-400 uppercase font-black tracking-widest">Liquid Mass</p>
+                                                            <p className="text-[10px] text-[#064e3b]/40 uppercase font-black tracking-[0.2em]">HONEY MASS</p>
                                                             <div className="flex items-center gap-2">
-                                                                <Zap className="w-3.5 h-3.5 text-amber-500" />
-                                                                <span className="font-bold text-beeyield-charcoal text-lg">{inspection.honey_stores || 0} kg</span>
+                                                                <Zap className="w-4 h-4 text-[#facc15]" />
+                                                                <span className="font-black text-[#064e3b] text-xl tracking-tighter">{inspection.honey_stores || 0} KG</span>
                                                             </div>
                                                         </div>
                                                         <div className="space-y-1">
-                                                            <p className="text-[10px] text-gray-400 uppercase font-black tracking-widest">Varroa Load</p>
+                                                            <p className="text-[10px] text-[#064e3b]/40 uppercase font-black tracking-[0.2em]">VARROA COUNT</p>
                                                             <div className="flex items-center gap-2">
-                                                                <ShieldCheck className={cn("w-3.5 h-3.5", (inspection.varroa_mite_count || 0) > 3 ? "text-red-500" : "text-emerald-500")} />
-                                                                <span className={cn("font-bold text-lg", (inspection.varroa_mite_count || 0) > 3 ? "text-red-500" : "text-beeyield-charcoal")}>
+                                                                <ShieldCheck className={cn("w-4 h-4", (inspection.varroa_mite_count || 0) > 3 ? "text-red-500" : "text-[#10b981]")} />
+                                                                <span className={cn("font-black text-xl tracking-tighter", (inspection.varroa_mite_count || 0) > 3 ? "text-red-500" : "text-[#064e3b]")}>
                                                                     {inspection.varroa_mite_count || 0}
                                                                 </span>
                                                             </div>
                                                         </div>
                                                         <div className="space-y-1">
-                                                            <p className="text-[10px] text-gray-400 uppercase font-black tracking-widest">Internal Core</p>
+                                                            <p className="text-[10px] text-[#064e3b]/40 uppercase font-black tracking-[0.2em]">CORE TEMP</p>
                                                             <div className="flex items-center gap-2">
-                                                                <Thermometer className="w-3.5 h-3.5 text-orange-500" />
-                                                                <span className="font-bold text-beeyield-charcoal text-lg">{inspection.temperature_celsius || '--'}°C</span>
+                                                                <Thermometer className="w-4 h-4 text-orange-500" />
+                                                                <span className="font-black text-[#064e3b] text-xl tracking-tighter">{inspection.temperature_celsius || '--'}°C</span>
                                                             </div>
                                                         </div>
                                                         <div className="flex flex-col justify-center">
                                                             <div className="flex flex-wrap gap-1.5">
-                                                                {inspection.queen_seen && <div className="w-6 h-6 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center text-[10px] font-black text-emerald-600" title="Queen Seen">Q</div>}
-                                                                {inspection.eggs_seen && <div className="w-6 h-6 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center text-[10px] font-black text-blue-600" title="Eggs Seen">E</div>}
-                                                                {inspection.queen_cells_seen && <div className="w-6 h-6 rounded-lg bg-red-50 border border-red-100 flex items-center justify-center text-[10px] font-black text-red-600" title="Cells Observed">QC</div>}
+                                                                {inspection.queen_seen && <div className="w-7 h-7 border-2 border-[#10b981] bg-[#10b981]/10 flex items-center justify-center text-[10px] font-black text-[#064e3b]" title="Queen Seen">Q</div>}
+                                                                {inspection.eggs_seen && <div className="w-7 h-7 border-2 border-blue-500 bg-blue-500/10 flex items-center justify-center text-[10px] font-black text-blue-600" title="Eggs Seen">E</div>}
+                                                                {inspection.queen_cells_seen && <div className="w-7 h-7 border-2 border-red-500 bg-red-500/10 flex items-center justify-center text-[10px] font-black text-red-600" title="Cells Observed">QC</div>}
                                                             </div>
                                                         </div>
                                                     </div>
 
                                                     {/* Actions & Navigation */}
-                                                    <div className="flex flex-row lg:flex-col justify-between items-end gap-4 border-t lg:border-t-0 lg:border-l border-[#F5F5F5] pt-6 lg:pt-0 lg:pl-10">
-                                                        <div className="w-12 h-12 rounded-2xl bg-beeyield-sand/30 flex items-center justify-center text-beeyield-forest group-hover:bg-beeyield-forest group-hover:text-white transition-all duration-500">
+                                                    <div className="flex flex-row lg:flex-col justify-between items-end gap-4 border-t-2 lg:border-t-0 lg:border-l-4 border-[#064e3b]/5 pt-6 lg:pt-0 lg:pl-10">
+                                                        <div className="w-12 h-12 rounded-none border-2 border-[#064e3b] flex items-center justify-center text-[#064e3b] group-hover:bg-[#064e3b] group-hover:text-white transition-none">
                                                             <ArrowRight className="w-5 h-5" />
                                                         </div>
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
-                                                            className="h-10 w-10 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                                                            className="h-10 w-10 text-[#064e3b]/20 hover:text-red-500 hover:bg-red-50 rounded-none transition-none"
                                                             onClick={(e) => handleDelete(inspection.id, e)}
                                                         >
-                                                            <Trash2 className="w-4.5 h-4.5" />
+                                                            <Trash2 className="w-5 h-5" />
                                                         </Button>
                                                     </div>
                                                 </div>

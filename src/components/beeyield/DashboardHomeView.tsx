@@ -1,23 +1,20 @@
 import React, { useMemo } from 'react';
 import {
     Activity,
-    Smartphone,
     MapPin,
-    AlertTriangle,
-    CheckCircle2,
-    Calendar,
-    ArrowUpRight,
-    ArrowDownRight,
-    Hexagon,
     Zap,
-    Signal,
-    Terminal,
-    RefreshCw
+    TrendingUp,
+    ArrowUpRight,
+    Search,
+    Edit3,
+    Download,
+    Hexagon,
+    Target,
+    LayoutGrid
 } from 'lucide-react';
-import { IoTDevice, SensorReading, Apiary, Hive } from '@/services/beeyieldService';
-import StatCard from './StatCard';
+import { IoTDevice, SensorReading, Apiary } from '@/services/beeyieldService';
 import { cn } from '@/lib/utils';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, ResponsiveContainer, YAxis, XAxis } from 'recharts';
 
 interface DashboardHomeViewProps {
     devices: IoTDevice[];
@@ -26,174 +23,166 @@ interface DashboardHomeViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
 }
 
-const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ devices, readings, apiaries, onTabChange }) => {
-    const activeStats = useMemo(() => {
-        const total = devices.length;
-        const online = devices.filter(d => d.status === 'active').length;
-        const lowBattery = devices.filter(d => d.battery_level < 20).length;
+const OrchardStatusCard: React.FC<{ orchard: Apiary; onAction: (tab: string) => void }> = ({ orchard, onAction }) => {
+    // Simulated live metrics based on orchard data
+    const activityScore = Math.floor(Math.random() * 4) + 6; // 6-10 range
 
-        // Health Index (Simplified)
-        const health = total > 0 ? Math.round((online / total) * 100) : 0;
-
-        return { total, online, lowBattery, health };
-    }, [devices]);
-
-    const chartData = useMemo(() => {
-        // Mock data for Brutalist chart
-        return [
-            { name: '00:00', val: 400 },
-            { name: '04:00', val: 300 },
-            { name: '08:00', val: 600 },
-            { name: '12:00', val: 800 },
-            { name: '16:00', val: 500 },
-            { name: '20:00', val: 700 },
-            { name: '23:59', val: 600 },
-        ];
-    }, []);
+    const sparkData = [
+        { name: 'D1', bloom: 10, activity: 20 },
+        { name: 'D2', bloom: 30, activity: 35 },
+        { name: 'D3', bloom: 60, activity: 50 }, // Deficit starting
+        { name: 'D4', bloom: 85, activity: 48 }, // Deficit peak
+        { name: 'D5', bloom: 90, activity: 70 },
+    ];
 
     return (
-        <div className="p-8 space-y-12 bg-white min-h-screen text-black antialiased">
+        <div className="border-4 border-[#064e3b] bg-white group hover:shadow-[12px_12px_0px_0px_rgba(45,90,39,1)] transition-all shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] flex flex-col h-full">
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b-4 border-black pb-8">
-                <div className="space-y-4">
-                    <h1 className="text-6xl font-black tracking-tighter uppercase leading-[0.8]">
-                        Dashboard <span className="text-[#FF4F00]">Home</span>
-                    </h1>
-                    <div className="flex items-center gap-6">
-                        <div className="flex items-center gap-2 group cursor-pointer">
-                            <div className="w-3 h-3 bg-black border-2 border-black" />
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">{activeStats.online} Online</span>
-                        </div>
-                        <div className="flex items-center gap-2 group cursor-pointer">
-                            <div className="w-3 h-3 bg-[#FF4F00] border-2 border-black" />
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">{activeStats.total - activeStats.online} Offline</span>
-                        </div>
+            <div className="p-6 border-b-4 border-[#064e3b] bg-[#064e3b]/3">
+                <div className="flex items-start justify-between">
+                    <div>
+                        <h3 className="text-2xl font-black text-[#064e3b] tracking-tighter uppercase">{orchard.name}</h3>
+                        <p className="text-[10px] font-black uppercase text-[#10b981] tracking-widest mt-1">Variety: Almond (Nonpareil)</p>
                     </div>
-                </div>
-                <div className="flex items-center gap-4">
-                    <div className="px-6 py-3 border-4 border-black bg-black text-white font-black text-xs uppercase tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                        Balance: KES 48,500
+                    <div className="w-10 h-10 border-2 border-[#064e3b] bg-white flex items-center justify-center">
+                        <MapPin className="w-5 h-5 text-[#064e3b]" />
                     </div>
-                    <button className="h-12 w-12 border-2 border-black bg-white flex items-center justify-center hover:bg-neutral-100 transition-none">
-                        <RefreshCw className="w-5 h-5 text-black" />
-                    </button>
                 </div>
             </div>
 
-            {/* Metrics Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <StatCard
-                    title="Health"
-                    value={`${activeStats.health}%`}
-                    trend="+2.1%"
-                    trendType="positive"
-                    icon={Signal}
-                    subtitle="System Online"
-                />
-                <StatCard
-                    title="Devices"
-                    value={activeStats.total}
-                    icon={Smartphone}
-                    subtitle="Connected Nodes"
-                />
-                <StatCard
-                    title="Battery"
-                    value={activeStats.lowBattery}
-                    trend={`-${activeStats.lowBattery}`}
-                    trendType={activeStats.lowBattery > 0 ? 'negative' : 'positive'}
-                    icon={Zap}
-                    subtitle="Low Power Alerts"
-                />
-                <StatCard
-                    title="Locations"
-                    value={apiaries.length}
-                    icon={MapPin}
-                    subtitle="Registered Hubs"
-                />
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                {/* Performance Chart */}
-                <div className="lg:col-span-8 border-4 border-black bg-white p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-                    <div className="flex items-center justify-between mb-10 border-b-4 border-black pb-6">
-                        <div className="flex items-center gap-4">
-                            <Terminal className="w-8 h-8 text-[#FF4F00]" />
-                            <h3 className="text-4xl font-black uppercase tracking-tighter">Performance</h3>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <div className="px-3 py-1 border-2 border-black bg-black text-white text-[10px] font-bold uppercase tracking-widest">Live</div>
+            {/* Metrics */}
+            <div className="p-6 flex-1 space-y-6">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-[#064e3b]/40">Bee Activity Score</p>
+                        <div className="flex items-baseline gap-2 mt-1">
+                            <span className="text-5xl font-black text-[#064e3b] tabular-nums">{activityScore}</span>
+                            <span className="text-xs font-black text-[#064e3b]/30">/ 10</span>
                         </div>
                     </div>
-                    <div className="h-80 w-full px-4">
+                    {/* Activity Gauge */}
+                    <div className="w-16 h-8 bg-[#064e3b]/5 overflow-hidden relative flex items-end px-1 gap-0.5">
+                        {[0.3, 0.5, 0.8, 1, 0.9, 0.7].map((h, i) => (
+                            <div key={i} className="flex-1 bg-[#10b981]" style={{ height: `${h * 100}%` }} />
+                        ))}
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-[#064e3b]/40">Bloom vs. Bee Pulse</p>
+                        <span className="text-[9px] font-black text-[#facc15] uppercase">Alert: Coverage Deficit</span>
+                    </div>
+                    {/* Sparkline */}
+                    <div className="h-20 w-full bg-[#064e3b]/[0.02] border-2 border-[#064e3b]/5">
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={chartData}>
-                                <CartesianGrid strokeDasharray="0" vertical={true} stroke="#00000010" />
-                                <XAxis
-                                    dataKey="name"
-                                    axisLine={{ stroke: '#000', strokeWidth: 2 }}
-                                    tickLine={false}
-                                    tick={{ fill: '#000', fontSize: 10, fontWeight: 700 }}
-                                />
-                                <YAxis hide />
-                                <Tooltip
-                                    cursor={{ stroke: '#FF4F00', strokeWidth: 2 }}
-                                    contentStyle={{
-                                        backgroundColor: '#000',
-                                        border: 'none',
-                                        borderRadius: '0px',
-                                        fontSize: '10px',
-                                        fontWeight: '700',
-                                        textTransform: 'uppercase',
-                                        color: '#fff'
-                                    }}
-                                    itemStyle={{ color: '#fff' }}
-                                />
-                                <Area
-                                    type="stepAfter"
-                                    dataKey="val"
-                                    stroke="#FF4F00"
-                                    strokeWidth={4}
-                                    fillOpacity={1}
-                                    fill="#FF4F0010"
-                                    animationDuration={0}
-                                />
-                            </AreaChart>
+                            <LineChart data={sparkData}>
+                                <Line type="monotone" dataKey="bloom" stroke="#facc15" strokeWidth={3} dot={false} />
+                                <Line type="monotone" dataKey="activity" stroke="#2D5A27" strokeWidth={3} dot={false} />
+                            </LineChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
 
-                {/* Activity Feed */}
-                <div className="lg:col-span-4 space-y-6">
-                    <div className="flex items-center gap-4 mb-4">
-                        <Activity className="w-8 h-8 text-black" />
-                        <h3 className="text-4xl font-black uppercase tracking-tighter">Activity</h3>
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="border-2 border-[#064e3b]/10 p-3">
+                        <p className="text-[8px] font-black uppercase text-[#064e3b]/30">Current Bloom</p>
+                        <p className="text-lg font-black text-[#064e3b]">85%</p>
                     </div>
-                    <div className="border-4 border-black divide-y-4 divide-black bg-white overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-                        {[
-                            { event: 'Node WAT-001 High Temp', time: '12:04', status: 'WARN' },
-                            { event: 'Sync: Zone Alpha', time: '11:58', status: 'OK' },
-                            { event: 'Hardware Connected', time: '11:42', status: 'OK' },
-                            { event: 'Battery Low: ENE-015', time: '10:15', status: 'FAIL' },
-                        ].map((item, i) => (
-                            <div key={i} className="p-5 flex items-center justify-between hover:bg-neutral-50 transition-none">
-                                <div className="space-y-1">
-                                    <p className="text-[10px] font-bold uppercase tracking-widest">{item.event}</p>
-                                    <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-tighter">{item.time} UTC</p>
-                                </div>
-                                <div className={cn(
-                                    "px-2 py-1 border-2 border-black text-[9px] font-black uppercase tracking-widest",
-                                    item.status === 'OK' ? "bg-black text-white" :
-                                        item.status === 'WARN' ? "bg-[#FF4F00] text-white" :
-                                            "bg-white text-black"
-                                )}>
-                                    {item.status}
-                                </div>
-                            </div>
-                        ))}
-                        <button className="w-full h-14 bg-white text-black font-black uppercase text-[10px] tracking-widest hover:bg-black hover:text-white transition-none border-t-4 border-black">
-                            View All Logs
-                        </button>
+                    <div className="border-2 border-[#064e3b]/10 p-3">
+                        <p className="text-[8px] font-black uppercase text-[#064e3b]/30">FPA Ratio</p>
+                        <p className="text-lg font-black text-[#10b981]">0.92</p>
                     </div>
+                </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="grid grid-cols-3 border-t-4 border-[#064e3b]">
+                <button
+                    onClick={() => onAction('orchard-mapper')}
+                    className="p-4 flex flex-col items-center justify-center border-r-4 border-[#064e3b] hover:bg-[#064e3b] hover:text-white transition-none"
+                >
+                    <MapPin className="w-4 h-4 mb-2" />
+                    <span className="text-[8px] font-black uppercase tracking-widest">Map</span>
+                </button>
+                <button
+                    onClick={() => onAction('bloom-tracking')}
+                    className="p-4 flex flex-col items-center justify-center border-r-4 border-[#064e3b] hover:bg-[#064e3b] hover:text-white transition-none"
+                >
+                    <Edit3 className="w-4 h-4 mb-2" />
+                    <span className="text-[8px] font-black uppercase tracking-widest">Bloom</span>
+                </button>
+                <button
+                    onClick={() => onAction('season-summary')}
+                    className="p-4 flex flex-col items-center justify-center hover:bg-[#064e3b] hover:text-white transition-none"
+                >
+                    <Download className="w-4 h-4 mb-2" />
+                    <span className="text-[8px] font-black uppercase tracking-widest">Audit</span>
+                </button>
+            </div>
+        </div>
+    );
+};
+
+const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabChange }) => {
+    return (
+        <div className="p-8 space-y-12 bg-white min-h-screen text-[#064e3b] antialiased">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b-4 border-[#064e3b] pb-10">
+                <div className="space-y-4">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b] mb-2">
+                        <Activity className="w-3.5 h-3.5 text-[#facc15]" />
+                        <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Executive Portfolio Summary</span>
+                    </div>
+                    <h1 className="text-7xl font-black tracking-tighter uppercase leading-[0.8] text-[#064e3b]">
+                        Orchard <span className="text-[#10b981]">Status</span>
+                    </h1>
+                    <p className="text-[#10b981] font-black uppercase text-[10px] tracking-[0.4em] pt-2">
+                        Cross-Property Pollination Analytics · Real-Time Coverage Scores
+                    </p>
+                </div>
+
+                <div className="flex items-center gap-4">
+                    <div className="px-8 py-4 border-4 border-[#064e3b] bg-[#064e3b] text-white font-black text-sm uppercase tracking-[0.2em] shadow-[6px_6px_0px_0px_rgba(45,90,39,1)] italic">
+                        FUND_RES: KES 142,500
+                    </div>
+                </div>
+            </div>
+
+            {/* Quick Portfolio Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                {[
+                    { label: 'Total Acreage', val: '482 ac', icon: LayoutGrid },
+                    { label: 'Mean Activity', val: '8.4', icon: Zap },
+                    { label: 'Total Hives', val: '840', icon: Hexagon },
+                    { label: 'Yield Confidence', val: '92%', icon: Target },
+                ].map(stat => (
+                    <div key={stat.label} className="border-4 border-[#064e3b] p-6 bg-[#064e3b]/3 relative overflow-hidden group">
+                        <stat.icon className="absolute -right-4 -bottom-4 w-20 h-20 text-[#064e3b]/5 group-hover:rotate-12 transition-all" />
+                        <p className="text-[9px] font-black uppercase tracking-widest text-[#064e3b]/40">{stat.label}</p>
+                        <p className="text-4xl font-black text-[#064e3b] mt-1 tabular-nums">{stat.val}</p>
+                    </div>
+                ))}
+            </div>
+
+            {/* Orchard Detail Cards */}
+            <div className="space-y-6">
+                <div className="flex items-center justify-between border-b-4 border-[#064e3b]/10 pb-4">
+                    <h2 className="text-3xl font-black uppercase tracking-tighter">Property Registry</h2>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]/30">{apiaries.length} Active Orchards</span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10">
+                    {apiaries.map(orchard => (
+                        <OrchardStatusCard key={orchard.id} orchard={orchard} onAction={onTabChange} />
+                    ))}
+                    {/* Empty placeholder for adding new */}
+                    <button className="border-4 border-dashed border-[#064e3b]/20 p-10 flex flex-col items-center justify-center hover:border-[#064e3b] hover:bg-[#064e3b]/3 transition-all">
+                        <div className="w-16 h-16 border-4 border-dashed border-[#064e3b]/20 flex items-center justify-center mb-4">
+                            <span className="text-4xl font-light text-[#064e3b]/30">+</span>
+                        </div>
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#064e3b]/40">Provision New Orchard</p>
+                    </button>
                 </div>
             </div>
         </div>
@@ -201,3 +190,4 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ devices, readings
 };
 
 export default DashboardHomeView;
+

@@ -66,6 +66,11 @@ const MeasurementData = lazy(() => import('@/pages/MeasurementData'))
 const Privacy = lazy(() => import('@/pages/Privacy'))
 const Terms = lazy(() => import('@/pages/Terms'))
 
+// Pollination Professional Pages
+const PollinationCalcs = lazy(() => import('@/pages/pollination/PollinationCalcs'))
+const FlightMapping = lazy(() => import('@/pages/pollination/FlightMapping'))
+const PollinationReports = lazy(() => import('@/pages/pollination/PollinationReports'))
+
 // 🚀 Performance Optimization: Route Prefetching Logic
 // This registry allows us to trigger the lazy dynamic imports on-demand (e.g. on link hover)
 const routeMap: Record<string, () => Promise<any>> = {
@@ -161,6 +166,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                                                         <Route path="/pollination-request" element={<PollinationRequest />} />
                                                         <Route path="/diseases" element={<Diseases />} />
                                                         <Route path="/media" element={<Media />} />
+
+                                                        {/* Precision Pollination Professional Sub-routes */}
+                                                        <Route path="/precision-pollination/calcs" element={<PollinationCalcs />} />
+                                                        <Route path="/precision-pollination/map" element={<FlightMapping />} />
+                                                        <Route path="/precision-pollination/reports" element={<PollinationReports />} />
                                                         <Route path="/beeyield-dashboard" element={<ProtectedRoute requireBeeYield={true}><BeeYieldDashboard /></ProtectedRoute>} />
                                                         <Route path="/measurements" element={<ProtectedRoute requireBeeYield={true}><MeasurementData /></ProtectedRoute>} />
                                                         <Route path="/ceba" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />

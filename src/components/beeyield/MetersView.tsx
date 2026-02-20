@@ -32,7 +32,7 @@ const usageTrendData = [
 ];
 
 interface MetersViewProps {
-    onTabChange: (tab: string) => void;
+    onTabChange: (tab: string, message?: string, action?: string) => void;
     activeSubTab?: string;
 }
 
@@ -124,15 +124,13 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
         <div className="space-y-12 animate-in fade-in duration-500 pb-12">
             {/* Header */}
             <div>
-                <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-beeyield-forest/5 border border-beeyield-forest/10 mb-6">
-                    <Activity className="w-3.5 h-3.5 text-beeyield-forest" />
-                    <span className="text-[10px] font-bold text-beeyield-forest uppercase tracking-[0.15em]">Live Monitoring</span>
+                <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b] mb-6">
+                    <Activity className="w-3.5 h-3.5 text-[#facc15]" />
+                    <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Operational Telemetry Hub</span>
                 </div>
-                <h1 className="text-5xl font-bold text-beeyield-charcoal tracking-tight">
-                    Resource Usage
-                </h1>
-                <p className="text-gray-500 font-medium mt-3 text-lg">
-                    Water, energy, and system health across all monitored sectors.
+                <h1 className="text-6xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">Resource <span className="text-[#10b981]">Inventory</span></h1>
+                <p className="text-[#064e3b]/40 font-black mt-3 text-xl uppercase tracking-tight">
+                    Critical payloads: Water, and Neural system energy health.
                 </p>
             </div>
 
@@ -143,80 +141,78 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                     const Icon = medium === 'Water' ? Droplet : medium === 'Heat' ? ThermometerSun : Zap;
                     const alertCount = meters.filter(m => m.meter_type === medium && m.has_alarm).length;
                     const iconColors = {
-                        Water: 'text-blue-600 bg-blue-50 border-blue-100',
-                        Heat: 'text-orange-500 bg-orange-50 border-orange-100',
-                        Energy: 'text-beeyield-forest bg-beeyield-forest/5 border-beeyield-forest/10'
+                        Water: 'text-[#10b981]',
+                        Heat: 'text-[#facc15]',
+                        Energy: 'text-white'
                     };
 
                     return (
-                        <motion.div key={medium} whileHover={{ y: -4, scale: 1.01 }}>
-                            <Card className="rounded-[2rem] border-[#E0E0E0] bg-white shadow-sm hover:shadow-xl hover:shadow-beeyield-forest/5 transition-all duration-500 overflow-hidden group">
-                                <CardContent className="p-8">
+                        <div key={medium}>
+                            <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all overflow-hidden group">
+                                <CardContent className="p-6">
                                     <div className="flex items-start justify-between mb-6">
-                                        <div className={cn('w-12 h-12 rounded-2xl flex items-center justify-center border transition-all duration-500 group-hover:bg-beeyield-forest group-hover:border-beeyield-forest group-hover:text-white', iconColors[medium])}>
-                                            <Icon className="w-6 h-6 stroke-[2] transition-colors duration-500 group-hover:text-white" />
+                                        <div className={cn('w-12 h-12 rounded-none bg-[#064e3b] flex items-center justify-center border-2 border-[#10b981] transition-all', iconColors[medium])}>
+                                            <Icon className="w-6 h-6" />
                                         </div>
-                                        <div className={cn('px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest border',
-                                            alertCount > 0 ? 'bg-red-50 text-red-600 border-red-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100'
+                                        <div className={cn('px-2 py-0.5 border-2 text-[8px] font-black uppercase tracking-widest',
+                                            alertCount > 0 ? 'bg-red-500 text-white border-[#064e3b]' : 'bg-[#10b981] text-white border-[#064e3b]'
                                         )}>
-                                            {alertCount > 0 ? 'Alert' : 'Normal'}
+                                            {alertCount > 0 ? 'ALERT' : 'NOMINAL'}
                                         </div>
                                     </div>
-                                    <h3 className="text-3xl font-bold text-beeyield-charcoal tracking-tight">
-                                        {total} <span className="text-sm font-bold text-gray-400">{unit}</span>
+                                    <h3 className="text-4xl font-black text-[#064e3b] tracking-tighter uppercase">
+                                        {total} <span className="text-sm font-black text-[#064e3b]/20">{unit}</span>
                                     </h3>
-                                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] mt-2">{medium} Total</p>
+                                    <p className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em] mt-2">{medium} ACCUMULATION</p>
                                 </CardContent>
                             </Card>
-                        </motion.div>
+                        </div>
                     );
                 })}
 
                 {/* Alerts Card — Forest green dark */}
-                <motion.div whileHover={{ y: -4, scale: 1.01 }}>
-                    <Card className="rounded-[2rem] border-none bg-beeyield-forest shadow-xl shadow-beeyield-forest/20 overflow-hidden relative">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-10 -mt-10" />
-                        <CardContent className="p-8 relative z-10">
+                <div>
+                    <Card className="rounded-none border-4 border-[#064e3b] bg-[#064e3b] shadow-[6px_6px_0px_0px_rgba(24acc15,1)] shadow-[#facc15] overflow-hidden relative">
+                        <CardContent className="p-6 relative z-10">
                             <div className="flex items-start justify-between mb-6">
-                                <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center">
-                                    <AlertTriangle className="w-6 h-6 text-amber-300" />
+                                <div className="w-12 h-12 rounded-none bg-white/5 border-2 border-white/20 flex items-center justify-center">
+                                    <AlertTriangle className="w-6 h-6 text-[#facc15]" />
                                 </div>
                             </div>
-                            <h3 className="text-4xl font-bold text-white tracking-tight">{activeAlarmsCount}</h3>
-                            <p className="text-[11px] font-bold text-white/60 uppercase tracking-[0.15em] mt-2">Active Alerts</p>
+                            <h3 className="text-5xl font-black text-white tracking-tighter uppercase">{activeAlarmsCount}</h3>
+                            <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em] mt-2">Active Protocol Alerts</p>
                             <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => onTabChange('meters-alarms')}
-                                className="mt-4 text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-8 px-3 text-[10px] font-bold uppercase tracking-widest"
+                                className="mt-6 text-[#facc15] hover:bg-white/10 rounded-none h-10 px-4 border-2 border-[#facc15]/20 font-black uppercase text-[10px] tracking-widest transition-none"
                             >
-                                View All →
+                                INTERROGATE RECORDS →
                             </Button>
                         </CardContent>
                     </Card>
-                </motion.div>
+                </div>
             </div>
 
             {/* Usage Trend Chart */}
-            <Card className="rounded-[2.5rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden">
+            <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[12px_12px_0px_0px_rgba(6,78,59,1)] overflow-hidden">
                 <CardContent className="p-10">
-                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-10">
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12">
                         <div>
-                            <h3 className="text-2xl font-bold text-beeyield-charcoal tracking-tight">Activity Trend</h3>
-                            <p className="text-gray-400 text-sm font-medium mt-1">Usage records from the last two weeks.</p>
+                            <h3 className="text-4xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">Activity <span className="text-[#10b981]">Trend</span></h3>
+                            <p className="text-[#064e3b]/30 font-black text-[10px] mt-2 uppercase tracking-[0.2em]">Usage records from the last two weeks.</p>
                         </div>
-                        <div className="flex bg-beeyield-sand/30 border border-[#E8E0D5] rounded-2xl p-1.5 gap-1">
+                        <div className="flex bg-[#064e3b]/5 border-4 border-[#064e3b] p-1.5 gap-1.5">
                             {(['Water', 'Heat', 'Energy'] as const).map(m => (
-                                <Button
+                                <button
                                     key={m}
-                                    variant="ghost"
-                                    className={cn('h-10 px-6 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all',
+                                    className={cn('h-10 px-6 rounded-none text-[10px] font-black uppercase tracking-widest transition-none',
                                         usageFilter === m
-                                            ? 'bg-beeyield-forest text-white shadow-md shadow-beeyield-forest/20'
-                                            : 'text-gray-400 hover:text-beeyield-charcoal hover:bg-white'
+                                            ? 'bg-[#064e3b] text-white shadow-[4px_4px_0px_0px_rgba(16,185,129,1)]'
+                                            : 'text-[#064e3b]/40 hover:text-[#064e3b] hover:bg-white'
                                     )}
                                     onClick={() => setUsageFilter(m)}
-                                >{m}</Button>
+                                >{m}</button>
                             ))}
                         </div>
                     </div>
@@ -256,12 +252,12 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                                 <Area
                                     type="monotone"
                                     dataKey="value"
-                                    stroke="#1B4332"
+                                    stroke="#064e3b"
                                     fillOpacity={1}
                                     fill="url(#colorUsage)"
                                     strokeWidth={4}
-                                    dot={{ r: 6, strokeWidth: 3, fill: '#fff', stroke: '#1B4332' }}
-                                    activeDot={{ r: 8 }}
+                                    dot={{ r: 6, strokeWidth: 3, fill: '#fff', stroke: '#064e3b' }}
+                                    activeDot={{ r: 8, fill: '#10b981' }}
                                 />
                             </AreaChart>
                         </ResponsiveContainer>
@@ -272,19 +268,19 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
             {/* Bottom: Smart Tips + Recent Events */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Smart Assistant */}
-                <Card className="rounded-[2.5rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden">
-                    <CardContent className="p-10">
-                        <div className="flex items-center gap-4 mb-8">
-                            <div className="w-14 h-14 bg-beeyield-forest/5 border border-beeyield-forest/10 rounded-2xl flex items-center justify-center">
-                                <Bot className="w-7 h-7 text-beeyield-forest" />
+                <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] overflow-hidden">
+                    <CardContent className="p-8">
+                        <div className="flex items-center gap-5 mb-8">
+                            <div className="w-14 h-14 bg-[#064e3b] border-2 border-[#10b981] rounded-none flex items-center justify-center">
+                                <Bot className="w-7 h-7 text-[#facc15]" />
                             </div>
                             <div>
-                                <h3 className="text-xl font-bold text-beeyield-charcoal">Smart Tips</h3>
-                                <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">Neural Hive Assistant</p>
+                                <h3 className="text-2xl font-black text-[#064e3b] uppercase tracking-tighter">Neural Co-Pilot</h3>
+                                <p className="text-[9px] text-[#064e3b]/30 font-black uppercase tracking-[0.2em] mt-0.5">Autonomous Hive Assistant</p>
                             </div>
                         </div>
 
-                        <div className="bg-beeyield-sand/30 border border-[#E8E0D5] rounded-[1.5rem] p-6 mb-6 min-h-[100px]">
+                        <div className="bg-neutral-50/50 border-4 border-[#064e3b]/10 rounded-none p-6 mb-8 min-h-[100px]">
                             {chatMessages.slice(-1).map((msg, idx) => (
                                 <p key={idx} className="text-sm font-medium text-beeyield-charcoal leading-relaxed">
                                     {msg.content}
@@ -292,39 +288,39 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                             ))}
                         </div>
 
-                        <div className="flex gap-3">
+                        <div className="flex gap-4">
                             <Input
-                                placeholder="Ask the System Assistant..."
+                                placeholder="Interrogate the Co-Pilot..."
                                 value={aiMessage}
                                 onChange={e => setAiMessage(e.target.value)}
                                 onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
-                                className="h-14 rounded-2xl border-[#E0E0E0] bg-white text-sm font-medium px-6 focus:ring-beeyield-forest/20 focus:border-beeyield-forest/30"
+                                className="h-14 rounded-none border-4 border-[#064e3b] bg-white text-xs font-black uppercase px-6 focus-visible:ring-0 focus-visible:bg-[#facc15]/5 transition-none"
                             />
                             <Button
                                 onClick={handleSendMessage}
-                                className="h-14 w-14 rounded-2xl bg-beeyield-forest hover:opacity-90 text-white shadow-lg shadow-beeyield-forest/20"
+                                className="h-14 w-14 rounded-none bg-[#064e3b] hover:bg-[#10b981] text-white border-2 border-[#064e3b] transition-none shadow-[4px_4px_0px_0px_rgba(16,185,129,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
                             >
-                                <Send className="w-5 h-5" />
+                                <Send className="w-6 h-6" />
                             </Button>
                         </div>
                     </CardContent>
                 </Card>
 
                 {/* Recent Events */}
-                <Card className="rounded-[2.5rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden">
-                    <CardContent className="p-10">
+                <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] overflow-hidden">
+                    <CardContent className="p-8">
                         <div className="flex items-center justify-between mb-8">
                             <div>
-                                <h3 className="text-xl font-bold text-beeyield-charcoal">System Events</h3>
-                                <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest mt-1">Live activity feed</p>
+                                <h3 className="text-2xl font-black text-[#064e3b] uppercase tracking-tighter leading-none">System <span className="text-[#10b981]">Events</span></h3>
+                                <p className="text-[9px] text-[#064e3b]/30 font-black uppercase tracking-[0.2em] mt-2">Live Telemetry Archive</p>
                             </div>
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-[10px] font-bold text-beeyield-forest uppercase tracking-widest hover:bg-beeyield-forest/5 rounded-xl px-4"
+                                className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-widest hover:text-[#064e3b] hover:bg-[#facc15]/10 rounded-none h-10 px-4 transition-none"
                                 onClick={() => onTabChange('meters-alarms')}
                             >
-                                Full Archive
+                                FULL ARCHIVE →
                             </Button>
                         </div>
 
@@ -332,20 +328,20 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                             {events.slice(0, 5).map((event) => (
                                 <div
                                     key={event.id}
-                                    className="flex items-center justify-between p-5 rounded-2xl hover:bg-beeyield-sand/20 transition-colors border border-transparent hover:border-[#E8E0D5] group cursor-pointer"
+                                    className="flex items-center justify-between p-5 rounded-none bg-neutral-50/30 border-2 border-transparent hover:border-[#064e3b]/10 transition-none group cursor-pointer"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <div className={cn('w-3 h-3 rounded-full border-2',
+                                        <div className={cn('w-3 h-3 rounded-none border-2',
                                             event.severity === 'CRITICAL' || event.severity === 'ALERT'
-                                                ? 'bg-red-500 border-red-200 animate-pulse'
-                                                : 'bg-amber-400 border-amber-200'
+                                                ? 'bg-red-500 border-[#064e3b] animate-pulse'
+                                                : 'bg-[#facc15] border-[#064e3b]'
                                         )} />
                                         <div>
-                                            <span className="text-sm font-bold text-beeyield-charcoal block">{event.event_type}</span>
-                                            <p className="text-[11px] text-gray-400 font-medium mt-0.5 uppercase tracking-wider">{event.reason}</p>
+                                            <span className="text-[11px] font-black text-[#064e3b] uppercase tracking-tighter block">{event.event_type}</span>
+                                            <p className="text-[9px] text-[#064e3b]/30 font-black mt-0.5 uppercase tracking-[0.1em]">{event.reason}</p>
                                         </div>
                                     </div>
-                                    <span className="text-[10px] text-gray-300 font-bold uppercase tracking-widest group-hover:text-gray-400 transition-colors">
+                                    <span className="text-[9px] text-[#064e3b]/20 font-black uppercase tracking-[0.2em] group-hover:text-[#064e3b]/40 transition-none">
                                         {new Date(event.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </span>
                                 </div>

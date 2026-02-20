@@ -28,7 +28,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 }) => {
     const [isQuickActionOpen, setIsQuickActionOpen] = React.useState(false);
     return (
-        <div className="flex h-screen w-full bg-beeyield-sand dark:bg-[#0a0a0a] overflow-hidden font-sans text-beeyield-charcoal dark:text-gray-100 selection:bg-beeyield-forest/20">
+        <div className="flex h-screen w-full bg-white dark:bg-[#0a0a0a] overflow-hidden font-sans text-[#064e3b] dark:text-gray-100 selection:bg-[#10b981]/20">
             {/* Subtle Texture/Grain could go here if needed, but keeping it clean for now */}
 
             <div className="relative z-10 flex w-full h-full">

@@ -70,14 +70,22 @@ const MetersAlarms: React.FC = () => {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-10">
-            <h1 className="text-[2.5rem] font-bold text-[#1B9157] dark:text-[#F4D03F] tracking-tight">System Updates</h1>
+            <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b] mb-4">
+                    <Bell className="w-3.5 h-3.5 text-[#facc15]" />
+                    <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Priority Protocol Feed</span>
+                </div>
+                <h1 className="text-5xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">System <span className="text-[#10b981]">Updates</span></h1>
+            </div>
 
             {/* Top Notifications Section */}
-            <Card className="rounded-2xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm overflow-hidden border-t-4 border-t-[#F4D03F]">
-                <CardHeader className="pb-4">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Bell className="w-5 h-5 text-[#1B9157] dark:text-[#F4D03F]" fill="currentColor" />
-                        <CardTitle className="text-lg font-bold text-[#1B9157] dark:text-[#F4D03F]">Latest alerts</CardTitle>
+            <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[12px_12px_0px_0px_rgba(6,78,59,1)] overflow-hidden">
+                <CardHeader className="p-8 pb-4 border-b-4 border-[#064e3b]/10">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-none bg-[#064e3b] flex items-center justify-center border-2 border-[#10b981]">
+                            <Bell className="w-5 h-5 text-[#facc15]" />
+                        </div>
+                        <CardTitle className="text-xl font-black text-[#064e3b] uppercase tracking-tighter">Active Incident Log</CardTitle>
                     </div>
                 </CardHeader>
                 <CardContent className="p-0">
@@ -88,33 +96,48 @@ const MetersAlarms: React.FC = () => {
                             <div className="p-12 text-center text-gray-400">No active alarms found.</div>
                         ) : (
                             events.map((event) => (
-                                <div key={event.id} className="p-6 flex flex-col md:flex-row md:items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-900/40 transition-all cursor-default">
-                                    <div className="space-y-1 mb-4 md:mb-0">
-                                        <div className="flex items-center gap-2">
-                                            {event.is_resolved ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <AlertTriangle className="w-4 h-4 text-red-500" />}
-                                            <h4 className="font-bold text-gray-900 dark:text-gray-100 uppercase tracking-tight">{event.event_type}</h4>
+                                <div key={event.id} className="p-8 flex flex-col md:flex-row md:items-center justify-between hover:bg-[#facc15]/5 transition-none cursor-default group border-b-2 border-neutral-50 last:border-0">
+                                    <div className="space-y-2 mb-6 md:mb-0">
+                                        <div className="flex items-center gap-3">
+                                            {event.is_resolved ? (
+                                                <div className="w-6 h-6 rounded-none bg-[#10b981] flex items-center justify-center border-2 border-[#064e3b] shadow-[2px_2px_0px_0px_rgba(6,78,59,1)]">
+                                                    <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                                                </div>
+                                            ) : (
+                                                <div className="w-6 h-6 rounded-none bg-red-500 flex items-center justify-center border-2 border-[#064e3b] shadow-[2px_2px_0px_0px_rgba(6,78,59,1)]">
+                                                    <AlertTriangle className="w-3.5 h-3.5 text-white" />
+                                                </div>
+                                            )}
+                                            <h4 className="font-black text-[#064e3b] uppercase tracking-tighter text-lg">{event.event_type}</h4>
                                         </div>
-                                        <p className="text-sm text-gray-500">{event.message || event.reason}</p>
-                                        <p className="text-[10px] text-gray-400 font-medium">{getMeterInfo(event.meter_id)} • {new Date(event.timestamp).toLocaleString()}</p>
+                                        <p className="text-xs font-black text-[#064e3b]/60 uppercase tracking-tight">{event.message || event.reason}</p>
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-[9px] font-black text-[#064e3b]/30 uppercase tracking-[0.2em]">{getMeterInfo(event.meter_id)}</span>
+                                            <span className="text-[9px] font-black text-[#10b981] uppercase tracking-[0.2em]">ARCHIVE_TS: {new Date(event.timestamp).toLocaleString()}</span>
+                                        </div>
                                     </div>
                                     <div className="flex items-center gap-6">
-                                        <div className="flex gap-3">
-                                            <Badge variant="outline" className={cn("px-3 py-1 font-bold", getSeverityStyles(event.severity))}>
+                                        <div className="flex gap-4">
+                                            <Badge className={cn("rounded-none border-2 px-3 py-1 font-black text-[9px] uppercase tracking-[0.2em] shadow-[3px_3px_0px_0px_rgba(6,78,59,1)]",
+                                                event.severity.toUpperCase() === 'CRITICAL' ? "bg-red-500 text-white border-[#064e3b]" :
+                                                    event.severity.toUpperCase() === 'WARNING' ? "bg-[#facc15] text-[#064e3b] border-[#064e3b]" : "bg-[#064e3b] text-white border-[#10b981]"
+                                            )}>
                                                 {event.severity}
                                             </Badge>
-                                            <Badge className={cn("px-3 py-1 font-bold items-center gap-1.5 border-none shadow-none", getBadgeStyles(event.severity))}>
-                                                <div className={cn("w-1.5 h-1.5 rounded-full", event.is_resolved ? "bg-green-500" : "bg-red-500")}></div>
-                                                {event.is_resolved ? 'RESOLVED' : 'ACTIVE'}
+                                            <Badge className={cn("rounded-none border-2 px-3 py-1 font-black text-[9px] uppercase tracking-[0.2em] items-center gap-2",
+                                                event.is_resolved ? 'bg-[#10b981]/10 text-[#10b981] border-[#10b981]/20' : 'bg-red-500 text-white border-[#064e3b] animate-pulse'
+                                            )}>
+                                                {event.is_resolved ? 'RESOLVED' : 'ACTIVE_INCIDENT'}
                                             </Badge>
                                         </div>
-                                        <Button variant="ghost" size="sm" className="hidden md:flex text-xs font-bold text-[#1B9157]">Start fix</Button>
+                                        <Button variant="ghost" size="sm" className="hidden md:flex rounded-none border-2 border-[#064e3b] bg-white text-[#064e3b] hover:bg-[#064e3b] hover:text-white font-black text-[10px] uppercase tracking-widest h-10 px-6 transition-none shadow-[4px_4px_0px_0px_rgba(6,78,59,1)] active:shadow-none active:translate-x-1 active:translate-y-1">COMMAND FIX</Button>
                                     </div>
                                 </div>
                             ))
                         )}
-                        <div className="p-4 bg-gray-50/50 dark:bg-gray-900/20 text-center">
-                            <span className="text-xs font-bold text-[#1B9157] hover:text-[#1B9157]/80 uppercase tracking-widest cursor-pointer transition-colors">
-                                View history
+                        <div className="p-6 bg-neutral-50/50 border-t-4 border-[#064e3b]/5 text-center">
+                            <span className="text-[10px] font-black text-[#064e3b] hover:text-[#10b981] uppercase tracking-[0.3em] cursor-pointer transition-none border-b-2 border-transparent hover:border-[#10b981]">
+                                RETRIEVE LEGACY ARCHIVES
                             </span>
                         </div>
                     </div>
@@ -123,27 +146,27 @@ const MetersAlarms: React.FC = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Stats Card */}
-                <Card className="rounded-2xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm">
-                    <CardHeader>
-                        <CardTitle className="text-lg font-bold text-[#1B9157]">Summary</CardTitle>
-                        <CardDescription>Alert counts by urgency</CardDescription>
+                <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] overflow-hidden">
+                    <CardHeader className="p-8 pb-4 border-b-4 border-[#064e3b]/10 bg-neutral-50/30">
+                        <CardTitle className="text-xl font-black text-[#064e3b] uppercase tracking-tighter">Incident Metrics</CardTitle>
+                        <CardDescription className="text-[10px] font-black text-[#064e3b]/30 uppercase tracking-widest mt-1">Telemetry stratification by urgency</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
+                    <CardContent className="p-8">
+                        <div className="space-y-6">
                             {['Critical', 'Warning', 'Info'].map(s => {
                                 const count = events.filter(e => e.severity.toLowerCase() === s.toLowerCase()).length;
                                 const total = events.length || 1;
                                 const pct = (count / total) * 100;
                                 return (
-                                    <div key={s} className="space-y-1.5">
-                                        <div className="flex justify-between text-xs font-bold">
-                                            <span>Priority</span>
-                                            <span>{count}</span>
+                                    <div key={s} className="space-y-3">
+                                        <div className="flex justify-between items-end">
+                                            <span className="text-[10px] font-black text-[#064e3b] uppercase tracking-widest">Urgency: {s}</span>
+                                            <span className="text-2xl font-black text-[#064e3b] tracking-tighter">{count}</span>
                                         </div>
-                                        <div className="h-2 w-full bg-gray-100 dark:bg-slate-200 rounded-full overflow-hidden">
+                                        <div className="h-4 w-full bg-neutral-100 rounded-none border-2 border-[#064e3b]/10 p-0.5">
                                             <div
                                                 className={cn("h-full transition-all duration-1000",
-                                                    s === 'Critical' ? "bg-red-500" : s === 'Warning' ? "bg-amber-500" : "bg-blue-500"
+                                                    s === 'Critical' ? "bg-red-500 shadow-[2px_0px_0px_0px_rgba(6,78,59,1)]" : s === 'Warning' ? "bg-[#facc15] shadow-[2px_0px_0px_0px_rgba(6,78,59,1)]" : "bg-[#10b981] shadow-[2px_0px_0px_0px_rgba(6,78,59,1)]"
                                                 )}
                                                 style={{ width: `${pct}%` }}
                                             />
@@ -156,19 +179,21 @@ const MetersAlarms: React.FC = () => {
                 </Card>
 
                 {/* Info Card */}
-                <Card className="rounded-2xl border border-gray-100 dark:border-slate-200 bg-white dark:bg-slate-50 shadow-sm">
-                    <CardHeader>
-                        <CardTitle className="text-lg font-bold text-[#1B9157]">System Health</CardTitle>
+                <Card className="rounded-none border-4 border-[#064e3b] bg-[#064e3b] shadow-[8px_8px_0px_0px_rgba(250,204,21,1)] overflow-hidden">
+                    <CardHeader className="p-8">
+                        <CardTitle className="text-xl font-black text-white uppercase tracking-tighter italic">System Integrity</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="p-4 rounded-xl bg-green-50/50 border border-green-100 flex items-center justify-between">
+                    <CardContent className="p-8 pt-0 space-y-8">
+                        <div className="p-6 rounded-none bg-white border-2 border-[#10b981] flex items-center justify-between shadow-[4px_4px_0px_0px_rgba(16,185,129,0.2)]">
                             <div>
-                                <h4 className="text-xs font-bold text-green-700">All urgent issues fixed</h4>
-                                <p className="text-[10px] text-green-600 mt-1">Great work on fixing things quickly.</p>
+                                <h4 className="text-xs font-black text-[#064e3b] uppercase tracking-widest">Protocol Nominal</h4>
+                                <p className="text-[10px] font-black text-[#064e3b]/40 uppercase tracking-tight mt-1">Resolution benchmarks exceeding targets.</p>
                             </div>
-                            <CheckCircle2 className="w-5 h-5 text-green-500" />
+                            <CheckCircle2 className="w-8 h-8 text-[#10b981]" />
                         </div>
-                        <Button className="w-full h-11 rounded-xl bg-gray-900 text-white font-bold text-xs">Check system</Button>
+                        <Button className="w-full h-14 rounded-none bg-[#facc15] text-[#064e3b] hover:bg-white border-4 border-[#064e3b] font-black text-xs uppercase tracking-[0.2em] transition-none shadow-[6px_6px_0px_0px_rgba(255,255,255,0.2)] active:shadow-none active:translate-x-1 active:translate-y-1">
+                            INITIATE SCAN
+                        </Button>
                     </CardContent>
                 </Card>
             </div>

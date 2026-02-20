@@ -4,6 +4,7 @@ import FirstStepsBanner from './FirstStepsBanner';
 import ChartsView from './ChartsView';
 import ConsumptionView from './ConsumptionView';
 import ComparisonsView from './ComparisonsView';
+import { TrendingUp } from 'lucide-react';
 
 interface MetersMeasurementsProps {
     onTabChange: (tab: string) => void;
@@ -45,8 +46,8 @@ const MetersMeasurements: React.FC<MetersMeasurementsProps> = ({ onTabChange, ac
                 return <ComparisonsView />;
             case 'meters-import':
                 return (
-                    <div className="flex flex-col items-center justify-center py-24 bg-white dark:bg-slate-50 rounded-[1.5rem] border border-dashed border-slate-200 dark:border-slate-200">
-                        <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">File Import view under construction</p>
+                    <div className="flex flex-col items-center justify-center py-24 bg-white border-4 border-dashed border-[#064e3b]/10 rounded-none">
+                        <p className="text-[#064e3b]/30 font-black uppercase tracking-[0.2em] text-[10px]">Asynchronous Data Ingest Protocol: INTERRUPTED</p>
                     </div>
                 );
             default:
@@ -57,7 +58,13 @@ const MetersMeasurements: React.FC<MetersMeasurementsProps> = ({ onTabChange, ac
     return (
         <div className="space-y-6 animate-in fade-in duration-500 pb-12">
             {/* Header */}
-            <h1 className="text-[2.5rem] font-bold text-[#091E42] dark:text-[#F4D03F] tracking-tight">Measurements & analysis</h1>
+            <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#10b981] bg-[#064e3b] mb-4">
+                    <TrendingUp className="w-3.5 h-3.5 text-[#facc15]" />
+                    <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Signal & Load Analytics</span>
+                </div>
+                <h1 className="text-5xl font-black text-[#064e3b] tracking-tighter uppercase leading-none">Diagnostic <span className="text-[#10b981]">Engine</span></h1>
+            </div>
 
             {/* Navigation Tabs (Cards) */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -68,21 +75,21 @@ const MetersMeasurements: React.FC<MetersMeasurementsProps> = ({ onTabChange, ac
                             key={tab.id}
                             onClick={() => onTabChange(tab.id)}
                             className={cn(
-                                "p-5 rounded-2xl border cursor-pointer transition-all duration-200",
+                                "p-6 rounded-none border-4 cursor-pointer transition-none",
                                 isActive
-                                    ? "bg-[#FFF9E5]/60 border-[#F4D03F] dark:bg-[#F4D03F]/10 dark:border-[#F4D03F]"
-                                    : "bg-white dark:bg-slate-50 border-gray-100 dark:border-slate-200 hover:border-[#F4D03F]/50 hover:shadow-md"
+                                    ? "bg-[#064e3b] border-[#064e3b] text-white shadow-[6px_6px_0px_0px_rgba(250,204,21,1)]"
+                                    : "bg-white border-[#064e3b] text-[#064e3b] hover:bg-[#facc15]/5 hover:shadow-[4px_4px_0px_0px_rgba(6,78,59,1)]"
                             )}
                         >
                             <h3 className={cn(
-                                "font-bold text-base mb-0.5",
-                                isActive ? "text-gray-900 dark:text-[#F4D03F]" : "text-gray-300 dark:text-gray-600"
+                                "font-black text-sm uppercase tracking-tighter mb-1",
+                                isActive ? "text-[#facc15]" : "text-[#064e3b]"
                             )}>
                                 {tab.label}
                             </h3>
                             <p className={cn(
-                                "text-xs font-medium",
-                                isActive ? "text-gray-600 dark:text-gray-300" : "text-gray-300 dark:text-gray-600 font-normal"
+                                "text-[9px] font-black uppercase tracking-widest",
+                                isActive ? "text-white/40" : "text-[#064e3b]/30"
                             )}>
                                 {tab.subtext}
                             </p>
