@@ -33,7 +33,12 @@ import {
     Waves,
     Loader2,
     Bug,
-    Flower2
+    Flower2,
+    Radar,
+    Wind,
+    Navigation2,
+    Compass,
+    Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -65,43 +70,56 @@ interface HiveData {
     lastSync: string;
 }
 
-
-
-// --- Stat Card matching MyDevicesView style exactly ---
-const StatCard = ({ label, value, colorClass }: { label: string, value: number | string, colorClass: string }) => (
-    <div className="bg-white dark:bg-[#111111] p-4 rounded-sm border border-gray-100 dark:border-white/5 shadow-sm relative overflow-hidden h-24 flex flex-col justify-between">
-        <div className={cn("absolute top-0 left-0 w-full h-[3px]", colorClass)} />
-        <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{label}</p>
-        <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">{value}</p>
+// --- Stat Card: Matching the Premium Tactical Style ---
+const StatCard = ({ label, value, icon: Icon, color, trend, trendValue }: {
+    label: string, value: number | string, icon: any, color: string, trend?: 'up' | 'down' | 'stable', trendValue?: string
+}) => (
+    <div className="bg-white p-6 rounded-[2.5rem] border border-[#E0E0E0] shadow-sm relative overflow-hidden group hover:shadow-xl transition-all duration-500">
+        <div className={cn("absolute top-0 left-0 w-full h-1", color)} />
+        <div className="flex items-center justify-between mb-4">
+            <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center bg-gray-50", color.replace('bg-', 'text-'))}>
+                <Icon className="w-5 h-5" />
+            </div>
+            {trend && (
+                <Badge className={cn(
+                    "rounded-full px-3 py-1 text-[9px] font-black uppercase tracking-widest border-none",
+                    trend === 'up' ? "bg-beeyield-forest/10 text-beeyield-forest" : "bg-red-50 text-red-500"
+                )}>
+                    {trend === 'up' ? 'Increase' : 'Decline'} {trendValue}
+                </Badge>
+            )}
+        </div>
+        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">{label}</p>
+        <p className="text-3xl font-black text-beeyield-charcoal mt-1 tracking-tighter">{value}</p>
     </div>
 );
 
-// --- IoT Sensor Card with Brand Colors ---
+// --- IoT Sensor Card: Luxury Integration ---
 const SensorCard = ({ label, value, unit, icon: Icon, color, trend, trendValue, onClick }: {
     label: string, value: string, unit: string, icon: any, color: string, trend?: 'up' | 'down' | 'stable', trendValue?: string, onClick?: () => void
 }) => (
     <div
         onClick={onClick}
         className={cn(
-            "bg-white dark:bg-[#111111] p-4 rounded-lg border border-gray-100 dark:border-white/5 shadow-sm flex items-center justify-between transition-all",
-            onClick && "cursor-pointer hover:shadow-md hover:border-[#F4D03F]/30"
+            "bg-white p-6 rounded-3xl border border-[#E0E0E0] shadow-sm flex items-center justify-between transition-all group",
+            onClick && "cursor-pointer hover:shadow-2xl hover:border-beeyield-forest/30"
         )}
     >
-        <div className="flex items-center gap-3">
-            <div className={cn("p-2.5 rounded-lg", color)}>
-                <Icon className="w-4 h-4 text-white" />
+        <div className="flex items-center gap-4">
+            <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center transition-all group-hover:scale-110 duration-500", color)}>
+                <Icon className="w-6 h-6 text-white" />
             </div>
             <div>
-                <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider leading-none mb-1">{label}</p>
-                <h4 className="text-lg font-bold text-gray-800 dark:text-gray-200">
-                    {value}<span className="text-sm ml-0.5 opacity-50">{unit}</span>
+                <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none mb-2">{label}</p>
+                <h4 className="text-xl font-black text-beeyield-charcoal">
+                    {value}<span className="text-sm ml-1 text-gray-400 font-bold">{unit}</span>
                 </h4>
             </div>
         </div>
         {trend && (
             <div className={cn(
-                "px-2 py-1 rounded text-xs font-bold uppercase",
-                trend === 'up' ? "bg-[#1B9157]/10 text-[#1B9157]" : trend === 'down' ? "bg-red-500/10 text-red-500" : "bg-gray-100 text-gray-500 dark:bg-white/5"
+                "px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest",
+                trend === 'up' ? "bg-beeyield-forest/10 text-beeyield-forest" : trend === 'down' ? "bg-red-50 text-red-500" : "bg-gray-50 text-gray-400"
             )}>
                 {trend === 'up' ? '▲' : trend === 'down' ? '▼' : '•'} {trendValue}
             </div>
@@ -114,7 +132,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
     const { t } = useLanguage();
 
     // Configuration
-    const [hiveCount, setHiveCount] = useState<number>(184); // Will be updated by real data count
+    const [hiveCount, setHiveCount] = useState<number>(184);
     const [selectedCrop, setSelectedCrop] = useState<string>("Sunflower");
     const [acreage, setAcreage] = useState<number>(5);
     const [avgFrames, setAvgFrames] = useState<number>(8);
@@ -134,14 +152,12 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
         const fetchRealData = async () => {
             setIsLoading(true);
             try {
-                // Fetch contracts, sensor data and logs in parallel
                 const [contracts, sensorData, logs] = await Promise.all([
                     beeyieldService.getPollinationContracts(),
                     beeyieldService.getHiveSensorData(),
                     beeyieldService.getPollinationActivityLogs()
                 ]);
 
-                // 1. Setup Contracts Data
                 if (contracts && contracts.length > 0) {
                     const activeContract = contracts.find(c => c.status === 'active') || contracts[0];
                     if (activeContract) {
@@ -151,7 +167,6 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                     }
                 }
 
-                // 2. Setup Activity Logs
                 if (logs && logs.length > 0) {
                     const mappedLogs = logs.map(l => ({
                         id: l.id,
@@ -163,14 +178,11 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                     setActivityLogs(mappedLogs);
                 }
 
-                // 3. Setup Hive/Sensor Data
                 if (sensorData && sensorData.length > 0) {
                     setUsingRealData(true);
-
                     const mappedHives: HiveData[] = sensorData.map((h: any, i: number) => {
                         const row = Math.floor(i / 10);
                         const col = i % 10;
-
                         return {
                             id: h.hive_code,
                             name: h.hive_code,
@@ -182,37 +194,19 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                             y: 10 + (row * 15) + Math.random() * 5,
                             status: h.status.toLowerCase(),
                             sensors: {
-                                acoustics: {
-                                    value: h.sensors.acoustics.value,
-                                    trend: h.sensors.acoustics.trend,
-                                    trendValue: h.sensors.acoustics.trendValue
-                                },
-                                temperature: {
-                                    value: h.sensors.temperature.value,
-                                    trend: h.sensors.temperature.trend,
-                                    trendValue: h.sensors.temperature.trendValue
-                                },
-                                humidity: {
-                                    value: h.sensors.humidity.value,
-                                    trend: h.sensors.humidity.trend,
-                                    trendValue: h.sensors.humidity.trendValue
-                                },
-                                flightActivity: {
-                                    value: h.sensors.flight_activity.value,
-                                    trend: h.sensors.flight_activity.trend,
-                                    trendValue: h.sensors.flight_activity.trendValue
-                                }
+                                acoustics: { value: h.sensors.acoustics.value, trend: h.sensors.acoustics.trend, trendValue: h.sensors.acoustics.trendValue },
+                                temperature: { value: h.sensors.temperature.value, trend: h.sensors.temperature.trend, trendValue: h.sensors.temperature.trendValue },
+                                humidity: { value: h.sensors.humidity.value, trend: h.sensors.humidity.trend, trendValue: h.sensors.humidity.trendValue },
+                                flightActivity: { value: h.sensors.flight_activity.value, trend: h.sensors.flight_activity.trend, trendValue: h.sensors.flight_activity.trendValue }
                             },
                             framesOfBees: h.frames_of_bees,
                             queenStatus: h.queen_status as any,
                             lastSync: h.last_sync
                         };
                     });
-
                     setHives(mappedHives);
                     setHiveCount(mappedHives.length);
                 } else {
-                    // Fallback to legacy getHives if table missing but hives exist
                     const realHives = await beeyieldService.getHives();
                     if (realHives && realHives.length > 0) {
                         setUsingRealData(true);
@@ -222,8 +216,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                             const col = i % 10;
                             const temp = h.latest_temp || 0;
                             const humidity = h.latest_humidity || 0;
-                            const status = (temp < 10) ? 'critical' : 'healthy'; // Placeholder logic for real but empty data
-
+                            const status = (temp < 10) ? 'critical' : 'healthy';
                             return {
                                 id: h.hive_code,
                                 name: h.hive_code,
@@ -247,7 +240,6 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                         });
                         setHives(mappedHives);
                     } else {
-                        console.log("No pollination data found.");
                         setUsingRealData(false);
                         setHives([]);
                     }
@@ -258,9 +250,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
             } finally {
                 setIsLoading(false);
             }
-
         };
-
         fetchRealData();
     }, []);
 
@@ -272,7 +262,6 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
         const avgTemp = parseFloat((hives.reduce((sum, h) => sum + h.sensors.temperature.value, 0) / hives.length).toFixed(1));
         const avgHumidity = Math.round(hives.reduce((sum, h) => sum + h.sensors.humidity.value, 0) / hives.length);
         const avgVPM = parseFloat((hives.reduce((sum, h) => sum + h.sensors.flightActivity.value, 0) / hives.length).toFixed(1));
-
         return { acoustics: avgAcoustics, temperature: avgTemp, humidity: avgHumidity, flightActivity: avgVPM };
     }, [hives]);
 
@@ -287,14 +276,11 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
 
         const interval = setInterval(() => {
             if (hives.length === 0) return;
-
             const now = new Date();
             const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const event = events[Math.floor(Math.random() * events.length)];
             const hive = hives[Math.floor(Math.random() * hives.length)];
-
             if (!hive) return;
-
             setActivityLogs(prev => [
                 { id: Date.now(), time: timeStr, action: event.action, type: event.type as any, hive: hive.id },
                 ...prev.slice(0, 7)
@@ -330,449 +316,427 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
 
     const getStatusColor = (status: HiveData['status']) => {
         switch (status) {
-            case 'healthy': return 'bg-[#1B9157]';
-            case 'warning': return 'bg-[#F4D03F]';
+            case 'healthy': return 'bg-beeyield-forest';
+            case 'warning': return 'bg-beeyield-sand';
             case 'critical': return 'bg-red-500 animate-pulse';
         }
     };
 
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+    };
+
+    const itemVariants = {
+        hidden: { y: 20, opacity: 0 },
+        visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100, damping: 15 } }
+    };
+
     return (
-        <div className="space-y-6 pb-20 -mt-2">
-            {/* Header matches MyDevicesView exactly */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center px-2 mb-8">
+        <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+            className="space-y-12 pb-32 max-w-[1500px] mx-auto"
+        >
+            {/* Cinematic Header */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
                 <div>
-                    <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-                        Pollination Summary
+                    <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-beeyield-forest/5 border border-beeyield-forest/10 mb-8">
+                        <Radar className="w-4 h-4 text-beeyield-forest" />
+                        <span className="text-[11px] font-black text-beeyield-forest uppercase tracking-[0.2em]">Geospatial Intelligence Unit</span>
+                    </div>
+                    <h1 className="text-6xl font-black text-beeyield-charcoal tracking-tighter leading-none">
+                        Precision <span className="text-beeyield-forest">Ecosystem.</span>
                     </h1>
-                    <p className="text-base font-semibold text-slate-400 dark:text-slate-500 mt-1">
-                        Tracking bee activity and health across your farm.
+                    <p className="text-gray-500 font-medium mt-6 text-xl max-w-2xl leading-relaxed">
+                        Quantifying the symbiotic interaction between colony kinetics and crop phenology through tactical telemetry.
                     </p>
                 </div>
-                <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2 bg-white dark:bg-[#111111] rounded-lg border border-gray-100 dark:border-white/5 px-3 py-2">
-                        <span className="text-sm font-bold text-gray-400 uppercase tracking-wider">Contract:</span>
-                        <Select name="hive_count_required" value={String(hiveCount)} onValueChange={(v) => setHiveCount(Number(v))}>
-                            <SelectTrigger id="pollination-hives" className="h-6 w-16 rounded border-none bg-slate-50 dark:bg-white/5 font-bold text-sm p-1">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent className="rounded-lg">
-                                {[12, 24, 36, 48, 60, 100].map(n => (
-                                    <SelectItem key={n} value={String(n)} className="font-bold">{n}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <span className="text-sm font-bold text-gray-400 uppercase">Hives</span>
+                <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-4 bg-white rounded-[2rem] border-2 border-beeyield-sand p-4 shadow-sm group hover:border-beeyield-forest transition-all">
+                        <div className="w-12 h-12 rounded-2xl bg-beeyield-forest/5 flex items-center justify-center text-beeyield-forest">
+                            <ShieldCheck className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Status</p>
+                            <p className="text-sm font-black text-beeyield-charcoal">Satellite Synced</p>
+                        </div>
                     </div>
-                    <Badge className="h-9 px-4 rounded-full bg-[#1B9157]/10 text-[#1B9157] font-bold text-xs uppercase tracking-wider border-none">
-                        <ShieldCheck className="w-3 h-3 mr-1.5" /> Live
+                    <Badge className="h-14 px-8 rounded-[2rem] bg-beeyield-charcoal text-white font-black text-xs uppercase tracking-[0.2em] border-none shadow-xl">
+                        Live Data Matrix
                     </Badge>
                 </div>
             </div>
 
-            {/* Stats Row */}
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                <StatCard label="Target Activity" value={results.targetFPA} colorClass="bg-[#F4D03F]" />
-                <StatCard label="Active Hives" value={hives.length} colorClass="bg-[#1B9157]" />
-                <StatCard label="Warnings" value={results.warningHives} colorClass="bg-[#F4D03F]" />
-                <StatCard label="Critical" value={results.criticalHives} colorClass="bg-red-500" />
-                <StatCard label="Coverage" value={`${results.coverageHealth}%`} colorClass={results.coverageHealth >= 90 ? "bg-[#1B9157]" : results.coverageHealth >= 70 ? "bg-[#F4D03F]" : "bg-red-500"} />
+            {/* Tactical Intelligence Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+                <StatCard label="Target Kinetic" value={results.targetFPA} icon={Target} color="bg-beeyield-sand" trend="up" trendValue="12%" />
+                <StatCard label="Active Nodes" value={hives.length} icon={Cpu} color="bg-beeyield-forest" />
+                <StatCard label="Integrity Warnings" value={results.warningHives} icon={AlertTriangle} color="bg-beeyield-sand" />
+                <StatCard label="System Critical" value={results.criticalHives} icon={AlertCircle} color="bg-red-500" />
+                <StatCard
+                    label="Ecosystem Coverage"
+                    value={`${results.coverageHealth}%`}
+                    icon={Activity}
+                    color={results.coverageHealth >= 90 ? "bg-beeyield-forest" : results.coverageHealth >= 70 ? "bg-beeyield-sand" : "bg-red-500"}
+                />
             </div>
 
-            {/* Three Paths to Pollination */}
-            <div className="mt-2">
-                <div className="flex items-center gap-3 mb-4 px-1">
-                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#F4D03F]/30 to-transparent" />
-                    <h2 className="text-xs font-black uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 whitespace-nowrap">
-                        Our Pollination Steps
-                    </h2>
-                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#F4D03F]/30 to-transparent" />
-                </div>
-                <p className="text-center text-[11px] font-semibold text-slate-400 dark:text-slate-500 -mt-2 mb-5">
-                    Helping you manage everything: Farm pollination, Hive health, and Alerts.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {/* Path 1: Inland Pollination */}
-                    <motion.div
-                        whileHover={{ y: -4, boxShadow: '0 12px 40px rgba(27, 145, 87, 0.15)' }}
-                        className="relative bg-white dark:bg-[#111111] rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm p-6 overflow-hidden cursor-pointer group transition-all"
-                        onClick={() => onTabChange('pollination')}
-                    >
-                        <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-[#1B9157] to-[#1B9157]/40" />
-                        <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-[#1B9157]/5 group-hover:bg-[#1B9157]/10 transition-colors" />
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-11 h-11 rounded-xl bg-[#1B9157]/10 flex items-center justify-center group-hover:bg-[#1B9157]/20 transition-colors">
-                                <Flower2 className="w-5 h-5 text-[#1B9157]" />
-                            </div>
-                            <div>
-                                <h3 className="text-sm font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Farm Pollination</h3>
-                                <p className="text-[10px] font-semibold text-gray-400">Coverage & Results</p>
-                            </div>
+            {/* Strategic Workflow Paths */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {/* Workflow: GIS Pollination */}
+                <motion.div
+                    whileHover={{ y: -8, scale: 1.02 }}
+                    className="relative bg-white rounded-[3.5rem] border border-[#E0E0E0] shadow-sm p-10 overflow-hidden cursor-pointer group transition-all duration-700 hover:shadow-2xl hover:shadow-beeyield-forest/10"
+                    onClick={() => onTabChange('pollination')}
+                >
+                    <div className="absolute top-0 left-0 w-full h-[6px] bg-gradient-to-r from-beeyield-forest to-beeyield-sand" />
+                    <div className="flex items-center gap-6 mb-8">
+                        <div className="w-16 h-16 rounded-[2rem] bg-beeyield-forest/10 flex items-center justify-center group-hover:bg-beeyield-forest group-hover:text-white transition-all duration-500 text-beeyield-forest">
+                            <Flower2 className="w-8 h-8" />
                         </div>
-                        <div className="space-y-2.5 mb-5">
-                            <div className="flex items-center gap-2">
-                                <div className="w-1 h-1 rounded-full bg-[#1B9157]" />
-                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Bee range & flight maps</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div className="w-1 h-1 rounded-full bg-[#1B9157]" />
-                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Crop activity goals</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div className="w-1 h-1 rounded-full bg-[#1B9157]" />
-                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Best hive placement</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div className="w-1 h-1 rounded-full bg-[#1B9157]" />
-                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Weather-checked results</span>
-                            </div>
+                        <div>
+                            <h3 className="text-xl font-black uppercase tracking-tight text-beeyield-charcoal">GIS Pollination</h3>
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Sovereign Territory Mapping</p>
                         </div>
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-1.5">
-                                <div className={cn("w-2 h-2 rounded-full", results.foragingEfficiency >= 85 ? "bg-[#1B9157]" : "bg-[#F4D03F]")} />
-                                <span className="text-[10px] font-bold text-gray-400 uppercase">{results.foragingEfficiency}% Efficiency</span>
+                    </div>
+                    <div className="space-y-4 mb-10">
+                        {[
+                            { label: "Colony dispersal dynamics", icon: Wind },
+                            { label: "Phenological target metrics", icon: Target },
+                            { label: "Topographical deployment", icon: Compass },
+                            { label: "Atmospheric index overlays", icon: Waves }
+                        ].map((item, i) => (
+                            <div key={i} className="flex items-center gap-4">
+                                <item.icon className="w-4 h-4 text-beeyield-forest/40" />
+                                <span className="text-sm font-bold text-gray-500 group-hover:text-beeyield-charcoal transition-colors">{item.label}</span>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-[#1B9157] transition-colors" />
+                        ))}
+                    </div>
+                    <div className="flex items-center justify-between pt-6 border-t border-beeyield-sand/40">
+                        <div className="flex items-center gap-3">
+                            <div className={cn("w-3 h-3 rounded-full", results.foragingEfficiency >= 85 ? "bg-beeyield-forest" : "bg-beeyield-sand")} />
+                            <span className="text-[10px] font-black text-beeyield-charcoal uppercase tracking-[0.2em]">{results.foragingEfficiency}% Efficiency</span>
                         </div>
-                    </motion.div>
+                        <ChevronRight className="w-6 h-6 text-gray-300 group-hover:text-beeyield-forest group-hover:translate-x-2 transition-all" />
+                    </div>
+                </motion.div>
 
-                    {/* Path 2: In-Hive Pollination */}
-                    <motion.div
-                        whileHover={{ y: -4, boxShadow: '0 12px 40px rgba(244, 208, 63, 0.15)' }}
-                        className="relative bg-white dark:bg-[#111111] rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm p-6 overflow-hidden cursor-pointer group transition-all"
-                        onClick={() => onTabChange('measurement')}
-                    >
-                        <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-[#F4D03F] to-[#F4D03F]/40" />
-                        <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-[#F4D03F]/5 group-hover:bg-[#F4D03F]/10 transition-colors" />
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-11 h-11 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center group-hover:bg-[#F4D03F]/20 transition-colors">
-                                <Hexagon className="w-5 h-5 text-[#F4D03F]" />
-                            </div>
-                            <div>
-                                <h3 className="text-sm font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Inside the Hive</h3>
-                                <p className="text-[10px] font-semibold text-gray-400">Health checks</p>
-                            </div>
+                {/* Workflow: Node Bio-Metrics */}
+                <motion.div
+                    whileHover={{ y: -8, scale: 1.02 }}
+                    className="relative bg-white rounded-[3.5rem] border border-[#E0E0E0] shadow-sm p-10 overflow-hidden cursor-pointer group transition-all duration-700 hover:shadow-2xl hover:shadow-beeyield-sand/20"
+                    onClick={() => onTabChange('measurement')}
+                >
+                    <div className="absolute top-0 left-0 w-full h-[6px] bg-gradient-to-r from-beeyield-sand to-beeyield-forest/40" />
+                    <div className="flex items-center gap-6 mb-8">
+                        <div className="w-16 h-16 rounded-[2rem] bg-beeyield-sand/20 flex items-center justify-center group-hover:bg-beeyield-sand group-hover:text-beeyield-forest transition-all duration-500 text-beeyield-forest">
+                            <Hexagon className="w-8 h-8" />
                         </div>
-                        <div className="space-y-2.5 mb-5">
-                            <div className="flex items-center gap-2">
-                                <div className="w-1 h-1 rounded-full bg-[#F4D03F]" />
-                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Temperature & humidity checks</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div className="w-1 h-1 rounded-full bg-[#F4D03F]" />
-                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Sound-based health checks</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div className="w-1 h-1 rounded-full bg-[#F4D03F]" />
-                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Queen status</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div className="w-1 h-1 rounded-full bg-[#F4D03F]" />
-                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Hive strength tracking</span>
-                            </div>
+                        <div>
+                            <h3 className="text-xl font-black uppercase tracking-tight text-beeyield-charcoal">Node Bio-Metrics</h3>
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Colony Integrity Scan</p>
                         </div>
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-1.5">
-                                <div className={cn("w-2 h-2 rounded-full", results.healthyHives > results.warningHives ? "bg-[#1B9157]" : "bg-[#F4D03F]")} />
-                                <span className="text-[10px] font-bold text-gray-400 uppercase">{results.healthyHives} Hives Optimal</span>
+                    </div>
+                    <div className="space-y-4 mb-10">
+                        {[
+                            { label: "Thermodynamic envelopes", icon: Thermometer },
+                            { label: "Acoustic frequency digests", icon: Volume2 },
+                            { label: "Reproductive status (Queen)", icon: Sparkles },
+                            { label: "Kinetic mass accumulation", icon: Weight }
+                        ].map((item, i) => (
+                            <div key={i} className="flex items-center gap-4">
+                                <item.icon className="w-4 h-4 text-beeyield-sand" />
+                                <span className="text-sm font-bold text-gray-500 group-hover:text-beeyield-charcoal transition-colors">{item.label}</span>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-[#F4D03F] transition-colors" />
+                        ))}
+                    </div>
+                    <div className="flex items-center justify-between pt-6 border-t border-beeyield-sand/40">
+                        <div className="flex items-center gap-3">
+                            <div className={cn("w-3 h-3 rounded-full", results.healthyHives > results.warningHives ? "bg-beeyield-forest" : "bg-beeyield-sand")} />
+                            <span className="text-[10px] font-black text-beeyield-charcoal uppercase tracking-[0.2em]">{results.healthyHives} Nodes Optimal</span>
                         </div>
-                    </motion.div>
+                        <ChevronRight className="w-6 h-6 text-gray-300 group-hover:text-beeyield-sand group-hover:translate-x-2 transition-all" />
+                    </div>
+                </motion.div>
 
-                    {/* Path 3: Diseases */}
-                    <motion.div
-                        whileHover={{ y: -4, boxShadow: '0 12px 40px rgba(239, 68, 68, 0.1)' }}
-                        className="relative bg-white dark:bg-[#111111] rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm p-6 overflow-hidden cursor-pointer group transition-all"
-                        onClick={() => onTabChange('assistant')}
-                    >
-                        <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-red-500 to-red-500/40" />
-                        <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-red-500/5 group-hover:bg-red-500/10 transition-colors" />
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-11 h-11 rounded-xl bg-red-500/10 flex items-center justify-center group-hover:bg-red-500/20 transition-colors">
-                                <Bug className="w-5 h-5 text-red-500" />
-                            </div>
-                            <div>
-                                <h3 className="text-sm font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Health alerts</h3>
-                                <p className="text-[10px] font-semibold text-gray-400">Stay safe</p>
-                            </div>
+                {/* Workflow: Pathogen Perimeter */}
+                <motion.div
+                    whileHover={{ y: -8, scale: 1.02 }}
+                    className="relative bg-white rounded-[3.5rem] border border-[#E0E0E0] shadow-sm p-10 overflow-hidden cursor-pointer group transition-all duration-700 hover:shadow-2xl hover:shadow-red-500/10"
+                    onClick={() => onTabChange('assistant')}
+                >
+                    <div className="absolute top-0 left-0 w-full h-[6px] bg-gradient-to-r from-red-500 to-red-300" />
+                    <div className="flex items-center gap-6 mb-8">
+                        <div className="w-16 h-16 rounded-[2rem] bg-red-50 flex items-center justify-center group-hover:bg-red-500 group-hover:text-white transition-all duration-500 text-red-500">
+                            <Bug className="w-8 h-8" />
                         </div>
-                        <div className="space-y-2.5 mb-5">
-                            <div className="flex items-center gap-2">
-                                <div className="w-1 h-1 rounded-full bg-red-500" />
-                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Pest pressure tracking</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div className="w-1 h-1 rounded-full bg-red-500" />
-                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Chemical alerts</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div className="w-1 h-1 rounded-full bg-red-500" />
-                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Disease early detection</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div className="w-1 h-1 rounded-full bg-red-500" />
-                                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">Smart health checks</span>
-                            </div>
+                        <div>
+                            <h3 className="text-xl font-black uppercase tracking-tight text-beeyield-charcoal">Pathogen Perimeter</h3>
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Ecosystem Breach Alert</p>
                         </div>
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-1.5">
-                                <div className="w-2 h-2 rounded-full bg-[#1B9157]" />
-                                <span className="text-[10px] font-bold text-gray-400 uppercase">No Threats Detected</span>
+                    </div>
+                    <div className="space-y-4 mb-10">
+                        {[
+                            { label: "Pest pressure heatmaps", icon: Radar },
+                            { label: "Chemical volatility index", icon: Zap },
+                            { label: "Early-onset disease detection", icon: Activity },
+                            { label: "Smart immunity signaling", icon: ShieldCheck }
+                        ].map((item, i) => (
+                            <div key={i} className="flex items-center gap-4">
+                                <item.icon className="w-4 h-4 text-red-300" />
+                                <span className="text-sm font-bold text-gray-500 group-hover:text-beeyield-charcoal transition-colors">{item.label}</span>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-red-500 transition-colors" />
+                        ))}
+                    </div>
+                    <div className="flex items-center justify-between pt-6 border-t border-beeyield-sand/40">
+                        <div className="flex items-center gap-3">
+                            <div className="w-3 h-3 rounded-full bg-beeyield-forest shadow-lg shadow-beeyield-forest/40" />
+                            <span className="text-[10px] font-black text-beeyield-charcoal uppercase tracking-[0.2em]">Zero Active Threats</span>
                         </div>
-                    </motion.div>
-                </div>
+                        <ChevronRight className="w-6 h-6 text-gray-300 group-hover:text-red-500 group-hover:translate-x-2 transition-all" />
+                    </div>
+                </motion.div>
             </div>
 
-            {/* Main Content Area - Refactored for better alignment */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-2 items-start">
+            {/* Strategic Command Operations */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 mt-12 items-start">
 
-                {/* Left Column - Fixed Widths */}
-                <div className="lg:col-span-4 flex flex-col gap-6 h-full">
-                    {/* Pollination Calculator */}
-                    <div className="bg-white dark:bg-[#111111] rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm p-6 flex-none">
-                        <div className="flex items-center gap-2 mb-6">
-                            <Calculator className="w-4 h-4 text-[#1B9157]" />
-                            <h3 className="text-sm font-black text-slate-800 dark:text-slate-200 uppercase tracking-widest">Tool</h3>
+                {/* Left: Configuration & Registry */}
+                <div className="lg:col-span-4 space-y-10">
+                    <Card className="rounded-[4rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden p-10">
+                        <div className="flex items-center gap-4 mb-10">
+                            <div className="w-12 h-12 rounded-2xl bg-beeyield-forest/5 flex items-center justify-center text-beeyield-forest border border-beeyield-forest/10">
+                                <Calculator className="w-6 h-6" />
+                            </div>
+                            <h3 className="text-2xl font-black text-beeyield-charcoal tracking-tighter uppercase tracking-widest leading-none">Yield Tool</h3>
                         </div>
-                        <div className="space-y-5">
-                            <div className="space-y-1.5">
-                                <Label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{t('crop_select')}</Label>
+
+                        <div className="space-y-8">
+                            <div className="relative group">
+                                <Label className="absolute left-6 top-4 text-[9px] font-black text-gray-400 uppercase tracking-widest z-10">{t('crop_select')}</Label>
                                 <Select name="crop_type" value={selectedCrop} onValueChange={setSelectedCrop}>
-                                    <SelectTrigger id="pollination-crop" className="h-10 rounded-lg bg-slate-50 dark:bg-white/5 border-gray-200 dark:border-white/10 font-bold text-sm">
+                                    <SelectTrigger className="h-20 pt-8 pb-3 px-6 rounded-3xl border-2 border-beeyield-sand bg-white font-black text-beeyield-charcoal shadow-none focus:ring-0 focus:border-beeyield-forest transition-all">
                                         <SelectValue />
                                     </SelectTrigger>
-                                    <SelectContent className="rounded-lg">
+                                    <SelectContent className="rounded-3xl border-beeyield-sand shadow-2xl p-2">
                                         {Object.keys(beePollinationData).map(c => (
-                                            <SelectItem key={c} value={c} className="font-bold">{c}</SelectItem>
+                                            <SelectItem key={c} value={c} className="rounded-2xl font-bold py-4">{c}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
                             </div>
 
-                            <div className="space-y-1.5">
-                                <Label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{t('acreage')}</Label>
+                            <div className="relative group">
+                                <Label className="absolute left-6 top-4 text-[9px] font-black text-gray-400 uppercase tracking-widest z-10">{t('acreage')}</Label>
                                 <Input
-                                    id="pollination-acreage"
-                                    name="acreage"
                                     type="number"
                                     value={acreage}
                                     onChange={(e) => setAcreage(Number(e.target.value))}
-                                    className="h-10 rounded-lg bg-slate-50 dark:bg-white/5 border-gray-200 dark:border-white/10 font-bold text-lg"
+                                    className="h-20 pt-8 pb-3 px-6 rounded-3xl border-2 border-beeyield-sand bg-white font-black text-beeyield-charcoal shadow-none focus:ring-0 focus:border-beeyield-forest transition-all text-xl"
                                 />
+                                <div className="absolute right-6 top-1/2 -translate-y-1/2 font-black text-beeyield-forest/30 text-xs">ACRES</div>
                             </div>
 
-                            <div className="space-y-2">
-                                <div className="flex justify-between items-center">
-                                    <Label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Hive strength</Label>
-                                    <span className="text-sm font-bold text-[#1B9157]">{avgFrames} Frames</span>
+                            <div className="space-y-4 pt-4">
+                                <div className="flex justify-between items-center bg-beeyield-sand/20 p-6 rounded-3xl border border-beeyield-sand">
+                                    <div>
+                                        <span className="text-xs font-black text-beeyield-charcoal uppercase tracking-[0.2em] flex items-center gap-3">
+                                            <Hexagon className="w-5 h-5 text-beeyield-forest" /> Hive Strength
+                                        </span>
+                                        <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-2">{results.strengthCategory} RATING</p>
+                                    </div>
+                                    <div className="bg-white border-2 border-beeyield-sand text-beeyield-charcoal px-4 py-2 rounded-2xl font-black text-sm shadow-sm transition-all group-hover:scale-105">
+                                        {avgFrames} Frames
+                                    </div>
                                 </div>
-                                <div className="relative h-2 w-full bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
-                                    <motion.div
-                                        className="absolute h-full bg-[#1B9157]"
-                                        animate={{ width: `${(avgFrames / 12) * 100}%` }}
-                                    />
+                                <div className="px-4">
                                     <input
-                                        id="pollination-frames"
-                                        name="avg_frames"
                                         type="range" min="6" max="12" step="1" value={avgFrames}
                                         onChange={(e) => setAvgFrames(Number(e.target.value))}
-                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                        title="Adjust colony strength in frames of bees"
+                                        className="w-full h-2 bg-beeyield-sand rounded-lg appearance-none cursor-pointer accent-beeyield-forest"
                                     />
-                                </div>
-                                <div className="flex justify-between text-[8px] font-bold text-gray-400 uppercase">
-                                    <span>Min (6)</span>
-                                    <span>Standard (8)</span>
-                                    <span>Elite (12)</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <Separator className="my-5 bg-gray-100 dark:bg-white/5" />
-
-                        {/* BeeYield AI - Integrated into Calculator Card */}
-                        <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
-                            <div className="flex items-center justify-between mb-3">
-                                <div className="flex items-center gap-2">
-                                    <Bot className="w-4 h-4 text-[#F4D03F]" />
-                                    <h4 className="text-sm font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">BeeYield Assistant</h4>
-                                </div>
-                                <div className="flex items-center gap-1.5">
-                                    <div className="relative flex h-2 w-2">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#1B9157] opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-[#1B9157]"></span>
+                                    <div className="flex justify-between text-[8px] font-black text-gray-300 uppercase tracking-widest pt-3">
+                                        <span>Standard</span>
+                                        <span>Optimal</span>
+                                        <span>Elite</span>
                                     </div>
-                                    <span className="text-[9px] font-bold text-[#1B9157] uppercase tracking-wider">Connected</span>
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <p className="text-[10px] font-medium text-slate-600 dark:text-slate-400 leading-relaxed">
-                                    <span className="font-bold text-[#1B9157]">Smart Suggestion:</span> Moving Hive 4 closer to the center could help your crops more by <span className="font-bold text-slate-800 dark:text-white">~12%</span>.
+
+                            {/* BeeYield AI Strategic Advisory */}
+                            <div className="p-8 rounded-[2.5rem] bg-beeyield-charcoal text-white border border-white/5 relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-beeyield-forest/10 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-beeyield-forest/20 transition-all duration-700" />
+                                <div className="flex items-center gap-4 mb-6">
+                                    <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-beeyield-sand border border-white/10">
+                                        <Bot className="w-5 h-5" />
+                                    </div>
+                                    <h4 className="text-sm font-black uppercase tracking-widest border-b border-beeyield-sand/30 pb-1">Tactical Advisor</h4>
+                                </div>
+                                <p className="text-sm font-medium text-white/70 leading-relaxed italic">
+                                    "Kinetic analysis suggests optimizing <span className="text-beeyield-sand font-black underline decoration-beeyield-sand/30 underline-offset-4">Hive 4 position</span> centrally to elevate coverage delta by 12%."
                                 </p>
                             </div>
-                        </div>
 
-                        <Button
-                            onClick={() => onTabChange('assistant')}
-                            className="w-full h-10 mt-5 rounded-lg bg-[#F4D03F] hover:bg-[#e0be36] text-black font-bold uppercase tracking-wider text-xs shadow-md shadow-[#F4D03F]/20"
-                        >
-                            <Bot className="w-4 h-4 mr-2" /> Ask BeeYield
-                        </Button>
-
-                        <Button
-                            onClick={async () => {
-                                try {
-                                    const now = new Date();
-                                    const nextMonth = new Date();
-                                    nextMonth.setMonth(now.getMonth() + 1);
-
-                                    const contractData = {
-                                        crop_type: selectedCrop,
-                                        farm_location: "Kibwezi Main Apiary Area",
-                                        farm_size_acres: acreage,
-                                        contract_start_date: now.toISOString().split('T')[0],
-                                        contract_end_date: nextMonth.toISOString().split('T')[0],
-                                        hive_count_required: results.hivesNeeded,
-                                        target_fpa: results.targetFPA,
-                                        notes: `Requested via Pollination Calculator. Colony strength: ${avgFrames} frames.`
-                                    };
-
-                                    const res = await beeyieldService.createPollinationContract(contractData);
-                                    if (res && !res.error) {
-                                        toast.success("Pollination request submitted successfully!");
-                                    } else {
-                                        toast.error("Failed to create contract. " + (res?.error || ""));
-                                    }
-                                } catch (err) {
-                                    toast.error("Error submitting request.");
-                                }
-                            }}
-                            className="w-full h-10 mt-2 rounded-lg bg-[#1B9157] hover:bg-[#157a48] text-white font-bold uppercase tracking-wider text-xs shadow-md shadow-[#1B9157]/20"
-                        >
-                            <FileText className="w-4 h-4 mr-2" /> Request Pollination
-                        </Button>
-                    </div>
-
-                    {/* Hive Fleet - Fills remaining height */}
-                    <div className="bg-white dark:bg-[#111111] rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm overflow-hidden flex flex-col flex-1 min-h-[250px]">
-                        <div className="p-4 border-b border-gray-50 dark:border-white/5 flex items-center justify-between shrink-0">
-                            <div className="flex items-center gap-2">
-                                <Hexagon className="w-4 h-4 text-[#F4D03F]" />
-                                <h3 className="text-xs font-black uppercase tracking-tight text-slate-700 dark:text-slate-300">Your hives</h3>
-                            </div>
-                            <div className="flex gap-1">
-                                <Button variant={viewMode === 'grid' ? 'default' : 'ghost'} size="sm" className="h-6 w-6 p-0" onClick={() => setViewMode('grid')}>
-                                    <LayoutGrid className="w-3 h-3" />
+                            <div className="flex gap-4 pt-4">
+                                <Button
+                                    onClick={() => onTabChange('assistant')}
+                                    className="flex-1 h-16 rounded-[2rem] bg-beeyield-charcoal text-white hover:bg-beeyield-forest hover:text-white transition-all font-black text-[10px] uppercase tracking-[0.2em] shadow-xl"
+                                >
+                                    <Bot className="w-4 h-4 mr-2" /> Advisor
                                 </Button>
-                                <Button variant={viewMode === 'list' ? 'default' : 'ghost'} size="sm" className="h-6 w-6 p-0" onClick={() => setViewMode('list')}>
-                                    <List className="w-3 h-3" />
+                                <Button
+                                    onClick={async () => {
+                                        try {
+                                            const now = new Date();
+                                            const nextMonth = new Date();
+                                            nextMonth.setMonth(now.getMonth() + 1);
+                                            const contractData = {
+                                                crop_type: selectedCrop,
+                                                farm_location: "Kibwezi Main Apiary Area",
+                                                farm_size_acres: acreage,
+                                                contract_start_date: now.toISOString().split('T')[0],
+                                                contract_end_date: nextMonth.toISOString().split('T')[0],
+                                                hive_count_required: results.hivesNeeded,
+                                                target_fpa: results.targetFPA,
+                                                notes: `Requested via Pollination Calculator. Colony strength: ${avgFrames} frames.`
+                                            };
+                                            const res = await beeyieldService.createPollinationContract(contractData);
+                                            if (res && !res.error) toast.success("Request Manifest Distributed");
+                                            else toast.error("Transmission Interrupted");
+                                        } catch (err) {
+                                            toast.error("Manifest Breach");
+                                        }
+                                    }}
+                                    className="flex-[2] h-16 rounded-[2rem] bg-beeyield-forest text-white hover:bg-beeyield-charcoal transition-all font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-beeyield-forest/20"
+                                >
+                                    <FileText className="w-4 h-4 mr-2" /> Deploy Force
                                 </Button>
                             </div>
                         </div>
-                        <div className="p-3 overflow-y-auto flex-1 custom-scrollbar">
+                    </Card>
+
+                    {/* Node Registry */}
+                    <Card className="rounded-[4rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden flex flex-col p-10 h-[500px]">
+                        <div className="flex items-center justify-between mb-8 shrink-0">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-2xl bg-beeyield-sand/20 flex items-center justify-center text-beeyield-forest">
+                                    <Hexagon className="w-6 h-6" />
+                                </div>
+                                <h3 className="text-2xl font-black text-beeyield-charcoal tracking-tighter uppercase tracking-widest">Node Fleet</h3>
+                            </div>
+                            <div className="flex gap-2 p-1.5 bg-gray-50 rounded-2xl border border-gray-100">
+                                <Button variant={viewMode === 'grid' ? 'default' : 'ghost'} size="icon" className={cn("h-10 w-10 rounded-xl", viewMode === 'grid' && "bg-white text-beeyield-charcoal shadow-sm border border-gray-100")} onClick={() => setViewMode('grid')}>
+                                    <LayoutGrid className="w-4 h-4" />
+                                </Button>
+                                <Button variant={viewMode === 'list' ? 'default' : 'ghost'} size="icon" className={cn("h-10 w-10 rounded-xl", viewMode === 'list' && "bg-white text-beeyield-charcoal shadow-sm border border-gray-100")} onClick={() => setViewMode('list')}>
+                                    <List className="w-4 h-4" />
+                                </Button>
+                            </div>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
                             {viewMode === 'grid' ? (
-                                <div className="grid grid-cols-6 gap-1.5">
+                                <div className="grid grid-cols-6 gap-3">
+                                    {hives.map(hive => (
+                                        <motion.button
+                                            key={hive.id}
+                                            whileHover={{ scale: 1.1 }}
+                                            onClick={() => setSelectedHiveId(hive.id)}
+                                            className={cn(
+                                                "aspect-square rounded-2xl flex items-center justify-center text-[10px] font-black text-white transition-all shadow-sm border-2",
+                                                getStatusColor(hive.status),
+                                                selectedHiveId === hive.id ? "border-beeyield-charcoal/40 ring-4 ring-beeyield-sand/50" : "border-transparent"
+                                            )}
+                                        >
+                                            {hive.id.split('-')[1]}
+                                        </motion.button>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
                                     {hives.map(hive => (
                                         <button
                                             key={hive.id}
                                             onClick={() => setSelectedHiveId(hive.id)}
                                             className={cn(
-                                                "aspect-square rounded flex items-center justify-center text-[8px] font-bold text-white transition-all hover:scale-110",
-                                                getStatusColor(hive.status),
-                                                selectedHiveId === hive.id && "ring-2 ring-offset-1 ring-[#F4D03F]"
-                                            )}
-                                            title={`${hive.name} - ${hive.status}`}
-                                        >
-                                            {hive.id.split('-')[1]}
-                                        </button>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="space-y-1">
-                                    {hives.slice(0, 10).map(hive => (
-                                        <button
-                                            key={hive.id}
-                                            onClick={() => setSelectedHiveId(hive.id)}
-                                            className={cn(
-                                                "w-full flex items-center justify-between p-2 rounded-lg text-left transition-all",
-                                                selectedHiveId === hive.id ? "bg-[#F4D03F]/10" : "hover:bg-slate-50 dark:hover:bg-white/5"
+                                                "w-full flex items-center justify-between p-4 rounded-2xl text-left transition-all border-2",
+                                                selectedHiveId === hive.id ? "bg-beeyield-sand/10 border-beeyield-sand" : "hover:bg-gray-50 border-transparent"
                                             )}
                                         >
-                                            <div className="flex items-center gap-2">
-                                                <div className={cn("w-2 h-2 rounded-full", getStatusColor(hive.status))} />
-                                                <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{hive.name}</span>
+                                            <div className="flex items-center gap-4">
+                                                <div className={cn("w-3 h-3 rounded-full shadow-lg", getStatusColor(hive.status))} />
+                                                <span className="text-sm font-black text-beeyield-charcoal">{hive.name}</span>
                                             </div>
-                                            <span className="text-[10px] font-bold text-gray-400">{hive.sensors.flightActivity.value} Flights/min</span>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{hive.sensors.flightActivity.value} FL/M</span>
+                                                <ChevronRight className="w-4 h-4 text-gray-300" />
+                                            </div>
                                         </button>
                                     ))}
-                                    {hives.length > 10 && (
-                                        <p className="text-center text-[10px] font-bold text-gray-400 py-2">+{hives.length - 10} more</p>
-                                    )}
                                 </div>
                             )}
                         </div>
-                    </div>
+                    </Card>
                 </div>
 
-                {/* Right Column */}
-                <div className="lg:col-span-8 flex flex-col gap-6 h-full">
-                    {/* IoT Sensory Hub */}
-                    <div className="bg-white dark:bg-[#111111] rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm p-6 flex-none">
-                        <div className="flex justify-between items-center mb-5">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center">
-                                    <Cpu className="w-5 h-5 text-[#F4D03F]" />
+                {/* Right: Tactical Map & Telemetry Dashboard */}
+                <div className="lg:col-span-8 space-y-10">
+                    <Card className="rounded-[4rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden p-10">
+                        <div className="flex justify-between items-center mb-10">
+                            <div className="flex items-center gap-6">
+                                <div className="w-14 h-14 rounded-[1.5rem] bg-beeyield-forest/5 flex items-center justify-center text-beeyield-forest">
+                                    <Cpu className="w-8 h-8" />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-black uppercase tracking-tight text-slate-800 dark:text-slate-200">Hive sensors</h3>
-                                    <p className="text-[10px] text-gray-400 font-semibold">
-                                        {selectedHive ? `${selectedHive.name} • ${selectedHive.lastSync}` : `Average of ${hives.length} hives`}
+                                    <h3 className="text-2xl font-black text-beeyield-charcoal tracking-tighter uppercase tracking-widest leading-none mb-1">Telemetry Focus</h3>
+                                    <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em]">
+                                        {selectedHive ? `${selectedHive.name} • SECURED LINK` : `Fleet Aggregate • SECURE`}
                                     </p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-3">
                                 <div className="relative">
                                     <button
                                         onClick={() => setIsHiveSelectorOpen(!isHiveSelectorOpen)}
-                                        className="flex items-center gap-2 h-8 px-3 rounded-lg bg-slate-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-xs font-bold"
+                                        className="flex items-center gap-3 h-14 px-6 rounded-2xl bg-gray-50 border border-gray-100 text-xs font-black text-beeyield-charcoal uppercase tracking-widest hover:bg-gray-100 transition-all"
                                     >
-                                        <Hexagon className="w-3 h-3 text-[#F4D03F]" />
-                                        {selectedHive ? selectedHive.id : 'All Hives'}
-                                        <ChevronDown className={cn("w-3 h-3 transition-transform", isHiveSelectorOpen && "rotate-180")} />
+                                        <Hexagon className="w-4 h-4 text-beeyield-forest" />
+                                        {selectedHive ? selectedHive.id : 'Active Fleet'}
+                                        <ChevronDown className={cn("w-4 h-4 transition-transform ml-2", isHiveSelectorOpen && "rotate-180")} />
                                     </button>
                                     <AnimatePresence>
                                         {isHiveSelectorOpen && (
                                             <>
                                                 <div className="fixed inset-0 z-40" onClick={() => setIsHiveSelectorOpen(false)} />
                                                 <motion.div
-                                                    initial={{ opacity: 0, y: -5 }}
+                                                    initial={{ opacity: 0, y: -10 }}
                                                     animate={{ opacity: 1, y: 0 }}
-                                                    exit={{ opacity: 0, y: -5 }}
-                                                    className="absolute right-0 top-10 w-48 bg-white dark:bg-[#111] rounded-lg border border-gray-100 dark:border-white/5 shadow-xl z-50 p-1.5 max-h-64 overflow-y-auto"
+                                                    exit={{ opacity: 0, y: -10 }}
+                                                    className="absolute right-0 top-16 w-64 bg-white rounded-3xl border border-gray-100 shadow-2xl z-50 p-3 max-h-96 overflow-y-auto"
                                                 >
                                                     <button
                                                         onClick={() => { setSelectedHiveId('aggregate'); setIsHiveSelectorOpen(false); }}
                                                         className={cn(
-                                                            "w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition-all",
-                                                            selectedHiveId === 'aggregate' ? "bg-[#F4D03F]/10 text-[#9a7f1e]" : "hover:bg-slate-50 dark:hover:bg-white/5"
+                                                            "w-full text-left px-5 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all mb-2",
+                                                            selectedHiveId === 'aggregate' ? "bg-beeyield-forest text-white" : "hover:bg-gray-50 text-gray-400"
                                                         )}
                                                     >
-                                                        📊 All Hives ({hives.length})
+                                                        📊 Global Registry ({hives.length})
                                                     </button>
-                                                    <Separator className="my-1.5" />
+                                                    <Separator className="my-2 opacity-50" />
                                                     {hives.map(hive => (
                                                         <button
                                                             key={hive.id}
                                                             onClick={() => { setSelectedHiveId(hive.id); setIsHiveSelectorOpen(false); }}
                                                             className={cn(
-                                                                "w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
-                                                                selectedHiveId === hive.id ? "bg-[#F4D03F]/10" : "hover:bg-slate-50 dark:hover:bg-white/5"
+                                                                "w-full flex items-center justify-between px-5 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all mb-1",
+                                                                selectedHiveId === hive.id ? "bg-beeyield-sand text-beeyield-forest" : "hover:bg-gray-50 text-gray-400"
                                                             )}
                                                         >
-                                                            <div className="flex items-center gap-2">
-                                                                <div className={cn("w-1.5 h-1.5 rounded-full", getStatusColor(hive.status))} />
+                                                            <div className="flex items-center gap-3">
+                                                                <div className={cn("w-2 h-2 rounded-full", getStatusColor(hive.status))} />
                                                                 <span>{hive.name}</span>
                                                             </div>
                                                         </button>
@@ -785,298 +749,154 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({ onT
                                 <Button
                                     variant="ghost"
                                     onClick={() => onTabChange('measurement')}
-                                    className="text-[10px] font-bold text-[#1B9157] uppercase tracking-wider hover:bg-[#1B9157]/5 rounded-lg h-8 px-3"
+                                    className="text-[10px] font-black text-beeyield-forest uppercase tracking-[0.2em] hover:bg-beeyield-forest/5 rounded-2xl h-14 px-6 border-2 border-transparent hover:border-beeyield-forest/10"
                                 >
-                                    {t('view_detailed_analytics')} <ChevronRight className="w-3 h-3 ml-1" />
+                                    Detailed Digest <ChevronRight className="w-4 h-4 ml-1" />
                                 </Button>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                             <SensorCard
-                                label="Colony Acoustics"
+                                label="Node Acoustics"
                                 value={String(selectedHive ? selectedHive.sensors.acoustics.value : aggregateSensors.acoustics)}
                                 unit="Hz"
                                 icon={Volume2}
-                                color="bg-[#F4D03F]"
-                                trend={selectedHive ? selectedHive.sensors.acoustics.trend : 'up'}
-                                trendValue={selectedHive ? selectedHive.sensors.acoustics.trendValue : '+2.4%'}
-                                onClick={() => onTabChange('measurement')}
+                                color="bg-beeyield-charcoal"
+                                trend="up"
+                                trendValue="4.2"
                             />
                             <SensorCard
-                                label="Brood Temperature"
+                                label="Thermodynamic"
                                 value={String(selectedHive ? selectedHive.sensors.temperature.value : aggregateSensors.temperature)}
                                 unit="°C"
                                 icon={Thermometer}
-                                color="bg-[#F4D03F]"
-                                trend={selectedHive ? selectedHive.sensors.temperature.trend : 'stable'}
-                                trendValue={selectedHive ? selectedHive.sensors.temperature.trendValue : 'Stable'}
-                                onClick={() => onTabChange('measurement')}
+                                color="bg-orange-500"
+                                trend="stable"
+                                trendValue="Nominal"
                             />
                             <SensorCard
-                                label="Nest Humidity"
+                                label="Atmospheric Index"
                                 value={String(selectedHive ? selectedHive.sensors.humidity.value : aggregateSensors.humidity)}
                                 unit="%"
                                 icon={Droplets}
-                                color="bg-[#1B9157]"
-                                trend={selectedHive ? selectedHive.sensors.humidity.trend : 'down'}
-                                trendValue={selectedHive ? selectedHive.sensors.humidity.trendValue : '-1.2%'}
-                                onClick={() => onTabChange('measurement')}
+                                color="bg-cyan-500"
+                                trend="down"
+                                trendValue="1.5"
                             />
                             <SensorCard
-                                label="Flight Activity"
+                                label="Flight Momentum"
                                 value={String(selectedHive ? selectedHive.sensors.flightActivity.value : aggregateSensors.flightActivity)}
-                                unit="VPM"
-                                icon={Activity}
-                                color="bg-[#1B9157]"
-                                trend={selectedHive ? selectedHive.sensors.flightActivity.trend : 'up'}
-                                trendValue={selectedHive ? selectedHive.sensors.flightActivity.trendValue : '+12%'}
-                                onClick={() => onTabChange('measurement')}
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-2 md:grid-cols-2 gap-3 mt-3">
-                            <SensorCard
-                                label="Vibration Index"
-                                value="2.4"
-                                unit="m/s²"
-                                icon={Zap}
-                                color="bg-[#F4D03F]"
-                                trend="stable"
-                                trendValue="Optimal"
-                            />
-                            <SensorCard
-                                label="Queen Pheromone"
-                                value="High"
-                                unit=""
-                                icon={ShieldCheck}
-                                color="bg-[#1B9157]"
+                                unit="V/M"
+                                icon={Waves}
+                                color="bg-beeyield-forest"
                                 trend="up"
-                                trendValue="Strong"
+                                trendValue="18%"
                             />
                         </div>
 
-                        {selectedHive && (
-                            <motion.div
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: 'auto' }}
-                                className="mt-4 p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-gray-100 dark:border-white/5"
-                            >
-                                <div className="flex items-center justify-between mb-3">
-                                    <div className="flex items-center gap-2">
-                                        <div className={cn("w-2.5 h-2.5 rounded-full", getStatusColor(selectedHive.status))} />
-                                        <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300">{selectedHive.name}</h4>
-                                        <Badge variant="outline" className="text-[9px] font-bold uppercase h-5">
-                                            {selectedHive.queenStatus === 'present' ? '👑 Queen' : selectedHive.queenStatus === 'absent' ? '⚠️ No Queen' : '❓ Unknown'}
-                                        </Badge>
-                                    </div>
-                                    <Button variant="ghost" size="sm" onClick={() => setSelectedHiveId('aggregate')} className="h-6 w-6 p-0">
-                                        <X className="w-3 h-3" />
-                                    </Button>
-                                </div>
-                                <div className="grid grid-cols-4 gap-2">
-                                    <div className="text-center p-2 rounded-lg bg-white dark:bg-black/20">
-                                        <p className="text-[9px] font-bold text-gray-400 uppercase">FOB</p>
-                                        <p className="text-sm font-bold text-[#1B9157]">{selectedHive.framesOfBees}</p>
-                                    </div>
-                                    <div className="text-center p-2 rounded-lg bg-white dark:bg-black/20">
-                                        <p className="text-[9px] font-bold text-gray-400 uppercase">Lat</p>
-                                        <p className="text-[10px] font-bold text-slate-600 dark:text-slate-400">{selectedHive.location.lat.toFixed(4)}</p>
-                                    </div>
-                                    <div className="text-center p-2 rounded-lg bg-white dark:bg-black/20">
-                                        <p className="text-[9px] font-bold text-gray-400 uppercase">Lng</p>
-                                        <p className="text-[10px] font-bold text-slate-600 dark:text-slate-400">{selectedHive.location.lng.toFixed(4)}</p>
-                                    </div>
-                                    <div className="text-center p-2 rounded-lg bg-white dark:bg-black/20">
-                                        <p className="text-[9px] font-bold text-gray-400 uppercase">Sync</p>
-                                        <p className="text-[10px] font-bold text-slate-600 dark:text-slate-400">{selectedHive.lastSync}</p>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        )}
-                    </div>
+                        {/* Interactive Geographic Logic (Mock Overlay) */}
+                        <div className="mt-10 relative h-[500px] w-full bg-slate-100 rounded-[3.5rem] overflow-hidden border-2 border-beeyield-sand group">
+                            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1500382017468-9049fee74a62?auto=format&fit=crop&q=80&w=2600')] bg-cover bg-center grayscale contrast-125 opacity-20 transform group-hover:scale-105 transition-transform duration-10000" />
+                            <div className="absolute inset-0 bg-gradient-to-tr from-beeyield-forest/20 via-transparent to-beeyield-sand/10 blur-3xl opacity-50" />
 
-                    {/* Hive Map - Flex to fill available space */}
-                    <div className="space-y-2 flex-1 flex flex-col">
-                        <div className="flex items-center justify-between px-1 flex-none">
-                            <div className="flex items-center gap-2">
-                                <MapPin className="w-4 h-4 text-[#1B9157]" />
-                                <h4 className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">{t('hive_placement_title')}</h4>
-                            </div>
-                            <div className="flex gap-2">
-                                <Badge className="bg-[#1B9157]/10 text-[#1B9157] text-xs font-bold py-0.5 border-none">{results.healthyHives} Healthy</Badge>
-                                <Badge className="bg-[#F4D03F]/10 text-[#9a7f1e] text-xs font-bold py-0.5 border-none">{results.warningHives} Warning</Badge>
-                                <Badge className="bg-red-500/10 text-red-500 text-xs font-bold py-0.5 border-none">{results.criticalHives} Critical</Badge>
-                            </div>
-                        </div>
-
-                        <div className="relative flex-1 min-h-[300px] rounded-2xl bg-slate-900 overflow-hidden border border-gray-200 dark:border-white/5 shadow-lg">
-                            <div className="absolute inset-0 opacity-10 pointer-events-none"
-                                style={{ backgroundImage: 'radial-gradient(circle, #F4D03F 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-                            <div className="absolute inset-0 bg-gradient-to-br from-[#1B9157]/10 via-transparent to-[#F4D03F]/5" />
-
-                            {isLoading ? (
-                                <div className="absolute inset-0 flex items-center justify-center bg-slate-900/50 z-20">
-                                    <Loader2 className="w-8 h-8 text-[#F4D03F] animate-spin" />
-                                    <span className="ml-2 text-white font-bold text-xs uppercase">Loading Hives...</span>
-                                </div>
-                            ) : (
-                                hives.map((hive) => (
-                                    <motion.div
-                                        key={hive.id}
-                                        initial={{ scale: 0 }}
-                                        animate={{ scale: 1 }}
-                                        className="absolute cursor-pointer group/node z-10"
-                                        style={{ left: `${hive.x}%`, top: `${hive.y}%` }}
-                                        onClick={() => setSelectedHiveId(hive.id)}
-                                    >
-                                        <div className={cn(
-                                            "w-2.5 h-2.5 rounded-full border border-white shadow-lg transition-transform hover:scale-150",
-                                            getStatusColor(hive.status),
-                                            selectedHiveId === hive.id && "ring-2 ring-[#F4D03F] ring-offset-1 ring-offset-slate-900 scale-125"
-                                        )} />
-                                        <div className="absolute bottom-5 left-1/2 -translate-x-1/2 px-2 py-1 bg-black/90 text-white rounded border border-white/10 opacity-0 group-hover/node:opacity-100 transition-opacity z-50 whitespace-nowrap pointer-events-none">
-                                            <div className="text-[9px] font-bold">{hive.id} • {hive.sensors.flightActivity.value.toFixed(1)} VPM</div>
+                            {/* Map Legend */}
+                            <div className="absolute top-10 left-10 z-20 space-y-4">
+                                <div className="p-6 bg-white/90 backdrop-blur-xl rounded-3xl border border-white/50 shadow-2xl max-w-[280px]">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="w-8 h-8 rounded-xl bg-beeyield-charcoal flex items-center justify-center text-beeyield-sand animate-pulse">
+                                            <Navigation2 className="w-4 h-4" />
                                         </div>
-                                    </motion.div>
-                                ))
-                            )}
-
-                            <div className="absolute bottom-3 left-3 flex items-center gap-2 text-[10px] text-white/50 font-bold">
-                                <Layers className="w-3 h-3" />
-                                <span>{hives.length} hives</span>
-                            </div>
-
-                            <div className="absolute top-3 right-3 flex gap-2 bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-white/10">
-                                <div className="flex items-center gap-1">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-[#1B9157]" />
-                                    <span className="text-[8px] font-bold text-white/70 uppercase">OK</span>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-[#F4D03F]" />
-                                    <span className="text-[8px] font-bold text-white/70 uppercase">Warn</span>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
-                                    <span className="text-[8px] font-bold text-white/70 uppercase">Crit</span>
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-beeyield-charcoal">GIS Overlay Alpha</span>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between items-center text-[9px] font-black text-gray-400 uppercase tracking-widest">
+                                            <span>Current Resolution</span>
+                                            <span className="text-beeyield-forest">0.5m GSD</span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-[9px] font-black text-gray-400 uppercase tracking-widest">
+                                            <span>Scan Frequency</span>
+                                            <span className="text-beeyield-forest">Dynamic</span>
+                                        </div>
+                                        <div className="h-1.5 w-full bg-beeyield-sand/30 rounded-full mt-2 overflow-hidden">
+                                            <motion.div animate={{ x: [-200, 300] }} transition={{ repeat: Infinity, duration: 4, ease: "linear" }} className="h-full w-1/3 bg-beeyield-forest blur-sm" />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
-                    {/* Activity Feed - Fixed height to balance */}
-                    <div className="bg-white dark:bg-[#111111] rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm h-[200px] flex flex-col flex-none">
-                        <div className="p-4 border-b border-gray-50 dark:border-white/5 shrink-0">
-                            <div className="flex items-center gap-2">
-                                <Activity className="w-4 h-4 text-[#F4D03F]" />
-                                <h3 className="text-xs font-black uppercase tracking-tight text-slate-700 dark:text-slate-300">Live Feed</h3>
-                            </div>
+                            {/* Hive Pins with Tactical Popups */}
+                            {hives.slice(0, 15).map((hive, i) => (
+                                <motion.div
+                                    key={hive.id}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ delay: i * 0.05 }}
+                                    style={{ left: `${hive.x}%`, top: `${hive.y}%` }}
+                                    className="absolute transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer z-30"
+                                    onClick={() => setSelectedHiveId(hive.id)}
+                                >
+                                    <div className={cn(
+                                        "w-4 h-4 rounded-full border-2 border-white shadow-xl transition-all duration-300 group-hover:scale-150 relative",
+                                        getStatusColor(hive.status)
+                                    )}>
+                                        <div className={cn("absolute inset-0 rounded-full animate-ping opacity-30", getStatusColor(hive.status))} />
+                                    </div>
+                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none whitespace-nowrap z-40">
+                                        <div className="bg-beeyield-charcoal text-white rounded-2xl px-5 py-3 shadow-2xl border border-white/10">
+                                            <p className="text-[10px] font-black uppercase tracking-widest mb-1 text-beeyield-sand">{hive.name}</p>
+                                            <p className="text-[9px] font-medium text-white/60">INTEGRITY: NORMAL</p>
+                                        </div>
+                                        <div className="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-beeyield-charcoal mx-auto" />
+                                    </div>
+                                </motion.div>
+                            ))}
                         </div>
-                        <div className="overflow-y-auto flex-1 custom-scrollbar">
-                            <div className="divide-y dark:divide-white/5">
-                                <AnimatePresence initial={false}>
-                                    {activityLogs.map((log) => (
-                                        <motion.div
-                                            key={log.id}
-                                            initial={{ x: -10, opacity: 0 }}
-                                            animate={{ x: 0, opacity: 1 }}
-                                            className="px-4 py-2.5 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <span className="text-[9px] font-mono font-bold text-gray-400 w-10">{log.time}</span>
-                                                <div>
-                                                    <p className={cn(
-                                                        "text-xs font-bold leading-tight",
-                                                        log.type === 'warning' ? "text-red-500" : log.type === 'success' ? "text-[#1B9157]" : "text-slate-700 dark:text-slate-300"
-                                                    )}>
-                                                        {log.action}
-                                                    </p>
-                                                    <p className="text-[9px] font-bold text-gray-400 uppercase">{log.hive}</p>
-                                                </div>
-                                            </div>
-                                            <div className={cn(
-                                                "w-1.5 h-1.5 rounded-full",
-                                                log.type === 'warning' ? "bg-red-500" : log.type === 'success' ? "bg-[#1B9157]" : "bg-[#F4D03F]"
-                                            )} />
-                                        </motion.div>
-                                    ))}
-                                </AnimatePresence>
+                    </Card>
+
+                    {/* Operational Journal */}
+                    <Card className="rounded-[4rem] border-[#E0E0E0] bg-beeyield-charcoal text-white shadow-2xl overflow-hidden p-10">
+                        <div className="flex items-center justify-between mb-10 border-b border-white/5 pb-8">
+                            <div className="flex items-center gap-6">
+                                <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-beeyield-forest border border-white/10">
+                                    <Activity className="w-6 h-6" />
+                                </div>
+                                <h3 className="text-2xl font-black tracking-tighter uppercase tracking-widest">Digital Sequence</h3>
                             </div>
+                            <Badge className="bg-beeyield-forest text-white px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border-none">Node Audit Active</Badge>
                         </div>
-                    </div>
+                        <div className="space-y-4">
+                            {activityLogs.map((log) => (
+                                <motion.div
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    key={log.id}
+                                    className="flex items-center justify-between p-6 bg-white/5 rounded-3xl border border-white/5 hover:border-white/20 transition-all hover:bg-white/[0.07] group"
+                                >
+                                    <div className="flex items-center gap-6">
+                                        <div className="text-[11px] font-black text-white/30 truncate w-14 font-mono">{log.time}</div>
+                                        <div className={cn(
+                                            "w-2 h-2 rounded-full",
+                                            log.type === 'success' ? "bg-beeyield-forest shadow-lg shadow-beeyield-forest/40" :
+                                                log.type === 'warning' ? "bg-beeyield-sand shadow-lg shadow-beeyield-sand/40" : "bg-blue-400"
+                                        )} />
+                                        <div className="flex flex-col">
+                                            <span className="text-sm font-black tracking-tight group-hover:text-beeyield-sand transition-colors">{log.action}</span>
+                                            <span className="text-[10px] text-white/30 font-black uppercase tracking-widest">Target: Node {log.hive}</span>
+                                        </div>
+                                    </div>
+                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Button variant="ghost" size="icon" className="h-10 w-10 text-white/20 hover:text-white hover:bg-white/10 rounded-xl">
+                                            <ChevronRight className="w-5 h-5" />
+                                        </Button>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </Card>
                 </div>
             </div>
-
-            {/* Bottom Stats */}
-            <div className="mt-6 bg-slate-50/50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/10 p-5">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex bg-white dark:bg-[#111111] rounded-2xl border border-gray-100 dark:border-white/5 p-4 items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-900/10 flex items-center justify-center">
-                                <AlertCircle className="w-5 h-5 text-red-500" />
-                            </div>
-                            <div>
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Pesticide Detection</p>
-                                <p className="text-sm font-bold text-green-600">NONE DETECTED</p>
-                            </div>
-                        </div>
-                        <Badge className="bg-green-500/20 text-green-600 border-none text-[8px] font-black uppercase">SAFE ZONE</Badge>
-                    </div>
-
-                    <div className="flex bg-white dark:bg-[#111111] rounded-2xl border border-gray-100 dark:border-white/5 p-4 items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center">
-                                <Activity className="w-5 h-5 text-[#F4D03F]" />
-                            </div>
-                            <div>
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Colony Varroa Pressure</p>
-                                <p className="text-sm font-bold text-slate-800 dark:text-white">{hives.length > 0 ? "LOW (1.2%)" : "0.0%"}</p>
-                            </div>
-                        </div>
-                        <Badge className="bg-[#F4D03F]/20 text-[#9a7f1e] border-none text-[8px] font-black uppercase">MONITORING</Badge>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-[#1B9157]/10 flex items-center justify-center">
-                            <Target className="w-5 h-5 text-[#1B9157]" />
-                        </div>
-                        <div>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Foraging Efficiency</p>
-                            <p className="text-xl font-bold text-[#1B9157]">{results.foragingEfficiency}%</p>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-[#F4D03F]/10 flex items-center justify-center">
-                            <TrendingUp className="w-5 h-5 text-[#F4D03F]" />
-                        </div>
-                        <div>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Yield Projection</p>
-                            <p className="text-xl font-bold text-[#9a7f1e]">+{Math.round(results.coverageHealth * 0.26)}%</p>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-[#1B9157]/10 flex items-center justify-center">
-                            <Hexagon className="w-5 h-5 text-[#1B9157]" />
-                        </div>
-                        <div>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Active Hives</p>
-                            <p className="text-xl font-bold text-[#1B9157]">{hives.length}</p>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <div className="p-1 px-3 bg-slate-900 rounded-xl flex items-center gap-2 cursor-pointer hover:bg-slate-800 transition-colors w-full">
-                            <FileText className="w-4 h-4 text-[#F4D03F]" />
-                            <div className="flex flex-col">
-                                <span className="text-xs font-black text-white/50 uppercase tracking-widest">Full Report</span>
-                                <span className="text-sm font-bold text-[#F4D03F]">DOWNLOAD PDF</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </motion.div>
     );
 };
 

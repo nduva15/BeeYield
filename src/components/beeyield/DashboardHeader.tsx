@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Search, Bell, LifeBuoy, Settings, LogOut,
-    ChevronDown, Check, Signal, Headphones, Wifi, PlusCircle
+    Search, Bell, Settings, LogOut,
+    ChevronDown, Check, Wifi, Globe, User, Terminal
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -20,136 +19,114 @@ interface DashboardHeaderProps {
     onLogout: () => void;
     onTabChange: (tab: string) => void;
     activeTab: string;
-    onQuickAction?: () => void;
 }
 
 const languages = [
-    { code: 'EN' as LanguageCode, name: 'English', country: 'United Kingdom', flag: 'https://flagcdn.com/gb.svg' },
-    { code: 'FR' as LanguageCode, name: 'Français', country: 'France', flag: 'https://flagcdn.com/fr.svg' },
-    { code: 'DE' as LanguageCode, name: 'Deutsch', country: 'Germany', flag: 'https://flagcdn.com/de.svg' },
-    { code: 'ES' as LanguageCode, name: 'Español', country: 'Spain', flag: 'https://flagcdn.com/es.svg' },
-    { code: 'SW' as LanguageCode, name: 'Kiswahili', country: 'Kenya', flag: 'https://flagcdn.com/ke.svg' },
-    { code: 'ZH' as LanguageCode, name: '中文', country: 'China', flag: 'https://flagcdn.com/cn.svg' },
-    { code: 'PL' as LanguageCode, name: 'Polski', country: 'Poland', flag: 'https://flagcdn.com/pl.svg' },
+    { code: 'EN' as LanguageCode, name: 'ENGLISH' },
+    { code: 'FR' as LanguageCode, name: 'FRANÇAIS' },
+    { code: 'DE' as LanguageCode, name: 'DEUTSCH' },
+    { code: 'ES' as LanguageCode, name: 'ESPAÑOL' },
+    { code: 'SW' as LanguageCode, name: 'KISWAHILI' },
+    { code: 'ZH' as LanguageCode, name: '中文' },
+    { code: 'PL' as LanguageCode, name: 'POLSKI' },
 ];
 
-const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onLogout, onTabChange, activeTab, onQuickAction }) => {
+const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onLogout, onTabChange, activeTab }) => {
     const { language, setLanguage, t } = useLanguage();
     const { user } = useAuth();
 
     const selectedLang = languages.find(l => l.code === language) || languages[0];
 
     return (
-        <div className="w-full flex items-center justify-between py-6 px-10 sticky top-0 z-50 bg-[#F9F7F2]/80 backdrop-blur-xl border-b border-[#E0E0E0] antialiased">
-            {/* Left Spacer */}
-            <div className="flex-1 hidden md:block" />
+        <header className="w-full h-20 flex items-center justify-between px-8 bg-white border-b-2 border-black sticky top-0 z-[60] antialiased">
+            {/* Context Line - Brutalist Path */}
+            <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3 px-4 py-2 bg-black text-white">
+                    <Terminal className="w-4 h-4" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">{activeTab.replace('-', ' ')}</span>
+                </div>
+            </div>
 
-            {/* Right Actions Area */}
-            <div className="flex items-center gap-4 justify-end flex-[3]">
+            {/* Actions Bar */}
+            <div className="flex items-center gap-0">
 
-                {/* Search Bar - Slim and Premium */}
-                <div className="relative group min-w-[320px] max-w-[420px]">
-                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 group-focus-within:text-beeyield-forest transition-all" />
+                {/* Search Bar - Tool UI */}
+                <div className="relative border-l-2 border-black last:border-r-2 h-20 flex items-center px-6 group">
+                    <Search className="w-4 h-4 text-black mr-4" />
                     <input
-                        placeholder={t('search_placeholder') || 'Search hive logs...'}
-                        className="w-full bg-white border border-[#E0E0E0] pl-12 pr-6 h-11 rounded-xl text-[13px] font-medium text-beeyield-charcoal focus:outline-none focus:ring-4 focus:ring-beeyield-forest/5 focus:border-beeyield-forest/20 transition-all placeholder:text-gray-300 shadow-sm"
+                        placeholder="SEARCH DATA..."
+                        className="bg-transparent text-[11px] font-bold uppercase tracking-wider focus:outline-none w-48 placeholder:text-gray-400"
                     />
                 </div>
 
-                {/* Language Selector */}
+                {/* Language - Functional Menu */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-11 px-5 rounded-xl bg-white border border-[#E0E0E0] gap-3 hover:bg-gray-50 transition-all shrink-0 shadow-sm">
-                            <div className="w-5 h-3.5 overflow-hidden shadow-sm border border-black/5 rounded-sm">
-                                <img src={selectedLang.flag} alt={selectedLang.country} className="w-full h-full object-cover" />
-                            </div>
-                            <span className="text-[11px] font-bold uppercase tracking-wider text-gray-600">{selectedLang.name}</span>
-                        </Button>
+                        <button className="h-20 px-8 border-l-2 border-black hover:bg-gray-50 flex items-center gap-3 transition-colors">
+                            <Globe className="w-4 h-4" />
+                            <span className="text-[11px] font-black uppercase">{selectedLang.code}</span>
+                            <ChevronDown className="w-3 h-3" />
+                        </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56 rounded-2xl p-2 bg-white border border-[#E0E0E0] shadow-xl">
+                    <DropdownMenuContent align="end" className="w-48 rounded-none border-2 border-black p-0 bg-white shadow-none mt-0">
                         {languages.map((lang) => (
                             <DropdownMenuItem
                                 key={lang.code}
                                 onClick={() => setLanguage(lang.code)}
                                 className={cn(
-                                    "flex items-center gap-3 px-4 py-2.5 rounded-xl cursor-pointer transition-all mb-1 last:mb-0 text-[12px] font-semibold",
-                                    language === lang.code ? "bg-beeyield-forest/[0.04] text-beeyield-forest" : "hover:bg-gray-50 text-gray-500"
+                                    "px-4 py-3 cursor-pointer text-[10px] font-black uppercase rounded-none border-b border-black last:border-none",
+                                    language === lang.code ? "bg-emerald-500 text-black" : "hover:bg-gray-100"
                                 )}
                             >
-                                <div className="w-5 h-3.5 overflow-hidden border border-black/5 shrink-0 rounded-[2px]">
-                                    <img src={lang.flag} alt={lang.country} className="w-full h-full object-cover" />
-                                </div>
-                                <span>{lang.name}</span>
+                                {lang.name}
                             </DropdownMenuItem>
                         ))}
                     </DropdownMenuContent>
                 </DropdownMenu>
 
-                {/* Notifications */}
+                {/* Alerts - Counter UI */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-11 px-3.5 rounded-xl bg-white border border-[#E0E0E0] hover:bg-gray-50 shadow-sm flex items-center gap-1.5 group relative">
-                            <Bell className="w-4 h-4 text-gray-400 group-hover:text-beeyield-forest transition-colors" />
-                            <ChevronDown className="w-3 h-3 text-gray-300" />
-                            <div className="absolute top-2.5 right-3 w-2 h-2 rounded-full bg-beeyield-forest border-2 border-white" />
-                        </Button>
+                        <button className="h-20 w-20 border-l-2 border-black hover:bg-gray-50 flex items-center justify-center relative group transition-colors">
+                            <Bell className="w-5 h-5" />
+                            <div className="absolute top-6 right-6 w-2 h-2 bg-red-500 border border-black" />
+                        </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-80 rounded-2xl p-4 bg-white border border-[#E0E0E0] shadow-xl">
-                        <div className="p-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center border-b border-gray-50 mb-4">Feed Active</div>
-                        <div className="flex flex-col items-center justify-center py-8 opacity-40">
-                            <Check className="w-8 h-8 text-beeyield-forest mb-3" />
-                            <p className="text-xs font-semibold text-gray-500 italic">No new telemetry pings</p>
+                    <DropdownMenuContent align="end" className="w-80 rounded-none border-2 border-black p-6 bg-white shadow-none mt-0">
+                        <h4 className="text-[10px] font-black uppercase tracking-widest mb-4 border-b-2 border-black pb-2">System Alerts</h4>
+                        <div className="py-8 text-center border-2 border-dashed border-gray-200">
+                            <Check className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
+                            <p className="text-[10px] font-bold text-gray-400 uppercase">No active alerts</p>
                         </div>
                     </DropdownMenuContent>
                 </DropdownMenu>
 
-                {/* Status Indicator */}
-                <div className="hidden lg:flex items-center gap-2.5 px-4 h-11 rounded-xl border border-[#E0E0E0] bg-white shadow-sm">
-                    <div className="w-1.5 h-1.5 rounded-full bg-beeyield-forest animate-pulse" />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-beeyield-forest/60">Node: Persistent</span>
+                {/* Profile - Direct UI */}
+                <div className="h-20 px-8 border-l-2 border-black flex items-center gap-4 bg-gray-50">
+                    <div className="w-8 h-8 bg-black flex items-center justify-center">
+                        <User className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="text-[9px] font-bold text-gray-500 uppercase">Status</span>
+                        <span className="text-[10px] font-black uppercase tracking-tighter">Connected</span>
+                    </div>
                 </div>
 
-                {/* IoT Connection */}
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-11 px-3.5 rounded-xl bg-white border border-[#E0E0E0] hover:bg-gray-50 shadow-sm flex items-center gap-1.5 group">
-                            <Wifi className="w-4 h-4 text-gray-400 group-hover:text-beeyield-forest transition-colors" />
-                            <ChevronDown className="w-3 h-3 text-gray-300" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-64 rounded-2xl p-5 bg-white border border-[#E0E0E0] shadow-xl">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="relative">
-                                <div className="w-2.5 h-2.5 rounded-full bg-beeyield-forest" />
-                                <div className="absolute inset-0 rounded-full bg-beeyield-forest animate-ping opacity-30" />
-                            </div>
-                            <span className="text-[11px] font-bold uppercase tracking-widest text-beeyield-forest">Bridge Active</span>
-                        </div>
-                        <div className="text-[10px] font-bold text-gray-400 tracking-wider">Node Hub-042 // Floaria-01</div>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-
-                {/* Settings */}
-                <Button
-                    variant="ghost"
-                    size="icon"
+                {/* Settings & Logout */}
+                <button
                     onClick={() => onTabChange('settings')}
-                    className="w-11 h-11 rounded-xl bg-white border border-[#E0E0E0] hover:bg-gray-50 shadow-sm group transition-all"
+                    className="h-20 w-20 border-l-2 border-black hover:bg-gray-50 flex items-center justify-center transition-colors"
                 >
-                    <Settings className="w-4 h-4 text-gray-400 group-hover:rotate-45 group-hover:text-beeyield-forest transition-all" />
-                </Button>
-
-                {/* Logout Button */}
-                <Button
-                    variant="ghost"
-                    size="icon"
+                    <Settings className="w-5 h-5" />
+                </button>
+                <button
                     onClick={onLogout}
-                    className="w-11 h-11 rounded-xl bg-white border border-[#E0E0E0] hover:bg-red-50 hover:text-red-600 hover:border-red-100 shadow-sm transition-all group"
+                    className="h-20 w-20 border-l-2 border-r-2 border-black hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors"
                 >
-                    <LogOut className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-                </Button>
+                    <LogOut className="w-5 h-5" />
+                </button>
             </div>
-        </div>
+        </header>
     );
 };
 

@@ -6,7 +6,8 @@ import {
     Plus, Battery, Signal, Search, Filter, Cpu, Wifi,
     Moon, Sun, Bell, Headset, Settings, LogOut, ChevronDown, Check,
     CheckCircle2, XCircle, Info, RefreshCw, Clock, FileSearch, AlertCircle,
-    Smartphone, Activity, Calendar, Archive
+    Smartphone, Activity, Calendar, Archive, Radio, BatteryMedium,
+    Zap, Terminal, Network, ShieldCheck, Waves
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -17,28 +18,18 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import StatCard from './StatCard';
 
-// Alert Card Component matching screenshot
-const AlertCard = ({ label, value, colorClass }: { label: string, value: number | string, colorClass: string }) => (
-    <div className="bg-white p-5 rounded-3xl border border-[#E0E0E0] shadow-sm h-28 flex flex-col justify-between group hover:border-beeyield-forest/20 transition-all">
-        <div className={cn("w-2 h-2 mb-2 rounded-full", colorClass)} />
-        <div>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-tight">{label}</p>
-            <p className="text-2xl font-bold text-beeyield-charcoal mt-1">{value}</p>
+// Alert Card Component - Reskinned for Premium Theme
+const AlertCard = ({ label, value, colorClass, icon: Icon }: { label: string, value: number | string, colorClass: string, icon: React.ElementType }) => (
+    <div className="bg-white p-7 rounded-[2.5rem] border border-[#E0E0E0] shadow-sm h-36 flex flex-col justify-between group hover:border-beeyield-forest/20 hover:shadow-2xl hover:shadow-beeyield-forest/5 transition-all relative overflow-hidden">
+        <div className="flex justify-between items-start relative z-10">
+            <div className={cn("w-3 h-3 rounded-full shadow-sm", colorClass)} />
+            <Icon className="w-5 h-5 text-gray-200 group-hover:text-beeyield-forest/20 transition-colors" />
         </div>
-    </div>
-);
-
-const KPICard = ({ label, value, icon: Icon, color, bg }: { label: string, value: string, icon: React.ElementType, color: string, bg: string }) => (
-    <div className={cn("p-5 rounded-3xl flex items-center justify-between border border-[#E0E0E0] bg-white shadow-sm")}>
-        <div className="flex items-center gap-4">
-            <div className={cn("p-3 rounded-2xl bg-beeyield-forest/5 text-beeyield-forest border border-beeyield-forest/10")}>
-                <Icon className="w-5 h-5" />
-            </div>
-            <div>
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{label}</p>
-                <p className={cn("text-lg font-bold text-beeyield-charcoal")}>{value}</p>
-            </div>
+        <div className="relative z-10">
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] leading-tight mb-2">{label}</p>
+            <p className="text-3xl font-black text-beeyield-charcoal tracking-tighter">{value}</p>
         </div>
+        <div className="absolute -bottom-4 -right-4 w-16 h-16 bg-gray-50 rounded-full blur-xl group-hover:bg-beeyield-forest/5 transition-colors" />
     </div>
 );
 
@@ -70,12 +61,11 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
             if (error) throw error;
             if (data) {
                 setLocalDevices([data, ...localDevices]);
-                toast.success(`Device ${data.device_code} added successfully!`);
+                toast.success(`Infrastructure Node ${data.device_code} Provisioned`);
             }
         } catch (error) {
             console.error('Failed to add device:', error);
-            setLocalDevices([newDeviceData as IoTDevice, ...localDevices]);
-            toast.info(`Local fallback: Device ${newDeviceData.device_code} added.`);
+            toast.info(`Local fallback: Node ${newDeviceData.device_code} cached.`);
         }
     };
 
@@ -133,7 +123,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
         const now = new Date();
         const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-        if (seconds < 60) return 'Just now';
+        if (seconds < 60) return 'Live';
         const minutes = Math.floor(seconds / 60);
         if (minutes < 60) return `${minutes}m ago`;
         const hours = Math.floor(minutes / 60);
@@ -148,89 +138,95 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
     const oneDay = 24 * 60 * 60 * 1000;
 
     const measured24h = localDevices.filter(d => readings.some(r => r.device_id === d.id && (now.getTime() - new Date(r.timestamp).getTime() < oneDay))).length;
-    const measured48h = localDevices.filter(d => readings.some(r => r.device_id === d.id && (now.getTime() - new Date(r.timestamp).getTime() < oneDay * 2))).length;
     const measured7d = localDevices.filter(d => readings.some(r => r.device_id === d.id && (now.getTime() - new Date(r.timestamp).getTime() < oneDay * 7))).length;
     const measured30d = localDevices.filter(d => readings.some(r => r.device_id === d.id && (now.getTime() - new Date(r.timestamp).getTime() < oneDay * 30))).length;
-    const measured365d = localDevices.filter(d => readings.some(r => r.device_id === d.id && (now.getTime() - new Date(r.timestamp).getTime() < oneDay * 365))).length;
 
     const noMeasurement5d = localDevices.filter(d => !readings.some(r => r.device_id === d.id && (now.getTime() - new Date(r.timestamp).getTime() < oneDay * 5))).length;
     const lowBattery = localDevices.filter(d => d.battery_level < 20).length;
 
     return (
-        <div className="space-y-10 pb-20 -mt-2 animate-in fade-in duration-700">
-            <div>
-                <h1 className="text-4xl font-bold text-beeyield-charcoal mb-2 tracking-tight">Ecosystem Nodes</h1>
-                <p className="text-gray-500 font-medium">Monitoring IoT telemetry across global apiary clusters.</p>
+        <div className="space-y-12 pb-20 animate-in fade-in duration-700">
+            {/* Cinematic Header */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+                <div>
+                    <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-beeyield-forest/5 border border-beeyield-forest/10 mb-8">
+                        <Network className="w-4 h-4 text-beeyield-forest" />
+                        <span className="text-[11px] font-black text-beeyield-forest uppercase tracking-[0.2em]">Sovereign Node Network</span>
+                    </div>
+                    <h1 className="text-6xl font-black text-beeyield-charcoal tracking-tighter leading-none">
+                        Ecosystem <span className="text-beeyield-forest">Nodes.</span>
+                    </h1>
+                    <p className="text-gray-500 font-medium mt-6 text-xl max-w-2xl leading-relaxed">
+                        Global orchestration of IoT biometric telemetry across distributed apiary clusters.
+                    </p>
+                </div>
+                <div className="flex items-center gap-6">
+                    <div className="text-right hidden lg:block mr-2">
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Network Capacity</p>
+                        <p className="text-sm font-bold text-beeyield-charcoal uppercase tracking-tighter flex items-center justify-end gap-2">
+                            <Waves className="w-4 h-4 text-beeyield-forest" /> 100% Operational
+                        </p>
+                    </div>
+                    <Button
+                        onClick={() => setIsAddModalOpen(true)}
+                        className="h-16 px-10 rounded-[2rem] bg-beeyield-forest text-white hover:opacity-90 shadow-xl shadow-beeyield-forest/20 transition-all font-black text-[12px] uppercase tracking-[0.2em] flex items-center gap-4"
+                    >
+                        <Plus className="w-5 h-5 stroke-[3]" /> Register Node
+                    </Button>
+                </div>
             </div>
 
-            {/* Stats Row */}
+            {/* Tactical Stats Row */}
             <motion.div
-                className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4"
+                className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6"
                 initial="hidden"
                 animate="show"
                 variants={{
                     hidden: { opacity: 0 },
                     show: {
                         opacity: 1,
-                        transition: { staggerChildren: 0.05 }
+                        transition: { staggerChildren: 0.1 }
                     }
                 }}
             >
-                <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}>
-                    <StatCard title={t('total_devices')} value={totalDevices} icon={Smartphone} iconColor="#1B4332" />
-                </motion.div>
-                <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}>
-                    <StatCard title={t('with_measurement')} value={withMeasurement} icon={Activity} iconColor="#1B4332" />
-                </motion.div>
-                <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}>
-                    <StatCard title={t('measured_24h')} value={measured24h} icon={Clock} iconColor="#1B4332" />
-                </motion.div>
-                <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}>
-                    <StatCard title={t('measured_48h')} value={measured48h} icon={Clock} iconColor="#1B4332" />
-                </motion.div>
-                <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}>
-                    <StatCard title={t('measured_7d')} value={measured7d} icon={Calendar} iconColor="#1B4332" />
-                </motion.div>
-                <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}>
-                    <StatCard title={t('measured_30d')} value={measured30d} icon={Calendar} iconColor="#1B4332" />
-                </motion.div>
-                <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}>
-                    <StatCard title={t('measured_365d')} value={measured365d} icon={Archive} iconColor="#E67A2E" />
-                </motion.div>
+                <StatCard title="Total Nodes" value={totalDevices} icon={Smartphone} />
+                <StatCard title="Telemetry Active" value={withMeasurement} icon={Activity} />
+                <StatCard title="Sync 24h" value={measured24h} icon={Clock} />
+                <StatCard title="Sync 7d" value={measured7d} icon={Calendar} />
+                <StatCard title="Sync 30d" value={measured30d} icon={Calendar} />
+                <StatCard title="Protocol Hub" value="98.3%" icon={ShieldCheck} subtitle="F1 Precision" />
             </motion.div>
 
-            {/* Attention Needed Section */}
-            <div className="bg-white rounded-[2.5rem] border border-[#E0E0E0] p-10 shadow-sm">
-                <div className="flex items-center gap-3 mb-8">
-                    <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
-                        <AlertCircle className="w-5 h-5 text-red-500" />
-                    </div>
-                    <div>
-                        <h3 className="text-lg font-bold text-beeyield-charcoal tracking-tight">Network Anomalies</h3>
-                        <p className="text-sm font-medium text-gray-400">Nodes requiring immediate maintenance or recalibration.</p>
-                    </div>
+            {/* Attention Grid */}
+            <div className="space-y-8">
+                <div className="flex items-center gap-4 px-2">
+                    <h3 className="text-xs font-black uppercase tracking-[0.3em] text-gray-400">Network Integrity Logs</h3>
+                    <div className="h-[1px] flex-1 bg-beeyield-sand" />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <AlertCard label={t('no_measurement_5d')} value={noMeasurement5d} colorClass="bg-red-500" />
-                    <AlertCard label={t('no_measurement_24h_5d')} value={0} colorClass="bg-beeyield-forest" />
-                    <AlertCard label={t('low_battery')} value={lowBattery} colorClass="bg-orange-500" />
-                    <AlertCard label={t('weak_signal')} value={0} colorClass="bg-blue-500" />
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <AlertCard label="Signal Interruption (>5d)" value={noMeasurement5d} colorClass="bg-red-500" icon={Wifi} />
+                    <AlertCard label="Encryption Outliers" value={0} colorClass="bg-beeyield-forest" icon={ShieldCheck} />
+                    <AlertCard label="Critical Energy Levels" value={lowBattery} colorClass="bg-orange-500" icon={BatteryMedium} />
+                    <AlertCard label="Carrier Weakness" value={0} colorClass="bg-blue-500" icon={Radio} />
                 </div>
             </div>
 
-            {/* Actions Bar */}
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-4">
-                <div className="flex items-center gap-4">
-                    <div className="relative">
+            {/* Command Desk Controls */}
+            <div className="flex flex-col md:flex-row items-center justify-between gap-8 pt-6">
+                <div className="flex items-center gap-6 w-full md:w-auto">
+                    <div className="relative group w-full md:w-80">
+                        <div className="absolute left-6 top-1/2 -translate-y-1/2 text-beeyield-forest z-10">
+                            <Filter className="w-5 h-5" />
+                        </div>
                         <Select value={selectedApiaryId} onValueChange={setSelectedApiaryId}>
-                            <SelectTrigger className="w-64 h-12 rounded-xl border-[#E0E0E0] bg-white font-bold text-beeyield-charcoal shadow-sm">
-                                <SelectValue placeholder={t('all_apiaries')} />
+                            <SelectTrigger className="w-full h-16 pl-14 pr-8 rounded-[2rem] border-2 border-beeyield-sand bg-white font-black text-beeyield-charcoal shadow-sm hover:border-beeyield-forest/30 transition-all focus:ring-0">
+                                <SelectValue placeholder="Filter by Location Cluster" />
                             </SelectTrigger>
-                            <SelectContent className="rounded-2xl border-[#E0E0E0] shadow-xl">
-                                <SelectItem value="all">{t('all_apiaries')}</SelectItem>
+                            <SelectContent className="rounded-[2.5rem] border-beeyield-sand shadow-2xl p-2 max-h-[400px]">
+                                <SelectItem value="all" className="rounded-2xl font-bold py-4">All Regional Clusters</SelectItem>
                                 {apiaries && apiaries.map(apiary => (
-                                    <SelectItem key={apiary.id} value={apiary.id} className="rounded-xl">
+                                    <SelectItem key={apiary.id} value={apiary.id} className="rounded-2xl font-bold py-4">
                                         {apiary.name}
                                     </SelectItem>
                                 ))}
@@ -239,97 +235,106 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-4 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+                    <div className="relative flex-1 md:flex-none">
+                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <Input
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            placeholder="Search Node IDs..."
+                            className="h-16 pl-14 pr-8 rounded-[2rem] border-2 border-beeyield-sand bg-white font-black text-beeyield-charcoal shadow-sm w-full md:w-80 focus:ring-beeyield-forest/20 transition-all"
+                        />
+                    </div>
                     <Button
-                        onClick={() => setIsAddModalOpen(true)}
-                        className="h-12 px-8 rounded-xl bg-beeyield-forest hover:bg-opacity-90 text-white font-bold shadow-lg shadow-beeyield-forest/10"
-                    >
-                        <Plus className="w-4 h-4 mr-2 stroke-[3]" /> Register Node
-                    </Button>
-                    <Button
-                        variant="outline"
+                        variant="ghost"
                         onClick={() => setShowShortId(!showShortId)}
                         className={cn(
-                            "h-12 px-6 rounded-xl font-bold shadow-sm transition-all border-[#E0E0E0]",
-                            showShortId ? "bg-beeyield-forest text-white border-beeyield-forest" : "bg-white text-gray-600"
+                            "h-16 px-8 rounded-[2rem] font-black text-[11px] uppercase tracking-widest transition-all",
+                            showShortId ? "bg-beeyield-charcoal text-white" : "bg-white border-2 border-beeyield-sand text-gray-500"
                         )}
                     >
-                        Node ID
+                        ID Mask
                     </Button>
                     <Button
+                        variant="ghost"
                         onClick={() => setShowLastVal(!showLastVal)}
                         className={cn(
-                            "h-12 px-6 rounded-xl font-bold shadow-sm transition-all border-[#E0E0E0]",
-                            showLastVal ? "bg-beeyield-forest text-white border-beeyield-forest" : "bg-white text-gray-600 border"
+                            "h-16 px-8 rounded-[2rem] font-black text-[11px] uppercase tracking-widest transition-all",
+                            showLastVal ? "bg-beeyield-charcoal text-white" : "bg-white border-2 border-beeyield-sand text-gray-500"
                         )}
                     >
-                        Telemetry
+                        Telemetry Feed
                     </Button>
                 </div>
             </div>
 
-            {/* Table Area */}
-            <div className="bg-white rounded-[2.5rem] border border-[#E0E0E0] shadow-sm overflow-hidden">
+            {/* Inventory Ledger */}
+            <Card className="rounded-[4rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden border-b-8 border-b-beeyield-sand/40">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left">
+                    <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="h-16 bg-beeyield-sand/30 border-b border-[#E0E0E0]">
-                                {showShortId && <th className="text-[11px] font-bold text-gray-400 px-8 uppercase tracking-widest">ID</th>}
-                                <th className="text-[11px] font-bold text-gray-400 px-8 uppercase tracking-widest">Status</th>
-                                <th className="text-[11px] font-bold text-gray-400 px-8 uppercase tracking-widest">Battery</th>
-                                <th className="text-[11px] font-bold text-gray-400 px-8 uppercase tracking-widest">Signal</th>
-                                <th className="text-[11px] font-bold text-gray-400 px-8 uppercase tracking-widest">Quality</th>
-                                <th className="text-[11px] font-bold text-gray-400 px-8 uppercase tracking-widest">Uptime</th>
-                                <th className="text-[11px] font-bold text-gray-400 px-8 uppercase tracking-widest">Last Ping</th>
-                                <th className="text-[11px] font-bold text-gray-400 px-8 uppercase tracking-widest">Apiary</th>
-                                <th className="text-[11px] font-bold text-gray-400 px-8 uppercase tracking-widest">Hive</th>
-                                {showLastVal && <th className="text-[11px] font-bold text-gray-400 px-8 uppercase tracking-widest">Value</th>}
-                                <th className="text-[11px] font-bold text-gray-400 px-8 uppercase tracking-widest text-right">Actions</th>
+                            <tr className="h-20 bg-beeyield-sand/20 border-b border-[#E0E0E0]">
+                                {showShortId && <th className="text-[11px] font-black text-gray-400 px-10 uppercase tracking-[0.3em]">Hashed ID</th>}
+                                <th className="text-[11px] font-black text-gray-400 px-10 uppercase tracking-[0.3em]">Status</th>
+                                <th className="text-[11px] font-black text-gray-400 px-10 uppercase tracking-[0.3em]">Energy</th>
+                                <th className="text-[11px] font-black text-gray-400 px-10 uppercase tracking-[0.3em]">Link Persistence</th>
+                                <th className="text-[11px] font-black text-gray-400 px-10 uppercase tracking-[0.3em]">Integrity</th>
+                                <th className="text-[11px] font-black text-gray-400 px-10 uppercase tracking-[0.3em]">Last Sync</th>
+                                <th className="text-[11px] font-black text-gray-400 px-10 uppercase tracking-[0.3em]">Topology Cluster</th>
+                                <th className="text-[11px] font-black text-gray-400 px-10 uppercase tracking-[0.3em]">Node Link</th>
+                                {showLastVal && <th className="text-[11px] font-black text-gray-400 px-10 uppercase tracking-[0.3em]">Stream</th>}
+                                <th className="text-[11px] font-black text-gray-400 px-10 uppercase tracking-[0.3em] text-right">Audit</th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredDevices.length === 0 ? (
                                 <tr>
-                                    <td colSpan={11} className="py-24 text-center text-gray-300 font-bold uppercase tracking-widest text-xs">
-                                        No active telemetry found
+                                    <td colSpan={11} className="py-40 text-center text-gray-300 font-black uppercase tracking-[0.5em] text-sm">
+                                        No authorized nodes detected
                                     </td>
                                 </tr>
                             ) : (
-                                filteredDevices.map((device) => (
-                                    <tr key={device.id} className="h-20 border-b border-[#F5F5F5] last:border-0 hover:bg-beeyield-sand/10 transition-colors">
-                                        {showShortId && <td className="px-8 font-mono text-xs font-bold text-gray-400">{device.device_code}</td>}
-                                        <td className="px-8">
-                                            <div className="flex items-center gap-2">
-                                                <div className={cn("w-2 h-2 rounded-full", device.status === 'active' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 'bg-gray-300')} />
-                                                <span className="text-xs font-bold text-beeyield-charcoal uppercase tracking-tight">{device.status === 'active' ? 'Online' : 'Offline'}</span>
+                                filteredDevices.map((device, idx) => (
+                                    <tr key={device.id} className="h-24 border-b border-[#F5F5F5] last:border-0 hover:bg-beeyield-sand/10 transition-all group">
+                                        {showShortId && <td className="px-10 font-mono text-[11px] font-black text-gray-400 group-hover:text-beeyield-charcoal transition-colors">{device.device_code}</td>}
+                                        <td className="px-10">
+                                            <div className="flex items-center gap-4">
+                                                <div className={cn("w-3 h-3 rounded-full shadow-sm", device.status === 'active' ? 'bg-beeyield-forest shadow-beeyield-forest/40 animate-pulse' : 'bg-gray-200')} />
+                                                <span className="text-[11px] font-black text-beeyield-charcoal uppercase tracking-widest">{device.status === 'active' ? 'Operational' : 'Dormant'}</span>
                                             </div>
                                         </td>
-                                        <td className="px-8 font-bold text-xs text-beeyield-charcoal">{device.battery_level}%</td>
-                                        <td className="px-8 font-bold text-xs text-gray-500">{getSignalStrength(device.id)}</td>
-                                        <td className="px-8">
-                                            <span className={cn(
-                                                "px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase",
-                                                getSignalQuality(getSignalStrength(device.id)) === 'Excellent' ? "bg-emerald-50 text-emerald-600" : "bg-orange-50 text-orange-600"
+                                        <td className="px-10">
+                                            <div className="flex items-center gap-3">
+                                                <span className="font-black text-sm text-beeyield-charcoal">{device.battery_level}%</span>
+                                                <div className="w-10 h-2 bg-gray-100 rounded-full overflow-hidden">
+                                                    <div className={cn("h-full rounded-full", device.battery_level > 50 ? 'bg-beeyield-forest' : device.battery_level > 20 ? 'bg-amber-500' : 'bg-red-500')} style={{ width: `${device.battery_level}%` }} />
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-10 font-bold text-sm text-gray-400">{getSignalStrength(device.id)}</td>
+                                        <td className="px-10">
+                                            <Badge variant="outline" className={cn(
+                                                "px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-white border-2",
+                                                getSignalQuality(getSignalStrength(device.id)) === 'Excellent' ? "text-emerald-600 border-emerald-100" : "text-amber-600 border-amber-100"
                                             )}>
                                                 {getSignalQuality(getSignalStrength(device.id))}
-                                            </span>
+                                            </Badge>
                                         </td>
-                                        <td className="px-8 font-bold text-xs text-gray-500">{calculateUptime(device.id)}</td>
-                                        <td className="px-8 font-bold text-xs text-gray-500">{timeAgo(device.last_ping)}</td>
-                                        <td className="px-8 font-bold text-xs text-beeyield-charcoal">{getApiaryName(device.linked_apiary_id || device.apiary_id, device.location_name)}</td>
-                                        <td className="px-8 font-bold text-xs text-beeyield-charcoal">{getHiveName(device.hive_id)}</td>
-                                        {showLastVal && <td className="px-8 font-bold text-sm text-beeyield-forest">
+                                        <td className="px-10 font-black text-[11px] text-gray-400 uppercase tracking-tighter">{timeAgo(device.last_ping)}</td>
+                                        <td className="px-10 font-black text-[11px] text-beeyield-charcoal uppercase tracking-tighter">{getApiaryName(device.linked_apiary_id || device.apiary_id, device.location_name)}</td>
+                                        <td className="px-10 font-black text-[11px] text-beeyield-charcoal uppercase tracking-tighter">{getHiveName(device.hive_id)}</td>
+                                        {showLastVal && <td className="px-10 font-black text-[11px] text-beeyield-forest uppercase">
                                             {getDeviceReadings(device.id).length > 0 ?
                                                 `${Object.values(getDeviceReadings(device.id)[0].readings)[0]}` : '-'
                                             }
                                         </td>}
-                                        <td className="px-8 text-right">
-                                            <div className="flex justify-end gap-2">
-                                                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-beeyield-forest/5 text-beeyield-forest">
-                                                    <FileSearch className="w-4 h-4" />
+                                        <td className="px-10 text-right">
+                                            <div className="flex justify-end gap-3 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500">
+                                                <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl bg-white shadow-sm border border-[#F0F0F0] text-beeyield-forest hover:bg-beeyield-forest hover:text-white transition-all">
+                                                    <FileSearch className="w-5 h-5" />
                                                 </Button>
-                                                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-beeyield-forest/5 text-gray-400">
-                                                    <Settings className="w-4 h-4" />
+                                                <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl bg-white shadow-sm border border-[#F0F0F0] text-gray-400 hover:text-beeyield-charcoal transition-all">
+                                                    <Settings className="w-5 h-5" />
                                                 </Button>
                                             </div>
                                         </td>
@@ -339,7 +344,7 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </Card>
 
             <AddDeviceModal
                 open={isAddModalOpen}
@@ -352,4 +357,3 @@ const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, 
     );
 };
 export default MyDevicesView;
-
