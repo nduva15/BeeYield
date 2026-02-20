@@ -1,173 +1,159 @@
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { LucideIcon, ChevronDown, LogOut, Search, LayoutGrid, Terminal, Shield, Home, Settings, Database, Activity, Map, BarChart2 } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
+import {
+    Home,
+    Smartphone,
+    MapPin,
+    Hexagon,
+    Activity,
+    FileText,
+    HelpCircle,
+    ClipboardList,
+    Cpu,
+    LayoutList,
+    Receipt,
+    LifeBuoy,
+    Settings,
+    ChevronDown,
+    ChevronRight,
+    LogOut,
+    Menu,
+    X,
+    Database
+} from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export interface NavItem {
     id: string;
     label: string;
-    icon: LucideIcon;
+    icon: React.ElementType;
     hasSubmenu?: boolean;
-    hidden?: boolean;
-    submenuItems?: {
-        id: string;
-        label: string;
-        icon?: LucideIcon;
-        subItems?: { id: string; label: string; icon?: LucideIcon }[];
-    }[];
+    submenuItems?: NavItem[];
+    subItems?: NavItem[]; // for third level
 }
 
-interface SidebarProps {
-    className?: string;
+interface DashboardSidebarProps {
     activeTab: string;
     onTabChange: (tab: string) => void;
     onLogout: () => void;
     navItems: NavItem[];
-    isAdmin?: boolean;
 }
 
-const DashboardSidebar: React.FC<SidebarProps> = ({
-    className,
+const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     activeTab,
     onTabChange,
     onLogout,
-    navItems,
-    isAdmin = false
+    navItems
 }) => {
-    const [openItems, setOpenItems] = useState<string[]>(['beeyield']);
-    const { t } = useLanguage();
+    const [expandedGroups, setExpandedGroups] = useState<string[]>(['data', 'meters', 'beeyield']);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-    const toggleExpand = (id: string, e?: React.MouseEvent) => {
-        if (e) e.stopPropagation();
-        setOpenItems(prev =>
-            prev.includes(id)
-                ? prev.filter(i => i !== id)
-                : [...prev, id]
+    const toggleGroup = (id: string) => {
+        setExpandedGroups(prev =>
+            prev.includes(id) ? prev.filter(g => g !== id) : [...prev, id]
+        );
+    };
+
+    const isTabActive = (id: string) => activeTab === id;
+
+    const renderNavItem = (item: NavItem, depth = 0) => {
+        const isActive = isTabActive(item.id);
+        const hasChildren = (item.submenuItems && item.submenuItems.length > 0) || (item.subItems && item.subItems.length > 0);
+        const isExpanded = expandedGroups.includes(item.id);
+
+        return (
+            <div key={item.id} className="w-full">
+                <button
+                    onClick={() => hasChildren ? toggleGroup(item.id) : onTabChange(item.id)}
+                    className={cn(
+                        "w-full flex items-center justify-between h-12 px-4 transition-none border-b-2 border-black group",
+                        isActive ? "bg-[#FF4F00] text-white" : "text-black hover:bg-neutral-100",
+                        depth > 0 && "pl-8 h-10 bg-neutral-50/50"
+                    )}
+                >
+                    <div className="flex items-center gap-3">
+                        <item.icon className={cn("w-4 h-4", isActive ? "text-white" : "text-black")} />
+                        <span className={cn(
+                            "text-[10px] uppercase font-bold tracking-widest",
+                            isActive ? "text-white" : "text-black"
+                        )}>
+                            {item.label}
+                        </span>
+                    </div>
+                    {hasChildren && (
+                        isExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />
+                    )}
+                </button>
+
+                {hasChildren && isExpanded && (
+                    <div className="bg-white">
+                        {(item.submenuItems || item.subItems)?.map(sub => renderNavItem(sub, depth + 1))}
+                    </div>
+                )
+                }
+            </div >
         );
     };
 
     return (
-        <aside
-            className={cn(
-                "flex flex-col h-screen w-[260px] bg-white border-r-2 border-black antialiased z-50",
-                className
-            )}
-        >
-            {/* Branding - Sharp Utility */}
-            <div className="px-6 py-8 border-b-2 border-black">
-                <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 bg-black flex items-center justify-center">
-                        <Shield className="w-6 h-6 text-white" />
+        <>
+            {/* Mobile Toggle */}
+            <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="lg:hidden fixed bottom-6 right-6 z-50 w-14 h-14 bg-[#FF4F00] border-4 border-black flex items-center justify-center text-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none translate-y-[-2px]"
+            >
+                {mobileMenuOpen ? <X /> : <Menu />}
+            </button>
+
+            <aside className={cn(
+                "fixed inset-y-0 left-0 z-40 w-72 bg-white border-r-4 border-black flex flex-col transition-transform lg:translate-x-0 shadow-[8px_0px_0px_0px_rgba(0,0,0,0.05)]",
+                mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+            )}>
+                {/* Branding */}
+                <div className="h-20 flex items-center px-6 border-b-4 border-black bg-white">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 border-2 border-black bg-black flex items-center justify-center">
+                            <Hexagon className="w-6 h-6 text-white fill-current" />
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-xl font-black text-black uppercase tracking-tighter leading-none">BeeYield</span>
+                            <span className="text-[9px] font-bold text-neutral-400 uppercase tracking-[0.2em]">Data Hub</span>
+                        </div>
                     </div>
-                    <div className="flex flex-col">
-                        <h1 className="text-xl font-black text-black leading-none uppercase tracking-tighter">
-                            BEEYIELD
-                        </h1>
-                        <span className="text-[10px] font-bold text-black uppercase mt-1">
-                            {isAdmin ? 'SYSTEM CORE' : 'USER DASHBOARD'}
-                        </span>
+                </div>
+
+                <div className="flex-1 overflow-hidden flex flex-col">
+                    <div className="p-4 flex items-center justify-between border-b-2 border-black bg-neutral-50 px-6">
+                        <span className="text-[10px] font-bold uppercase text-black tracking-widest">Menu</span>
+                        <div className="bg-black text-white px-2 py-0.5 text-[8px] font-bold tracking-widest">LIVE</div>
                     </div>
+                    <ScrollArea className="flex-1">
+                        <div className="py-0">
+                            {navItems.map(item => renderNavItem(item))}
+                        </div>
+                    </ScrollArea>
                 </div>
 
-                {/* Search - Field UI */}
-                <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black" />
-                    <input
-                        type="text"
-                        placeholder="Search files..."
-                        className="w-full bg-white border-2 border-black py-2 pl-10 pr-4 text-xs font-bold uppercase placeholder:text-gray-400 focus:outline-none"
-                    />
-                </div>
-            </div>
-
-            {/* Navigation - Logic Tree */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar-brutalist">
-                <div className="p-4 bg-gray-100 border-b-2 border-black">
-                    <span className="text-[9px] font-black text-black uppercase tracking-widest">Navigation</span>
-                </div>
-
-                <nav className="divide-y-2 divide-black">
-                    {navItems.filter(item => !item.hidden).map((item) => {
-                        const isActive = activeTab === item.id;
-                        const isOpen = openItems.includes(item.id);
-
-                        return (
-                            <div key={item.id} className="relative">
-                                <button
-                                    onClick={() => {
-                                        onTabChange(item.id);
-                                        if (item.hasSubmenu) toggleExpand(item.id);
-                                    }}
-                                    className={cn(
-                                        "w-full flex items-center justify-between px-6 py-4 transition-colors",
-                                        isActive ? "bg-emerald-500 text-black font-black" : "bg-white text-black hover:bg-gray-50"
-                                    )}
-                                >
-                                    <div className="flex items-center gap-4">
-                                        <item.icon className="w-5 h-5 stroke-[2]" />
-                                        <span className="text-[11px] font-bold uppercase tracking-tight">{item.label}</span>
-                                    </div>
-                                    {item.hasSubmenu && (
-                                        <ChevronDown className={cn("w-4 h-4 transition-transform", isOpen ? "rotate-0" : "-rotate-90")} />
-                                    )}
-                                </button>
-
-                                {item.hasSubmenu && isOpen && item.submenuItems && (
-                                    <div className="bg-gray-50 border-t-2 border-black divide-y divide-black/10">
-                                        {item.submenuItems.map((subItem) => (
-                                            <button
-                                                key={subItem.id}
-                                                onClick={() => onTabChange(subItem.id)}
-                                                className={cn(
-                                                    "w-full text-left py-3 px-10 text-[10px] font-bold uppercase tracking-widest",
-                                                    activeTab === subItem.id ? "bg-black text-white" : "text-black hover:bg-gray-200"
-                                                )}
-                                            >
-                                                {subItem.label}
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })}
-                </nav>
-            </div>
-
-            {/* Footer Actions */}
-            <div className="p-6 border-t-2 border-black bg-gray-50">
-                <div className="grid grid-cols-1 gap-2">
+                {/* Footer Actions */}
+                <div className="p-6 border-t-4 border-black bg-white space-y-4">
                     <button
                         onClick={() => onTabChange('settings')}
-                        className="flex items-center justify-center gap-3 w-full py-3 bg-white border-2 border-black text-[10px] font-black uppercase hover:bg-black hover:text-white transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
+                        className="w-full h-12 border-2 border-black bg-white flex items-center gap-3 px-4 hover:bg-neutral-100 transition-none"
                     >
-                        <Settings className="w-4 h-4" />
-                        Settings
+                        <Settings className="w-4 h-4 text-black" />
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-black">Settings</span>
                     </button>
                     <button
                         onClick={onLogout}
-                        className="flex items-center justify-center gap-3 w-full py-3 bg-red-500 text-white border-2 border-black text-[10px] font-black uppercase hover:bg-red-600 transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
+                        className="w-full h-12 border-2 border-black bg-black flex items-center gap-3 px-4 hover:bg-[#FF4F00] text-white transition-none transition-colors"
                     >
-                        <LogOut className="w-4 h-4" />
-                        Log Out
+                        <LogOut className="w-4 h-4 text-white" />
+                        <span className="text-[10px] font-bold uppercase tracking-widest">Logout</span>
                     </button>
                 </div>
-            </div>
-
-            <style dangerouslySetInnerHTML={{
-                __html: `
-                .custom-scrollbar-brutalist::-webkit-scrollbar {
-                    width: 8px;
-                }
-                .custom-scrollbar-brutalist::-webkit-scrollbar-track {
-                    background: white;
-                    border-left: 2px solid black;
-                }
-                .custom-scrollbar-brutalist::-webkit-scrollbar-thumb {
-                    background: black;
-                }
-            `}} />
-        </aside>
+            </aside>
+        </>
     );
 };
 

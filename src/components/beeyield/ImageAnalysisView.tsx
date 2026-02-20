@@ -143,56 +143,54 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
     return (
         <div className="space-y-6 animate-in fade-in duration-700 pb-20">
             {/* Page Header */}
-            <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center border border-slate-100 dark:border-white/10 shadow-sm">
-                    <Camera className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+            <div className="flex items-center gap-4 border-b-4 border-black pb-6">
+                <div className="w-12 h-12 bg-black flex items-center justify-center border-2 border-black">
+                    <Camera className="w-6 h-6 text-white" />
                 </div>
-                <h1 className="text-2xl font-bold text-[#0F172A] dark:text-white tracking-tight">
-                    Image analysis
+                <h1 className="text-5xl font-black text-black uppercase tracking-tighter">
+                    Analysis
                 </h1>
             </div>
 
-            <p className="text-[15px] font-medium text-slate-600 dark:text-slate-400 pl-1">
-                Upload a photo of your hive or bees to detect potential health problems like Varroa, Nosema, and more.
+            <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest pl-1">
+                Upload photos to check for disease or pests.
             </p>
 
-            {/* Instruction Card (Existing Design) */}
-            <Card className="rounded-[2rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-[#111111] shadow-sm overflow-hidden mb-6">
-                <CardContent className="p-8">
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 dark:border-amber-500/20">
-                            <Info className="w-4 h-4 text-[#D4AF37]" />
-                        </div>
-                        <h2 className="text-xl font-bold text-[#0F172A] dark:text-white">How to use the analysis</h2>
+            {/* Instruction Card */}
+            <div className="border-4 border-black bg-white p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-10">
+                <div className="flex items-center gap-3 mb-8 border-b-2 border-black pb-4">
+                    <div className="w-8 h-8 bg-black flex items-center justify-center border-2 border-black">
+                        <Info className="w-4 h-4 text-white" />
+                    </div>
+                    <h2 className="text-2xl font-black text-black uppercase tracking-tight">Instructions</h2>
+                </div>
+
+                <div className="space-y-6">
+                    <div className="space-y-1 text-[10px] text-neutral-400 font-bold uppercase tracking-widest">
+                        <p>Results are indicators and not a medical diagnosis.</p>
+                        <p>Confidence levels indicate certainty.</p>
                     </div>
 
-                    <div className="space-y-4">
-                        <div className="space-y-1 text-sm text-slate-500 dark:text-slate-400 font-medium">
-                            <p>Results are system indications and are not a veterinary diagnosis.</p>
-                            <p>Each label is a probability estimate. Lower confidence means less certainty.</p>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-3 pt-2">
-                            {instructions.map((item, idx) => (
-                                <div key={idx} className="flex gap-4">
-                                    <div className="min-w-[160px]">
-                                        <h4 className="text-[13px] font-bold text-[#0F172A] dark:text-white">{item.label}</h4>
-                                    </div>
-                                    <div>
-                                        <p className="text-[13px] text-slate-400 dark:text-slate-500 font-medium">{item.description}</p>
-                                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 pt-2">
+                        {instructions.map((item, idx) => (
+                            <div key={idx} className="flex gap-4 border-l-2 border-black pl-4">
+                                <div className="min-w-[140px]">
+                                    <h4 className="text-[11px] font-black text-black uppercase tracking-widest">{item.label}</h4>
                                 </div>
-                            ))}
-                        </div>
+                                <div className="flex-1">
+                                    <p className="text-[11px] text-neutral-400 font-bold uppercase tracking-tight">{item.description}</p>
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                </CardContent>
-            </Card>
+                </div>
+            </div>
 
             {/* Upload Area */}
             {!previewUrl && (
                 <div
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-full min-h-[160px] border border-dashed rounded-[1.5rem] flex flex-col items-center justify-center gap-3 transition-all duration-300 cursor-pointer bg-white dark:bg-[#0d0d0d] border-slate-200 dark:border-white/10 hover:border-slate-300"
+                    className="w-full min-h-[200px] border-4 border-dashed border-black flex flex-col items-center justify-center gap-3 transition-none cursor-pointer bg-white hover:bg-neutral-50 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
                 >
                     <input
                         id="bee-image-upload"
@@ -204,10 +202,10 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
                         aria-label="Upload bee image"
                         onChange={(e) => e.target.files && handleFile(e.target.files[0])}
                     />
-                    <Camera className="w-6 h-6 text-slate-400" />
-                    <div className="text-center">
-                        <h3 className="text-sm font-bold text-[#0F172A] dark:text-white">Select Bee Image</h3>
-                        <p className="text-[12px] text-slate-400 dark:text-slate-500 font-medium">Click to browse or drag and drop an image</p>
+                    <Camera className="w-8 h-8 text-black" />
+                    <div className="text-center space-y-2">
+                        <h3 className="text-xl font-black text-black uppercase tracking-widest">Select Image</h3>
+                        <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-[0.2em]">Click to browse or drop file</p>
                     </div>
                 </div>
             )}
@@ -216,193 +214,189 @@ const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) =>
             {previewUrl && (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-in fade-in duration-500">
                     <div className="lg:col-span-6 space-y-6">
-                        <Card className="rounded-[1.5rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-[#111111] overflow-hidden group relative p-1">
-                            <div className="min-h-[300px] flex items-center justify-center bg-slate-50 dark:bg-white/5">
+                        <div className="border-4 border-black bg-white p-2 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] relative">
+                            <div className="min-h-[300px] flex items-center justify-center bg-neutral-100 border-2 border-black">
                                 <img src={previewUrl} alt="Analyzed" className="w-full h-full object-contain max-h-[500px]" />
                                 {isAnalyzing && (
-                                    <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex flex-col items-center justify-center z-10 rounded-[1.5rem]">
+                                    <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center z-10">
                                         {realtimeCount > 0 ? (
                                             <>
-                                                <div className="text-6xl font-black text-[#F4D03F] animate-pulse drop-shadow-lg">{realtimeCount}</div>
-                                                <div className="text-white font-bold uppercase tracking-widest text-[10px] mt-2 bg-black/50 px-3 py-1 rounded-full border border-white/10">Bees Detected</div>
+                                                <div className="text-8xl font-black text-[#FF4F00] drop-shadow-lg">{realtimeCount}</div>
+                                                <div className="text-white font-black uppercase tracking-widest text-[10px] mt-2 bg-black px-4 py-2 border-2 border-white">Detected</div>
                                             </>
                                         ) : (
-                                            <Bot className="w-12 h-12 text-white animate-bounce" />
+                                            <div className="w-16 h-16 border-4 border-t-[#FF4F00] border-white rounded-none animate-spin" />
                                         )}
                                     </div>
                                 )}
                             </div>
-                        </Card>
+                        </div>
 
-                        <div className="flex justify-center">
-                            <Button variant="outline" size="sm" onClick={clearImage} className="rounded-full px-6 h-9 font-bold border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400">
-                                Clear image
-                            </Button>
+                        <div className="flex justify-start">
+                            <button onClick={clearImage} className="h-10 px-8 border-2 border-black bg-white font-bold text-[10px] uppercase tracking-widest hover:bg-neutral-100 transition-none">
+                                Clear
+                            </button>
                         </div>
 
                         {results && (
-                            <Card className="rounded-[2.5rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-[#111111] px-10 py-8 shadow-sm max-w-sm mx-auto">
+                            <div className="border-4 border-black bg-white p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                                 <div className="space-y-6">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center"><Search className="w-4 h-4 text-blue-500" /></div>
-                                        <h3 className="text-2xl font-bold text-[#0F172A] dark:text-white">Results</h3>
+                                    <div className="flex items-center gap-3 pb-4 border-b-2 border-black">
+                                        <div className="w-8 h-8 bg-black flex items-center justify-center"><Search className="w-4 h-4 text-white" /></div>
+                                        <h3 className="text-3xl font-black text-black uppercase tracking-tighter">Results</h3>
                                     </div>
-                                    <div className="flex items-center justify-between gap-4">
-                                        <span className="text-sm font-bold text-[#0F172A] dark:text-white">Healthy</span>
-                                        <div className="flex-1 h-2 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden">
-                                            <div className="h-full bg-[#F4D03F]" style={{ width: `${results.overallConfidence}%` }} />
+                                    <div className="flex items-center justify-between gap-6">
+                                        <span className="text-xs font-black uppercase tracking-widest">Health Score</span>
+                                        <div className="flex-1 h-4 border-2 border-black bg-neutral-100 overflow-hidden">
+                                            <div className="h-full bg-[#FF4F00]" style={{ width: `${results.overallConfidence}%` }} />
                                         </div>
-                                        <span className="text-sm font-bold text-[#0F172A] dark:text-white">{results.overallConfidence}%</span>
+                                        <span className="text-xs font-black uppercase tracking-widest">{results.overallConfidence}%</span>
                                     </div>
                                 </div>
-                            </Card>
+                            </div>
                         )}
                     </div>
 
                     <div className="lg:col-span-6 space-y-6">
                         {isAnalyzing ? (
-                            <Card className="rounded-[1.5rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-[#111111] p-8 h-full flex flex-col justify-center items-center text-center space-y-8 min-h-[400px]">
-                                <div className="w-24 h-24 rounded-[2rem] bg-amber-50 dark:bg-[#F4D03F]/10 flex items-center justify-center border border-[#F4D03F]/20 dark:border-amber-500/20 shadow-inner">
-                                    <Bot className="w-12 h-12 text-[#F4D03F] animate-bounce" />
+                            <div className="border-4 border-black bg-white p-12 h-full flex flex-col justify-center items-center text-center space-y-10 min-h-[400px] shadow-[8px_8px_0px_0px_rgba(255,79,0,1)]">
+                                <div className="w-20 h-20 bg-black flex items-center justify-center border-4 border-black shadow-[6px_6px_0px_0px_rgba(255,79,0,1)]">
+                                    <Bot className="w-10 h-10 text-white" />
                                 </div>
-                                <div className="space-y-3">
-                                    <h3 className="text-2xl font-black text-[#0F172A] dark:text-white uppercase tracking-tight leading-tight">Scanning specimen...</h3>
-                                    <p className="text-slate-400 dark:text-slate-500 font-medium leading-relaxed max-w-[280px]">
-                                        Our health scanner is isolating biological signatures across the hive structure.
+                                <div className="space-y-4">
+                                    <h3 className="text-4xl font-black text-black uppercase tracking-tighter leading-tight">Processing...</h3>
+                                    <p className="text-neutral-400 font-bold uppercase text-[10px] tracking-widest leading-relaxed max-w-[280px]">
+                                        Identifying patterns and detecting health anomalies.
                                     </p>
                                 </div>
-                                <div className="w-full max-w-[200px] h-1.5 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
-                                    <motion.div
-                                        initial={{ x: "-100%" }}
-                                        animate={{ x: "100%" }}
-                                        transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-                                        className="h-full bg-amber-500 w-1/3"
-                                    />
+                                <div className="w-full max-w-[240px] h-3 border-2 border-black bg-neutral-100 overflow-hidden">
+                                    <div className="h-full bg-black w-1/3 animate-ping" />
                                 </div>
-                            </Card>
+                            </div>
                         ) : error ? (
-                            <Card className="rounded-[2.5rem] border border-red-100 dark:border-red-500/20 bg-red-50/30 dark:bg-red-500/5 p-8 h-full flex flex-col justify-center items-center text-center space-y-6 min-h-[400px]">
-                                <Bot className="w-10 h-10 text-red-600 dark:text-red-400" />
-                                <div className="space-y-3">
-                                    <h3 className="text-2xl font-black text-red-600 dark:text-red-400 uppercase tracking-tight">Detection Failed</h3>
-                                    <p className="text-red-800/60 dark:text-red-400/60 font-medium leading-relaxed max-w-[320px]">
-                                        Our health scanner could not identify any honey bees or hive structures in this image.
-                                        Only biological data is permitted.
+                            <div className="border-4 border-black bg-white p-12 h-full flex flex-col justify-center items-center text-center space-y-10 min-h-[400px] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                                <Bot className="w-12 h-12 text-black" />
+                                <div className="space-y-4">
+                                    <h3 className="text-4xl font-black text-black uppercase tracking-tighter">Failed</h3>
+                                    <p className="text-neutral-400 font-bold uppercase text-[10px] tracking-widest leading-relaxed max-w-[320px]">
+                                        Could not identify hive structures or bees. Please try a clearer photo.
                                     </p>
                                 </div>
-                                <Button onClick={clearImage} className="rounded-xl px-8 h-12 bg-red-600 hover:bg-red-700 text-white font-bold uppercase tracking-widest text-xs">
-                                    Try Different Photo
-                                </Button>
-                            </Card>
+                                <button onClick={clearImage} className="h-14 px-10 border-4 border-black bg-black text-white font-black uppercase tracking-widest text-[10px] hover:bg-[#FF4F00] transition-none">
+                                    Try Again
+                                </button>
+                            </div>
                         ) : results ? (
-                            <Card className="rounded-[1.5rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-[#111111] p-8 space-y-8">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="text-xl font-bold text-[#0F172A] dark:text-white">Bee detection</h3>
+                            <div className="border-4 border-black bg-white p-10 space-y-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                                <div className="flex items-center justify-between border-b-2 border-black pb-4">
+                                    <h3 className="text-2xl font-black uppercase tracking-tight">Detection</h3>
                                     <div className="flex items-center gap-4">
-                                        <span className="text-sm font-bold text-slate-500">Bees detected</span>
-                                        <div className="w-8 h-8 rounded-full bg-slate-50 dark:bg-white/5 flex items-center justify-center border border-slate-100 dark:border-white/10 font-bold">
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Total Count</span>
+                                        <div className="w-10 h-10 bg-black text-white flex items-center justify-center border-2 border-black font-black">
                                             {results.beesCounted}
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="space-y-6">
+                                <div className="space-y-8">
                                     <div className="space-y-4">
-                                        <div className="flex items-center justify-between text-sm font-medium">
-                                            <span className="text-slate-500">Confidence Threshold</span>
-                                            <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{confidenceThreshold}%</span>
+                                        <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest">
+                                            <span>Confidence</span>
+                                            <span className="text-black">{confidenceThreshold}%</span>
                                         </div>
                                         <Slider value={confidenceThreshold} onValueChange={setConfidenceThreshold} max={100} step={1} />
                                     </div>
 
                                     <div className="space-y-4">
-                                        <div className="flex items-center justify-between text-sm font-medium">
-                                            <span className="text-slate-500">Overlap Threshold</span>
-                                            <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{overlapThreshold}%</span>
+                                        <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest">
+                                            <span>Overlap</span>
+                                            <span className="text-black">{overlapThreshold}%</span>
                                         </div>
                                         <Slider value={overlapThreshold} onValueChange={setOverlapThreshold} max={100} step={1} />
                                     </div>
 
                                     <div className="space-y-3">
-                                        <span className="text-sm font-medium text-slate-500 text-[13px]">Label Display Mode</span>
+                                        <span className="text-[10px] font-black uppercase tracking-widest">Label Mode</span>
                                         <Select value={displayMode} onValueChange={setDisplayMode}>
-                                            <SelectTrigger className="w-full h-11 rounded-xl bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10">
-                                                <SelectValue placeholder="Select display mode" />
+                                            <SelectTrigger className="w-full h-12 rounded-none bg-white border-2 border-black text-[11px] font-bold uppercase transition-none focus:ring-0">
+                                                <SelectValue placeholder="Select Mode" />
                                             </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="Label + confidence">Label + confidence</SelectItem>
-                                                <SelectItem value="Label only">Label only</SelectItem>
+                                            <SelectContent className="rounded-none border-2 border-black">
+                                                <SelectItem value="Label + confidence" className="text-[11px] font-bold uppercase">All</SelectItem>
+                                                <SelectItem value="Label only" className="text-[11px] font-bold uppercase">Labels</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
                                 </div>
 
-                                <div className="pt-4 border-t border-slate-50 dark:border-white/5">
-                                    <div className="rounded-xl border border-slate-100 dark:border-white/10 overflow-hidden">
-                                        <table className="w-full text-[11px] font-medium border-collapse">
+                                <div className="pt-6 border-t-2 border-black">
+                                    <div className="border-4 border-black overflow-hidden">
+                                        <table className="w-full text-[10px] font-bold border-collapse">
                                             <thead>
-                                                <tr className="bg-slate-50/50 dark:bg-white/5 border-b border-slate-100 dark:border-white/10 font-bold text-slate-400 uppercase tracking-widest">
-                                                    <th className="px-3 py-2 text-left">#</th>
-                                                    <th className="px-3 py-2 text-left">Conf.</th>
-                                                    <th className="px-3 py-2 text-left">Health</th>
-                                                    <th className="px-3 py-2 text-left">Coords</th>
+                                                <tr className="bg-black border-b-4 border-black text-white uppercase tracking-widest text-[9px]">
+                                                    <th className="px-3 py-3 text-left font-black">#</th>
+                                                    <th className="px-3 py-3 text-left font-black">Conf.</th>
+                                                    <th className="px-3 py-3 text-left font-black">Health</th>
+                                                    <th className="px-3 py-3 text-left font-black">Coords</th>
                                                 </tr>
                                             </thead>
-                                            <tbody>
+                                            <tbody className="divide-y-2 divide-black">
                                                 {results.detections.slice(0, 6).map((det: DetectionRecord, idx: number) => (
-                                                    <tr key={det.id} className="border-b border-slate-50 dark:border-white/5 last:border-0 text-slate-700 dark:text-slate-300">
-                                                        <td className="px-3 py-2">{idx + 1}</td>
-                                                        <td className="px-3 py-2">{det.confidence}%</td>
-                                                        <td className="px-3 py-2 text-emerald-500 font-bold">{det.health}</td>
-                                                        <td className="px-3 py-2 opacity-50">[{det.x},{det.y}]</td>
+                                                    <tr key={det.id} className="hover:bg-neutral-50 transition-none text-black">
+                                                        <td className="px-3 py-3">{idx + 1}</td>
+                                                        <td className="px-3 py-3">{det.confidence}%</td>
+                                                        <td className="px-3 py-3 font-black text-[#FF4F00]">{det.health}</td>
+                                                        <td className="px-3 py-3 text-neutral-400">[{det.x},{det.y}]</td>
                                                     </tr>
                                                 ))}
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
-                            </Card>
+                            </div>
                         ) : !isAnalyzing && (
-                            <div className="space-y-6">
-                                <Card className="rounded-[1.5rem] border border-slate-100 dark:border-white/5 bg-white dark:bg-[#111111] p-8 h-auto flex flex-col justify-center items-center text-center space-y-8 border-dashed min-h-[300px]">
-                                    <Bot className="w-12 h-12 text-blue-500 animate-pulse" />
-                                    <h3 className="text-xl font-bold text-slate-500">Ready for Processing</h3>
-                                    <Button onClick={() => handleStartAnalysis()} className="w-full h-16 rounded-2xl bg-[#F4D03F]/10 text-white font-black text-lg uppercase shadow-xl shadow-orange-500/20">
-                                        Process Specimen
-                                    </Button>
-                                </Card>
+                            <div className="space-y-10">
+                                <div className="border-4 border-black border-dashed bg-white p-12 h-auto flex flex-col justify-center items-center text-center space-y-10 min-h-[300px] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                                    <div className="w-16 h-16 bg-black flex items-center justify-center border-4 border-black shadow-[6px_6px_0px_0px_rgba(255,79,0,1)]">
+                                        <Activity className="w-8 h-8 text-white" />
+                                    </div>
+                                    <h3 className="text-3xl font-black uppercase tracking-tighter">Ready</h3>
+                                    <button onClick={() => handleStartAnalysis()} className="w-full h-20 border-4 border-black bg-black text-white font-black text-xl uppercase tracking-widest hover:bg-[#FF4F00] transition-none shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1">
+                                        Identify Specimen
+                                    </button>
+                                </div>
 
                                 {recentDetections.length > 0 && (
-                                    <Card className="rounded-[1.5rem] border-none bg-white dark:bg-[#111111] shadow-sm p-6">
-                                        <div className="flex items-center justify-between mb-4">
-                                            <h3 className="text-sm font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-                                                <Clock className="w-4 h-4 text-gray-400" />
-                                                Recent Analysis
+                                    <div className="border-4 border-black bg-white p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                                        <div className="flex items-center justify-between mb-6 border-b-2 border-black pb-4">
+                                            <h3 className="text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                                                <Clock className="w-4 h-4 text-black" />
+                                                History
                                             </h3>
                                         </div>
-                                        <div className="space-y-3">
+                                        <div className="space-y-4">
                                             {recentDetections.slice(0, 3).map((item, i) => (
-                                                <div key={i} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-white/5 rounded-xl border border-slate-100 dark:border-white/5">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-10 h-10 rounded-lg bg-gray-200 overflow-hidden">
+                                                <div key={i} className="flex items-center justify-between p-4 border-2 border-black bg-neutral-50 hover:bg-neutral-100 transition-none">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-12 h-12 border-2 border-black bg-neutral-200 overflow-hidden">
                                                             {item.thumbnail_url ? (
                                                                 <img src={item.thumbnail_url} alt="Thumbnail" className="w-full h-full object-cover" />
                                                             ) : (
-                                                                <div className="w-full h-full bg-gray-300" />
+                                                                <div className="w-full h-full bg-neutral-300" />
                                                             )}
                                                         </div>
                                                         <div>
-                                                            <p className="text-xs font-bold text-[#0F172A] dark:text-white capitalize">Bee Analysis</p>
-                                                            <p className="text-[10px] text-gray-500">{new Date(item.created_at).toLocaleDateString()}</p>
+                                                            <p className="text-[11px] font-black uppercase tracking-widest">Entry {i + 1}</p>
+                                                            <p className="text-[9px] font-bold text-neutral-400 uppercase">{new Date(item.created_at).toLocaleDateString()}</p>
                                                         </div>
                                                     </div>
                                                     <div className="text-right">
-                                                        <p className="text-xs font-bold text-[#1B9157]">{item.health_score}% Health</p>
+                                                        <p className="text-[11px] font-black uppercase text-[#FF4F00]">{item.health_score}% SCORE</p>
                                                     </div>
                                                 </div>
                                             ))}
                                         </div>
-                                    </Card>
+                                    </div>
                                 )}
                             </div>
                         )}

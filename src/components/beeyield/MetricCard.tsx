@@ -20,28 +20,25 @@ const MetricCard: React.FC<MetricCardProps> = ({
     className
 }) => {
     return (
-        <div className={cn("bg-card border border-border rounded-2xl p-6 relative overflow-hidden group shadow-sm hover:shadow-md transition-all duration-300", className)}>
-            <div className="flex justify-between items-start mb-4">
-                <div className="p-2.5 bg-muted rounded-xl text-muted-foreground group-hover:text-primary transition-colors">
-                    <Icon className="w-5 h-5" />
+        <div className={cn("bg-white border-2 border-black rounded-none p-6 relative overflow-hidden group shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-none", className)}>
+            <div className="flex justify-between items-start mb-6">
+                <div className="p-3 bg-black text-white rounded-none">
+                    <Icon className="w-6 h-6" />
                 </div>
                 {trend && (
-                    <div className="flex items-center gap-1 text-green-600 bg-green-500/10 px-2 py-0.5 rounded-full text-xs font-bold">
+                    <div className="flex items-center gap-1 text-white bg-[#FF4F00] px-2 py-1 border-2 border-black font-black text-[10px] uppercase">
                         <TrendingUp className="w-3 h-3" />
                         {trend}
                     </div>
                 )}
             </div>
 
-            <div className="space-y-1">
-                <h3 className="text-2xl font-bold text-foreground tracking-tight">{value}</h3>
-                <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-wider">
+            <div className="space-y-2">
+                <h3 className="text-4xl font-black text-black tracking-tighter uppercase leading-none">{value}</h3>
+                <p className="text-neutral-500 text-[10px] font-bold uppercase tracking-widest">
                     {description}
                 </p>
             </div>
-
-            {/* Subtle gloss effect for 'clear' aesthetic */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
     );
 };

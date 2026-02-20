@@ -85,11 +85,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     // Determine current backend based on path
     const getActiveBackendFromPath = (path: string): AuthBackend => {
-        if (path.includes('/ceba') || path.startsWith('/admin')) return 'ceba';
-        if (path.includes('/beeyield')) return 'beeyield';
-        if (path.includes('/auth/callback')) {
+        const lowerPath = path.toLowerCase();
+        if (lowerPath.includes('/ceba') || lowerPath.startsWith('/admin')) {
+            return 'ceba';
+        }
+        if (lowerPath.includes('/beeyield')) {
+            return 'beeyield';
+        }
+        if (lowerPath.includes('/auth/callback')) {
             const stored = localStorage.getItem('authBackend') as AuthBackend;
-            if (stored && ['shop', 'beeyield', 'ceba'].includes(stored)) return stored;
+            if (stored && ['shop', 'beeyield', 'ceba'].includes(stored)) {
+                return stored;
+            }
         }
         return 'shop';
     };

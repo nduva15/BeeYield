@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { Loader2, Mail, Lock, User, ShieldCheck, Database } from 'lucide-react';
+import { Loader2, Mail, Lock, User, ShieldCheck, Database, ArrowRight, Zap } from 'lucide-react';
 
 interface BeeYieldRegisterFormProps {
     onSuccess?: () => void;
@@ -29,7 +29,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
         setLoading(true);
 
         if (password !== confirmPassword) {
-            toast.error("Passwords do not match.");
+            toast.error("Passwords mismatch.");
             setLoading(false);
             return;
         }
@@ -42,7 +42,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
         }, 'beeyield');
 
         if (error) {
-            toast.error("Account creation failed", { description: error.message });
+            toast.error("Registry error", { description: error.message });
         } else {
             const { supabaseBeeYield } = await import('@/lib/supabase');
             if (supabaseBeeYield && signupData?.user) {
@@ -55,7 +55,7 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
                 });
             }
 
-            toast.success("Account created. Check your email for a verification link.");
+            toast.success("Identity registered. Check email.");
             onSuccess?.();
         }
         setLoading(false);
@@ -67,121 +67,116 @@ const BeeYieldRegisterForm: React.FC<BeeYieldRegisterFormProps> = ({
         localStorage.setItem('authBackend', 'beeyield');
         const { error } = await signInWithGoogle({ beeyield_active: true }, 'beeyield');
         if (error) {
-            toast.error("Google sync failed", { description: error.message });
+            toast.error("Sinc error", { description: error.message });
             setGoogleLoading(false);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
-            <Button
+        <form onSubmit={handleSubmit} className="space-y-8 bg-white p-8 border-2 border-[#064e3b]">
+            <button
                 type="button"
-                variant="outline"
-                className="w-full h-12 bg-white border-2 border-black text-black hover:bg-black hover:text-white transition-none font-bold text-xs uppercase rounded-none"
                 onClick={handleGoogleSignUp}
                 disabled={googleLoading}
+                className="w-full h-14 bg-white border-2 border-[#064e3b] text-[#064e3b] font-black text-xs uppercase tracking-widest hover:bg-[#facc15] transition-all flex items-center justify-center gap-3"
             >
                 {googleLoading ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                    <ShieldCheck className="mr-2 h-4 w-4" />
+                    <ShieldCheck className="h-4 w-4" />
                 )}
-                Sign up with Google
-            </Button>
+                Register with Google
+            </button>
 
             <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-black" />
+                    <span className="w-full border-t-2 border-[#064e3b]/10" />
                 </div>
-                <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-widest">
-                    <span className="bg-white px-4 text-black border border-black">OR ENTER DETAILS</span>
+                <div className="relative flex justify-center text-[10px] font-black tracking-[0.3em] uppercase">
+                    <span className="bg-white px-6 text-[#064e3b]">Manual Input</span>
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
-                    <Label htmlFor="by-reg-firstName" className="text-black font-bold text-[10px] uppercase tracking-widest">First Name</Label>
-                    <Input
-                        id="by-reg-firstName"
-                        placeholder="John"
+                    <Label className="text-[#064e3b] font-black text-[10px] uppercase tracking-widest">Given Name</Label>
+                    <input
+                        placeholder="INPUT FIRST"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
-                        className="h-12 bg-white border-2 border-black focus:bg-yellow-50 focus:ring-0 text-black font-bold text-xs rounded-none placeholder:text-neutral-400"
+                        className="w-full h-12 bg-white border-2 border-[#064e3b] focus:bg-[#facc15]/10 outline-none px-4 text-[#064e3b] font-bold text-xs uppercase placeholder:opacity-20"
                         required
                     />
                 </div>
                 <div className="space-y-2">
-                    <Label htmlFor="by-reg-lastName" className="text-black font-bold text-[10px] uppercase tracking-widest">Last Name</Label>
-                    <Input
-                        id="by-reg-lastName"
-                        placeholder="Doe"
+                    <Label className="text-[#064e3b] font-black text-[10px] uppercase tracking-widest">Family Name</Label>
+                    <input
+                        placeholder="INPUT LAST"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
-                        className="h-12 bg-white border-2 border-black focus:bg-yellow-50 focus:ring-0 text-black font-bold text-xs rounded-none placeholder:text-neutral-400"
+                        className="w-full h-12 bg-white border-2 border-[#064e3b] focus:bg-[#facc15]/10 outline-none px-4 text-[#064e3b] font-bold text-xs uppercase placeholder:opacity-20"
                         required
                     />
                 </div>
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="by-reg-email" className="text-black font-bold text-[10px] uppercase tracking-widest">Email Address</Label>
-                <Input
-                    id="by-reg-email"
+                <Label className="text-[#064e3b] font-black text-[10px] uppercase tracking-widest">Network Email</Label>
+                <input
                     type="email"
-                    placeholder="john@example.com"
+                    placeholder="E.G. USER@BEEYIELD.COM"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="h-12 bg-white border-2 border-black focus:bg-yellow-50 focus:ring-0 text-black font-bold text-xs rounded-none placeholder:text-neutral-400"
+                    className="w-full h-12 bg-white border-2 border-[#064e3b] focus:bg-[#facc15]/10 outline-none px-4 text-[#064e3b] font-bold text-xs uppercase placeholder:opacity-20"
                     required
                 />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
-                    <Label htmlFor="by-reg-password" className="text-black font-bold text-[10px] uppercase tracking-widest">Password</Label>
-                    <Input
-                        id="by-reg-password"
+                    <Label className="text-[#064e3b] font-black text-[10px] uppercase tracking-widest">Access Key</Label>
+                    <input
                         type="password"
                         placeholder="••••••••"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="h-12 bg-white border-2 border-black focus:bg-yellow-50 focus:ring-0 text-black font-bold text-xs rounded-none placeholder:text-neutral-400"
+                        className="w-full h-12 bg-white border-2 border-[#064e3b] focus:bg-[#facc15]/10 outline-none px-4 text-[#064e3b] font-bold text-xs uppercase"
                         required
                     />
                 </div>
                 <div className="space-y-2">
-                    <Label htmlFor="by-reg-confirm" className="text-black font-bold text-[10px] uppercase tracking-widest">Confirm Password</Label>
-                    <Input
-                        id="by-reg-confirm"
+                    <Label className="text-[#064e3b] font-black text-[10px] uppercase tracking-widest">Confirm Key</Label>
+                    <input
                         type="password"
                         placeholder="••••••••"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="h-12 bg-white border-2 border-black focus:bg-yellow-50 focus:ring-0 text-black font-bold text-xs rounded-none placeholder:text-neutral-400"
+                        className="w-full h-12 bg-white border-2 border-[#064e3b] focus:bg-[#facc15]/10 outline-none px-4 text-[#064e3b] font-bold text-xs uppercase"
                         required
                     />
                 </div>
             </div>
 
-            <Button
+            <button
                 type="submit"
-                className="w-full h-12 bg-[#FF4F00] text-white font-bold uppercase tracking-widest text-xs rounded-none border-2 border-black hover:bg-black hover:text-[#FF4F00] transition-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                 disabled={loading}
+                className="w-full h-14 bg-[#10b981] border-2 border-[#064e3b] text-white font-black uppercase text-xs tracking-widest hover:bg-black hover:text-[#10b981] transition-all shadow-[6px_6px_0px_0px_rgba(6,78,59,1)] active:shadow-none active:translate-x-1 active:translate-y-1"
             >
-                <div className="flex items-center gap-2">
-                    <Database className="w-4 h-4" /> Create Account
+                <div className="flex items-center justify-center gap-3">
+                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Database className="w-4 h-4" />}
+                    Initialize Account
                 </div>
-            </Button>
+            </button>
 
             {onSwitchToLogin && (
-                <p className="text-center text-[10px] font-bold text-black uppercase tracking-widest">
-                    Already have an account?{' '}
+                <p className="text-center text-[10px] font-black text-[#064e3b] uppercase tracking-widest pt-4">
+                    Existing User?{' '}
                     <button
                         type="button"
                         onClick={onSwitchToLogin}
-                        className="text-[#007AFF] hover:underline"
+                        className="underline decoration-2 decoration-[#facc15] underline-offset-4 hover:text-[#10b981]"
                     >
-                        Log in
+                        Login Path
                     </button>
                 </p>
             )}

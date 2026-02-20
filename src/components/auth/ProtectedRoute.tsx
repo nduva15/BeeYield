@@ -22,25 +22,19 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireBeeYie
     }
 
     // Determine the relevant user for the current path
-    // This prevents race conditions where activeBackend hasn't updated yet during navigation
-    let effectiveUser = user; // Default to generic user (usually shop)
+    let effectiveUser = user;
+    let loginPath = '/login';
+    const path = location.pathname.toLowerCase();
 
-    // STRICT SEPARATION: Ignore 'user' (which actively switches) and check specific session buckets
-    if (location.pathname.includes('beeyield')) {
+    if (path.includes('beeyield')) {
         effectiveUser = beeyieldUser;
-    } else if (location.pathname.includes('ceba') || location.pathname.startsWith('/admin')) {
+        loginPath = '/beeyield-login';
+    } else if (path.includes('ceba') || path.startsWith('/admin')) {
         effectiveUser = cebaUser;
+        loginPath = '/ceba/login';
     }
 
     if (!effectiveUser) {
-        // Redirect to login but save the current location
-        let loginPath = '/login';
-        if (location.pathname.includes('beeyield')) {
-            loginPath = '/beeyield-login';
-        } else if (location.pathname.includes('ceba') || location.pathname.startsWith('/admin')) {
-            loginPath = '/ceba/login';
-        }
-
         return <Navigate to={loginPath} state={{ from: location }} replace />;
     }
 

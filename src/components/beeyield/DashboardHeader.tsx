@@ -1,130 +1,105 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { cn } from '@/lib/utils';
 import {
-    Search, Bell, Settings, LogOut,
-    ChevronDown, Check, Wifi, Globe, User, Terminal
+    Search,
+    Bell,
+    Settings,
+    User,
+    ChevronDown,
+    Zap,
+    Signal,
+    Activity,
+    Database,
+    Globe,
+    Terminal,
+    RefreshCw
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useLanguage } from '@/contexts/LanguageContext';
-import { useAuth } from '@/contexts/AuthContext';
-import { LanguageCode } from '@/lib/translations';
-import { cn } from '@/lib/utils';
 
 interface DashboardHeaderProps {
-    onLogout: () => void;
     onTabChange: (tab: string) => void;
-    activeTab: string;
 }
 
-const languages = [
-    { code: 'EN' as LanguageCode, name: 'ENGLISH' },
-    { code: 'FR' as LanguageCode, name: 'FRANÇAIS' },
-    { code: 'DE' as LanguageCode, name: 'DEUTSCH' },
-    { code: 'ES' as LanguageCode, name: 'ESPAÑOL' },
-    { code: 'SW' as LanguageCode, name: 'KISWAHILI' },
-    { code: 'ZH' as LanguageCode, name: '中文' },
-    { code: 'PL' as LanguageCode, name: 'POLSKI' },
-];
-
-const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onLogout, onTabChange, activeTab }) => {
-    const { language, setLanguage, t } = useLanguage();
-    const { user } = useAuth();
-
-    const selectedLang = languages.find(l => l.code === language) || languages[0];
+const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onTabChange }) => {
+    const { user, beeyieldUser } = useAuth();
+    const { language, setLanguage } = useLanguage();
 
     return (
-        <header className="w-full h-20 flex items-center justify-between px-8 bg-white border-b-2 border-black sticky top-0 z-[60] antialiased">
-            {/* Context Line - Brutalist Path */}
-            <div className="flex items-center gap-2">
-                <div className="flex items-center gap-3 px-4 py-2 bg-black text-white">
-                    <Terminal className="w-4 h-4" />
-                    <span className="text-[10px] font-black uppercase tracking-widest">{activeTab.replace('-', ' ')}</span>
+        <header className="h-20 bg-white border-b-2 border-black sticky top-0 z-30 flex items-center justify-between px-8">
+            {/* System Status */}
+            <div className="flex items-center gap-6">
+                <div className="flex items-center gap-2 px-3 py-1 bg-black border-2 border-black text-white">
+                    <Signal className="w-3 h-3" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest whitespace-nowrap">Status: Online</span>
+                </div>
+                <div className="hidden md:flex items-center gap-3 text-black">
+                    <Terminal className="w-4 h-4 opacity-40" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">session/registry</span>
                 </div>
             </div>
 
-            {/* Actions Bar */}
-            <div className="flex items-center gap-0">
-
-                {/* Search Bar - Tool UI */}
-                <div className="relative border-l-2 border-black last:border-r-2 h-20 flex items-center px-6 group">
-                    <Search className="w-4 h-4 text-black mr-4" />
+            {/* Actions */}
+            <div className="flex items-center gap-4">
+                <div className="hidden lg:flex items-center border-2 border-black h-11 px-4 bg-white transition-none focus-within:bg-neutral-50">
+                    <Search className="w-4 h-4 text-black mr-3" />
                     <input
-                        placeholder="SEARCH DATA..."
-                        className="bg-transparent text-[11px] font-bold uppercase tracking-wider focus:outline-none w-48 placeholder:text-gray-400"
+                        type="text"
+                        placeholder="Search..."
+                        className="bg-transparent border-none outline-none text-[10px] font-bold uppercase text-black placeholder:text-neutral-300 w-48"
                     />
                 </div>
 
-                {/* Language - Functional Menu */}
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <button className="h-20 px-8 border-l-2 border-black hover:bg-gray-50 flex items-center gap-3 transition-colors">
-                            <Globe className="w-4 h-4" />
-                            <span className="text-[11px] font-black uppercase">{selectedLang.code}</span>
-                            <ChevronDown className="w-3 h-3" />
-                        </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48 rounded-none border-2 border-black p-0 bg-white shadow-none mt-0">
-                        {languages.map((lang) => (
-                            <DropdownMenuItem
-                                key={lang.code}
-                                onClick={() => setLanguage(lang.code)}
-                                className={cn(
-                                    "px-4 py-3 cursor-pointer text-[10px] font-black uppercase rounded-none border-b border-black last:border-none",
-                                    language === lang.code ? "bg-emerald-500 text-black" : "hover:bg-gray-100"
-                                )}
-                            >
-                                {lang.name}
-                            </DropdownMenuItem>
-                        ))}
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <div className="h-11 w-2 bg-black/10 mx-2 hidden lg:block" />
 
-                {/* Alerts - Counter UI */}
+                {/* Notifications */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <button className="h-20 w-20 border-l-2 border-black hover:bg-gray-50 flex items-center justify-center relative group transition-colors">
-                            <Bell className="w-5 h-5" />
-                            <div className="absolute top-6 right-6 w-2 h-2 bg-red-500 border border-black" />
+                        <button className="h-11 w-11 border-2 border-black bg-white flex items-center justify-center hover:bg-neutral-100 transition-none">
+                            <Bell className="w-4 h-4" />
                         </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-80 rounded-none border-2 border-black p-6 bg-white shadow-none mt-0">
-                        <h4 className="text-[10px] font-black uppercase tracking-widest mb-4 border-b-2 border-black pb-2">System Alerts</h4>
-                        <div className="py-8 text-center border-2 border-dashed border-gray-200">
-                            <Check className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
-                            <p className="text-[10px] font-bold text-gray-400 uppercase">No active alerts</p>
+                    <DropdownMenuContent align="end" className="w-80 rounded-none border-2 border-black p-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white animate-none">
+                        <div className="bg-black p-4 border-b-2 border-black">
+                            <p className="text-[10px] font-bold text-white uppercase tracking-widest">Alerts</p>
+                        </div>
+                        <div className="p-4 text-center py-10">
+                            <RefreshCw className="w-8 h-8 text-neutral-200 mx-auto mb-3" />
+                            <p className="text-[10px] font-bold uppercase text-neutral-300">No Notifications</p>
                         </div>
                     </DropdownMenuContent>
                 </DropdownMenu>
 
-                {/* Profile - Direct UI */}
-                <div className="h-20 px-8 border-l-2 border-black flex items-center gap-4 bg-gray-50">
-                    <div className="w-8 h-8 bg-black flex items-center justify-center">
-                        <User className="w-5 h-5 text-white" />
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="text-[9px] font-bold text-gray-500 uppercase">Status</span>
-                        <span className="text-[10px] font-black uppercase tracking-tighter">Connected</span>
-                    </div>
-                </div>
-
-                {/* Settings & Logout */}
-                <button
-                    onClick={() => onTabChange('settings')}
-                    className="h-20 w-20 border-l-2 border-black hover:bg-gray-50 flex items-center justify-center transition-colors"
-                >
-                    <Settings className="w-5 h-5" />
-                </button>
-                <button
-                    onClick={onLogout}
-                    className="h-20 w-20 border-l-2 border-r-2 border-black hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors"
-                >
-                    <LogOut className="w-5 h-5" />
-                </button>
+                {/* Profile */}
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <button className="h-11 flex items-center gap-3 px-4 border-2 border-black bg-[#FF4F00] text-white hover:bg-black transition-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1">
+                            <div className="w-6 h-6 border-2 border-white/20 bg-white/10 overflow-hidden flex items-center justify-center">
+                                <User className="w-4 h-4" />
+                            </div>
+                            <span className="text-[10px] font-bold uppercase tracking-widest hidden md:block">User: Admin</span>
+                            <ChevronDown className="w-3 h-3" />
+                        </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56 rounded-none border-2 border-black p-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white animate-none">
+                        <DropdownMenuLabel className="p-4 text-[10px] font-bold uppercase text-neutral-400 bg-neutral-50">Account</DropdownMenuLabel>
+                        <DropdownMenuSeparator className="bg-black/10 m-0" />
+                        <DropdownMenuItem onClick={() => onTabChange('settings')} className="p-4 text-[10px] font-bold uppercase hover:bg-[#FF4F00] hover:text-white focus:bg-[#FF4F00] focus:text-white rounded-none cursor-pointer transition-none">
+                            Settings
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="p-4 text-[10px] font-bold uppercase hover:bg-neutral-100 focus:bg-neutral-100 rounded-none cursor-pointer transition-none">
+                            API Keys
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
         </header>
     );
