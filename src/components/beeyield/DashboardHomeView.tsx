@@ -164,6 +164,56 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ apiaries, onTabCh
                 ))}
             </div>
 
+            {/* AI Yield Summary Block */}
+            <Card className="rounded-none border-4 border-[#064e3b] bg-[#064e3b] text-white shadow-[12px_12px_0px_0px_rgba(16,185,129,1)] overflow-hidden">
+                <div className="flex flex-col lg:flex-row divide-y-4 lg:divide-y-0 lg:divide-x-4 divide-white/10">
+                    <div className="p-10 flex-1 space-y-6">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-white/10 flex items-center justify-center">
+                                <TrendingUp className="w-6 h-6 text-[#facc15]" />
+                            </div>
+                            <div>
+                                <h3 className="text-2xl font-black uppercase tracking-tighter italic">AI YIELD PREDICTION</h3>
+                                <p className="text-[10px] font-black uppercase text-white/40 tracking-widest">Season Aggregate Forecast v4.2</p>
+                            </div>
+                        </div>
+                        <div className="flex items-baseline gap-4">
+                            <span className="text-8xl font-black tabular-nums tracking-tighter italic">742.4</span>
+                            <span className="text-2xl font-black text-[#10b981]">METRIC TONS</span>
+                        </div>
+                        <div className="flex items-center gap-4 pt-4 border-t-2 border-white/10">
+                            <Badge className="bg-[#10b981] text-white rounded-none px-4 py-1 text-[10px] font-black italic">+12.8% YOY</Badge>
+                            <p className="text-[10px] font-black uppercase text-white/40">Confidence Interval: [718.2 - 765.9]</p>
+                        </div>
+                    </div>
+                    <div className="p-10 lg:w-96 bg-white flex flex-col justify-between">
+                        <div>
+                            <span className="text-[9px] font-black uppercase text-[#064e3b]/40 tracking-widest block mb-4">Risk Assessment</span>
+                            <div className="space-y-4">
+                                {[
+                                    { label: 'Pests/Pathogens', val: 12, color: 'bg-green-500' },
+                                    { label: 'Weather Impact', val: 8, color: 'bg-green-500' },
+                                    { label: 'Hive Mortality', val: 4, color: 'bg-[#10b981]' },
+                                ].map(risk => (
+                                    <div key={risk.label} className="space-y-1">
+                                        <div className="flex justify-between text-[9px] font-black uppercase text-[#064e3b]">
+                                            <span>{risk.label}</span>
+                                            <span>{risk.val}% RISK</span>
+                                        </div>
+                                        <div className="h-1.5 w-full bg-neutral-100 border border-[#064e3b]/10">
+                                            <div className={cn("h-full", risk.color)} style={{ width: `${risk.val}%` }} />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <Button className="w-full h-12 mt-8 rounded-none bg-[#064e3b] text-white font-black uppercase tracking-[0.2em] text-[10px] shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
+                            Generate Full Season Report
+                        </Button>
+                    </div>
+                </div>
+            </Card>
+
             {/* Orchard Detail Cards */}
             <div className="space-y-6">
                 <div className="flex items-center justify-between border-b-4 border-[#064e3b]/10 pb-4">

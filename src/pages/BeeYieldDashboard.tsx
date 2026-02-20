@@ -92,7 +92,10 @@ import DashboardHomeView from '@/components/beeyield/DashboardHomeView';
 import HiveTelemetryView from '@/components/beeyield/HiveTelemetryView';
 import ContractVerificationModule from '@/components/beeyield/ContractVerificationModule';
 import GatewayHub from '@/components/beeyield/GatewayHub';
-import SpatialCoverageView from '@/components/beeyield/SpatialCoverageView';
+import SpatialCoverageView from '@/components/telemetry/SpatialCoverageView';
+import MasterMapView from '@/pages/MasterMapView';
+import BeeCalculatorSuite from '@/pages/BeeCalculatorSuite';
+import BloomPhenology from '@/pages/BloomPhenology';
 
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
@@ -361,7 +364,8 @@ const BeeYieldDashboard: React.FC = () => {
             case 'precision-pollination-grid':
                 return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} activeSubPageOverride="grid" />;
             case 'bloom-tracking':
-                return <BloomTrackingView onTabChange={handleTabChange} />;
+            case 'bloom-phenology':
+                return <BloomPhenology />;
             case 'pollination-calcs':
             case 'pollination-engine':
                 return <PollinationEngine onTabChange={handleTabChange} />;
@@ -376,7 +380,8 @@ const BeeYieldDashboard: React.FC = () => {
 
             case 'logistics-setup':
             case 'orchard-mapper':
-                return <OrchardMapper onTabChange={handleTabChange} />;
+            case 'master-map':
+                return <MasterMapView />;
 
             case 'fleet-security':
             case 'geospatial-security':
@@ -387,7 +392,8 @@ const BeeYieldDashboard: React.FC = () => {
                 return <AcousticMoodTransformer />;
 
             case 'bee-calculator':
-                return <BeeCalculatorPage />;
+            case 'calculator-suite':
+                return <BeeCalculatorSuite />;
 
             case 'hpa-optimizer':
                 return <HpaOptimizer />;
