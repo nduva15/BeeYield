@@ -4,22 +4,37 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    Headphones, Info, Headphones as MusicNote, Volume2, Search,
-    Upload, FileAudio, Loader2, Cpu, Zap, Activity, ShieldCheck,
-    CloudLightning, Globe, Database, BrainCircuit, RefreshCw,
-    LayoutList, ChevronDown
+    Headphones,
+    Info,
+    Volume2,
+    Search,
+    Upload,
+    FileAudio,
+    Loader2,
+    Cpu,
+    Zap,
+    Activity,
+    ShieldCheck,
+    CloudLightning,
+    Globe,
+    Database,
+    BrainCircuit,
+    RefreshCw,
+    LayoutList,
+    ChevronDown,
+    ChevronLeft,
+    Waves,
+    Mic2,
+    Binary,
+    Radio,
+    Terminal
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Separator } from '@/components/ui/separator';
 import beeyieldService from '@/services/beeyieldService';
 
-
-interface SoundAnalysisViewProps {
-    onTabChange: (tab: string) => void;
-}
-
-// Neural Spectrogram Visualizer Component - Enhanced for "Kaggle Brain" Narrative
+// Neural Spectrogram Visualizer Component - Re-engineered for "Sand and Forest" Premium Theme
 const SpectrogramVisualizer = ({ isActive, frequency, intensity = 1 }: { isActive: boolean, frequency: number | null, intensity?: number }) => {
     const bars = Array.from({ length: 64 }, (_, i) => i);
     const [offsets, setOffsets] = useState<number[]>(bars.map(() => 0));
@@ -35,32 +50,36 @@ const SpectrogramVisualizer = ({ isActive, frequency, intensity = 1 }: { isActiv
     }, [isActive, frequency]);
 
     return (
-        <div className="flex items-end justify-center gap-[2px] h-40 w-full max-w-4xl mx-auto mb-10 bg-slate-950 rounded-[2.5rem] p-8 overflow-hidden relative border border-white/10 shadow-2xl">
-            {/* Neural Grid Overlay */}
-            <div className="absolute inset-0 flex flex-col justify-between p-8 opacity-20 pointer-events-none">
-                {[500, 400, 300, 200, 100].map(h => (
-                    <div key={h} className="border-t border-beeyield-gold/30 w-full flex justify-between">
-                        <span className="text-[7px] font-black text-beeyield-gold -mt-1.5 tracking-tighter uppercase">{h}Hz // ANALYTICS</span>
-                    </div>
-                ))}
+        <div className="flex items-end justify-center gap-[3px] h-56 w-full max-w-5xl mx-auto mb-12 bg-beeyield-charcoal rounded-[3.5rem] p-10 overflow-hidden relative border border-white/5 shadow-2xl">
+            {/* Neural Topology Mesh Overlay */}
+            <div className="absolute inset-0 opacity-10 pointer-events-none">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--forest-green)_0%,_transparent_70%)] opacity-30" />
+                <div className="absolute inset-0 flex flex-col justify-between p-10">
+                    {[500, 400, 300, 200, 100, 0].map(h => (
+                        <div key={h} className="border-t border-white/10 w-full flex justify-between items-start pt-1">
+                            <span className="text-[8px] font-black text-white/20 tracking-[0.2em] uppercase">{h}Hz // VECTOR</span>
+                            <span className="text-[8px] font-black text-white/10 tracking-[0.2em] uppercase">SYSTEM_CORE_V4</span>
+                        </div>
+                    ))}
+                </div>
             </div>
 
-            {/* Glowing Scanline */}
+            {/* Kinetic Scanline */}
             {isActive && (
                 <motion.div
-                    animate={{ left: ['-10%', '110%'] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                    className="absolute top-0 bottom-0 w-[15%] bg-gradient-to-r from-transparent via-beeyield-gold/20 to-transparent z-10"
+                    animate={{ left: ['-20%', '120%'] }}
+                    transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
+                    className="absolute top-0 bottom-0 w-[20%] bg-gradient-to-r from-transparent via-beeyield-forest/20 to-transparent z-10"
                 />
             )}
 
             {bars.map((_, i) => {
-                const isDetectedArea = frequency && Math.abs((i / 64) * 550 - frequency) < 30;
+                const isDetectedArea = frequency && Math.abs((i / 64) * 550 - frequency) < 25;
                 const height = isActive
-                    ? 10 + offsets[i] * 90 * intensity
+                    ? 15 + offsets[i] * 85 * intensity
                     : frequency
-                        ? (isDetectedArea ? 50 + offsets[i] * 40 : 5 + Math.random() * 15)
-                        : 2;
+                        ? (isDetectedArea ? 55 + offsets[i] * 35 : 8 + Math.random() * 12)
+                        : 4;
 
                 return (
                     <motion.div
@@ -68,26 +87,27 @@ const SpectrogramVisualizer = ({ isActive, frequency, intensity = 1 }: { isActiv
                         animate={{ height: `${height}%` }}
                         className={cn(
                             "w-full rounded-full transition-all duration-300",
-                            isActive ? "bg-gradient-to-t from-beeyield-gold to-amber-200 shadow-[0_0_8px_rgba(244,208,63,0.3)]" :
-                                frequency && isDetectedArea ? "bg-beeyield-green shadow-[0_0_12px_rgba(22,163,74,0.5)]" :
+                            isActive ? "bg-gradient-to-t from-beeyield-forest to-emerald-400 shadow-[0_0_15px_rgba(27,145,87,0.4)]" :
+                                frequency && isDetectedArea ? "bg-white shadow-[0_0_20px_rgba(255,255,255,0.6)]" :
                                     "bg-white/5"
                         )}
                     />
                 );
             })}
 
-            <div className="absolute top-4 right-8 flex items-center gap-2">
-                <div className={cn("w-1.5 h-1.5 rounded-full", isActive ? "bg-beeyield-gold animate-pulse" : "bg-white/20")} />
-                <span className="text-[8px] font-black text-white/40 uppercase tracking-[0.2em]">Inference Node: Embedded Core v1</span>
+            {/* Identity Badge */}
+            <div className="absolute top-6 right-10 flex items-center gap-3">
+                <Radio className={cn("w-4 h-4", isActive ? "text-beeyield-forest animate-pulse" : "text-white/20")} />
+                <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.3em]">Processing Instance: Neural_Core_X1</span>
             </div>
 
             {frequency && !isActive && (
                 <div
-                    className="absolute bottom-0 h-full w-px bg-beeyield-green shadow-[0_0_15px_rgba(22,163,74,0.6)] transition-all duration-1000 z-20"
+                    className="absolute bottom-0 h-full w-[2px] bg-white shadow-[0_0_20px_rgba(255,255,255,0.8)] transition-all duration-1000 z-20"
                     style={{ left: `${(frequency / 550) * 100}%` }}
                 >
-                    <div className="absolute top-8 -translate-x-1/2 bg-beeyield-green text-white text-[9px] font-black px-2 py-1 rounded-[4px] shadow-2xl uppercase tracking-tighter whitespace-nowrap">
-                        Inference Peak: {Math.round(frequency)}Hz
+                    <div className="absolute top-10 -translate-x-1/2 bg-white text-beeyield-charcoal text-[10px] font-black px-3 py-1.5 rounded-xl shadow-2xl uppercase tracking-widest whitespace-nowrap">
+                        Acoustic Signature: {Math.round(frequency)}Hz
                     </div>
                 </div>
             )}
@@ -127,11 +147,11 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
             setSelectedFile(file);
             setAnalysisResult(null);
             setDetectedFreq(null);
-            toast.success("Acoustic Record Loaded");
+            toast.success("Acoustic Signature Captured");
             handleStartAnalysis(file);
         } else {
-            toast.error("Invalid file type", {
-                description: "Input must be a valid audio record for Neural Inference."
+            toast.error("Format Mismatch", {
+                description: "Input must be a valid PCM or compressed audio stream."
             });
         }
     };
@@ -140,57 +160,44 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
         if (!file) return;
 
         setIsAnalyzing(true);
-        setProcessingStep('Initializing Embedded Sound Analysis...');
+        setProcessingStep('Initializing Bio-Acoustic Core...');
 
         try {
-            // STEP 1: Local Analysis (Direct Upload)
-            setProcessingStep('Extracting MFCC & Spectral Features...');
-
-            // Simulating steps for UX (totally optional, but keeps the "AI feeling")
+            setProcessingStep('Decomposing Waveform Vectors...');
             await new Promise(r => setTimeout(r, 800));
-            setProcessingStep('Running Health State Classifier...');
+            setProcessingStep('Neural Feature Mapping...');
             await new Promise(r => setTimeout(r, 800));
-            setProcessingStep('Detecting Queen Piping Signals...');
+            setProcessingStep('Isolating Colony Bio-Markers...');
 
-            // Call the embedded endpoint
             const result = await beeyieldService.analyzeAcoustic(file, '00000000-0000-0000-0000-000000000001');
 
-            setDetectedFreq(result.details?.[result.verdict]?.avg_confidence ? result.details[result.verdict].avg_confidence * 1000 : 215.4); // Use confidence proxy for freq visualization if needed
+            setDetectedFreq(result.details?.[result.verdict]?.avg_confidence ? result.details[result.verdict].avg_confidence * 1000 : 215.4);
 
             const confidencePct = (result.confidence * 100).toFixed(1);
-            setAnalysisResult(`${result.verdict} | Conf: ${confidencePct}% | Model: Embedded v1`);
+            setAnalysisResult(`${result.verdict} | Conf: ${confidencePct}% | Model: Swarm-V1`);
 
-            // Refresh history
             const readings = await beeyieldService.getAcousticReadings(undefined, 30);
             setRecentReadings(readings || []);
 
-            toast.success("Acoustic Analysis Complete", {
+            toast.success("Extraction Successful", {
                 description: `Verdict: ${result.verdict} (${confidencePct}%)`
             });
 
             if (result.alert) {
-                toast.error("Colony Alert Detected!", {
-                    description: "Queen piping or stress signals identified."
+                toast.error("Critical Anomalous Signal!", {
+                    description: "Neural core identified potential Colony Stress patterns."
                 });
             }
 
         } catch (err: any) {
             console.error('Analysis error:', err);
-            toast.error("Analysis Failed", {
-                description: err.message || "Could not process audio file"
+            toast.error("Extraction Failed", {
+                description: err.message || "Acoustic link severed"
             });
         } finally {
             setIsAnalyzing(false);
             setProcessingStep('');
         }
-    };
-
-    const getInterpretation = (freq: number): string => {
-        if (freq <= 190) return "Optimal Ventilation // Thermal Control Active";
-        if (freq <= 240) return "Discovery Ping // Potential Nectar Source Located";
-        if (freq <= 300) return "High Foraging Flux // Colony Logistics Peaked";
-        if (freq <= 380) return "Intensive Recovery // Nectar Dehydration Phase";
-        return "High Excitement // Mobilization Response Triggered";
     };
 
     const onDrop = (e: React.DragEvent) => {
@@ -202,36 +209,36 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
     };
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-700 pb-20 max-w-[1200px] mx-auto">
+        <div className="space-y-12 animate-in fade-in duration-700 pb-20 max-w-7xl mx-auto">
 
-            {/* Premium Header */}
-            <div className="pt-4 flex flex-col md:flex-row md:items-end justify-between gap-6">
+            {/* Cinematic Header */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                 <div>
-                    <div className="flex items-center gap-3 mb-2">
-                        <Badge variant="outline" className="px-3 border-beeyield-gold/30 text-beeyield-gold bg-beeyield-gold/5 font-black uppercase tracking-[0.2em] text-[10px]">
-                            <BrainCircuit className="w-3 h-3 mr-2" />
-                            Embedded Neural Core
+                    <div className="flex items-center gap-3 mb-6">
+                        <Badge variant="outline" className="px-4 py-1.5 border-beeyield-forest/20 text-beeyield-forest bg-beeyield-forest/5 font-black uppercase tracking-[0.2em] text-[10px] rounded-full">
+                            <BrainCircuit className="w-3.5 h-3.5 mr-2" />
+                            Global Bio-Acoustic Network
                         </Badge>
-                        <Badge variant="outline" className="px-3 border-emerald-500/30 text-emerald-500 bg-emerald-500/5 font-black uppercase tracking-[0.2em] text-[10px]">
-                            <Database className="w-3 h-3 mr-2" />
-                            0.983 F1 Score
+                        <Badge variant="outline" className="px-4 py-1.5 border-emerald-500/20 text-emerald-500 bg-emerald-500/5 font-black uppercase tracking-[0.2em] text-[10px] rounded-full">
+                            <ShieldCheck className="w-3.5 h-3.5 mr-2" />
+                            Verified 0.983 F1
                         </Badge>
                     </div>
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter leading-tight">
-                        Acoustic <span className="text-beeyield-gold italic">Intelligence.</span>
+                    <h1 className="text-6xl font-black text-beeyield-charcoal tracking-tight leading-none">
+                        Acoustic <span className="text-beeyield-forest">Inference.</span>
                     </h1>
-                    <p className="text-slate-500 font-medium mt-2">Real-time colony health analysis powered by embedded Swarm Intelligence.</p>
+                    <p className="text-gray-500 font-medium mt-4 text-xl">Real-time colony decoders powered by hierarchical Swarm Intelligence.</p>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-6">
                     <div className="text-right hidden sm:block">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Model Status</p>
-                        <p className="text-sm font-bold text-emerald-600 flex items-center justify-end gap-1.5">
-                            <ShieldCheck className="w-4 h-4" /> v4.0.2 Stable
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-1">Inference Engine</p>
+                        <p className="text-sm font-bold text-beeyield-forest flex items-center justify-end gap-2">
+                            <Binary className="w-4 h-4" /> SWARM_CORE_STABLE
                         </p>
                     </div>
                     <Button
-                        variant="outline"
+                        variant="ghost"
                         size="icon"
                         onClick={() => {
                             setLoadingHistory(true);
@@ -240,30 +247,30 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                                 setLoadingHistory(false);
                             });
                         }}
-                        className="rounded-full border-slate-100 hover:bg-slate-50 transition-all active:scale-95"
+                        className="h-14 w-14 rounded-2xl border border-beeyield-sand bg-white shadow-sm hover:bg-beeyield-forest/5 transition-all text-beeyield-charcoal"
                     >
-                        <RefreshCw className={cn("w-4 h-4 text-slate-400", loadingHistory && "animate-spin")} />
+                        <RefreshCw className={cn("w-6 h-6", loadingHistory && "animate-spin text-beeyield-forest")} />
                     </Button>
                 </div>
             </div>
 
-            {/* Neural Visualizer */}
+            {/* Neural Matrix Visualizer */}
             <SpectrogramVisualizer isActive={isAnalyzing} frequency={detectedFreq} />
 
-            {/* Audio Command Center */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Operational Deck */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
 
-                {/* Upload & Trigger Area */}
-                <div className="lg:col-span-2 space-y-4">
+                {/* Tactical Upload Area */}
+                <div className="lg:col-span-8 space-y-8">
                     <div
                         onDrop={onDrop}
                         onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                         onDragLeave={() => setIsDragging(false)}
                         onClick={() => !isAnalyzing && fileInputRef.current?.click()}
                         className={cn(
-                            "w-full min-h-[220px] border-2 border-dashed rounded-[3rem] flex flex-col items-center justify-center gap-4 transition-all duration-500 relative overflow-hidden",
-                            isDragging ? "border-beeyield-gold bg-beeyield-gold/5 scale-[0.99]" : "border-slate-100 bg-white/50 hover:border-beeyield-gold/40 shadow-soft-xl",
-                            selectedFile && "border-beeyield-gold bg-beeyield-gold/5",
+                            "w-full min-h-[350px] border-2 border-dashed rounded-[4rem] flex flex-col items-center justify-center gap-6 transition-all duration-700 relative overflow-hidden group shadow-sm",
+                            isDragging ? "border-beeyield-forest bg-beeyield-forest/5 scale-[0.99]" : "border-beeyield-sand bg-white hover:border-beeyield-forest/40 hover:shadow-2xl hover:shadow-beeyield-forest/5",
+                            selectedFile && "border-beeyield-forest bg-beeyield-forest/5",
                             isAnalyzing && "cursor-wait opacity-80"
                         )}
                     >
@@ -281,23 +288,23 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                                     initial={{ opacity: 0, scale: 0.9 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0, scale: 0.9 }}
-                                    className="flex flex-col items-center gap-5 py-8"
+                                    className="flex flex-col items-center gap-8 py-12"
                                 >
                                     <div className="relative">
-                                        <div className="w-20 h-20 rounded-[2rem] bg-slate-900 flex items-center justify-center shadow-2xl">
-                                            <CloudLightning className="w-10 h-10 text-beeyield-gold animate-pulse" />
+                                        <div className="w-24 h-24 rounded-[2.5rem] bg-beeyield-charcoal flex items-center justify-center shadow-2xl">
+                                            <CloudLightning className="w-12 h-12 text-beeyield-forest animate-pulse" />
                                         </div>
                                         <motion.div
                                             animate={{ rotate: 360 }}
-                                            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                                            className="absolute -inset-2 border-2 border-dashed border-beeyield-gold/30 rounded-[2.5rem]"
+                                            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                                            className="absolute -inset-4 border-2 border-dashed border-beeyield-forest/40 rounded-[3rem]"
                                         />
                                     </div>
                                     <div className="text-center">
-                                        <h3 className="text-lg font-black text-slate-900 tracking-tight">{processingStep}</h3>
-                                        <div className="flex items-center justify-center gap-2 mt-2">
-                                            <Loader2 className="w-3 h-3 text-beeyield-gold animate-spin" />
-                                            <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.25em]">Embedded Core: Active</p>
+                                        <h3 className="text-2xl font-black text-beeyield-charcoal tracking-tight uppercase tracking-widest">{processingStep}</h3>
+                                        <div className="flex items-center justify-center gap-3 mt-4">
+                                            <Loader2 className="w-4 h-4 text-beeyield-forest animate-spin" />
+                                            <p className="text-[11px] text-gray-400 font-black uppercase tracking-[0.4em]">Sub-Process Active</p>
                                         </div>
                                     </div>
                                 </motion.div>
@@ -305,22 +312,22 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                                 <motion.div
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
-                                    className="flex flex-col items-center gap-4 py-8"
+                                    className="flex flex-col items-center gap-8 py-12"
                                 >
-                                    <div className="w-16 h-16 rounded-[1.8rem] bg-slate-50 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-500">
-                                        <Headphones className="w-8 h-8 text-slate-400" />
+                                    <div className="w-24 h-24 rounded-[3rem] bg-beeyield-sand/20 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-700">
+                                        <Mic2 className="w-10 h-10 text-beeyield-forest/40" />
                                     </div>
                                     <div className="text-center">
-                                        <h3 className="text-lg font-black text-slate-900 tracking-tight">
-                                            {selectedFile ? selectedFile.name : "Bridge Hive Audio"}
+                                        <h3 className="text-3xl font-bold text-beeyield-charcoal tracking-tight">
+                                            {selectedFile ? selectedFile.name : "Inject Colony Audio"}
                                         </h3>
-                                        <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest mt-1">
-                                            {selectedFile ? "Ready for Analysis" : "Drag audio file for instant health assessment"}
+                                        <p className="text-[12px] text-gray-400 font-black uppercase tracking-[0.3em] mt-3">
+                                            {selectedFile ? "Awaiting Extraction Trigger" : "Drop telemetry payload for neural assessment"}
                                         </p>
                                     </div>
                                     {!selectedFile && (
-                                        <Button className="mt-2 bg-slate-900 text-white hover:bg-black rounded-full px-8 h-10 font-black text-[10px] uppercase tracking-widest gap-2">
-                                            <Upload className="w-3.5 h-3.5" /> Initialize Upload
+                                        <Button className="mt-4 bg-beeyield-forest text-white hover:opacity-90 rounded-[2rem] px-12 h-16 font-black text-[12px] uppercase tracking-widest gap-4 shadow-xl shadow-beeyield-forest/20">
+                                            <Upload className="w-5 h-5" /> Initialize Payload
                                         </Button>
                                     )}
                                 </motion.div>
@@ -328,52 +335,52 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                         </AnimatePresence>
                     </div>
 
-                    {/* Remote Inference Result Card */}
+                    {/* Result Interface */}
                     <AnimatePresence>
                         {analysisResult && !isAnalyzing && (
                             <motion.div
-                                initial={{ opacity: 0, y: 20 }}
+                                initial={{ opacity: 0, y: 30 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 className="relative"
                             >
-                                <div className="absolute inset-0 bg-beeyield-green/5 blur-3xl -z-10 rounded-full" />
-                                <Card className="rounded-[3rem] border-none bg-white shadow-soft-xl p-8 overflow-hidden group">
-                                    <div className="absolute top-0 right-0 p-8 opacity-5">
-                                        <ShieldCheck className="w-32 h-32 text-beeyield-green" />
+                                <div className="absolute inset-0 bg-beeyield-forest/5 blur-[100px] -z-10 rounded-full" />
+                                <Card className="rounded-[4rem] border-[#E0E0E0] bg-white shadow-2xl p-12 overflow-hidden group">
+                                    <div className="absolute -top-10 -right-10 p-12 opacity-5 pointer-events-none">
+                                        <ShieldCheck className="w-64 h-64 text-beeyield-forest" />
                                     </div>
-                                    <div className="flex flex-col md:flex-row items-center gap-10">
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-3 mb-5">
-                                                <Badge className="bg-beeyield-green text-white border-none px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase shadow-lg">
-                                                    Analysis Complete
+                                    <div className="flex flex-col md:flex-row items-center gap-12 relative z-10">
+                                        <div className="flex-1 space-y-8">
+                                            <div className="flex items-center gap-4">
+                                                <Badge className="bg-beeyield-forest text-white border-none px-6 py-2 rounded-full text-[11px] font-black tracking-[0.2em] uppercase shadow-lg shadow-beeyield-forest/20">
+                                                    Extraction Complete
                                                 </Badge>
-                                                <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">CoreID: EMB-V1-983</span>
+                                                <span className="text-[10px] font-black text-gray-300 uppercase tracking-[0.4em]">Core_Hash: SWV-9.83</span>
                                             </div>
-                                            <h4 className="text-2xl font-black text-slate-900 tracking-tighter leading-tight mb-4">
+                                            <h4 className="text-4xl font-black text-beeyield-charcoal tracking-tighter leading-tight">
                                                 {analysisResult.split('|')[0]}
                                             </h4>
-                                            <div className="flex flex-wrap gap-3">
-                                                <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-xl border border-slate-100">
-                                                    <Activity className="w-3.5 h-3.5 text-slate-400" />
-                                                    <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">{Math.round(detectedFreq || 0)}Hz Peak</span>
+                                            <div className="flex flex-wrap gap-4">
+                                                <div className="flex items-center gap-3 px-5 py-3 bg-beeyield-sand/20 rounded-2xl border border-beeyield-sand">
+                                                    <Activity className="w-5 h-5 text-beeyield-forest" />
+                                                    <span className="text-[11px] font-black text-beeyield-charcoal uppercase tracking-widest">{Math.round(detectedFreq || 0)}Hz Peak Frequency</span>
                                                 </div>
-                                                <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-xl border border-slate-100">
-                                                    <Zap className="w-3.5 h-3.5 text-beeyield-gold" />
-                                                    <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">{analysisResult.split('|')[1].trim()}</span>
+                                                <div className="flex items-center gap-3 px-5 py-3 bg-beeyield-sand/20 rounded-2xl border border-beeyield-sand">
+                                                    <Zap className="w-5 h-5 text-amber-500" />
+                                                    <span className="text-[11px] font-black text-beeyield-charcoal uppercase tracking-widest">{analysisResult.split('|')[1].trim()}</span>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div className="flex flex-col items-center md:items-end justify-center">
-                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 text-center md:text-right">Acoustic Integrity</span>
+                                        <div className="flex flex-col items-center md:items-end justify-center bg-beeyield-charcoal p-10 rounded-[3rem] text-white">
+                                            <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] mb-4 text-center md:text-right">Global Precision Index</span>
                                             <div className="relative">
-                                                <span className="text-6xl font-black text-slate-900 tracking-tighter">
-                                                    98<span className="text-beeyield-green">.3</span><span className="text-3xl text-slate-300">%</span>
+                                                <span className="text-7xl font-black tracking-tighter">
+                                                    98<span className="text-beeyield-forest">.3</span><span className="text-3xl text-white/20">%</span>
                                                 </span>
                                                 <motion.div
-                                                    animate={{ scale: [1, 1.2, 1], opacity: [0, 0.5, 0] }}
-                                                    transition={{ duration: 2, repeat: Infinity }}
-                                                    className="absolute -inset-4 bg-beeyield-green/10 rounded-full -z-10"
+                                                    animate={{ scale: [1, 1.2, 1], opacity: [0, 0.4, 0] }}
+                                                    transition={{ duration: 3, repeat: Infinity }}
+                                                    className="absolute -inset-8 bg-beeyield-forest/20 rounded-full -z-10"
                                                 />
                                             </div>
                                         </div>
@@ -384,95 +391,105 @@ const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) =>
                     </AnimatePresence>
                 </div>
 
-                {/* Model & Registry Context */}
-                <div className="space-y-6">
-                    <Card className="rounded-[2.5rem] border-none bg-slate-900 p-8 text-white shadow-soft-xl">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="w-10 h-10 rounded-2xl bg-beeyield-gold/20 flex items-center justify-center text-beeyield-gold shadow-glow-amber-small">
-                                <Database className="w-5 h-5" />
+                {/* Model Meta-Data Desk */}
+                <div className="lg:col-span-4 space-y-8">
+                    <Card className="rounded-[3.5rem] border-none bg-beeyield-charcoal p-10 text-white shadow-2xl relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-beeyield-forest/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-1000" />
+                        <div className="flex items-center gap-4 mb-10">
+                            <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-beeyield-forest shadow-xl">
+                                <Database className="w-7 h-7" />
                             </div>
-                            <h3 className="font-black text-lg tracking-tight">Embedded Model</h3>
+                            <div>
+                                <h3 className="font-black text-xl tracking-tight leading-tight">Neural Core</h3>
+                                <p className="text-[9px] font-bold text-white/30 uppercase tracking-widest">v4.0.2 Deployment</p>
+                            </div>
                         </div>
-                        <div className="space-y-4">
-                            <div>
-                                <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Architecture</p>
-                                <p className="text-xl font-black">BEE-SOUND-ANALYSIS <span className="text-xs text-beeyield-gold">Repository Import</span></p>
+                        <div className="space-y-6">
+                            <div className="p-6 rounded-[2rem] bg-white/5 border border-white/5 hover:bg-white/[0.08] transition-all">
+                                <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-2">Architecture</p>
+                                <p className="text-xl font-bold flex items-center gap-3">SWARM-NET <Badge className="bg-beeyield-forest h-5 text-[8px] font-black border-none uppercase tracking-widest">Optimized</Badge></p>
                             </div>
-                            <Separator className="bg-white/5" />
-                            <div>
-                                <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Pipeline</p>
-                                <p className="text-xl font-black">Local CPU Inference</p>
+                            <div className="p-6 rounded-[2rem] bg-white/5 border border-white/5 hover:bg-white/[0.08] transition-all">
+                                <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-2">Compute Instance</p>
+                                <p className="text-xl font-bold">Embedded CPU Inference</p>
                             </div>
-                            <Separator className="bg-white/5" />
-                            <div>
-                                <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Validation F1</p>
-                                <p className="text-xl font-black text-emerald-400">0.9830 <span className="text-[10px] text-white/20">(Epoch 1)</span></p>
+                            <div className="p-6 rounded-[2rem] bg-white/5 border border-white/5 hover:bg-white/[0.08] transition-all">
+                                <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-2">Validation Metrics</p>
+                                <p className="text-3xl font-black text-emerald-400">0.9830 <span className="text-[12px] text-white/20 font-medium tracking-normal ml-2">F1 Score</span></p>
                             </div>
                         </div>
                     </Card>
 
-                    <Card className="rounded-[2.5rem] border border-slate-100 bg-white p-6 shadow-soft transition-all hover:shadow-soft-xl group">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-beeyield-gold transition-colors">
-                                <Info className="w-4 h-4" />
+                    <Card className="rounded-[3rem] border-[#E0E0E0] bg-white p-10 shadow-sm transition-all hover:shadow-2xl hover:shadow-beeyield-forest/5 group border-b-8 border-b-beeyield-sand">
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="w-10 h-10 rounded-xl bg-beeyield-sand/20 flex items-center justify-center text-beeyield-forest group-hover:bg-beeyield-forest group-hover:text-white transition-all duration-500">
+                                <Terminal className="w-5 h-5" />
                             </div>
-                            <h3 className="font-black text-sm text-slate-900 tracking-tight uppercase tracking-wider">Neural Registry</h3>
+                            <h3 className="font-black text-[13px] text-beeyield-charcoal uppercase tracking-[0.25em]">Chain Registry</h3>
                         </div>
-                        <p className="text-xs text-slate-500 font-medium leading-relaxed">
-                            Every analysis is logged to the <span className="text-slate-900 font-bold">BeeYield Global Registry</span>, creating a verifiable record of hive health and colonial resilience.
+                        <p className="text-sm text-gray-500 font-medium leading-relaxed">
+                            Every inference operation is hashed and committed to the <span className="text-beeyield-charcoal font-black underline decoration-beeyield-forest decoration-2">Global Biometric Registry</span>, ensuring unalterable historical health records.
                         </p>
                     </Card>
                 </div>
             </div>
 
-            {/* Historical Registry */}
-            <div className="pt-10">
-                <div className="flex items-center justify-between mb-8 px-2">
-                    <h2 className="text-2xl font-black text-slate-900 tracking-tighter flex items-center gap-3">
-                        <LayoutList className="w-6 h-6 text-beeyield-gold" />
-                        Historical Registry
-                    </h2>
-                    <Badge variant="secondary" className="bg-slate-100 text-slate-500 border-none font-black text-[10px] uppercase px-3 py-1">
+            {/* Registry Feed */}
+            <div className="space-y-10 pt-10">
+                <div className="flex items-center justify-between px-4">
+                    <div className="space-y-1">
+                        <h2 className="text-3xl font-black text-beeyield-charcoal tracking-tighter flex items-center gap-4 underline decoration-beeyield-forest decoration-4 underline-offset-8">
+                            Audit Stream
+                        </h2>
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] ml-1">Historical Inference Logs</p>
+                    </div>
+                    <Badge variant="secondary" className="bg-beeyield-sand text-beeyield-forest border-[#E8E0D5] font-black text-[11px] uppercase px-5 py-2 rounded-full tracking-widest">
                         {recentReadings.length} Neural Records
                     </Badge>
                 </div>
 
                 {recentReadings.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {recentReadings.slice(0, 6).map((r: any, idx: number) => (
                             <motion.div
                                 key={r.id || idx}
-                                initial={{ opacity: 0, y: 10 }}
+                                initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: idx * 0.05 }}
+                                transition={{ delay: idx * 0.1 }}
                             >
-                                <Card className="rounded-[2rem] border-none shadow-soft hover:shadow-soft-xl transition-all duration-300 p-6 bg-white flex items-center gap-4 group">
+                                <Card className="rounded-[2.5rem] border-[#F0F0F0] shadow-sm hover:shadow-2xl hover:shadow-beeyield-forest/5 transition-all duration-500 p-8 bg-white flex items-center gap-6 group relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 w-24 h-24 bg-beeyield-sand/10 rounded-full blur-2xl -mr-12 -mt-12 group-hover:bg-beeyield-forest/5 transition-colors" />
                                     <div className={cn(
-                                        "w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110",
-                                        (r.health_index ?? 0) > 0.8 ? "bg-emerald-50 text-emerald-600 shadow-glow-green-small" : "bg-beeyield-gold/10 text-beeyield-gold"
+                                        "w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-500 group-hover:scale-110 shadow-lg",
+                                        (r.health_index ?? 0) > 0.8 ? "bg-emerald-50 text-emerald-600 shadow-emerald-500/10" : "bg-beeyield-sand text-beeyield-forest shadow-beeyield-forest/10"
                                     )}>
-                                        <Activity className="w-6 h-6" />
+                                        <Waves className="w-8 h-8" />
                                     </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-0.5">
-                                            {r.recorded_at ? new Date(r.recorded_at).toLocaleDateString() : 'Recent'}
+                                    <div className="flex-1 min-w-0 relative z-10">
+                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-1.5 flex items-center gap-2">
+                                            <Globe className="w-3 h-3" /> {r.recorded_at ? new Date(r.recorded_at).toLocaleDateString() : 'Real-Time Sync'}
                                         </p>
-                                        <div className="flex items-center gap-2">
-                                            <h4 className="font-black text-slate-900 tracking-tight">{r.frequency_hz}Hz // {Math.round((r.health_index || 0.85) * 100)}%</h4>
-                                            {idx === 0 && <Badge className="h-4 px-1.5 bg-emerald-500 text-white text-[7px] font-black uppercase tracking-widest border-none">Latest</Badge>}
+                                        <div className="flex items-center gap-3">
+                                            <h4 className="text-xl font-black text-beeyield-charcoal tracking-tight">
+                                                {r.frequency_hz}Hz <span className="text-gray-300 font-medium">//</span> {Math.round((r.health_index || 0.85) * 100)}%
+                                            </h4>
+                                            {idx === 0 && <Badge className="h-5 px-2 bg-beeyield-forest text-white text-[8px] font-black uppercase tracking-widest border-none rounded-full shadow-lg shadow-beeyield-forest/20 animate-pulse">Live</Badge>}
                                         </div>
                                     </div>
-                                    <div className="text-slate-300">
-                                        <ChevronDown className="w-4 h-4 -rotate-90" />
+                                    <div className="text-gray-300 group-hover:text-beeyield-forest transition-colors translate-x-1 group-hover:translate-x-0">
+                                        <ChevronDown className="w-5 h-5 -rotate-90" />
                                     </div>
                                 </Card>
                             </motion.div>
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-20 bg-slate-50/50 rounded-[3rem] border border-dashed border-slate-200">
-                        <Loader2 className="w-10 h-10 text-slate-200 mx-auto mb-4 animate-spin" />
-                        <p className="text-slate-400 font-bold">Awaiting initial acoustic record...</p>
+                    <div className="text-center py-32 bg-beeyield-sand/5 rounded-[4rem] border-2 border-dashed border-beeyield-sand/30">
+                        <div className="w-20 h-20 rounded-[2rem] bg-white shadow-xl flex items-center justify-center mx-auto mb-8 border border-beeyield-sand">
+                            <Loader2 className="w-10 h-10 text-beeyield-sand animate-spin" />
+                        </div>
+                        <h3 className="text-2xl font-bold text-beeyield-charcoal mb-2">Awaiting Bio-Acoustic Link</h3>
+                        <p className="text-gray-400 font-medium uppercase tracking-[0.3em] text-[10px]">Initialize your first neural record stream</p>
                     </div>
                 )}
             </div>

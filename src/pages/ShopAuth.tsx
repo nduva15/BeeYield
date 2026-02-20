@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import ShopLoginForm from '@/components/auth/shop/ShopLoginForm';
 import ShopRegisterForm from '@/components/auth/shop/ShopRegisterForm';
-import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
+import ShopForgotPasswordForm from '@/components/auth/shop/ShopForgotPasswordForm';
 import Logo from '@/assets/Logo.png';
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
@@ -241,8 +241,7 @@ const ShopAuth: React.FC = () => {
 
                                         {authMode === 'forgot-password' && (
                                             <div className="animate-fade-in-up">
-                                                <ForgotPasswordForm
-                                                    variant="shop"
+                                                <ShopForgotPasswordForm
                                                     onBackToLogin={() => setAuthMode('login')}
                                                 />
                                             </div>

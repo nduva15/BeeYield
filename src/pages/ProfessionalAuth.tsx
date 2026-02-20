@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import BeeYieldLoginForm from '@/components/auth/beeyield/BeeYieldLoginForm';
 import BeeYieldRegisterForm from '@/components/auth/beeyield/BeeYieldRegisterForm';
-import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
+import BeeYieldForgotPasswordForm from '@/components/auth/beeyield/BeeYieldForgotPasswordForm';
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 
@@ -201,8 +201,7 @@ const ProfessionalAuth: React.FC = () => {
 
                                         {authMode === 'forgot-password' && (
                                             <div className="animate-fade-in-up">
-                                                <ForgotPasswordForm
-                                                    variant="professional"
+                                                <BeeYieldForgotPasswordForm
                                                     onBackToLogin={() => setAuthMode('login')}
                                                 />
                                             </div>

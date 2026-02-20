@@ -6,14 +6,15 @@ import {
     TrendingUp, TrendingDown, Minus, Activity, Hexagon, MapPin,
     Droplet, Thermometer, Wind, Gauge, Zap, Calendar, ArrowRight,
     BarChart3, PieChart, LineChart, Users, Package, AlertCircle,
-    CheckCircle2, Clock, Target, Sparkles
+    CheckCircle2, Clock, Target, Sparkles, Orbit, Binary, Waves,
+    Cpu, Globe, ShieldCheck, RefreshCw, Terminal, LayoutDashboard
 } from 'lucide-react';
 import { AreaChart, Area, BarChart, Bar, PieChart as RePieChart, Pie, Cell, LineChart as ReLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { beeyieldService } from '@/services/beeyieldService';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface DashboardHomeViewProps {
     onTabChange?: (tab: string, item1?: any, item2?: any) => void;
@@ -39,36 +40,35 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, change, icon: Ico
     const getTrendColor = () => {
         if (trend === 'up') return 'text-emerald-600 bg-emerald-50 border-emerald-100';
         if (trend === 'down') return 'text-red-600 bg-red-50 border-red-100';
-        return 'text-gray-500 bg-gray-50 border-gray-100';
+        return 'text-gray-400 bg-gray-50 border-gray-100';
     };
 
     return (
-        <Card className="border-[#E0E0E0] bg-white shadow-sm hover:shadow-xl hover:shadow-beeyield-forest/5 transition-all duration-500 rounded-[2rem] overflow-hidden group">
-            <CardContent className="p-8">
+        <Card className="border-[#E0E0E0] bg-white shadow-sm hover:shadow-2xl hover:shadow-beeyield-forest/5 transition-all duration-500 rounded-[3rem] overflow-hidden group">
+            <CardContent className="p-10">
                 <div className="flex items-start justify-between">
                     <div className="flex-1">
-                        <p className="text-[11px] font-bold text-gray-400 mb-3 uppercase tracking-[0.15em]">{title}</p>
+                        <p className="text-[11px] font-black text-gray-400 mb-4 uppercase tracking-[0.2em]">{title}</p>
                         <div className="flex items-baseline gap-4">
-                            <h3 className="text-4xl font-bold text-beeyield-charcoal tracking-tight">{value}</h3>
+                            <h3 className="text-5xl font-black text-beeyield-charcoal tracking-tighter leading-none">{value}</h3>
                             {change !== undefined && (
-                                <div className={cn("flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border", getTrendColor())}>
+                                <div className={cn("flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-black border uppercase tracking-widest", getTrendColor())}>
                                     {getTrendIcon()}
                                     <span>{Math.abs(change)}%</span>
                                 </div>
                             )}
                         </div>
                         {subtitle && (
-                            <p className="text-[11px] text-gray-400 mt-3 font-medium uppercase tracking-tight">{subtitle}</p>
+                            <p className="text-[10px] text-gray-400 mt-4 font-black uppercase tracking-[0.15em] opacity-60">{subtitle}</p>
                         )}
                     </div>
                     <div className={cn(
-                        "w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:bg-beeyield-forest group-hover:text-white border border-beeyield-forest/10 bg-beeyield-forest/5 text-beeyield-forest",
+                        "w-16 h-16 rounded-[2rem] flex items-center justify-center transition-all duration-500 group-hover:bg-beeyield-forest group-hover:text-white border border-beeyield-forest/10 bg-beeyield-forest/5 text-beeyield-forest shadow-sm",
                         color === 'blue' && "text-blue-600 bg-blue-50 border-blue-100",
-                        color === 'amber' && "text-beeyield-forest bg-beeyield-forest/5",
                         color === 'green' && "text-emerald-600 bg-emerald-50 border-emerald-100",
                         color === 'purple' && "text-purple-600 bg-purple-50 border-purple-100"
                     )}>
-                        <Icon className="w-6 h-6 stroke-[2]" />
+                        <Icon className="w-7 h-7 stroke-[1.5]" />
                     </div>
                 </div>
             </CardContent>
@@ -137,7 +137,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
         apiaries.slice(0, 2).forEach(apiary => {
             activities.push({
                 type: 'apiary',
-                title: `New apiary: ${apiary.name}`,
+                title: `Cluster Initialized: ${apiary.name}`,
                 time: new Date(apiary.created_at).toLocaleDateString(),
                 icon: MapPin,
                 color: 'text-blue-600 bg-blue-50 border-blue-100'
@@ -146,7 +146,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
         hives.slice(0, 2).forEach(hive => {
             activities.push({
                 type: 'hive',
-                title: `Hive ${hive.hive_code} added`,
+                title: `Node Auth: ${hive.hive_code}`,
                 time: new Date(hive.created_at).toLocaleDateString(),
                 icon: Hexagon,
                 color: 'text-beeyield-forest bg-beeyield-forest/5 border-beeyield-forest/10'
@@ -155,7 +155,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
         if (readings.length > 0) {
             activities.push({
                 type: 'reading',
-                title: 'Latest sensor data received',
+                title: 'Packet Received: Telemetry v4',
                 time: new Date(readings[0].timestamp).toLocaleTimeString(),
                 icon: Activity,
                 color: 'text-emerald-600 bg-emerald-50 border-emerald-100'
@@ -166,163 +166,204 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
 
     const hiveHealthData = [
         { name: 'Healthy', value: stats?.active_hives || 0, color: '#1B4332' },
-        { name: 'Warning', value: Math.floor((stats?.total_hives || 0) * 0.15), color: '#52B788' },
-        { name: 'Critical', value: Math.floor((stats?.total_hives || 0) * 0.05), color: '#D8E2DC' }
+        { name: 'Warning', value: Math.floor((stats?.total_hives || 0) * 0.15), color: '#38A3A5' },
+        { name: 'Critical', value: Math.floor((stats?.total_hives || 0) * 0.05), color: '#E9D8A6' }
     ];
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-[500px]">
-                <div className="flex flex-col items-center gap-6">
-                    <div className="w-14 h-14 border-[4px] border-beeyield-forest border-t-transparent rounded-full animate-spin" />
-                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] animate-pulse">Synchronizing Core...</p>
+            <div className="flex items-center justify-center min-h-[600px]">
+                <div className="flex flex-col items-center gap-8">
+                    <div className="relative">
+                        <div className="w-20 h-20 border-[6px] border-beeyield-forest border-t-transparent rounded-full animate-spin" />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-10 h-10 bg-beeyield-forest/10 rounded-full animate-pulse" />
+                        </div>
+                    </div>
+                    <div className="text-center space-y-2">
+                        <p className="text-[12px] font-black text-beeyield-charcoal uppercase tracking-[0.4em] animate-pulse">Synchronizing Global Hub</p>
+                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Bridging Biometric Streams</p>
+                    </div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="space-y-12 animate-in fade-in duration-1000">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <div className="space-y-16 animate-in fade-in duration-1000 pb-20">
+            {/* Cinematic Header */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
                 <div>
-                    <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-beeyield-forest/5 border border-beeyield-forest/10 mb-6">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[10px] font-bold text-beeyield-forest uppercase tracking-[0.15em]">System Node Active</span>
+                    <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-beeyield-forest/5 border border-beeyield-forest/10 mb-8">
+                        <div className="w-2.5 h-2.5 rounded-full bg-beeyield-forest animate-pulse" />
+                        <span className="text-[11px] font-black text-beeyield-forest uppercase tracking-[0.2em]">Live Infrastructure Link</span>
                     </div>
-                    <h1 className="text-5xl font-bold text-beeyield-charcoal tracking-tight">
-                        Ecosystem Overview
+                    <h1 className="text-6xl font-black text-beeyield-charcoal tracking-tighter leading-none">
+                        Ecosystem <span className="text-beeyield-forest">Intelligence.</span>
                     </h1>
-                    <p className="text-gray-500 font-medium mt-3 text-lg">
-                        Telemetry analysis and harvest synchronization for the current cycle.
+                    <p className="text-gray-500 font-medium mt-6 text-xl max-w-2xl leading-relaxed">
+                        Secure telemetry analysis and sovereign harvest synchronization for your global apiary network.
                     </p>
                 </div>
-                <Button
-                    onClick={loadDashboardData}
-                    variant="outline"
-                    className="h-14 px-8 rounded-2xl border-[#E0E0E0] bg-white hover:bg-gray-50 shadow-sm transition-all font-bold text-sm flex items-center gap-3"
-                >
-                    <Activity className="w-4 h-4 text-beeyield-forest" />
-                    Refresh Core
-                </Button>
+                <div className="flex items-center gap-4">
+                    <div className="text-right hidden lg:block mr-4">
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Last Update</p>
+                        <p className="text-sm font-bold text-beeyield-charcoal uppercase tracking-tighter flex items-center gap-2">
+                            <Clock className="w-4 h-4 text-beeyield-forest" /> Just Now
+                        </p>
+                    </div>
+                    <Button
+                        onClick={loadDashboardData}
+                        variant="ghost"
+                        className="h-16 px-10 rounded-[2rem] border-2 border-beeyield-sand bg-white hover:bg-beeyield-forest hover:text-white hover:border-beeyield-forest shadow-sm transition-all duration-500 font-black text-[12px] uppercase tracking-widest flex items-center gap-4"
+                    >
+                        <RefreshCw className="w-5 h-5" />
+                        Push Cycle Sync
+                    </Button>
+                </div>
             </div>
 
-            {/* Key Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* Tactical Metrics Deck */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
                 <MetricCard
-                    title="Active Apiaries"
+                    title="Active Clusters"
                     value={stats?.total_apiaries || 0}
                     change={12}
                     trend="up"
                     icon={MapPin}
                     color="blue"
-                    subtitle="Regional clusters"
+                    subtitle="Regional Topology"
                 />
                 <MetricCard
-                    title="Monitored Hives"
+                    title="Auth Hives"
                     value={stats?.total_hives || 0}
                     change={8}
                     trend="up"
                     icon={Hexagon}
                     color="amber"
-                    subtitle={`${stats?.active_hives || 0} online`}
+                    subtitle={`${stats?.active_hives || 0} Telemetry Live`}
                 />
                 <MetricCard
-                    title="Aggregate Harvest"
+                    title="Seeded Yield"
                     value={`${stats?.total_honey_kg || 0} kg`}
                     change={15}
                     trend="up"
                     icon={Package}
                     color="green"
-                    subtitle="Current season"
+                    subtitle="Certified Harvest"
                 />
                 <MetricCard
-                    title="Active Protocols"
+                    title="Active Ops"
                     value={stats?.pending_tasks || 0}
-                    icon={Clock}
+                    icon={Terminal}
                     color="purple"
-                    subtitle="Maintenance queue"
+                    subtitle="Actionable Deck"
                 />
             </div>
 
-            {/* Charts Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <Card className="lg:col-span-2 border-[#E0E0E0] bg-white rounded-[2.5rem] shadow-sm overflow-hidden">
-                    <CardHeader className="p-10 pb-4">
+            {/* Primary Analysis Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                {/* Telemetry Spectrum Chart */}
+                <Card className="lg:col-span-8 border-[#E0E0E0] bg-white rounded-[4rem] shadow-sm overflow-hidden group">
+                    <CardHeader className="p-12 pb-6">
                         <div className="flex items-center justify-between">
-                            <div>
-                                <CardTitle className="text-xl font-bold text-beeyield-charcoal flex items-center gap-3">
-                                    <Activity className="w-6 h-6 text-beeyield-forest" />
+                            <div className="space-y-2">
+                                <CardTitle className="text-3xl font-black text-beeyield-charcoal tracking-tighter flex items-center gap-4">
+                                    <Waves className="w-8 h-8 text-beeyield-forest" />
                                     Telemetry Spectrum
                                 </CardTitle>
-                                <p className="text-sm text-gray-400 font-medium mt-1">Real-time activity and temperature fluctuations</p>
+                                <p className="text-[12px] text-gray-400 font-bold uppercase tracking-[0.2em]">Dynamic Biological Performance Log</p>
+                            </div>
+                            <div className="flex gap-3">
+                                <Badge className="bg-beeyield-sand text-beeyield-forest border-none px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase">7 Day Interval</Badge>
                             </div>
                         </div>
                     </CardHeader>
-                    <CardContent className="p-10 pt-2">
-                        <ResponsiveContainer width="100%" height={340}>
-                            <BarChart data={sensorData}>
-                                <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#F5F5F5" />
-                                <XAxis
-                                    dataKey="date"
-                                    stroke="#9ca3af"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fontSize: 12, fontWeight: 700 }}
-                                    dy={15}
-                                />
-                                <YAxis
-                                    stroke="#9ca3af"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fontSize: 12, fontWeight: 700 }}
-                                />
-                                <Tooltip
-                                    cursor={{ fill: '#F9F7F2', opacity: 0.4 }}
-                                    contentStyle={{ borderRadius: '24px', border: '1px solid #E0E0E0', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', padding: '20px' }}
-                                />
-                                <Bar dataKey="activity" fill="#1B4332" radius={[12, 12, 0, 0]} barSize={28} />
-                                <Bar dataKey="temperature" fill="#B7E4C7" radius={[12, 12, 0, 0]} barSize={28} />
-                            </BarChart>
-                        </ResponsiveContainer>
+                    <CardContent className="p-12 pt-4">
+                        <div className="h-[400px] w-full mt-4">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={sensorData}>
+                                    <CartesianGrid vertical={false} strokeDasharray="0" stroke="#F0F0F0" />
+                                    <XAxis
+                                        dataKey="date"
+                                        stroke="#9ca3af"
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fontSize: 11, fontWeight: 900, fill: '#9ca3af' }}
+                                        dy={20}
+                                    />
+                                    <YAxis
+                                        stroke="#9ca3af"
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fontSize: 11, fontWeight: 900, fill: '#9ca3af' }}
+                                    />
+                                    <Tooltip
+                                        cursor={{ fill: 'rgba(27, 67, 50, 0.03)', radius: 24 }}
+                                        contentStyle={{
+                                            borderRadius: '32px',
+                                            border: 'none',
+                                            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1)',
+                                            padding: '24px',
+                                            backgroundColor: '#1E1E1E',
+                                            color: '#fff'
+                                        }}
+                                        itemStyle={{ fontWeight: 800, textTransform: 'uppercase', fontSize: '10px', letterSpacing: '0.1em' }}
+                                    />
+                                    <Bar dataKey="activity" fill="#1B4332" radius={[16, 16, 0, 0]} barSize={32} />
+                                    <Bar dataKey="temperature" fill="#B7E4C7" radius={[16, 16, 0, 0]} barSize={32} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
                     </CardContent>
                 </Card>
 
-                <Card className="border-[#E0E0E0] bg-white rounded-[2.5rem] shadow-sm overflow-hidden">
-                    <CardHeader className="p-10 pb-4">
-                        <CardTitle className="text-xl font-bold text-beeyield-charcoal flex items-center gap-3">
-                            <PieChart className="w-6 h-6 text-beeyield-forest" />
-                            Health Integrity
-                        </CardTitle>
-                        <p className="text-sm text-gray-400 font-medium mt-1">Ecosystem distribution</p>
+                {/* Health Integrity Gauge */}
+                <Card className="lg:col-span-4 border-[#E0E0E0] bg-white rounded-[4rem] shadow-sm overflow-hidden flex flex-col">
+                    <CardHeader className="p-12 pb-4">
+                        <div className="space-y-2">
+                            <CardTitle className="text-2xl font-black text-beeyield-charcoal tracking-tighter flex items-center gap-4">
+                                <ShieldCheck className="w-7 h-7 text-beeyield-forest" />
+                                Registry Health
+                            </CardTitle>
+                            <p className="text-[11px] text-gray-400 font-bold uppercase tracking-[0.2em]">Verified Consensus</p>
+                        </div>
                     </CardHeader>
-                    <CardContent className="p-10 pt-2">
-                        <ResponsiveContainer width="100%" height={220}>
-                            <RePieChart>
-                                <Pie
-                                    data={hiveHealthData}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={75}
-                                    outerRadius={95}
-                                    paddingAngle={10}
-                                    dataKey="value"
-                                >
-                                    {hiveHealthData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
-                                    ))}
-                                </Pie>
-                                <Tooltip />
-                            </RePieChart>
-                        </ResponsiveContainer>
-                        <div className="mt-10 space-y-4">
+                    <CardContent className="p-12 pt-6 flex-1 flex flex-col justify-between">
+                        <div className="h-[240px] relative">
+                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                <div className="text-center">
+                                    <p className="text-4xl font-black text-beeyield-charcoal tracking-tighter">98<span className="text-beeyield-forest">.4</span>%</p>
+                                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-1">Uptime</p>
+                                </div>
+                            </div>
+                            <ResponsiveContainer width="100%" height="100%">
+                                <RePieChart>
+                                    <Pie
+                                        data={hiveHealthData}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={80}
+                                        outerRadius={105}
+                                        paddingAngle={12}
+                                        dataKey="value"
+                                        stroke="none"
+                                    >
+                                        {hiveHealthData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={entry.color} />
+                                        ))}
+                                    </Pie>
+                                </RePieChart>
+                            </ResponsiveContainer>
+                        </div>
+                        <div className="space-y-5 mt-10">
                             {hiveHealthData.map((item, index) => (
-                                <div key={index} className="flex items-center justify-between">
+                                <div key={index} className="flex items-center justify-between p-4 rounded-3xl bg-beeyield-sand/10 border border-beeyield-sand/20 hover:border-beeyield-forest/20 transition-all cursor-default">
                                     <div className="flex items-center gap-4">
-                                        <div className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: item.color }} />
-                                        <span className="text-gray-400 font-bold uppercase text-[11px] tracking-widest">{item.name}</span>
+                                        <div className="w-3.5 h-3.5 rounded-full shadow-sm" style={{ backgroundColor: item.color }} />
+                                        <span className="text-gray-500 font-black uppercase text-[10px] tracking-[0.2em]">{item.name} Protocol</span>
                                     </div>
-                                    <span className="font-bold text-beeyield-charcoal text-lg">{item.value}</span>
+                                    <span className="font-black text-beeyield-charcoal text-lg tracking-tighter">{item.value}</span>
                                 </div>
                             ))}
                         </div>
@@ -330,89 +371,118 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                 </Card>
             </div>
 
-            {/* Environmental & Activity */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <Card className="border-[#E0E0E0] bg-white rounded-[2.5rem] shadow-sm overflow-hidden">
-                    <CardHeader className="p-10 pb-4 border-b border-[#F9F7F2]">
+            {/* Secondary Analysis Deck */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                {/* Atmospheric Persistence */}
+                <Card className="border-[#E0E0E0] bg-white rounded-[4rem] shadow-sm overflow-hidden">
+                    <CardHeader className="p-12 pb-4 border-b border-[#F9F7F2]">
                         <div className="flex items-center justify-between">
-                            <CardTitle className="text-xl font-bold text-beeyield-charcoal flex items-center gap-3">
-                                <Thermometer className="w-6 h-6 text-beeyield-forest" />
-                                Atmospheric Metrics
-                            </CardTitle>
-                            <Button variant="ghost" size="sm" className="text-xs font-bold text-beeyield-forest uppercase tracking-widest hover:bg-beeyield-forest/5">Full Log</Button>
+                            <div className="space-y-2">
+                                <CardTitle className="text-2xl font-black text-beeyield-charcoal tracking-tighter flex items-center gap-4">
+                                    <Thermometer className="w-7 h-7 text-beeyield-forest" />
+                                    Persistence Log
+                                </CardTitle>
+                                <p className="text-[11px] text-gray-400 font-bold uppercase tracking-[0.2em]">Isobaric & Thermal Stability</p>
+                            </div>
+                            <Button variant="ghost" className="h-10 px-6 rounded-full text-[10px] font-black text-beeyield-forest uppercase tracking-[0.2em] hover:bg-beeyield-forest/5 border border-beeyield-forest/10">Full Archive</Button>
                         </div>
                     </CardHeader>
-                    <CardContent className="p-10">
-                        <ResponsiveContainer width="100%" height={280}>
-                            <ReLineChart data={sensorData}>
-                                <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#F5F5F5" />
-                                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 11, fontWeight: 700 }} dy={15} />
-                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fontWeight: 700 }} />
-                                <Tooltip />
-                                <Legend verticalAlign="top" align="right" wrapperStyle={{ paddingBottom: '20px' }} />
-                                <Line type="monotone" dataKey="temperature" stroke="#1B4332" strokeWidth={4} dot={{ r: 6, strokeWidth: 3, fill: '#fff' }} activeDot={{ r: 8 }} name="Temp °C" />
-                                <Line type="monotone" dataKey="humidity" stroke="#B7E4C7" strokeWidth={4} dot={{ r: 6, strokeWidth: 3, fill: '#fff' }} name="Humidity %" />
-                            </ReLineChart>
-                        </ResponsiveContainer>
+                    <CardContent className="p-12 bg-gradient-to-b from-[#F9F7F2]/30 to-white">
+                        <div className="h-[320px]">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <ReLineChart data={sensorData}>
+                                    <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#F0F0F0" />
+                                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: '#9ca3af' }} dy={15} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: '#9ca3af' }} />
+                                    <Tooltip
+                                        contentStyle={{
+                                            borderRadius: '24px',
+                                            border: 'none',
+                                            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1)',
+                                            padding: '20px',
+                                            backgroundColor: '#fff',
+                                            color: '#1B4332'
+                                        }}
+                                    />
+                                    <Legend verticalAlign="top" align="right" wrapperStyle={{ paddingBottom: '30px', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em' }} />
+                                    <Line type="monotone" dataKey="temperature" stroke="#1B4332" strokeWidth={5} dot={{ r: 0 }} activeDot={{ r: 8, strokeWidth: 0, fill: '#1B4332' }} name="Thermal Index" />
+                                    <Line type="monotone" dataKey="humidity" stroke="#38A3A5" strokeWidth={5} dot={{ r: 0 }} activeDot={{ r: 8, strokeWidth: 0, fill: '#38A3A5' }} name="Bioload Index" />
+                                </ReLineChart>
+                            </ResponsiveContainer>
+                        </div>
                     </CardContent>
                 </Card>
 
-                <Card className="border-[#E0E0E0] bg-white rounded-[2.5rem] shadow-sm overflow-hidden">
-                    <CardHeader className="p-10 pb-4 border-b border-[#F9F7F2]">
-                        <CardTitle className="text-xl font-bold text-beeyield-charcoal flex items-center gap-3">
-                            <Clock className="w-6 h-6 text-beeyield-forest" />
-                            Protocol History
-                        </CardTitle>
+                {/* Audit Registry Stream */}
+                <Card className="border-[#E0E0E0] bg-white rounded-[4rem] shadow-sm overflow-hidden flex flex-col">
+                    <CardHeader className="p-12 pb-4 border-b border-[#F9F7F2]">
+                        <div className="space-y-2">
+                            <CardTitle className="text-2xl font-black text-beeyield-charcoal tracking-tighter flex items-center gap-4">
+                                <Activity className="w-7 h-7 text-beeyield-forest" />
+                                Audit Stream
+                            </CardTitle>
+                            <p className="text-[11px] text-gray-400 font-bold uppercase tracking-[0.2em]">Verified Event Propagation</p>
+                        </div>
                     </CardHeader>
-                    <CardContent className="p-10 space-y-8">
+                    <CardContent className="p-12 space-y-8 flex-1">
                         {recentActivity.map((activity, index) => (
-                            <div key={index} className="flex items-start gap-6 group cursor-pointer transition-all hover:translate-x-2">
-                                <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center transition-all shadow-sm border", activity.color)}>
-                                    <activity.icon className="w-6 h-6" />
+                            <div key={index} className="flex items-start gap-8 group cursor-pointer transition-all hover:bg-beeyield-sand/10 p-4 -ml-4 -mr-4 rounded-[2.5rem] border border-transparent hover:border-beeyield-sand">
+                                <div className={cn("w-16 h-16 rounded-[2rem] flex items-center justify-center transition-all shadow-sm border shrink-0", activity.color)}>
+                                    <activity.icon className="w-7 h-7 stroke-[1.5]" />
                                 </div>
-                                <div className="flex-1">
-                                    <div className="flex items-center justify-between">
-                                        <p className="text-base font-bold text-beeyield-charcoal">{activity.title}</p>
-                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{activity.time}</span>
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center justify-between gap-4">
+                                        <p className="text-lg font-black text-beeyield-charcoal truncate tracking-tight">{activity.title}</p>
+                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest shrink-0">{activity.time}</span>
                                     </div>
-                                    <p className="text-[11px] text-gray-400 font-bold mt-2 uppercase tracking-[0.1em]">Neural Hub Signature Authenticated</p>
+                                    <div className="flex items-center gap-3 mt-2">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                        <p className="text-[11px] text-gray-400 font-bold uppercase tracking-[0.1em]">Signature: Verified v4.2</p>
+                                    </div>
                                 </div>
-                                <ArrowRight className="w-5 h-5 text-gray-300 opacity-0 group-hover:opacity-100 transition-all self-center" />
+                                <ArrowRight className="w-6 h-6 text-beeyield-forest opacity-0 group-hover:opacity-100 transition-all self-center -translate-x-4 group-hover:translate-x-0" />
                             </div>
                         ))}
                     </CardContent>
                 </Card>
             </div>
 
-            {/* Quick Actions */}
-            <div className="bg-beeyield-forest rounded-[3rem] p-16 text-white overflow-hidden relative group">
-                <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-[100px] -mr-32 -mt-32 transition-transform duration-1000 group-hover:scale-110" />
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-beeyield-gold/10 rounded-full blur-[80px] -ml-20 -mb-20" />
+            {/* Sovereign Command Center CTA */}
+            <div className="bg-beeyield-charcoal rounded-[4rem] p-20 text-white overflow-hidden relative group shadow-2xl">
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-beeyield-forest/10 rounded-full blur-[120px] -mr-64 -mt-64 transition-transform duration-1000 group-hover:scale-125" />
+                <div className="absolute bottom-0 left-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-[100px] -ml-32 -mb-32" />
 
-                <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-16">
-                    <div className="max-w-xl text-center lg:text-left">
-                        <h3 className="text-4xl font-bold tracking-tight">System Terminal</h3>
-                        <p className="text-white/70 mt-6 font-medium text-xl leading-relaxed">
-                            Interface directly with the Neural Hive protocols to manage inspections, analyze harvest yields, or synchronize regional apiary nodes.
+                <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-20">
+                    <div className="max-w-2xl text-center lg:text-left space-y-10">
+                        <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/5 border border-white/10">
+                            <Cpu className="w-4 h-4 text-beeyield-forest" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em]">Master Protocol Access</span>
+                        </div>
+                        <h3 className="text-6xl font-black tracking-tighter leading-none">Command <br /><span className="text-beeyield-forest">The Hive.</span></h3>
+                        <p className="text-white/40 font-medium text-2xl leading-relaxed max-w-xl">
+                            Deploy regional clusters, audit secure datasets, and orchestrate precision bio-intelligence from a single sovereign terminal.
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 w-full lg:w-auto">
+                    <div className="grid grid-cols-2 lg:grid-cols-2 gap-8 w-full lg:w-auto">
                         {[
-                            { icon: Target, label: 'Inspect', tab: 'inspections', action: 'open_add_new' },
-                            { icon: Package, label: 'Harvest', tab: 'harvests', action: 'open_add_new' },
-                            { icon: MapPin, label: 'Apiary', tab: 'places' },
-                            { icon: BarChart3, label: 'Export', tab: 'reports-exports' }
+                            { icon: Target, label: 'Protocols', tab: 'inspections', action: 'open_add_new', color: 'hover:border-blue-500' },
+                            { icon: Package, label: 'Payloads', tab: 'harvests', action: 'open_add_new', color: 'hover:border-emerald-500' },
+                            { icon: MapPin, label: 'Topology', tab: 'places', color: 'hover:border-amber-500' },
+                            { icon: BarChart3, label: 'Analytics', tab: 'reports-exports', color: 'hover:border-purple-500' }
                         ].map((action, i) => (
                             <motion.button
                                 key={i}
-                                whileHover={{ y: -8, scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
+                                whileHover={{ y: -10, scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
                                 onClick={() => onTabChange?.(action.tab, undefined, action.action)}
-                                className="bg-white/10 backdrop-blur-xl rounded-[2rem] p-8 flex flex-col items-center gap-4 border border-white/10 hover:bg-white hover:text-beeyield-forest transition-all"
+                                className={cn(
+                                    "bg-white/5 backdrop-blur-2xl rounded-[3rem] p-12 flex flex-col items-center gap-6 border border-white/10 transition-all duration-500 min-w-[200px] group/btn",
+                                    "hover:bg-white hover:text-beeyield-charcoal hover:shadow-2xl hover:shadow-beeyield-forest/20"
+                                )}
                             >
-                                <action.icon className="w-8 h-8 stroke-[2]" />
-                                <span className="text-xs font-bold uppercase tracking-widest">{action.label}</span>
+                                <action.icon className="w-10 h-10 stroke-[1.5] group-hover/btn:scale-110 transition-transform" />
+                                <span className="text-[12px] font-black uppercase tracking-[0.3em]">{action.label}</span>
                             </motion.button>
                         ))}
                     </div>
