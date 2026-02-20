@@ -36,7 +36,7 @@ interface SensorHealthViewProps {
 
 // --- Mock Data ---
 const generateHistoryData = (months: number) => {
-    const data = [];
+    const data: any[] = [];
     const now = new Date(2026, 1, 20); // Feb 2026
     for (let i = months - 1; i >= 0; i--) {
         const d = new Date(now);
@@ -173,11 +173,11 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                             <Thermometer className="w-6 h-6 text-[#facc15]" />
                         </div>
                         <h1 className="text-5xl font-black tracking-tighter uppercase leading-[0.8]">
-                            Sensor <span className="text-[#10b981]">Vitals</span>
+                            Hive <span className="text-[#10b981]">Health</span>
                         </h1>
                     </div>
                     <p className="text-[#10b981] font-black uppercase text-[10px] tracking-[0.4em]">
-                        Internal Hive Environmental Monitoring — 24/7
+                        Temperature and Humidity monitoring — 24/7
                     </p>
                 </div>
                 <div className="flex items-center gap-3 px-5 py-3 border-4 border-[#064e3b] bg-[#064e3b]">
@@ -200,7 +200,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
 
             {/* Hive Node Selector */}
             <div className="space-y-4">
-                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#064e3b]/40">Select Node</h3>
+                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#064e3b]/40">Select Hive</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
                     {hiveNodes.map(hive => {
                         const ac = acousticConfig[hive.acoustic] ?? acousticConfig['Healthy'];
@@ -261,7 +261,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                 )}>
                     <div className="flex items-start justify-between mb-6">
                         <div className="space-y-2">
-                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#064e3b]/40">Acoustic Signature</p>
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#064e3b]/40">Hive Sound</p>
                             <p className={cn("text-3xl font-black uppercase tracking-tight", acoustic.color)}>
                                 {selectedHive.acoustic}
                             </p>
@@ -370,7 +370,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
             <div className="space-y-4">
                 <div className="flex items-center gap-4 border-b-4 border-[#064e3b] pb-4">
                     <Shield className="w-5 h-5 text-[#10b981]" />
-                    <h3 className="text-3xl font-black uppercase tracking-tighter">Fleet Vitals Registry</h3>
+                    <h3 className="text-3xl font-black uppercase tracking-tighter">All Hive Health</h3>
                 </div>
                 <div className="border-4 border-[#064e3b] overflow-hidden shadow-[6px_6px_0px_0px_rgba(6,78,59,1)]">
                     <table className="w-full">
@@ -427,7 +427,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                                                 </span>
                                             ) : (
                                                 <span className="px-3 py-1.5 bg-[#10b981]/10 text-[#10b981] text-[9px] font-black uppercase tracking-widest">
-                                                    NOMINAL
+                                                    OK
                                                 </span>
                                             )}
                                         </td>

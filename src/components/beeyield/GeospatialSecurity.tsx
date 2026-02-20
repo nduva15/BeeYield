@@ -44,9 +44,9 @@ const getHeatColor = (val: number) => {
 };
 
 const statusConfig = {
-    nominal: { dot: 'bg-[#10b981]', label: 'Nominal', ring: 'ring-2 ring-[#10b981]/30' },
-    alert: { dot: 'bg-[#facc15] animate-pulse', label: 'Geofence Alert', ring: 'ring-4 ring-[#facc15]/50 animate-pulse' },
-    moved: { dot: 'bg-red-500 animate-pulse', label: 'Unauthorized Move', ring: 'ring-4 ring-red-500/50 animate-pulse' },
+    nominal: { dot: 'bg-[#10b981]', label: 'OK', ring: 'ring-2 ring-[#10b981]/30' },
+    alert: { dot: 'bg-[#facc15] animate-pulse', label: 'Location Alert', ring: 'ring-4 ring-[#facc15]/50 animate-pulse' },
+    moved: { dot: 'bg-red-500 animate-pulse', label: 'Hive Moved', ring: 'ring-4 ring-red-500/50 animate-pulse' },
 };
 
 const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) => {
@@ -65,18 +65,18 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                             <Shield className="w-6 h-6 text-[#facc15]" />
                         </div>
                         <h1 className="text-5xl font-black tracking-tighter uppercase leading-[0.8]">
-                            Geospatial <span className="text-[#10b981]">Security</span>
+                            Hive <span className="text-[#10b981]">Map</span>
                         </h1>
                     </div>
                     <p className="text-[#10b981] font-black uppercase text-[10px] tracking-[0.4em]">
-                        Live Hive Mapping — Geofence Monitoring — Pollination Saturation
+                        Live Hive Map · Hive Tracking · Bee Density
                     </p>
                 </div>
                 <div className="flex items-center gap-4">
                     {alerts.length > 0 && (
                         <div className="flex items-center gap-2 px-5 py-2 bg-red-500 border-2 border-red-700">
                             <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                            <span className="text-white font-black text-[10px] uppercase tracking-widest">{alerts.length} Geofence Violation{alerts.length > 1 ? 's' : ''}</span>
+                            <span className="text-white font-black text-[10px] uppercase tracking-widest">{alerts.length} Location Alert{alerts.length > 1 ? 's' : ''}</span>
                         </div>
                     )}
                     <button
@@ -105,12 +105,12 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                     <AlertTriangle className={cn("w-5 h-5 mt-0.5 shrink-0", hive.status === 'moved' ? "text-red-500" : "text-[#b45309]")} />
                     <div>
                         <p className={cn("text-xs font-black uppercase tracking-widest", hive.status === 'moved' ? "text-red-700" : "text-[#b45309]")}>
-                            {hive.status === 'moved' ? `⚠ Unauthorized Movement — ${hive.id} (${hive.name})` : `⚠ Geofence Alert — ${hive.id} (${hive.name})`}
+                            {hive.status === 'moved' ? `⚠ Hive Moved — ${hive.id} (${hive.name})` : `⚠ Location Alert — ${hive.id} (${hive.name})`}
                         </p>
                         <p className="text-[10px] font-bold text-neutral-500 mt-1">
                             {hive.status === 'moved'
-                                ? `GPS drift detected outside scheduled move window for ${hive.block}. Hive marked RED on map.`
-                                : `GPS coordinates near block boundary. Verify hive position in ${hive.block}.`}
+                                ? `Hive moved from its spot in ${hive.block}. Marked RED on map.`
+                                : `Hive is close to the edge of ${hive.block}. Please check its position.`}
                         </p>
                     </div>
                 </div>
@@ -120,7 +120,7 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* The Orchard Map */}
                 <div className="lg:col-span-8 space-y-3">
-                    <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#064e3b]/40">Orchard Overlay — Block Map</h3>
+                    <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#064e3b]/40">Farm Map</h3>
                     <div className="border-4 border-[#064e3b] bg-[#064e3b]/3 shadow-[8px_8px_0px_0px_rgba(6,78,59,1)] relative overflow-hidden" style={{ aspectRatio: '16/10' }}>
                         {/* Heatmap layer */}
                         {showHeatmap && (
@@ -199,7 +199,7 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
 
                 {/* Hive Detail Panel */}
                 <div className="lg:col-span-4 space-y-4">
-                    <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#064e3b]/40">Hive Registry</h3>
+                    <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#064e3b]/40">Hive List</h3>
                     <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1">
                         {hiveMarkers.map(h => {
                             const s = statusConfig[h.status];
@@ -235,7 +235,7 @@ const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) 
                                         {/* Saturation mini bar */}
                                         <div className="w-24 space-y-1">
                                             <p className={cn("text-[8px] font-black uppercase text-right", isSelected ? "text-white/50" : "text-[#064e3b]/30")}>
-                                                Sat. {h.saturation}%
+                                                Density {h.saturation}%
                                             </p>
                                             <div className="h-1.5 bg-black/10 w-full">
                                                 <div

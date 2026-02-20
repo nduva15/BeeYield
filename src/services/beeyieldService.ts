@@ -529,6 +529,24 @@ export interface NotificationConfigUpdate {
     sms_enabled?: boolean;
 }
 
+// ========== CALCULATOR TYPES ==========
+export interface CalculatorLog {
+    id: string;
+    user_id: string;
+    calculation_type: 'feeding' | 'health' | 'logistics' | 'economy';
+    sub_type: string;
+    inputs: any;
+    results: any;
+    created_at: string;
+}
+
+export interface CalculatorLogCreateInput {
+    calculation_type: 'feeding' | 'health' | 'logistics' | 'economy';
+    sub_type: string;
+    inputs: any;
+    results: any;
+}
+
 export interface UserNotificationSettings {
     user_id: string;
     email_alerts_enabled: boolean;
@@ -783,6 +801,42 @@ export const beeyieldService = {
         } catch (error) {
             console.error('Error in getHarvests:', error);
             return [];
+        }
+    },
+
+    async updateIoTSettings(settings: Partial<IoTSettings>): Promise<{ data: any; error: any }> {
+        try {
+            const data = await apiPut<any>('/settings/iot', settings);
+            toast.success('IoT settings updated');
+            return { data, error: null };
+        } catch (error) {
+            console.error('Error updating IoT settings:', error);
+            toast.error('Failed to update IoT settings');
+            return { data: null, error };
+        }
+    },
+
+    // ========== CALCULATOR LOGS ==========
+    async getCalculatorLogs(type?: string): Promise<CalculatorLog[]> {
+        try {
+            const params: any = {};
+            if (type) params.calculation_type = type;
+            return await apiGet<CalculatorLog[]>('/beeyield/calculator-logs', params);
+        } catch (error) {
+            console.error('Error fetching calculator logs:', error);
+            return [];
+        }
+    },
+
+    async logCalculation(input: CalculatorLogCreateInput): Promise<{ data: CalculatorLog | null; error: any }> {
+        try {
+            const data = await apiPost<CalculatorLog>('/beeyield/calculator-logs', input);
+            toast.success('Calculation persisted to Cloud');
+            return { data, error: null };
+        } catch (error) {
+            console.error('Error logging calculation:', error);
+            toast.error('Failed to sync calculation');
+            return { data: null, error };
         }
     },
 
@@ -1086,16 +1140,6 @@ export const beeyieldService = {
         } catch (error) {
             console.error('Error fetching IoT settings:', error);
             return null;
-        }
-    },
-
-    async updateIoTSettings(settings: Partial<IoTSettings>): Promise<{ data: any; error: any }> {
-        try {
-            const data = await apiPut<any>('/settings/iot', settings);
-            return { data, error: null };
-        } catch (error) {
-            console.error('Error updating IoT settings:', error);
-            return { data: null, error };
         }
     },
 

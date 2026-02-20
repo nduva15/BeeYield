@@ -18,7 +18,7 @@ import beeyieldService from '@/services/beeyieldService';
 import { Loader2 } from 'lucide-react';
 
 interface BuyBeeYieldHubViewProps {
-    onTabChange: (tab: string) => void;
+    onTabChange: (tab: string, message?: string, action?: string) => void;
 }
 
 const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) => {
@@ -35,13 +35,13 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                 } else {
                     // Fallback to static demo data if none in DB
                     setInventory([
-                        { id: '1', sn: '130324000185', desc: 'HUB_PRO_V3', lat: '-1.2863', long: '36.8221', status: 'Online', uptime: '15d 04:22' },
-                        { id: '2', sn: '220424000842', desc: 'SENSOR_NODE_INTERNAL', lat: '-1.2864', long: '36.8222', status: 'Online', uptime: '15d 04:22' },
-                        { id: '3', sn: '220424000843', desc: 'SENSOR_NODE_EXTERNAL', lat: '-1.2863', long: '36.8224', status: 'Offline', uptime: '02d 01:15' },
-                        { id: '4', sn: '250524001290', desc: 'HIVE_SCALE_PRO', lat: '-1.2865', long: '36.8221', status: 'Online', uptime: '12d 08:45' },
-                        { id: '5', sn: '250524001291', desc: 'HIVE_SCALE_PRO', lat: '-1.2866', long: '36.8220', status: 'Online', uptime: '12d 08:45' },
-                        { id: '6', sn: '100624000551', desc: 'BEEYIELD_GPS_TRACKER', lat: '-1.2869', long: '36.8225', status: 'Online', uptime: '30d 12:10' },
-                        { id: '7', sn: '100624000552', desc: 'BEEYIELD_GPS_TRACKER', lat: '-1.2870', long: '36.8226', status: 'Online', uptime: '30d 12:10' }
+                        { id: '1', sn: '130324000185', desc: 'Bee Hub', lat: '-1.2863', long: '36.8221', status: 'Online', uptime: '15d 04:22' },
+                        { id: '2', sn: '220424000842', desc: 'Inside Sensor', lat: '-1.2864', long: '36.8222', status: 'Online', uptime: '15d 04:22' },
+                        { id: '3', sn: '220424000843', desc: 'Outside Sensor', lat: '-1.2863', long: '36.8224', status: 'Offline', uptime: '02d 01:15' },
+                        { id: '4', sn: '250524001290', desc: 'Hive Scale', lat: '-1.2865', long: '36.8221', status: 'Online', uptime: '12d 08:45' },
+                        { id: '5', sn: '250524001291', desc: 'Hive Scale', lat: '-1.2866', long: '36.8220', status: 'Online', uptime: '12d 08:45' },
+                        { id: '6', sn: '100624000551', desc: 'Bee Tracker', lat: '-1.2869', long: '36.8225', status: 'Online', uptime: '30d 12:10' },
+                        { id: '7', sn: '100624000552', desc: 'Bee Tracker', lat: '-1.2870', long: '36.8226', status: 'Online', uptime: '30d 12:10' }
                     ]);
                 }
             } catch (err) {
@@ -104,30 +104,30 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
     ];
 
     const parameters = [
-        { name: 'Ambient', description: 'Surrounding environment temperature and conditions' },
-        { name: 'Temperature', description: 'Internal hive temperature monitoring for brood health' },
-        { name: 'Humidity', description: 'Internal humidity levels for honey curing and health' },
-        { name: 'Weight', description: 'Real-time honey yield tracking and swarm detection' },
-        { name: 'Sound', description: 'Acoustic analysis for queen status and swarm intent' },
-        { name: 'Activity', description: 'Flight activity monitoring at the hive entrance' },
-        { name: 'Battery', description: 'Device voltage and solar charging performance' },
-        { name: 'Signal', description: 'GSM/Satellite and Bluetooth connectivity strength' },
-        { name: 'GPS', description: 'Precise location tracking and movement alerts' },
-        { name: 'Pressure', description: 'Barometric pressure for weather forecasting' },
-        { name: 'Light', description: 'Solar intensity and forage time monitoring' },
-        { name: 'Motion', description: 'Anti-tamper and vibration detection' },
-        { name: 'Orientation', description: '3-axis orientation to detect hive tilting or falls' },
-        { name: 'Acceleration', description: 'Impact detection and movement analysis' },
-        { name: 'Magnetic', description: 'Entrance gate monitoring and magnetic disturbances' },
-        { name: 'CO2', description: 'Carbon dioxide concentration within the hive hive' },
-        { name: 'VOC', description: 'Volatile Organic Compounds for health diagnostics' },
-        { name: 'PM2.5 / PM10', description: 'Particulate matter monitoring in the apiary vicinity' },
-        { name: 'NOx / SOx', description: 'Air quality monitoring for pollutants affecting bees' },
-        { name: 'Rain', description: 'Real-time rainfall intensity and duration tracking' },
-        { name: 'Wind Speed', description: 'Anemometer data for flight safety alerts' },
-        { name: 'UV Index', description: 'Solar radiation intensity monitoring' },
-        { name: 'Lux', description: 'Precise light intensity for biological clock correlation' },
-        { name: 'Visibility', description: 'Atmospheric visibility for foraging conditions' }
+        { name: 'Air', description: 'Checks conditions around the hives' },
+        { name: 'Temperature', description: 'Checks inside health for baby bees' },
+        { name: 'Humidity', description: 'Checks moisture for honey quality' },
+        { name: 'Weight', description: 'Real-time honey gain and swarm check' },
+        { name: 'Sound', description: 'Sound analysis for queen and swarm risk' },
+        { name: 'Activity', description: 'Checks how many bees are flying' },
+        { name: 'Battery', description: 'Power and solar charging status' },
+        { name: 'Signal', description: 'Cellular and Satellite connection status' },
+        { name: 'GPS', description: 'Location tracking and hive move alerts' },
+        { name: 'Pressure', description: 'Air pressure for weather updates' },
+        { name: 'Light', description: 'Sunlight and foraging time checks' },
+        { name: 'Motion', description: 'Anti-theft and movement alerts' },
+        { name: 'Tilting', description: 'Checks if a hive has tipped over' },
+        { name: 'Impact', description: 'Detects bumps or falls' },
+        { name: 'Magnetic', description: 'Entrance monitoring and magnetic checks' },
+        { name: 'CO2', description: 'Carbon dioxide levels inside the hive' },
+        { name: 'VOC', description: 'Health checks using air chemicals' },
+        { name: 'Air Dust', description: 'Particulate matter monitoring' },
+        { name: 'Pollution', description: 'Checks for pollutants affecting bees' },
+        { name: 'Rain', description: 'Real-time rainfall tracking' },
+        { name: 'Wind', description: 'Checks if it is too windy for bees to fly' },
+        { name: 'UV', description: 'Solar radiation checks' },
+        { name: 'Light Level', description: 'Checks light for bee activity' },
+        { name: 'Visibility', description: 'Checks visibility for foraging' }
     ];
 
     return (
@@ -141,7 +141,7 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
                         <div className="p-12 lg:p-20 space-y-8 flex flex-col justify-center">
                             <div className="space-y-4">
                                 <h1 className="text-6xl font-black text-[#0F172A] dark:text-white tracking-tight leading-[1.1]">
-                                    IoT monitoring system
+                                    Hive monitoring system
                                 </h1>
                                 <p className="text-lg text-gray-500 dark:text-gray-400 leading-relaxed max-w-xl">
                                     What to use when monitoring your apiary? BeeYield Hub gives beekeepers one place to see hive health, honey production, and early warnings—all in real time.
@@ -327,9 +327,9 @@ const BuyBeeYieldHubView: React.FC<BuyBeeYieldHubViewProps> = ({ onTabChange }) 
             <div className="space-y-12 py-12">
                 <div className="text-center space-y-4 max-w-4xl mx-auto">
                     <h2 className="text-3xl font-bold tracking-tight px-12 uppercase">
-                        Measurement parameters supported by the BeeHUB Platform
+                        What the Bee Hub Platform measures
                     </h2>
-                    <p className="text-[10px] font-bold text-[#F4D03F] uppercase tracking-widest">ADVANCED PRECISION SENSING</p>
+                    <p className="text-[10px] font-bold text-[#F4D03F] uppercase tracking-widest">SMART SENSORS</p>
                 </div>
 
                 <div className="bg-white dark:bg-[#09090b] rounded-[2.5rem] border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm">
