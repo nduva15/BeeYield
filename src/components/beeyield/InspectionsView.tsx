@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -44,22 +44,22 @@ interface InspectionsViewProps {
 
 const InspectionsView: React.FC<InspectionsViewProps> = ({ initialParams }) => {
     // UI State
-    const [isAddingInspection, setIsAddingInspection] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isSaving, setIsSaving] = useState(false);
-    const [editingId, setEditingId] = useState<string | null>(null);
+    const [isAddingInspection, setIsAddingInspection] = React.useState(false);
+    const [isLoading, setIsLoading] = React.useState(true);
+    const [isSaving, setIsSaving] = React.useState(false);
+    const [editingId, setEditingId] = React.useState<string | null>(null);
 
     // Data State
-    const [inspections, setInspections] = useState<Inspection[]>([]);
-    const [apiaries, setApiaries] = useState<Apiary[]>([]);
-    const [hives, setHives] = useState<Hive[]>([]);
+    const [inspections, setInspections] = React.useState<Inspection[]>([]);
+    const [apiaries, setApiaries] = React.useState<Apiary[]>([]);
+    const [hives, setHives] = React.useState<Hive[]>([]);
 
     // Filters
-    const [selectedPlaceId, setSelectedPlaceId] = useState<string>('all_places');
-    const [selectedHiveId, setSelectedHiveId] = useState<string>('all_hives');
-    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedPlaceId, setSelectedPlaceId] = React.useState<string>('all_places');
+    const [selectedHiveId, setSelectedHiveId] = React.useState<string>('all_hives');
+    const [searchQuery, setSearchQuery] = React.useState('');
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (initialParams?.action === 'open_add_new') {
             setIsAddingInspection(true);
         } else if (initialParams?.action?.startsWith('filter_hive:')) {
@@ -79,7 +79,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ initialParams }) => {
     const userId = beeyieldUser?.id || user?.id;
 
     // Form State
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = React.useState({
         hive_id: '',
         inspector_name: '',
         inspection_date: new Date().toISOString().split('T')[0],
@@ -124,7 +124,7 @@ const InspectionsView: React.FC<InspectionsViewProps> = ({ initialParams }) => {
         setEditingId(null);
     };
 
-    useEffect(() => {
+    React.useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
             try {

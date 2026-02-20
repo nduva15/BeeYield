@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ShieldCheck, Camera, Activity, FileCheck, Info, Award, CheckCircle2, XCircle, Search, Cpu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -7,8 +7,8 @@ interface DigitalHealthAuditProps {
 }
 
 const DigitalHealthAudit: React.FC<DigitalHealthAuditProps> = ({ onTabChange }) => {
-    const [isScanning, setIsScanning] = useState(false);
-    const [scanResults, setScanResults] = useState<null | { fpa: number; status: string }>(null);
+    const [isScanning, setIsScanning] = React.useState(false);
+    const [scanResults, setScanResults] = React.useState<null | { fpa: number; status: string }>(null);
 
     const handleScan = () => {
         setIsScanning(true);

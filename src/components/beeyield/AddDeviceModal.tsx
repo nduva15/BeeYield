@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,12 +18,12 @@ interface AddDeviceModalProps {
 
 const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ open, onOpenChange, onAdd, apiaries, hives }) => {
     const { t } = useLanguage();
-    const [selectedApiaryId, setSelectedApiaryId] = useState<string>("");
-    const [selectedHiveId, setSelectedHiveId] = useState<string>("");
-    const [deviceCode, setDeviceCode] = useState("");
-    const [deviceName, setDeviceName] = useState("");
-    const [deviceType, setDeviceType] = useState<'infield' | 'inland' | 'disease'>('inland');
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>("");
+    const [selectedHiveId, setSelectedHiveId] = React.useState<string>("");
+    const [deviceCode, setDeviceCode] = React.useState("");
+    const [deviceName, setDeviceName] = React.useState("");
+    const [deviceType, setDeviceType] = React.useState<'infield' | 'inland' | 'disease'>('inland');
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
 
     const filteredHives = hives?.filter(h => h.apiary_id === selectedApiaryId) || [];
 

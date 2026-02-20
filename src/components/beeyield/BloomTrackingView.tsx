@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
     Sprout,
     Calendar,
@@ -21,7 +21,7 @@ interface BloomTrackingViewProps {
 }
 
 const BloomTrackingView: React.FC<BloomTrackingViewProps> = ({ onTabChange }) => {
-    const [showLogForm, setShowLogForm] = useState(false);
+    const [showLogForm, setShowLogForm] = React.useState(false);
 
     return (
         <div className="p-8 space-y-12 bg-white min-h-screen text-[#064e3b] antialiased">

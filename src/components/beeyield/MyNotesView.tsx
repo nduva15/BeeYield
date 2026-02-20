@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { LayoutGrid, Plus, ChevronDown, Box, MapPin, Loader2, Check, Clock as ClockIcon, StickyNote, Trash2, Edit } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -44,27 +44,27 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
     const deleteNoteMutation = useDeleteNote();
 
     // UI States
-    const [isPlacesOpen, setIsPlacesOpen] = useState(false);
-    const [isHivesOpen, setIsHivesOpen] = useState(false);
-    const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
-    const [selectedHiveId, setSelectedHiveId] = useState<string | null>(null);
-    const [isAddingNote, setIsAddingNote] = useState(false);
-    const [isEditingNote, setIsEditingNote] = useState<Note | null>(null);
+    const [isPlacesOpen, setIsPlacesOpen] = React.useState(false);
+    const [isHivesOpen, setIsHivesOpen] = React.useState(false);
+    const [selectedPlaceId, setSelectedPlaceId] = React.useState<string | null>(null);
+    const [selectedHiveId, setSelectedHiveId] = React.useState<string | null>(null);
+    const [isAddingNote, setIsAddingNote] = React.useState(false);
+    const [isEditingNote, setIsEditingNote] = React.useState<Note | null>(null);
 
     // Form States
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [noteDate, setNoteDate] = useState<Date>(new Date());
-    const [noteTime, setNoteTime] = useState(format(new Date(), "HH:mm"));
-    const [priority, setPriority] = useState<'low' | 'medium' | 'high'>("medium");
-    const [category, setCategory] = useState("General");
-    const [isSaving, setIsSaving] = useState(false);
+    const [title, setTitle] = React.useState("");
+    const [description, setDescription] = React.useState("");
+    const [noteDate, setNoteDate] = React.useState<Date>(new Date());
+    const [noteTime, setNoteTime] = React.useState(format(new Date(), "HH:mm"));
+    const [priority, setPriority] = React.useState<'low' | 'medium' | 'high'>("medium");
+    const [category, setCategory] = React.useState("General");
+    const [isSaving, setIsSaving] = React.useState(false);
 
     // Derived
     const selectedPlace = apiaries.find(a => a.id === selectedPlaceId);
     const selectedHive = hives.find(h => h.id === selectedHiveId);
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (initialAction === 'add') {
             setIsAddingNote(true);
             onInitialActionConsumed?.();
@@ -72,7 +72,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
     }, [initialAction]);
 
     // Handle initial state for editing
-    useEffect(() => {
+    React.useEffect(() => {
         if (isEditingNote) {
             setTitle(isEditingNote.title || "");
             setDescription(isEditingNote.content || "");
@@ -86,7 +86,7 @@ const MyNotesView: React.FC<MyNotesViewProps> = ({
     }, [isEditingNote]);
 
     // Debounced Auto-save for content
-    const debouncedSave = useCallback(
+    const debouncedSave = React.useCallback(
         debounce(async (id: string, content: string) => {
             await updateNoteMutation.mutateAsync({
                 id,
