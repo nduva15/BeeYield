@@ -29,6 +29,8 @@ import {
 } from 'recharts';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import WeightDynamicsChart from '@/components/telemetry/WeightDynamicsChart';
+import AcousticWaveform from '@/components/telemetry/AcousticWaveform';
 
 interface WeightData {
     time: string;
@@ -212,114 +214,8 @@ const HiveTelemetryView: React.FC = () => {
 
             {/* Performance Graphs */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[12px_12px_0px_0px_rgba(6,78,59,1)]">
-                    <CardHeader className="p-10 border-b-4 border-[#064e3b]/5 flex flex-row items-center justify-between">
-                        <div>
-                            <CardTitle className="text-3xl font-black text-[#064e3b] uppercase tracking-tighter">Gross Mass Timeline</CardTitle>
-                            <p className="text-[10px] font-black uppercase text-[#064e3b]/30 tracking-widest">24-Hour Cycle Resolution</p>
-                        </div>
-                        <Activity className="w-8 h-8 text-[#064e3b]/10" />
-                    </CardHeader>
-                    <CardContent className="p-10">
-                        <div className="h-[350px] w-full">
-                            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
-                                <AreaChart data={data} margin={{ top: 20, right: 20, left: -20, bottom: 0 }}>
-                                    <defs>
-                                        <linearGradient id="colorWeight" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#064e3b" stopOpacity={0.15} />
-                                            <stop offset="95%" stopColor="#064e3b" stopOpacity={0} />
-                                        </linearGradient>
-                                    </defs>
-                                    <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#E5E7EB" />
-                                    <XAxis
-                                        dataKey="time"
-                                        axisLine={false}
-                                        tickLine={false}
-                                        tick={{ fill: '#064e3b', fontSize: 10, fontWeight: 900 }}
-                                        dy={12}
-                                    />
-                                    <YAxis
-                                        axisLine={false}
-                                        tickLine={false}
-                                        tick={{ fill: '#064e3b', fontSize: 10, fontWeight: 900 }}
-                                        domain={['auto', 'auto']}
-                                    />
-                                    <Tooltip
-                                        contentStyle={{
-                                            borderRadius: '0px',
-                                            border: '4px solid #064e3b',
-                                            padding: '12px',
-                                            textTransform: 'uppercase',
-                                            fontWeight: 900,
-                                            fontSize: '11px'
-                                        }}
-                                    />
-                                    <Area
-                                        type="monotone"
-                                        dataKey="weight"
-                                        stroke="#064e3b"
-                                        strokeWidth={6}
-                                        fillOpacity={1}
-                                        fill="url(#colorWeight)"
-                                        dot={{ r: 4, fill: '#fff', stroke: '#064e3b', strokeWidth: 3 }}
-                                        activeDot={{ r: 8, fill: '#facc15', stroke: '#064e3b', strokeWidth: 4 }}
-                                    />
-                                </AreaChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card className="rounded-none border-4 border-[#064e3b] bg-white shadow-[12px_12px_0px_0px_rgba(6,78,59,1)]">
-                    <CardHeader className="p-10 border-b-4 border-[#064e3b]/5 flex flex-row items-center justify-between">
-                        <div>
-                            <CardTitle className="text-3xl font-black text-[#064e3b] uppercase tracking-tighter">Velocity Matrix ($dW/dt$)</CardTitle>
-                            <p className="text-[10px] font-black uppercase text-[#064e3b]/30 tracking-widest">Biological Influx / Consumption Rate</p>
-                        </div>
-                        <TrendingUp className="w-8 h-8 text-[#10b981]/20" />
-                    </CardHeader>
-                    <CardContent className="p-10">
-                        <div className="h-[350px] w-full">
-                            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
-                                <LineChart data={data} margin={{ top: 20, right: 20, left: -20, bottom: 0 }}>
-                                    <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#E5E7EB" />
-                                    <XAxis
-                                        dataKey="time"
-                                        axisLine={false}
-                                        tickLine={false}
-                                        tick={{ fill: '#064e3b', fontSize: 10, fontWeight: 900 }}
-                                        dy={12}
-                                    />
-                                    <YAxis
-                                        axisLine={false}
-                                        tickLine={false}
-                                        tick={{ fill: '#064e3b', fontSize: 10, fontWeight: 900 }}
-                                    />
-                                    <Tooltip
-                                        contentStyle={{
-                                            borderRadius: '0px',
-                                            border: '4px solid #064e3b',
-                                            padding: '12px',
-                                            textTransform: 'uppercase',
-                                            fontWeight: 900,
-                                            fontSize: '11px'
-                                        }}
-                                    />
-                                    <ReferenceLine y={0.05} stroke="#10b981" strokeDasharray="8 8" label={{ position: 'right', value: 'FLUX_MIN', fill: '#10b981', fontSize: 9, fontWeight: 900 }} />
-                                    <ReferenceLine y={0} stroke="#064e3b" strokeWidth={2} />
-                                    <Line
-                                        type="monotone"
-                                        dataKey="dwdt"
-                                        stroke="#10b981"
-                                        strokeWidth={4}
-                                        dot={false}
-                                        activeDot={{ r: 6, fill: '#facc15', stroke: '#064e3b', strokeWidth: 3 }}
-                                    />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </CardContent>
-                </Card>
+                <WeightDynamicsChart />
+                <AcousticWaveform />
             </div>
 
             {/* Historical Logs */}
