@@ -258,7 +258,7 @@ const BeeYieldDashboard: React.FC = () => {
     const renderContent = () => {
         switch (activeTab) {
             case 'home':
-                return <DashboardHomeView onTabChange={handleTabChange} />;
+                return <DashboardHomeView devices={devices} readings={readings} apiaries={apiaries} onTabChange={handleTabChange} />;
             case 'assistant':
                 return (
                     <SmartAssistantView
@@ -270,7 +270,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'agro-intelligence':
                 return <AgroIntelligenceView onTabChange={handleTabChange} />;
             case 'precision-pollination':
-                return <PrecisionPollinationView onTabChange={handleTabChange} />;
+                return <PrecisionPollinationView devices={devices} readings={readings} onTabChange={handleTabChange} />;
             case 'places':
                 return <MyPlacesView onTabChange={handleTabChange} />;
             case 'beeyield':
@@ -368,47 +368,44 @@ const BeeYieldDashboard: React.FC = () => {
 
 
 
-    // 1. User is not logged in OR does not have a Pollination account: Show Login/Register
     if (!user || !isBeeYieldActive) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#050505] text-white font-mono">
-                <div className="max-w-md w-full text-center space-y-8">
-                    <div className="w-24 h-24 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto border border-primary/20 relative">
-                        <Hexagon className="h-12 w-12 text-primary" />
-                        <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full opacity-50" />
-                    </div>
-                    <div className="space-y-4">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 mb-2">
-                            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                            <span className="text-[10px] font-bold text-red-500 tracking-widest uppercase">{t('access_denied')}</span>
-                        </div>
-                        <h1 className="text-4xl font-black tracking-tighter">{t('restricted_airspace')}</h1>
-                        {t('auth_mandatory')}
+            <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-white font-sans text-[#064e3b] antialiased">
+                <div className="max-w-2xl w-full text-center space-y-12">
+                    <div className="w-24 h-24 border-4 border-[#064e3b] bg-[#facc15] flex items-center justify-center mx-auto shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
+                        <Hexagon className="h-12 w-12 text-[#064e3b] fill-current" />
                     </div>
 
-                    <div className="grid gap-3">
-                        <Button
-                            onClick={() => navigate('/beeyield-login')}
-                            className="w-full h-14 text-sm font-black rounded-xl bg-primary text-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all"
-                        >
-                            <LogIn className="w-4 h-4 mr-2" /> {t('authenticate_session')}
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            onClick={() => navigate('/shop')}
-                            className="w-full h-14 text-white/40 hover:text-white transition-colors uppercase tracking-widest text-[10px] font-bold"
-                        >
-                            <ArrowLeft className="w-4 h-4 mr-2" /> {t('return_public_shop')}
-                        </Button>
+                    <div className="space-y-6">
+                        <h1 className="text-6xl font-black uppercase tracking-tighter leading-none">
+                            Access <span className="text-[#10b981]">Denied</span>
+                        </h1>
+                        <p className="text-[10px] font-black uppercase text-[#064e3b]/40 tracking-[0.4em]">
+                            Security Protocol // 42_BETA
+                        </p>
                     </div>
 
-                    <div className="pt-8 border-t border-white/5 flex flex-col items-center gap-2">
-                        <div className="flex gap-4">
-                            <Shield className="h-3 w-3 text-white/10" />
-                            <Lock className="h-3 w-3 text-white/10" />
+                    <div className="border-4 border-[#064e3b] p-10 bg-white shadow-[12px_12px_0px_0px_rgba(6,78,59,1)]">
+                        <p className="text-sm font-black uppercase leading-relaxed mb-10">
+                            Registry access requires valid authentication. Credentials must be verified through the central node.
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                            <button
+                                onClick={() => navigate('/login')}
+                                className="h-14 px-12 border-2 border-[#064e3b] bg-[#10b981] text-white font-black uppercase text-xs tracking-widest hover:bg-black transition-all flex items-center justify-center gap-3"
+                            >
+                                <Lock className="w-4 h-4" />
+                                Login Path
+                            </button>
                         </div>
-                        <p className="text-[8px] text-white/10 tracking-[0.3em]">{t('encrypted_kernel_access')}</p>
                     </div>
+
+                    <button
+                        onClick={() => navigate('/')}
+                        className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]/30 hover:text-[#10b981] transition-colors"
+                    >
+                        Back to Origin
+                    </button>
                 </div>
             </div>
         );

@@ -1,9 +1,7 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Hexagon, Zap, Activity, Droplet, ArrowRight, Settings, BarChart2 } from 'lucide-react';
+import { Hexagon, Zap, Droplet, ArrowRight, Settings, BarChart2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface FlipCardHiveProps {
@@ -20,104 +18,79 @@ interface FlipCardHiveProps {
 }
 
 const FlipCardHive: React.FC<FlipCardHiveProps> = ({ hive, onViewHistory, onMarkInspection }) => {
-    const [isFlipped, setIsFlipped] = React.useState(false);
-
-    const getStatusColor = (status: string) => {
+    const getStatusStyles = (status: string) => {
         switch (status) {
-            case 'ok': return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20';
-            case 'warning': return 'text-amber-500 bg-amber-500/10 border-amber-500/20';
-            case 'critical': return 'text-rose-500 bg-rose-500/10 border-rose-500/20';
-            default: return 'text-slate-500 bg-slate-500/10 border-slate-500/20';
+            case 'ok': return 'bg-[#ecfdf5] border-emerald-500 text-emerald-700';
+            case 'warning': return 'bg-[#fffbeb] border-amber-500 text-amber-700';
+            case 'critical': return 'bg-[#fef2f2] border-rose-500 text-rose-700';
+            default: return 'bg-white border-black text-black';
         }
     };
 
     return (
-        <div
-            className="group relative h-[280px] w-full perspective-1000 cursor-pointer"
-            onMouseEnter={() => setIsFlipped(true)}
-            onMouseLeave={() => setIsFlipped(false)}
-        >
-            <motion.div
-                className="relative h-full w-full transition-all duration-500 preserve-3d"
-                animate={{ rotateY: isFlipped ? 180 : 0 }}
-                transition={{ duration: 0.6, type: "spring", stiffness: 260, damping: 20 }}
-            >
-                {/* Front Face */}
-                <Card className="absolute inset-0 h-full w-full backface-hidden border-2 border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-xl overflow-hidden rounded-3xl">
-                    <div className={cn("absolute top-0 right-0 p-4 rounded-bl-3xl border-b border-l", getStatusColor(hive.status))}>
-                        <Activity className="w-5 h-5 animate-pulse" />
+        <Card className="h-full border-2 border-black bg-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-hidden group">
+            <div className={cn("p-2 border-b-2 border-black font-bold text-[10px] uppercase tracking-widest text-center", getStatusStyles(hive.status))}>
+                STATUS: {hive.status.toUpperCase()}
+            </div>
+
+            <CardContent className="h-full flex flex-col p-6 gap-6">
+                <div className="flex items-start justify-between">
+                    <div>
+                        <h3 className="text-3xl font-black text-black tracking-tighter uppercase leading-none mb-1">
+                            {hive.name}
+                        </h3>
+                        <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
+                            Hive
+                        </p>
                     </div>
+                    <div className="w-10 h-10 border-2 border-black flex items-center justify-center bg-[#FF4F00] text-white">
+                        <Hexagon className="w-5 h-5" />
+                    </div>
+                </div>
 
-                    <CardContent className="flex flex-col h-full justify-between p-6">
-                        <div>
-                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/20 mb-4">
-                                <Hexagon className="w-6 h-6 text-white fill-white/20" />
-                            </div>
-                            <h3 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight mb-1">
-                                {hive.name}
-                            </h3>
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                                Smart Hive Node
-                            </p>
+                <div className="grid grid-cols-2 gap-2">
+                    <div className="p-3 border-2 border-black bg-neutral-50">
+                        <div className="flex items-center gap-2 mb-1 text-neutral-500">
+                            <Zap className="w-3.5 h-3.5" />
+                            <span className="text-[8px] font-bold uppercase tracking-widest">Weight</span>
                         </div>
-
-                        <div className="grid grid-cols-2 gap-3 mt-6">
-                            <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
-                                <div className="flex items-center gap-2 mb-1 text-slate-400 dark:text-slate-500">
-                                    <Zap className="w-3.5 h-3.5" />
-                                    <span className="text-[10px] font-bold uppercase">Weight</span>
-                                </div>
-                                <span className="text-lg font-black text-slate-700 dark:text-slate-200">{hive.weight}kg</span>
-                            </div>
-                            <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
-                                <div className="flex items-center gap-2 mb-1 text-slate-400 dark:text-slate-500">
-                                    <Droplet className="w-3.5 h-3.5" />
-                                    <span className="text-[10px] font-bold uppercase">Humid</span>
-                                </div>
-                                <span className="text-lg font-black text-slate-700 dark:text-slate-200">{hive.humidity}%</span>
-                            </div>
+                        <span className="text-xl font-black text-black">{hive.weight}kg</span>
+                    </div>
+                    <div className="p-3 border-2 border-black bg-neutral-50">
+                        <div className="flex items-center gap-2 mb-1 text-neutral-500">
+                            <Droplet className="w-3.5 h-3.5" />
+                            <span className="text-[8px] font-bold uppercase tracking-widest">Humidity</span>
                         </div>
-                    </CardContent>
-                </Card>
+                        <span className="text-xl font-black text-black">{hive.humidity}%</span>
+                    </div>
+                </div>
 
-                {/* Back Face */}
-                <Card
-                    className="absolute inset-0 h-full w-full backface-hidden rotate-y-180 bg-slate-900 text-white border-none shadow-2xl rounded-3xl overflow-hidden"
-                    style={{ transform: "rotateY(180deg)" }}
-                >
-                    <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-950 z-0" />
-
-                    <CardContent className="relative z-10 flex flex-col h-full justify-center items-center p-6 gap-4">
-                        <h4 className="text-lg font-bold text-slate-200 mb-2">Hive Actions</h4>
-
+                <div className="mt-auto space-y-2">
+                    <div className="flex gap-2">
                         <Button
                             variant="outline"
-                            className="w-full h-12 rounded-xl bg-white/5 border-white/10 hover:bg-white/10 hover:text-white justify-between group"
-                            onClick={(e) => { e.stopPropagation(); onViewHistory(); }}
+                            className="flex-1 h-10 rounded-none border-2 border-black bg-white text-black hover:bg-black hover:text-white font-bold text-[9px] uppercase tracking-widest transition-none"
+                            onClick={onViewHistory}
                         >
-                            <span className="text-xs font-bold uppercase tracking-wider">Analytics</span>
-                            <BarChart2 className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" />
+                            <BarChart2 className="w-3 h-3 mr-2" /> Data
                         </Button>
-
                         <Button
                             variant="outline"
-                            className="w-full h-12 rounded-xl bg-white/5 border-white/10 hover:bg-white/10 hover:text-white justify-between group"
-                            onClick={(e) => { e.stopPropagation(); onMarkInspection(); }}
+                            className="flex-1 h-10 rounded-none border-2 border-black bg-white text-black hover:bg-black hover:text-white font-bold text-[9px] uppercase tracking-widest transition-none"
+                            onClick={onMarkInspection}
                         >
-                            <span className="text-xs font-bold uppercase tracking-wider">Inspect</span>
-                            <Settings className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" />
+                            <Settings className="w-3 h-3 mr-2" /> Inspect
                         </Button>
-
-                        <Button
-                            className="w-full h-12 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold shadow-lg shadow-amber-500/20 mt-2"
-                            onClick={(e) => { e.stopPropagation(); onViewHistory(); }}
-                        >
-                            View Details <ArrowRight className="w-4 h-4 ml-2" />
-                        </Button>
-                    </CardContent>
-                </Card>
-            </motion.div>
-        </div>
+                    </div>
+                    <Button
+                        className="w-full h-10 rounded-none bg-black text-white hover:bg-[#FF4F00] font-bold text-[9px] uppercase tracking-widest transition-none border-2 border-black"
+                        onClick={onViewHistory}
+                    >
+                        View Details <ArrowRight className="w-3 h-3 ml-2" />
+                    </Button>
+                </div>
+            </CardContent>
+        </Card>
     );
 };
 

@@ -10,8 +10,6 @@ import {
     Wind,
     ArrowRight,
     Bot,
-    ChevronLeft,
-    SearchX,
     Database,
     Binary,
     Globe,
@@ -21,12 +19,9 @@ import {
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { beeHealthData } from '@/data/beeHealthData';
 import { beeSpeciesData } from '@/data/beeSpeciesData';
 import beeyieldService from '@/services/beeyieldService';
-import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 interface HealthGuideViewProps {
@@ -48,7 +43,7 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
                 const results = await beeyieldService.getHealthKnowledgeBase(searchTerm || undefined);
                 setCommunityKnowledge(results || []);
             } catch (err) {
-                console.error('Error fetching health knowledge base:', err);
+                console.error('Error fetching data:', err);
             } finally {
                 setLoadingKB(false);
             }
@@ -93,122 +88,114 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
 
     const getRiskStyles = (risk?: string) => {
         switch (risk) {
-            case 'CRITICAL': return 'bg-red-50 text-red-600 border-red-100';
-            case 'HIGH': return 'bg-orange-50 text-orange-600 border-orange-100';
-            case 'MEDIUM': return 'bg-amber-50 text-amber-600 border-amber-100';
-            default: return 'bg-emerald-50 text-emerald-600 border-emerald-100';
+            case 'CRITICAL': return 'bg-red-500 text-white border-black';
+            case 'HIGH': return 'bg-[#FF4F00] text-white border-black';
+            case 'MEDIUM': return 'bg-white text-black border-black';
+            default: return 'bg-neutral-100 text-black border-black';
         }
     };
 
     return (
-        <div className="space-y-12 animate-in fade-in duration-700 pb-20">
+        <div className="space-y-10 animate-in fade-in duration-700 pb-20">
             {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <div>
-                    <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-beeyield-forest/5 border border-beeyield-forest/10 mb-6">
-                        <Database className="w-3.5 h-3.5 text-beeyield-forest" />
-                        <span className="text-[10px] font-bold text-beeyield-forest uppercase tracking-[0.15em]">Global Biometric Lexicon</span>
-                    </div>
-                    <h1 className="text-5xl font-bold text-beeyield-charcoal tracking-tight">Health & Species</h1>
-                    <p className="text-gray-500 font-medium mt-3 text-lg leading-relaxed max-w-3xl">
-                        Technical repository of colony pathology and sub-species genetics.
-                        Select a condition to access verified biological protocols.
-                    </p>
+            <div className="flex items-center gap-4 border-b-4 border-black pb-6">
+                <div className="w-12 h-12 bg-black flex items-center justify-center border-2 border-black">
+                    <Database className="w-6 h-6 text-white" />
                 </div>
+                <h1 className="text-5xl font-black text-black uppercase tracking-tighter">
+                    Health
+                </h1>
             </div>
+
+            <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest pl-1">
+                Colony pathology and sub-species data.
+            </p>
 
             {/* Tactical Search & Selectors */}
             <div className="space-y-8">
-                <Card className="rounded-[2.5rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden">
-                    <CardContent className="p-10 space-y-10">
-                        <div className="relative max-w-2xl">
-                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                            <Input
-                                placeholder="Search symptoms, diseases, or genetics..."
-                                className="h-16 pl-14 pr-6 rounded-2xl border-[#E0E0E0] text-lg font-bold text-beeyield-charcoal focus:ring-beeyield-forest/20 focus:border-beeyield-forest/30 transition-all shadow-sm"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                            {loadingKB && (
-                                <div className="absolute right-6 top-1/2 -translate-y-1/2">
-                                    <Loader2 className="w-6 h-6 text-beeyield-forest animate-spin" />
-                                </div>
-                            )}
+                <div className="border-4 border-black bg-white p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] space-y-10">
+                    <div className="relative max-w-2xl">
+                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-black" />
+                        <Input
+                            placeholder="Search diseases or species..."
+                            className="h-16 pl-14 pr-6 rounded-none border-4 border-black text-lg font-black text-black uppercase tracking-tight focus:ring-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                        {loadingKB && (
+                            <div className="absolute right-6 top-1/2 -translate-y-1/2">
+                                <Loader2 className="w-6 h-6 text-black animate-spin" />
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black text-neutral-400 uppercase tracking-widest ml-1">Diseases</label>
+                            <Select value={selectedSymptom} onValueChange={(val) => {
+                                setSelectedSymptom(val);
+                                if (val !== 'none') setSelectedSpecies('none');
+                            }}>
+                                <SelectTrigger className="h-16 px-6 rounded-none border-4 border-black text-base font-black text-black uppercase tracking-tight transition-none focus:ring-0">
+                                    <div className="flex items-center gap-3">
+                                        <Bug className="w-5 h-5 text-black" />
+                                        <SelectValue placeholder="Condition" />
+                                    </div>
+                                </SelectTrigger>
+                                <SelectContent className="rounded-none border-4 border-black p-0 max-h-[400px]">
+                                    <SelectItem value="none" className="font-black uppercase py-4 px-6 text-neutral-400">None</SelectItem>
+                                    {filteredSymptoms.map(s => (
+                                        <SelectItem key={s} value={s} className="font-black uppercase py-4 px-6">{s}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                            <div className="space-y-3">
-                                <label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Colony Pathology</label>
-                                <Select value={selectedSymptom} onValueChange={(val) => {
-                                    setSelectedSymptom(val);
-                                    if (val !== 'none') setSelectedSpecies('none');
-                                }}>
-                                    <SelectTrigger className="h-16 px-6 rounded-2xl border-[#E0E0E0] text-base font-bold text-beeyield-charcoal focus:ring-0 shadow-sm transition-all">
-                                        <div className="flex items-center gap-3">
-                                            <Bug className="w-5 h-5 text-beeyield-forest" />
-                                            <SelectValue placeholder="Identify Health Condition" />
-                                        </div>
-                                    </SelectTrigger>
-                                    <SelectContent className="rounded-2xl border-[#E0E0E0] shadow-2xl p-2 max-h-[400px]">
-                                        <SelectItem value="none" className="font-bold py-3 px-4 rounded-xl text-gray-400">Select condition...</SelectItem>
-                                        {filteredSymptoms.map(s => (
-                                            <SelectItem key={s} value={s} className="font-bold py-3 px-4 rounded-xl">{s}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            <div className="space-y-3">
-                                <label className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">Species Genetics</label>
-                                <Select value={selectedSpecies} onValueChange={(val) => {
-                                    setSelectedSpecies(val);
-                                    if (val !== 'none') setSelectedSymptom('none');
-                                }}>
-                                    <SelectTrigger className="h-16 px-6 rounded-2xl border-[#E0E0E0] text-base font-bold text-beeyield-charcoal focus:ring-0 shadow-sm transition-all">
-                                        <div className="flex items-center gap-3">
-                                            <Dna className="w-5 h-5 text-beeyield-forest" />
-                                            <SelectValue placeholder="Identify Bee Sub-species" />
-                                        </div>
-                                    </SelectTrigger>
-                                    <SelectContent className="rounded-2xl border-[#E0E0E0] shadow-2xl p-2 max-h-[400px]">
-                                        <SelectItem value="none" className="font-bold py-3 px-4 rounded-xl text-gray-400">Select species...</SelectItem>
-                                        {filteredSpecies.map(s => (
-                                            <SelectItem key={s} value={s} className="font-bold py-3 px-4 rounded-xl">{s}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black text-neutral-400 uppercase tracking-widest ml-1">Species</label>
+                            <Select value={selectedSpecies} onValueChange={(val) => {
+                                setSelectedSpecies(val);
+                                if (val !== 'none') setSelectedSymptom('none');
+                            }}>
+                                <SelectTrigger className="h-16 px-6 rounded-none border-4 border-black text-base font-black text-black uppercase tracking-tight transition-none focus:ring-0">
+                                    <div className="flex items-center gap-3">
+                                        <Dna className="w-5 h-5 text-black" />
+                                        <SelectValue placeholder="Genetic Profile" />
+                                    </div>
+                                </SelectTrigger>
+                                <SelectContent className="rounded-none border-4 border-black p-0 max-h-[400px]">
+                                    <SelectItem value="none" className="font-black uppercase py-4 px-6 text-neutral-400">None</SelectItem>
+                                    {filteredSpecies.map(s => (
+                                        <SelectItem key={s} value={s} className="font-black uppercase py-4 px-6">{s}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
 
                 {/* Community Knowledge Results */}
                 <AnimatePresence>
                     {communityKnowledge.length > 0 && searchTerm && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="space-y-6"
-                        >
-                            <div className="flex items-center gap-3">
-                                <h3 className="text-xs font-black uppercase tracking-[0.25em] text-gray-400 px-2">Knowledge Pulse</h3>
-                                <div className="h-[1px] flex-1 bg-[#F5F5F5]" />
+                        <div className="space-y-6 pt-4">
+                            <div className="flex items-center gap-3 border-b-2 border-black pb-4">
+                                <h3 className="text-xs font-black uppercase tracking-widest text-black">Articles</h3>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {communityKnowledge.map((article: any) => (
-                                    <Card key={article.id} className="p-8 border-[#F0F0F0] bg-beeyield-sand/10 hover:bg-white hover:border-beeyield-forest/20 hover:shadow-xl hover:shadow-beeyield-forest/5 transition-all cursor-pointer rounded-3xl group">
+                                    <div key={article.id} className="p-8 border-4 border-black bg-white hover:bg-neutral-50 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-none cursor-pointer group">
                                         <div className="flex justify-between items-start mb-4">
-                                            <h4 className="font-bold text-beeyield-charcoal text-lg group-hover:text-beeyield-forest transition-colors">{article.title}</h4>
-                                            <Badge variant="outline" className="text-[9px] uppercase font-black tracking-widest bg-white border-[#E0E0E0]">{article.category}</Badge>
+                                            <h4 className="font-black text-black text-lg uppercase tracking-tight group-hover:text-[#FF4F00]">{article.title}</h4>
+                                            <div className="text-[10px] uppercase font-black tracking-widest bg-black text-white px-3 py-1 border-2 border-black">{article.category}</div>
                                         </div>
-                                        <p className="text-sm font-medium text-gray-500 leading-relaxed line-clamp-2">{article.description}</p>
-                                        <div className="mt-6 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-beeyield-forest opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0">
-                                            Access Protocol <ArrowRight className="w-3 h-3" />
+                                        <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-tight line-clamp-2">{article.description}</p>
+                                        <div className="mt-6 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#FF4F00] opacity-0 group-hover:opacity-100 transition-none">
+                                            Read <ArrowRight className="w-3 h-3" />
                                         </div>
-                                    </Card>
+                                    </div>
                                 ))}
                             </div>
-                        </motion.div>
+                        </div>
                     )}
                 </AnimatePresence>
             </div>
@@ -216,344 +203,274 @@ const HealthGuideView: React.FC<HealthGuideViewProps> = ({ onTabChange }) => {
             {/* Condition/Species Details */}
             <AnimatePresence mode="wait">
                 {selectedSymptom !== 'none' && (
-                    <motion.div
-                        key={`symptom-${selectedSymptom}`}
-                        initial={{ opacity: 0, scale: 0.98 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.98 }}
-                        className="animate-in fade-in slide-in-from-top-4 duration-500"
-                    >
-                        <Card className="rounded-[3rem] border-[#E0E0E0] bg-white shadow-xl shadow-beeyield-forest/5 overflow-hidden">
-                            <div className="p-12 md:p-16 space-y-16">
-                                {/* Header Detail */}
-                                <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
-                                    <div className="space-y-4">
-                                        <h1 className="text-6xl md:text-7xl font-bold text-beeyield-charcoal tracking-tighter leading-none">
-                                            {selectedSymptom}
-                                        </h1>
-                                        {detail.scientificName && (
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-beeyield-forest" />
-                                                <p className="text-xl font-bold text-gray-400 italic">
-                                                    {detail.scientificName}
-                                                </p>
-                                            </div>
-                                        )}
-                                    </div>
-                                    {detail.riskLevel && (
-                                        <div className={cn("px-8 py-3 rounded-full text-[11px] font-black tracking-[0.2em] border-2 uppercase", getRiskStyles(detail.riskLevel))}>
-                                            Security Risk: {detail.riskLevel}
+                    <div className="animate-in fade-in slide-in-from-top-4 duration-500 border-4 border-black bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
+                        <div className="p-12 md:p-16 space-y-16">
+                            {/* Header Detail */}
+                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b-4 border-black pb-10">
+                                <div className="space-y-4">
+                                    <h1 className="text-6xl md:text-8xl font-black text-black tracking-tighter uppercase leading-none">
+                                        {selectedSymptom}
+                                    </h1>
+                                    {detail.scientificName && (
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-2 h-2 bg-[#FF4F00]" />
+                                            <p className="text-xl font-black text-neutral-400 uppercase italic">
+                                                {detail.scientificName}
+                                            </p>
                                         </div>
                                     )}
                                 </div>
-
-                                {/* Body Content */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-                                    <div className="space-y-6">
-                                        <div className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-beeyield-sand/30 border border-[#E8E0D5]">
-                                            <Search className="w-3.5 h-3.5 text-beeyield-forest" />
-                                            <span className="text-[10px] font-black text-beeyield-charcoal uppercase tracking-[0.15em]">Clinical Manifestations</span>
-                                        </div>
-                                        <h2 className="text-3xl font-bold text-beeyield-charcoal">Visual Markers</h2>
-                                        <p className="text-lg text-gray-500 font-medium leading-relaxed">
-                                            {detail.signs}
-                                        </p>
+                                {detail.riskLevel && (
+                                    <div className={cn("px-10 py-5 border-4 font-black tracking-widest uppercase text-lg", getRiskStyles(detail.riskLevel))}>
+                                        Risk: {detail.riskLevel}
                                     </div>
-                                    <div className="space-y-6">
-                                        <div className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-beeyield-sand/30 border border-[#E8E0D5]">
-                                            <Stethoscope className="w-3.5 h-3.5 text-red-500" />
-                                            <span className="text-[10px] font-black text-beeyield-charcoal uppercase tracking-[0.15em]">Systemic Effects</span>
-                                        </div>
-                                        <h2 className="text-3xl font-bold text-beeyield-charcoal">Physiological Symptoms</h2>
-                                        <p className="text-lg text-gray-500 font-medium leading-relaxed">
-                                            {detail.symptoms}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-16 p-12 rounded-[2.5rem] bg-beeyield-sand/10 border border-[#E8E0D5]">
-                                    <div className="space-y-6">
-                                        <h2 className="text-2xl font-bold text-amber-600 flex items-center gap-3 uppercase tracking-tighter">
-                                            <Binary className="w-6 h-6" /> Detection Vector
-                                        </h2>
-                                        <p className="text-lg text-beeyield-charcoal font-bold leading-relaxed">
-                                            {detail.detection}
-                                        </p>
-                                    </div>
-                                    <div className="space-y-6">
-                                        <h2 className="text-2xl font-bold text-purple-600 flex items-center gap-3 uppercase tracking-tighter">
-                                            <Wind className="w-6 h-6" /> Pathogen Vector
-                                        </h2>
-                                        <p className="text-lg text-beeyield-charcoal font-bold leading-relaxed">
-                                            {detail.transmission}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-                                    <div className="space-y-6">
-                                        <h2 className="text-3xl font-bold text-beeyield-forest uppercase tracking-tighter">Elimination Protocol</h2>
-                                        <p className="text-lg text-gray-700 font-bold leading-relaxed bg-white p-8 rounded-3xl border border-beeyield-forest/10 shadow-sm">
-                                            {detail.treatment}
-                                        </p>
-                                    </div>
-                                    <div className="space-y-6">
-                                        <h2 className="text-3xl font-bold text-emerald-600 uppercase tracking-tighter">Bioresilience Strategy</h2>
-                                        <p className="text-lg text-gray-700 font-bold leading-relaxed bg-white p-8 rounded-3xl border border-emerald-100 shadow-sm">
-                                            {detail.prevention}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                {/* Protocol List */}
-                                <div className="space-y-8 pt-8">
-                                    <h2 className="text-3xl font-bold text-beeyield-charcoal uppercase tracking-tighter flex items-center gap-4">
-                                        <Cpu className="w-8 h-8 text-beeyield-forest" /> Operational Action Steps
-                                    </h2>
-                                    <div className="grid grid-cols-1 gap-4">
-                                        {detail.steps && detail.steps.map((step: string, i: number) => (
-                                            <div key={i} className="flex gap-6 items-center p-6 rounded-2xl bg-white border border-[#F5F5F5] hover:border-beeyield-forest/20 transition-all group">
-                                                <div className="w-10 h-10 rounded-xl bg-beeyield-forest text-white flex items-center justify-center font-black text-sm shrink-0 shadow-lg shadow-beeyield-forest/20">
-                                                    {i + 1}
-                                                </div>
-                                                <span className="text-lg text-gray-500 font-bold">{step}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Ask assistant Call to Action */}
-                                <div className="pt-12 border-t border-[#F5F5F5]">
-                                    <Card className="bg-beeyield-forest border-none p-12 rounded-[3rem] relative overflow-hidden group shadow-2xl shadow-beeyield-forest/20">
-                                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-32 -mt-32 group-hover:scale-110 transition-transform duration-700" />
-                                        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
-                                            <div className="space-y-4 max-w-xl text-center md:text-left">
-                                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white border border-white/20 mb-2">
-                                                    <Bot className="w-4 h-4" />
-                                                    <span className="text-[10px] font-black uppercase tracking-widest">Neural Copilot</span>
-                                                </div>
-                                                <h3 className="text-4xl font-bold text-white tracking-tight">Access Precision Simulation?</h3>
-                                                <p className="text-lg font-medium text-emerald-100/70 leading-relaxed uppercase tracking-wider">
-                                                    Initiate a site-specific pathology analysis for your exact GPS coordinates.
-                                                </p>
-                                            </div>
-                                            <Button
-                                                onClick={() => onTabChange('assistant', `Perform a technical analysis of ${selectedSymptom} using BeeYield's advanced analytics. Include markers like ${detail.signs}, detection methods like ${detail.detection}, and how BeeYield's sensors can prevent this from becoming a ${detail.riskLevel} risk.`)}
-                                                className="h-20 px-12 rounded-2xl bg-white text-beeyield-forest font-bold text-xl flex items-center gap-4 hover:bg-emerald-50 transition-all shadow-2xl active:scale-95 whitespace-nowrap"
-                                            >
-                                                <Bot className="w-6 h-6" />
-                                                Analyze with BeeYield
-                                            </Button>
-                                        </div>
-                                    </Card>
-                                </div>
+                                )}
                             </div>
-                        </Card>
-                    </motion.div>
-                )}
 
-                {selectedSpecies !== 'none' && (
-                    <motion.div
-                        key={`species-${selectedSpecies}`}
-                        initial={{ opacity: 0, scale: 0.98 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.98 }}
-                        className="animate-in fade-in slide-in-from-top-4 duration-500"
-                    >
-                        <Card className="rounded-[3rem] border-[#E0E0E0] bg-white shadow-xl shadow-beeyield-forest/5 overflow-hidden">
-                            <div className="p-12 md:p-16 space-y-16">
-                                {/* Header Detail */}
-                                <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
-                                    <div className="space-y-4">
-                                        <h1 className="text-6xl md:text-7xl font-bold text-beeyield-charcoal tracking-tighter leading-none">
-                                            {selectedSpecies}
-                                        </h1>
-                                        {speciesDetail.scientificName && (
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-beeyield-forest" />
-                                                <p className="text-xl font-bold text-gray-400 italic">
-                                                    {speciesDetail.scientificName}
-                                                </p>
-                                            </div>
-                                        )}
+                            {/* Body Content */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+                                <div className="space-y-6">
+                                    <div className="inline-flex items-center gap-3 px-4 py-2 border-2 border-black bg-neutral-100">
+                                        <Search className="w-4 h-4 text-black" />
+                                        <span className="text-[10px] font-black text-black uppercase tracking-widest">Signs</span>
                                     </div>
-                                    <div className="px-8 py-3 rounded-full text-[11px] font-black tracking-[0.2em] border-2 border-emerald-100 bg-emerald-50 text-emerald-600 uppercase">
-                                        Origin Hub: {speciesDetail.origin}
-                                    </div>
-                                </div>
-
-                                {/* Body Content */}
-                                <div className="space-y-8">
-                                    <div className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-beeyield-sand/30 border border-[#E8E0D5]">
-                                        <Globe className="w-3.5 h-3.5 text-beeyield-forest" />
-                                        <span className="text-[10px] font-black text-beeyield-charcoal uppercase tracking-[0.15em]">Genetic Profile</span>
-                                    </div>
-                                    <h2 className="text-3xl font-bold text-beeyield-charcoal uppercase tracking-tighter">Varietal Identity</h2>
-                                    <p className="text-2xl text-gray-500 font-medium leading-relaxed max-w-5xl">
-                                        {speciesDetail.description}
+                                    <h2 className="text-4xl font-black text-black uppercase tracking-tighter">Visual Markers</h2>
+                                    <p className="text-lg text-neutral-500 font-bold leading-relaxed uppercase tracking-tight">
+                                        {detail.signs}
                                     </p>
                                 </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-                                    <div className="space-y-6">
-                                        <h2 className="text-3xl font-bold text-amber-600 uppercase tracking-tighter">Genetic Traits</h2>
-                                        <p className="text-lg text-gray-500 font-bold leading-relaxed bg-beeyield-sand/10 p-10 rounded-[2.5rem] border border-[#E8E0D5]">
-                                            {speciesDetail.characteristics}
-                                        </p>
+                                <div className="space-y-6">
+                                    <div className="inline-flex items-center gap-3 px-4 py-2 border-2 border-black bg-neutral-100">
+                                        <Stethoscope className="w-4 h-4 text-black" />
+                                        <span className="text-[10px] font-black text-black uppercase tracking-widest">Symptoms</span>
                                     </div>
-                                    <div className="space-y-6">
-                                        <h2 className="text-3xl font-bold text-purple-600 uppercase tracking-tighter">Behavioral Profile</h2>
-                                        <p className="text-lg text-gray-500 font-bold leading-relaxed bg-beeyield-sand/10 p-10 rounded-[2.5rem] border border-[#E8E0D5]">
-                                            {speciesDetail.temperament}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-16 p-12 rounded-[2.5rem] bg-beeyield-forest text-white/90">
-                                    <div className="space-y-6">
-                                        <h2 className="text-2xl font-bold text-emerald-300 uppercase tracking-tighter flex items-center gap-3">
-                                            <Zap className="w-6 h-6" /> Yield Potential
-                                        </h2>
-                                        <p className="text-xl font-bold leading-relaxed">
-                                            {speciesDetail.honeyYield}
-                                        </p>
-                                    </div>
-                                    <div className="space-y-6">
-                                        <h2 className="text-2xl font-bold text-emerald-300 uppercase tracking-tighter flex items-center gap-3">
-                                            <Globe className="w-6 h-6" /> Bioreman Resilience
-                                        </h2>
-                                        <p className="text-xl font-bold leading-relaxed">
-                                            {speciesDetail.climateSuitability}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                {/* Pros & Cons */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-                                    <div className="space-y-8">
-                                        <h2 className="text-2xl font-black text-emerald-600 uppercase tracking-widest border-b border-emerald-100 pb-4">Genetic Fortitude</h2>
-                                        <div className="space-y-4">
-                                            {speciesDetail.pros && speciesDetail.pros.map((pro: string, i: number) => (
-                                                <div key={i} className="flex items-center gap-4 bg-emerald-50/50 p-5 rounded-2xl border border-emerald-100 group">
-                                                    <div className="w-3 h-3 rounded-full bg-emerald-500 shadow-sm" />
-                                                    <span className="text-lg font-bold text-emerald-800">{pro}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                    <div className="space-y-8">
-                                        <h2 className="text-2xl font-black text-amber-600 uppercase tracking-widest border-b border-amber-100 pb-4">System Vulnerabilities</h2>
-                                        <div className="space-y-4">
-                                            {speciesDetail.cons && speciesDetail.cons.map((con: string, i: number) => (
-                                                <div key={i} className="flex items-center gap-4 bg-amber-50/50 p-5 rounded-2xl border border-amber-100">
-                                                    <div className="w-3 h-3 rounded-full bg-amber-500 shadow-sm" />
-                                                    <span className="text-lg font-bold text-amber-800">{con}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* AI CTA */}
-                                <div className="pt-12 border-t border-[#F5F5F5]">
-                                    <Card className="bg-beeyield-charcoal border-none p-12 rounded-[3rem] relative overflow-hidden group shadow-2xl">
-                                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-32 -mt-32 group-hover:scale-110 transition-transform duration-700" />
-                                        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
-                                            <div className="space-y-4 max-w-xl text-center md:text-left">
-                                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white border border-white/20 mb-2">
-                                                    <Bot className="w-4 h-4" />
-                                                    <span className="text-[10px] font-black uppercase tracking-widest">Neural Copilot</span>
-                                                </div>
-                                                <h3 className="text-4xl font-bold text-white tracking-tight">Predict Regional Performance?</h3>
-                                                <p className="text-lg font-medium text-white/40 leading-relaxed uppercase tracking-wider">
-                                                    Simulate how {selectedSpecies} will perform within your local environmental profile.
-                                                </p>
-                                            </div>
-                                            <Button
-                                                onClick={() => onTabChange('assistant', `Perform a site-specific performance simulation for ${selectedSpecies} (${speciesDetail.scientificName}) using BeeYield's site matching analysis.`)}
-                                                className="h-20 px-12 rounded-2xl bg-white text-beeyield-charcoal font-bold text-xl flex items-center gap-4 hover:bg-gray-100 transition-all shadow-2xl active:scale-95 whitespace-nowrap"
-                                            >
-                                                <Bot className="w-6 h-6" />
-                                                Run Simulation
-                                            </Button>
-                                        </div>
-                                    </Card>
+                                    <h2 className="text-4xl font-black text-black uppercase tracking-tighter">Physiological</h2>
+                                    <p className="text-lg text-neutral-500 font-bold leading-relaxed uppercase tracking-tight">
+                                        {detail.symptoms}
+                                    </p>
                                 </div>
                             </div>
-                        </Card>
-                    </motion.div>
-                )}
-            </AnimatePresence>
 
-            {/* Hub Insights - Always visible when nothing selected */}
-            {selectedSymptom === 'none' && selectedSpecies === 'none' && (
-                <div className="space-y-10 py-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-                    <div className="flex items-center gap-3">
-                        <h3 className="text-xs font-black uppercase tracking-[0.35em] text-beeyield-forest/60 px-2 underline decoration-beeyield-forest decoration-2 underline-offset-8">Mission Critical Intelligence</h3>
-                        <div className="h-[1px] flex-1 bg-beeyield-sand/50" />
-                    </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-16 p-12 border-4 border-black bg-neutral-50">
+                                <div className="space-y-6">
+                                    <h2 className="text-2xl font-black text-black flex items-center gap-3 uppercase tracking-tighter">
+                                        <Binary className="w-6 h-6" /> Detection
+                                    </h2>
+                                    <p className="text-lg text-black font-black uppercase tracking-tight leading-relaxed">
+                                        {detail.detection}
+                                    </p>
+                                </div>
+                                <div className="space-y-6">
+                                    <h2 className="text-2xl font-black text-black flex items-center gap-3 uppercase tracking-tighter">
+                                        <Wind className="w-6 h-6" /> Vector
+                                    </h2>
+                                    <p className="text-lg text-black font-black uppercase tracking-tight leading-relaxed">
+                                        {detail.transmission}
+                                    </p>
+                                </div>
+                            </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                        {[
-                            {
-                                id: 'market',
-                                title: 'Market Vector',
-                                emoji: '📊',
-                                color: 'bg-amber-50 border-amber-100',
-                                text: 'The global honey market is hitting $9.73B. BeeYield is the only infrastructure securing this capital via HoneyChain™ ledger.'
-                            },
-                            {
-                                id: 'iot',
-                                title: 'Connectivity Edge',
-                                emoji: '📡',
-                                color: 'bg-beeyield-forest/5 border-beeyield-forest/10',
-                                text: '90% of smart apiaries utilize BeeYield nodes. Our acoustic biosensors now hit 98.4% swarm precision.'
-                            },
-                            {
-                                id: 'survival',
-                                title: 'Biotype Resilience',
-                                emoji: '🌱',
-                                color: 'bg-emerald-50 border-emerald-100',
-                                text: 'Global bee mortality spikes to 60%. BeeYield users report 80% lower losses via our Neural Health simulation.'
-                            }
-                        ].map((insight) => (
-                            <Card key={insight.id} className={cn("p-10 rounded-[2.5rem] border shadow-sm transition-all hover:-translate-y-2 hover:shadow-xl", insight.color)}>
-                                <div className="w-14 h-14 rounded-2xl bg-white/80 shadow-sm flex items-center justify-center text-3xl mb-8">
-                                    {insight.emoji}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+                                <div className="space-y-6">
+                                    <h2 className="text-4xl font-black text-[#FF4F00] uppercase tracking-tighter border-b-2 border-black pb-2">Treatment</h2>
+                                    <p className="text-lg text-black font-black uppercase tracking-tight leading-relaxed bg-white p-8 border-4 border-black">
+                                        {detail.treatment}
+                                    </p>
                                 </div>
-                                <h3 className="text-2xl font-bold text-beeyield-charcoal uppercase tracking-tighter mb-4">{insight.title}</h3>
-                                <p className="text-sm font-bold text-gray-500 leading-relaxed uppercase tracking-widest">{insight.text}</p>
-                            </Card>
-                        ))}
-                    </div>
+                                <div className="space-y-6">
+                                    <h2 className="text-4xl font-black text-black uppercase tracking-tighter border-b-2 border-black pb-2">Prevention</h2>
+                                    <p className="text-lg text-black font-black uppercase tracking-tight leading-relaxed bg-white p-8 border-4 border-black">
+                                        {detail.prevention}
+                                    </p>
+                                </div>
+                            </div>
 
-                    <Card className="rounded-[4rem] border-none bg-beeyield-charcoal text-white p-16 relative overflow-hidden group">
-                        <div className="absolute inset-0 bg-gradient-to-br from-beeyield-forest/40 to-transparent" />
-                        <div className="relative z-10 space-y-8 max-w-5xl">
-                            <h2 className="text-5xl md:text-6xl font-bold tracking-tight">BeeYield: The Champion of Next-Gen Apiculture.</h2>
-                            <p className="text-xl md:text-2xl font-medium text-white/50 leading-relaxed">
-                                Our tactical system provides the biological infrastructure supporting the world's pollinators. We don't just monitor—we protect the foundation of global food security.
-                            </p>
-                            <div className="pt-8 flex flex-wrap gap-8">
-                                <div className="space-y-1">
-                                    <p className="text-4xl font-black text-white">98.4%</p>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-emerald-400">Hub Precision</p>
+                            {/* Protocol List */}
+                            <div className="space-y-8 pt-8">
+                                <h2 className="text-4xl font-black text-black uppercase tracking-tighter flex items-center gap-4 border-b-4 border-black pb-4">
+                                    <Cpu className="w-10 h-10 text-black" /> Steps
+                                </h2>
+                                <div className="grid grid-cols-1 gap-4">
+                                    {detail.steps && detail.steps.map((step: string, i: number) => (
+                                        <div key={i} className="flex gap-8 items-center p-8 border-4 border-black bg-white hover:bg-neutral-50 transition-none group shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                            <div className="w-12 h-12 bg-black text-white flex items-center justify-center font-black text-xl shrink-0">
+                                                {i + 1}
+                                            </div>
+                                            <span className="text-xl text-black font-black uppercase tracking-tight">{step}</span>
+                                        </div>
+                                    ))}
                                 </div>
-                                <div className="w-[1px] h-12 bg-white/10 hidden md:block" />
-                                <div className="space-y-1">
-                                    <p className="text-4xl font-black text-white">80%</p>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-emerald-400">Yield Defense</p>
-                                </div>
-                                <div className="w-[1px] h-12 bg-white/10 hidden md:block" />
-                                <div className="space-y-1">
-                                    <p className="text-4xl font-black text-white">13.8k</p>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-emerald-400">Node Population</p>
+                            </div>
+
+                            {/* Ask assistant Call to Action */}
+                            <div className="pt-12">
+                                <div className="bg-[#FF4F00] p-12 border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden group">
+                                    <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
+                                        <div className="space-y-4 flex-1">
+                                            <div className="inline-flex items-center gap-2 px-4 py-1 bg-black text-white border-2 border-black mb-2">
+                                                <Bot className="w-4 h-4" />
+                                                <span className="text-[10px] font-black uppercase tracking-widest">Assistant</span>
+                                            </div>
+                                            <h3 className="text-5xl font-black text-black tracking-tighter uppercase leading-none">Access Analysis</h3>
+                                            <p className="text-[11px] font-black text-white/80 uppercase tracking-widest leading-relaxed">
+                                                Initiate a site-specific pathology analysis for your exact coordinates.
+                                            </p>
+                                        </div>
+                                        <button
+                                            onClick={() => onTabChange('assistant', `Perform a technical analysis of ${selectedSymptom} using BeeYield's advanced analytics. Include markers like ${detail.signs}, detection methods like ${detail.detection}, and how BeeYield's sensors can prevent this from becoming a ${detail.riskLevel} risk.`)}
+                                            className="h-24 px-12 bg-black text-white font-black text-2xl uppercase tracking-widest flex items-center gap-4 hover:bg-white hover:text-black transition-none shadow-[8px_8px_0px_0px_rgba(0,0,0,0.3)] active:shadow-none"
+                                        >
+                                            <Bot className="w-8 h-8" />
+                                            Analyze
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </Card>
+                    </div>
+                )}
+
+                {selectedSpecies !== 'none' && (
+                    <div className="animate-in fade-in slide-in-from-top-4 duration-500 border-4 border-black bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
+                        <div className="p-12 md:p-16 space-y-16">
+                            {/* Header Detail */}
+                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 border-b-4 border-black pb-10">
+                                <div className="space-y-4">
+                                    <h1 className="text-6xl md:text-8xl font-black text-black tracking-tighter uppercase leading-none">
+                                        {selectedSpecies}
+                                    </h1>
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-2 h-2 bg-[#FF4F00]" />
+                                        <p className="text-xl font-black text-neutral-400 uppercase italic">
+                                            {speciesDetail.scientificName}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Body Content */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+                                <div className="space-y-6">
+                                    <div className="inline-flex items-center gap-3 px-4 py-2 border-2 border-black bg-neutral-100">
+                                        <Globe className="w-4 h-4 text-black" />
+                                        <span className="text-[10px] font-black text-black uppercase tracking-widest">Origin</span>
+                                    </div>
+                                    <h2 className="text-4xl font-black text-black uppercase tracking-tighter">Native Habitat</h2>
+                                    <p className="text-lg text-neutral-500 font-bold leading-relaxed uppercase tracking-tight">
+                                        {speciesDetail.origin}
+                                    </p>
+                                </div>
+                                <div className="space-y-6">
+                                    <div className="inline-flex items-center gap-3 px-4 py-2 border-2 border-black bg-neutral-100">
+                                        <Zap className="w-4 h-4 text-black" />
+                                        <span className="text-[10px] font-black text-black uppercase tracking-widest">Traits</span>
+                                    </div>
+                                    <h2 className="text-4xl font-black text-black uppercase tracking-tighter">Behavioral</h2>
+                                    <p className="text-lg text-neutral-500 font-bold leading-relaxed uppercase tracking-tight">
+                                        {speciesDetail.characteristics}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 p-12 border-4 border-black bg-neutral-50">
+                                <div className="space-y-4">
+                                    <h4 className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Honey Yield</h4>
+                                    <p className="text-2xl font-black text-black uppercase tracking-tight">{speciesDetail.honeyYield}</p>
+                                </div>
+                                <div className="space-y-4">
+                                    <h4 className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Temperament</h4>
+                                    <p className="text-2xl font-black text-black uppercase tracking-tight">{speciesDetail.temperament}</p>
+                                </div>
+                                <div className="space-y-4">
+                                    <h4 className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Climate</h4>
+                                    <p className="text-2xl font-black text-black uppercase tracking-tight">{speciesDetail.climateSuitability}</p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+                                <div className="space-y-8">
+                                    <h2 className="text-4xl font-black text-[#FF4F00] uppercase tracking-tighter border-b-2 border-black pb-2">Advantages</h2>
+                                    <ul className="space-y-6">
+                                        {speciesDetail.pros.map((pro: string, i: number) => (
+                                            <li key={i} className="flex gap-4">
+                                                <div className="w-6 h-6 bg-black text-white flex items-center justify-center font-black text-xs shrink-0">
+                                                    +
+                                                </div>
+                                                <span className="text-lg font-black text-black uppercase tracking-tight">{pro}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                                <div className="space-y-8">
+                                    <h2 className="text-4xl font-black text-black uppercase tracking-tighter border-b-2 border-black pb-2">Challenges</h2>
+                                    <ul className="space-y-6">
+                                        {speciesDetail.cons.map((con: string, i: number) => (
+                                            <li key={i} className="flex gap-4">
+                                                <div className="w-6 h-6 border-2 border-black flex items-center justify-center font-black text-xs shrink-0">
+                                                    -
+                                                </div>
+                                                <span className="text-lg font-black text-neutral-500 uppercase tracking-tight">{con}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            {/* Species CTA */}
+                            <div className="pt-12">
+                                <div className="bg-black p-12 border-4 border-black shadow-[12px_12px_0px_0px_rgba(255,79,0,1)] relative overflow-hidden group">
+                                    <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
+                                        <div className="space-y-4 flex-1">
+                                            <div className="inline-flex items-center gap-2 px-4 py-1 bg-[#FF4F00] text-black border-2 border-black mb-2">
+                                                <Zap className="w-4 h-4" />
+                                                <span className="text-[10px] font-black uppercase tracking-widest">Optimization</span>
+                                            </div>
+                                            <h3 className="text-5xl font-black text-white tracking-tighter uppercase leading-none">Management Plan</h3>
+                                            <p className="text-[11px] font-black text-neutral-400 uppercase tracking-widest leading-relaxed">
+                                                Generate a sub-species specific deployment strategy for {selectedSpecies}.
+                                            </p>
+                                        </div>
+                                        <button
+                                            onClick={() => onTabChange('assistant', `Create a management strategy for ${selectedSpecies} colonies. Address their ${speciesDetail.temperament} temperament, optimize for ${speciesDetail.honeyYield} honey yield expectations, and mitigate challenges like ${speciesDetail.cons.join(', ')}.`)}
+                                            className="h-24 px-12 bg-[#FF4F00] text-black font-black text-2xl uppercase tracking-widest flex items-center gap-4 hover:bg-white hover:text-black transition-none shadow-[8px_8px_0px_0px_rgba(255,255,255,0.2)] active:shadow-none"
+                                        >
+                                            <ArrowRight className="w-8 h-8" />
+                                            Request
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Bottom Stats Grid */}
+            <div className="space-y-8 pt-10">
+                <div className="flex items-center gap-3 border-b-4 border-black pb-4">
+                    <Activity className="w-8 h-8 text-black" />
+                    <h3 className="text-3xl font-black text-black uppercase tracking-tighter">Stats</h3>
                 </div>
-            )}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {[
+                        { label: 'Samples', value: '14,204', desc: 'Verified cases', icon: Database },
+                        { label: 'Latency', value: '42ms', desc: 'Knowledge retrieval', icon: Zap },
+                        { label: 'Sensors', value: '890', desc: 'Deployments', icon: HeartPulse },
+                        { label: 'Accuracy', value: '99.4%', desc: 'Pathogen ID', icon: ShieldCheck }
+                    ].map((stat, i) => (
+                        <div key={i} className="border-4 border-black bg-white p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+                            <div className="flex items-center gap-4 mb-4">
+                                <div className="w-10 h-10 bg-black flex items-center justify-center">
+                                    <stat.icon className="w-5 h-5 text-white" />
+                                </div>
+                                <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">{stat.label}</p>
+                            </div>
+                            <h4 className="text-3xl font-black text-black tracking-tighter mb-1">{stat.value}</h4>
+                            <p className="text-[9px] font-black text-neutral-400 uppercase tracking-widest">{stat.desc}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 };

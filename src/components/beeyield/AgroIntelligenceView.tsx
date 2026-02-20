@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
     Share2,
     Download,
@@ -21,7 +18,6 @@ import {
 } from 'lucide-react';
 import { beeyieldService } from '@/services/beeyieldService';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
 
 interface AgroIntelligenceViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -43,7 +39,7 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
                 setWeather(weatherData);
                 setSatellite(satelliteData);
             } catch (err) {
-                console.error('Error loading agro intelligence data:', err);
+                console.error('Error loading data:', err);
             } finally {
                 setLoading(false);
             }
@@ -56,209 +52,183 @@ const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange
     const carbonScore = satellite?.ndvi ? Math.round(satellite.ndvi * 1000) : null;
 
     return (
-        <div className="space-y-12 pb-20 animate-in fade-in duration-500">
+        <div className="space-y-10 pb-20 animate-in fade-in duration-700">
             {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <div>
-                    <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-beeyield-forest/5 border border-beeyield-forest/10 mb-6">
-                        <Satellite className="w-3.5 h-3.5 text-beeyield-forest" />
-                        <span className="text-[10px] font-bold text-beeyield-forest uppercase tracking-[0.15em]">Neural Terrain Analysis</span>
-                    </div>
-                    <h1 className="text-5xl font-bold text-beeyield-charcoal tracking-tight">Agro Intelligence</h1>
-                    <p className="text-gray-500 font-medium mt-3 text-lg">
-                        Copernicus satellite integration and bio-metric field modeling.
-                    </p>
+            <div className="flex items-center gap-4 border-b-4 border-black pb-6">
+                <div className="w-12 h-12 bg-black flex items-center justify-center border-2 border-black">
+                    <Satellite className="w-6 h-6 text-white" />
                 </div>
-                <div className="flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-emerald-50 border border-emerald-100">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-widest">Active Data Feed</span>
-                </div>
+                <h1 className="text-5xl font-black text-black uppercase tracking-tighter">
+                    Satellite
+                </h1>
             </div>
 
+            <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest pl-1">
+                Field data from Copernicus orbital systems.
+            </p>
+
             {/* Live Metrics Row */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
-                    { label: 'Atmosphere', value: loading ? '...' : (weather?.cloud_cover_percent != null ? `${100 - weather.cloud_cover_percent}% Clear` : 'Stable'), icon: Sun, color: 'text-amber-500', bg: 'bg-amber-50' },
-                    { label: 'Soil Moisture', value: loading ? '...' : (moisture != null ? `${moisture}%` : '42%'), icon: CloudRain, color: 'text-blue-500', bg: 'bg-blue-50' },
-                    { label: 'Veg Index', value: loading ? '...' : (vegetation != null ? vegetation : '0.64'), icon: Sprout, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-                    { label: 'Carbon Sink', value: loading ? '...' : (carbonScore != null ? carbonScore : '1,240'), icon: Wind, color: 'text-beeyield-forest', bg: 'bg-beeyield-forest/5' }
+                    { label: 'Air', value: loading ? '...' : (weather?.cloud_cover_percent != null ? `${100 - weather.cloud_cover_percent}% Clear` : 'Stable'), icon: Sun },
+                    { label: 'Moisture', value: loading ? '...' : (moisture != null ? `${moisture}%` : '42%'), icon: CloudRain },
+                    { label: 'Vegetation', value: loading ? '...' : (vegetation != null ? vegetation : '0.64'), icon: Sprout },
+                    { label: 'Carbon', value: loading ? '...' : (carbonScore != null ? carbonScore : '1,240'), icon: Wind }
                 ].map((stat, i) => (
-                    <motion.div key={i} whileHover={{ y: -4, scale: 1.01 }}>
-                        <Card className="rounded-[2rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden group">
-                            <CardContent className="p-8">
-                                <div className="flex items-center gap-4 mb-6">
-                                    <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center border transition-all duration-500 group-hover:bg-beeyield-forest group-hover:border-beeyield-forest group-hover:text-white", stat.bg)}>
-                                        <stat.icon className={cn("w-6 h-6 stroke-[2] transition-colors duration-500 group-hover:text-white", stat.color)} />
-                                    </div>
-                                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.15em]">{stat.label}</p>
-                                </div>
-                                <h3 className="text-3xl font-bold text-beeyield-charcoal tracking-tight">{stat.value}</h3>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
+                    <div key={stat.label} className="border-4 border-black bg-white p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="w-10 h-10 bg-black flex items-center justify-center border-2 border-black">
+                                <stat.icon className="w-5 h-5 text-white" />
+                            </div>
+                            <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">{stat.label}</p>
+                        </div>
+                        <h3 className="text-3xl font-black text-black tracking-tighter">{stat.value}</h3>
+                    </div>
                 ))}
             </div>
 
             {/* Hero / Promo Card */}
-            <Card className="rounded-[3rem] border-none bg-beeyield-forest shadow-2xl overflow-hidden relative group">
-                {/* Abstract Satellite Background Elements */}
-                <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl -mr-48 -mt-48 transition-transform duration-1000 group-hover:scale-110" />
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-400/10 rounded-full blur-2xl -ml-32 -mb-32" />
-
-                <CardContent className="p-12 md:p-16 relative z-10 flex flex-col md:flex-row items-center gap-12">
-                    <div className="max-w-2xl">
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/10 mb-8">
-                            <BrainCircuit className="w-4 h-4 text-emerald-400" />
-                            <span className="text-[10px] font-bold text-white uppercase tracking-widest">Predictive Bio-Analysis</span>
+            <div className="border-4 border-black bg-black p-12 shadow-[12px_12px_0px_0px_rgba(255,79,0,1)] relative overflow-hidden group">
+                <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
+                    <div className="flex-1 space-y-8">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-[#FF4F00] flex items-center justify-center border-2 border-[#FF4F00]">
+                                <BrainCircuit className="w-4 h-4 text-white" />
+                            </div>
+                            <span className="text-[10px] font-black text-[#FF4F00] uppercase tracking-widest">Environmental Data</span>
                         </div>
-                        <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight mb-6">
-                            Beyond monitoring. <span className="text-emerald-400">Holistic eco-intelligence.</span>
+                        <h2 className="text-5xl font-black text-white leading-none uppercase tracking-tighter">
+                            Field <span className="text-[#FF4F00]">Dynamics.</span>
                         </h2>
-                        <p className="text-emerald-100/70 text-lg md:text-xl font-medium mb-10 leading-relaxed">
-                            Intertwining satellite spectral data with local hive telemetry to reveal the unseen rhythms of your ecosystem. Optimize nectar flow windows and pollinator flight patterns.
+                        <p className="text-neutral-400 text-lg font-bold leading-relaxed uppercase tracking-tight max-w-2xl">
+                            Satellite spectral data reveals the rhythms of your ecosystem. Optimize nectar flow windows and pollinator flight patterns with objective terrain metrics.
                         </p>
-                        <div className="flex flex-col sm:flex-row gap-4">
-                            <Button
+                        <div className="flex flex-col sm:flex-row gap-6 pt-4">
+                            <button
                                 onClick={() => onTabChange('precision-pollination')}
-                                className="h-16 px-10 rounded-2xl bg-white text-beeyield-forest hover:bg-emerald-50 font-bold text-base shadow-xl shadow-black/10"
+                                className="h-16 px-10 border-4 border-white bg-white text-black hover:bg-[#FF4F00] hover:border-[#FF4F00] hover:text-white font-black text-[11px] uppercase tracking-widest transition-none shadow-[8px_8px_0px_0px_rgba(255,255,255,0.2)] active:shadow-none translate-x-1 translate-y-1"
                             >
-                                Explorer Pollination Atlas
-                            </Button>
-                            <Button variant="outline" className="h-16 px-10 rounded-2xl text-white border-white/20 hover:bg-white/10 font-bold backdrop-blur-sm">
-                                Read Protocol Documentation
-                            </Button>
+                                Explorer Atlas
+                            </button>
+                            <button className="h-16 px-10 border-4 border-neutral-800 bg-transparent text-white hover:bg-neutral-900 font-black text-[11px] uppercase tracking-widest transition-none">
+                                Documentation
+                            </button>
                         </div>
                     </div>
-                </CardContent>
-            </Card>
+                </div>
+            </div>
 
             {/* Quick Actions Grid */}
             <div className="space-y-6">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-beeyield-forest/5 border border-beeyield-forest/10 flex items-center justify-center">
-                        <Cpu className="w-5 h-5 text-beeyield-forest" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-beeyield-charcoal">Quick Analysis Tools</h3>
+                <div className="flex items-center gap-3 border-b-2 border-black pb-4">
+                    <Cpu className="w-6 h-6 text-black" />
+                    <h3 className="text-2xl font-black uppercase tracking-tight">Tools</h3>
                 </div>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                     {[
-                        { title: 'Field Status', icon: MapIcon, desc: 'Real-time terrain scan' },
-                        { title: 'Anomaly Map', icon: Share2, desc: 'Stress signal locator' },
-                        { title: 'Hydration', icon: CloudRain, desc: 'Spectral moisture logs' },
-                        { title: 'Biomass', icon: Sprout, desc: 'Trophy level analysis' }
+                        { title: 'Status', icon: MapIcon, desc: 'Terrain scan' },
+                        { title: 'Anomalies', icon: Share2, desc: 'Stress signal' },
+                        { title: 'Hydration', icon: CloudRain, desc: 'Moisture logs' },
+                        { title: 'Biomass', icon: Sprout, desc: 'Yield analysis' }
                     ].map((btn, i) => (
-                        <motion.button
-                            key={i}
-                            whileHover={{ y: -4, scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            className="p-8 flex flex-col items-center text-center bg-white border border-[#E0E0E0] rounded-[2.5rem] shadow-sm hover:shadow-xl hover:shadow-beeyield-forest/5 transition-all group"
+                        <button
+                            key={btn.title}
+                            className="p-8 flex flex-col items-center text-center bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-none group"
                         >
-                            <div className="w-14 h-14 rounded-2xl bg-beeyield-forest/5 border border-beeyield-forest/10 flex items-center justify-center mb-6 group-hover:bg-beeyield-forest transition-all duration-500">
-                                <btn.icon className="w-7 h-7 text-beeyield-forest group-hover:text-white transition-colors duration-500" />
+                            <div className="w-14 h-14 bg-black flex items-center justify-center mb-6 group-hover:bg-[#FF4F00] transition-none">
+                                <btn.icon className="w-7 h-7 text-white" />
                             </div>
-                            <h4 className="text-base font-bold text-beeyield-charcoal mb-1">{btn.title}</h4>
-                            <p className="text-xs text-gray-400 font-medium">{btn.desc}</p>
-                        </motion.button>
+                            <h4 className="text-xs font-black text-black uppercase tracking-widest mb-1">{btn.title}</h4>
+                            <p className="text-[9px] text-neutral-400 font-bold uppercase tracking-tight">{btn.desc}</p>
+                        </button>
                     ))}
                 </div>
             </div>
 
             {/* Workflow Section */}
             <div className="space-y-6">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-beeyield-forest/5 border border-beeyield-forest/10 flex items-center justify-center">
-                        <Layers className="w-5 h-5 text-beeyield-forest" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-beeyield-charcoal">Processing Workflow</h3>
+                <div className="flex items-center gap-3 border-b-2 border-black pb-4">
+                    <Layers className="w-6 h-6 text-black" />
+                    <h3 className="text-2xl font-black uppercase tracking-tight">Workflow</h3>
                 </div>
-                <Card className="rounded-[3rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden">
-                    <CardContent className="p-12">
-                        <div className="flex flex-col lg:flex-row items-center justify-between gap-12 text-center lg:text-left">
-                            {[
-                                { title: "Satellite Ingestion", icon: Satellite, color: "text-blue-500", bg: "bg-blue-50" },
-                                { title: "Spectral Analysis", icon: Layers, color: "text-purple-500", bg: "bg-purple-50" },
-                                { title: "Bio-Correlator", icon: BrainCircuit, color: "text-emerald-600", bg: "bg-emerald-50" },
-                                { title: "Farming Insights", icon: Target, color: "text-beeyield-forest", bg: "bg-beeyield-forest/5" }
-                            ].map((step, i, arr) => (
-                                <React.Fragment key={i}>
-                                    <div className="flex flex-col items-center gap-6 group transition-all duration-500 flex-1">
-                                        <div className={cn("w-20 h-20 rounded-[2rem] border transition-all duration-500 flex items-center justify-center group-hover:shadow-lg", step.bg, "border-transparent group-hover:border-current")}>
-                                            <step.icon className={cn("w-10 h-10 stroke-[1.5]", step.color)} />
-                                        </div>
-                                        <div>
-                                            <span className="block font-bold text-beeyield-charcoal text-lg mb-1">{step.title}</span>
-                                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Phase 0{i + 1}</span>
-                                        </div>
+                <div className="border-4 border-black bg-white p-12 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none transition-none">
+                    <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+                        {[
+                            { title: "Ingestion", icon: Satellite },
+                            { title: "Analysis", icon: Layers },
+                            { title: "Correlation", icon: BrainCircuit },
+                            { title: "Insights", icon: Target }
+                        ].map((step, i, arr) => (
+                            <React.Fragment key={step.title}>
+                                <div className="flex flex-col items-center gap-4 flex-1">
+                                    <div className="w-20 h-20 bg-black flex items-center justify-center border-4 border-black">
+                                        <step.icon className="w-10 h-10 text-white" />
                                     </div>
-                                    {i < arr.length - 1 && (
-                                        <div className="hidden lg:block">
-                                            <ArrowRight className="w-6 h-6 text-[#E0E0E0]" />
-                                        </div>
-                                    )}
-                                </React.Fragment>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
+                                    <div className="text-center">
+                                        <span className="block font-black text-black text-xs uppercase tracking-widest mb-1">{step.title}</span>
+                                        <span className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest">Phase 0{i + 1}</span>
+                                    </div>
+                                </div>
+                                {i < arr.length - 1 && (
+                                    <div className="hidden lg:block">
+                                        <ArrowRight className="w-6 h-6 text-neutral-200" />
+                                    </div>
+                                )}
+                            </React.Fragment>
+                        ))}
+                    </div>
+                </div>
             </div>
 
             {/* Detailed Features Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <Card className="rounded-[2.5rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden group">
-                    <CardHeader className="p-10 pb-0">
-                        <CardTitle className="text-2xl font-bold text-beeyield-charcoal flex items-center gap-4">
-                            <div className="p-3.5 rounded-2xl bg-beeyield-forest/5 text-beeyield-forest group-hover:bg-beeyield-forest group-hover:text-white transition-all">
-                                <MapIcon className="w-6 h-6" />
-                            </div>
-                            Field Modeling
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-10">
-                        <ul className="space-y-5">
-                            {[
-                                "N-S-E-W Boundary definition with sub-meter precision",
-                                "Automated terrain contour and slope mapping",
-                                "Per-sector assigned biomass and yield targets",
-                                "Historical boundary state rollbacks and archive"
-                            ].map((item, i) => (
-                                <li key={i} className="flex gap-4">
-                                    <div className="w-5 h-5 rounded-full bg-emerald-50 flex items-center justify-center shrink-0 mt-0.5">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                                    </div>
-                                    <span className="text-base font-medium text-gray-600 leading-snug">{item}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    </CardContent>
-                </Card>
+                <div className="border-4 border-black bg-white p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                    <div className="flex items-center gap-4 mb-8 border-b-2 border-black pb-4">
+                        <div className="w-10 h-10 bg-black flex items-center justify-center">
+                            <MapIcon className="w-5 h-5 text-white" />
+                        </div>
+                        <h3 className="text-xl font-black uppercase tracking-tight">Modeling</h3>
+                    </div>
+                    <ul className="space-y-6">
+                        {[
+                            "Boundary definition with precision",
+                            "Terrain and slope mapping",
+                            "Per-sector yield targets",
+                            "Historical state archive"
+                        ].map((item, i) => (
+                            <li key={i} className="flex gap-4">
+                                <div className="w-5 h-5 bg-black flex items-center justify-center shrink-0 mt-0.5">
+                                    <div className="w-1.5 h-1.5 bg-white" />
+                                </div>
+                                <span className="text-[11px] font-bold text-black uppercase tracking-tight">{item}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
 
-                <Card className="rounded-[2.5rem] border-[#E0E0E0] bg-white shadow-sm overflow-hidden group">
-                    <CardHeader className="p-10 pb-0">
-                        <CardTitle className="text-2xl font-bold text-beeyield-charcoal flex items-center gap-4">
-                            <div className="p-3.5 rounded-2xl bg-amber-50 text-amber-500 group-hover:bg-amber-500 group-hover:text-white transition-all">
-                                <Layers className="w-6 h-6" />
-                            </div>
-                            Data Topology
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-10">
-                        <ul className="space-y-5">
-                            {[
-                                "RGB / NIR multi-spectral layer visualization",
-                                "Live Nectar Flow and Pollen Diversity indexes",
-                                "Enhanced Vegetation Index (EVI) growth tracking",
-                                "Dynamic temporal slider for seasonal drift analysis"
-                            ].map((item, i) => (
-                                <li key={i} className="flex gap-4">
-                                    <div className="w-5 h-5 rounded-full bg-amber-50 flex items-center justify-center shrink-0 mt-0.5">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                                    </div>
-                                    <span className="text-base font-medium text-gray-600 leading-snug">{item}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    </CardContent>
-                </Card>
+                <div className="border-4 border-black bg-white p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                    <div className="flex items-center gap-4 mb-8 border-b-2 border-black pb-4">
+                        <div className="w-10 h-10 bg-[#FF4F00] flex items-center justify-center">
+                            <Layers className="w-5 h-5 text-white" />
+                        </div>
+                        <h3 className="text-xl font-black uppercase tracking-tight">Topology</h3>
+                    </div>
+                    <ul className="space-y-6">
+                        {[
+                            "Multi-spectral layer visualization",
+                            "Nectar Flow and Diversity indexes",
+                            "Vegetation Index tracking",
+                            "Seasonal drift analysis"
+                        ].map((item, i) => (
+                            <li key={i} className="flex gap-4">
+                                <div className="w-5 h-5 bg-[#FF4F00] flex items-center justify-center shrink-0 mt-0.5">
+                                    <div className="w-1.5 h-1.5 bg-white" />
+                                </div>
+                                <span className="text-[11px] font-bold text-black uppercase tracking-tight">{item}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             </div>
         </div>
     );

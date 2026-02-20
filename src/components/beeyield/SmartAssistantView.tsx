@@ -304,64 +304,58 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
     return (
         <div className="flex flex-col animate-in fade-in duration-700 pb-16">
             {/* Header Area */}
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center justify-between mb-8 border-b-4 border-black pb-6">
                 <div>
-                    <h1 className="text-4xl font-bold text-beeyield-charcoal flex items-center gap-3">
-                        Smart Assistant
+                    <h1 className="text-5xl font-black text-black uppercase tracking-tighter">
+                        Chat
                     </h1>
-                    <p className="text-gray-500 font-medium mt-1">Ecosystem Intelligence Node active.</p>
+                    <p className="text-neutral-400 font-bold uppercase text-[10px] tracking-widest mt-1">Status: Online</p>
                 </div>
-                <div className="flex items-center gap-2 px-4 py-2 bg-beeyield-forest/5 border border-beeyield-forest/10 rounded-full">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[11px] font-bold text-beeyield-forest uppercase tracking-widest">Neural Sync Stable</span>
+                <div className="flex items-center gap-2 px-4 py-2 border-2 border-black">
+                    <div className="w-2 h-2 bg-black" />
+                    <span className="text-[10px] font-black text-black uppercase tracking-widest">System OK</span>
                 </div>
             </div>
 
-            {/* Forest Theme Hero Card */}
-            <div className="relative mb-12 overflow-hidden rounded-[2.5rem] bg-beeyield-forest p-12 text-white shadow-xl shadow-beeyield-forest/10 group">
-                <div className="absolute top-0 right-0 w-80 h-full bg-white/10 rounded-l-full blur-[100px] group-hover:bg-white/20 transition-all duration-1000" />
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5 pointer-events-none" />
-
+            {/* Clean Hero Area */}
+            <div className="relative mb-12 border-4 border-black bg-black p-12 text-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
                 <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-12">
                     <div className="space-y-6 max-w-2xl">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
-                            <Sparkles className="h-3 w-3 text-white" />
-                            <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Floaria™ Intelligence</span>
+                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#FF4F00] border-2 border-black">
+                            <span className="text-[10px] font-black uppercase tracking-widest">Expert Search</span>
                         </div>
-                        <h2 className="text-5xl font-bold tracking-tighter leading-[1.05]">
-                            Consult the <br />Hive Mind.
+                        <h2 className="text-6xl font-black tracking-tighter uppercase leading-[0.8]">
+                            Search <br />Records.
                         </h2>
-                        <p className="text-white/70 font-medium leading-relaxed max-w-lg">
-                            An expert retrieval system specialized in apiculture, pollination forensics, and IoT telemetry interpretation.
+                        <p className="text-neutral-400 font-bold uppercase text-xs tracking-wide leading-relaxed max-w-lg">
+                            Search through hive data, pollination records, and health telemetry.
                         </p>
                     </div>
 
-                    <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
+                    <button
                         onClick={handleNewChat}
-                        className="bg-white text-beeyield-forest rounded-2xl px-10 h-16 font-bold text-lg flex items-center justify-center gap-3 shadow-2xl transition-all"
+                        className="bg-white text-black border-4 border-black px-10 h-16 font-black uppercase tracking-widest text-lg flex items-center justify-center gap-3 transition-none hover:bg-[#FF4F00] hover:text-white"
                     >
                         <Plus className="w-6 h-6 stroke-[3px]" />
-                        Initialize Node
-                    </motion.button>
+                        New Chat
+                    </button>
                 </div>
             </div>
 
             {/* Main Chat Interface */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 min-h-[700px]">
-                {/* Sidebar - Chat History */}
-                <div className="lg:col-span-3 bg-white rounded-[2rem] border border-[#E0E0E0] overflow-hidden flex flex-col shadow-sm">
-                    <div className="p-7 px-8 border-b border-[#F5F5F5] flex items-center justify-between">
+                {/* Sidebar - History */}
+                <div className="lg:col-span-3 bg-white border-4 border-black flex flex-col shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                    <div className="p-6 border-b-4 border-black flex items-center justify-between bg-neutral-50">
                         <div className="flex items-center gap-3">
-                            <MessageSquare className="w-5 h-5 text-beeyield-forest/40" />
-                            <span className="text-sm font-bold text-beeyield-charcoal">Conversations</span>
+                            <MessageSquare className="w-5 h-5 text-black" />
+                            <span className="text-xs font-black uppercase tracking-widest">History</span>
                         </div>
                     </div>
-                    <div className="flex-1 overflow-y-auto custom-scrollbar-slim p-4 pt-6 space-y-2">
+                    <div className="flex-1 overflow-y-auto p-4 space-y-2">
                         {chats.length === 0 ? (
                             <div className="text-center py-20 px-6">
-                                <p className="text-xs font-bold text-gray-300 uppercase tracking-widest">No Active Nodes</p>
+                                <p className="text-[10px] font-black text-neutral-300 uppercase tracking-widest">No Logs</p>
                             </div>
                         ) : (
                             chats.map((chat) => (
@@ -369,27 +363,27 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
                                     <button
                                         onClick={() => switchChat(chat.id)}
                                         className={cn(
-                                            "w-full text-left p-5 rounded-[1.25rem] transition-all duration-300",
+                                            "w-full text-left p-4 border-2 border-black transition-none",
                                             selectedChat === chat.id
-                                                ? "bg-beeyield-forest/[0.04] border border-beeyield-forest/10"
-                                                : "hover:bg-beeyield-sand/50 border border-transparent"
+                                                ? "bg-black text-white"
+                                                : "hover:bg-neutral-50"
                                         )}
                                     >
                                         <div className="flex flex-col gap-1">
-                                            <p className={cn(
-                                                "text-[13px] font-bold truncate",
-                                                selectedChat === chat.id ? "text-beeyield-forest" : "text-beeyield-charcoal"
-                                            )}>
+                                            <p className="text-[11px] font-bold uppercase truncate">
                                                 {chat.title}
                                             </p>
-                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{chat.date}</p>
+                                            <p className={cn(
+                                                "text-[8px] font-bold uppercase tracking-widest",
+                                                selectedChat === chat.id ? "text-neutral-400" : "text-neutral-400"
+                                            )}>{chat.date}</p>
                                         </div>
                                     </button>
                                     <button
                                         onClick={(e) => deleteChat(e, chat.id)}
-                                        className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                                        className="absolute right-2 top-2 p-1.5 bg-black border border-white text-white opacity-0 group-hover:opacity-100 transition-none hover:bg-red-600"
                                     >
-                                        <Trash2 className="w-3.5 h-3.5" />
+                                        <Trash2 className="w-3 h-3" />
                                     </button>
                                 </div>
                             ))
@@ -398,27 +392,27 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
                 </div>
 
                 {/* Main Content Area */}
-                <div className="lg:col-span-9 bg-white rounded-[2rem] border border-[#E0E0E0] overflow-hidden flex flex-col shadow-sm relative">
-                    <div className="flex-1 overflow-y-auto p-12 custom-scrollbar shadow-inner bg-beeyield-sand/20">
+                <div className="lg:col-span-9 bg-white border-4 border-black flex flex-col shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] relative">
+                    <div className="flex-1 overflow-y-auto p-12 bg-neutral-50/50">
                         {showWelcome ? (
                             <div className="flex items-center justify-center h-full">
-                                <div className="text-center max-w-xl animate-in zoom-in-95 duration-500">
-                                    <div className="w-24 h-24 bg-beeyield-forest rounded-[2rem] flex items-center justify-center shadow-xl mx-auto mb-10 group-hover:rotate-6 transition-transform">
+                                <div className="text-center max-w-xl">
+                                    <div className="w-24 h-24 bg-black flex items-center justify-center shadow-[8px_8px_0px_0px_rgba(255,79,0,1)] mx-auto mb-10">
                                         <Hexagon className="w-10 h-10 text-white" />
                                     </div>
-                                    <h3 className="text-4xl font-bold text-beeyield-charcoal mb-4">Neural Hive Node</h3>
-                                    <p className="text-gray-500 font-medium mb-12">Search our proprietary apiculture knowledge graph.</p>
+                                    <h3 className="text-5xl font-black text-black uppercase tracking-tighter mb-4">Search</h3>
+                                    <p className="text-neutral-400 font-bold uppercase text-xs tracking-widest mb-12">Search hive records and health telemetry.</p>
 
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-2 gap-6">
                                         {topicCategories.map((topic, i) => (
                                             <button
                                                 key={i}
                                                 onClick={() => handleTopicClick(topic.label)}
-                                                className="p-8 rounded-[2rem] bg-white border border-[#EBEBEB] text-left hover:border-beeyield-forest hover:shadow-md transition-all group"
+                                                className="p-8 border-2 border-black bg-white text-left hover:bg-[#FF4F00] hover:text-white transition-none group"
                                             >
                                                 <div className="flex items-center gap-4">
                                                     <span className="text-2xl">{topic.icon}</span>
-                                                    <span className="text-[13px] font-bold text-gray-600 group-hover:text-beeyield-forest uppercase tracking-tighter">{topic.label}</span>
+                                                    <span className="text-[11px] font-black uppercase tracking-widest">{topic.label}</span>
                                                 </div>
                                             </button>
                                         ))}
@@ -436,30 +430,30 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
                                         )}
                                     >
                                         <div className={cn(
-                                            "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border",
-                                            message.role === 'user' ? "bg-white border-[#E0E0E0]" : "bg-beeyield-forest border-beeyield-forest shadow-md shadow-beeyield-forest/10"
+                                            "w-12 h-12 flex items-center justify-center shrink-0 border-4 border-black",
+                                            message.role === 'user' ? "bg-white" : "bg-black"
                                         )}>
                                             {message.role === 'user' ? (
-                                                <span className="text-xs font-bold text-beeyield-charcoal">ME</span>
+                                                <span className="text-xs font-black text-black">U</span>
                                             ) : (
                                                 <Bot className="w-6 h-6 text-white" />
                                             )}
                                         </div>
 
                                         <div className={cn(
-                                            "flex-1 p-8 rounded-[2rem] shadow-sm",
+                                            "flex-1 p-8 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]",
                                             message.role === 'user'
-                                                ? "bg-beeyield-forest/5 border border-beeyield-forest/10 rounded-tr-none text-beeyield-charcoal"
-                                                : "bg-white border border-[#E0E0E0] rounded-tl-none shadow-md"
+                                                ? "bg-neutral-50"
+                                                : "bg-white"
                                         )}>
                                             <FormattedMessage content={message.content} isUser={message.role === 'user'} />
 
                                             {message.role === 'assistant' && message.sources && message.sources.length > 0 && (
-                                                <div className="mt-8 pt-6 border-t border-[#F0F0F0] flex flex-wrap gap-2.5">
+                                                <div className="mt-8 pt-6 border-t-2 border-black flex flex-wrap gap-2.5">
                                                     {message.sources.map((source, idx) => (
-                                                        <div key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg border border-[#E0E0E0]">
-                                                            <div className="w-1.5 h-1.5 rounded-full bg-beeyield-forest" />
-                                                            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{source.name}</span>
+                                                        <div key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-black border border-black">
+                                                            <div className="w-1.5 h-1.5 bg-white" />
+                                                            <span className="text-[8px] font-black text-white uppercase tracking-widest">{source.name}</span>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -471,7 +465,7 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
                                                         <button
                                                             key={idx}
                                                             onClick={() => handleTopicClick(suggestion)}
-                                                            className="px-4 py-2 bg-beeyield-forest/10 text-beeyield-forest text-[11px] font-bold uppercase tracking-widest rounded-full border border-beeyield-forest/20 hover:bg-beeyield-forest hover:text-white transition-all"
+                                                            className="px-4 py-2 border-2 border-black bg-white text-black text-[9px] font-bold uppercase tracking-widest hover:bg-[#FF4F00] hover:text-white transition-none"
                                                         >
                                                             {suggestion}
                                                         </button>
@@ -479,11 +473,8 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
                                                 </div>
                                             )}
 
-                                            <div className="mt-6 flex items-center justify-between opacity-30">
-                                                <span className="text-[10px] font-bold uppercase tracking-widest">{message.timestamp}</span>
-                                                <div className="flex gap-1">
-                                                    {[1, 2, 3].map(i => <div key={i} className="w-1 h-1 rounded-full bg-beeyield-forest" />)}
-                                                </div>
+                                            <div className="mt-6 flex items-center justify-between border-t-2 border-black pt-4">
+                                                <span className="text-[8px] font-black uppercase tracking-widest text-neutral-400">{message.timestamp}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -493,14 +484,14 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
                     </div>
 
                     {/* Chat Input Area */}
-                    <div className="p-10 bg-white border-t border-[#F5F5F5]">
+                    <div className="p-10 bg-white border-t-4 border-black">
                         <div className="max-w-4xl mx-auto flex items-center gap-4">
                             <div className="flex items-center gap-2">
-                                <Button variant="ghost" size="icon" className="w-12 h-12 rounded-xl text-gray-400 hover:text-beeyield-forest hover:bg-beeyield-forest/5 transition-all">
-                                    <Paperclip className="w-5 h-5" />
+                                <Button variant="ghost" size="icon" className="w-14 h-14 border-2 border-black rounded-none text-black hover:bg-neutral-100 transition-none">
+                                    <Paperclip className="w-6 h-6" />
                                 </Button>
-                                <Button variant="ghost" size="icon" className="w-12 h-12 rounded-xl text-gray-400 hover:text-beeyield-forest hover:bg-beeyield-forest/5 transition-all">
-                                    <ImageIcon className="w-5 h-5" />
+                                <Button variant="ghost" size="icon" className="w-14 h-14 border-2 border-black rounded-none text-black hover:bg-neutral-100 transition-none">
+                                    <ImageIcon className="w-6 h-6" />
                                 </Button>
                             </div>
                             <div className="relative flex-1">
@@ -508,15 +499,15 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
                                     value={inputValue}
                                     onChange={(e) => setInputValue(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                                    placeholder="Type a research vector or query..."
-                                    className="w-full h-14 pl-6 pr-14 rounded-2xl bg-beeyield-sand/30 border-[#E0E0E0] focus:ring-beeyield-forest/20 font-medium placeholder:text-gray-300"
+                                    placeholder="Enter your query..."
+                                    className="w-full h-14 pl-6 pr-14 rounded-none bg-white border-2 border-black focus:ring-0 font-bold placeholder:text-neutral-300 transition-none"
                                 />
                                 <Button
                                     id="send-ai-message"
                                     onClick={handleSendMessage}
-                                    className="absolute right-1.5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-xl bg-beeyield-forest hover:bg-opacity-90 text-white shadow-lg transition-transform active:scale-95"
+                                    className="absolute right-0 top-0 w-14 h-14 rounded-none bg-black hover:bg-[#FF4F00] text-white transition-none shadow-none"
                                 >
-                                    <Send className="w-4 h-4" />
+                                    <Send className="w-5 h-5" />
                                 </Button>
                             </div>
                         </div>
@@ -524,9 +515,9 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
                 </div>
             </div>
 
-            {/* Regulatory Footer */}
-            <div className="mt-8 text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-white py-4 rounded-2xl border border-[#F5F5F5] shadow-sm">
-                Neural Retrieval Layer — AI outputs may be nondeterministic. <a href="#" className="text-beeyield-forest hover:underline ml-1">Terms of Protocol</a>
+            {/* Footer */}
+            <div className="mt-8 text-center text-[9px] font-bold text-neutral-400 uppercase tracking-widest bg-white py-6 border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+                Archive Retrieval Layer — Search results are limited to available telemetry. <a href="#" className="underline ml-1 hover:text-black">Terms of Service</a>
             </div>
         </div>
     );
