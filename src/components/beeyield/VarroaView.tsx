@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -16,11 +16,11 @@ interface VarroaHive {
 }
 
 const VarroaView: React.FC = () => {
-    const [hives, setHives] = useState<{ id: string; infestation: number; status: string; trend: string; method: string; date: string }[]>([]);
-    const [treatments, setTreatments] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [hives, setHives] = React.useState<{ id: string; infestation: number; status: string; trend: string; method: string; date: string }[]>([]);
+    const [treatments, setTreatments] = React.useState<any[]>([]);
+    const [loading, setLoading] = React.useState(true);
 
-    useEffect(() => {
+    React.useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
             try {

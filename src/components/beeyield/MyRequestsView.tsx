@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React from 'react';
 import {
     LayoutGrid, Box, ChevronDown, Check, Loader2, Plus,
     History, HardDrive, Cpu, ShieldCheck, HelpCircle,
@@ -41,39 +41,39 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
     const { data: requests, isLoading: isLoadingRequests } = useRequests();
     const createRequest = useCreateRequest();
 
-    const [selectedPlaceId, setSelectedPlaceId] = useState<string>("");
-    const [selectedHive, setSelectedHive] = useState<string>("");
-    const [isPlacesOpen, setIsPlacesOpen] = useState(false);
-    const [isHivesOpen, setIsHivesOpen] = useState(false);
+    const [selectedPlaceId, setSelectedPlaceId] = React.useState<string>("");
+    const [selectedHive, setSelectedHive] = React.useState<string>("");
+    const [isPlacesOpen, setIsPlacesOpen] = React.useState(false);
+    const [isHivesOpen, setIsHivesOpen] = React.useState(false);
 
     // Wizard State
-    const [wizardStep, setWizardStep] = useState(0); // 0: Category, 1: Details, 2: Review
-    const [category, setCategory] = useState('');
-    const [subject, setSubject] = useState('');
-    const [description, setDescription] = useState('');
-    const [priority, setPriority] = useState('medium');
-    const [showWizard, setShowWizard] = useState(false);
+    const [wizardStep, setWizardStep] = React.useState(0); // 0: Category, 1: Details, 2: Review
+    const [category, setCategory] = React.useState('');
+    const [subject, setSubject] = React.useState('');
+    const [description, setDescription] = React.useState('');
+    const [priority, setPriority] = React.useState('medium');
+    const [showWizard, setShowWizard] = React.useState(false);
 
     // Filter History State
-    const [searchQuery, setSearchQuery] = useState("");
-    const [statusFilter, setStatusFilter] = useState("All");
+    const [searchQuery, setSearchQuery] = React.useState("");
+    const [statusFilter, setStatusFilter] = React.useState("All");
 
     // Get apiary name from ID for display
-    const selectedPlace = useMemo(() => {
+    const selectedPlace = React.useMemo(() => {
         if (!selectedPlaceId) return "";
         return apiariesData?.find(a => a.id === selectedPlaceId)?.name || "";
     }, [selectedPlaceId, apiariesData]);
 
     const places = apiariesData || [];
 
-    const filteredHives = useMemo(() => {
+    const filteredHives = React.useMemo(() => {
         if (!hivesData) return [];
         if (!selectedPlaceId) return hivesData;
         return hivesData.filter(hive => hive.apiary_id === selectedPlaceId);
     }, [hivesData, selectedPlaceId]);
 
     // Filter Requests for Table
-    const filteredRequests = useMemo(() => {
+    const filteredRequests = React.useMemo(() => {
         if (!requests) return [];
         return requests.filter(req => {
             const matchesSearch = req.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -84,7 +84,7 @@ const MyRequestsView: React.FC<MyRequestsViewProps> = ({ onTabChange }) => {
     }, [requests, searchQuery, statusFilter]);
 
     // Auto-select first apiary if only one exists
-    useEffect(() => {
+    React.useEffect(() => {
         if (apiariesData?.length === 1 && !selectedPlaceId) {
             setSelectedPlaceId(apiariesData[0].id);
         }

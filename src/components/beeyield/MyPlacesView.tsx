@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
     Plus,
     MapPin,
@@ -12,6 +12,7 @@ import {
     ArrowRight,
     ChevronLeft,
     SearchX,
+    RefreshCw,
     Wind,
     Sun,
     Sprout,
@@ -55,10 +56,10 @@ import OrchardDashboardView from './OrchardDashboardView';
 // --- Detail View Component ---
 const ApiaryDetailView = ({ apiary, setViewingApiary, onTabChange }: { apiary: Apiary; setViewingApiary: (a: Apiary | null) => void; onTabChange?: (tab: string) => void }) => {
     const { hives, isLoading: hivesLoading } = useHivesWithTelemetry(apiary.id);
-    const [activeView, setActiveView] = useState<'dashboard' | 'details'>('dashboard');
-    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-    const [isAddingHive, setIsAddingHive] = useState(false);
-    const [editingHive, setEditingHive] = useState<Hive | null>(null);
+    const [activeView, setActiveView] = React.useState<'dashboard' | 'details'>('dashboard');
+    const [viewMode, setViewMode] = React.useState<'grid' | 'list'>('grid');
+    const [isAddingHive, setIsAddingHive] = React.useState(false);
+    const [editingHive, setEditingHive] = React.useState<Hive | null>(null);
 
     const handleEditHive = (hive: Hive) => {
         setEditingHive(hive);
@@ -294,9 +295,9 @@ interface MyPlacesViewProps {
 
 const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
     // UI State
-    const [isAddingPlace, setIsAddingPlace] = useState(false);
-    const [editingApiary, setEditingApiary] = useState<Apiary | null>(null);
-    const [viewingApiary, setViewingApiary] = useState<Apiary | null>(null);
+    const [isAddingPlace, setIsAddingPlace] = React.useState(false);
+    const [editingApiary, setEditingApiary] = React.useState<Apiary | null>(null);
+    const [viewingApiary, setViewingApiary] = React.useState<Apiary | null>(null);
 
     // TanStack Query Hooks
     const { data: apiaries = [], isLoading } = useApiaries();
@@ -305,7 +306,7 @@ const MyPlacesView: React.FC<MyPlacesViewProps> = ({ onTabChange }) => {
     const deleteApiary = useDeleteApiary();
 
     // Form state
-    const [formData, setFormData] = useState<ApiaryCreateInput>({
+    const [formData, setFormData] = React.useState<ApiaryCreateInput>({
         name: '',
         type: 'permanent',
         location_name: '',

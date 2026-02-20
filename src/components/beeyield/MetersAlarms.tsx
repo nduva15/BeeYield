@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -10,12 +10,12 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
 const MetersAlarms: React.FC = () => {
-    const [events, setEvents] = useState<MeterEvent[]>([]);
-    const [meters, setMeters] = useState<Meter[]>([]);
-    const [buildings, setBuildings] = useState<Building[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [events, setEvents] = React.useState<MeterEvent[]>([]);
+    const [meters, setMeters] = React.useState<Meter[]>([]);
+    const [buildings, setBuildings] = React.useState<Building[]>([]);
+    const [loading, setLoading] = React.useState(true);
 
-    useEffect(() => {
+    React.useEffect(() => {
         const loadAlarms = async () => {
             setLoading(true);
             try {

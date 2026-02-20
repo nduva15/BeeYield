@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -35,20 +35,20 @@ interface DetectionRecord {
 }
 
 const ImageAnalysisView: React.FC<ImageAnalysisViewProps> = ({ onTabChange }) => {
-    const [selectedImage, setSelectedImage] = useState<File | null>(null);
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-    const [isAnalyzing, setIsAnalyzing] = useState(false);
-    const [results, setResults] = useState<any>(null);
-    const [isDragging, setIsDragging] = useState(false);
-    const [confidenceThreshold, setConfidenceThreshold] = useState([40]);
-    const [overlapThreshold, setOverlapThreshold] = useState([50]);
-    const [displayMode, setDisplayMode] = useState("Label + confidence");
-    const [error, setError] = useState<string | null>(null);
-    const [realtimeCount, setRealtimeCount] = useState(0);
-    const [recentDetections, setRecentDetections] = useState<any[]>([]);
-    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [selectedImage, setSelectedImage] = React.useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
+    const [isAnalyzing, setIsAnalyzing] = React.useState(false);
+    const [results, setResults] = React.useState<any>(null);
+    const [isDragging, setIsDragging] = React.useState(false);
+    const [confidenceThreshold, setConfidenceThreshold] = React.useState([40]);
+    const [overlapThreshold, setOverlapThreshold] = React.useState([50]);
+    const [displayMode, setDisplayMode] = React.useState("Label + confidence");
+    const [error, setError] = React.useState<string | null>(null);
+    const [realtimeCount, setRealtimeCount] = React.useState(0);
+    const [recentDetections, setRecentDetections] = React.useState<any[]>([]);
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-    useEffect(() => {
+    React.useEffect(() => {
         loadHistory();
     }, []);
 

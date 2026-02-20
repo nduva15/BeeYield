@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import { cn } from '@/lib/utils';
 import {
     Mic2,
@@ -24,10 +24,10 @@ interface SoundAnalysisViewProps {
 }
 
 const SoundAnalysisView: React.FC<SoundAnalysisViewProps> = ({ onTabChange }) => {
-    const [recording, setRecording] = useState(false);
-    const [analyzing, setAnalyzing] = useState(false);
-    const [result, setResult] = useState<null | 'Healthy' | 'Warning'>(null);
-    const [progress, setProgress] = useState(0);
+    const [recording, setRecording] = React.useState(false);
+    const [analyzing, setAnalyzing] = React.useState(false);
+    const [result, setResult] = React.useState<null | 'Healthy' | 'Warning'>(null);
+    const [progress, setProgress] = React.useState(0);
 
     const handleRecord = () => {
         setRecording(true);

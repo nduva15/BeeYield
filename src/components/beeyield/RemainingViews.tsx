@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { beeyieldService, Apiary, Hive, IoTDevice, SensorReading } from '@/services/beeyieldService';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -52,7 +52,7 @@ const ToggleSwitch = ({ checked, onCheckedChange }: { checked: boolean, onChecke
 
 const MeasurementIntervalSelector = () => {
     const options = [15, 30, 60, 120, 180, 360, 720];
-    const [selected, setSelected] = useState(60);
+    const [selected, setSelected] = React.useState(60);
     return (
         <div className="flex bg-slate-50 border border-slate-100 rounded-[1.5rem] overflow-hidden w-full p-1.5 gap-1.5 shadow-inner">
             {options.map((opt) => (
@@ -74,10 +74,10 @@ interface SettingsDialogProps {
 }
 
 const SettingsDialog = ({ open, onOpenChange }: SettingsDialogProps) => {
-    const [makePublic, setMakePublic] = useState(false);
-    const [keepUpdate, setKeepUpdate] = useState(false);
-    const [consent, setConsent] = useState(false);
-    const [searchWireless, setSearchWireless] = useState(false);
+    const [makePublic, setMakePublic] = React.useState(false);
+    const [keepUpdate, setKeepUpdate] = React.useState(false);
+    const [consent, setConsent] = React.useState(false);
+    const [searchWireless, setSearchWireless] = React.useState(false);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -138,11 +138,11 @@ const SettingsDialog = ({ open, onOpenChange }: SettingsDialogProps) => {
 };
 
 const NotificationsDialog = ({ open, onOpenChange }: NotificationsDialogProps) => {
-    const [appNotif, setAppNotif] = useState(false);
-    const [emailNotif, setEmailNotif] = useState(false);
-    const [smsNotif, setSmsNotif] = useState(false);
-    const [tempAlerts, setTempAlerts] = useState(false);
-    const [weightAlerts, setWeightAlerts] = useState(false);
+    const [appNotif, setAppNotif] = React.useState(false);
+    const [emailNotif, setEmailNotif] = React.useState(false);
+    const [smsNotif, setSmsNotif] = React.useState(false);
+    const [tempAlerts, setTempAlerts] = React.useState(false);
+    const [weightAlerts, setWeightAlerts] = React.useState(false);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -218,23 +218,23 @@ interface NotificationsDialogProps {
 
 // BeeYield Online View (Measurement data)
 export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }) => {
-    const [selectedPlace, setSelectedPlace] = useState<string>('');
-    const [selectedHive, setSelectedHive] = useState<string>('');
-    const [settingsOpen, setSettingsOpen] = useState(false);
-    const [notificationsOpen, setNotificationsOpen] = useState(false);
+    const [selectedPlace, setSelectedPlace] = React.useState<string>('');
+    const [selectedHive, setSelectedHive] = React.useState<string>('');
+    const [settingsOpen, setSettingsOpen] = React.useState(false);
+    const [notificationsOpen, setNotificationsOpen] = React.useState(false);
 
-    const [apiaries, setApiaries] = useState<Apiary[]>([]);
-    const [hives, setHives] = useState<Hive[]>([]);
-    const [devices, setDevices] = useState<IoTDevice[]>([]);
-    const [latestReading, setLatestReading] = useState<SensorReading | null>(null);
-    const [isFetchingReading, setIsFetchingReading] = useState(false);
+    const [apiaries, setApiaries] = React.useState<Apiary[]>([]);
+    const [hives, setHives] = React.useState<Hive[]>([]);
+    const [devices, setDevices] = React.useState<IoTDevice[]>([]);
+    const [latestReading, setLatestReading] = React.useState<SensorReading | null>(null);
+    const [isFetchingReading, setIsFetchingReading] = React.useState(false);
 
     const { user, beeyieldUser } = useAuth();
     const userId = beeyieldUser?.id || user?.id;
 
 
 
-    useEffect(() => {
+    React.useEffect(() => {
         const loadInitialData = async () => {
             const [apiariesData, hivesData, devicesData] = await Promise.all([
                 beeyieldService.getApiaries(),
@@ -249,7 +249,7 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
         loadInitialData();
     }, []);
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (selectedPlace && selectedPlace !== 'none') {
             const filteredHives = hives.filter(h => h.apiary_id === selectedPlace || !h.apiary_id);
             if (selectedHive && !filteredHives.find(h => h.id === selectedHive)) {
@@ -258,7 +258,7 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
         }
     }, [selectedPlace, hives]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         const fetchLatest = async () => {
             if (selectedHive && selectedHive !== 'none') {
                 setIsFetchingReading(true);
@@ -476,9 +476,9 @@ export const BeeYieldOnlineView: React.FC<RemainingViewProps> = ({ onTabChange }
 
 // Bluetooth View
 export const BluetoothView: React.FC<RemainingViewProps> = ({ onTabChange }) => {
-    const [devices, setDevices] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [isScanning, setIsScanning] = useState(false);
+    const [devices, setDevices] = React.useState<any[]>([]);
+    const [loading, setLoading] = React.useState(true);
+    const [isScanning, setIsScanning] = React.useState(false);
 
     const { user, beeyieldUser } = useAuth();
     const userId = beeyieldUser?.id || user?.id;
@@ -499,7 +499,7 @@ export const BluetoothView: React.FC<RemainingViewProps> = ({ onTabChange }) => 
         }
     };
 
-    useEffect(() => {
+    React.useEffect(() => {
         fetchDevices();
     }, [userId]);
 

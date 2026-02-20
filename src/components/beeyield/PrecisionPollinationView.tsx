@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React from 'react';
 import {
     Map as MapIcon,
     Layers,
@@ -43,7 +43,7 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
     onTabChange,
     activeSubPageOverride
 }) => {
-    const [internalSubPage, setInternalSubPage] = useState<SubPage>('home');
+    const [internalSubPage, setInternalSubPage] = React.useState<SubPage>('home');
     const activeSubPage = activeSubPageOverride || internalSubPage;
 
     const setActiveSubPage = (page: SubPage) => {
@@ -62,11 +62,11 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
         }
     };
 
-    const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedDeviceId, setSelectedDeviceId] = React.useState<string | null>(null);
+    const [searchTerm, setSearchTerm] = React.useState('');
 
     // Calc Engine State
-    const [calcInputs, setCalcInputs] = useState<CalculationInputs>({
+    const [calcInputs, setCalcInputs] = React.useState<CalculationInputs>({
         totalAcres: 50,
         hives: Array(10).fill(null).map((_, i) => ({
             frameCount: 8,
@@ -77,27 +77,27 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
         bloomIntensity: 0.9
     });
 
-    const metrics = useMemo(() => calculatePollinationMetrics(calcInputs), [calcInputs]);
+    const metrics = React.useMemo(() => calculatePollinationMetrics(calcInputs), [calcInputs]);
 
-    const filteredDevices = useMemo(() => {
+    const filteredDevices = React.useMemo(() => {
         return devices.filter(d =>
             d.device_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
             (d.location_name || '').toLowerCase().includes(searchTerm.toLowerCase())
         );
     }, [devices, searchTerm]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (filteredDevices.length > 0 && !selectedDeviceId) {
             setSelectedDeviceId(filteredDevices[0].id);
         }
     }, [filteredDevices, selectedDeviceId]);
 
-    const selectedDevice = useMemo(() =>
+    const selectedDevice = React.useMemo(() =>
         devices.find(d => d.id === selectedDeviceId),
         [devices, selectedDeviceId]
     );
 
-    const deviceReadings = useMemo(() =>
+    const deviceReadings = React.useMemo(() =>
         readings.filter(r => r.device_id === selectedDeviceId)
             .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()),
         [readings, selectedDeviceId]

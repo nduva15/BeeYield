@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { beeyieldService, IoTDevice, SensorReading, Apiary, Hive } from '@/services/beeyieldService';
 import {
     Plus, Battery, Signal, Search, Smartphone, RefreshCw, Wifi,
@@ -20,13 +20,13 @@ interface MyDevicesViewProps {
 }
 
 const MyDevicesView: React.FC<MyDevicesViewProps> = ({ devices: initialDevices, readings, apiaries, hives, onTabChange }) => {
-    const [localDevices, setLocalDevices] = useState<IoTDevice[]>(initialDevices);
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedApiaryId, setSelectedApiaryId] = useState<string>('all');
+    const [localDevices, setLocalDevices] = React.useState<IoTDevice[]>(initialDevices);
+    const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
+    const [searchTerm, setSearchTerm] = React.useState('');
+    const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>('all');
     const { t } = useLanguage();
 
-    useEffect(() => {
+    React.useEffect(() => {
         setLocalDevices(initialDevices);
     }, [initialDevices]);
 

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import { Brain, TrendingUp, AlertCircle, Building2, FileText, Info, Zap, Activity, Cpu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ComposedChart, Line } from 'recharts';
@@ -15,7 +15,7 @@ const PREDICTION_DATA = [
 ];
 
 const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTabChange }) => {
-    const [activeHub, setActiveHub] = useState('Central Orchard');
+    const [activeHub, setActiveHub] = React.useState('Central Orchard');
 
     return (
         <div className="p-8 space-y-12 bg-white min-h-screen text-[#064e3b] antialiased">
@@ -106,7 +106,7 @@ const PollinationIntelligence: React.FC<PollinationIntelligenceProps> = ({ onTab
                         </div>
 
                         <div className="h-[300px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
+                            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
                                 <ComposedChart data={PREDICTION_DATA}>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#064e3b10" />
                                     <XAxis dataKey="stage" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: '#064e3b' }} />

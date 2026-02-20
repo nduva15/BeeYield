@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,7 +19,8 @@ import {
     ShieldCheck,
     ChevronRight,
     Search as SearchIcon,
-    Dna
+    Dna,
+    Globe
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -113,11 +114,11 @@ const speciesData = [
 ];
 
 const HealthGuideView: React.FC = () => {
-    const [searchQuery, setSearchQuery] = useState('');
-    const [selectedItem, setSelectedItem] = useState<any>(null);
-    const [activeTab, setActiveTab] = useState<'diseases' | 'species'>('diseases');
+    const [searchQuery, setSearchQuery] = React.useState('');
+    const [selectedItem, setSelectedItem] = React.useState<any>(null);
+    const [activeTab, setActiveTab] = React.useState<'diseases' | 'species'>('diseases');
 
-    const filteredItems = (activeTab === 'diseases' ? diseaseData : speciesData).filter(item =>
+    const filteredItems = (activeTab === 'diseases' ? diseaseData : speciesData).filter((item: any) =>
         item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.code.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -199,11 +200,11 @@ const HealthGuideView: React.FC = () => {
                                         {activeTab === 'diseases' && (
                                             <span className={cn(
                                                 "text-[8px] px-2 py-0.5 border-2 font-black uppercase tracking-widest",
-                                                item.severity === 'Critical' ? "bg-red-500 text-white border-red-500" :
-                                                    item.severity === 'High' ? "bg-[#facc15] text-[#064e3b] border-[#facc15]" :
+                                                (item as any).severity === 'Critical' ? "bg-red-500 text-white border-red-500" :
+                                                    (item as any).severity === 'High' ? "bg-[#facc15] text-[#064e3b] border-[#facc15]" :
                                                         "bg-[#10b981] text-white border-[#10b981]"
                                             )}>
-                                                {item.severity}
+                                                {(item as any).severity}
                                             </span>
                                         )}
                                     </div>

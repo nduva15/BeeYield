@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,12 +11,12 @@ import { SUPER_ADMIN_EMAIL } from '@/config/constants';
 
 const UserDebugPanel: React.FC = () => {
     const { user } = useAuth();
-    const [apiaries, setApiaries] = useState<any[]>([]);
-    const [hives, setHives] = useState<any[]>([]);
-    const [dbName, setDbName] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [apiaries, setApiaries] = React.useState<any[]>([]);
+    const [hives, setHives] = React.useState<any[]>([]);
+    const [dbName, setDbName] = React.useState<string | null>(null);
+    const [loading, setLoading] = React.useState(true);
 
-    useEffect(() => {
+    React.useEffect(() => {
         const loadData = async () => {
             if (!user) return;
 

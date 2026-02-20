@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ShieldCheck, Activity, Thermometer, UserCheck, Download, AlertCircle, CheckCircle2, Award } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -7,7 +7,7 @@ interface HealthyHiveIndexProps {
 }
 
 const HealthyHiveIndex: React.FC<HealthyHiveIndexProps> = ({ onTabChange }) => {
-    const [generatingCert, setGeneratingCert] = useState(false);
+    const [generatingCert, setGeneratingCert] = React.useState(false);
 
     const auditMetrics = [
         {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -106,11 +106,11 @@ const KanbanColumn = ({
 
 const ContentDashboard = () => {
     const navigate = useNavigate();
-    const [posts, setPosts] = useState<ContentPost[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [stats, setStats] = useState<any>(null);
-    const [search, setSearch] = useState('');
-    const [pillarFilter, setPillarFilter] = useState('all');
+    const [posts, setPosts] = React.useState<ContentPost[]>([]);
+    const [loading, setLoading] = React.useState(true);
+    const [stats, setStats] = React.useState<any>(null);
+    const [search, setSearch] = React.useState('');
+    const [pillarFilter, setPillarFilter] = React.useState('all');
 
     const loadData = async () => {
         setLoading(true);
@@ -129,7 +129,7 @@ const ContentDashboard = () => {
         }
     };
 
-    useEffect(() => {
+    React.useEffect(() => {
         loadData();
     }, []);
 

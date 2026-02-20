@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Bell, Shield, Plug, Settings2 } from 'lucide-react';
@@ -20,16 +20,16 @@ interface ThresholdSetting {
 }
 
 const MetersSettings: React.FC = () => {
-    const [activeDialog, setActiveDialog] = useState<{ type: 'notification' | 'threshold', id: string } | null>(null);
-    const [tempValue, setTempValue] = useState('');
+    const [activeDialog, setActiveDialog] = React.useState<{ type: 'notification' | 'threshold', id: string } | null>(null);
+    const [tempValue, setTempValue] = React.useState('');
 
-    const [notificationSettings, setNotificationSettings] = useState<NotificationSetting[]>([
+    const [notificationSettings, setNotificationSettings] = React.useState<NotificationSetting[]>([
         { id: 'water_leak', title: 'Water leak', value: 'Email + SMS' },
         { id: 'sudden_spike', title: 'Sudden spike', value: 'Email' },
         { id: 'no_comm', title: 'No communication', value: 'Push' },
     ]);
 
-    const [thresholdSettings, setThresholdSettings] = useState<ThresholdSetting[]>([
+    const [thresholdSettings, setThresholdSettings] = React.useState<ThresholdSetting[]>([
         { id: 'water', title: 'Water', value: '+25%' },
         { id: 'heat', title: 'Heat', value: '+20%' },
         { id: 'energy', title: 'Energy', value: '+18%' },

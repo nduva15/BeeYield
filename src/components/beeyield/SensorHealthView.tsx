@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
     Thermometer,
     Droplets,
@@ -146,12 +146,12 @@ const VitalsCard: React.FC<{
 // --- Main Component ---
 
 const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
-    const [selectedHive, setSelectedHive] = useState(hiveNodes[0]);
-    const [historyRange, setHistoryRange] = useState(12);
-    const [historyData] = useState(() => generateHistoryData(12));
-    const [liveTime, setLiveTime] = useState(new Date());
+    const [selectedHive, setSelectedHive] = React.useState(hiveNodes[0]);
+    const [historyRange, setHistoryRange] = React.useState(12);
+    const [historyData] = React.useState(() => generateHistoryData(12));
+    const [liveTime, setLiveTime] = React.useState(new Date());
 
-    useEffect(() => {
+    React.useEffect(() => {
         const timer = setInterval(() => setLiveTime(new Date()), 1000);
         return () => clearInterval(timer);
     }, []);
@@ -325,7 +325,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
 
                 <div className="border-4 border-[#064e3b] bg-white p-8 shadow-[8px_8px_0px_0px_rgba(6,78,59,1)]">
                     <div className="h-[280px]">
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
                             <ComposedChart data={visibleData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
                                 <defs>
                                     <linearGradient id="tempGrad" x1="0" y1="0" x2="0" y2="1">

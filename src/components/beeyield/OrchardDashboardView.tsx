@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
     Activity,
     Thermometer,
@@ -71,7 +71,7 @@ const StatCard: React.FC<{
 const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onTabChange }) => {
     const { hives, isLoading } = useHivesWithTelemetry(apiary?.id);
 
-    const stats = useMemo(() => {
+    const stats = React.useMemo(() => {
         if (!hives.length) return null;
         const totalHives = hives.length;
         const activeHives = hives.filter(h => h.status === 'ACTIVE').length;
@@ -177,7 +177,7 @@ const OrchardDashboardView: React.FC<OrchardDashboardViewProps> = ({ apiary, onT
                         <p className="text-sm text-gray-400 font-medium mt-1">Colony movement pattern for today's cycle</p>
                     </CardHeader>
                     <CardContent className="p-10 pt-2">
-                        <ResponsiveContainer width="100%" height={300} minWidth={0} minHeight={0}>
+                        <ResponsiveContainer width="100%" height={300} minWidth={0} minHeight={0} debounce={50}>
                             <AreaChart data={activityData}>
                                 <defs>
                                     <linearGradient id="colorActivity" x1="0" y1="0" x2="0" y2="1">

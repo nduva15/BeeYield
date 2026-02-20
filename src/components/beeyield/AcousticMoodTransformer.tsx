@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     Volume2,
-    Waveform,
     Zap,
     AlertCircle,
     Activity,
@@ -13,8 +12,10 @@ import {
     ShieldAlert,
     BrainCircuit,
     ChevronRight,
-    Search
+    Search,
+    Settings
 } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     AreaChart,
@@ -36,12 +37,29 @@ const generateMFCC = () => {
     }));
 };
 
-const AcousticMoodTransformer: React.FC = () => {
-    const [mfccData, setMfccData] = useState(generateMFCC());
-    const [status, setStatus] = useState<'queen-right' | 'queenless-roar' | 'swarm-intent'>('queen-right');
-    const [confidence, setConfidence] = useState(98.4);
+type Prediction = {
+    timestamp: string;
+    status: 'queen-right' | 'queenless-roar' | 'swarm-intent';
+    confidence: number;
+};
 
-    useEffect(() => {
+const AcousticMoodTransformer: React.FC = () => {
+    const [mfccData, setMfccData] = React.useState(generateMFCC());
+    const [status, setStatus] = React.useState<'queen-right' | 'queenless-roar' | 'swarm-intent'>('queen-right');
+    const [confidence, setConfidence] = React.useState(98.4);
+    const [isRecording, setIsRecording] = React.useState(false);
+    const [intensity, setIntensity] = React.useState(0);
+    const [prediction, setPrediction] = React.useState<Prediction | null>(null);
+    const [history, setHistory] = React.useState<Prediction[]>([]);
+
+    const frequencies = React.useMemo(() => [
+        { label: 'Sub-bass', range: '20-60Hz', value: 45 },
+        { label: 'Fundamental', range: '180-250Hz', value: 85 },
+        { label: 'Swarm Triggers', range: '400-600Hz', value: 12 },
+        { label: 'Harmonics', range: '1k-4kHz', value: 28 },
+    ], []);
+
+    React.useEffect(() => {
         const interval = setInterval(() => {
             setMfccData(generateMFCC());
             setConfidence(prev => Math.max(95, Math.min(99.9, prev + (Math.random() - 0.5))));
@@ -113,7 +131,7 @@ const AcousticMoodTransformer: React.FC = () => {
 
                     <div className="h-[350px] w-full border-4 border-[#064e3b] bg-white p-6 relative overflow-hidden">
                         <div className="absolute inset-0 bg-[#064e3b]/[0.02] pointer-events-none" />
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
                             <AreaChart data={mfccData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
                                 <defs>
                                     <linearGradient id="colorDb" x1="0" y1="0" x2="0" y2="1">

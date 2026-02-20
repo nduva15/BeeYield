@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
     Share2,
     Download,
@@ -26,11 +26,11 @@ interface AgroIntelligenceViewProps {
 }
 
 const AgroIntelligenceView: React.FC<AgroIntelligenceViewProps> = ({ onTabChange }) => {
-    const [weather, setWeather] = useState<any>(null);
-    const [satellite, setSatellite] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
+    const [weather, setWeather] = React.useState<any>(null);
+    const [satellite, setSatellite] = React.useState<any>(null);
+    const [loading, setLoading] = React.useState(true);
 
-    useEffect(() => {
+    React.useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
             try {

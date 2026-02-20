@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,13 +8,13 @@ import { cn } from '@/lib/utils';
 import beeyieldService from '@/services/beeyieldService';
 
 const FlightMapView: React.FC = () => {
-    const [isPlaying, setIsPlaying] = useState(true);
-    const [points, setPoints] = useState<{ x: number, y: number, id: number, type: 'hive' | 'forage', label?: string }[]>([]);
-    const [forageZones, setForageZones] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [stats, setStats] = useState({ activeBees: 0, avgTrip: 0, forageRange: 0 });
+    const [isPlaying, setIsPlaying] = React.useState(true);
+    const [points, setPoints] = React.useState<{ x: number, y: number, id: number, type: 'hive' | 'forage', label?: string }[]>([]);
+    const [forageZones, setForageZones] = React.useState<any[]>([]);
+    const [loading, setLoading] = React.useState(true);
+    const [stats, setStats] = React.useState({ activeBees: 0, avgTrip: 0, forageRange: 0 });
 
-    useEffect(() => {
+    React.useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
             try {

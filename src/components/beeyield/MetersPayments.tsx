@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Reorder, useDragControls } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,8 +15,8 @@ interface MetersPaymentsProps {
 }
 
 const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { } }) => {
-    const [rates, setRates] = useState<BillingRate[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [rates, setRates] = React.useState<BillingRate[]>([]);
+    const [loading, setLoading] = React.useState(true);
 
     const consumptionData = [
         { label: 'Energy usage', value: '12,483 Units', subtext: 'last month', icon: Zap },
@@ -24,7 +24,7 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
         { label: 'Heat/Fuel usage', value: '1,203 GJ', subtext: 'last month', icon: Flame },
     ];
 
-    const [columns, setColumns] = useState([
+    const [columns, setColumns] = React.useState([
         'Sensor ID',
         'Device number',
         'Apiary address',
@@ -33,7 +33,7 @@ const MetersPayments: React.FC<MetersPaymentsProps> = ({ onTabChange = () => { }
         'Reading'
     ]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         const loadRates = async () => {
             setLoading(true);
             try {

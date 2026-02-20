@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -55,39 +55,39 @@ const MyTaskView: React.FC<MyTaskViewProps> = ({
     onInitialActionConsumed
 }) => {
     const { t } = useLanguage();
-    const [view, setView] = useState<'list' | 'month'>('month');
-    const [currentDate, setCurrentDate] = useState(new Date());
-    const [isAddingTask, setIsAddingTask] = useState(false);
+    const [view, setView] = React.useState<'list' | 'month'>('month');
+    const [currentDate, setCurrentDate] = React.useState(new Date());
+    const [isAddingTask, setIsAddingTask] = React.useState(false);
 
     // Form States
-    const [title, setTitle] = useState("");
-    const [taskDate, setTaskDate] = useState<Date>(new Date());
-    const [taskTime, setTaskTime] = useState("00:00");
-    const [priority, setPriority] = useState<"Low" | "Medium" | "High">("Medium");
-    const [taskType, setTaskType] = useState<"Inspection" | "Feeding" | "Treatment" | "Harvest" | "Other">("Inspection");
-    const [category, setCategory] = useState("General");
-    const [description, setDescription] = useState("");
-    const [isRecurring, setIsRecurring] = useState(false);
-    const [recurrenceDays, setRecurrenceDays] = useState("7");
-    const [selectedApiary, setSelectedApiary] = useState<Apiary | null>(null);
-    const [selectedHive, setSelectedHive] = useState<Hive | null>(null);
-    const [isApiaryOpen, setIsApiaryOpen] = useState(false);
-    const [isHiveOpen, setIsHiveOpen] = useState(false);
-    const [isSaving, setIsSaving] = useState(false);
+    const [title, setTitle] = React.useState("");
+    const [taskDate, setTaskDate] = React.useState<Date>(new Date());
+    const [taskTime, setTaskTime] = React.useState("00:00");
+    const [priority, setPriority] = React.useState<"Low" | "Medium" | "High">("Medium");
+    const [taskType, setTaskType] = React.useState<"Inspection" | "Feeding" | "Treatment" | "Harvest" | "Other">("Inspection");
+    const [category, setCategory] = React.useState("General");
+    const [description, setDescription] = React.useState("");
+    const [isRecurring, setIsRecurring] = React.useState(false);
+    const [recurrenceDays, setRecurrenceDays] = React.useState("7");
+    const [selectedApiary, setSelectedApiary] = React.useState<Apiary | null>(null);
+    const [selectedHive, setSelectedHive] = React.useState<Hive | null>(null);
+    const [isApiaryOpen, setIsApiaryOpen] = React.useState(false);
+    const [isHiveOpen, setIsHiveOpen] = React.useState(false);
+    const [isSaving, setIsSaving] = React.useState(false);
 
     // Data States
-    const [apiaries, setApiaries] = useState<Apiary[]>([]);
-    const [hives, setHives] = useState<Hive[]>([]);
-    const [tasks, setTasks] = useState<Task[]>([]);
+    const [apiaries, setApiaries] = React.useState<Apiary[]>([]);
+    const [hives, setHives] = React.useState<Hive[]>([]);
+    const [tasks, setTasks] = React.useState<Task[]>([]);
     const { user, beeyieldUser } = useAuth();
     const userId = beeyieldUser?.id || user?.id;
 
     // Clock UI State
-    const [isClockMinutes, setIsClockMinutes] = useState(false);
+    const [isClockMinutes, setIsClockMinutes] = React.useState(false);
 
     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-    useEffect(() => {
+    React.useEffect(() => {
         const fetchAllData = async () => {
             try {
                 const [apiariesData, hivesData, tasksData] = await Promise.all([

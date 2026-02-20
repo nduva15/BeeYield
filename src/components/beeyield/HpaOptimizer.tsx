@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -18,9 +18,9 @@ import {
 import { cn } from '@/lib/utils';
 
 const HpaOptimizer: React.FC = () => {
-    const [acreage, setAcreage] = useState(40);
-    const [treeDensity, setTreeDensity] = useState('high'); // high, medium, low
-    const [variety, setVariety] = useState('almond');
+    const [acreage, setAcreage] = React.useState(40);
+    const [treeDensity, setTreeDensity] = React.useState('high'); // high, medium, low
+    const [variety, setVariety] = React.useState('almond');
 
     // Simple calculus-inspired logic for suggested HPA
     const calculateSuggestedHPA = () => {

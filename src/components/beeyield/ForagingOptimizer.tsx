@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import { Target, Move, Zap, TrendingUp, Info, Activity, ShieldAlert, Crosshair, Hexagon, Brain } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
@@ -18,7 +18,7 @@ const FORAGING_MATH = [
 ];
 
 const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) => {
-    const [viewMode, setViewMode] = useState<'MAP' | 'MATH'>('MAP');
+    const [viewMode, setViewMode] = React.useState<'MAP' | 'MATH'>('MAP');
 
     return (
         <div className="p-8 space-y-12 bg-white min-h-screen text-[#064e3b] antialiased">
@@ -120,7 +120,7 @@ const ForagingOptimizer: React.FC<ForagingOptimizerProps> = ({ onTabChange }) =>
                                     </div>
                                 </div>
                                 <div className="h-64 w-full">
-                                    <ResponsiveContainer width="100%" height="100%">
+                                    <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
                                         <AreaChart data={FORAGING_MATH}>
                                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#064e3b10" />
                                             <XAxis dataKey="t" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: '#064e3b50' }} />

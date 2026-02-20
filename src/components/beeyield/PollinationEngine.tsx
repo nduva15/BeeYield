@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import { Calculator, Zap, Target, TrendingUp, Info, ArrowRight, Save, LayoutGrid, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { LineChart, Line, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import { LineChart, Line, XAxis, YAxis } from 'recharts';
 
 interface PollinationEngineProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -44,22 +44,22 @@ const CircularGauge: React.FC<{ value: number; max: number; label: string }> = (
 };
 
 const PollinationEngine: React.FC<PollinationEngineProps> = ({ onTabChange }) => {
-    const [schemeA, setSchemeA] = useState<Scenario>({ hivesPerAcre: 2, framesPerHive: 8, label: 'Scheme A (Standard)' });
-    const [schemeB, setSchemeB] = useState<Scenario>({ hivesPerAcre: 1.5, framesPerHive: 10, label: 'Scheme B (Premium)' });
+    const [schemeA, setSchemeA] = React.useState<Scenario>({ hivesPerAcre: 2, framesPerHive: 8, label: 'Scheme A (Standard)' });
+    const [schemeB, setSchemeB] = React.useState<Scenario>({ hivesPerAcre: 1.5, framesPerHive: 10, label: 'Scheme B (Premium)' });
 
     // Model Constants
     const TARGET_FPA = 1.0; // Frames per acre target
     const PRICE_PER_HIVE = 180; // $
     const VARIETY_MULTIPLIER = 1.25; // Technical multiplier for Almonds
 
-    const statsA = useMemo(() => {
+    const statsA = React.useMemo(() => {
         const fpa = (schemeA.hivesPerAcre * schemeA.framesPerHive) / 10; // Normalized FPA
         const cost = schemeA.hivesPerAcre * PRICE_PER_HIVE;
         const setProbability = Math.min(100, fpa * 100 * VARIETY_MULTIPLIER);
         return { fpa, cost, setProbability };
     }, [schemeA]);
 
-    const statsB = useMemo(() => {
+    const statsB = React.useMemo(() => {
         const fpa = (schemeB.hivesPerAcre * schemeB.framesPerHive) / 10;
         const cost = schemeB.hivesPerAcre * PRICE_PER_HIVE;
         const setProbability = Math.min(100, fpa * 100 * VARIETY_MULTIPLIER);

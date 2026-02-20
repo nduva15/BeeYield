@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -15,17 +15,17 @@ const ComparisonsView: React.FC = () => {
     const { user, beeyieldUser } = useAuth();
     const userId = beeyieldUser?.id || user?.id;
 
-    const [selectedComparisonTab, setSelectedComparisonTab] = useState<'apt12' | 'apt24' | 'main'>('main');
-    const [apiaries, setApiaries] = useState<Apiary[]>([]);
-    const [selectedApiaryId, setSelectedApiaryId] = useState<string>('');
-    const [medium, setMedium] = useState<string>('pollen');
-    const [dateRange, setDateRange] = useState<string>('7days');
-    const [comparisonMode, setComparisonMode] = useState<string>('main');
+    const [selectedComparisonTab, setSelectedComparisonTab] = React.useState<'apt12' | 'apt24' | 'main'>('main');
+    const [apiaries, setApiaries] = React.useState<Apiary[]>([]);
+    const [selectedApiaryId, setSelectedApiaryId] = React.useState<string>('');
+    const [medium, setMedium] = React.useState<string>('pollen');
+    const [dateRange, setDateRange] = React.useState<string>('7days');
+    const [comparisonMode, setComparisonMode] = React.useState<string>('main');
 
-    const [comparisonData, setComparisonData] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [comparisonData, setComparisonData] = React.useState<any[]>([]);
+    const [isLoading, setIsLoading] = React.useState(false);
 
-    useEffect(() => {
+    React.useEffect(() => {
         const loadApiaries = async () => {
             const data = await beeyieldService.getApiaries();
             if (userId) {
@@ -40,7 +40,7 @@ const ComparisonsView: React.FC = () => {
         loadApiaries();
     }, [userId]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         const fetchComparison = async () => {
             if (!selectedApiaryId) return;
             setIsLoading(true);
@@ -201,7 +201,7 @@ const ComparisonsView: React.FC = () => {
                                 <p className="font-bold text-sm">No comparison data available for this selection.</p>
                             </div>
                         ) : (
-                            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+                            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
                                 <LineChart data={comparisonData}>
                                     <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#E5E7EB" />
                                     <XAxis

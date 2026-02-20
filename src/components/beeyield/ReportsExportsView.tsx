@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -31,26 +31,26 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
     const { user, beeyieldUser } = useAuth();
     const userId = beeyieldUser?.id || user?.id;
 
-    const [reportScope, setReportScope] = useState('30');
-    const [selectedFormat, setSelectedFormat] = useState<'PDF' | 'XLSX'>('PDF');
-    const [isGenerating, setIsGenerating] = useState(false);
-    const [isAISynthesizing, setIsAISynthesizing] = useState(false);
-    const [genProgress, setGenProgress] = useState(0);
+    const [reportScope, setReportScope] = React.useState('30');
+    const [selectedFormat, setSelectedFormat] = React.useState<'PDF' | 'XLSX'>('PDF');
+    const [isGenerating, setIsGenerating] = React.useState(false);
+    const [isAISynthesizing, setIsAISynthesizing] = React.useState(false);
+    const [genProgress, setGenProgress] = React.useState(0);
 
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = React.useState(true);
 
-    const [reports, setReports] = useState<GeneratedReport[]>([]);
-    const [schedules, setSchedules] = useState<ScheduledReport[]>([]);
-    const [apiaries, setApiaries] = useState<Apiary[]>([]);
-    const [hives, setHives] = useState<Hive[]>([]);
+    const [reports, setReports] = React.useState<GeneratedReport[]>([]);
+    const [schedules, setSchedules] = React.useState<ScheduledReport[]>([]);
+    const [apiaries, setApiaries] = React.useState<Apiary[]>([]);
+    const [hives, setHives] = React.useState<Hive[]>([]);
 
-    const [selectedPlace, setSelectedPlace] = useState<string>('');
-    const [selectedHive, setSelectedHive] = useState<string>('');
+    const [selectedPlace, setSelectedPlace] = React.useState<string>('');
+    const [selectedHive, setSelectedHive] = React.useState<string>('');
 
     // Schedule Modal State
-    const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
-    const [isSavingSchedule, setIsSavingSchedule] = useState(false);
-    const [newSchedule, setNewSchedule] = useState({
+    const [isScheduleModalOpen, setIsScheduleModalOpen] = React.useState(false);
+    const [isSavingSchedule, setIsSavingSchedule] = React.useState(false);
+    const [newSchedule, setNewSchedule] = React.useState({
         name: "",
         report_type: "full_summary",
         frequency: "weekly" as 'daily' | 'weekly' | 'monthly',
@@ -59,7 +59,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
     });
 
     // Checkboxes for sections
-    const [sections, setSections] = useState({
+    const [sections, setSections] = React.useState({
         apiaries: true,
         hives: true,
         overview: true,
@@ -99,7 +99,7 @@ const ReportsExportsView: React.FC<ReportsExportsViewProps> = () => {
         }
     };
 
-    useEffect(() => {
+    React.useEffect(() => {
         loadData();
     }, [userId]);
 

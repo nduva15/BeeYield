@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Camera, ArrowUp, ArrowDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const VpmTicker: React.FC = () => {
-    const [vpm, setVpm] = useState(14.2);
-    const [trend, setTrend] = useState<'up' | 'down'>('up');
+    const [vpm, setVpm] = React.useState(14.2);
+    const [trend, setTrend] = React.useState<'up' | 'down'>('up');
 
-    useEffect(() => {
+    React.useEffect(() => {
         const interval = setInterval(() => {
             const delta = (Math.random() - 0.5) * 0.8;
             setVpm(prev => {

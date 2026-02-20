@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React from 'react';
 import { MapPin, ShieldAlert, Hexagon, Trash2, RotateCcw, Crosshair, ClipboardList, Save, Share2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -18,13 +18,13 @@ const GRID_W = 800;
 const GRID_H = 500;
 
 const DeploymentPlanning: React.FC<DeploymentPlanningProps> = ({ onTabChange }) => {
-    const [pallets, setPallets] = useState<Pallet[]>([]);
-    const [draggingPallet, setDraggingPallet] = useState<string | null>(null);
-    const [logs, setLogs] = useState([
+    const [pallets, setPallets] = React.useState<Pallet[]>([]);
+    const [draggingPallet, setDraggingPallet] = React.useState<string | null>(null);
+    const [logs, setLogs] = React.useState([
         { id: 1, type: 'syrup', desc: 'Sector 4 Syrup Feeding complete (250 gal)', time: '09:00' },
         { id: 2, type: 'mite', desc: 'Mite check Sector 12 - nominal', time: '10:15' },
     ]);
-    const svgRef = useRef<SVGSVGElement>(null);
+    const svgRef = React.useRef<SVGSVGElement>(null);
 
     const handleSVGClick = (e: React.MouseEvent) => {
         if (draggingPallet) return;
