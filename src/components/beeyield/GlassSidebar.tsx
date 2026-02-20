@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { cn } from '@/lib/utils';
 import { LucideIcon, Hexagon, ChevronDown, LogOut, Search, Command, LayoutGrid, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -22,7 +22,7 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
     navItems,
     isAdmin = false
 }) => {
-    const [pinnedItems, setPinnedItems] = useState<string[]>(['beeyield', 'data', 'meters']);
+    const [pinnedItems, setPinnedItems] = React.useState<string[]>(['beeyield', 'data', 'meters']);
     const { t } = useLanguage();
 
     const toggleExpand = (id: string, e?: React.MouseEvent) => {
@@ -41,7 +41,7 @@ const GlassSidebar: React.FC<GlassSidebarProps> = ({
             x: 0,
             transition: {
                 duration: 0.8,
-                ease: [0.16, 1, 0.3, 1],
+                ease: [0.16, 1, 0.3, 1] as const,
                 staggerChildren: 0.04
             }
         }

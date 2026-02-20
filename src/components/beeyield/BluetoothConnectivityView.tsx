@@ -5,7 +5,7 @@ declare global {
     }
 }
 
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { beeyieldService, Apiary, Hive } from '@/services/beeyieldService';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -47,25 +47,25 @@ interface BluetoothDevice {
 }
 
 export const BluetoothConnectivityView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTabChange }) => {
-    const [connectedDevice, setConnectedDevice] = useState<any>(null);
-    const [gattServer, setGattServer] = useState<any>(null);
-    const [status, setStatus] = useState<'IDLE' | 'SCANNING' | 'CONNECTING' | 'CONNECTED' | 'ERROR'>('IDLE');
-    const [logs, setLogs] = useState<string[]>([]);
-    const [liveData, setLiveData] = useState<{ temp?: number, weight?: number, humidity?: number, battery?: number }>({});
-    const [syncProgress, setSyncProgress] = useState(0);
-    const [isSyncing, setIsSyncing] = useState(false);
+    const [connectedDevice, setConnectedDevice] = React.useState<any>(null);
+    const [gattServer, setGattServer] = React.useState<any>(null);
+    const [status, setStatus] = React.useState<'IDLE' | 'SCANNING' | 'CONNECTING' | 'CONNECTED' | 'ERROR'>('IDLE');
+    const [logs, setLogs] = React.useState<string[]>([]);
+    const [liveData, setLiveData] = React.useState<{ temp?: number, weight?: number, humidity?: number, battery?: number }>({});
+    const [syncProgress, setSyncProgress] = React.useState(0);
+    const [isSyncing, setIsSyncing] = React.useState(false);
 
     // DB state
-    const [knownDevice, setKnownDevice] = useState<BluetoothDevice | null>(null);
-    const [showSetupModal, setShowSetupModal] = useState(false);
-    const [apiaries, setApiaries] = useState<Apiary[]>([]);
-    const [hives, setHives] = useState<Hive[]>([]);
+    const [knownDevice, setKnownDevice] = React.useState<BluetoothDevice | null>(null);
+    const [showSetupModal, setShowSetupModal] = React.useState(false);
+    const [apiaries, setApiaries] = React.useState<Apiary[]>([]);
+    const [hives, setHives] = React.useState<Hive[]>([]);
 
     // Setup form
-    const [setupName, setSetupName] = useState('New Sensor');
-    const [selectedHiveId, setSelectedHiveId] = useState<string>('');
+    const [setupName, setSetupName] = React.useState('New Sensor');
+    const [selectedHiveId, setSelectedHiveId] = React.useState<string>('');
 
-    useEffect(() => {
+    React.useEffect(() => {
         loadData();
     }, []);
 

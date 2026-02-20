@@ -124,6 +124,28 @@ export interface SensorReading {
     temperature?: number;
     humidity?: number;
     weight?: number;
+    delta_w?: number;
+    signal_dbm?: number;
+}
+
+export interface Orchard {
+    id: string;
+    grower_id: string;
+    name: string;
+    crop_type: string;
+    boundaries: any; // GeoJSON
+    acreage: number;
+    created_at: string;
+}
+
+export interface TelemetryGateway {
+    id: string;
+    beekeeper_id: string;
+    device_code: string;
+    status: 'ONLINE' | 'OFFLINE';
+    battery: number;
+    signal: number;
+    deployment_date: string;
 }
 
 export interface DashboardStats {
@@ -804,86 +826,130 @@ export const beeyieldService = {
         }
     },
 
-    async updateIoTSettings(settings: Partial<IoTSettings>): Promise<{ data: any; error: any }> {
-        try {
-            const data = await apiPut<any>('/settings/iot', settings);
-            toast.success('IoT settings updated');
-            return { data, error: null };
-        } catch (error) {
-            console.error('Error updating IoT settings:', error);
-            toast.error('Failed to update IoT settings');
-            return { data: null, error };
-        }
+    // ========== REAL-TIME SUBSCRIPTIONS (PULSE) ==========
+    subscribeToWeightAlerts(hiveId: string, callback: (payload: any) => void) {
+        if (!supabase) return null;
+        return supabase
+            .channel(`hive-alerts-${hiveId}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'sensor_data',
+                    filter: `hive_id=eq.${hiveId}`
+                },
+                (payload) => {
+                    if (payload.new.delta_w < -1.5) {
+                        callback(payload);
+                    }
+                }
+            )
+            .subscribe();
     },
 
+    subscribeToGatewayStatus(gatewayId: string, callback: (payload: any) => void) {
+        if (!supabase) return null;
+        return supabase
+            .channel(`gateway-status-${gatewayId}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'telemetry_gateways',
+                    filter: `id=eq.${gatewayId}`
+                },
+                (payload) => callback(payload)
+            )
+            .subscribe();
+    },
+} catch (error) {
+    console.error('Error in getHarvests:', error);
+    return [];
+}
+    },
+
+    async updateIoTSettings(settings: Partial<IoTSettings>): Promise < { data: any; error: any } > {
+    try {
+        const data = await apiPut<any>('/settings/iot', settings);
+        toast.success('IoT settings updated');
+        return { data, error: null };
+    } catch(error) {
+        console.error('Error updating IoT settings:', error);
+        toast.error('Failed to update IoT settings');
+        return { data: null, error };
+    }
+},
+
     // ========== CALCULATOR LOGS ==========
-    async getCalculatorLogs(type?: string): Promise<CalculatorLog[]> {
+    async getCalculatorLogs(type ?: string): Promise < CalculatorLog[] > {
         try {
             const params: any = {};
-            if (type) params.calculation_type = type;
+            if(type) params.calculation_type = type;
             return await apiGet<CalculatorLog[]>('/beeyield/calculator-logs', params);
-        } catch (error) {
+        } catch(error) {
             console.error('Error fetching calculator logs:', error);
             return [];
         }
     },
 
-    async logCalculation(input: CalculatorLogCreateInput): Promise<{ data: CalculatorLog | null; error: any }> {
-        try {
-            const data = await apiPost<CalculatorLog>('/beeyield/calculator-logs', input);
-            toast.success('Calculation persisted to Cloud');
-            return { data, error: null };
-        } catch (error) {
-            console.error('Error logging calculation:', error);
-            toast.error('Failed to sync calculation');
-            return { data: null, error };
-        }
-    },
+        async logCalculation(input: CalculatorLogCreateInput): Promise < { data: CalculatorLog | null; error: any } > {
+            try {
+                const data = await apiPost<CalculatorLog>('/beeyield/calculator-logs', input);
+                toast.success('Calculation persisted to Cloud');
+                return { data, error: null };
+            } catch(error) {
+                console.error('Error logging calculation:', error);
+                toast.error('Failed to sync calculation');
+                return { data: null, error };
+            }
+        },
 
-    async logHarvestBatch(input: HarvestBatchInput): Promise<{ data: any | null; error: any }> {
-        try {
-            const data = await apiPost<any>('/beeyield/harvests/log', input);
-            toast.success('Batch logged & secured!');
-            return { data, error: null };
-        } catch (error) {
-            console.error('Error in logHarvestBatch:', error);
-            toast.error('Failed to log batch');
-            return { data: null, error };
-        }
-    },
+            async logHarvestBatch(input: HarvestBatchInput): Promise < { data: any | null; error: any } > {
+                try {
+                    const data = await apiPost<any>('/beeyield/harvests/log', input);
+                    toast.success('Batch logged & secured!');
+                    return { data, error: null };
+                } catch(error) {
+                    console.error('Error in logHarvestBatch:', error);
+                    toast.error('Failed to log batch');
+                    return { data: null, error };
+                }
+            },
 
-    async createHarvest(input: HarvestCreateInput): Promise<{ data: Harvest | null; error: any }> {
-        try {
-            const response = await apiPost<any>('/beeyield/harvests', {
-                ...input,
-                extraction_method: input.extraction_method || 'Cold Extraction',
-                nectar_source: input.nectar_source || 'Acacia',
-                weather_conditions: input.weather_conditions || 'Sunny'
-            });
-            toast.success('Harvest recorded!');
-            return { data: response as Harvest, error: null };
-        } catch (error) {
-            console.error('Error in createHarvest:', error);
-            toast.error('Failed to record harvest');
-            return { data: null, error };
-        }
-    },
+                async createHarvest(input: HarvestCreateInput): Promise < { data: Harvest | null; error: any } > {
+                    try {
+                        const response = await apiPost<any>('/beeyield/harvests', {
+                            ...input,
+                            extraction_method: input.extraction_method || 'Cold Extraction',
+                            nectar_source: input.nectar_source || 'Acacia',
+                            weather_conditions: input.weather_conditions || 'Sunny'
+                        });
+                        toast.success('Harvest recorded!');
+                        return { data: response as Harvest, error: null };
+                    } catch(error) {
+                        console.error('Error in createHarvest:', error);
+                        toast.error('Failed to record harvest');
+                        return { data: null, error };
+                    }
+                },
 
-    async updateHarvest(id: string, input: Partial<HarvestCreateInput>): Promise<{ data: Harvest | null; error: any }> {
-        try {
-            const data = await apiPut<Harvest>(`/beeyield/harvests/${id}`, input);
-            toast.success('Harvest updated!');
-            return { data, error: null };
-        } catch (error) {
-            console.error('Error in updateHarvest:', error);
-            toast.error('Failed to update harvest');
-            return { data: null, error };
-        }
-    },
+                    async updateHarvest(id: string, input: Partial<HarvestCreateInput>): Promise < { data: Harvest | null; error: any } > {
+                        try {
+                            const data = await apiPut<Harvest>(`/beeyield/harvests/${id}`, input);
+                            toast.success('Harvest updated!');
+                            return { data, error: null };
+                        } catch(error) {
+                            console.error('Error in updateHarvest:', error);
+                            toast.error('Failed to update harvest');
+                            return { data: null, error };
+                        }
+                    },
 
-    async deleteHarvest(id: string): Promise<{ error: any }> {
-        try {
-            await apiDelete(`/beeyield/harvests/${id}`);
+                        async deleteHarvest(id: string): Promise < { error: any } > {
+                            try {
+                                await apiDelete(`/beeyield/harvests/${id}`);
             toast.success('Harvest removed');
             return { error: null };
         } catch (error) {
@@ -917,7 +983,7 @@ export const beeyieldService = {
 
     async updateTask(id: string, updates: Partial<TaskCreateInput>): Promise<{ data: Task | null; error: any }> {
         try {
-            const data = await apiPut<Task>(`/beeyield/tasks/${id}`, updates);
+            const data = await apiPut<Task>(`/ beeyield / tasks / ${ id } `, updates);
             toast.success('Task updated');
             return { data, error: null };
         } catch (error) {
@@ -929,7 +995,7 @@ export const beeyieldService = {
 
     async deleteTask(id: string): Promise<{ error: any }> {
         try {
-            await apiDelete(`/beeyield/tasks/${id}`);
+            await apiDelete(`/ beeyield / tasks / ${ id } `);
             toast.success('Task deleted');
             return { error: null };
         } catch (error) {
@@ -953,7 +1019,7 @@ export const beeyieldService = {
 
     async getInspectionById(id: string): Promise<Inspection | null> {
         try {
-            return await apiGet<Inspection>(`/beeyield/inspections/${id}`, {});
+            return await apiGet<Inspection>(`/ beeyield / inspections / ${ id } `, {});
         } catch (error) {
             console.error('Error fetching inspection:', error);
             return null;
@@ -974,7 +1040,7 @@ export const beeyieldService = {
 
     async updateInspection(id: string, updates: Partial<InspectionCreateInput>): Promise<{ data: Inspection | null; error: any }> {
         try {
-            const data = await apiPut<Inspection>(`/beeyield/inspections/${id}`, updates);
+            const data = await apiPut<Inspection>(`/ beeyield / inspections / ${ id } `, updates);
             toast.success('Inspection updated successfully');
             return { data, error: null };
         } catch (error) {
@@ -986,7 +1052,7 @@ export const beeyieldService = {
 
     async deleteInspection(id: string): Promise<{ error: any }> {
         try {
-            await apiDelete(`/beeyield/inspections/${id}`);
+            await apiDelete(`/ beeyield / inspections / ${ id } `);
             toast.success('Inspection deleted');
             return { error: null };
         } catch (error) {
@@ -1075,7 +1141,7 @@ export const beeyieldService = {
 
     async updateNotificationConfig(eventType: string, config: NotificationConfigUpdate): Promise<{ data: any; error: any }> {
         try {
-            const data = await apiPut<any>(`/settings/notifications/${eventType}`, config);
+            const data = await apiPut<any>(`/ settings / notifications / ${ eventType } `, config);
             toast.success(`Notification updated`);
             return { data, error: null };
         } catch (error) {
@@ -1087,126 +1153,126 @@ export const beeyieldService = {
 
     async updateHiveThresholds(hiveId: string, thresholds: { temp_high?: number; temp_low?: number; weight_drop?: number }): Promise<{ data: any; error: any }> {
         try {
-            const data = await apiPost<any>(`/settings/hives/${hiveId}/thresholds`, thresholds);
-            toast.success(`Hive thresholds updated`);
-            return { data, error: null };
+            const data = await apiPost<any>(`/ settings / hives / ${ hiveId }/thresholds`, thresholds);
+toast.success(`Hive thresholds updated`);
+return { data, error: null };
         } catch (error) {
-            console.error('Error updating hive thresholds:', error);
-            toast.error('Failed to update hive thresholds');
-            return { data: null, error };
-        }
+    console.error('Error updating hive thresholds:', error);
+    toast.error('Failed to update hive thresholds');
+    return { data: null, error };
+}
     },
 
-    async getHiveSettings(): Promise<any[]> {
-        try {
-            return await apiGet<any[]>('/settings/hives', {});
-        } catch (error) {
-            console.error('Error fetching hive settings:', error);
-            return [];
-        }
-    },
+    async getHiveSettings(): Promise < any[] > {
+    try {
+        return await apiGet<any[]>('/settings/hives', {});
+    } catch(error) {
+        console.error('Error fetching hive settings:', error);
+        return [];
+    }
+},
 
-    async getFullSettings(): Promise<any> {
+    async getFullSettings(): Promise < any > {
         try {
             return await apiGet<any>('/settings/full', {});
-        } catch (error) {
+        } catch(error) {
             console.error('Error fetching full settings:', error);
             return null;
         }
     },
 
-    async getNotificationSettings(): Promise<UserNotificationSettings | null> {
-        try {
-            return await apiGet<UserNotificationSettings>('/settings/notifications', {});
-        } catch (error) {
-            console.error('Error fetching notification settings:', error);
-            return null;
-        }
-    },
+        async getNotificationSettings(): Promise < UserNotificationSettings | null > {
+            try {
+                return await apiGet<UserNotificationSettings>('/settings/notifications', {});
+            } catch(error) {
+                console.error('Error fetching notification settings:', error);
+                return null;
+            }
+        },
 
-    async updateNotificationSettings(settings: Partial<UserNotificationSettings>): Promise<{ data: any; error: any }> {
-        try {
-            const data = await apiPut<any>('/settings/notifications', settings);
-            return { data, error: null };
-        } catch (error) {
-            console.error('Error updating notification settings:', error);
-            return { data: null, error };
-        }
-    },
+            async updateNotificationSettings(settings: Partial<UserNotificationSettings>): Promise < { data: any; error: any } > {
+                try {
+                    const data = await apiPut<any>('/settings/notifications', settings);
+                    return { data, error: null };
+                } catch(error) {
+                    console.error('Error updating notification settings:', error);
+                    return { data: null, error };
+                }
+            },
 
-    async getIoTSettings(): Promise<IoTSettings | null> {
-        try {
-            return await apiGet<IoTSettings>('/settings/iot', {});
-        } catch (error) {
-            console.error('Error fetching IoT settings:', error);
-            return null;
-        }
-    },
+                async getIoTSettings(): Promise < IoTSettings | null > {
+                    try {
+                        return await apiGet<IoTSettings>('/settings/iot', {});
+                    } catch(error) {
+                        console.error('Error fetching IoT settings:', error);
+                        return null;
+                    }
+                },
 
-    // ========== REQUESTS ==========
-    async getRequests(): Promise<Request[]> {
-        try {
-            return await apiGet<Request[]>('/beeyield/requests');
-        } catch (error) {
-            console.error('Error fetching requests:', error);
-            return [];
-        }
-    },
+                    // ========== REQUESTS ==========
+                    async getRequests(): Promise < Request[] > {
+                        try {
+                            return await apiGet<Request[]>('/beeyield/requests');
+                        } catch(error) {
+                            console.error('Error fetching requests:', error);
+                            return [];
+                        }
+                    },
 
-    async createRequest(input: RequestCreateInput): Promise<{ data: Request | null; error: any }> {
-        try {
-            const data = await apiPost<Request>('/beeyield/requests', input);
-            toast.success('Request submitted successfully');
-            return { data, error: null };
-        } catch (error) {
-            console.error('Error creating request:', error);
-            toast.error('Failed to submit request');
-            return { data: null, error };
-        }
-    },
+                        async createRequest(input: RequestCreateInput): Promise < { data: Request | null; error: any } > {
+                            try {
+                                const data = await apiPost<Request>('/beeyield/requests', input);
+                                toast.success('Request submitted successfully');
+                                return { data, error: null };
+                            } catch(error) {
+                                console.error('Error creating request:', error);
+                                toast.error('Failed to submit request');
+                                return { data: null, error };
+                            }
+                        },
 
-    // ========== REPORTS ==========
-    async getGeneratedReports(): Promise<GeneratedReport[]> {
-        try {
-            return await apiGet<GeneratedReport[]>('/beeyield/reports');
-        } catch (error) {
-            console.error('Error fetching reports:', error);
-            return [];
-        }
-    },
+                            // ========== REPORTS ==========
+                            async getGeneratedReports(): Promise < GeneratedReport[] > {
+                                try {
+                                    return await apiGet<GeneratedReport[]>('/beeyield/reports');
+                                } catch(error) {
+                                    console.error('Error fetching reports:', error);
+                                    return [];
+                                }
+                            },
 
-    async generateReport(input: ReportCreateInput): Promise<{ data: GeneratedReport | null; error: any }> {
-        try {
-            const data = await apiPost<GeneratedReport>('/beeyield/reports', input);
-            return { data, error: null };
-        } catch (error) {
-            console.error('Error generating report:', error);
-            return { data: null, error };
-        }
-    },
+                                async generateReport(input: ReportCreateInput): Promise < { data: GeneratedReport | null; error: any } > {
+                                    try {
+                                        const data = await apiPost<GeneratedReport>('/beeyield/reports', input);
+                                        return { data, error: null };
+                                    } catch(error) {
+                                        console.error('Error generating report:', error);
+                                        return { data: null, error };
+                                    }
+                                },
 
-    async getScheduledReports(): Promise<ScheduledReport[]> {
-        try {
-            return await apiGet<ScheduledReport[]>('/beeyield/reports/scheduled');
-        } catch (error) {
-            console.error('Error fetching schedules:', error);
-            return [];
-        }
-    },
+                                    async getScheduledReports(): Promise < ScheduledReport[] > {
+                                        try {
+                                            return await apiGet<ScheduledReport[]>('/beeyield/reports/scheduled');
+                                        } catch(error) {
+                                            console.error('Error fetching schedules:', error);
+                                            return [];
+                                        }
+                                    },
 
-    async createScheduledReport(input: ScheduledReportCreateInput): Promise<{ data: ScheduledReport | null; error: any }> {
-        try {
-            const data = await apiPost<ScheduledReport>('/beeyield/reports/scheduled', input);
-            return { data, error: null };
-        } catch (error) {
-            console.error('Error creating schedule:', error);
-            return { data: null, error };
-        }
-    },
+                                        async createScheduledReport(input: ScheduledReportCreateInput): Promise < { data: ScheduledReport | null; error: any } > {
+                                            try {
+                                                const data = await apiPost<ScheduledReport>('/beeyield/reports/scheduled', input);
+                                                return { data, error: null };
+                                            } catch(error) {
+                                                console.error('Error creating schedule:', error);
+                                                return { data: null, error };
+                                            }
+                                        },
 
-    async deleteScheduledReport(id: string): Promise<{ error: any }> {
-        try {
-            await apiDelete(`/beeyield/reports/scheduled/${id}`);
+                                            async deleteScheduledReport(id: string): Promise < { error: any } > {
+                                                try {
+                                                    await apiDelete(`/beeyield/reports/scheduled/${id}`);
             return { error: null };
         } catch (error) {
             console.error('Error deleting schedule:', error);
@@ -1429,7 +1495,7 @@ export const beeyieldService = {
 
     async unpairUsbDevice(id: string): Promise<{ error: any }> {
         try {
-            await apiDelete(`/beeyield/hardware/usb-devices/${id}`);
+            await apiDelete(`/ beeyield / hardware / usb - devices / ${ id } `);
             toast.success('Device unpaired');
             return { error: null };
         } catch (error) {
@@ -1560,7 +1626,7 @@ export const beeyieldService = {
         }
 
         const apiUrl = import.meta.env.VITE_API_URL || '';
-        const response = await fetch(`${apiUrl}/api/v1/image/analyze`, {
+        const response = await fetch(`${ apiUrl } /api/v1 / image / analyze`, {
             method: 'POST',
             headers: {
                 ...headers
@@ -1590,7 +1656,7 @@ export const beeyieldService = {
             if (options?.offset) params.offset = options.offset.toString();
 
             const query = new URLSearchParams(params).toString();
-            return await apiGet<AnalysisHistoryResponse>(`/image/analyses${query ? '?' + query : ''}`, {});
+            return await apiGet<AnalysisHistoryResponse>(`/ image / analyses${ query ? '?' + query : '' } `, {});
         } catch (error) {
             console.error('Error fetching analysis history:', error);
             return { total: 0, items: [] };
@@ -1599,7 +1665,7 @@ export const beeyieldService = {
 
     async getAnalysisById(id: string): Promise<ImageAnalysisResult | null> {
         try {
-            return await apiGet<ImageAnalysisResult>(`/image/analysis/${id}`, {});
+            return await apiGet<ImageAnalysisResult>(`/ image / analysis / ${ id } `, {});
         } catch (error) {
             console.error('Error fetching analysis:', error);
             return null;
@@ -1608,7 +1674,7 @@ export const beeyieldService = {
 
     async deleteAnalysis(id: string): Promise<{ success: boolean; message: string }> {
         try {
-            return await apiDelete<{ success: boolean; message: string }>(`/image/analysis/${id}`);
+            return await apiDelete<{ success: boolean; message: string }>(`/ image / analysis / ${ id } `);
         } catch (error) {
             console.error('Error deleting analysis:', error);
             throw error;
@@ -1641,7 +1707,7 @@ export const beeyieldService = {
             const { getBaseUrl } = await import('./api');
             const baseUrl = getBaseUrl('/acoustic/analyze');
 
-            const response = await fetch(`${baseUrl}/acoustic/analyze`, {
+            const response = await fetch(`${ baseUrl } /acoustic/analyze`, {
                 method: 'POST',
                 headers: headers as any,
                 body: formData
@@ -1683,7 +1749,7 @@ export const beeyieldService = {
 
     async updateNote(id: string, updates: Partial<NoteCreateInput>): Promise<{ data: Note | null; error: any }> {
         try {
-            const data = await apiPut<Note>(`/beeyield/notes/${id}`, updates);
+            const data = await apiPut<Note>(`/ beeyield / notes / ${ id } `, updates);
             toast.success('Note updated');
             return { data, error: null };
         } catch (error) {
@@ -1695,7 +1761,7 @@ export const beeyieldService = {
 
     async deleteNote(id: string): Promise<{ error: any }> {
         try {
-            await apiDelete(`/beeyield/notes/${id}`);
+            await apiDelete(`/ beeyield / notes / ${ id } `);
             toast.success('Note deleted');
             return { error: null };
         } catch (error) {
@@ -1755,7 +1821,7 @@ export const beeyieldService = {
         try {
             // Use API_URL from env or default to relative path proxy
             const apiUrl = import.meta.env.VITE_API_URL || '';
-            const response = await fetch(`${apiUrl}/api/v1/jobs/apply`, {
+            const response = await fetch(`${ apiUrl } /api/v1 / jobs / apply`, {
                 method: 'POST',
                 body: formData, // fetch will automatically set the correct boundary for multipart/form-data
             });

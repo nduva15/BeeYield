@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { cn } from '@/lib/utils';
 import {
     Home,
@@ -53,8 +53,8 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     onLogout,
     navItems
 }) => {
-    const [expandedGroups, setExpandedGroups] = useState<string[]>(['data', 'meters', 'beeyield']);
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [expandedGroups, setExpandedGroups] = React.useState<string[]>(['data', 'meters', 'beeyield']);
+    const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
     const toggleGroup = (id: string) => {
         setExpandedGroups(prev =>

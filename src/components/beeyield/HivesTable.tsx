@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import {
     useReactTable,
     getCoreRowModel,
@@ -23,8 +23,8 @@ interface HivesTableProps {
 }
 
 export const HivesTable: React.FC<HivesTableProps> = ({ data, onRowClick }) => {
-    const [sorting, setSorting] = useState<SortingState>([]);
-    const [globalFilter, setGlobalFilter] = useState('');
+    const [sorting, setSorting] = React.useState<SortingState>([]);
+    const [globalFilter, setGlobalFilter] = React.useState('');
 
     const columns: ColumnDef<Hive>[] = [
         {

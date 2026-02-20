@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Activity, Volume2, Info, Zap, Cpu, CheckCircle2, Waves, Brain } from 'lucide-react';
 
 interface AcousticSpectralViewProps {
@@ -12,9 +12,9 @@ const generateSpectralData = () => {
 };
 
 const AcousticSpectralView: React.FC<AcousticSpectralViewProps> = () => {
-    const [spectralData, setSpectralData] = useState(generateSpectralData());
+    const [spectralData, setSpectralData] = React.useState(generateSpectralData());
 
-    useEffect(() => {
+    React.useEffect(() => {
         const interval = setInterval(() => {
             setSpectralData(generateSpectralData());
         }, 2000);

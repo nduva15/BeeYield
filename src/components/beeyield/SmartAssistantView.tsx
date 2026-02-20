@@ -27,6 +27,8 @@ import { aiService, ChatMessage } from '@/services/aiService';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 
+
+
 interface AIAssistantViewProps {
     onTabChange: (tab: string, message?: string) => void;
     initialMessage?: string;

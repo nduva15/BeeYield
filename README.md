@@ -1,109 +1,82 @@
-# 🐝 BeeYield: The Tesla of Apiculture
+# BeeYield: Precision Apiculture & Economic Forecasting Platform
 
-BeeYield is a state-of-the-art apiculture ecosystem marrying high-level engineering—**Rust, Wasm, AI**—with tangible environmental impact. We are redefining the "Hive-to-Table" lifecycle.
-
-> **Mission Statement:** To protect the world's pollinators through bio-digital intelligence and provide consumers with radical transparency, ensuring every drop of honey is a testament to planetary health.
+BeeYield is a professional-grade telemetry and intelligence ecosystem engineered to transition apiculture from reactive monitoring to pro-active, calculus-based economic forecasting. The platform integrates IoT weight dynamics, acoustic biological decoding, and geospatial saturation modeling to maximize pollination ROI.
 
 ---
 
-## 🚀 Vision: The Hive-to-Table Lifecycle
+## 📐 Core Mathematical Framework
 
-We don't just build tools; we build a predictive guardian for the planet's most vital workers.
+### 1. Yield Dynamics & Nectar Flow Calculus
+BeeYield utilizes continuous hive weight (CHW) to determine biological productivity through the **First Derivative of Weight over Time**:
 
-- **Bio-Digital Intelligence**: Moving beyond simple monitoring to predictive AI that prevents colony collapse before it happens by detecting "Queen Piping" or swarm behavior through acoustic analysis.
-- **Radical Transparency**: Combatting "honey laundering" and adulteration by providing a trustless, cryptographic record of every batch's origin, from flower to jar.
+$$ \text{Flow Rate} = \frac{dW}{dt} $$
+
+- **Positive Influx ($\frac{dW}{dt} > 0$):** High-velocity nectar intake during forage windows. Dashboards indicate a "Green Zone" flow.
+- **Anomaly Detection:** Rapid negative step-functions ($\Delta W < -2.0\text{kg/hr}$) paired with acoustic spikes trigger Swarm or Robbing alerts.
+
+#### Cumulative Seasonal Yield
+The definitive projection of honey harvest is calculated as the definite integral of all positive daily flux:
+
+$$ Y = \int_{t_0}^{t_n} \max\left(0, \frac{dW}{dt}\right) dt $$
+
+### 2. Spatial Intelligence & Saturation Math
+Pollination efficacy follows an exponential decay function based on the distance ($d$) from the pallet gateway:
+
+$$ P(d) = P_0 e^{-\lambda d} $$
+
+where:
+- $P_0$ is the initial pollination intensity.
+- $\lambda$ is the biological decay constant specific to the crop (e.g., Almond vs. Blueberry).
+
+The **Orchard Coverage Index** is determined by calculating the overlapping surface integrals of all active pallet halos to ensure 100% saturation across the property.
+
+### 3. Biological Decoding (Acoustic AI)
+Colony stressors are decoded via Mel-Frequency Cepstral Coefficients (MFCC) and spectral density analysis to detect:
+- **Queen Presence:** Identified by stable, low-frequency harmonics.
+- **Swarm Preparation:** Indicated by high-frequency pitch oscillation patterns.
 
 ---
 
-## 🛠️ Technology Stack: Strategic Polyglot Architecture
+## 🛠 Strategic Technology Stack
 
-BeeYield leverages a powerful, multi-language architecture, where each language is chosen for a specific strategic purpose:
-
-| Component | Tech Stack | Strategic Purpose |
+| Component | Architecture | Specification |
 | :--- | :--- | :--- |
-| **Real-time Engine** | **Go** | Low-latency handling of thousands of concurrent IoT hive pings. |
-| **Integrity Layer** | **C++ (Wasm)** | Heavyweight cryptographic hashing of batch data performed client-side for "Trustless" verification. |
-| **Safety Layer** | **Rust** | Memory-safe handling of sensitive Beekeeper financial and yield data. |
-| **Inference Layer** | **Python** | Running acoustic analysis models to detect colony health signatures. |
+| **Telemetry Engine** | **Go** | Concurrency-optimized for high-frequency IoT duplexing. |
+| **Logic Layer** | **Rust** | Memory-safe processing of yield math and beekeeper financials. |
+| **AI Inference** | **Python** | Signal processing and YOLOv11-based computer vision for PCR tracking. |
+| **Integrity Layer** | **C++ (Wasm)** | Client-side cryptographic batch verification and "Golden Thread" hashes. |
+| **Frontend** | **React / Vite** | "High-Utility Brutalist" design utilizing Framer Motion for telemetry visualization. |
 
 ---
 
-## 🏗️ System Architecture
+## 🏗 System Infrastructure
 
 ```mermaid
-sequenceDiagram
-    participant Hive as 🐝 IoT Hive Sensors
-    participant Gateway as 🚀 Go Gateway
-    participant AI as 🧠 Python Inference
-    participant DB as 🦀 Rust/Supabase DB
-    participant UI as 📱 React Frontend (Wasm)
-
-    Hive->>Gateway: Real-time telemetry (Temp, Sound, Humidity)
-    Gateway->>AI: Stream audio data for analysis
-    AI->>AI: Detect "Queen Piping" / Swarm Signatures
-    AI->>Gateway: Health Alert Triggered
-    Gateway->>DB: Store Alert & Update State
-    DB->>UI: Real-time Toast via Supabase Realtime
-    UI->>UI: Client-side cryptographic batch verification (Wasm)
+graph TD
+    A[IoT Hive Sensors] -->|Weight/Acoustics| B[Go Gateway Hub]
+    B -->|BIP-32 Payload| C[Rust Analytics Engine]
+    C -->|dA/dt & Integral Yield| D[Supabase RDS]
+    D -->|Real-time Hooks| E[High-Utility Dashboard]
+    E -->|Spatial Integrals| F[Orchard Mapping & Saturation UI]
 ```
 
 ---
 
-## 🌟 Key Features
+## 📋 Professional Feature Registry
 
-### 1. **Precision Pollination**
-A comprehensive suite for farmers to request and manage pollination services. Features include crop-specific optimization and field health tracking.
-
-### 2. **Blockchain Traceability (Radical Transparency)**
-Every honey batch is verified using a distributed integrity system. Users can scan a QR code to see the "Golden Thread" connecting the beekeeper, the botanical origin, and lab results.
-
-### 3. **Bio-Digital Dashboard**
-Real-time monitoring of hive vitals. Features **Acoustic Visualization** where beekeepers can "see" hive health through pitch spectrograms.
-
-### 4. **E-commerce Platform**
-A premium marketplace for honey, hardware, and education, featuring **Offline-First Sync** with TanStack Query for beekeepers in low-connectivity areas.
+1. **Precision Pollination Hub**: Field-specific optimization engines and BFH (Bee Flight Hours) forecasting.
+2. **Economic Forecasting**: Automated "Grade A/B" pallet certification and ROI justification reports.
+3. **Gateway Management**: Mesh network health tracking with 30-month preventive maintenance lifecycles.
+4. **Contract Verification**: Cryptographic evidence of colony strength for premium per-hive payment negotiation.
+5. **Traceability Engine**: End-to-end "Golden Thread" verification for honey product authentication.
 
 ---
 
-## 📄 Feature Pages
+## 📊 Deployment Requirements
 
-| Page | Path | Description |
-| :--- | :--- | :--- |
-| **Home** | `/` | Main portal for pollination services and brand overview. |
-| **Honey Landing** | `/honey` | Showcase of premium honey products with high-fidelity visuals. |
-| **Shop** | `/shop` | Full-featured store for honey, hardware, and education. |
-| **Traceability** | `/traceability` | Verification engine to check batch authenticity and integrity. |
-| **BeeYield Dashboard** | `/beeyield-dashboard` | Professional workspace for beekeepers to monitor hives. |
-| **Measurements** | `/measurements` | Deep dive into real-time sensor data and historical trends. |
-| **Impact & ESG** | `/impact`, `/esg` | Live statistics on carbon offset, bee population growth, and social impact. |
-| **BeeLearn** | `/learn` | Knowledge hub with articles and courses on sustainable apiculture. |
-| **Global Hive Network** | `/global-hive-network` | Interactive map showing the reach of our connected hives. |
-| **Admin Dashboard** | `/admin` | Centralized control for content, orders, and user management. |
+- **Runtime**: Node.js v18+ 
+- **Analytics**: Python 3.10+, Rust 1.70+, Go 1.20+
+- **Infrastructure**: Supabase (PostgreSQL + RLS)
 
 ---
-
-## �️ Security & Scaling
-
-- **Multi-tenancy**: Hardened Supabase RLS ensures commercial pollinators manage thousands of hives while hobbyists see only their own, with zero data leakage.
-- **Deno Edge Functions**: Sub-50ms latency by handling logic at the edge between the Go gateway and Postgres.
-- **React 19 Server Components**: Powering `/impact` and `/esg` for SEO-friendly, lightning-fast static data delivery.
-
----
-
-## � Getting Started
-
-### Prerequisites
-- Node.js (v18+)
-- Python 3.10+ (for backend/AI services)
-- Rust (for database services)
-- Go (for gateway services)
-
-### Installation & Development
-```bash
-npm install
-npm run dev
-```
-
----
-*Built with ❤️ for the bees and the engineers who protect them.*
-
+*Precision Tools for a Modern Apiary. Developed for Enterprise Pollination Management.*

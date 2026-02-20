@@ -73,9 +73,8 @@ const OrchardStatusCard: React.FC<{ orchard: Apiary; onAction: (tab: string) => 
                         <p className="text-[9px] font-black uppercase tracking-widest text-[#064e3b]/40">Bloom vs. Bee Pulse</p>
                         <span className="text-[9px] font-black text-[#facc15] uppercase">Alert: Coverage Deficit</span>
                     </div>
-                    {/* Sparkline */}
                     <div className="h-20 w-full bg-[#064e3b]/[0.02] border-2 border-[#064e3b]/5">
-                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
+                        <ResponsiveContainer width="100%" height={80} minWidth={0} minHeight={0} debounce={50}>
                             <LineChart data={sparkData}>
                                 <Line type="monotone" dataKey="bloom" stroke="#facc15" strokeWidth={3} dot={false} />
                                 <Line type="monotone" dataKey="activity" stroke="#2D5A27" strokeWidth={3} dot={false} />

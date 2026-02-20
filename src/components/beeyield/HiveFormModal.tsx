@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,7 +21,7 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
     const createHive = useCreateHive();
     const updateHive = useUpdateHive();
 
-    const [formData, setFormData] = useState<HiveCreateInput>({
+    const [formData, setFormData] = React.useState<HiveCreateInput>({
         hive_code: '',
         apiary_id: '',
         hive_type: 'Langstroth',
@@ -44,7 +44,7 @@ const HiveFormModal: React.FC<HiveFormModalProps> = ({ isOpen, onClose, editingH
         }
     };
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (editingHive) {
             setFormData({
                 hive_code: editingHive.hive_code,

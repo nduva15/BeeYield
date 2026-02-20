@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -147,19 +147,19 @@ const defaultDesign: LabelDesign = {
 
 const LabelGeneratorView: React.FC<LabelGeneratorViewProps> = ({ onTabChange }) => {
     const { t } = useLanguage();
-    const [design, setDesign] = useState<LabelDesign>(defaultDesign);
-    const [savedDesigns, setSavedDesigns] = useState<LabelDesign[]>([]);
-    const [isGenerating, setIsGenerating] = useState(false);
-    const [harvests, setHarvests] = useState<Harvest[]>([]);
-    const [hives, setHives] = useState<Hive[]>([]);
-    const [isLoadingData, setIsLoadingData] = useState(false);
-    const [isGeneratingBlurb, setIsGeneratingBlurb] = useState(false);
+    const [design, setDesign] = React.useState<LabelDesign>(defaultDesign);
+    const [savedDesigns, setSavedDesigns] = React.useState<LabelDesign[]>([]);
+    const [isGenerating, setIsGenerating] = React.useState(false);
+    const [harvests, setHarvests] = React.useState<Harvest[]>([]);
+    const [hives, setHives] = React.useState<Hive[]>([]);
+    const [isLoadingData, setIsLoadingData] = React.useState(false);
+    const [isGeneratingBlurb, setIsGeneratingBlurb] = React.useState(false);
 
     // Refs
-    const previewRef = useRef<HTMLDivElement>(null);
-    const fileInputRef = useRef<HTMLInputElement>(null);
+    const previewRef = React.useRef<HTMLDivElement>(null);
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-    useEffect(() => {
+    React.useEffect(() => {
         const loadInitialData = async () => {
             setIsLoadingData(true);
             try {

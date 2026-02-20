@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { beeyieldService, IoTDevice, SensorReading, Apiary, Hive } from '@/services/beeyieldService';
@@ -14,7 +14,7 @@ import {
     Hand, Map, TrendingUp, Volume2, Camera, BookOpen, Droplet, Flame, Zap, Building2, Home, PieChart,
     ArrowRightLeft, FileInput, Bot, Activity, Gauge, List, Layers, BarChart3, Upload, LayoutList, Hexagon, Puzzle,
     LogIn, UserPlus, Loader2, ArrowLeft, Shield, Lock, Bell, Banknote, Globe, Tag, ShieldCheck, Server,
-    Navigation, FileBarChart, Brain, Crosshair
+    Navigation, FileBarChart, Brain, Crosshair, Scale, FileCheck
 } from 'lucide-react';
 import { Award } from 'lucide-react';
 import { toast } from 'sonner';
@@ -89,6 +89,11 @@ import BeeCalculatorPage from '@/components/beeyield/BeeCalculatorPage';
 
 import DashboardHomeView from '@/components/beeyield/DashboardHomeView';
 
+import HiveTelemetryView from '@/components/beeyield/HiveTelemetryView';
+import ContractVerificationModule from '@/components/beeyield/ContractVerificationModule';
+import GatewayHub from '@/components/beeyield/GatewayHub';
+import SpatialCoverageView from '@/components/beeyield/SpatialCoverageView';
+
 
 type AuthMode = 'login' | 'register' | 'forgot-password';
 
@@ -98,19 +103,19 @@ const BeeYieldDashboard: React.FC = () => {
     const { t } = useLanguage();
 
     // Auth State
-    const [authMode, setAuthMode] = useState<AuthMode>('login');
+    const [authMode, setAuthMode] = React.useState<AuthMode>('login');
 
     // Dashboard state
-    const [loading, setLoading] = useState(true);
-    const [devices, setDevices] = useState<IoTDevice[]>([]);
-    const [readings, setReadings] = useState<SensorReading[]>([]);
-    const [apiaries, setApiaries] = useState<Apiary[]>([]);
-    const [hives, setHives] = useState<Hive[]>([]);
-    const [activeTab, setActiveTab] = useState('home');
-    const [aiInitialMessage, setAiInitialMessage] = useState<string | null>(null);
-    const [showBanner, setShowBanner] = useState(true);
+    const [loading, setLoading] = React.useState(true);
+    const [devices, setDevices] = React.useState<IoTDevice[]>([]);
+    const [readings, setReadings] = React.useState<SensorReading[]>([]);
+    const [apiaries, setApiaries] = React.useState<Apiary[]>([]);
+    const [hives, setHives] = React.useState<Hive[]>([]);
+    const [activeTab, setActiveTab] = React.useState('home');
+    const [aiInitialMessage, setAiInitialMessage] = React.useState<string | null>(null);
+    const [showBanner, setShowBanner] = React.useState(true);
 
-    const [viewParams, setViewParams] = useState<{ message?: string, action?: string } | null>(null);
+    const [viewParams, setViewParams] = React.useState<{ message?: string, action?: string } | null>(null);
 
     const handleTabChange = (tab: string, message?: string, action?: string) => {
         if (tab === 'assistant' && message) {
@@ -127,7 +132,7 @@ const BeeYieldDashboard: React.FC = () => {
     };
 
     // Data fetching
-    useEffect(() => {
+    React.useEffect(() => {
         const loadData = async () => {
             // Only load data if user is authenticated
             if (!user) return;
@@ -238,6 +243,15 @@ const BeeYieldDashboard: React.FC = () => {
                         { id: 'sensor-vitals', label: 'Hive Health', icon: Zap },
                         { id: 'continuous-monitor', label: 'Live View', icon: Activity },
                         { id: 'yard-ops', label: 'Bee Yard', icon: Building2 },
+                        { id: 'gateway-hub', label: 'Gateway Hub', icon: Server },
+                    ]
+                },
+                {
+                    title: 'Forecasting & Infrastructure',
+                    items: [
+                        { id: 'hive-telemetry', label: 'Weight Dynamics', icon: Scale },
+                        { id: 'saturation-math', label: 'Saturation Math', icon: Crosshair },
+                        { id: 'contract-verification', label: 'Grade Certificates', icon: ShieldCheck },
                     ]
                 },
             ]
@@ -413,6 +427,15 @@ const BeeYieldDashboard: React.FC = () => {
                 return <OrchardMapper onTabChange={handleTabChange} />;
             case 'season-summary':
                 return <SeasonSummary onTabChange={handleTabChange} />;
+
+            case 'hive-telemetry':
+                return <HiveTelemetryView />;
+            case 'contract-verification':
+                return <ContractVerificationModule />;
+            case 'gateway-hub':
+                return <GatewayHub />;
+            case 'saturation-math':
+                return <SpatialCoverageView />;
 
             case 'places':
                 return <MyPlacesView onTabChange={handleTabChange} />;

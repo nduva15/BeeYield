@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,22 +30,22 @@ const ContentEditor = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
 
-    const [post, setPost] = useState<ContentPost | null>(null);
-    const [chapters, setChapters] = useState<BlogChapter[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
-    const [analysis, setAnalysis] = useState<SEOScoreResult | null>(null);
+    const [post, setPost] = React.useState<ContentPost | null>(null);
+    const [chapters, setChapters] = React.useState<BlogChapter[]>([]);
+    const [loading, setLoading] = React.useState(true);
+    const [saving, setSaving] = React.useState(false);
+    const [analysis, setAnalysis] = React.useState<SEOScoreResult | null>(null);
 
     // Editor State
-    const [activeChapterId, setActiveChapterId] = useState<string | null>(null);
-    const [editedContent, setEditedContent] = useState('');
+    const [activeChapterId, setActiveChapterId] = React.useState<string | null>(null);
+    const [editedContent, setEditedContent] = React.useState('');
 
     // AI Generation State
-    const [generating, setGenerating] = useState(false);
-    const [publishing, setPublishing] = useState(false);
-    const [aiContext, setAiContext] = useState('');
+    const [generating, setGenerating] = React.useState(false);
+    const [publishing, setPublishing] = React.useState(false);
+    const [aiContext, setAiContext] = React.useState('');
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (id) loadPost(id);
     }, [id]);
 
