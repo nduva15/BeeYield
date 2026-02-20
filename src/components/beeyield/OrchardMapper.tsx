@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React from 'react';
 import { Map, MapPin, MousePointer2, Calculator, Share2, Info, Zap, Layers, Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -12,11 +12,11 @@ interface Point {
 }
 
 const OrchardMapper: React.FC<OrchardMapperProps> = ({ onTabChange }) => {
-    const [points, setPoints] = useState<Point[]>([]);
-    const [isDrawing, setIsDrawing] = useState(false);
-    const svgRef = useRef<SVGSVGElement>(null);
+    const [points, setPoints] = React.useState<Point[]>([]);
+    const [isDrawing, setIsDrawing] = React.useState(false);
+    const svgRef = React.useRef<SVGSVGElement>(null);
 
-    const acreage = useMemo(() => {
+    const acreage = React.useMemo(() => {
         if (points.length < 3) return 0;
         let area = 0;
         for (let i = 0; i < points.length; i++) {

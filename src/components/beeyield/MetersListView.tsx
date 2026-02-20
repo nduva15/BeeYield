@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -31,10 +31,10 @@ interface MetersListViewProps {
 }
 
 const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) => {
-    const [isBuildingsOpen, setIsBuildingsOpen] = useState(true);
-    const [isApartmentsOpen, setIsApartmentsOpen] = useState(true);
-    const [isExportOpen, setIsExportOpen] = useState(true);
-    const [searchQuery, setSearchQuery] = useState('');
+    const [isBuildingsOpen, setIsBuildingsOpen] = React.useState(true);
+    const [isApartmentsOpen, setIsApartmentsOpen] = React.useState(true);
+    const [isExportOpen, setIsExportOpen] = React.useState(true);
+    const [searchQuery, setSearchQuery] = React.useState('');
 
     const title = type.charAt(0).toUpperCase() + type.slice(1);
     const Icon = type === 'water' ? Droplet : type === 'heat' ? Flame : type === 'energy' ? Zap : Layers;
@@ -104,7 +104,7 @@ const MetersListView: React.FC<MetersListViewProps> = ({ type, onTabChange }) =>
         },
     ];
 
-    const [columns, setColumns] = useState([
+    const [columns, setColumns] = React.useState([
         { id: 'serial', label: 'Sensor ID', checked: true },
         { id: 'medium', label: 'Type', checked: true },
         { id: 'building', label: 'Apiary/Zone', checked: true },

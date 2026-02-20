@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Clock, Activity, Zap, AlertTriangle, CheckCircle2, Thermometer, Hexagon, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -43,11 +43,11 @@ const heartbeatNodes = [
 ];
 
 const ContinuousMonitor: React.FC<ContinuousMonitorProps> = ({ onTabChange }) => {
-    const [events, setEvents] = useState<HiveEvent[]>(initialEvents);
-    const [tick, setTick] = useState(0);
-    const [liveTime, setLiveTime] = useState(new Date());
+    const [events, setEvents] = React.useState<HiveEvent[]>(initialEvents);
+    const [tick, setTick] = React.useState(0);
+    const [liveTime, setLiveTime] = React.useState(new Date());
 
-    useEffect(() => {
+    React.useEffect(() => {
         const timer = setInterval(() => {
             setLiveTime(new Date());
             setTick(t => t + 1);

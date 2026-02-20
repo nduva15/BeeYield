@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,25 +25,25 @@ interface MetersListBaseProps {
 
 const MetersListBase: React.FC<MetersListBaseProps> = ({ meterType, title, onTabChange }) => {
     // Data States
-    const [buildings, setBuildings] = useState<Building[]>([]);
-    const [apartments, setApartments] = useState<Apartment[]>([]);
-    const [meters, setMeters] = useState<Meter[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [buildings, setBuildings] = React.useState<Building[]>([]);
+    const [apartments, setApartments] = React.useState<Apartment[]>([]);
+    const [meters, setMeters] = React.useState<Meter[]>([]);
+    const [loading, setLoading] = React.useState(true);
 
     // Filter States
-    const [buildingFilter, setBuildingFilter] = useState<string>('all');
-    const [apartmentFilter, setApartmentFilter] = useState<string>('all');
-    const [statusFilter, setStatusFilter] = useState<string>('all');
-    const [searchQuery, setSearchQuery] = useState('');
+    const [buildingFilter, setBuildingFilter] = React.useState<string>('all');
+    const [apartmentFilter, setApartmentFilter] = React.useState<string>('all');
+    const [statusFilter, setStatusFilter] = React.useState<string>('all');
+    const [searchQuery, setSearchQuery] = React.useState('');
 
     // UI States
-    const [buildingsOpen, setBuildingsOpen] = useState(true);
-    const [apartmentsOpen, setApartmentsOpen] = useState(true);
-    const [exportOpen, setExportOpen] = useState(true);
-    const [downloading, setDownloading] = useState<string | null>(null);
-    const [isAddingMeter, setIsAddingMeter] = useState(false);
+    const [buildingsOpen, setBuildingsOpen] = React.useState(true);
+    const [apartmentsOpen, setApartmentsOpen] = React.useState(true);
+    const [exportOpen, setExportOpen] = React.useState(true);
+    const [downloading, setDownloading] = React.useState<string | null>(null);
+    const [isAddingMeter, setIsAddingMeter] = React.useState(false);
 
-    useEffect(() => {
+    React.useEffect(() => {
         const loadData = async () => {
             setLoading(true);
             try {

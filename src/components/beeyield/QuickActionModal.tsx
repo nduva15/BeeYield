@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
     Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter
 } from "@/components/ui/dialog";
@@ -21,12 +21,12 @@ interface QuickActionModalProps {
 }
 
 const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, onSuccess }) => {
-    const [activeTab, setActiveTab] = useState('apiary');
-    const [apiaries, setApiaries] = useState<Apiary[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [activeTab, setActiveTab] = React.useState('apiary');
+    const [apiaries, setApiaries] = React.useState<Apiary[]>([]);
+    const [loading, setLoading] = React.useState(false);
 
     // Apiary Form State
-    const [apiaryData, setApiaryData] = useState({
+    const [apiaryData, setApiaryData] = React.useState({
         name: '',
         location_name: '',
         forage_type: 'Forest',
@@ -34,7 +34,7 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
     });
 
     // Hive Form State
-    const [hiveData, setHiveData] = useState({
+    const [hiveData, setHiveData] = React.useState({
         apiary_id: '',
         hive_code: '',
         type: 'Langstroth',
@@ -42,7 +42,7 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({ isOpen, onClose, on
         strength: 3
     });
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (isOpen) {
             fetchApiaries();
         }

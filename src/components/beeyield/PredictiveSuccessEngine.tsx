@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Calculator, Zap, Target, TrendingUp, Info, Activity, ShieldAlert, Cpu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -98,7 +98,7 @@ const PredictiveSuccessEngine: React.FC<PredictiveSuccessEngineProps> = ({ onTab
                     </div>
 
                     <div className="h-64 w-full">
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
                             <ComposedChart data={PREDICTION_DATA}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#064e3b10" />
                                 <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#064e3b', fontSize: 10, fontWeight: 900 }} />

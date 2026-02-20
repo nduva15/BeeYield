@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React from 'react';
 import { MapPin, Shield, Crosshair, Hexagon, AlertCircle, Plus, Info, Zap, Trash2, ShieldAlert } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -15,12 +15,12 @@ interface Pallet {
 }
 
 const HiveLogisticsSecurity: React.FC<HiveLogisticsSecurityProps> = ({ onTabChange }) => {
-    const [pallets, setPallets] = useState<Pallet[]>([
+    const [pallets, setPallets] = React.useState<Pallet[]>([
         { id: 'PAL-001', x: 200, y: 150, hives: 4, isSecure: true },
         { id: 'PAL-002', x: 450, y: 300, hives: 4, isSecure: true },
     ]);
-    const [addingHive, setAddingHive] = useState(false);
-    const svgRef = useRef<SVGSVGElement>(null);
+    const [addingHive, setAddingHive] = React.useState(false);
+    const svgRef = React.useRef<SVGSVGElement>(null);
 
     const handleSVGClick = (e: React.MouseEvent) => {
         if (!addingHive) return;

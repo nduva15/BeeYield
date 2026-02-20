@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileText, Download, Activity, DollarSign, BarChart, Loader2, Database, Terminal, ShieldCheck } from 'lucide-react';
@@ -15,11 +15,11 @@ interface GeneratedReport {
 }
 
 const MetersReports: React.FC = () => {
-    const [generatedReports, setGeneratedReports] = useState<GeneratedReport[]>([
+    const [generatedReports, setGeneratedReports] = React.useState<GeneratedReport[]>([
         { id: '1', name: 'Fault Log', date: '2026-01-17 07:50', type: 'PDF' }
     ]);
-    const [loading, setLoading] = useState<string | null>(null);
-    const [downloading, setDownloading] = useState<string | null>(null);
+    const [loading, setLoading] = React.useState<string | null>(null);
+    const [downloading, setDownloading] = React.useState<string | null>(null);
 
     const generateReportData = (reportName: string) => {
         const now = new Date();

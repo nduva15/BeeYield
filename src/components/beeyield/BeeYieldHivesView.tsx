@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,26 +38,26 @@ interface BeeYieldHivesViewProps {
 
 const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) => {
     // UI State
-    const [selectedPlace, setSelectedPlace] = useState('all');
-    const [searchQuery, setSearchQuery] = useState('');
-    const [isExporting, setIsExporting] = useState(false);
-    const [viewMode, setViewMode] = useState<'hives' | 'devices'>('hives');
+    const [selectedPlace, setSelectedPlace] = React.useState('all');
+    const [searchQuery, setSearchQuery] = React.useState('');
+    const [isExporting, setIsExporting] = React.useState(false);
+    const [viewMode, setViewMode] = React.useState<'hives' | 'devices'>('hives');
 
     // Modal states
-    const [isHiveModalOpen, setIsHiveModalOpen] = useState(false);
-    const [editingHive, setEditingHive] = useState<Hive | null>(null);
+    const [isHiveModalOpen, setIsHiveModalOpen] = React.useState(false);
+    const [editingHive, setEditingHive] = React.useState<Hive | null>(null);
 
     // Notes and Quick Details states
-    const [isNotesModalOpen, setIsNotesModalOpen] = useState(false);
-    const [isQuickDetailsOpen, setIsQuickDetailsOpen] = useState(false);
-    const [activeHive, setActiveHive] = useState<Hive | null>(null);
-    const [hiveNotes, setHiveNotes] = useState("");
-    const [isSavingNotes, setIsSavingNotes] = useState(false);
+    const [isNotesModalOpen, setIsNotesModalOpen] = React.useState(false);
+    const [isQuickDetailsOpen, setIsQuickDetailsOpen] = React.useState(false);
+    const [activeHive, setActiveHive] = React.useState<Hive | null>(null);
+    const [hiveNotes, setHiveNotes] = React.useState("");
+    const [isSavingNotes, setIsSavingNotes] = React.useState(false);
 
     // Request Inspection Task State
-    const [isRequestingInspection, setIsRequestingInspection] = useState(false);
-    const [isSavingTask, setIsSavingTask] = useState(false);
-    const [inspectionTaskForm, setInspectionTaskForm] = useState({
+    const [isRequestingInspection, setIsRequestingInspection] = React.useState(false);
+    const [isSavingTask, setIsSavingTask] = React.useState(false);
+    const [inspectionTaskForm, setInspectionTaskForm] = React.useState({
         title: 'Routine Inspection',
         description: 'Standard hive health check',
         due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -71,9 +71,9 @@ const BeeYieldHivesView: React.FC<BeeYieldHivesViewProps> = ({ onTabChange }) =>
     const { data: apiaries = [], isLoading: apiariesLoading } = useApiaries();
     const deleteHive = useDeleteHive();
     const updateHiveMutation = useUpdateHive();
-    const [devices, setDevices] = useState<IoTDevice[]>([]);
+    const [devices, setDevices] = React.useState<IoTDevice[]>([]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         const fetchDevices = async () => {
             try {
                 const devicesData = await beeyieldService.getDevices();

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,17 +37,17 @@ interface MetersViewProps {
 }
 
 const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'meters-dashboard' }) => {
-    const [meters, setMeters] = useState<Meter[]>([]);
-    const [events, setEvents] = useState<MeterEvent[]>([]);
-    const [buildings, setBuildings] = useState<Building[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [usageFilter, setUsageFilter] = useState<'Water' | 'Heat' | 'Energy'>('Water');
-    const [aiMessage, setAiMessage] = useState('');
-    const [chatMessages, setChatMessages] = useState([
+    const [meters, setMeters] = React.useState<Meter[]>([]);
+    const [events, setEvents] = React.useState<MeterEvent[]>([]);
+    const [buildings, setBuildings] = React.useState<Building[]>([]);
+    const [loading, setLoading] = React.useState(true);
+    const [usageFilter, setUsageFilter] = React.useState<'Water' | 'Heat' | 'Energy'>('Water');
+    const [aiMessage, setAiMessage] = React.useState('');
+    const [chatMessages, setChatMessages] = React.useState([
         { role: 'assistant', content: 'Checking system status... How can I help you today?' },
     ]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         const loadDashboardData = async () => {
             if (activeSubTab !== 'meters-dashboard') return;
             setLoading(true);
@@ -218,7 +218,7 @@ const MetersView: React.FC<MetersViewProps> = ({ onTabChange, activeSubTab = 'me
                     </div>
 
                     <div className="h-[360px] w-full">
-                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
                             <AreaChart data={usageTrendData}>
                                 <defs>
                                     <linearGradient id="colorUsage" x1="0" y1="0" x2="0" y2="1">

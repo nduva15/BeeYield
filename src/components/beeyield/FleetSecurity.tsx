@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -32,16 +32,16 @@ interface Pallet {
 }
 
 const FleetSecurity: React.FC = () => {
-    const [pallets, setPallets] = useState<Pallet[]>([
+    const [pallets, setPallets] = React.useState<Pallet[]>([
         { id: 'PAL-001', hives: 12, location: 'North Block', lastMoved: '2h ago', status: 'secured', vibration: 0.02 },
         { id: 'PAL-002', hives: 12, location: 'East Corridor', lastMoved: '10m ago', status: 'warning', vibration: 0.15 },
         { id: 'PAL-003', hives: 8, location: 'Hillside Apiary', lastMoved: '5d ago', status: 'secured', vibration: 0.01 },
     ]);
 
-    const [globalAlert, setGlobalAlert] = useState(false);
+    const [globalAlert, setGlobalAlert] = React.useState(false);
 
     // Simulate real-time alerts
-    useEffect(() => {
+    React.useEffect(() => {
         const interval = setInterval(() => {
             setPallets(prev => prev.map(p => {
                 if (p.id === 'PAL-002') {

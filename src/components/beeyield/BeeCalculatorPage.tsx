@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -9,7 +9,6 @@ import {
     Calculator,
     Droplet,
     Zap,
-    Award,
     Leaf,
     Info,
     AlertCircle,
@@ -28,91 +27,162 @@ import {
     Trash2,
     CheckCircle2
 } from 'lucide-react';
+import { Award } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useBeekeepingMath } from '@/hooks/useBeekeepingMath';
-import { beeyieldService } from '@/services/beeyieldService';
+import { beeyieldService, CalculatorLogCreateInput } from '@/services/beeyieldService';
 import { toast } from 'sonner';
+import { useAuth } from '@/hooks/useAuth';
+
+interface Scenario {
+    id: string;
+    name: string;
+    location: string;
+    beeType: string;
+    createdAt: string;
+}
+
+type BeeType = 'Apis mellifera' | 'Apis cerana' | 'Apis florea' | 'Apis dorsata';
 
 const BeeCalculatorPage: React.FC = () => {
+    const { user, beeyieldUser } = useAuth();
+    const userId = beeyieldUser?.id || user?.id;
+
     const math = useBeekeepingMath();
-    const [activeSection, setActiveSection] = useState('feeding');
-    const [showHistory, setShowHistory] = useState(false);
-    const [historyLogs, setHistoryLogs] = useState<any[]>([]);
-    const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+    const [activeSection, setActiveSection] = React.useState('feeding');
+    const [showHistory, setShowHistory] = React.useState(false);
+    const [historyLogs, setHistoryLogs] = React.useState<any[]>([]);
+    const [isLoadingHistory, setIsLoadingHistory] = React.useState(false);
+
+    const [scenarios, setScenarios] = React.useState<Scenario[]>([]);
+    const [selectedScenarioId, setSelectedScenarioId] = React.useState<string | null>(null);
+    const [isLoading, setIsLoading] = React.useState(true);
+    const [isSaving, setIsSaving] = React.useState(false);
+    const [activeTab, setActiveTab] = React.useState<string>('inputs');
+
+    // Scenario inputs
+    const [scenarioName, setScenarioName] = React.useState("New Forecast Scenario");
+    const [location, setLocation] = React.useState("Tana River Orchard");
+    const [beeType, setBeeType] = React.useState<BeeType>('Apis mellifera');
+    const [colonyCountScenario, setColonyCountScenario] = React.useState(100); // Renamed to avoid conflict
+    const [foragingRadius, setForagingRadius] = React.useState(3.0);
+    const [targetCrop, setTargetCrop] = React.useState("Macadamia");
+    const [bloomDensity, setBloomDensity] = React.useState(75);
+    const [environmentalStress, setEnvironmentalStress] = React.useState(15);
+    const [competitionLevel, setCompetitionLevel] = React.useState(20);
 
     // --- State for Feeding ---
-    const [syrupVol, setSyrupVol] = useState(10);
-    const [syrupRatio, setSyrupRatio] = useState<'1:1' | '2:1'>('1:1');
+    const [syrupVol, setSyrupVol] = React.useState(10);
+    const [syrupRatio, setSyrupRatio] = React.useState<'1:1' | '2:1'>('1:1');
     const syrupResult = math.calculateSyrup(syrupVol, syrupRatio);
 
-    const [currentWeight, setCurrentWeight] = useState(35);
-    const [targetWeight, setTargetWeight] = useState(45);
+    const [currentWeight, setCurrentWeight] = React.useState(35);
+    const [targetWeight, setTargetWeight] = React.useState(45);
     const winterResult = math.calculateWinterDeficit(currentWeight, targetWeight);
 
     // --- State for Health ---
-    const [miteCount, setMiteCount] = useState(2);
-    const [temp, setTemp] = useState(24);
+    const [miteCount, setMiteCount] = React.useState(2);
+    const [temp, setTemp] = React.useState(24);
     const varroaResult = math.getVarroaInfestation(miteCount);
 
     // --- State for Logistics ---
-    const [colonyCount, setColonyCount] = useState(50);
+    const [colonyCount, setColonyCount] = React.useState(50);
     const bomResult = math.calculateBOM(colonyCount);
 
-    const [honeyKg, setHoneyKg] = useState(250);
-    const [jarSize, setJarSize] = useState(500);
+    const [honeyKg, setHoneyKg] = React.useState(250);
+    const [jarSize, setJarSize] = React.useState(500);
     const harvestResult = math.calculateHarvestSupplies(honeyKg, jarSize);
 
     // --- State for Economy ---
-    const [laborCost, setLaborCost] = useState(500);
-    const [fuelCost, setFuelCost] = useState(200);
-    const [medCost, setMedCost] = useState(150);
-    const [equipCost, setEquipCost] = useState(100);
+    const [laborCost, setLaborCost] = React.useState(500);
+    const [fuelCost, setFuelCost] = React.useState(200);
+    const [medCost, setMedCost] = React.useState(150);
+    const [equipCost, setEquipCost] = React.useState(100);
     const marginResult = math.calculateHoneyMargin({ labor: laborCost, fuel: fuelCost, medicine: medCost, equipment: equipCost }, honeyKg);
 
-    const [hikingHives, setHikingHives] = useState(40);
-    const [hikingYield, setHikingYield] = useState(15); // per hive
-    const [hikingPrice, setHikingPrice] = useState(12);
-    const [hikingTransport, setHikingTransport] = useState(800);
+    const [hikingHives, setHikingHives] = React.useState(40);
+    const [hikingYield, setHikingYield] = React.useState(15); // per hive
+    const [hikingPrice, setHikingPrice] = React.useState(12);
+    const [hikingTransport, setHikingTransport] = React.useState(800);
     const hikingROI = math.calculateHikingROI(hikingHives * hikingYield, hikingPrice, hikingTransport, hikingHives);
 
-    const [totalColonies, setTotalColonies] = useState(100);
-    const [replacementRate, setReplacementRate] = useState(15);
+    const [totalColonies, setTotalColonies] = React.useState(100);
+    const [replacementRate, setReplacementRate] = React.useState(15);
     const queensNeeded = Math.ceil(totalColonies * (replacementRate / 100));
 
     // --- Actions ---
-    const handleSave = async () => {
-        let payload: any = {
-            calculation_type: activeSection as any,
-            sub_type: 'snapshot',
-            inputs: {},
-            results: {}
+    React.useEffect(() => {
+        const syncCalculation = async () => {
+            let payload: any = {
+                calculation_type: activeSection as any,
+                sub_type: 'snapshot',
+                inputs: {},
+                results: {}
+            };
+
+            if (activeSection === 'feeding') {
+                payload.inputs = { syrupVol, syrupRatio, currentWeight, targetWeight };
+                payload.results = { syrupResult, winterResult };
+            } else if (activeSection === 'health') {
+                payload.inputs = { miteCount, temp };
+                payload.results = { varroaResult };
+            } else if (activeSection === 'logistics') {
+                payload.inputs = { colonyCount, honeyKg, jarSize, totalColonies, replacementRate };
+                payload.results = { bomResult, harvestResult, queensNeeded };
+            } else if (activeSection === 'economy') {
+                payload.inputs = { laborCost, fuelCost, medCost, equipCost, hikingHives, hikingYield, hikingPrice, hikingTransport };
+                payload.results = { marginResult, hikingROI };
+            }
+
+            const { error } = await beeyieldService.logCalculation(payload);
+            if (error) {
+                toast.error("Failed to sync calculation with BeeYield Cloud.");
+            }
         };
 
-        if (activeSection === 'feeding') {
-            payload.inputs = { syrupVol, syrupRatio, currentWeight, targetWeight };
-            payload.results = { syrupResult, winterResult };
-        } else if (activeSection === 'health') {
-            payload.inputs = { miteCount, temp };
-            payload.results = { varroaResult };
-        } else if (activeSection === 'logistics') {
-            payload.inputs = { colonyCount, honeyKg, jarSize, totalColonies, replacementRate };
-            payload.results = { bomResult, harvestResult, queensNeeded };
-        } else if (activeSection === 'economy') {
-            payload.inputs = { laborCost, fuelCost, medCost, equipCost, hikingHives, hikingYield, hikingPrice, hikingTransport };
-            payload.results = { marginResult, hikingROI };
-        }
-
-        const { error } = await beeyieldService.logCalculation(payload);
-        if (error) {
-            toast.error("Failed to sync calculation with BeeYield Cloud.");
-        }
-    };
+        syncCalculation();
+    }, [activeSection, syrupVol, syrupRatio, currentWeight, targetWeight,
+        syrupResult, winterResult, miteCount, temp, varroaResult,
+        colonyCount, honeyKg, jarSize, totalColonies, replacementRate,
+        bomResult, harvestResult, queensNeeded, laborCost, fuelCost,
+        medCost, equipCost, hikingHives, hikingYield, hikingPrice, hikingTransport,
+        marginResult, hikingROI]);
 
     const handleShare = (tool: string) => {
         toast.success(`Exporting ${tool} report...`, {
             description: "Generated PDF shared with Yard Operations team.",
             icon: <Share2 className="w-4 h-4" />
         });
+    };
+
+    const handleSave = async () => {
+        setIsSaving(true);
+        const payload: CalculatorLogCreateInput = {
+            calculation_type: activeSection as any,
+            sub_type: 'snapshot',
+            inputs: {
+                syrupVol, syrupRatio, currentWeight, targetWeight,
+                miteCount, temp, colonyCount, honeyKg, jarSize,
+                totalColonies, replacementRate, laborCost, fuelCost,
+                medCost, equipCost, hikingHives, hikingYield,
+                hikingPrice, hikingTransport
+            },
+            results: {
+                syrupResult, winterResult, varroaResult, bomResult,
+                harvestResult, queensNeeded, marginResult, hikingROI
+            }
+        };
+
+        const { error } = await beeyieldService.logCalculation(payload);
+        if (error) {
+            toast.error("Failed to save calculation state.");
+        } else {
+            toast.success("Calculation snapshot saved successfully.", {
+                description: "Access this entry via the Math Ledger history.",
+                icon: <CheckCircle2 className="w-4 h-4 text-[#10b981]" />
+            });
+        }
+        setIsSaving(false);
     };
 
     const fetchHistory = async () => {

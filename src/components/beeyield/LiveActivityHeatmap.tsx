@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React from 'react';
 import { MapPin, Zap, Info, Layers, PieChart, Activity, Minimize2, Maximize2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PieChart as RePieChart, Pie, Cell, ResponsiveContainer, Tooltip as ReTooltip } from 'recharts';
@@ -14,19 +14,19 @@ const POLLINATOR_DATA = [
 ];
 
 const LiveActivityHeatmap: React.FC<LiveActivityHeatmapProps> = ({ onTabChange }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
-    const [activeSector, setActiveSector] = useState<number | null>(null);
-    const [pulseOpacity, setPulseOpacity] = useState(0.4);
+    const [isExpanded, setIsExpanded] = React.useState(false);
+    const [activeSector, setActiveSector] = React.useState<number | null>(null);
+    const [pulseOpacity, setPulseOpacity] = React.useState(0.4);
 
     // Simulated "Pulse" animation for the heatmap
-    useEffect(() => {
+    React.useEffect(() => {
         const interval = setInterval(() => {
             setPulseOpacity(prev => (prev === 0.4 ? 0.7 : 0.4));
         }, 2000);
         return () => clearInterval(interval);
     }, []);
 
-    const sectors = useMemo(() => {
+    const sectors = React.useMemo(() => {
         return Array.from({ length: 24 }).map((_, i) => ({
             id: i,
             vpm: Math.floor(Math.random() * 12) + 6, // 6-18 VPM range
@@ -136,7 +136,7 @@ const LiveActivityHeatmap: React.FC<LiveActivityHeatmapProps> = ({ onTabChange }
                         </div>
 
                         <div className="h-64 w-full relative">
-                            <ResponsiveContainer width="100%" height="100%">
+                            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
                                 <RePieChart>
                                     <Pie
                                         data={POLLINATOR_DATA}

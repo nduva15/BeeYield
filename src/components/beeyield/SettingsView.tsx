@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -35,8 +35,8 @@ interface SettingsViewProps {
 
 const SettingsView: React.FC<SettingsViewProps> = ({ onTabChange }) => {
     const { user, signOut } = useAuth();
-    const [loading, setLoading] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = React.useState(false);
+    const [showPassword, setShowPassword] = React.useState(false);
 
     const handleSave = () => {
         setLoading(true);

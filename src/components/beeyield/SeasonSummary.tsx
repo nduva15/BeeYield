@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import { Calculator, TrendingUp, ArrowRight, CheckCircle2, AlertTriangle, Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -57,9 +57,9 @@ const CircularGauge: React.FC<{ value: number; max: number; label: string; subla
 };
 
 const SeasonSummary: React.FC<SeasonSummaryProps> = ({ onTabChange }) => {
-    const [exportDone, setExportDone] = useState(false);
+    const [exportDone, setExportDone] = React.useState(false);
 
-    const pillarScores = useMemo(() => {
+    const pillarScores = React.useMemo(() => {
         // Uniformity: 100 minus average coverage variance
         const avgVariance = blockResults.reduce((s, b) => s + b.coverageVariance, 0) / blockResults.length;
         const uniformity = Math.max(0, 100 - avgVariance);

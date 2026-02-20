@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -6,9 +6,9 @@ import { Loader2 } from 'lucide-react';
 import beeyieldService from '@/services/beeyieldService';
 
 const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ onTabChange }) => {
-    const [loading, setLoading] = useState(true);
-    const [stats, setStats] = useState<any>(null);
-    const [lastRefresh, setLastRefresh] = useState('-');
+    const [loading, setLoading] = React.useState(true);
+    const [stats, setStats] = React.useState<any>(null);
+    const [lastRefresh, setLastRefresh] = React.useState('-');
 
     const fetchStats = async () => {
         setLoading(true);
@@ -23,7 +23,7 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
         }
     };
 
-    useEffect(() => {
+    React.useEffect(() => {
         fetchStats();
     }, []);
 
@@ -97,7 +97,7 @@ const ServerStatusView: React.FC<{ onTabChange: (tab: string) => void }> = ({ on
 
                     {/* Progress Bar */}
                     <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                        <div className="h-full bg-green-500 transition-all duration-500" style={{ width: `${Math.max(parseFloat(usagePercent), 1)}%` }} />
+                        <div className="h-full bg-green-500 transition-all duration-500" style={{ width: `${Math.max(parseFloat(usagePercent), 1)}% ` }} />
                     </div>
 
                     {/* Stats */}

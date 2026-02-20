@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
     Activity,
     MapPin,
@@ -75,7 +75,7 @@ const OrchardStatusCard: React.FC<{ orchard: Apiary; onAction: (tab: string) => 
                     </div>
                     {/* Sparkline */}
                     <div className="h-20 w-full bg-[#064e3b]/[0.02] border-2 border-[#064e3b]/5">
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
                             <LineChart data={sparkData}>
                                 <Line type="monotone" dataKey="bloom" stroke="#facc15" strokeWidth={3} dot={false} />
                                 <Line type="monotone" dataKey="activity" stroke="#2D5A27" strokeWidth={3} dot={false} />

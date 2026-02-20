@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,7 +18,8 @@ import {
     Database,
     Cpu,
     Sparkles,
-    Zap
+    Zap,
+    Hexagon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Logo from '@/assets/Logo.png';
@@ -50,19 +51,19 @@ interface Message {
 }
 
 const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initialMessage, onInitialMessageConsumed }) => {
-    const [chats, setChats] = useState<Chat[]>(() => {
+    const [chats, setChats] = React.useState<Chat[]>(() => {
         const saved = localStorage.getItem('beeyield_chats');
         return saved ? JSON.parse(saved) : [];
     });
-    const [selectedChat, setSelectedChat] = useState<string | null>(null);
-    const [messages, setMessages] = useState<Message[]>([]);
-    const [inputValue, setInputValue] = useState('');
-    const [showWelcome, setShowWelcome] = useState(true);
-    const [systemStatus, setSystemStatus] = useState<{ status: string, capabilities?: string[] }>({ status: 'online' });
+    const [selectedChat, setSelectedChat] = React.useState<string | null>(null);
+    const [messages, setMessages] = React.useState<Message[]>([]);
+    const [inputValue, setInputValue] = React.useState('');
+    const [showWelcome, setShowWelcome] = React.useState(true);
+    const [systemStatus, setSystemStatus] = React.useState<{ status: string, capabilities?: string[] }>({ status: 'online' });
     const { language, t } = useLanguage();
     const navigate = useNavigate();
 
-    useEffect(() => {
+    React.useEffect(() => {
         const checkStatus = async () => {
             const status = await aiService.getStatus();
             setSystemStatus(status);
@@ -70,11 +71,11 @@ const SmartAssistantView: React.FC<AIAssistantViewProps> = ({ onTabChange, initi
         checkStatus();
     }, []);
 
-    useEffect(() => {
+    React.useEffect(() => {
         localStorage.setItem('beeyield_chats', JSON.stringify(chats));
     }, [chats]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (initialMessage) {
             setInputValue(initialMessage);
             onInitialMessageConsumed?.();

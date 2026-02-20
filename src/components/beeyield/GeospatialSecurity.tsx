@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { MapPin, Shield, AlertTriangle, CheckCircle2, Zap, Navigation, Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -50,8 +50,8 @@ const statusConfig = {
 };
 
 const GeospatialSecurity: React.FC<GeospatialSecurityProps> = ({ onTabChange }) => {
-    const [selected, setSelected] = useState<HiveMarker | null>(null);
-    const [showHeatmap, setShowHeatmap] = useState(true);
+    const [selected, setSelected] = React.useState<HiveMarker | null>(null);
+    const [showHeatmap, setShowHeatmap] = React.useState(true);
 
     const alerts = hiveMarkers.filter(h => h.status !== 'nominal');
 

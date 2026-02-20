@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
@@ -23,15 +23,15 @@ import logoAsset from '@/assets/Logo.png';
 import { useAuth } from '@/contexts/AuthContext';
 
 export function UsbHubDashboard() {
-    const [device, setDevice] = useState<USBDevice | null>(null);
-    const [connectionStatus, setConnectionStatus] = useState<'disconnected' | 'connecting' | 'connected' | 'error'>('disconnected');
-    const [syncProgress, setSyncProgress] = useState(0);
-    const [isFlashing, setIsFlashing] = useState(false);
-    const [logs, setLogs] = useState<string[]>([]);
-    const logsEndRef = useRef<HTMLDivElement>(null);
+    const [device, setDevice] = React.useState<USBDevice | null>(null);
+    const [connectionStatus, setConnectionStatus] = React.useState<'disconnected' | 'connecting' | 'connected' | 'error'>('disconnected');
+    const [syncProgress, setSyncProgress] = React.useState(0);
+    const [isFlashing, setIsFlashing] = React.useState(false);
+    const [logs, setLogs] = React.useState<string[]>([]);
+    const logsEndRef = React.useRef<HTMLDivElement>(null);
 
-    const [firmwareFile, setFirmwareFile] = useState<File | null>(null);
-    const [manifestJson, setManifestJson] = useState<string>(`{
+    const [firmwareFile, setFirmwareFile] = React.useState<File | null>(null);
+    const [manifestJson, setManifestJson] = React.useState<string>(`{
   "name": "BeeYield Hub Queen Firmware",
   "version": "1.2.5",
   "builds": [
@@ -50,7 +50,7 @@ export function UsbHubDashboard() {
         logsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
-    useEffect(() => {
+    React.useEffect(() => {
         scrollToBottom();
     }, [logs]);
 

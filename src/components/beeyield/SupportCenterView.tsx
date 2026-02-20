@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import {
@@ -31,15 +31,15 @@ interface SupportCenterViewProps {
 
 const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) => {
     const { user } = useAuth();
-    const [activeTab, setActiveTab] = useState<'all' | 'new' | 'in_progress' | 'resolved'>('all');
-    const [filterText, setFilterText] = useState('');
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [loading, setLoading] = useState(true);
-    const [supportRequests, setSupportRequests] = useState<SupportRequest[]>([]);
+    const [activeTab, setActiveTab] = React.useState<'all' | 'new' | 'in_progress' | 'resolved'>('all');
+    const [filterText, setFilterText] = React.useState('');
+    const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
+    const [loading, setLoading] = React.useState(true);
+    const [supportRequests, setSupportRequests] = React.useState<SupportRequest[]>([]);
 
     // Form State
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = React.useState({
         category: 'General',
         subject: '',
         description: '',
@@ -53,7 +53,7 @@ const SupportCenterView: React.FC<SupportCenterViewProps> = ({ onTabChange }) =>
         setLoading(false);
     };
 
-    useEffect(() => {
+    React.useEffect(() => {
         loadRequests();
     }, []);
 

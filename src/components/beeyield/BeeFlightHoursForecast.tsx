@@ -41,6 +41,7 @@ const CUSTOM_COLORS = {
 
 const BeeFlightHoursForecast: React.FC = () => {
     // Detection for "Recovery Mode"
+    // Detection for "Recovery Mode"
     const isRecoveryNeeded = mockData.slice(2, 4).every(d => d.status === 'low');
 
     return (
@@ -110,7 +111,7 @@ const BeeFlightHoursForecast: React.FC = () => {
                             <span className="text-[9px] font-black uppercase tracking-widest">Low/No Flight</span>
                         </div>
                     </div>
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
                         <BarChart data={mockData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                             <XAxis

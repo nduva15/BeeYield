@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -15,19 +15,20 @@ import {
     Pause,
     History
 } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 const VpmAutoCounter: React.FC = () => {
-    const [isActive, setIsActive] = useState(true);
-    const [detections, setDetections] = useState<any[]>([]);
-    const [vpm, setVpm] = useState(14.2);
-    const [pcr, setPcr] = useState(68); // Pollen Collection Rate (%)
-    const [totalBees, setTotalBees] = useState(1284);
-    const [pollenBees, setPollenBees] = useState(873);
+    const [isActive, setIsActive] = React.useState(true);
+    const [detections, setDetections] = React.useState<any[]>([]);
+    const [vpm, setVpm] = React.useState(14.2);
+    const [pcr, setPcr] = React.useState(68); // Pollen Collection Rate (%)
+    const [totalBees, setTotalBees] = React.useState(1284);
+    const [pollenBees, setPollenBees] = React.useState(873);
 
     // Simulate real-time detections
-    useEffect(() => {
+    React.useEffect(() => {
         if (!isActive) return;
 
         const interval = setInterval(() => {

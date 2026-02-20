@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,7 +19,7 @@ import { toast } from 'sonner';
 
 // Analytics Section Component
 const AnalyticsSection: React.FC<{ currency: string }> = ({ currency }) => {
-    const [activeAnalyticsTab, setActiveAnalyticsTab] = useState('Monthly overview');
+    const [activeAnalyticsTab, setActiveAnalyticsTab] = React.useState('Monthly overview');
 
     // In a real app, these would come from backend aggregation endpoint
     const analyticsTabs = ['Monthly overview', 'Per entity profitability', 'Per category', 'VAT summary', 'Cost vs Usage'];
@@ -116,30 +116,30 @@ interface BillingViewProps {
 }
 
 const BillingView: React.FC<BillingViewProps> = ({ onTabChange }) => {
-    const [activeSubTab, setActiveSubTab] = useState('Dashboard');
-    const [currency, setCurrency] = useState('KES');
-    const [isNewDocFormOpen, setIsNewDocFormOpen] = useState(false);
-    const [docFormStep, setDocFormStep] = useState(1);
+    const [activeSubTab, setActiveSubTab] = React.useState('Dashboard');
+    const [currency, setCurrency] = React.useState('KES');
+    const [isNewDocFormOpen, setIsNewDocFormOpen] = React.useState(false);
+    const [docFormStep, setDocFormStep] = React.useState(1);
 
     // New Document Form State
-    const [newDocType, setNewDocType] = useState('invoice');
-    const [newDocAmount, setNewDocAmount] = useState(0);
-    const [newDocDate, setNewDocDate] = useState(new Date().toISOString().split('T')[0]);
-    const [newDocEntityId, setNewDocEntityId] = useState('');
-    const [newDocDescription, setNewDocDescription] = useState('');
-    const [sellerName, setSellerName] = useState('BeeYield Platform');
-    const [buyerName, setBuyerName] = useState('');
-    const [lineItemsCount, setLineItemsCount] = useState(1);
+    const [newDocType, setNewDocType] = React.useState('invoice');
+    const [newDocAmount, setNewDocAmount] = React.useState(0);
+    const [newDocDate, setNewDocDate] = React.useState(new Date().toISOString().split('T')[0]);
+    const [newDocEntityId, setNewDocEntityId] = React.useState('');
+    const [newDocDescription, setNewDocDescription] = React.useState('');
+    const [sellerName, setSellerName] = React.useState('BeeYield Platform');
+    const [buyerName, setBuyerName] = React.useState('');
+    const [lineItemsCount, setLineItemsCount] = React.useState(1);
 
     // Data State
-    const [transactions, setTransactions] = useState<any[]>([]);
-    const [overview, setOverview] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
+    const [transactions, setTransactions] = React.useState<any[]>([]);
+    const [overview, setOverview] = React.useState<any>(null);
+    const [loading, setLoading] = React.useState(true);
 
     const isFormValid = sellerName.trim() !== '' && buyerName.trim() !== '' && lineItemsCount > 0;
-    const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
+    const [isCurrencyOpen, setIsCurrencyOpen] = React.useState(false);
 
-    useEffect(() => {
+    React.useEffect(() => {
         fetchData();
     }, []);
 
